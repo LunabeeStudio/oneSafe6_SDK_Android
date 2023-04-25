@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option java_package = "studio.lunabee.onesafe.storage";
+option java_outer_classname = "OSForceUpgradeProto";
+
+message ForceUpgradeProtoData {
+  int32 buildNumber = 1;
+  int32 forceBuildNumber = 2;
+  int32 softBuildNumber = 3;
+  string title = 4;
+  string forceDescription = 5;
+  string softDescription = 6;
+  string buttonLabel = 7;
+};

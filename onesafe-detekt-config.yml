@@ -1,0 +1,27 @@
+comments:
+  AbsentOrWrongFileLicense:
+    active: true
+    licenseTemplateFile: "onesafe6-license.template"
+    excludes:
+      - '**/app/*'
+      - '**/app/src/**'
+      - '**/app/core-ui/**'
+      - '**/Commons_Android/**'
+      - '**/macrobenchmark-android/**'
+
+complexity:
+  LongMethod:
+    threshold: 250
+  CyclomaticComplexMethod:
+    threshold: 35
+  NestedBlockDepth:
+    threshold: 10
+  ComplexCondition:
+    threshold: 10
+  LongParameterList:
+    constructorThreshold: 10
+
+
+style:
+  UnusedPrivateMember:
+    ignoreAnnotated: [ 'Preview', 'OsDefaultPreview' ]
