@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+option java_package = "studio.lunabee.onesafe.proto";
+option java_outer_classname = "OSExportProto";
+
+message ArchiveMetadata {
+  enum ArchiveKind {
+    UNSPECIFIED = 0;
+    BACKUP = 1;
+    SHARING = 2;
+  }
+  bool is_from_one_safe_plus = 2;
+  int32 archive_version = 3; // The archive spec version. Currently 1.
+  string from_platform = 4; // "ios" or "android"
+  string created_at = 5; // Using ISO8601 format like this: 2022-11-29T06:18:08.095Z
+  int32 items_count = 6;
+  ArchiveKind archive_kind = 7;
+};
+
+message Archive {
+  bytes salt = 1;
+  repeated ArchiveSafeItem items = 2;
+  repeated ArchiveSafeItemField fields = 3;
+  repeated ArchiveSafeItemKey keys = 4;
+};
+
+message ArchiveSafeItem {
+  string id = 1;
+  optional bytes enc_name = 2;
+  optional bytes enc_color = 3;
+  optional string icon_id = 4;
+  optional string parent_id = 5;
+  optional string deleted_parent_id = 6;
+  bool is_favorite = 7;
+  string created_at = 8; // Using ISO8601 format like this: 2022-11-29T06:18:08.095Z
+  string updated_at = 9; // Using ISO8601 format like this: 2022-11-29T06:18:08.095Z
+  optional string deleted_at = 10; // Using ISO8601 format like this: 2022-11-29T06:18:08.095Z
+  double position = 11;
+};
+
+message ArchiveSafeItemField {
+  string id = 1;
+  optional bytes enc_name = 2;
+  double position = 3;
+  string item_id = 4;
+  optional bytes enc_placeholder = 5;
+  optional bytes enc_value = 6;
+  optional bytes enc_kind = 7;
+  bool show_prediction = 8;
+  string created_at = 9; // Using ISO8601 format like this: 2022-11-29T06:18:08.095Z
+  string updated_at = 10; // Using ISO8601 format like this: 2022-11-29T06:18:08.095Z
+  bool is_item_identifier = 11;
+  optional bytes formatting_mask = 12;
+  optional bytes secure_display_mask = 13;
+  bool is_secured = 14;
+};
+
+message ArchiveSafeItemKey {
+  string id = 1;
+  bytes value = 2;
+};

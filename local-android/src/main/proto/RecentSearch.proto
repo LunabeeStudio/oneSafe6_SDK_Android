@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+option java_package = "studio.lunabee.onesafe.storage";
+option java_outer_classname = "OSRecentSearchProto";
+
+message RecentSearchProto {
+  repeated bytes recentSearch = 1;
+};
