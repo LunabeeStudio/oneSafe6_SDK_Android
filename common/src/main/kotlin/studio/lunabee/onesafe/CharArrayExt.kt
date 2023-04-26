@@ -26,7 +26,7 @@ import java.util.Arrays
 
 fun CharArray.randomize(): CharArray {
     val random = SecureRandom()
-    val randomBytes = ByteArray(this.size * 2)
+    val randomBytes = ByteArray(this.size * 4)
     random.nextBytes(randomBytes)
     val byteBuffer = ByteBuffer.wrap(randomBytes)
     val charBuffer = Charsets.UTF_16.decode(byteBuffer)
