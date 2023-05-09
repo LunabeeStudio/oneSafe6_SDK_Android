@@ -22,14 +22,10 @@ package studio.lunabee.onesafe.test
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
-import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import java.nio.ByteBuffer
 import java.time.Instant
 import java.util.UUID
 import kotlin.random.Random
-import kotlin.reflect.KMutableProperty
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.jvm.isAccessible
 
 object OSTestUtils {
     fun createSafeItem(
@@ -116,23 +112,6 @@ object OSTestUtils {
             formattingMask,
             secureDisplayMask,
             isSecured,
-        )
-    }
-
-    fun unloadMasterKey(cryptoRepository: MainCryptoRepository) {
-        val propertyMasterKey = (
-            cryptoRepository::class.declaredMemberProperties.find { it.name == "masterKey" }
-                .apply { this?.isAccessible = true } as KMutableProperty<*>
-            )
-        propertyMasterKey.setter.call(cryptoRepository, null)
-
-        val propertySearchIndexKey = (
-            cryptoRepository::class.declaredMemberProperties.find { it.name == "searchIndexKey" }
-                .apply { this?.isAccessible = true } as KMutableProperty<*>
-            )
-        propertySearchIndexKey.setter.call(
-            cryptoRepository,
-            null,
         )
     }
 }

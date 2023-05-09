@@ -34,6 +34,7 @@ import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
 import studio.lunabee.onesafe.domain.model.search.ClearIndexWordEntry
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.domain.usecase.search.GetMatchFromSearchUseCase
 import studio.lunabee.onesafe.test.OSTestUtils
 import studio.lunabee.onesafe.test.testUUIDs
 import kotlin.test.assertContentEquals

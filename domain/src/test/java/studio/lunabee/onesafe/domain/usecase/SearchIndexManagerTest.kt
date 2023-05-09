@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.domain.usecase
 
 import com.lunabee.lbcore.model.LBFlowResult
+import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lbextensions.lazyFast
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -37,8 +38,8 @@ import org.junit.jupiter.api.Test
 import studio.lunabee.onesafe.domain.manager.SearchIndexManager
 import studio.lunabee.onesafe.domain.model.search.ClearIndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
-import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.IndexWordEntryRepository
+import studio.lunabee.onesafe.domain.usecase.search.DecryptIndexWordUseCase
 import studio.lunabee.onesafe.test.assertSuccess
 import studio.lunabee.onesafe.test.testUUIDs
 import kotlin.test.assertContentEquals
@@ -49,12 +50,12 @@ import kotlin.test.assertNull
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchIndexManagerTest {
     private val indexManager: SearchIndexManager by lazyFast {
-        SearchIndexManager(cryptoRepository, indexWordEntryRepository)
+        SearchIndexManager(indexWordEntryRepository, decryptIndexWordUseCase)
     }
 
-    @MockK lateinit var cryptoRepository: MainCryptoRepository
-
     @MockK lateinit var indexWordEntryRepository: IndexWordEntryRepository
+
+    @MockK lateinit var decryptIndexWordUseCase: DecryptIndexWordUseCase
 
     private val indexList: List<IndexWordEntry> = listOf(IndexWordEntry(byteArrayOf(), testUUIDs[0], null))
     private val clearIndexWordEntries = listOf(ClearIndexWordEntry("word", testUUIDs[0], null))
@@ -64,7 +65,7 @@ class SearchIndexManagerTest {
         MockKAnnotations.init(this)
 
         every { indexWordEntryRepository.getAll() } returns flowOf(indexList)
-        coEvery { cryptoRepository.decryptIndexWord(indexList) } returns clearIndexWordEntries
+        coEvery { decryptIndexWordUseCase.invoke(indexList) } returns LBResult.Success(clearIndexWordEntries)
     }
 
     @Test
@@ -107,7 +108,7 @@ class SearchIndexManagerTest {
         val indexFlow = MutableStateFlow(indexList)
 
         every { indexWordEntryRepository.getAll() } returns indexFlow
-        coEvery { cryptoRepository.decryptIndexWord(indexList2) } returns expectedIndex
+        coEvery { decryptIndexWordUseCase.invoke(indexList2) } returns LBResult.Success(expectedIndex)
 
         indexManager.initStoreIndex(this)
         runCurrent()

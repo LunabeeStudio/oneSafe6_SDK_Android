@@ -23,10 +23,12 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
+import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import studio.lunabee.onesafe.repository.datasource.SecurityOptionDataSource
 import javax.inject.Inject
 import kotlin.time.Duration
@@ -38,6 +40,8 @@ class AndroidSecurityOptionDataSource @Inject constructor(
     private val autoLockInactivityDelayKey = longPreferencesKey(SettingsConstants.AutoLockInactivityDelay)
     private val autoLockAppChangeDelayKey = longPreferencesKey(SettingsConstants.AutoLockAppChangeDelay)
     private val clipboardClearDelaySecondsSettingKey = longPreferencesKey(SettingsConstants.ClipboardClearDelayMsSetting)
+    private val verifyPasswordIntervalKey = stringPreferencesKey(SettingsConstants.VerifyPasswordIntervalKey)
+    private val lastPasswordVerificationKey = longPreferencesKey(SettingsConstants.LastPasswordVerification)
 
     override val autoLockInactivityDelay: Duration
         get() = runBlocking {
@@ -72,6 +76,25 @@ class AndroidSecurityOptionDataSource @Inject constructor(
                     ?: SettingsDefaults.ClipboardClearDelayMsDefault.milliseconds
             }
 
+    override val passwordVerificationInterval: VerifyPasswordInterval
+        get() = runBlocking {
+            dataStore.data.map { preferences ->
+                preferences[verifyPasswordIntervalKey]?.let(VerifyPasswordInterval::valueOf)
+            }.firstOrNull() ?: SettingsDefaults.VerifyPasswordIntervalDefault
+        }
+
+    override val passwordVerificationIntervalFlow: Flow<VerifyPasswordInterval>
+        get() = dataStore.data.map { preferences ->
+            preferences[verifyPasswordIntervalKey]?.let(VerifyPasswordInterval::valueOf) ?: SettingsDefaults.VerifyPasswordIntervalDefault
+        }
+
+    override val lastPasswordVerificationTimeStamp: Long?
+        get() = runBlocking {
+            dataStore.data.map { preferences ->
+                preferences[lastPasswordVerificationKey]
+            }.firstOrNull()
+        }
+
     override fun setAutoLockInactivityDelay(delay: Duration) {
         runBlocking {
             dataStore.edit { settings ->
@@ -92,6 +115,22 @@ class AndroidSecurityOptionDataSource @Inject constructor(
         runBlocking {
             dataStore.edit { settings ->
                 settings[clipboardClearDelaySecondsSettingKey] = delay.inWholeMilliseconds
+            }
+        }
+    }
+
+    override fun setPasswordVerificationInterval(interval: VerifyPasswordInterval) {
+        runBlocking {
+            dataStore.edit { settings ->
+                settings[verifyPasswordIntervalKey] = interval.toString()
+            }
+        }
+    }
+
+    override fun setLastPasswordVerificationTimeStamp(timeStamp: Long) {
+        runBlocking {
+            dataStore.edit { settings ->
+                settings[lastPasswordVerificationKey] = timeStamp
             }
         }
     }

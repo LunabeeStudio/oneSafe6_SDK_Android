@@ -29,4 +29,6 @@ internal object SettingsConstants {
     const val ClipboardClearDelayMsSetting: String = "32aff47b-b847-4f00-bf73-0a0756b8902d"
     const val DisplayShareWarning: String = "bc2034fa-d941-4689-b418-c78ff9645eaf"
     const val MigrationVersionSetting: String = "6997642a-497b-4615-b431-058d131eee7e"
+    const val VerifyPasswordIntervalKey: String = "472e7ca7-0784-41a3-bbcf-f963c93503d2"
+    const val LastPasswordVerification: String = "17b8f6fe-ecb4-408e-8315-257f6db69210"
 }

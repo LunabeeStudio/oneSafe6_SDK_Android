@@ -37,5 +37,6 @@ data class OSAppError(
         MIGRATION_IMPORT_MODE_NOT_SET("Import mode expected to be set"),
         MIGRATION_ONESAFE5_SERVICE_NULL_BINDING("The oneSafe 5 service bind is null"),
         URL_DATA_FETCHING_FAIL("Error during data fetching"),
+        MIGRATION_MISSING_PASSWORD("No encrypted password set in migration manager"),
     }
 }

@@ -42,7 +42,6 @@ import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.model.search.ClearIndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.error.OSCryptoError
-import studio.lunabee.onesafe.test.OSTestUtils
 import studio.lunabee.onesafe.test.assertFailure
 import studio.lunabee.onesafe.test.assertSuccess
 import studio.lunabee.onesafe.test.testUUIDs
@@ -66,9 +65,6 @@ class AndroidMainCryptoRepositoryTest {
 
     @Inject
     internal lateinit var hashEngine: HashEngine
-
-    @Inject
-    internal lateinit var saltProvider: SaltProvider
 
     @Inject
     internal lateinit var itemKeyProvider: ItemKeyProvider
@@ -311,7 +307,7 @@ class AndroidMainCryptoRepositoryTest {
     }
 
     private fun unloadMasterKey() {
-        OSTestUtils.unloadMasterKey(repository)
+        repository.unloadCryptographyKeys()
     }
 
     companion object {

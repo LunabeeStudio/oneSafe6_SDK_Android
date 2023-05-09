@@ -39,6 +39,7 @@ import javax.inject.Inject
 class MigrateAndSignInUseCase @Inject constructor(
     private val appSettings: OSAppSettings,
     private val migrationFromV0ToV1: MigrationFromV0ToV1,
+    private val migrationFromV1ToV2: MigrationFromV1ToV2,
     private val isSignUpUseCase: IsSignUpUseCase,
     private val mainCryptoRepository: MainCryptoRepository,
     biometricEngine: BiometricEngine,
@@ -75,6 +76,11 @@ class MigrateAndSignInUseCase @Inject constructor(
 
         if (version == 0) {
             results += migrationFromV0ToV1(masterKey)
+            version++
+        }
+
+        if (version == 1) {
+            results += migrationFromV1ToV2()
             version++
         }
 

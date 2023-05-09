@@ -47,8 +47,8 @@ import studio.lunabee.onesafe.domain.repository.IconRepository
 import studio.lunabee.onesafe.domain.repository.IndexWordEntryRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
-import studio.lunabee.onesafe.domain.usecase.CreateIndexWordEntriesFromItemFieldUseCase
-import studio.lunabee.onesafe.domain.usecase.CreateIndexWordEntriesFromItemUseCase
+import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemFieldUseCase
+import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemUseCase
 import studio.lunabee.onesafe.domain.usecase.DecryptUseCase
 import studio.lunabee.onesafe.error.OSImportExportError
 import studio.lunabee.onesafe.test.ConsoleTree
