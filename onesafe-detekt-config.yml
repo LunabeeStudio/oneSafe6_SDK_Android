@@ -8,6 +8,7 @@ comments:
       - '**/app/core-ui/**'
       - '**/Commons_Android/**'
       - '**/macrobenchmark-android/**'
+      - '**/mockos5/*'
 
 complexity:
   LongMethod:

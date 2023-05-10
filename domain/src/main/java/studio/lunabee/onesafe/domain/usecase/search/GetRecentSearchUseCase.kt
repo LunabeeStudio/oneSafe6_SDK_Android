@@ -17,19 +17,19 @@
  * Last modified 4/7/23, 12:24 AM
  */
 
-package studio.lunabee.onesafe.domain.usecase
+package studio.lunabee.onesafe.domain.usecase.search
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.RecentSearchRepository
 import javax.inject.Inject
 
-class EncryptAndSaveRecentSearchUseCase @Inject constructor(
-    private val cryptoRepository: MainCryptoRepository,
+class GetRecentSearchUseCase @Inject constructor(
     private val recentSearchRepository: RecentSearchRepository,
+    private val cryptoRepository: MainCryptoRepository,
 ) {
-
-    suspend operator fun invoke(clearRecentSearch: List<String>) {
-        val encValue = cryptoRepository.encryptRecentSearch(clearRecentSearch.distinct())
-        recentSearchRepository.saveRecentSearch(encValue)
+    operator fun invoke(): Flow<List<String>> = recentSearchRepository.getRecentSearch().map { _encRecentSearch ->
+        cryptoRepository.decryptRecentSearch(_encRecentSearch.toList())
     }
 }

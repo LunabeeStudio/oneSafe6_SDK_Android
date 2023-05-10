@@ -24,6 +24,7 @@ import studio.lunabee.onesafe.domain.model.safeitem.ItemFieldData
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
 import studio.lunabee.onesafe.domain.model.search.ItemFieldDataToIndex
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
+import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemFieldUseCase
 import studio.lunabee.onesafe.error.OSError
 import java.util.UUID
 import javax.inject.Inject

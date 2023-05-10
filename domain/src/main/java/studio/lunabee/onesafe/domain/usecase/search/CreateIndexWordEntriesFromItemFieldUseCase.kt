@@ -17,7 +17,7 @@
  * Last modified 4/7/23, 12:24 AM
  */
 
-package studio.lunabee.onesafe.domain.usecase
+package studio.lunabee.onesafe.domain.usecase.search
 
 import studio.lunabee.onesafe.domain.model.search.ClearIndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry

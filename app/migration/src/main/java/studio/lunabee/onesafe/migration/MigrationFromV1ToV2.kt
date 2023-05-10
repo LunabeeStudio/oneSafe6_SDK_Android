@@ -17,30 +17,29 @@
  * Last modified 4/7/23, 12:24 AM
  */
 
-package studio.lunabee.onesafe.domain.usecase.onboarding
+package studio.lunabee.onesafe.migration
 
 import com.lunabee.lbcore.model.LBResult
-import studio.lunabee.onesafe.domain.repository.EditCryptoRepository
-import studio.lunabee.onesafe.domain.usecase.authentication.IsSignUpUseCase
+import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import studio.lunabee.onesafe.domain.usecase.verifypassword.SetLastPasswordVerificationUseCase
+import studio.lunabee.onesafe.domain.usecase.verifypassword.SetVerifyPasswordIntervalUseCase
 import studio.lunabee.onesafe.error.OSError
+import studio.lunabee.onesafe.error.OSMigrationError
 import javax.inject.Inject
 
 /**
- * Load & persist the temporary key of the onboarding repository. The use case is safe to call twice.
+ * Add lastPasswordVerification and passwordVerificationInterval.
  */
-class FinishOnboardingUseCase @Inject constructor(
-    private val editCryptoRepository: EditCryptoRepository,
-    private val isSignUpUseCase: IsSignUpUseCase,
+class MigrationFromV1ToV2 @Inject constructor(
     private val setLastPasswordVerificationUseCase: SetLastPasswordVerificationUseCase,
+    private val setVerifyPasswordIntervalUseCase: SetVerifyPasswordIntervalUseCase,
 ) {
-    suspend operator fun invoke(): LBResult<Unit> = OSError.runCatching {
-        if (isSignUpUseCase()) {
-            // Already signed up, only reset
-            editCryptoRepository.reset()
-        } else {
-            editCryptoRepository.setMainCryptographicData()
-            setLastPasswordVerificationUseCase(System.currentTimeMillis())
-        }
+    operator fun invoke(): LBResult<Unit> = OSError.runCatching(
+        mapErr = {
+            OSMigrationError(OSMigrationError.Code.SET_PASSWORD_VERIFICATION_FAIL, cause = it)
+        },
+    ) {
+        setLastPasswordVerificationUseCase(System.currentTimeMillis())
+        setVerifyPasswordIntervalUseCase(VerifyPasswordInterval.EVERY_TWO_MONTHS) // Default value.
     }
 }

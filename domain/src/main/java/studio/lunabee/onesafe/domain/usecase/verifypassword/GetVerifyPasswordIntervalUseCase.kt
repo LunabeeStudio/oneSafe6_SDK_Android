@@ -13,21 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:24 AM
+ * Created by Lunabee Studio / Date - 4/21/2023 - for the oneSafe6 SDK.
+ * Last modified 4/21/23, 5:15 PM
  */
 
-package studio.lunabee.onesafe
+package studio.lunabee.onesafe.domain.usecase.verifypassword
 
+import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
+import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
+import javax.inject.Inject
 
-internal object SettingsDefaults {
-    const val AutoLockInactivityDelayMsDefault: Long = 30_000
-    const val AutoLockAppChangeDelayMsDefault: Long = 10_000
-    const val MaterialYouSettingDefault: Boolean = true
-    const val AutomationSettingDefault: Boolean = true
-    const val AllowScreenshotSettingDefault: Boolean = false
-    const val ClipboardClearDelayMsDefault: Long = 30_000
-    const val DisplayShareWarningDefault: Boolean = true
-    val VerifyPasswordIntervalDefault: VerifyPasswordInterval = VerifyPasswordInterval.EVERY_TWO_MONTHS
+class GetVerifyPasswordIntervalUseCase @Inject constructor(
+    private val securityOptionRepository: SecurityOptionRepository,
+) {
+    operator fun invoke(): VerifyPasswordInterval = securityOptionRepository.verifyPasswordInterval
+    fun getAsFlow(): Flow<VerifyPasswordInterval> = securityOptionRepository.verifyPasswordIntervalFlow
 }

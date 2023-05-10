@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.domain.usecase.authentication
 import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
+import studio.lunabee.onesafe.domain.usecase.verifypassword.SetLastPasswordVerificationUseCase
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
 import javax.inject.Inject
@@ -33,6 +34,7 @@ private val log = LBLogger.get<LocalSignInUseCase>()
  */
 class LocalSignInUseCase @Inject constructor(
     private val cryptoRepository: MainCryptoRepository,
+    private val setLastPasswordVerificationUseCase: SetLastPasswordVerificationUseCase,
 ) {
     suspend operator fun invoke(password: CharArray): LBResult<Unit> = OSError.runCatching(
         log,
@@ -41,5 +43,6 @@ class LocalSignInUseCase @Inject constructor(
         },
     ) {
         cryptoRepository.loadMasterKeyFromPassword(password)
+        setLastPasswordVerificationUseCase(System.currentTimeMillis())
     }
 }

@@ -36,6 +36,8 @@ import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemFieldUseCase
+import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemUseCase
 import studio.lunabee.onesafe.domain.utils.SafeItemBuilder
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
@@ -100,7 +102,6 @@ class DuplicateItemUseCase @Inject constructor(
             val safeItemKeys = duplicationDataList.map { it.key }
             val duplicatedFields = encryptToField(duplicationDataList)
             val safeItems = duplicationDataList.map { it.item }
-
             try {
                 val indexWordEntries =
                     createIndexWordEntriesFromDuplicatedItems(duplicationDataList) +

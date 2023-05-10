@@ -84,6 +84,7 @@ val excludedTestProjects: List<String> = listOf(
     "macrobenchmark-android",
     "dependency-injection",
     "test-component",
+    "mockos5",
 )
 
 subprojects {

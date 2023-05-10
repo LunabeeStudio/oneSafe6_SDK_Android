@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe
 
+import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import kotlin.time.Duration
 
 /**
@@ -34,4 +35,5 @@ internal object SettingsDefaults {
     const val AllowScreenshotSettingDefault: Boolean = true
     val ClipboardClearDelayMsDefault: Long = Duration.INFINITE.inWholeMilliseconds
     const val DisplayShareWarningDefault: Boolean = true
+    val VerifyPasswordIntervalDefault: VerifyPasswordInterval = VerifyPasswordInterval.NEVER
 }

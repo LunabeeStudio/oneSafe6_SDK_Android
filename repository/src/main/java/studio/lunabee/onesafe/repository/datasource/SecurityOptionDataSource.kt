@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.repository.datasource
 
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import kotlin.time.Duration
 
 interface SecurityOptionDataSource {
@@ -34,4 +35,11 @@ interface SecurityOptionDataSource {
     val clipboardDelay: Duration
     val clipboardDelayFlow: Flow<Duration>
     fun setClipboardClearDelay(delay: Duration)
+
+    val passwordVerificationInterval: VerifyPasswordInterval
+    val passwordVerificationIntervalFlow: Flow<VerifyPasswordInterval>
+    val lastPasswordVerificationTimeStamp: Long?
+
+    fun setPasswordVerificationInterval(interval: VerifyPasswordInterval)
+    fun setLastPasswordVerificationTimeStamp(timeStamp: Long)
 }
