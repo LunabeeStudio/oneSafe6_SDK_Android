@@ -29,13 +29,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.domain.model.search.ClearIndexWordEntry
-import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.IndexWordEntryRepository
+import studio.lunabee.onesafe.domain.usecase.search.DecryptIndexWordUseCase
 import javax.inject.Inject
 
 class SearchIndexManager @Inject constructor(
-    private val cryptoRepository: MainCryptoRepository,
     private val indexWordEntryRepository: IndexWordEntryRepository,
+    private val decryptIndexWordUseCase: DecryptIndexWordUseCase,
 ) {
     private val _decryptedIndex: MutableStateFlow<LBFlowResult<List<ClearIndexWordEntry>>> = MutableStateFlow(LBFlowResult.Loading())
     val decryptedIndex: StateFlow<LBFlowResult<List<ClearIndexWordEntry>>> = _decryptedIndex.asStateFlow()
@@ -53,7 +53,7 @@ class SearchIndexManager @Inject constructor(
     private fun readAndStoreIndex(scope: CoroutineScope): Job = scope.launch {
         indexWordEntryRepository.getAll().collect {
             _decryptedIndex.value = LBFlowResult.Loading()
-            _decryptedIndex.value = LBFlowResult.Success(cryptoRepository.decryptIndexWord(it))
+            _decryptedIndex.value = decryptIndexWordUseCase(it).asFlowResult()
         }
     }
 

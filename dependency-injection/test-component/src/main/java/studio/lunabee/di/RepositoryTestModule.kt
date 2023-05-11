@@ -27,6 +27,7 @@ import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import studio.lunabee.onesafe.domain.repository.AutoLockRepository
 import studio.lunabee.onesafe.domain.repository.ClipboardRepository
 import studio.lunabee.onesafe.domain.repository.ForceUpgradeRepository
@@ -120,6 +121,8 @@ internal object SecurityOptionModule {
             private var internalClipboardDelay: Duration = 10.seconds
             private var internalAutoLockInactivityDelay = 30.seconds
             private var internalAutoLockAppChangeDelay = 10.seconds
+            private var lastPasswordVerif: Long? = null
+            private var verifInterval = VerifyPasswordInterval.EVERY_MONTH
 
             override val autoLockInactivityDelay: Duration
                 get() = internalAutoLockInactivityDelay
@@ -146,6 +149,23 @@ internal object SecurityOptionModule {
 
             override fun setClipboardClearDelay(delay: Duration) {
                 internalClipboardDelay = delay
+            }
+
+            override val verifyPasswordInterval: VerifyPasswordInterval
+                get() = verifInterval
+
+            override val lastPasswordVerificationTimeStamp: Long?
+                get() = lastPasswordVerif
+
+            override val verifyPasswordIntervalFlow: Flow<VerifyPasswordInterval>
+                get() = flowOf(verifInterval)
+
+            override fun setLastPasswordVerification(timeStamp: Long) {
+                lastPasswordVerif = timeStamp
+            }
+
+            override fun setPasswordInterval(passwordInterval: VerifyPasswordInterval) {
+                verifInterval = passwordInterval
             }
         }
     }

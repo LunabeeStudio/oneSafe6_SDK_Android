@@ -13,31 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:24 AM
+ * Created by Lunabee Studio / Date - 5/5/2023 - for the oneSafe6 SDK.
+ * Last modified 5/5/23, 10:41 AM
  */
 
-package studio.lunabee.onesafe.domain.usecase
+package studio.lunabee.onesafe.domain.usecase.search
 
+import com.lunabee.lbcore.model.LBResult
+import com.lunabee.lblogger.LBLogger
 import studio.lunabee.onesafe.domain.model.search.ClearIndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
-import studio.lunabee.onesafe.domain.utils.StringUtils
-import java.util.UUID
+import studio.lunabee.onesafe.error.OSError
 import javax.inject.Inject
 
-class CreateIndexWordEntriesFromItemUseCase @Inject constructor(
+private val log = LBLogger.get<DecryptIndexWordUseCase>()
+
+class DecryptIndexWordUseCase @Inject constructor(
     private val cryptoRepository: MainCryptoRepository,
 ) {
-    suspend operator fun invoke(name: String, id: UUID): List<IndexWordEntry> {
-        val clearIndexWordEntry = StringUtils.getListStringSearch(name).map { word ->
-            ClearIndexWordEntry(
-                word = word,
-                itemMatch = id,
-                fieldMatch = null,
-            )
-        }
-
-        return cryptoRepository.encryptIndexWord(clearIndexWordEntry)
+    suspend operator fun invoke(encIndexWordEntry: List<IndexWordEntry>): LBResult<List<ClearIndexWordEntry>> = OSError.runCatching(log) {
+        cryptoRepository.decryptIndexWord(encIndexWordEntry)
     }
 }

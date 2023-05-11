@@ -28,6 +28,7 @@ import org.junit.Before
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.LocalSignInUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.LocalSignOutUseCase
+import studio.lunabee.onesafe.domain.usecase.autolock.LockAppUseCase
 import studio.lunabee.onesafe.domain.usecase.onboarding.CreateMasterKeyUseCase
 import studio.lunabee.onesafe.domain.usecase.onboarding.FinishOnboardingUseCase
 import javax.inject.Inject
@@ -66,6 +67,8 @@ abstract class OSHiltTest : OSTest() {
     @Inject lateinit var finishOnboardingUseCase: FinishOnboardingUseCase
 
     @Inject lateinit var cryptoRepository: MainCryptoRepository
+
+    @Inject lateinit var lockAppUseCase: LockAppUseCase
 
     @Inject lateinit var localSignInUseCase: LocalSignInUseCase
 
@@ -128,7 +131,7 @@ abstract class OSHiltTest : OSTest() {
      * ```
      */
     fun unloadMasterKey() {
-        OSTestUtils.unloadMasterKey(cryptoRepository)
+        lockAppUseCase()
     }
 
     @After

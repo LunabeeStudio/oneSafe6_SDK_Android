@@ -19,9 +19,11 @@
 
 package studio.lunabee.onesafe.domain.usecase
 
+import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.repository.SafeItemDeletedRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.error.OSError
 import java.util.UUID
 import javax.inject.Inject
 
@@ -32,9 +34,9 @@ class GetItemWithAncestorsUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
     private val safeItemDeletedRepository: SafeItemDeletedRepository,
 ) {
-    suspend operator fun invoke(itemId: UUID): List<SafeItem> {
+    suspend operator fun invoke(itemId: UUID): LBResult<List<SafeItem>> = OSError.runCatching {
         val isDeleted = safeItemRepository.getSafeItem(itemId).deletedAt != null
-        return if (isDeleted) {
+        if (isDeleted) {
             safeItemDeletedRepository.findByIdWithDeletedAncestors(itemId)
         } else {
             safeItemRepository.findByIdWithAncestors(itemId)

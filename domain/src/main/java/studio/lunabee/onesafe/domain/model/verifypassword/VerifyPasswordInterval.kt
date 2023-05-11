@@ -13,19 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:24 AM
+ * Created by Lunabee Studio / Date - 4/21/2023 - for the oneSafe6 SDK.
+ * Last modified 4/21/23, 11:14 AM
  */
 
-package studio.lunabee.onesafe.error
+package studio.lunabee.onesafe.domain.model.verifypassword
 
-data class OSMigrationError(
-    val code: Code,
-    override val message: String = code.message,
-    override val cause: Throwable? = null,
-) : OSError(message, cause) {
-    enum class Code(val message: String) {
-        USERNAME_REMOVAL_FAIL("Migration to remove the username failed"),
-        SET_PASSWORD_VERIFICATION_FAIL("Migration to save password verification data failed"),
-    }
+enum class VerifyPasswordInterval {
+    NEVER,
+    EVERY_MONTH,
+    EVERY_TWO_MONTHS,
+    EVERY_SIX_MONTHS,
+    ;
 }

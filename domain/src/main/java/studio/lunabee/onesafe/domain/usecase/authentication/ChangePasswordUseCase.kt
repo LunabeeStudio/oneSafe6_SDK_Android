@@ -24,6 +24,7 @@ import com.lunabee.lblogger.LBLogger
 import studio.lunabee.onesafe.domain.repository.EditCryptoRepository
 import studio.lunabee.onesafe.domain.repository.PersistenceManager
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
+import studio.lunabee.onesafe.domain.usecase.verifypassword.SetLastPasswordVerificationUseCase
 import studio.lunabee.onesafe.error.OSError
 import javax.inject.Inject
 
@@ -33,6 +34,7 @@ class ChangePasswordUseCase @Inject constructor(
     private val safeItemKeyRepository: SafeItemKeyRepository,
     private val editCryptoRepository: EditCryptoRepository,
     private val persistenceManager: PersistenceManager,
+    private val setLastPasswordVerificationUseCase: SetLastPasswordVerificationUseCase,
 ) {
     suspend operator fun invoke(newPassword: CharArray): LBResult<Unit> = OSError.runCatching(logger = log) {
         editCryptoRepository.generateCryptographicData(newPassword)
@@ -41,6 +43,7 @@ class ChangePasswordUseCase @Inject constructor(
             editCryptoRepository.reEncryptItemKeys(keys)
             safeItemKeyRepository.update(keys)
             editCryptoRepository.overrideMainCryptographicData()
+            setLastPasswordVerificationUseCase(System.currentTimeMillis())
         }
     }
 }
