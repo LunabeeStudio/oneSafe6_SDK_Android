@@ -19,12 +19,10 @@
 
 package studio.lunabee.onesafe.cryptography
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class ChachaPolyJCECryptoEngineTest {
 
     private val crypto: ChachaPolyJCECryptoEngine = ChachaPolyJCECryptoEngine(

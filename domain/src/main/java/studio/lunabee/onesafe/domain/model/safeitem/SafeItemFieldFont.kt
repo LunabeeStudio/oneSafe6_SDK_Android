@@ -22,5 +22,4 @@ package studio.lunabee.onesafe.domain.model.safeitem
 enum class SafeItemFieldFont {
     Default,
     Legibility,
-    ;
 }

@@ -17,14 +17,17 @@
  * Last modified 4/7/23, 12:24 AM
  */
 
-package studio.lunabee.onesafe.domain.usecase
+package studio.lunabee.onesafe.domain.usecase.item
 
-import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import java.time.Instant
+import java.util.UUID
 import javax.inject.Inject
 
-class GetItemWithIdentifierCountUseCase @Inject constructor(
+class SetSafeItemAsConsultedAtNowUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
 ) {
-    operator fun invoke(): Flow<Int> = safeItemRepository.getSafeItemsWithIdentifierCount()
+    suspend operator fun invoke(itemId: UUID) {
+        safeItemRepository.updateConsultedAt(itemId, Instant.now())
+    }
 }

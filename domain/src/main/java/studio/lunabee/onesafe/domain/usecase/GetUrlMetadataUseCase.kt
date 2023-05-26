@@ -104,7 +104,6 @@ class GetUrlMetadataUseCase @Inject constructor(
         All,
         Title,
         Image,
-        ;
     }
 
     companion object {

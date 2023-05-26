@@ -22,4 +22,7 @@ package studio.lunabee.onesafe.visits
 object AppVisitConstants {
     const val hasVisitedLoginKey: String = "8e2386e8-d876-11ed-afa1-0242ac120002"
     const val hasVisitedLoginDefault: Boolean = false
+
+    const val hasFinishOneSafeKOnBoarding: String = "dbc410db-e7a9-4bbc-b94f-fb552572243a"
+    const val hasFinishOneSafeKOnBoardingDefault: Boolean = false
 }

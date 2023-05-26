@@ -142,6 +142,8 @@ formatting:
     active: true
   ArgumentListWrapping:
     maxLineLength: 140
+  PropertyWrapping:
+    maxLineLength: 140
 
 naming:
   FunctionNaming:

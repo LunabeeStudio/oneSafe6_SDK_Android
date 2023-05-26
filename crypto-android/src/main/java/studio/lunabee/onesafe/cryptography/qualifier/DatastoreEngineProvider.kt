@@ -26,5 +26,5 @@ import javax.inject.Qualifier
 annotation class DatastoreEngineProvider(val type: DataStoreType)
 
 enum class DataStoreType {
-    Clear, Encrypted
+    Plain, Encrypted
 }

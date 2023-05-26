@@ -20,7 +20,6 @@
 package studio.lunabee.onesafe.cryptography
 
 import android.util.Base64
-import com.lunabee.lbcore.model.LBFlowResult
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.mockk
@@ -39,11 +38,9 @@ import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
-import studio.lunabee.onesafe.domain.model.search.ClearIndexWordEntry
+import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.error.OSCryptoError
-import studio.lunabee.onesafe.test.assertFailure
-import studio.lunabee.onesafe.test.assertSuccess
 import studio.lunabee.onesafe.test.testUUIDs
 import java.util.UUID
 import javax.inject.Inject
@@ -51,9 +48,10 @@ import kotlin.random.Random
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @HiltAndroidTest
 class AndroidMainCryptoRepositoryTest {
 
@@ -170,9 +168,9 @@ class AndroidMainCryptoRepositoryTest {
     fun encrypt_decrypt_string_test(): TestResult = runTest {
         loadMasterKey()
         val key = repository.generateKeyForItemId(testUUIDs[0])
-        val encText = repository.encrypt(key, EncryptEntry("clear_text"))
+        val encText = repository.encrypt(key, EncryptEntry("plain_text"))
         val decText = repository.decrypt(key, DecryptEntry(encText, String::class))
-        assertEquals("clear_text", decText)
+        assertEquals("plain_text", decText)
     }
 
     @Test
@@ -211,7 +209,7 @@ class AndroidMainCryptoRepositoryTest {
     fun decrypt_no_mapper_test(): TestResult = runTest {
         loadMasterKey()
         val key = repository.generateKeyForItemId(testUUIDs[0])
-        val encText = repository.encrypt(key, EncryptEntry("clear_text"))
+        val encText = repository.encrypt(key, EncryptEntry("plain_text"))
         val error = assertFailsWith<OSCryptoError> {
             repository.decrypt(key, DecryptEntry(encText, Unit::class))
         }
@@ -233,7 +231,7 @@ class AndroidMainCryptoRepositoryTest {
         loadMasterKey()
         val key = repository.generateKeyForItemId(testUUIDs[0])
         val wrongKey = repository.generateKeyForItemId(testUUIDs[1])
-        val encText = repository.encrypt(key, EncryptEntry("clear_text"))
+        val encText = repository.encrypt(key, EncryptEntry("plain_text"))
         val error = assertFailsWith<OSCryptoError> {
             repository.decrypt(wrongKey, DecryptEntry(encText, Unit::class))
         }
@@ -245,7 +243,7 @@ class AndroidMainCryptoRepositoryTest {
         loadMasterKey()
         val key = SafeItemKey(testUUIDs[0], ByteArray(12) { it.toByte() })
         val error = assertFailsWith<OSCryptoError> {
-            repository.encrypt(key, EncryptEntry("clear_text"))
+            repository.encrypt(key, EncryptEntry("plain_text"))
         }
         assertEquals(OSCryptoError.Code.ENCRYPTION_FAILED_BAD_KEY, error.code)
     }
@@ -268,30 +266,30 @@ class AndroidMainCryptoRepositoryTest {
     fun encrypt_and_decrypt_index_entry_test(): TestResult = runTest {
         loadMasterKey()
         val initialEntries = listOf(
-            ClearIndexWordEntry(
+            PlainIndexWordEntry(
                 "word",
                 UUID.randomUUID(),
                 null,
             ),
         )
         val encryptedEntries: List<IndexWordEntry> = repository.encryptIndexWord(initialEntries)
-        val decryptedEntries: List<ClearIndexWordEntry> = repository.decryptIndexWord(encryptedEntries)
+        val decryptedEntries: List<PlainIndexWordEntry> = repository.decryptIndexWord(encryptedEntries)
         assertContentEquals(initialEntries, decryptedEntries)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun collect_crypto_data_missing_test_test(): TestResult = runTest {
-        val values = mutableListOf<LBFlowResult<Unit>>()
-        val collectJob = launch(UnconfinedTestDispatcher(testScheduler)) {
+        val values = mutableListOf<Boolean>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             repository.isCryptoDataInMemory().toList(values)
         }
-        assertFailure(values[0])
+        assertFalse(values[0])
         loadMasterKey()
-        assertSuccess(values[1])
+        assertTrue(values[1])
         unloadMasterKey()
-        assertFailure(values[2])
+        assertFalse(values[2])
         assertEquals(3, values.size)
-        collectJob.cancel()
     }
 
     @Test

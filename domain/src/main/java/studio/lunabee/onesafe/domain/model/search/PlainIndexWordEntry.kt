@@ -17,18 +17,12 @@
  * Last modified 4/7/23, 12:24 AM
  */
 
-package studio.lunabee.onesafe.domain.usecase
+package studio.lunabee.onesafe.domain.model.search
 
-import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import java.util.UUID
-import javax.inject.Inject
 
-class ItemToggleFavoriteUseCase @Inject constructor(
-    private val safeItemRepository: SafeItemRepository,
-) {
-    suspend operator fun invoke(
-        itemId: UUID,
-    ) {
-        safeItemRepository.toggleFavorite(itemId)
-    }
-}
+data class PlainIndexWordEntry(
+    val word: String,
+    val itemMatch: UUID,
+    val fieldMatch: UUID?,
+)

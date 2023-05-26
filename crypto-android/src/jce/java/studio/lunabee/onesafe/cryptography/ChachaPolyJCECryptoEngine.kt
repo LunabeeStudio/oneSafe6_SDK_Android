@@ -164,7 +164,6 @@ class ChachaPolyJCECryptoEngine @Inject constructor(
         InvalidAlgorithmParameterException::class,
         IOException::class,
     )
-
     private fun getCipherInputStream(inputStream: InputStream, secretKey: SecretKeySpec, associatedData: ByteArray?): InputStream {
         val nonce = ByteArray(NONCE_LENGTH)
         inputStream.read(nonce)

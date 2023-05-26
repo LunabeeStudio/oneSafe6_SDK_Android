@@ -44,7 +44,7 @@ class MigrateAndSignInUseCase @Inject constructor(
     private val mainCryptoRepository: MainCryptoRepository,
     biometricEngine: BiometricEngine,
     hashEngine: HashEngine,
-    @DatastoreEngineProvider(DataStoreType.Clear) dataStoreEngine: DatastoreEngine,
+    @DatastoreEngineProvider(DataStoreType.Plain) dataStoreEngine: DatastoreEngine,
 ) {
     private val migrationGetMasterKeyV0UseCase: MigrationGetMasterKeyV0UseCase = MigrationGetMasterKeyV0UseCase(
         biometricEngine,

@@ -26,6 +26,5 @@ import javax.inject.Qualifier
 annotation class DateFormatterType(val type: Type) {
     enum class Type {
         IsoInstant,
-        ;
     }
 }

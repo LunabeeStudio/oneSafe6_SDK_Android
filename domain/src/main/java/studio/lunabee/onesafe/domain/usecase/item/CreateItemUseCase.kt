@@ -17,7 +17,7 @@
  * Last modified 4/7/23, 12:24 AM
  */
 
-package studio.lunabee.onesafe.domain.usecase
+package studio.lunabee.onesafe.domain.usecase.item
 
 import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.domain.common.ItemIdProvider

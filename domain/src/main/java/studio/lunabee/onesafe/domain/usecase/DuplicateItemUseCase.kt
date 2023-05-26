@@ -145,10 +145,10 @@ class DuplicateItemUseCase @Inject constructor(
         }
         val fieldEncryptedPropertiesCount = 6
 
-        val clearEntries = cryptoRepository.decrypt(originalKey, originalCryptoEntries)
+        val plainEntries = cryptoRepository.decrypt(originalKey, originalCryptoEntries)
 
-        val name = clearEntries[0] as String? // -1
-        val color = clearEntries[1] as String? // -2
+        val name = plainEntries[0] as String? // -1
+        val color = plainEntries[1] as String? // -2
         val itemEncryptedPropertiesCount = 2
 
         val icon = originalItem.iconId?.let { getIconUseCase(it, originalItem.id) }?.let { iconResult ->
@@ -177,7 +177,7 @@ class DuplicateItemUseCase @Inject constructor(
         )
 
         val itemFieldsData = mutableListOf<ItemFieldData>()
-        val fieldEntries = clearEntries.subList(itemEncryptedPropertiesCount, clearEntries.size)
+        val fieldEntries = plainEntries.subList(itemEncryptedPropertiesCount, plainEntries.size)
         originalFields.forEachIndexed { idx, originalField ->
             val offsetIdx = idx * fieldEncryptedPropertiesCount
             itemFieldsData += ItemFieldData(
@@ -197,7 +197,7 @@ class DuplicateItemUseCase @Inject constructor(
         return DuplicationData(
             key = duplicatedItemKey,
             item = duplicatedItem,
-            clearName = transformedName,
+            plainName = transformedName,
             fields = itemFieldsData,
         )
     }
@@ -216,7 +216,7 @@ class DuplicateItemUseCase @Inject constructor(
 
     private suspend fun createIndexWordEntriesFromDuplicatedItems(duplicationDataList: List<DuplicationData>): List<IndexWordEntry> {
         return duplicationDataList.mapNotNull { duplicationData ->
-            duplicationData.clearName?.let { name ->
+            duplicationData.plainName?.let { name ->
                 createIndexWordEntriesFromItemUseCase(name, duplicationData.item.id)
             }
         }.flatten()
@@ -228,11 +228,11 @@ class DuplicateItemUseCase @Inject constructor(
     ): List<IndexWordEntry> {
         val fieldsForIndex = duplicationDataList.flatMap { it.fields }
             .zip(duplicatedFields)
-            .mapNotNull { (clear, encrypt) ->
-                clear.value?.let {
+            .mapNotNull { (plain, encrypt) ->
+                plain.value?.let {
                     ItemFieldDataToIndex(
-                        clear.value,
-                        clear.isSecured,
+                        plain.value,
+                        plain.isSecured,
                         encrypt.itemId,
                         encrypt.id,
                     )
@@ -244,7 +244,7 @@ class DuplicateItemUseCase @Inject constructor(
     private class DuplicationData(
         val key: SafeItemKey,
         val item: SafeItem,
-        val clearName: String?,
+        val plainName: String?,
         val fields: List<ItemFieldData>,
     )
 }

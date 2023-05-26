@@ -24,5 +24,4 @@ enum class VerifyPasswordInterval {
     EVERY_MONTH,
     EVERY_TWO_MONTHS,
     EVERY_SIX_MONTHS,
-    ;
 }

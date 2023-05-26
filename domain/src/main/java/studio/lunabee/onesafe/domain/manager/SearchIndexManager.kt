@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import studio.lunabee.onesafe.domain.model.search.ClearIndexWordEntry
+import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.repository.IndexWordEntryRepository
 import studio.lunabee.onesafe.domain.usecase.search.DecryptIndexWordUseCase
 import javax.inject.Inject
@@ -37,8 +37,8 @@ class SearchIndexManager @Inject constructor(
     private val indexWordEntryRepository: IndexWordEntryRepository,
     private val decryptIndexWordUseCase: DecryptIndexWordUseCase,
 ) {
-    private val _decryptedIndex: MutableStateFlow<LBFlowResult<List<ClearIndexWordEntry>>> = MutableStateFlow(LBFlowResult.Loading())
-    val decryptedIndex: StateFlow<LBFlowResult<List<ClearIndexWordEntry>>> = _decryptedIndex.asStateFlow()
+    private val _decryptedIndex: MutableStateFlow<LBFlowResult<List<PlainIndexWordEntry>>> = MutableStateFlow(LBFlowResult.Loading())
+    val decryptedIndex: StateFlow<LBFlowResult<List<PlainIndexWordEntry>>> = _decryptedIndex.asStateFlow()
 
     private var storeIndexJob: Job? = null
     private var cleanStoreIndexJob: Job? = null

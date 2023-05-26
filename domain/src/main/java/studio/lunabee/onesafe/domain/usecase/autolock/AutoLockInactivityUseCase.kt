@@ -19,7 +19,6 @@
 
 package studio.lunabee.onesafe.domain.usecase.autolock
 
-import com.lunabee.lbcore.model.LBFlowResult
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -41,7 +40,7 @@ class AutoLockInactivityUseCase @Inject constructor(
         ) { inactivityDelay, isCryptoDataReady ->
             inactivityDelay to isCryptoDataReady
         }.collectLatest { (inactivityDelay, isCryptoDataReady) ->
-            if (isCryptoDataReady is LBFlowResult.Success && inactivityDelay != Duration.INFINITE) {
+            if (isCryptoDataReady && inactivityDelay != Duration.INFINITE) {
                 waitAndCheckRemainingTime(inactivityDelay)
             }
         }

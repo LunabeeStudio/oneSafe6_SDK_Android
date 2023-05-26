@@ -127,7 +127,7 @@ object CryptoDatastoreTestModule {
 )
 abstract class DatastoreEngineTestModule {
     @Binds
-    @DatastoreEngineProvider(DataStoreType.Clear)
+    @DatastoreEngineProvider(DataStoreType.Plain)
     internal abstract fun bindClearDatastoreEngine(datastore: ClearDatastoreEngine): DatastoreEngine
 
     @Binds

@@ -44,7 +44,7 @@ import javax.inject.Inject
  *   • Remove username from datastore
  */
 class MigrationFromV0ToV1 @Inject constructor(
-    @DatastoreEngineProvider(DataStoreType.Clear) private val dataStoreEngine: DatastoreEngine,
+    @DatastoreEngineProvider(DataStoreType.Plain) private val dataStoreEngine: DatastoreEngine,
     private val cryptoEngine: CryptoEngine,
     private val safeItemKeyDao: SafeItemKeyDao,
     private val indexWordEntryDao: IndexWordEntryDao,
@@ -59,12 +59,12 @@ class MigrationFromV0ToV1 @Inject constructor(
             val encMasterKeyTest = dataStoreEngine.retrieveValue(DATASTORE_MASTER_KEY_TEST).firstOrNull()
                 ?: throw OSCryptoError(OSCryptoError.Code.MASTER_KEY_NOT_GENERATED)
 
-            val clearMasterKeyTest = try {
+            val plainMasterKeyTest = try {
                 cryptoEngine.decrypt(encMasterKeyTest, masterKey, username).decodeToString()
             } catch (e: Exception) {
                 throw OSCryptoError(OSCryptoError.Code.MASTER_KEY_WRONG_PASSWORD, cause = e)
             }
-            val isPasswordOk = clearMasterKeyTest == MASTER_KEY_TEST_VALUE
+            val isPasswordOk = plainMasterKeyTest == MASTER_KEY_TEST_VALUE
 
             if (isPasswordOk) {
                 Timber.i("Run migration from V0 to V1")

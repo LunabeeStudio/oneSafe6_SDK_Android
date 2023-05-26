@@ -23,7 +23,6 @@ import android.util.Base64
 import androidx.benchmark.junit4.BenchmarkRule
 import androidx.benchmark.junit4.measureRepeated
 import androidx.test.filters.LargeTest
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Rule
 import org.junit.Test
@@ -31,7 +30,6 @@ import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
 import timber.log.Timber
 import java.lang.reflect.Method
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @LargeTest
 class PBKDF2JceHashEngineBenchmark {
 

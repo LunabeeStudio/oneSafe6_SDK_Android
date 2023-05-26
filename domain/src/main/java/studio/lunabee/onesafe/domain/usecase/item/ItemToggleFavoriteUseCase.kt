@@ -17,16 +17,18 @@
  * Last modified 4/7/23, 12:24 AM
  */
 
-package studio.lunabee.onesafe.domain.usecase
+package studio.lunabee.onesafe.domain.usecase.item
 
-import kotlinx.coroutines.flow.Flow
-import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import java.util.UUID
 import javax.inject.Inject
 
-class GetRecentItemUseCase @Inject constructor(
+class ItemToggleFavoriteUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
 ) {
-    private val itemDisplayedLimit: Int = 4
-    operator fun invoke(): Flow<List<SafeItem>> = safeItemRepository.getLastConsultedNotDeletedSafeItem(itemDisplayedLimit)
+    suspend operator fun invoke(
+        itemId: UUID,
+    ) {
+        safeItemRepository.toggleFavorite(itemId)
+    }
 }

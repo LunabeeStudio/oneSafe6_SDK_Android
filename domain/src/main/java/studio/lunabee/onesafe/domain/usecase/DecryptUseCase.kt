@@ -43,7 +43,7 @@ class DecryptUseCase @Inject constructor(
      * @param itemId The ID of the linked item
      * @param clazz The output type expected
      *
-     * @return Clear data wrapped in a [LBResult]
+     * @return Plain data wrapped in a [LBResult]
      */
     suspend operator fun <Data : Any> invoke(data: ByteArray, itemId: UUID, clazz: KClass<Data>): LBResult<Data> {
         return OSError.runCatching {

@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
-import studio.lunabee.onesafe.domain.model.search.ClearIndexWordEntry
+import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.utils.StringUtils
 import javax.inject.Inject
@@ -34,7 +34,7 @@ import javax.inject.Inject
 class GetMatchFromSearchUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
 ) {
-    operator fun invoke(searchValue: String, searchIndex: List<ClearIndexWordEntry>): Flow<LinkedHashSet<SafeItemWithIdentifier>> {
+    operator fun invoke(searchValue: String, searchIndex: List<PlainIndexWordEntry>): Flow<LinkedHashSet<SafeItemWithIdentifier>> {
         val searchedWords = StringUtils.getListStringSearch(searchValue)
         val idMatching = searchedWords.flatMap { searchedWord ->
             searchIndex.filter { it.word.contains(searchedWord) }.map { it.itemMatch }

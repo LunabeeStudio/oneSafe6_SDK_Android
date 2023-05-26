@@ -126,7 +126,7 @@ object CryptoDatastoreModule {
 @InstallIn(ActivityRetainedComponent::class)
 abstract class DatastoreEngineModule {
     @Binds
-    @DatastoreEngineProvider(DataStoreType.Clear)
+    @DatastoreEngineProvider(DataStoreType.Plain)
     internal abstract fun bindClearDatastoreEngine(datastore: ClearDatastoreEngine): DatastoreEngine
 
     @Binds

@@ -26,7 +26,6 @@ import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestResult
@@ -36,7 +35,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import studio.lunabee.onesafe.domain.manager.SearchIndexManager
-import studio.lunabee.onesafe.domain.model.search.ClearIndexWordEntry
+import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.domain.repository.IndexWordEntryRepository
 import studio.lunabee.onesafe.domain.usecase.search.DecryptIndexWordUseCase
@@ -47,7 +46,6 @@ import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class SearchIndexManagerTest {
     private val indexManager: SearchIndexManager by lazyFast {
         SearchIndexManager(indexWordEntryRepository, decryptIndexWordUseCase)
@@ -58,7 +56,7 @@ class SearchIndexManagerTest {
     @MockK lateinit var decryptIndexWordUseCase: DecryptIndexWordUseCase
 
     private val indexList: List<IndexWordEntry> = listOf(IndexWordEntry(byteArrayOf(), testUUIDs[0], null))
-    private val clearIndexWordEntries = listOf(ClearIndexWordEntry("word", testUUIDs[0], null))
+    private val clearIndexWordEntries = listOf(PlainIndexWordEntry("word", testUUIDs[0], null))
 
     @BeforeEach
     fun setup() {
@@ -70,7 +68,7 @@ class SearchIndexManagerTest {
 
     @Test
     fun initStoreIndex_test(): TestResult = runTest {
-        assertIs<LBFlowResult.Loading<List<ClearIndexWordEntry>>>(indexManager.decryptedIndex.value)
+        assertIs<LBFlowResult.Loading<List<PlainIndexWordEntry>>>(indexManager.decryptedIndex.value)
         assertNull(indexManager.decryptedIndex.value.data)
 
         indexManager.initStoreIndex(this)
@@ -90,15 +88,15 @@ class SearchIndexManagerTest {
 
         runCurrent()
 
-        assertIs<LBFlowResult.Loading<List<ClearIndexWordEntry>>>(indexManager.decryptedIndex.value)
+        assertIs<LBFlowResult.Loading<List<PlainIndexWordEntry>>>(indexManager.decryptedIndex.value)
         assertNull(indexManager.decryptedIndex.value.data)
     }
 
     @Test
     fun collect_new_item_when_index_is_decrypted_test(): TestResult = runTest {
         val expectedIndex = listOf(
-            ClearIndexWordEntry("word", testUUIDs[0], null),
-            ClearIndexWordEntry("word2", testUUIDs[1], null),
+            PlainIndexWordEntry("word", testUUIDs[0], null),
+            PlainIndexWordEntry("word2", testUUIDs[1], null),
         )
 
         val indexList2 = listOf(

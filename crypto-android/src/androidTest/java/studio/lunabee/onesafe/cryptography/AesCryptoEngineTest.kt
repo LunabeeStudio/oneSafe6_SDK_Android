@@ -19,14 +19,12 @@
 
 package studio.lunabee.onesafe.cryptography
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import studio.lunabee.onesafe.test.ConsoleTree
 import timber.log.Timber
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class AesCryptoEngineTest {
 
     private val crypto: AesCryptoEngine = AesCryptoEngine(

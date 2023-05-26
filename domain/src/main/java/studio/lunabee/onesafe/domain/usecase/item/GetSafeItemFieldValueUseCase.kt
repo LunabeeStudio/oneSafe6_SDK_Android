@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:24 AM
+ * Created by Lunabee Studio / Date - 5/17/2023 - for the oneSafe6 SDK.
+ * Last modified 5/17/23, 4:23 PM
  */
 
-package studio.lunabee.onesafe.domain.usecase
+package studio.lunabee.onesafe.domain.usecase.item
 
 import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldValue
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.domain.usecase.DecryptUseCase
 import studio.lunabee.onesafe.error.OSError
 import java.util.UUID
 import javax.inject.Inject

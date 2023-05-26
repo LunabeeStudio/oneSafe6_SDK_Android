@@ -19,7 +19,6 @@
 
 package studio.lunabee.onesafe.domain.usecase.authentication
 
-import com.lunabee.lbcore.model.LBFlowResult
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import javax.inject.Inject
@@ -27,5 +26,5 @@ import javax.inject.Inject
 class IsCryptoDataReadyInMemoryUseCase @Inject constructor(
     private val mainCryptoRepository: MainCryptoRepository,
 ) {
-    operator fun invoke(): Flow<LBFlowResult<Unit>> = mainCryptoRepository.isCryptoDataInMemory()
+    operator fun invoke(): Flow<Boolean> = mainCryptoRepository.isCryptoDataInMemory()
 }

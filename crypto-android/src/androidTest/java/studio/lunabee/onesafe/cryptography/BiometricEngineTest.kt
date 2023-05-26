@@ -23,7 +23,6 @@ import androidx.biometric.BiometricManager
 import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.flow.first
@@ -43,7 +42,6 @@ import kotlin.reflect.jvm.isAccessible
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @HiltAndroidTest
 class BiometricEngineTest {
     private val context by lazy { InstrumentationRegistry.getInstrumentation().targetContext }

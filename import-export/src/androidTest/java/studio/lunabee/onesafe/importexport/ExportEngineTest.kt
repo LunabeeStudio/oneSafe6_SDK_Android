@@ -25,7 +25,6 @@ import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
@@ -62,7 +61,6 @@ class ExportEngineTest : OSHiltTest() {
     override val initialTestState: InitialTestState = InitialTestState.LoggedIn
 
     @Test
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun export_engine_empty_test(): TestResult = runTest {
         val prepareResult = exportEngine.prepareBackup(
             password = testPassword.toCharArray(),

@@ -101,7 +101,7 @@ abstract class OSHiltTest : OSTest() {
                 unloadMasterKey()
             }
 
-            is InitialTestState.SignedOut -> {} /*Nothing to do*/
+            is InitialTestState.SignedOut -> {} // Nothing to do
             is InitialTestState.LoggedIn -> {
                 signup()
             }

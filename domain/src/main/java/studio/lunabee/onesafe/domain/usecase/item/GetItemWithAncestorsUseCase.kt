@@ -13,27 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:24 AM
+ * Created by Lunabee Studio / Date - 5/17/2023 - for the oneSafe6 SDK.
+ * Last modified 5/17/23, 4:23 PM
  */
 
-package studio.lunabee.onesafe.domain.usecase
+package studio.lunabee.onesafe.domain.usecase.item
 
-import kotlinx.coroutines.flow.Flow
+import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.repository.SafeItemDeletedRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.error.OSError
+import java.util.UUID
 import javax.inject.Inject
 
-class CountSafeItemInParentUseCase @Inject constructor(
+/**
+ * Retrieve the safe item by its id alongside its ancestors with the same deleted state, ordered from ancestors to item
+ */
+class GetItemWithAncestorsUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
     private val safeItemDeletedRepository: SafeItemDeletedRepository,
 ) {
-    operator fun invoke(parentItem: SafeItem): Flow<Int> {
-        return if (parentItem.isDeleted) {
-            safeItemDeletedRepository.countSafeItemByParentIdDeletedFlow(parentItem.id)
+    suspend operator fun invoke(itemId: UUID): LBResult<List<SafeItem>> = OSError.runCatching {
+        val isDeleted = safeItemRepository.getSafeItem(itemId).deletedAt != null
+        if (isDeleted) {
+            safeItemDeletedRepository.findByIdWithDeletedAncestors(itemId)
         } else {
-            safeItemRepository.countSafeItemByParentIdFlow(parentItem.id)
+            safeItemRepository.findByIdWithAncestors(itemId)
         }
     }
 }

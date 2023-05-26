@@ -23,7 +23,6 @@ import com.lunabee.lbextensions.lazyFast
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.TestResult
@@ -31,7 +30,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
-import studio.lunabee.onesafe.domain.model.search.ClearIndexWordEntry
+import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.usecase.search.GetMatchFromSearchUseCase
@@ -39,7 +38,6 @@ import studio.lunabee.onesafe.test.OSTestUtils
 import studio.lunabee.onesafe.test.testUUIDs
 import kotlin.test.assertContentEquals
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class GetMatchFromSearchUseCaseTest {
     val getMatchFromSearchUseCase: GetMatchFromSearchUseCase by lazyFast { GetMatchFromSearchUseCase(itemRepository) }
 
@@ -50,12 +48,12 @@ class GetMatchFromSearchUseCaseTest {
     private val firstItem: SafeItemWithIdentifier = OSTestUtils.createSafeItemWithIdentifier(id = testUUIDs[0]) // love beer
     private val secondItem: SafeItemWithIdentifier = OSTestUtils.createSafeItemWithIdentifier(id = testUUIDs[1]) // love wine
 
-    private val index: List<ClearIndexWordEntry> = listOf(
-        ClearIndexWordEntry("love", testUUIDs[0], null),
-        ClearIndexWordEntry("beer", testUUIDs[0], null),
-        ClearIndexWordEntry("text", testUUIDs[0], testUUIDs[10]),
-        ClearIndexWordEntry("love", testUUIDs[1], null),
-        ClearIndexWordEntry("wine", testUUIDs[1], null),
+    private val index: List<PlainIndexWordEntry> = listOf(
+        PlainIndexWordEntry("love", testUUIDs[0], null),
+        PlainIndexWordEntry("beer", testUUIDs[0], null),
+        PlainIndexWordEntry("text", testUUIDs[0], testUUIDs[10]),
+        PlainIndexWordEntry("love", testUUIDs[1], null),
+        PlainIndexWordEntry("wine", testUUIDs[1], null),
     )
 
     @BeforeEach

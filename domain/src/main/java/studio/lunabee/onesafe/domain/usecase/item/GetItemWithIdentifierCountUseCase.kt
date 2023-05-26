@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:24 AM
+ * Created by Lunabee Studio / Date - 5/17/2023 - for the oneSafe6 SDK.
+ * Last modified 5/17/23, 4:23 PM
  */
 
-package studio.lunabee.onesafe.domain.model.search
+package studio.lunabee.onesafe.domain.usecase.item
 
-import java.util.UUID
+import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import javax.inject.Inject
 
-data class ClearIndexWordEntry(
-    val word: String,
-    val itemMatch: UUID,
-    val fieldMatch: UUID?,
-)
+class GetItemWithIdentifierCountUseCase @Inject constructor(
+    private val safeItemRepository: SafeItemRepository,
+) {
+    operator fun invoke(): Flow<Int> = safeItemRepository.getSafeItemsWithIdentifierCount()
+}

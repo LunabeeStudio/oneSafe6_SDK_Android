@@ -17,15 +17,23 @@
  * Last modified 4/7/23, 12:24 AM
  */
 
-package studio.lunabee.onesafe.domain.usecase
+package studio.lunabee.onesafe.domain.usecase.item
 
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
+import studio.lunabee.onesafe.domain.repository.SafeItemDeletedRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import javax.inject.Inject
 
-class GetItemCountUseCase @Inject constructor(
+class CountSafeItemInParentUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
+    private val safeItemDeletedRepository: SafeItemDeletedRepository,
 ) {
-
-    operator fun invoke(): Flow<Int> = safeItemRepository.getSafeItemsCount()
+    operator fun invoke(parentItem: SafeItem): Flow<Int> {
+        return if (parentItem.isDeleted) {
+            safeItemDeletedRepository.countSafeItemByParentIdDeletedFlow(parentItem.id)
+        } else {
+            safeItemRepository.countSafeItemByParentIdFlow(parentItem.id)
+        }
+    }
 }

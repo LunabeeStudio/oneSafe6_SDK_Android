@@ -21,7 +21,6 @@ package studio.lunabee.onesafe.storage.dao
 
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
@@ -37,7 +36,6 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @HiltAndroidTest
 class SafeItemDaoTest {
 

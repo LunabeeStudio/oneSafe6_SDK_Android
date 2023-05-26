@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
+    <issue id="LintBaseline" severity="ignore" />
     <issue id="VectorRaster" severity="ignore" />
 
     <issue id="ConvertToWebp" severity="warning" />
