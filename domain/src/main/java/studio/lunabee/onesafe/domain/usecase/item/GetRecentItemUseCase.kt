@@ -13,35 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:24 AM
+ * Created by Lunabee Studio / Date - 5/17/2023 - for the oneSafe6 SDK.
+ * Last modified 5/17/23, 4:23 PM
  */
 
-package studio.lunabee.onesafe.domain.usecase
+package studio.lunabee.onesafe.domain.usecase.item
 
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
-import studio.lunabee.onesafe.domain.repository.SafeItemDeletedRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import javax.inject.Inject
 
-class GetPagerItemByParentUseCase @Inject constructor(
+class GetRecentItemUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
-    private val safeItemDeletedRepository: SafeItemDeletedRepository,
 ) {
-    operator fun invoke(item: SafeItem, pagingConfig: PagingConfig): Flow<PagingData<SafeItem>> {
-        return if (item.isDeleted) {
-            safeItemDeletedRepository.getPagerItemByParentIdDeleted(
-                pagingConfig,
-                item.id,
-            )
-        } else {
-            safeItemRepository.getPagerItemByParents(
-                pagingConfig,
-                item.id,
-            )
-        }
-    }
+    private val itemDisplayedLimit: Int = 4
+    operator fun invoke(): Flow<List<SafeItem>> = safeItemRepository.getLastConsultedNotDeletedSafeItem(itemDisplayedLimit)
 }

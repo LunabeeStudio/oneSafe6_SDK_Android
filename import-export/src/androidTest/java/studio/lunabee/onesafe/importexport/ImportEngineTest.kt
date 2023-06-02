@@ -26,7 +26,6 @@ import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.test.runTest
@@ -100,7 +99,6 @@ class ImportEngineTest : OSHiltTest() {
     }
 
     @Test
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun import_data_test() {
         runTest {
             val testFolder: File
@@ -199,7 +197,6 @@ class ImportEngineTest : OSHiltTest() {
     }
 
     @Test
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun authenticate_test() {
         runTest {
             val testFolder = File(context.cacheDir, "testArchiveExtracted")
@@ -220,7 +217,6 @@ class ImportEngineTest : OSHiltTest() {
     }
 
     @Test
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun authenticate_wrong_credentials_test() {
         runTest {
             val testFolder = File(context.cacheDir, "testArchiveExtracted")
@@ -241,7 +237,6 @@ class ImportEngineTest : OSHiltTest() {
     }
 
     @Test
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun authenticate_no_data_test() {
         runTest {
             val testFolder = File(context.cacheDir, "testArchiveExtracted")
@@ -264,7 +259,6 @@ class ImportEngineTest : OSHiltTest() {
     }
 
     @Test
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun getMetadata_no_metadata_test() {
         runTest {
             val testFolder = File(context.cacheDir, "testArchiveExtracted")

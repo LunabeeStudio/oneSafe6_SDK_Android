@@ -28,6 +28,5 @@ annotation class ArchiveDir(val type: Type) {
         Export,
         Import,
         Migration,
-        ;
     }
 }

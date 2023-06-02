@@ -19,12 +19,11 @@
 
 package studio.lunabee.onesafe.domain.repository
 
-import com.lunabee.lbcore.model.LBFlowResult
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
-import studio.lunabee.onesafe.domain.model.search.ClearIndexWordEntry
+import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import java.io.File
 import java.util.UUID
@@ -37,8 +36,8 @@ interface MainCryptoRepository {
     suspend fun <Data : Any> decrypt(file: File, key: SafeItemKey, clazz: KClass<Data>, mapper: (ByteArray.() -> Data)? = null): Data
     suspend fun <Data : Any> encrypt(key: SafeItemKey, encryptEntry: EncryptEntry<Data>): ByteArray
     suspend fun <Data : Any> encrypt(key: SafeItemKey, encryptEntries: List<EncryptEntry<Data>?>): List<ByteArray?>
-    suspend fun encryptIndexWord(indexWordEntry: List<ClearIndexWordEntry>): List<IndexWordEntry>
-    suspend fun decryptIndexWord(encIndexWordEntry: List<IndexWordEntry>): List<ClearIndexWordEntry>
+    suspend fun encryptIndexWord(indexWordEntry: List<PlainIndexWordEntry>): List<IndexWordEntry>
+    suspend fun decryptIndexWord(encIndexWordEntry: List<IndexWordEntry>): List<PlainIndexWordEntry>
     suspend fun generateKeyForItemId(itemId: UUID): SafeItemKey
     suspend fun importItemKey(rawKeyValue: ByteArray, keyId: UUID): SafeItemKey
     suspend fun resetCryptography()
@@ -65,8 +64,8 @@ interface MainCryptoRepository {
     fun disableBiometric()
     fun enableBiometric(biometricCipher: Cipher)
     suspend fun reEncryptItemKey(itemKey: SafeItemKey, key: ByteArray)
-    fun isCryptoDataInMemory(): Flow<LBFlowResult<Unit>>
+    fun isCryptoDataInMemory(): Flow<Boolean>
     suspend fun loadMasterKeyExternal(masterKey: ByteArray)
     suspend fun decryptRecentSearch(encRecentSearch: List<ByteArray>): List<String>
-    suspend fun encryptRecentSearch(clearRecentSearch: List<String>): List<ByteArray>
+    suspend fun encryptRecentSearch(plainRecentSearch: List<String>): List<ByteArray>
 }

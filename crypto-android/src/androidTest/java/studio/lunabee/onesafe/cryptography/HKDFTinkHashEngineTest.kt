@@ -20,13 +20,11 @@
 package studio.lunabee.onesafe.cryptography
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import java.util.Base64
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class HKDFTinkHashEngineTest {
 
     private val hkdf = HKDFTinkHashEngine(Dispatchers.Default)

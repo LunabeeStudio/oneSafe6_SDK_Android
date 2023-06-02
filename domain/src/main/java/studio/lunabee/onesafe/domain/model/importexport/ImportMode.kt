@@ -23,5 +23,4 @@ enum class ImportMode {
     Append, // Append the items at the first level (no parent)
     AppendInFolder, // Will create folder and add all the items inside,
     Replace, // Replace all the "old"  items,
-    ;
 }

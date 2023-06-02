@@ -29,6 +29,8 @@ android {
     flavorDimensions += "environment"
     productFlavors {
         create("dev") {
+            minSdk = AndroidConfig.MIN_DEV_APP_SDK
+
             dimension = "environment"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "#${AndroidConfig.envVersionCode} dev"
@@ -38,6 +40,7 @@ android {
         }
 
         create("prod") {
+            minSdk = AndroidConfig.MIN_APP_SDK
             dimension = "environment"
 
             buildConfigField("Boolean", "IS_DEV", "false")

@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.transformLatest
 import studio.lunabee.onesafe.domain.Constant
 import studio.lunabee.onesafe.domain.manager.SearchIndexManager
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
-import studio.lunabee.onesafe.domain.model.search.ClearIndexWordEntry
+import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.SearchQuery
 import javax.inject.Inject
 
@@ -72,7 +72,7 @@ class SearchItemUseCase @Inject constructor(
 
     val searchResultFlow: Flow<LinkedHashSet<SafeItemWithIdentifier>?> =
         searchIndexManager.decryptedIndex
-            .filterIsInstance<LBFlowResult.Success<List<ClearIndexWordEntry>>>()
+            .filterIsInstance<LBFlowResult.Success<List<PlainIndexWordEntry>>>()
             .combine(filteredSearchQueryFlow) { decryptedIndex, searchValue ->
                 Pair(decryptedIndex, searchValue)
             }.flatMapLatest { (decryptedIndex, searchValue) ->

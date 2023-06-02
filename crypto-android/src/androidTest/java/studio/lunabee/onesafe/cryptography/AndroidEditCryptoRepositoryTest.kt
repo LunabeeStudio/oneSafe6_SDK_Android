@@ -22,7 +22,6 @@ package studio.lunabee.onesafe.cryptography
 import android.security.keystore.KeyProperties
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -48,7 +47,6 @@ class AndroidEditCryptoRepositoryTest {
     @Inject
     internal lateinit var mainRepository: AndroidMainCryptoRepository
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setUp() {
         hiltRule.inject()
@@ -57,21 +55,18 @@ class AndroidEditCryptoRepositoryTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun generate_and_check_match_test(): TestResult = runTest {
         repository.generateCryptographicData(password)
         assertTrue { repository.checkCryptographicData(password) }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun generate_and_check_no_match_test(): TestResult = runTest {
         repository.generateCryptographicData(password)
         assertFalse { repository.checkCryptographicData(charArrayOf('a')) }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun check_not_generated_test(): TestResult = runTest {
         assertThrows<OSCryptoError> { repository.checkCryptographicData(password) }
@@ -81,14 +76,12 @@ class AndroidEditCryptoRepositoryTest {
         assertThrows<OSCryptoError> { repository.checkCryptographicData(password) }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun persist_test(): TestResult = runTest {
         repository.generateCryptographicData(password)
         assertDoesNotThrow { repository.setMainCryptographicData() }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun persist_not_generated_test(): TestResult = runTest {
         assertThrows<OSCryptoError> { repository.setMainCryptographicData() }
@@ -98,7 +91,6 @@ class AndroidEditCryptoRepositoryTest {
         assertThrows<OSCryptoError> { repository.setMainCryptographicData() }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun initializeBiometric_and_check_match_test(): TestResult = runTest {
         repository.generateCryptographicData(password)
@@ -111,7 +103,6 @@ class AndroidEditCryptoRepositoryTest {
         assertTrue { repository.checkCryptographicData(password) }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun persist_biometric_match_test(): TestResult = runTest {
         repository.generateCryptographicData(password)
@@ -124,7 +115,6 @@ class AndroidEditCryptoRepositoryTest {
         assertTrue { repository.checkCryptographicData(password) }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun reEncryptItemKeys_no_key_test(): TestResult = runTest {
         assertThrows<OSCryptoError> { repository.reEncryptItemKeys(listOf()) }

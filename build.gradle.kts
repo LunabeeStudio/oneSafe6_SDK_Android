@@ -35,6 +35,11 @@ buildscript {
     }
 }
 
+val artifactoryUsername: String = project.findProperty("artifactory_consumer_username") as? String
+    ?: "library-consumer-public"
+val artifactoryPassword: String = project.findProperty("artifactory_consumer_api_key") as? String
+    ?: "AKCp8k8PbuxYXoLgvNpc5Aro1ytENk3rSyXCwQ71BA4byg3h7iuMyQ6Sd4ZmJtSJcr7XjwMej"
+
 allprojects {
     repositories {
         maven {
@@ -42,6 +47,16 @@ allprojects {
         }
         maven {
             url = uri("https://androidx.dev/storage/compose-compiler/repository/")
+        }
+        maven {
+            url = uri("https://artifactory.lunabee.studio/artifactory/florisboard-library-local")
+            credentials {
+                username = artifactoryUsername
+                password = artifactoryPassword
+            }
+            mavenContent {
+                releasesOnly()
+            }
         }
     }
 }
@@ -85,6 +100,7 @@ val excludedTestProjects: List<String> = listOf(
     "dependency-injection",
     "test-component",
     "mockos5",
+    "checks",
 )
 
 subprojects {

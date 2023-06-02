@@ -40,7 +40,6 @@ import java.util.UUID
     ],
     indices = [Index("item_id")],
 )
-
 data class RoomSafeItemField(
     @PrimaryKey
     @ColumnInfo(name = "id")

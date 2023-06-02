@@ -21,7 +21,6 @@ package studio.lunabee.onesafe.storage.database
 
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.test.runTest
@@ -37,7 +36,6 @@ import javax.inject.Inject
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @HiltAndroidTest
 class MainDatabaseTest {
     @Inject

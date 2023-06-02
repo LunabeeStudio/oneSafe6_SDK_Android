@@ -22,7 +22,8 @@ package studio.lunabee.onesafe.cryptography
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.util.AtomicFile
-import com.lunabee.lbcore.model.LBFlowResult
+import com.lunabee.lblogger.LBLogger
+import com.lunabee.lblogger.v
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -36,7 +37,7 @@ import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
-import studio.lunabee.onesafe.domain.model.search.ClearIndexWordEntry
+import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.error.OSCryptoError
@@ -49,13 +50,15 @@ import javax.crypto.Cipher
 import javax.inject.Inject
 import kotlin.reflect.KClass
 
+private val log = LBLogger.get<AndroidMainCryptoRepository>()
+
 @Suppress("ObsoleteSdkInt")
 @RequiresApi(Build.VERSION_CODES.M)
 class AndroidMainCryptoRepository @Inject constructor(
     private val crypto: CryptoEngine,
     private val hashEngine: HashEngine,
     private val biometricEngine: BiometricEngine,
-    @DatastoreEngineProvider(DataStoreType.Clear) private val dataStoreEngine: DatastoreEngine,
+    @DatastoreEngineProvider(DataStoreType.Plain) private val dataStoreEngine: DatastoreEngine,
     private val itemKeyProvider: ItemKeyProvider,
 ) : MainCryptoRepository {
 
@@ -71,15 +74,11 @@ class AndroidMainCryptoRepository @Inject constructor(
     )
     private var searchIndexKey: ByteArray? by safeCryptoArrayDelete(searchIndexKeyFlow)
 
-    override fun isCryptoDataInMemory(): Flow<LBFlowResult<Unit>> = merge(
+    override fun isCryptoDataInMemory(): Flow<Boolean> = merge(
         masterKeyFlow,
         searchIndexKeyFlow,
     ).map { masterKey ->
-        if (masterKey == null) {
-            LBFlowResult.Failure(OSCryptoError(OSCryptoError.Code.CRYPTO_DATA_ARE_NOT_LOADED))
-        } else {
-            LBFlowResult.Success(Unit)
-        }
+        masterKey != null
     }.distinctUntilChanged()
 
     private var saltDataStore: ByteArray? by dataStoreValueDelegate(
@@ -112,6 +111,7 @@ class AndroidMainCryptoRepository @Inject constructor(
     override fun unloadCryptographyKeys() {
         masterKey = null
         searchIndexKey = null
+        log.v("cryptographic keys unloaded")
     }
 
     override suspend fun storeMasterKeyAndSalt(key: ByteArray, salt: ByteArray) {
@@ -120,6 +120,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
         saltDataStore = salt.copyOf()
         masterKey = key.copyOf()
+        log.v("cryptographic keys stored")
 
         masterKeyTestDataStore = crypto.encrypt(
             plainData = MASTER_KEY_TEST_VALUE.encodeToByteArray(),
@@ -145,11 +146,13 @@ class AndroidMainCryptoRepository @Inject constructor(
     override suspend fun loadMasterKeyFromBiometric(cipher: Cipher) {
         masterKey = biometricEngine.retrieveKey(cipher)
         retrieveKeyForIndex()
+        log.v("cryptographic keys loaded using biometric")
     }
 
     override suspend fun loadMasterKeyExternal(masterKey: ByteArray) {
         this.masterKey = masterKey.copyOf()
         retrieveKeyForIndex()
+        log.v("cryptographic keys externally loaded")
     }
 
     private suspend fun generateIndexKey() {
@@ -189,6 +192,7 @@ class AndroidMainCryptoRepository @Inject constructor(
             retrieveMasterKeyFromPassword(password)?.let {
                 masterKey = it
                 retrieveKeyForIndex()
+                log.v("cryptographic keys loaded using password")
             }
         }
     }
@@ -204,8 +208,8 @@ class AndroidMainCryptoRepository @Inject constructor(
                 val encMasterKeyTest = masterKeyTestDataStore ?: throw OSCryptoError(OSCryptoError.Code.MASTER_KEY_NOT_GENERATED)
                 hashEngine.deriveKey(password, salt).use { masterKey ->
                     try {
-                        val clearMasterKeyTest = crypto.decrypt(encMasterKeyTest, masterKey, null).decodeToString()
-                        val isPasswordOk = clearMasterKeyTest == MASTER_KEY_TEST_VALUE
+                        val plainMasterKeyTest = crypto.decrypt(encMasterKeyTest, masterKey, null).decodeToString()
+                        val isPasswordOk = plainMasterKeyTest == MASTER_KEY_TEST_VALUE
                         if (isPasswordOk) {
                             masterKey.copyOf()
                         } else {
@@ -341,7 +345,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    override suspend fun encryptIndexWord(indexWordEntry: List<ClearIndexWordEntry>): List<IndexWordEntry> {
+    override suspend fun encryptIndexWord(indexWordEntry: List<PlainIndexWordEntry>): List<IndexWordEntry> {
         return indexWordEntry.map {
             IndexWordEntry(
                 crypto.encrypt(plainData = it.word.encodeToByteArray(), key = searchIndexKey!!, associatedData = null),
@@ -351,8 +355,8 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    override suspend fun encryptRecentSearch(clearRecentSearch: List<String>): List<ByteArray> {
-        return clearRecentSearch.map { _element ->
+    override suspend fun encryptRecentSearch(plainRecentSearch: List<String>): List<ByteArray> {
+        return plainRecentSearch.map { _element ->
             crypto.encrypt(plainData = _element.encodeToByteArray(), key = searchIndexKey!!, associatedData = null)
         }
     }
@@ -363,9 +367,9 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    override suspend fun decryptIndexWord(encIndexWordEntry: List<IndexWordEntry>): List<ClearIndexWordEntry> {
+    override suspend fun decryptIndexWord(encIndexWordEntry: List<IndexWordEntry>): List<PlainIndexWordEntry> {
         return encIndexWordEntry.map {
-            ClearIndexWordEntry(
+            PlainIndexWordEntry(
                 crypto.decrypt(it.encWord, searchIndexKey!!, null).decodeToString(),
                 it.itemMatch,
                 it.fieldMatch,
@@ -374,8 +378,8 @@ class AndroidMainCryptoRepository @Inject constructor(
     }
 
     override suspend fun reEncryptItemKey(itemKey: SafeItemKey, key: ByteArray) {
-        crypto.decrypt(cipherData = itemKey.encValue, key = masterKey!!, associatedData = null).use { clearKey ->
-            crypto.encrypt(clearKey, key, null).copyInto(itemKey.encValue)
+        crypto.decrypt(cipherData = itemKey.encValue, key = masterKey!!, associatedData = null).use { plainKey ->
+            crypto.encrypt(plainKey, key, null).copyInto(itemKey.encValue)
         }
     }
 

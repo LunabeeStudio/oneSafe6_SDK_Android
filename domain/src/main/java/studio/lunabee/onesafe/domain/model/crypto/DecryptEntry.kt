@@ -37,7 +37,7 @@ class DecryptEntry<Data : Any>(
 /**
  * Wrapper for the data to encrypt
  *
- * @param data The clear data
+ * @param data The plain data
  * @param mapper Optional mapper to map [Data] to raw [ByteArray]
  */
 class EncryptEntry<Data : Any>(

@@ -21,7 +21,6 @@ package studio.lunabee.onesafe.cryptography
 
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -34,7 +33,6 @@ import javax.inject.Inject
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @HiltAndroidTest
 class EncryptedDatastoreTest {
 

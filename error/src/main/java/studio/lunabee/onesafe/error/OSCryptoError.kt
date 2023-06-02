@@ -53,7 +53,6 @@ data class OSCryptoError(
         SEARCH_INDEX_KEY_ALREADY_GENERATED("Search index key have already been generated"),
         SEARCH_INDEX_KEY_NOT_LOADED("Search index key not loaded in memory"),
         SEARCH_INDEX_KEY_ALREADY_LOADED("Search index key already loaded in memory"),
-        CRYPTO_DATA_ARE_NOT_LOADED("Mandatory crypto data are not loaded in memory"),
         DERIVATION_WITH_EMPTY_PASSWORD("Entered password is empty"),
         MIGRATION_KEYPAIR_NOT_LOADED("KeyPair for migration has not be generated"),
         ONBOARDING_SALT_NOT_LOADED("The salt has not been generated"),

@@ -43,4 +43,16 @@ class OsAppVisit @Inject constructor(
             preferences[hasVisitedLoginKey] = true
         }
     }
+
+    private val hasFinishOneSafeKOnBoardingKey = booleanPreferencesKey(AppVisitConstants.hasFinishOneSafeKOnBoarding)
+
+    val hasFinishOneSafeKOnBoarding: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[hasFinishOneSafeKOnBoardingKey] ?: AppVisitConstants.hasFinishOneSafeKOnBoardingDefault
+    }
+
+    suspend fun storeHasFinishOneSafeKOnBoarding() {
+        dataStore.edit { preferences ->
+            preferences[hasFinishOneSafeKOnBoardingKey] = true
+        }
+    }
 }

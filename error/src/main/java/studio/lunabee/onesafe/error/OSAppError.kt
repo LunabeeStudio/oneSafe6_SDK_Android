@@ -33,6 +33,7 @@ data class OSAppError(
         BIOMETRIC_TOO_WEAK("This device has no strong biometric"),
         BIOMETRIC_ERROR("Error during biometric setup"),
         BIOMETRIC_LOGIN_ERROR("Error during biometric login"),
+        BIOMETRIC_LOGIN_CIPHER_ERROR("Biometric authentication succeed but cipher is null"),
         URI_INVALID("Invalid uri from content provider"),
         MIGRATION_IMPORT_MODE_NOT_SET("Import mode expected to be set"),
         MIGRATION_ONESAFE5_SERVICE_NULL_BINDING("The oneSafe 5 service bind is null"),

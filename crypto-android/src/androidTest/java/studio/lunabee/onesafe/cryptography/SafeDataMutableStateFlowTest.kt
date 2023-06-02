@@ -32,7 +32,6 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class SafeDataMutableStateFlowTest {
 
     private val overrideCode = OSCryptoError.Code.MASTER_KEY_ALREADY_LOADED
@@ -61,10 +60,11 @@ class SafeDataMutableStateFlowTest {
         assertEquals(nullableCode, error.code)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun collect_value_flow_test(): TestResult = runTest {
         val values = mutableListOf<ByteArray?>()
-        val collectJob = launch(UnconfinedTestDispatcher(testScheduler)) {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             testFlow.toList(values)
         }
         assertEquals(null, values[0])
@@ -78,6 +78,5 @@ class SafeDataMutableStateFlowTest {
             testFlow.value = byteArrayOf(3)
         }
         assertEquals(overrideCode, error.code)
-        collectJob.cancel()
     }
 }
