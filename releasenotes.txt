@@ -1,3 +1,9 @@
+NEW in testing (last 24h)
+• (Android) Bug - Autolock en changeant d’app ne fonctionne pas Prod only
+
+ALL in testing
+• (Android) Bug - Autolock en changeant d’app ne fonctionne pas Prod only
+
 ALL tested
 • (Android)(oSK) Ecran de contacts
 • (Android) BUG - autolock sur mot de passe fullscreen : écran vide
