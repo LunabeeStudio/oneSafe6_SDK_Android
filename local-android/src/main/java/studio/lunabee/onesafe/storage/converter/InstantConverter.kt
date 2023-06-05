@@ -22,7 +22,7 @@ package studio.lunabee.onesafe.storage.converter
 import androidx.room.TypeConverter
 import java.time.Instant
 
-internal class InstantConverter {
+class InstantConverter {
     @TypeConverter
     fun fromTimestamp(value: Long): Instant {
         return Instant.ofEpochMilli(value)

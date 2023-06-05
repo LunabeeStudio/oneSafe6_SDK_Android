@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.cryptography
 import android.util.Base64
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
@@ -34,12 +35,13 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
-import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
+import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.test.testUUIDs
 import java.util.UUID
@@ -70,23 +72,27 @@ class AndroidMainCryptoRepositoryTest {
     @Inject
     internal lateinit var dataStore: EncryptedDataStoreEngine
 
+    private val featureFlags: FeatureFlags = mockk {
+        every { this@mockk.bubbles() } returns false
+    }
+
     private val repository: AndroidMainCryptoRepository by lazy {
-        AndroidMainCryptoRepository(crypto, hashEngine, mockk(), dataStore, itemKeyProvider)
+        AndroidMainCryptoRepository(crypto, hashEngine, mockk(), dataStore, featureFlags, itemKeyProvider)
     }
 
     @Before
     fun setUp() {
         hiltRule.inject()
         runTest {
-            repository.resetCryptography()
+            this@AndroidMainCryptoRepositoryTest.repository.resetCryptography()
         }
     }
 
     @Test
     fun storeMasterKeyAndSalt_already_loaded_test(): TestResult = runTest {
-        repository.storeMasterKeyAndSalt(key, salt)
+        this@AndroidMainCryptoRepositoryTest.repository.storeMasterKeyAndSalt(key, salt)
         val error = assertFailsWith<OSCryptoError> {
-            repository.storeMasterKeyAndSalt(key, salt)
+            this@AndroidMainCryptoRepositoryTest.repository.storeMasterKeyAndSalt(key, salt)
         }
         assertEquals(OSCryptoError.Code.MASTER_SALT_ALREADY_LOADED, error.code)
     }
@@ -95,29 +101,35 @@ class AndroidMainCryptoRepositoryTest {
     fun storeMasterKeyAndSalt_already_saved_test(): TestResult = runTest {
         loadMasterKey()
         val error = assertFailsWith<OSCryptoError> {
-            repository.storeMasterKeyAndSalt(key, salt)
+            this@AndroidMainCryptoRepositoryTest.repository.storeMasterKeyAndSalt(key, salt)
         }
         assertEquals(OSCryptoError.Code.MASTER_SALT_ALREADY_LOADED, error.code)
     }
 
     @Test
     fun loadMasterKey_no_password_stored_test(): TestResult = runTest {
-        assertThrows<OSCryptoError> { repository.loadMasterKeyFromPassword(password.toCharArray()) }
+        assertThrows<OSCryptoError> {
+            this@AndroidMainCryptoRepositoryTest.repository.loadMasterKeyFromPassword(password.toCharArray())
+        }
     }
 
     @Test
     fun loadMasterKey_test(): TestResult = runTest {
         loadMasterKey()
         unloadMasterKey()
-        assertDoesNotThrow { repository.loadMasterKeyFromPassword(password.toCharArray()) }
+        assertDoesNotThrow { this@AndroidMainCryptoRepositoryTest.repository.loadMasterKeyFromPassword(password.toCharArray()) }
     }
 
     @Test
     fun loadMasterKey_already_loaded_test(): TestResult = runTest {
         loadMasterKey()
         unloadMasterKey()
-        assertDoesNotThrow { repository.loadMasterKeyFromPassword(password.toCharArray()) }
-        val error = assertThrows<OSCryptoError> { repository.loadMasterKeyFromPassword(password.toCharArray()) }
+        assertDoesNotThrow { this@AndroidMainCryptoRepositoryTest.repository.loadMasterKeyFromPassword(password.toCharArray()) }
+        val error = assertThrows<OSCryptoError> {
+            this@AndroidMainCryptoRepositoryTest.repository.loadMasterKeyFromPassword(
+                password.toCharArray(),
+            )
+        }
         assertEquals(OSCryptoError.Code.MASTER_KEY_ALREADY_LOADED, error.code)
     }
 
@@ -125,28 +137,30 @@ class AndroidMainCryptoRepositoryTest {
     fun loadMasterKey_wrong_password_test(): TestResult = runTest {
         loadMasterKey()
         unloadMasterKey()
-        assertThrows<OSCryptoError> { repository.loadMasterKeyFromPassword(charArrayOf('a')) }
+        assertThrows<OSCryptoError> {
+            this@AndroidMainCryptoRepositoryTest.repository.loadMasterKeyFromPassword(charArrayOf('a'))
+        }
     }
 
     @Test
     fun getCurrentSalt_no_master_key_test(): TestResult = runTest {
-        assertThrows<NullPointerException> { repository.getCurrentSalt() }
+        assertThrows<NullPointerException> { this@AndroidMainCryptoRepositoryTest.repository.getCurrentSalt() }
     }
 
     @Test
     fun no_master_key_test(): TestResult = runTest {
         val error1 = assertFailsWith<OSCryptoError> {
-            repository.generateKeyForItemId(testUUIDs[0])
+            this@AndroidMainCryptoRepositoryTest.repository.generateKeyForItemId(testUUIDs[0])
         }
         assertEquals(error1.code, OSCryptoError.Code.MASTER_KEY_NOT_LOADED)
 
         val error2 = assertFailsWith<OSCryptoError> {
-            repository.encrypt(mockk(relaxed = true), EncryptEntry(""))
+            this@AndroidMainCryptoRepositoryTest.repository.encrypt(mockk(relaxed = true), EncryptEntry(""))
         }
         assertEquals(error2.code, OSCryptoError.Code.MASTER_KEY_NOT_LOADED)
 
         val error3 = assertFailsWith<OSCryptoError> {
-            repository.decrypt(mockk(relaxed = true), DecryptEntry(byteArrayOf(), Unit::class))
+            this@AndroidMainCryptoRepositoryTest.repository.decrypt(mockk(relaxed = true), DecryptEntry(byteArrayOf(), Unit::class))
         }
         assertEquals(error3.code, OSCryptoError.Code.MASTER_KEY_NOT_LOADED)
     }
@@ -154,22 +168,22 @@ class AndroidMainCryptoRepositoryTest {
     @Test
     fun generateKeyForItem_test(): TestResult = runTest {
         loadMasterKey()
-        repository.generateKeyForItemId(testUUIDs[0])
+        this@AndroidMainCryptoRepositoryTest.repository.generateKeyForItemId(testUUIDs[0])
     }
 
     @Test
     fun deleteMasterKey_test(): TestResult = runTest {
         loadMasterKey()
-        repository.resetCryptography()
-        repository.resetCryptography() // test safe call twice
+        this@AndroidMainCryptoRepositoryTest.repository.resetCryptography()
+        this@AndroidMainCryptoRepositoryTest.repository.resetCryptography() // test safe call twice
     }
 
     @Test
     fun encrypt_decrypt_string_test(): TestResult = runTest {
         loadMasterKey()
-        val key = repository.generateKeyForItemId(testUUIDs[0])
-        val encText = repository.encrypt(key, EncryptEntry("plain_text"))
-        val decText = repository.decrypt(key, DecryptEntry(encText, String::class))
+        val key = this@AndroidMainCryptoRepositoryTest.repository.generateKeyForItemId(testUUIDs[0])
+        val encText = this@AndroidMainCryptoRepositoryTest.repository.encrypt(key, EncryptEntry("plain_text"))
+        val decText = this@AndroidMainCryptoRepositoryTest.repository.decrypt(key, DecryptEntry(encText, String::class))
         assertEquals("plain_text", decText)
     }
 
@@ -177,9 +191,9 @@ class AndroidMainCryptoRepositoryTest {
     fun encrypt_decrypt_int_test(): TestResult = runTest {
         loadMasterKey()
         val num = Random.nextInt()
-        val key = repository.generateKeyForItemId(testUUIDs[0])
-        val encNum = repository.encrypt(key, EncryptEntry(num))
-        val decNum = repository.decrypt(key, DecryptEntry(encNum, Int::class))
+        val key = this@AndroidMainCryptoRepositoryTest.repository.generateKeyForItemId(testUUIDs[0])
+        val encNum = this@AndroidMainCryptoRepositoryTest.repository.encrypt(key, EncryptEntry(num))
+        val decNum = this@AndroidMainCryptoRepositoryTest.repository.decrypt(key, DecryptEntry(encNum, Int::class))
         assertEquals(num, decNum)
     }
 
@@ -187,9 +201,9 @@ class AndroidMainCryptoRepositoryTest {
     fun encrypt_decrypt_SafeItemFieldKind_test(): TestResult = runTest {
         loadMasterKey()
         val kind = SafeItemFieldKind.Email
-        val key = repository.generateKeyForItemId(testUUIDs[0])
-        val encKind = repository.encrypt(key, EncryptEntry(kind, SafeItemFieldKind::toByteArray))
-        val decKind = repository.decrypt(key, DecryptEntry(encKind, SafeItemFieldKind::class))
+        val key = this@AndroidMainCryptoRepositoryTest.repository.generateKeyForItemId(testUUIDs[0])
+        val encKind = this@AndroidMainCryptoRepositoryTest.repository.encrypt(key, EncryptEntry(kind, SafeItemFieldKind::toByteArray))
+        val decKind = this@AndroidMainCryptoRepositoryTest.repository.decrypt(key, DecryptEntry(encKind, SafeItemFieldKind::class))
         assertEquals(kind, decKind)
     }
 
@@ -197,9 +211,9 @@ class AndroidMainCryptoRepositoryTest {
     fun encrypt_decrypt_unknown_SafeItemFieldKind_test(): TestResult = runTest {
         loadMasterKey()
         val kind = SafeItemFieldKind.Unknown("unknown_type")
-        val key = repository.generateKeyForItemId(testUUIDs[0])
-        val encKind = repository.encrypt(key, EncryptEntry(kind, SafeItemFieldKind::toByteArray))
-        val decKind = repository.decrypt(key, DecryptEntry(encKind, SafeItemFieldKind::class))
+        val key = this@AndroidMainCryptoRepositoryTest.repository.generateKeyForItemId(testUUIDs[0])
+        val encKind = this@AndroidMainCryptoRepositoryTest.repository.encrypt(key, EncryptEntry(kind, SafeItemFieldKind::toByteArray))
+        val decKind = this@AndroidMainCryptoRepositoryTest.repository.decrypt(key, DecryptEntry(encKind, SafeItemFieldKind::class))
 
         assertIs<SafeItemFieldKind.Unknown>(decKind)
         assertEquals(kind.id, decKind.id)
@@ -208,10 +222,10 @@ class AndroidMainCryptoRepositoryTest {
     @Test
     fun decrypt_no_mapper_test(): TestResult = runTest {
         loadMasterKey()
-        val key = repository.generateKeyForItemId(testUUIDs[0])
-        val encText = repository.encrypt(key, EncryptEntry("plain_text"))
+        val key = this@AndroidMainCryptoRepositoryTest.repository.generateKeyForItemId(testUUIDs[0])
+        val encText = this@AndroidMainCryptoRepositoryTest.repository.encrypt(key, EncryptEntry("plain_text"))
         val error = assertFailsWith<OSCryptoError> {
-            repository.decrypt(key, DecryptEntry(encText, Unit::class))
+            this@AndroidMainCryptoRepositoryTest.repository.decrypt(key, DecryptEntry(encText, Unit::class))
         }
         assertEquals(OSCryptoError.Code.MISSING_MAPPER, error.code)
     }
@@ -219,9 +233,9 @@ class AndroidMainCryptoRepositoryTest {
     @Test
     fun encrypt_no_mapper_test(): TestResult = runTest {
         loadMasterKey()
-        val key = repository.generateKeyForItemId(testUUIDs[0])
+        val key = this@AndroidMainCryptoRepositoryTest.repository.generateKeyForItemId(testUUIDs[0])
         val error = assertFailsWith<OSCryptoError> {
-            repository.encrypt(key, EncryptEntry(Unit))
+            this@AndroidMainCryptoRepositoryTest.repository.encrypt(key, EncryptEntry(Unit))
         }
         assertEquals(OSCryptoError.Code.MISSING_MAPPER, error.code)
     }
@@ -229,11 +243,11 @@ class AndroidMainCryptoRepositoryTest {
     @Test
     fun decrypt_wrong_key_test(): TestResult = runTest {
         loadMasterKey()
-        val key = repository.generateKeyForItemId(testUUIDs[0])
-        val wrongKey = repository.generateKeyForItemId(testUUIDs[1])
-        val encText = repository.encrypt(key, EncryptEntry("plain_text"))
+        val key = this@AndroidMainCryptoRepositoryTest.repository.generateKeyForItemId(testUUIDs[0])
+        val wrongKey = this@AndroidMainCryptoRepositoryTest.repository.generateKeyForItemId(testUUIDs[1])
+        val encText = this@AndroidMainCryptoRepositoryTest.repository.encrypt(key, EncryptEntry("plain_text"))
         val error = assertFailsWith<OSCryptoError> {
-            repository.decrypt(wrongKey, DecryptEntry(encText, Unit::class))
+            this@AndroidMainCryptoRepositoryTest.repository.decrypt(wrongKey, DecryptEntry(encText, Unit::class))
         }
         assertEquals(OSCryptoError.Code.DECRYPTION_FAILED_WRONG_KEY, error.code)
     }
@@ -243,7 +257,7 @@ class AndroidMainCryptoRepositoryTest {
         loadMasterKey()
         val key = SafeItemKey(testUUIDs[0], ByteArray(12) { it.toByte() })
         val error = assertFailsWith<OSCryptoError> {
-            repository.encrypt(key, EncryptEntry("plain_text"))
+            this@AndroidMainCryptoRepositoryTest.repository.encrypt(key, EncryptEntry("plain_text"))
         }
         assertEquals(OSCryptoError.Code.ENCRYPTION_FAILED_BAD_KEY, error.code)
     }
@@ -252,12 +266,12 @@ class AndroidMainCryptoRepositoryTest {
     fun encrypt_reload_master_key_decrypt_test(): TestResult = runTest {
         loadMasterKey()
         val num = Random.nextInt()
-        val key = repository.generateKeyForItemId(testUUIDs[0])
-        val encNum = repository.encrypt(key, EncryptEntry(num))
+        val key = this@AndroidMainCryptoRepositoryTest.repository.generateKeyForItemId(testUUIDs[0])
+        val encNum = this@AndroidMainCryptoRepositoryTest.repository.encrypt(key, EncryptEntry(num))
 
         unloadMasterKey()
-        repository.loadMasterKeyFromPassword(password.toCharArray())
-        val decNum = repository.decrypt(key, DecryptEntry(encNum, Int::class))
+        this@AndroidMainCryptoRepositoryTest.repository.loadMasterKeyFromPassword(password.toCharArray())
+        val decNum = this@AndroidMainCryptoRepositoryTest.repository.decrypt(key, DecryptEntry(encNum, Int::class))
 
         assertEquals(num, decNum)
     }
@@ -272,8 +286,8 @@ class AndroidMainCryptoRepositoryTest {
                 null,
             ),
         )
-        val encryptedEntries: List<IndexWordEntry> = repository.encryptIndexWord(initialEntries)
-        val decryptedEntries: List<PlainIndexWordEntry> = repository.decryptIndexWord(encryptedEntries)
+        val encryptedEntries: List<IndexWordEntry> = this@AndroidMainCryptoRepositoryTest.repository.encryptIndexWord(initialEntries)
+        val decryptedEntries: List<PlainIndexWordEntry> = this@AndroidMainCryptoRepositoryTest.repository.decryptIndexWord(encryptedEntries)
         assertContentEquals(initialEntries, decryptedEntries)
     }
 
@@ -282,7 +296,7 @@ class AndroidMainCryptoRepositoryTest {
     fun collect_crypto_data_missing_test_test(): TestResult = runTest {
         val values = mutableListOf<Boolean>()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-            repository.isCryptoDataInMemory().toList(values)
+            this@AndroidMainCryptoRepositoryTest.repository.isCryptoDataInMemory().toList(values)
         }
         assertFalse(values[0])
         loadMasterKey()
@@ -294,18 +308,47 @@ class AndroidMainCryptoRepositoryTest {
 
     @Test
     fun overrideMasterKeyAndSalt_test(): TestResult = runTest {
-        repository.storeMasterKeyAndSalt(ByteArray(32) { it.toByte() }, byteArrayOf(1))
-        repository.overrideMasterKeyAndSalt(key, salt)
+        this@AndroidMainCryptoRepositoryTest.repository.storeMasterKeyAndSalt(ByteArray(32) { it.toByte() }, byteArrayOf(1))
+        this@AndroidMainCryptoRepositoryTest.repository.overrideMasterKeyAndSalt(key, salt)
         unloadMasterKey()
-        assertDoesNotThrow { repository.loadMasterKeyFromPassword(password.toCharArray()) }
+        assertDoesNotThrow { this@AndroidMainCryptoRepositoryTest.repository.loadMasterKeyFromPassword(password.toCharArray()) }
     }
 
-    private suspend fun loadMasterKey() {
+    @Test
+    fun bubble_contacts_key_not_set_if_feature_not_enabled_test(): TestResult = runTest {
+        loadMasterKey()
+        val error = assertFailsWith<OSCryptoError> {
+            this@AndroidMainCryptoRepositoryTest.repository.encryptForBubblesContact(ByteArray(1))
+        }
+        assertEquals(OSCryptoError.Code.BUBBLES_CONTACT_KEY_NOT_LOADED, error.code)
+    }
+
+    @Test
+    fun bubbles_contacts_key_set_if_feature_is_enabled(): TestResult = runTest {
+        every { featureFlags.bubbles() } returns true
+        this@AndroidMainCryptoRepositoryTest.repository.storeMasterKeyAndSalt(key, salt)
+        val error = assertFailsWith<OSCryptoError> {
+            this@AndroidMainCryptoRepositoryTest.repository.generateBubblesContactKey()
+        }
+        assertEquals(OSCryptoError.Code.BUBBLES_CONTACT_KEY_ALREADY_LOADED, error.code)
+    }
+
+    @Test
+    fun encrypt_decrypt_for_bubbles_test(): TestResult = runTest {
+        every { featureFlags.bubbles() } returns true
+        this@AndroidMainCryptoRepositoryTest.repository.storeMasterKeyAndSalt(key, salt)
+        val plainData = "contactName"
+        val encryptedData = this@AndroidMainCryptoRepositoryTest.repository.encryptForBubblesContact(plainData.encodeToByteArray())
+        val decryptedData = this@AndroidMainCryptoRepositoryTest.repository.decryptForBubblesContact(encryptedData)
+        assertEquals(plainData, decryptedData)
+    }
+
+    private suspend fun loadMasterKey(repository: AndroidMainCryptoRepository = this.repository) {
         repository.storeMasterKeyAndSalt(key, salt)
     }
 
     private fun unloadMasterKey() {
-        repository.unloadCryptographyKeys()
+        this.repository.unloadCryptographyKeys()
     }
 
     companion object {

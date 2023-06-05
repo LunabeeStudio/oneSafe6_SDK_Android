@@ -1,22 +1,5 @@
-NEW in testing (last 24h)
-• Automate open sourcing 
-• (Android) Grossir les smileys comme sur iOS
-• (Android) Première fois sur l’écran de login
-
-ALL in testing
-• Automate open sourcing 
-• (Android) Grossir les smileys comme sur iOS
-• (Android) Première fois sur l’écran de login
-• (Android)(oSK) onboarding v1
-• (Android)(oneSafe K) Valider l’accessibilité en Android 7 et 8
-
 ALL tested
-• Item undecipherable
-• (Android)(Bug) Mes favoris, indéchiffrables sur la Home
-• Password fullscreen broken
-• (Android) Splashscreen
-• (Android)(oneSafe K) Valider l’accessibilité en Android 10, 11, 12,13 et 14
-• (Android)(oneSafe K) “Feature flagger” le POC accessibilité
-• (Android)(oneSafe K) valider accessibility
-• Lint rule
-• (Android) Ordre des sections settings
+• (Android)(oSK) Ecran de contacts
+• (Android) BUG - autolock sur mot de passe fullscreen : écran vide
+• (Android)(oSK) Mocker contacts de Bubbles
+• (Android)(oneSafe K) Valider l’accessibilité en Android 7 et 8

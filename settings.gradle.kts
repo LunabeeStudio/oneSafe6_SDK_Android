@@ -64,4 +64,6 @@ include(":import-export")
 include(":dependency-injection")
 include(":dependency-injection:test-component")
 include(":app:message-companion")
+include(":bubbles")
+include(":app:common-ui")
 // include(":mockos5") // mockos5 apk is embedded for tests

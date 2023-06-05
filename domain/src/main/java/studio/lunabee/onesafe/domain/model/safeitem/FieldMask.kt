@@ -76,7 +76,8 @@ data class FieldMask(
         private val FigureSymbol: Pair<String, Char> = Pair("[0-9]", '#')
         private val AnySymbol: Pair<String, Char> = Pair(".", '*')
         private val HiddenSymbol: Pair<String, Char> = Pair(".", '•')
-        val SpecialSymbols: List<Pair<String, Char>> = listOf(LowerCaseSymbol, CapitalizeSymbol, FigureSymbol, AnySymbol)
+        val SpecialSymbols: List<Pair<String, Char>> =
+            listOf(LowerCaseSymbol, CapitalizeSymbol, FigureSymbol, AnySymbol)
 
         val CreditCardMasks: List<FieldMask> = listOf(
             // 4-6

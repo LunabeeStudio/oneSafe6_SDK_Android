@@ -57,5 +57,8 @@ data class OSCryptoError(
         MIGRATION_KEYPAIR_NOT_LOADED("KeyPair for migration has not be generated"),
         ONBOARDING_SALT_NOT_LOADED("The salt has not been generated"),
         ONBOARDING_KEY_NOT_LOADED("The key has not been generated"),
+        BUBBLES_CONTACT_KEY_ALREADY_GENERATED("A Bubble contact key have already been generated"),
+        BUBBLES_CONTACT_KEY_NOT_LOADED("Bubble contact key not loaded in memory"),
+        BUBBLES_CONTACT_KEY_ALREADY_LOADED("Bubble contact key already loaded in memory"),
     }
 }
