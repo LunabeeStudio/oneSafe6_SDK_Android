@@ -18,8 +18,8 @@
  */
 
 object AndroidConfig {
-    private const val VERSION_CODE: Int = 43
-    private const val VERSION_NAME: String = "1.10.0"
+    private const val VERSION_CODE: Int = 9999
+    private const val VERSION_NAME: String = "1.11.0"
 
     const val COMPILE_SDK: Int = 33
     const val TARGET_SDK: Int = COMPILE_SDK

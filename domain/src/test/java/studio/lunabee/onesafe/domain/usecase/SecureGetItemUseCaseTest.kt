@@ -64,9 +64,10 @@ class SecureGetItemUseCaseTest {
     }
 
     // Add a timeout around SecureGetItemUseCase flow so we can test the empty flow case
-    private val useCase: SecureGetItemUseCase = spyk(SecureGetItemUseCase(safeItemRepository, isCryptoDataReadyInMemoryUseCase)) {
-        every { this@spyk.invoke(any()) } answers { callOriginal().timeout(100.milliseconds) }
-    }
+    private val useCase: SecureGetItemUseCase =
+        spyk(SecureGetItemUseCase(safeItemRepository, isCryptoDataReadyInMemoryUseCase)) {
+            every { this@spyk.invoke(any()) } answers { callOriginal().timeout(100.milliseconds) }
+        }
 
     @Test
     fun master_key_loaded_test(): TestResult = runTest {

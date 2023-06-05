@@ -28,11 +28,13 @@ open class CryptoTestUtils(base64Decode: (String) -> ByteArray) {
     val key256: ByteArray = base64Decode("NPK+Xd162lfUdcekSXF/l4gKO3PwSGOTLOQ8Kd+0hVs=")
 
     val chacha20poly1305_data: ByteArray = base64Decode("tTvx8LSk38YNztWsB7bdukMLZpTfCc/WyCiBOy+I8tba/A==")
-    val chacha20poly1305_data_authenticated: ByteArray = base64Decode("tTvx8LSk38YNztWsB7bdukMLwgOvQbi4lP/B5ZnXjOkfkw==")
+    val chacha20poly1305_data_authenticated: ByteArray =
+        base64Decode("tTvx8LSk38YNztWsB7bdukMLwgOvQbi4lP/B5ZnXjOkfkw==")
     val aes256gcm_data: ByteArray = base64Decode("tTvx8LSk38YNztWsLHtmXVAFlB9RuTOhJvG0ZXN29xmTww==")
     val plainData: ByteArray = base64Decode("AQIDBAUG")
 
     val aes256gcm_file: File = File("../common-test-android/src/main/resources", "pixel_3xl_cam_encrypted_aes256gcm")
-    val chacha20poly1305_file: File = File("../common-test-android/src/main/resources", "pixel_3xl_cam_encrypted_chacha20poly1305")
+    val chacha20poly1305_file: File =
+        File("../common-test-android/src/main/resources", "pixel_3xl_cam_encrypted_chacha20poly1305")
     val plainFile: File = File("../common-test-android/src/main/resources", "pixel_3xl_cam.webp")
 }

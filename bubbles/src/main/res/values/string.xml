@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="ExtraTranslation">
+    <string name="bubbles_emptyContactCard_title">placeholder</string>
+    <string name="bubbles_emptyContactCard_description">placeholder</string>
+    <string name="bubbles_contact_manageButton">placeholder</string>
+    <string name="bubbles_contact_settingsButton">placeholder</string>
+    <string name="bubbles_contact_help">placeholder</string>
+</resources>

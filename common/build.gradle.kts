@@ -25,4 +25,5 @@ plugins {
 dependencies {
     implementation(AndroidX.paging.commonKtx)
     implementation(libs.hilt.core)
+    implementation(KotlinX.serialization.json)
 }

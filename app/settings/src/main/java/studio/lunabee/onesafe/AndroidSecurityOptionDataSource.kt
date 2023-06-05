@@ -39,7 +39,8 @@ class AndroidSecurityOptionDataSource @Inject constructor(
 ) : SecurityOptionDataSource {
     private val autoLockInactivityDelayKey = longPreferencesKey(SettingsConstants.AutoLockInactivityDelay)
     private val autoLockAppChangeDelayKey = longPreferencesKey(SettingsConstants.AutoLockAppChangeDelay)
-    private val clipboardClearDelaySecondsSettingKey = longPreferencesKey(SettingsConstants.ClipboardClearDelayMsSetting)
+    private val clipboardClearDelaySecondsSettingKey =
+        longPreferencesKey(SettingsConstants.ClipboardClearDelayMsSetting)
     private val verifyPasswordIntervalKey = stringPreferencesKey(SettingsConstants.VerifyPasswordIntervalKey)
     private val lastPasswordVerificationKey = longPreferencesKey(SettingsConstants.LastPasswordVerification)
 

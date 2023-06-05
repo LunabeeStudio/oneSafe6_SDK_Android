@@ -33,12 +33,13 @@ import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
 import studio.lunabee.onesafe.cryptography.utils.SafeDataMutableStateFlow
 import studio.lunabee.onesafe.cryptography.utils.dataStoreValueDelegate
 import studio.lunabee.onesafe.cryptography.utils.safeCryptoArrayDelete
+import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
-import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
+import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.randomize
@@ -59,6 +60,7 @@ class AndroidMainCryptoRepository @Inject constructor(
     private val hashEngine: HashEngine,
     private val biometricEngine: BiometricEngine,
     @DatastoreEngineProvider(DataStoreType.Plain) private val dataStoreEngine: DatastoreEngine,
+    private val featureFlags: FeatureFlags,
     private val itemKeyProvider: ItemKeyProvider,
 ) : MainCryptoRepository {
 
@@ -74,12 +76,21 @@ class AndroidMainCryptoRepository @Inject constructor(
     )
     private var searchIndexKey: ByteArray? by safeCryptoArrayDelete(searchIndexKeyFlow)
 
-    override fun isCryptoDataInMemory(): Flow<Boolean> = merge(
-        masterKeyFlow,
-        searchIndexKeyFlow,
-    ).map { masterKey ->
-        masterKey != null
-    }.distinctUntilChanged()
+    private val bubblesContactKeyFlow: SafeDataMutableStateFlow = SafeDataMutableStateFlow(
+        overrideCode = OSCryptoError.Code.BUBBLES_CONTACT_KEY_ALREADY_LOADED,
+        nullableCode = OSCryptoError.Code.BUBBLES_CONTACT_KEY_NOT_LOADED,
+    )
+    private var bubblesContactKey: ByteArray? by safeCryptoArrayDelete(bubblesContactKeyFlow)
+
+    override fun isCryptoDataInMemory(): Flow<Boolean> {
+        val flows = mutableListOf(masterKeyFlow, searchIndexKeyFlow)
+        if (featureFlags.bubbles()) {
+            flows += bubblesContactKeyFlow
+        }
+        return flows.merge().map { masterKey ->
+            masterKey != null
+        }.distinctUntilChanged()
+    }
 
     private var saltDataStore: ByteArray? by dataStoreValueDelegate(
         key = DATASTORE_MASTER_SALT,
@@ -99,6 +110,12 @@ class AndroidMainCryptoRepository @Inject constructor(
         errorCodeIfOverrideExistingValue = OSCryptoError.Code.SEARCH_INDEX_KEY_ALREADY_GENERATED,
     )
 
+    private var bubblesContactKeyDataStore: ByteArray? by dataStoreValueDelegate(
+        key = DATASTORE_BUBBLES_CONTACT_KEY,
+        datastoreEngine = dataStoreEngine,
+        errorCodeIfOverrideExistingValue = OSCryptoError.Code.BUBBLES_CONTACT_KEY_ALREADY_GENERATED,
+    )
+
     override fun hasMasterSalt(): Boolean = saltDataStore != null
 
     override fun getCurrentSalt(): ByteArray = saltDataStore!!
@@ -111,6 +128,9 @@ class AndroidMainCryptoRepository @Inject constructor(
     override fun unloadCryptographyKeys() {
         masterKey = null
         searchIndexKey = null
+        if (featureFlags.bubbles()) {
+            bubblesContactKey = null
+        }
         log.v("cryptographic keys unloaded")
     }
 
@@ -128,6 +148,9 @@ class AndroidMainCryptoRepository @Inject constructor(
             associatedData = null,
         )
         generateIndexKey()
+        if (featureFlags.bubbles()) {
+            generateBubblesContactKey()
+        }
     }
 
     override suspend fun overrideMasterKeyAndSalt(key: ByteArray, salt: ByteArray) {
@@ -141,23 +164,39 @@ class AndroidMainCryptoRepository @Inject constructor(
         )
         dataStoreEngine.editValue(value = masterKeyTestValue, key = DATASTORE_MASTER_KEY_TEST)
         reEncryptIndexKey()
+        if (featureFlags.bubbles()) {
+            reEncryptBubblesContactKey()
+        }
     }
 
     override suspend fun loadMasterKeyFromBiometric(cipher: Cipher) {
         masterKey = biometricEngine.retrieveKey(cipher)
         retrieveKeyForIndex()
+        if (featureFlags.bubbles()) {
+            retrieveKeyForBubblesContact()
+        }
         log.v("cryptographic keys loaded using biometric")
     }
 
     override suspend fun loadMasterKeyExternal(masterKey: ByteArray) {
         this.masterKey = masterKey.copyOf()
         retrieveKeyForIndex()
+        if (featureFlags.bubbles()) {
+            retrieveKeyForBubblesContact()
+        }
         log.v("cryptographic keys externally loaded")
     }
 
     private suspend fun generateIndexKey() {
         searchIndexKeyDataStore = itemKeyProvider().use { keyData ->
             searchIndexKey = keyData.copyOf()
+            crypto.encrypt(keyData, masterKey!!, null)
+        }
+    }
+
+    override suspend fun generateBubblesContactKey() {
+        bubblesContactKeyDataStore = itemKeyProvider().use { keyData ->
+            bubblesContactKey = keyData.copyOf()
             crypto.encrypt(keyData, masterKey!!, null)
         }
     }
@@ -169,6 +208,19 @@ class AndroidMainCryptoRepository @Inject constructor(
 
     private suspend fun retrieveKeyForIndex() {
         searchIndexKey = crypto.decrypt(searchIndexKeyDataStore!!, masterKey!!, null)
+    }
+
+    private suspend fun retrieveKeyForBubblesContact() {
+        if (bubblesContactKeyDataStore != null) {
+            bubblesContactKey = crypto.decrypt(bubblesContactKeyDataStore!!, masterKey!!, null)
+        } else {
+            generateBubblesContactKey()
+        }
+    }
+
+    private suspend fun reEncryptBubblesContactKey() {
+        val key = crypto.encrypt(bubblesContactKey!!, masterKey!!, null)
+        dataStoreEngine.editValue(value = key, key = DATASTORE_BUBBLES_CONTACT_KEY)
     }
 
     override fun getCipherForBiometricForVerify(): Cipher = biometricEngine.getCipherBiometricForDecrypt()
@@ -192,6 +244,9 @@ class AndroidMainCryptoRepository @Inject constructor(
             retrieveMasterKeyFromPassword(password)?.let {
                 masterKey = it
                 retrieveKeyForIndex()
+                if (featureFlags.bubbles()) {
+                    retrieveKeyForBubblesContact()
+                }
                 log.v("cryptographic keys loaded using password")
             }
         }
@@ -383,6 +438,13 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
+    override suspend fun encryptForBubblesContact(data: ByteArray): ByteArray =
+        crypto.encrypt(data, bubblesContactKey!!, null)
+
+    override suspend fun decryptForBubblesContact(data: ByteArray): String {
+        return crypto.decrypt(data, bubblesContactKey!!, null).decodeToString()
+    }
+
     private fun <Data : Any> mapToData(mapper: ((Data) -> ByteArray)?, data: Data) = when {
         mapper != null -> mapper(data)
         data is String -> data.encodeToByteArray()
@@ -400,6 +462,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         private const val DATASTORE_SEARCH_INDEX_KEY = "f0ab7671-5314-41dc-9f57-3c689180ab33"
         private const val DATASTORE_MASTER_SALT = "b282a019-4337-45a3-8bf6-da657ad39a6c"
         private const val DATASTORE_MASTER_KEY_TEST = "f9e3fa44-2f54-4246-8ba6-2784a18b63ea"
+        private const val DATASTORE_BUBBLES_CONTACT_KEY: String = "2b96478c-cbd4-4150-b591-6fe5a4dffc5f"
 
         private const val MASTER_KEY_TEST_VALUE = "44c5dac9-17ba-4690-9275-c7471b2e0582"
     }

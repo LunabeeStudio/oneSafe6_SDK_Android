@@ -130,7 +130,8 @@ class ExportEngineImpl @Inject constructor(
     ) {
         emit(LBFlowResult.Loading(progress = 1f)) // TODO add constants to indicate current step in process
         try {
-            val archiveMetadata = createArchiveMetadata(safeItemCount = itemCount, platformInfo = platformInfo, kind = archiveKind)
+            val archiveMetadata =
+                createArchiveMetadata(safeItemCount = itemCount, platformInfo = platformInfo, kind = archiveKind)
             val metadataDestFile = File(folderDestination, Constants.MetadataFile)
             archiveMetadata.writeAsFile(destFile = metadataDestFile)
         } catch (e: Exception) {
@@ -148,9 +149,12 @@ class ExportEngineImpl @Inject constructor(
     ) {
         emit(LBFlowResult.Loading(progress = 2f)) // TODO add constants to indicate current step in process
         try {
-            val safeItemKeysToExport: List<OSExportProto.ArchiveSafeItemKey> = createArchiveSafeItemKeys(safeItemsWithKeys.values.toList())
-            val safeItemFieldsToExport: List<OSExportProto.ArchiveSafeItemField> = createArchiveSafeItemFields(safeItemFields)
-            val safeItemsToExport: List<OSExportProto.ArchiveSafeItem> = createArchiveSafeItems(safeItemsWithKeys.keys.toList())
+            val safeItemKeysToExport: List<OSExportProto.ArchiveSafeItemKey> =
+                createArchiveSafeItemKeys(safeItemsWithKeys.values.toList())
+            val safeItemFieldsToExport: List<OSExportProto.ArchiveSafeItemField> =
+                createArchiveSafeItemFields(safeItemFields)
+            val safeItemsToExport: List<OSExportProto.ArchiveSafeItem> =
+                createArchiveSafeItems(safeItemsWithKeys.keys.toList())
             val archiveData: OSExportProto.Archive = archive {
                 salt = exportCacheDataSource.exportSalt!!.use(ByteArray::byteStringOrEmpty)
                 items.addAll(safeItemsToExport)

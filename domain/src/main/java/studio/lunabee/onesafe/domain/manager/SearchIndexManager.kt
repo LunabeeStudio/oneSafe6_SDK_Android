@@ -37,7 +37,8 @@ class SearchIndexManager @Inject constructor(
     private val indexWordEntryRepository: IndexWordEntryRepository,
     private val decryptIndexWordUseCase: DecryptIndexWordUseCase,
 ) {
-    private val _decryptedIndex: MutableStateFlow<LBFlowResult<List<PlainIndexWordEntry>>> = MutableStateFlow(LBFlowResult.Loading())
+    private val _decryptedIndex: MutableStateFlow<LBFlowResult<List<PlainIndexWordEntry>>> =
+        MutableStateFlow(LBFlowResult.Loading())
     val decryptedIndex: StateFlow<LBFlowResult<List<PlainIndexWordEntry>>> = _decryptedIndex.asStateFlow()
 
     private var storeIndexJob: Job? = null
