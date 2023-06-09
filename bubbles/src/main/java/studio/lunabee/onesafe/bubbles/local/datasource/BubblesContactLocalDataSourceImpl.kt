@@ -27,6 +27,8 @@ import studio.lunabee.onesafe.bubbles.repository.datasource.BubblesContactLocalD
 import javax.inject.Inject
 import com.lunabee.lbextensions.mapValues
 import studio.lunabee.onesafe.bubbles.domain.model.EncBubblesContactInfo
+import studio.lunabee.onesafe.bubbles.domain.model.EncBubblesKey
+import java.util.UUID
 
 class BubblesContactLocalDataSourceImpl @Inject constructor(
     private val dao: BubblesContactDao,
@@ -37,5 +39,11 @@ class BubblesContactLocalDataSourceImpl @Inject constructor(
     }
 
     override fun getAllContactsFlow(): Flow<List<EncBubblesContactInfo>> =
-        dao.getAll().mapValues { roomContact -> roomContact.toEncBubblesContactInfo() }
+        dao.getAllInFlow().mapValues { roomContact -> roomContact.toEncBubblesContactInfo() }
+
+    override suspend fun getEncKeysList(): List<EncBubblesKey> = dao.getAllEncKeys()
+
+    override suspend fun getContact(id: UUID): EncBubblesContactInfo? = dao.getById(id)?.toEncBubblesContactInfo()
+
+    override suspend fun getEncContactKey(id: UUID): ByteArray? = dao.getEncContactKey(id)
 }

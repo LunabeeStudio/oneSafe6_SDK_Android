@@ -40,6 +40,7 @@ import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
+import studio.lunabee.onesafe.domain.repository.SupportOSRepository
 import studio.lunabee.onesafe.domain.repository.UrlMetadataRepository
 import studio.lunabee.onesafe.repository.repository.AutoLockRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.ClipboardRepositoryImpl
@@ -52,6 +53,7 @@ import studio.lunabee.onesafe.repository.repository.SafeItemDeletedRepositoryImp
 import studio.lunabee.onesafe.repository.repository.SafeItemFieldRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.SafeItemKeyRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.SafeItemRepositoryImpl
+import studio.lunabee.onesafe.repository.repository.SupportOSRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.UrlMetadataRepositoryImpl
 import javax.inject.Singleton
 import kotlin.time.Duration
@@ -105,6 +107,10 @@ interface RepositoryTestModule {
     @Binds
     @Singleton
     fun bindsAutoLockRepository(autoLockRepositoryImpl: AutoLockRepositoryImpl): AutoLockRepository
+
+    @Binds
+    @Singleton
+    fun bindSupportOSRepository(supportOSRepository: SupportOSRepositoryImpl): SupportOSRepository
 }
 
 @Module

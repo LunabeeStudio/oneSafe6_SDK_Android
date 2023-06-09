@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
-import studio.lunabee.onesafe.bubbles.domain.model.BubblesUser
+import studio.lunabee.onesafe.bubbles.ui.model.BubblesUser
 import studio.lunabee.onesafe.bubbles.domain.usecase.StoreBubblesContactsListUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import java.io.IOException

@@ -23,7 +23,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.bubbles.domain.model.EncBubblesKey
 import studio.lunabee.onesafe.bubbles.local.model.RoomBubblesContact
+import java.util.UUID
 
 @Dao
 interface BubblesContactDao {
@@ -34,5 +36,14 @@ interface BubblesContactDao {
     suspend fun clearTable()
 
     @Query("SELECT * FROM BubblesContact")
-    fun getAll(): Flow<List<RoomBubblesContact>>
+    fun getAllInFlow(): Flow<List<RoomBubblesContact>>
+
+    @Query("SELECT * FROM BubblesContact WHERE id = :id")
+    suspend fun getById(id: UUID): RoomBubblesContact?
+
+    @Query("SELECT enc_key FROM BubblesContact WHERE id = :id")
+    suspend fun getEncContactKey(id: UUID): ByteArray?
+
+    @Query("SELECT id, enc_key as encKey FROM BubblesContact")
+    suspend fun getAllEncKeys(): List<EncBubblesKey>
 }

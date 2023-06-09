@@ -13,17 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 5/22/2023 - for the oneSafe6 SDK.
- * Last modified 5/22/23, 2:38 PM
+ * Created by Lunabee Studio / Date - 6/7/2023 - for the oneSafe6 SDK.
+ * Last modified 6/7/23, 9:55 AM
  */
 
-package studio.lunabee.onesafe.bubbles.domain.model
+package studio.lunabee.onesafe.domain.usecase.support
 
-import kotlinx.serialization.Serializable
+import studio.lunabee.onesafe.domain.repository.SupportOSRepository
+import java.time.Instant
+import javax.inject.Inject
 
-// TODO : Temporary class used to test the Bubbles feature with oneSafeK
-@Serializable
-data class BubblesUser(
-    val name: String,
-    val contacts: List<PlainBubblesContact>,
-)
+class HasDismissSupportUseCase @Inject constructor(
+    private val supportOSRepository: SupportOSRepository,
+) {
+    suspend operator fun invoke() {
+        supportOSRepository.setDismissInstant(Instant.now())
+        supportOSRepository.setRatingInstant(null)
+        supportOSRepository.resetAppVisit()
+    }
+}

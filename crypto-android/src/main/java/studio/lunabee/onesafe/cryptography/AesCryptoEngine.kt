@@ -161,7 +161,7 @@ class AesCryptoEngine @Inject constructor(
         return SelfDestroyCipherInputStream(inputStream, cipher, secretKey)
     }
 
-    private fun getCipherOutputStream(outputStream: OutputStream, key: ByteArray, associatedData: ByteArray?): OutputStream {
+    override fun getCipherOutputStream(outputStream: OutputStream, key: ByteArray, associatedData: ByteArray?): OutputStream {
         val secretKey = getSecretKeySpec(key)
         val cipher = getCipher()
         val iv = ivProvider(AES_GCM_IV_LENGTH)

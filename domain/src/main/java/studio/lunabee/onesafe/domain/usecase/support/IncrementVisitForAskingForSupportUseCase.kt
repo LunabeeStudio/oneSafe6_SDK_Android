@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2023 Lunabee Studio
+ * Copyright (c) 2023 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:45 AM
+ * Created by Lunabee Studio / Date - 6/7/2023 - for the oneSafe6 SDK.
+ * Last modified 6/7/23, 9:58 AM
  */
 
-plugins {
-    `android-library`
-}
+package studio.lunabee.onesafe.domain.usecase.support
 
-android {
-    namespace = "studio.lunabee.onesafe.settings"
+import studio.lunabee.onesafe.domain.repository.SupportOSRepository
+import javax.inject.Inject
 
-    compileOptions {
-        isCoreLibraryDesugaringEnabled = true
+class IncrementVisitForAskingForSupportUseCase @Inject constructor(
+    private val supportOSRepository: SupportOSRepository,
+) {
+    suspend operator fun invoke() {
+        supportOSRepository.incrementAppVisit()
     }
-}
-
-dependencies {
-    implementation(AndroidX.dataStore.preferences)
-
-    implementation(project(":domain"))
-    implementation(project(":repository"))
-    coreLibraryDesugaring(Android.tools.desugarJdkLibs)
 }

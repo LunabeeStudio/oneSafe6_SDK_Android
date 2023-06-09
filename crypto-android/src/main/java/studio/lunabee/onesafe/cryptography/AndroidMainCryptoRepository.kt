@@ -45,6 +45,7 @@ import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.randomize
 import studio.lunabee.onesafe.use
 import java.io.File
+import java.io.OutputStream
 import java.security.GeneralSecurityException
 import java.util.UUID
 import javax.crypto.Cipher
@@ -400,6 +401,10 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
+    override suspend fun encrypt(outputStream: OutputStream, key: ByteArray): OutputStream {
+        return crypto.getCipherOutputStream(outputStream, key, null)
+    }
+
     override suspend fun encryptIndexWord(indexWordEntry: List<PlainIndexWordEntry>): List<IndexWordEntry> {
         return indexWordEntry.map {
             IndexWordEntry(
@@ -438,11 +443,37 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    override suspend fun encryptForBubblesContact(data: ByteArray): ByteArray =
+    override suspend fun encryptForBubblesContact(data: ByteArray): ByteArray = try {
         crypto.encrypt(data, bubblesContactKey!!, null)
+    } catch (e: GeneralSecurityException) {
+        throw OSCryptoError(OSCryptoError.Code.BUBBLES_ENCRYPTION_FAILED_BAD_KEY, cause = e)
+    }
 
-    override suspend fun decryptForBubblesContact(data: ByteArray): String {
-        return crypto.decrypt(data, bubblesContactKey!!, null).decodeToString()
+    override suspend fun decryptForBubblesContact(data: ByteArray): ByteArray = try {
+        crypto.decrypt(data, bubblesContactKey!!, null)
+    } catch (e: GeneralSecurityException) {
+        throw OSCryptoError(OSCryptoError.Code.BUBBLES_DECRYPTION_FAILED_WRONG_KEY, cause = e)
+    }
+
+    override suspend fun encryptWithBubbleContactKey(data: ByteArray, encContactKey: ByteArray): ByteArray = try {
+        val contactKey = crypto.decrypt(encContactKey, bubblesContactKey!!, null)
+        crypto.encrypt(data, contactKey, null)
+    } catch (e: GeneralSecurityException) {
+        throw OSCryptoError(OSCryptoError.Code.BUBBLES_ENCRYPTION_FAILED_BAD_CONTACT_KEY, cause = e)
+    }
+
+    override suspend fun encryptWithBubbleContactKey(outputStream: OutputStream, encContactKey: ByteArray): OutputStream = try {
+        val contactKey = crypto.decrypt(encContactKey, bubblesContactKey!!, null)
+        crypto.getCipherOutputStream(outputStream, contactKey, null)
+    } catch (e: GeneralSecurityException) {
+        throw OSCryptoError(OSCryptoError.Code.BUBBLES_ENCRYPTION_FAILED_BAD_CONTACT_KEY, cause = e)
+    }
+
+    override suspend fun decryptWithBubbleContactKey(data: ByteArray, encContactKey: ByteArray): ByteArray = try {
+        val contactKey = crypto.decrypt(encContactKey, bubblesContactKey!!, null)
+        crypto.decrypt(data, contactKey, null)
+    } catch (e: GeneralSecurityException) {
+        throw OSCryptoError(OSCryptoError.Code.BUBBLES_DECRYPTION_FAILED_WRONG_CONTACT_KEY, cause = e)
     }
 
     private fun <Data : Any> mapToData(mapper: ((Data) -> ByteArray)?, data: Data) = when {

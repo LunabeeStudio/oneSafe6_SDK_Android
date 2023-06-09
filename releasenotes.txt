@@ -1,11 +1,13 @@
 NEW in testing (last 24h)
-• (Android) Bug - Autolock en changeant d’app ne fonctionne pas Prod only
+• (Android) Lien discord
+• (Android) Noter l’app
 
 ALL in testing
-• (Android) Bug - Autolock en changeant d’app ne fonctionne pas Prod only
+• (Android) Lien discord
+• (Android) Noter l’app
+• (Android) Manque un titre au onboarding
+• (Android) Section favoris apparait vide a chaque navigation
+• (Android)(osK) Ecran de messagerie
 
 ALL tested
-• (Android)(oSK) Ecran de contacts
-• (Android) BUG - autolock sur mot de passe fullscreen : écran vide
-• (Android)(oSK) Mocker contacts de Bubbles
-• (Android)(oneSafe K) Valider l’accessibilité en Android 7 et 8
+• (Android) Bug - Autolock en changeant d’app ne fonctionne pas Prod only

@@ -69,6 +69,10 @@ class ChachaPolyTinkCryptoEngine @Inject constructor(
         throw NotImplementedError("Use JCE implementation instead")
     }
 
+    override fun getCipherOutputStream(outputStream: OutputStream, key: ByteArray, associatedData: ByteArray?): OutputStream {
+        return outputStream
+    }
+
     companion object {
         private const val NONCE_LENGTH = 12
     }

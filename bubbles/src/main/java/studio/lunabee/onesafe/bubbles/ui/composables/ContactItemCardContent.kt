@@ -21,7 +21,7 @@ package studio.lunabee.onesafe.bubbles.ui.composables
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
-import studio.lunabee.onesafe.bubbles.domain.model.BubblesContactInfo
+import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
 import studio.lunabee.onesafe.commonui.EmojiNameProvider
 import studio.lunabee.onesafe.model.OSItemIllustration
 import studio.lunabee.onesafe.model.OSLazyCardContent

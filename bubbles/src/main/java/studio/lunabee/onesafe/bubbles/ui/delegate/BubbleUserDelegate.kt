@@ -20,7 +20,7 @@
 package studio.lunabee.onesafe.bubbles.ui.delegate
 
 import kotlinx.coroutines.flow.StateFlow
-import studio.lunabee.onesafe.bubbles.domain.model.BubblesUser
+import studio.lunabee.onesafe.bubbles.ui.model.BubblesUser
 
 // TODO : Temporary class used to test the Bubbles feature with oneSafeK
 interface BubbleUserDelegate {
