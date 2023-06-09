@@ -12,6 +12,9 @@ complexity:
     active: false
   LargeClass:
     threshold: 1000
+  CyclomaticComplexMethod:
+    ignoreSingleWhenExpression: true
+    ignoreSimpleWhenEntries: true
 
 empty-blocks:
   EmptyFunctionBlock:

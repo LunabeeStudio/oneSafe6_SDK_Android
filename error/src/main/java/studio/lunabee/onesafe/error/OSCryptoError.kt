@@ -60,5 +60,9 @@ data class OSCryptoError(
         BUBBLES_CONTACT_KEY_ALREADY_GENERATED("A Bubble contact key have already been generated"),
         BUBBLES_CONTACT_KEY_NOT_LOADED("Bubble contact key not loaded in memory"),
         BUBBLES_CONTACT_KEY_ALREADY_LOADED("Bubble contact key already loaded in memory"),
+        BUBBLES_ENCRYPTION_FAILED_BAD_KEY("Unable to encrypt with the provided key"),
+        BUBBLES_DECRYPTION_FAILED_WRONG_KEY("Unable to decrypt with the provided key"),
+        BUBBLES_ENCRYPTION_FAILED_BAD_CONTACT_KEY("Unable to encrypt with the provided key"),
+        BUBBLES_DECRYPTION_FAILED_WRONG_CONTACT_KEY("Unable to decrypt with the provided key"),
     }
 }

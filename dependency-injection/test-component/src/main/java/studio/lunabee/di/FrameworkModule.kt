@@ -27,7 +27,7 @@ import studio.lunabee.onesafe.domain.common.FeatureFlags
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal object FrameworkModule {
+object FrameworkModule {
     @Provides
     fun provideFeatureFlags(): FeatureFlags = object : FeatureFlags {
         override fun florisBoard(): Boolean = false

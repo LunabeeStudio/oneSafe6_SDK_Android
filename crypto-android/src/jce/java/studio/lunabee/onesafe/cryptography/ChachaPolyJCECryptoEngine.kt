@@ -174,7 +174,7 @@ class ChachaPolyJCECryptoEngine @Inject constructor(
         return SelfDestroyCipherInputStream(inputStream, cipher, secretKey)
     }
 
-    private fun getCipherOutputStream(outputStream: OutputStream, key: ByteArray, associatedData: ByteArray?): OutputStream {
+    override fun getCipherOutputStream(outputStream: OutputStream, key: ByteArray, associatedData: ByteArray?): OutputStream {
         val secretKey = getSecretKeySpec(key)
         val cipher = getCipher()
         val nonce = ivProvider(NONCE_LENGTH)

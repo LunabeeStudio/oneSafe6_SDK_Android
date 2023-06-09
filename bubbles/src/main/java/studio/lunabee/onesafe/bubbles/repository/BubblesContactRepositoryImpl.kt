@@ -23,11 +23,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.invoke
 import studio.lunabee.onesafe.bubbles.domain.model.BubblesContact
 import studio.lunabee.onesafe.bubbles.domain.model.EncBubblesContactInfo
+import studio.lunabee.onesafe.bubbles.domain.model.EncBubblesKey
 import studio.lunabee.onesafe.bubbles.domain.model.PlainBubblesContact
 import studio.lunabee.onesafe.bubbles.domain.repository.BubblesContactRepository
 import studio.lunabee.onesafe.bubbles.repository.datasource.BubblesContactLocalDataSource
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import java.time.Instant
+import java.util.UUID
 import javax.inject.Inject
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -52,4 +54,10 @@ class BubblesContactRepositoryImpl @Inject constructor(
 
     override fun getAllContactsFlow(): Flow<List<EncBubblesContactInfo>> =
         localDataSource.getAllContactsFlow()
+
+    override suspend fun getEncKeysList(): List<EncBubblesKey> = localDataSource.getEncKeysList()
+
+    override suspend fun getContact(id: UUID): EncBubblesContactInfo? = localDataSource.getContact(id)
+
+    override suspend fun getEncContactKey(id: UUID): ByteArray? = localDataSource.getEncContactKey(id)
 }

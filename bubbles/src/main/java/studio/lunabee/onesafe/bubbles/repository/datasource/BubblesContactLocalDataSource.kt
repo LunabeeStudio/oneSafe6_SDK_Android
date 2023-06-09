@@ -22,8 +22,13 @@ package studio.lunabee.onesafe.bubbles.repository.datasource
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.bubbles.domain.model.BubblesContact
 import studio.lunabee.onesafe.bubbles.domain.model.EncBubblesContactInfo
+import studio.lunabee.onesafe.bubbles.domain.model.EncBubblesKey
+import java.util.UUID
 
 interface BubblesContactLocalDataSource {
     suspend fun storeContactsList(contacts: List<BubblesContact>)
     fun getAllContactsFlow(): Flow<List<EncBubblesContactInfo>>
+    suspend fun getEncKeysList(): List<EncBubblesKey>
+    suspend fun getContact(id: UUID): EncBubblesContactInfo?
+    suspend fun getEncContactKey(id: UUID): ByteArray?
 }

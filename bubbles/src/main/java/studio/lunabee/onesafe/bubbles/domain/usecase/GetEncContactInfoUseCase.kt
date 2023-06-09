@@ -13,24 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 5/24/2023 - for the oneSafe6 SDK.
- * Last modified 5/24/23, 11:16 AM
+ * Created by Lunabee Studio / Date - 5/29/2023 - for the oneSafe6 SDK.
+ * Last modified 5/29/23, 8:13 AM
  */
 
 package studio.lunabee.onesafe.bubbles.domain.usecase
 
-import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
+import studio.lunabee.onesafe.bubbles.domain.model.EncBubblesContactInfo
+import studio.lunabee.onesafe.bubbles.domain.repository.BubblesContactRepository
+import java.util.UUID
 import javax.inject.Inject
-import com.lunabee.lbcore.model.LBResult
-import studio.lunabee.onesafe.error.OSError
 
-class DecryptForContactUseCase @Inject constructor(
-    private val cryptoRepository: MainCryptoRepository,
+class GetEncContactInfoUseCase @Inject constructor(
+    private val bubblesContactRepository: BubblesContactRepository,
 ) {
-    suspend operator fun invoke(data: ByteArray?): LBResult<String?> =
-        OSError.runCatching {
-            data?.let {
-                cryptoRepository.decryptForBubblesContact(data).decodeToString()
-            }
-        }
+    suspend operator fun invoke(id: UUID): EncBubblesContactInfo? = bubblesContactRepository.getContact(id)
 }

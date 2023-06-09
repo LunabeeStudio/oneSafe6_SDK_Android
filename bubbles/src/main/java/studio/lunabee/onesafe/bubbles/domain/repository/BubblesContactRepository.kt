@@ -22,10 +22,15 @@ package studio.lunabee.onesafe.bubbles.domain.repository
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.bubbles.domain.model.BubblesContact
 import studio.lunabee.onesafe.bubbles.domain.model.EncBubblesContactInfo
+import studio.lunabee.onesafe.bubbles.domain.model.EncBubblesKey
 import studio.lunabee.onesafe.bubbles.domain.model.PlainBubblesContact
+import java.util.UUID
 
 interface BubblesContactRepository {
     suspend fun storeContactsList(contacts: List<BubblesContact>)
     suspend fun encryptPlainContact(contact: PlainBubblesContact): BubblesContact
     fun getAllContactsFlow(): Flow<List<EncBubblesContactInfo>>
+    suspend fun getEncKeysList(): List<EncBubblesKey>
+    suspend fun getContact(id: UUID): EncBubblesContactInfo?
+    suspend fun getEncContactKey(id: UUID): ByteArray?
 }

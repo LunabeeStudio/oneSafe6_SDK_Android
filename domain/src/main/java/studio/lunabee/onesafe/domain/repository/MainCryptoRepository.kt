@@ -26,6 +26,7 @@ import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import java.io.File
+import java.io.OutputStream
 import java.util.UUID
 import javax.crypto.Cipher
 import kotlin.reflect.KClass
@@ -36,6 +37,7 @@ interface MainCryptoRepository {
     suspend fun <Data : Any> decrypt(file: File, key: SafeItemKey, clazz: KClass<Data>, mapper: (ByteArray.() -> Data)? = null): Data
     suspend fun <Data : Any> encrypt(key: SafeItemKey, encryptEntry: EncryptEntry<Data>): ByteArray
     suspend fun <Data : Any> encrypt(key: SafeItemKey, encryptEntries: List<EncryptEntry<Data>?>): List<ByteArray?>
+    suspend fun encrypt(outputStream: OutputStream, key: ByteArray): OutputStream
     suspend fun encryptIndexWord(indexWordEntry: List<PlainIndexWordEntry>): List<IndexWordEntry>
     suspend fun decryptIndexWord(encIndexWordEntry: List<IndexWordEntry>): List<PlainIndexWordEntry>
     suspend fun generateKeyForItemId(itemId: UUID): SafeItemKey
@@ -70,5 +72,8 @@ interface MainCryptoRepository {
     suspend fun encryptRecentSearch(plainRecentSearch: List<String>): List<ByteArray>
     suspend fun encryptForBubblesContact(data: ByteArray): ByteArray
     suspend fun generateBubblesContactKey()
-    suspend fun decryptForBubblesContact(data: ByteArray): String
+    suspend fun decryptForBubblesContact(data: ByteArray): ByteArray
+    suspend fun encryptWithBubbleContactKey(data: ByteArray, encContactKey: ByteArray): ByteArray
+    suspend fun encryptWithBubbleContactKey(outputStream: OutputStream, encContactKey: ByteArray): OutputStream
+    suspend fun decryptWithBubbleContactKey(data: ByteArray, encContactKey: ByteArray): ByteArray
 }

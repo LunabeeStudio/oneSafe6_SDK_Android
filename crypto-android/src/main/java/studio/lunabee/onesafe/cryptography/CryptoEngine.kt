@@ -28,4 +28,5 @@ interface CryptoEngine {
     suspend fun decrypt(cipherData: ByteArray, key: ByteArray, associatedData: ByteArray?): ByteArray
     suspend fun decrypt(cipherFile: AtomicFile, key: ByteArray, associatedData: ByteArray?): ByteArray
     fun getEncryptStream(file: File, key: ByteArray, associatedData: ByteArray?): OutputStream
+    fun getCipherOutputStream(outputStream: OutputStream, key: ByteArray, associatedData: ByteArray?): OutputStream
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2023-2023 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 5/24/2023 - for the oneSafe6 SDK.
- * Last modified 5/24/23, 10:42 AM
+ * Created by Lunabee Studio / Date - 6/7/2023 - for the oneSafe6 SDK.
+ * Last modified 6/7/23, 4:41 PM
  */
 
-package studio.lunabee.onesafe.bubbles.domain.model
+package studio.lunabee.onesafe.bubbles.ui.model
 
 import studio.lunabee.onesafe.commonui.OSNameProvider
 import java.util.UUID

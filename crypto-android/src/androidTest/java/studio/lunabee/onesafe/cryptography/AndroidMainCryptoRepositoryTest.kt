@@ -340,7 +340,7 @@ class AndroidMainCryptoRepositoryTest {
         val plainData = "contactName"
         val encryptedData = this@AndroidMainCryptoRepositoryTest.repository.encryptForBubblesContact(plainData.encodeToByteArray())
         val decryptedData = this@AndroidMainCryptoRepositoryTest.repository.decryptForBubblesContact(encryptedData)
-        assertEquals(plainData, decryptedData)
+        assertEquals(plainData, decryptedData.decodeToString())
     }
 
     private suspend fun loadMasterKey(repository: AndroidMainCryptoRepository = this.repository) {

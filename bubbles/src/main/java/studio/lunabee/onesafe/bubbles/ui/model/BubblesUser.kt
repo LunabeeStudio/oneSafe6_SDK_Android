@@ -13,26 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:45 AM
+ * Created by Lunabee Studio / Date - 6/7/2023 - for the oneSafe6 SDK.
+ * Last modified 6/7/23, 4:41 PM
  */
 
-plugins {
-    `android-library`
-}
+package studio.lunabee.onesafe.bubbles.ui.model
 
-android {
-    namespace = "studio.lunabee.onesafe.settings"
+import kotlinx.serialization.Serializable
+import studio.lunabee.onesafe.bubbles.domain.model.PlainBubblesContact
 
-    compileOptions {
-        isCoreLibraryDesugaringEnabled = true
-    }
-}
-
-dependencies {
-    implementation(AndroidX.dataStore.preferences)
-
-    implementation(project(":domain"))
-    implementation(project(":repository"))
-    coreLibraryDesugaring(Android.tools.desugarJdkLibs)
-}
+// TODO : Temporary class used to test the Bubbles feature with oneSafeK
+@Serializable
+data class BubblesUser(
+    val name: String,
+    val contacts: List<PlainBubblesContact>,
+)
