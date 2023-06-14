@@ -33,6 +33,7 @@ import java.util.UUID
 class BubblesContactLocalDataSourceImpl @Inject constructor(
     private val dao: BubblesContactDao,
 ) : BubblesContactLocalDataSource {
+
     override suspend fun storeContactsList(contacts: List<BubblesContact>) {
         dao.clearTable()
         dao.insert(contacts.map { contact -> RoomBubblesContact.fromBubblesContact(contact) })

@@ -29,6 +29,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityRetainedScoped
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import studio.lunabee.onesafe.cryptography.AndroidEditCryptoRepository
@@ -55,6 +56,7 @@ import studio.lunabee.onesafe.domain.repository.EditCryptoRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.MigrationCryptoRepository
 import studio.lunabee.onesafe.importexport.ImportExportCryptoRepository
+import javax.inject.Singleton
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
@@ -66,24 +68,7 @@ abstract class CryptoModule {
 
     @Binds
     @ActivityRetainedScoped
-    internal abstract fun bindImportExportCryptoRepository(androidImportExportCryptoRepository: AndroidImportExportCryptoRepository):
-        ImportExportCryptoRepository
-
-    @Binds
-    @ActivityRetainedScoped
-    internal abstract fun bindIVProvider(ivProvider: SecureIVProvider): IVProvider
-
-    @Binds
-    @ActivityRetainedScoped
-    internal abstract fun bindHashEngine(hashEngine: PBKDF2JceHashEngine): HashEngine
-
-    @Binds
-    @ActivityRetainedScoped
-    internal abstract fun rsaCryptoEngine(rsaCryptoEngine: JceRsaCryptoEngine): RsaCryptoEngine
-
-    @Binds
-    @ActivityRetainedScoped
-    internal abstract fun bindOnboardingCryptoRepository(
+    internal abstract fun bindEditCryptoRepository(
         androidEditCryptoRepository: AndroidEditCryptoRepository,
     ): EditCryptoRepository
 }
@@ -99,7 +84,7 @@ abstract class CryptoMigrationModule {
 }
 
 @Module
-@InstallIn(ActivityRetainedComponent::class)
+@InstallIn(SingletonComponent::class)
 object CryptoDispatcherModule {
 
     @CryptoDispatcher
@@ -135,9 +120,27 @@ abstract class DatastoreEngineModule {
 }
 
 @Module
-@InstallIn(ActivityRetainedComponent::class)
+@InstallIn(SingletonComponent::class)
 object CryptoConstantsModule {
     @Provides
     @PBKDF2Iterations
     fun providePBKDF2Iterations(): Int = CryptoConstants.PBKDF2Iterations
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class GlobalCryptoModule {
+    @Binds
+    @Singleton
+    internal abstract fun bindImportExportCryptoRepository(androidImportExportCryptoRepository: AndroidImportExportCryptoRepository):
+        ImportExportCryptoRepository
+
+    @Binds
+    internal abstract fun bindIVProvider(ivProvider: SecureIVProvider): IVProvider
+
+    @Binds
+    internal abstract fun bindHashEngine(hashEngine: PBKDF2JceHashEngine): HashEngine
+
+    @Binds
+    internal abstract fun rsaCryptoEngine(rsaCryptoEngine: JceRsaCryptoEngine): RsaCryptoEngine
 }

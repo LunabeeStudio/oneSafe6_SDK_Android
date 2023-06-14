@@ -19,45 +19,12 @@
 
 package studio.lunabee.di
 
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
-import studio.lunabee.onesafe.domain.engine.ExportEngine
-import studio.lunabee.onesafe.domain.engine.ImportEngine
 import studio.lunabee.onesafe.domain.qualifier.DateFormatterType
-import studio.lunabee.onesafe.importexport.ExportCacheDataSource
-import studio.lunabee.onesafe.importexport.ExportCacheDataSourceImpl
-import studio.lunabee.onesafe.importexport.ExportEngineImpl
-import studio.lunabee.onesafe.importexport.ImportCacheDataSource
-import studio.lunabee.onesafe.importexport.ImportCacheDataSourceImpl
-import studio.lunabee.onesafe.importexport.ImportEngineImpl
 import java.time.format.DateTimeFormatter
-import javax.inject.Singleton
-
-@Module
-@TestInstallIn(
-    components = [SingletonComponent::class],
-    replaces = [ImportExportModule::class],
-)
-interface ImportExportTestModule {
-    @Binds
-    @Singleton
-    fun bindImportEngine(importEngineImpl: ImportEngineImpl): ImportEngine
-
-    @Binds
-    @Singleton
-    fun bindExportEngine(exportEngineImpl: ExportEngineImpl): ExportEngine
-
-    @Binds
-    @Singleton
-    fun bindImportCacheDataSource(importCacheDataSourceImpl: ImportCacheDataSourceImpl): ImportCacheDataSource
-
-    @Binds
-    @Singleton
-    fun bindExportCacheDataSource(exportCacheDataSourceImpl: ExportCacheDataSourceImpl): ExportCacheDataSource
-}
 
 @Module
 @TestInstallIn(

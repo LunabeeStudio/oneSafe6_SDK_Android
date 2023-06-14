@@ -61,26 +61,6 @@ interface RepositoryModule {
 
     @Binds
     @ActivityRetainedScoped
-    fun bindSafeItemRepository(safeItemRepository: SafeItemRepositoryImpl): SafeItemRepository
-
-    @Binds
-    @ActivityRetainedScoped
-    fun bindSafeItemDeletedRepository(safeItemDeletedRepository: SafeItemDeletedRepositoryImpl): SafeItemDeletedRepository
-
-    @Binds
-    @ActivityRetainedScoped
-    fun bindSafeItemKeyRepository(safeItemKeyRepository: SafeItemKeyRepositoryImpl): SafeItemKeyRepository
-
-    @Binds
-    @ActivityRetainedScoped
-    fun bindSafeItemFieldRepository(safeItemFieldRepository: SafeItemFieldRepositoryImpl): SafeItemFieldRepository
-
-    @Binds
-    @ActivityRetainedScoped
-    fun bindIconRepository(iconRepository: IconRepositoryImpl): IconRepository
-
-    @Binds
-    @ActivityRetainedScoped
     fun bindUrlMetadataRepository(urlMetadataRepository: UrlMetadataRepositoryImpl): UrlMetadataRepository
 
     @Binds
@@ -116,6 +96,26 @@ interface RepositoryGlobalModule {
     @Binds
     @Singleton
     fun bindAutoLockRepository(autoLockRepositoryImpl: AutoLockRepositoryImpl): AutoLockRepository
+
+    @Binds
+    @Singleton
+    fun bindSafeItemRepository(safeItemRepository: SafeItemRepositoryImpl): SafeItemRepository
+
+    @Binds
+    @Singleton
+    fun bindSafeItemDeletedRepository(safeItemDeletedRepository: SafeItemDeletedRepositoryImpl): SafeItemDeletedRepository
+
+    @Binds
+    @Singleton
+    fun bindSafeItemKeyRepository(safeItemKeyRepository: SafeItemKeyRepositoryImpl): SafeItemKeyRepository
+
+    @Binds
+    @Singleton
+    fun bindSafeItemFieldRepository(safeItemFieldRepository: SafeItemFieldRepositoryImpl): SafeItemFieldRepository
+
+    @Binds
+    @Singleton
+    fun bindIconRepository(iconRepository: IconRepositoryImpl): IconRepository
 
     @Binds
     @Singleton

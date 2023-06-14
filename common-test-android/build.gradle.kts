@@ -32,7 +32,7 @@ android {
     }
 
     sourceSets["main"].resources {
-        srcDir("${rootDir.path}/oneSafe6_common/test")
+        srcDir("${rootDir.path}/oneSafe6_common/archive/test")
     }
 
     packaging {
@@ -50,6 +50,8 @@ dependencies {
     implementation(AndroidX.compose.ui.testJunit4)
     implementation(AndroidX.test.coreKtx)
     implementation(JakeWharton.timber)
+    implementation(AndroidX.Work.testing)
+    api(AndroidX.Hilt.work)
 
     implementation(libs.lunabee.bom)
     implementation(libs.lbcore)

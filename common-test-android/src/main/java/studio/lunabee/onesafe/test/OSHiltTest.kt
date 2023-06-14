@@ -19,6 +19,12 @@
 
 package studio.lunabee.onesafe.test
 
+import android.util.Log
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.work.Configuration
+import androidx.work.testing.SynchronousExecutor
+import androidx.work.testing.WorkManagerTestInitHelper
 import dagger.hilt.android.testing.HiltAndroidRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -72,6 +78,8 @@ abstract class OSHiltTest : OSTest() {
 
     @Inject lateinit var localSignInUseCase: LocalSignInUseCase
 
+    @Inject lateinit var workerFactory: HiltWorkerFactory
+
     /**
      * See [InitialTestState] for more details.
      * Additional action linked to [InitialTestState] are executed before each test. See [initialTestState]
@@ -83,10 +91,21 @@ abstract class OSHiltTest : OSTest() {
     @Before
     fun injectAndInit() {
         hiltRule.inject()
+        initializeWorkManager()
         // Use runBlocking to make sure the test cannot start before/while initialize
         runBlocking {
             initialize()
         }
+    }
+
+    private fun initializeWorkManager() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val config = Configuration.Builder()
+            .setMinimumLoggingLevel(Log.DEBUG)
+            .setExecutor(SynchronousExecutor())
+            .setWorkerFactory(workerFactory)
+            .build()
+        WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
     }
 
     /**

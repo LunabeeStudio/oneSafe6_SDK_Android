@@ -23,6 +23,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import studio.lunabee.onesafe.domain.common.IconIdProvider
@@ -38,6 +39,15 @@ import studio.lunabee.onesafe.domain.utils.SafeItemBuilderImpl
 @InstallIn(ActivityRetainedComponent::class)
 object DomainModule {
     @Provides
+    fun provideSafeItemBuilder(cryptoRepository: MainCryptoRepository, setIconUseCase: SetIconUseCase): SafeItemBuilder =
+        SafeItemBuilderImpl(cryptoRepository = cryptoRepository, setIconUseCase = setIconUseCase)
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object GlobalDomainModule {
+
+    @Provides
     fun provideItemIdProvider(): ItemIdProvider = UuidProvider()
 
     @Provides
@@ -46,8 +56,4 @@ object DomainModule {
     @Provides
     @FileDispatcher
     fun providesFileDispatcher(): CoroutineDispatcher = Dispatchers.IO
-
-    @Provides
-    fun provideSafeItemBuilder(cryptoRepository: MainCryptoRepository, setIconUseCase: SetIconUseCase): SafeItemBuilder =
-        SafeItemBuilderImpl(cryptoRepository = cryptoRepository, setIconUseCase = setIconUseCase)
 }

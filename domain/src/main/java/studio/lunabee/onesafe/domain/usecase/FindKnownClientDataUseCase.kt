@@ -13,14 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:24 AM
+ * Created by Lunabee Studio / Date - 6/12/2023 - for the oneSafe6 SDK.
+ * Last modified 6/12/23, 4:49 PM
  */
 
-package studio.lunabee.onesafe.importexport
+package studio.lunabee.onesafe.domain.usecase
 
-object Constants {
-    const val MetadataFile: String = "metadata"
-    const val DataFile: String = "data"
-    const val IconFolder: String = "icons"
+import studio.lunabee.onesafe.domain.model.client.AfClientData
+import javax.inject.Inject
+
+class FindKnownClientDataUseCase @Inject constructor() {
+
+    operator fun invoke(
+        clientPackage: String?,
+        clientDomain: String?,
+        knownApps: List<AfClientData>,
+    ): AfClientData? {
+        return knownApps.firstOrNull { it.appPackage == clientPackage || it.domains.contains(clientDomain) }
+    }
 }

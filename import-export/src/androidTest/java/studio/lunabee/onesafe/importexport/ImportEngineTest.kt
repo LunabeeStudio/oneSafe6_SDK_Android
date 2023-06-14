@@ -245,7 +245,7 @@ class ImportEngineTest : OSHiltTest() {
                 context = context,
                 deviceDestinationFile = testFolder,
             )
-            File(testFolder, Constants.DataFile).delete()
+            File(testFolder, ArchiveConstants.DataFile).delete()
             importEngine.getMetadata(testFolder)
 
             val authResult = importEngine.authenticateAndExtractData(
@@ -267,7 +267,7 @@ class ImportEngineTest : OSHiltTest() {
                 context = context,
                 deviceDestinationFile = testFolder,
             )
-            File(testFolder, Constants.MetadataFile).delete()
+            File(testFolder, ArchiveConstants.MetadataFile).delete()
             val error = assertThrows<OSImportExportError> {
                 importEngine.getMetadata(testFolder)
             }

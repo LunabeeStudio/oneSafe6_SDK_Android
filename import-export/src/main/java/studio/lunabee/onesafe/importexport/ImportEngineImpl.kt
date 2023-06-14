@@ -55,7 +55,6 @@ import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.error.OSImportExportError
 import studio.lunabee.onesafe.proto.OSExportProto
-import studio.lunabee.onesafe.proto.OSExportProto.Archive
 import studio.lunabee.onesafe.proto.OSExportProto.ArchiveSafeItem
 import studio.lunabee.onesafe.proto.OSExportProto.ArchiveSafeItemField
 import studio.lunabee.onesafe.use
@@ -86,7 +85,7 @@ class ImportEngineImpl @Inject constructor(
         // TODO Until we found a better solution, clear all cache if an new import is started.
         importCacheDataSource.clearAll()
         return withContext(fileDispatcher) {
-            val metadataFile = File(archiveExtractedDirectory, Constants.MetadataFile)
+            val metadataFile = File(archiveExtractedDirectory, ArchiveConstants.MetadataFile)
             if (metadataFile.exists()) {
                 metadataFile.inputStream().use {
                     val protoMetadata = OSExportProto.ArchiveMetadata.parseFrom(it)
@@ -122,7 +121,7 @@ class ImportEngineImpl @Inject constructor(
     ): Flow<LBFlowResult<Unit>> {
         return flow {
             try {
-                val dataFile = File(archiveExtractedDirectory, Constants.DataFile)
+                val dataFile = File(archiveExtractedDirectory, ArchiveConstants.DataFile)
                 if (!dataFile.exists()) {
                     LOG.e("Data file does not exist in the archive build from ${importCacheDataSource.importMetadata?.fromPlatform}")
                     emit(LBFlowResult.Failure(OSImportExportError(code = OSImportExportError.Code.DATA_FILE_NOT_FOUND)))
@@ -130,7 +129,7 @@ class ImportEngineImpl @Inject constructor(
                 }
 
                 val archiveContent = dataFile.inputStream().use {
-                    Archive.parseFrom(it)
+                    OSExportProto.Archive.parseFrom(it)
                 }
                 importCacheDataSource.archiveContent = archiveContent
                 importCacheDataSource.archiveMasterKey = password.use {
@@ -354,7 +353,9 @@ class ImportEngineImpl @Inject constructor(
 
         val safeItemsToImport = mapSafeItemsFromArchive(archiveSafeItems = archiveContent.itemsList)
         val safeItemFieldsToImport = mapSafeItemFieldsFromArchive(archiveSafeFieldItems = archiveContent.fieldsList)
-        importCacheDataSource.migratedIconsToImport = File(archiveExtractedDirectory, Constants.IconFolder).listFiles()?.toList().orEmpty()
+        importCacheDataSource.migratedIconsToImport = File(archiveExtractedDirectory, ArchiveConstants.IconFolder).listFiles()
+            ?.toList()
+            .orEmpty()
         // First, we gather all the already used ids.
         val existingIconsIds: List<String> = iconRepository.getIcons().map { it.nameWithoutExtension }
 

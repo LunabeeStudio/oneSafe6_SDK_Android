@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option java_package = "studio.lunabee.onesafe.messagecompanion";
+option java_outer_classname = "OSMessage";
+
+import "google/protobuf/timestamp.proto";
+
+message MessageData {
+  string content = 1;
+  string recipient_id = 2;
+  google.protobuf.Timestamp sent_at = 3;
+};
