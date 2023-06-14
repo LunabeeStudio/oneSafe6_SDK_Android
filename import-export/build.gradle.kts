@@ -41,7 +41,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":proto"))
+    implementation(project(":import-export:proto"))
     implementation(project(":domain"))
     implementation(project(":error"))
     implementation(project(":common"))

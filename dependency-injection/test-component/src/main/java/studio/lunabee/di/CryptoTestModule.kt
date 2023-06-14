@@ -29,29 +29,18 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import studio.lunabee.onesafe.cryptography.AndroidEditCryptoRepository
-import studio.lunabee.onesafe.cryptography.AndroidImportExportCryptoRepository
 import studio.lunabee.onesafe.cryptography.AndroidMainCryptoRepository
 import studio.lunabee.onesafe.cryptography.ClearDatastoreEngine
 import studio.lunabee.onesafe.cryptography.DatastoreEngine
 import studio.lunabee.onesafe.cryptography.EncryptedDataStoreEngine
-import studio.lunabee.onesafe.cryptography.HashEngine
-import studio.lunabee.onesafe.cryptography.IVProvider
-import studio.lunabee.onesafe.cryptography.JceRsaCryptoEngine
-import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
 import studio.lunabee.onesafe.cryptography.ProtoData
-import studio.lunabee.onesafe.cryptography.RsaCryptoEngine
-import studio.lunabee.onesafe.cryptography.SecureIVProvider
-import studio.lunabee.onesafe.cryptography.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
 import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
 import studio.lunabee.onesafe.cryptography.qualifier.PBKDF2Iterations
 import studio.lunabee.onesafe.cryptography.utils.SecuredDataSerializer
 import studio.lunabee.onesafe.domain.repository.EditCryptoRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
-import studio.lunabee.onesafe.importexport.ImportExportCryptoRepository
 import javax.inject.Singleton
 
 @Module
@@ -68,38 +57,9 @@ abstract class CryptoTestModule {
 
     @Binds
     @Singleton
-    internal abstract fun bindImportExportCryptoRepository(
-        cryptoRepository: AndroidImportExportCryptoRepository,
-    ): ImportExportCryptoRepository
-
-    @Binds
-    @Singleton
-    internal abstract fun bindIVProvider(ivProvider: SecureIVProvider): IVProvider
-
-    @Binds
-    @Singleton
-    internal abstract fun bindHashEngine(hashEngine: PBKDF2JceHashEngine): HashEngine
-
-    @Binds
-    @Singleton
-    internal abstract fun rsaCryptoEngine(rsaCryptoEngine: JceRsaCryptoEngine): RsaCryptoEngine
-
-    @Binds
-    @Singleton
     internal abstract fun bindOnboardingCryptoRepository(
         androidEditCryptoRepository: AndroidEditCryptoRepository,
     ): EditCryptoRepository
-}
-
-@Module
-@TestInstallIn(
-    components = [SingletonComponent::class],
-    replaces = [CryptoDispatcherModule::class],
-)
-object CryptoDispatcherTestModule {
-    @CryptoDispatcher
-    @Provides
-    fun provideDCryptoDispatcher(): CoroutineDispatcher = Dispatchers.Default
 }
 
 @Module

@@ -27,9 +27,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ActivityRetainedScoped
+import dagger.hilt.components.SingletonComponent
 import studio.lunabee.onesafe.domain.repository.PersistenceManager
 import studio.lunabee.onesafe.repository.datasource.ForceUpgradeLocalDatasource
 import studio.lunabee.onesafe.repository.datasource.IconLocalDataSource
@@ -59,9 +58,10 @@ import studio.lunabee.onesafe.storage.datasource.SafeItemLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datastore.ForceUpgradeDataSerializer
 import studio.lunabee.onesafe.storage.datastore.PasswordGeneratorConfigSerializer
 import studio.lunabee.onesafe.storage.datastore.RecentSearchSerializer
+import javax.inject.Singleton
 
 @Module
-@InstallIn(ActivityRetainedComponent::class)
+@InstallIn(SingletonComponent::class)
 interface StorageModule {
     @Binds
     fun bindSafeItemLocalDataSource(safeItemLocalDataSourceImpl: SafeItemLocalDataSourceImpl): SafeItemLocalDataSource
@@ -99,10 +99,10 @@ interface StorageModule {
 }
 
 @Module
-@InstallIn(ActivityRetainedComponent::class)
+@InstallIn(SingletonComponent::class)
 object MainDatabaseModule {
     @Provides
-    @ActivityRetainedScoped
+    @Singleton
     fun provideMainDatabase(@ApplicationContext appContext: Context): MainDatabase {
         return Room.databaseBuilder(
             appContext,
@@ -113,7 +113,7 @@ object MainDatabaseModule {
 }
 
 @Module
-@InstallIn(ActivityRetainedComponent::class)
+@InstallIn(SingletonComponent::class)
 object MainDatabaseDaoModule {
     @Provides
     fun provideSafeItemDao(mainDatabase: MainDatabase): SafeItemDao {
@@ -137,7 +137,7 @@ object MainDatabaseDaoModule {
 }
 
 @Module
-@InstallIn(ActivityRetainedComponent::class)
+@InstallIn(SingletonComponent::class)
 object PersistenceManagerModule {
     @Provides
     fun providePersistenceManager(
@@ -150,12 +150,13 @@ object PersistenceManagerModule {
 }
 
 @Module
-@InstallIn(ActivityRetainedComponent::class)
+@InstallIn(SingletonComponent::class)
 object AppMaintenanceDatastoreModule {
 
     private const val datastoreFile: String = "e6c59819-f0ea-4e32-bb0f-442e546bf9bd"
 
     @Provides
+    @Singleton
     fun provideDatastore(@ApplicationContext context: Context): DataStore<ForceUpgradeProtoData> = context.dataStoreProto
 
     private val Context.dataStoreProto: DataStore<ForceUpgradeProtoData> by dataStore(
@@ -165,12 +166,13 @@ object AppMaintenanceDatastoreModule {
 }
 
 @Module
-@InstallIn(ActivityRetainedComponent::class)
+@InstallIn(SingletonComponent::class)
 object RecentSearchDatastoreModule {
 
     private const val datastoreFile: String = "201c4654-39bd-400e-a3ef-3408e0729273"
 
     @Provides
+    @Singleton
     fun provideDatastore(@ApplicationContext context: Context): DataStore<RecentSearchProto> = context.dataStoreProto
 
     private val Context.dataStoreProto: DataStore<RecentSearchProto> by dataStore(
@@ -180,12 +182,13 @@ object RecentSearchDatastoreModule {
 }
 
 @Module
-@InstallIn(ActivityRetainedComponent::class)
+@InstallIn(SingletonComponent::class)
 object PasswordGeneratorConfigDatastoreModule {
 
     private const val datastoreFile: String = "5a483983-a9c3-4385-8747-7baff8d6b29b"
 
     @Provides
+    @Singleton
     fun provideDatastore(@ApplicationContext context: Context): DataStore<PasswordGeneratorConfigProto> = context.dataStoreProto
 
     private val Context.dataStoreProto: DataStore<PasswordGeneratorConfigProto> by dataStore(

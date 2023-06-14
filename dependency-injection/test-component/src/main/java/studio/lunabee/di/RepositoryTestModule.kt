@@ -65,34 +65,17 @@ import kotlin.time.Duration.Companion.seconds
     replaces = [RepositoryModule::class, RepositoryGlobalModule::class],
 )
 interface RepositoryTestModule {
-
     @Binds
-    fun bindSafeItemRepository(safeItemRepository: SafeItemRepositoryImpl): SafeItemRepository
-
-    @Binds
-    fun bindSafeItemDeletedRepository(safeItemDeletedRepository: SafeItemDeletedRepositoryImpl): SafeItemDeletedRepository
-
-    @Binds
-    fun bindSafeItemKeyRepository(safeItemKeyRepository: SafeItemKeyRepositoryImpl): SafeItemKeyRepository
-
-    @Binds
-    fun bindSafeItemFieldRepository(safeItemFieldRepository: SafeItemFieldRepositoryImpl): SafeItemFieldRepository
-
-    @Binds
-    fun bindIconRepository(iconRepository: IconRepositoryImpl): IconRepository
-
-    @Binds
+    @Singleton
     fun bindUrlMetadataRepository(urlMetadataRepository: UrlMetadataRepositoryImpl): UrlMetadataRepository
 
     @Binds
+    @Singleton
     fun bindIndexWordEntryRepository(indexWordEntryRepository: IndexWordEntryRepositoryImpl): IndexWordEntryRepository
 
     @Binds
-    fun bindForceUpgradeRepository(forceUpgradeRepositoryImpl: ForceUpgradeRepositoryImpl): ForceUpgradeRepository
-
-    @Binds
     @Singleton
-    fun bindClipboardRepository(clipboardRepository: ClipboardRepositoryImpl): ClipboardRepository
+    fun bindForceUpgradeRepository(forceUpgradeRepositoryImpl: ForceUpgradeRepositoryImpl): ForceUpgradeRepository
 
     @Binds
     @Singleton
@@ -103,6 +86,30 @@ interface RepositoryTestModule {
     fun bindsPasswordGeneratorConfigRepository(
         passwordGeneratorConfigRepositoryImpl: PasswordGeneratorConfigRepositoryImpl,
     ): PasswordGeneratorConfigRepository
+
+    @Binds
+    @Singleton
+    fun bindClipboardRepository(clipboardRepository: ClipboardRepositoryImpl): ClipboardRepository
+
+    @Binds
+    @Singleton
+    fun bindSafeItemRepository(safeItemRepository: SafeItemRepositoryImpl): SafeItemRepository
+
+    @Binds
+    @Singleton
+    fun bindSafeItemDeletedRepository(safeItemDeletedRepository: SafeItemDeletedRepositoryImpl): SafeItemDeletedRepository
+
+    @Binds
+    @Singleton
+    fun bindSafeItemKeyRepository(safeItemKeyRepository: SafeItemKeyRepositoryImpl): SafeItemKeyRepository
+
+    @Binds
+    @Singleton
+    fun bindSafeItemFieldRepository(safeItemFieldRepository: SafeItemFieldRepositoryImpl): SafeItemFieldRepository
+
+    @Binds
+    @Singleton
+    fun bindIconRepository(iconRepository: IconRepositoryImpl): IconRepository
 
     @Binds
     @Singleton

@@ -39,5 +39,7 @@ data class OSAppError(
         MIGRATION_ONESAFE5_SERVICE_NULL_BINDING("The oneSafe 5 service bind is null"),
         URL_DATA_FETCHING_FAIL("Error during data fetching"),
         MIGRATION_MISSING_PASSWORD("No encrypted password set in migration manager"),
+        EXPORT_WORKER_FAILURE("Something wrong happened during background export"),
+        EXPORT_WORKER_CANCELED("Background export canceled"),
     }
 }

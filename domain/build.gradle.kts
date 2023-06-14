@@ -20,6 +20,7 @@
 plugins {
     `kotlin-library`
     `onesafe-publish`
+    kotlin("plugin.serialization")
 }
 
 description = "Business layer of oneSafe"
@@ -28,6 +29,7 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(KotlinX.coroutines.core)
     api(AndroidX.paging.commonKtx)
+    implementation(KotlinX.serialization.json)
 
     implementation(libs.kotlin.logging.jvm)
 

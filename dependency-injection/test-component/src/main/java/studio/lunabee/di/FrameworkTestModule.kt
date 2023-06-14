@@ -27,12 +27,13 @@ import studio.lunabee.onesafe.domain.common.FeatureFlags
 
 @Module
 @InstallIn(SingletonComponent::class)
-object FrameworkModule {
+object FrameworkTestModule {
     @Provides
     fun provideFeatureFlags(): FeatureFlags = object : FeatureFlags {
         override fun florisBoard(): Boolean = false
         override fun accessibilityService(): Boolean = false
         override fun oneSafeK(): Boolean = false
         override fun bubbles(): Boolean = false
+        override fun quickSignIn(): Boolean = false
     }
 }

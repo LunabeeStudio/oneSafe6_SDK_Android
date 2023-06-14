@@ -21,10 +21,14 @@ package studio.lunabee.onesafe.bubbles.di
 
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import studio.lunabee.onesafe.bubbles.domain.repository.BubblesContactRepository
 import studio.lunabee.onesafe.bubbles.repository.BubblesContactRepositoryImpl
+import studio.lunabee.onesafe.domain.qualifier.BuildNumber
+import studio.lunabee.onesafe.domain.qualifier.VersionName
 
 @Module
 @TestInstallIn(
@@ -34,4 +38,18 @@ import studio.lunabee.onesafe.bubbles.repository.BubblesContactRepositoryImpl
 interface BubblesRepositoryTestModule {
     @Binds
     fun bindBubblesContactRepository(bubblesContactRepository: BubblesContactRepositoryImpl): BubblesContactRepository
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object FrameWorkForBubblesTestModule {
+    @Provides
+    @BuildNumber
+    @Suppress("FunctionOnlyReturningConstant")
+    fun provideBuildNumber(): Int = 9999
+
+    @Provides
+    @VersionName
+    @Suppress("FunctionOnlyReturningConstant")
+    fun provideVersionName(): String = "1.11.0"
 }

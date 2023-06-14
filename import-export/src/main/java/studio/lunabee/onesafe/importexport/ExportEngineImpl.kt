@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import studio.lunabee.onesafe.domain.engine.ExportEngine
+import studio.lunabee.onesafe.domain.model.importexport.ExportProgress
 import studio.lunabee.onesafe.domain.model.importexport.OSArchiveKind
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
@@ -46,8 +47,8 @@ import studio.lunabee.onesafe.proto.archiveSafeItemKey
 import studio.lunabee.onesafe.randomize
 import studio.lunabee.onesafe.use
 import java.io.File
-import java.time.Instant
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
@@ -128,11 +129,11 @@ class ExportEngineImpl @Inject constructor(
         itemCount: Int,
         archiveKind: ArchiveKind,
     ) {
-        emit(LBFlowResult.Loading(progress = 1f)) // TODO add constants to indicate current step in process
+        emit(LBFlowResult.Loading(progress = ExportProgress.BuildMetadata.value()))
         try {
             val archiveMetadata =
                 createArchiveMetadata(safeItemCount = itemCount, platformInfo = platformInfo, kind = archiveKind)
-            val metadataDestFile = File(folderDestination, Constants.MetadataFile)
+            val metadataDestFile = File(folderDestination, ArchiveConstants.MetadataFile)
             archiveMetadata.writeAsFile(destFile = metadataDestFile)
         } catch (e: Exception) {
             emit(LBFlowResult.Failure(throwable = OSImportExportError(code = OSImportExportError.Code.EXPORT_METADATA_FAILURE, cause = e)))
@@ -147,7 +148,7 @@ class ExportEngineImpl @Inject constructor(
         safeItemsWithKeys: Map<SafeItem, SafeItemKey>,
         safeItemFields: List<SafeItemField>,
     ) {
-        emit(LBFlowResult.Loading(progress = 2f)) // TODO add constants to indicate current step in process
+        emit(LBFlowResult.Loading(progress = ExportProgress.BuildData.value()))
         try {
             val safeItemKeysToExport: List<OSExportProto.ArchiveSafeItemKey> =
                 createArchiveSafeItemKeys(safeItemsWithKeys.values.toList())
@@ -161,7 +162,7 @@ class ExportEngineImpl @Inject constructor(
                 fields.addAll(safeItemFieldsToExport)
                 keys.addAll(safeItemKeysToExport)
             }
-            File(folderDestination, Constants.DataFile).outputStream().use { outputStream ->
+            File(folderDestination, ArchiveConstants.DataFile).outputStream().use { outputStream ->
                 archiveData.writeTo(outputStream)
             }
         } catch (e: Exception) {
@@ -173,9 +174,9 @@ class ExportEngineImpl @Inject constructor(
      * Take all the icons files from current installation and copy it into the export folder.
      */
     private suspend fun FlowCollector<LBFlowResult<Unit>>.copyIconFilesToExportFolder(icons: List<File>, folderDestination: File) {
-        emit(LBFlowResult.Loading(progress = 3f)) // TODO add constants to indicate current step in process
+        emit(LBFlowResult.Loading(progress = ExportProgress.CopyIcons.value()))
         try {
-            val iconFolder = File(folderDestination, Constants.IconFolder)
+            val iconFolder = File(folderDestination, ArchiveConstants.IconFolder)
             if (!iconFolder.exists()) iconFolder.mkdirs()
             icons.forEach { file ->
                 file.copyTo(target = File(iconFolder, file.name))
@@ -221,12 +222,12 @@ class ExportEngineImpl @Inject constructor(
         kind: ArchiveKind,
     ): OSExportProto.ArchiveMetadata {
         return archiveMetadata {
-            archiveVersion = com.lunabee.onesafe.proto.Constants.ArchiveSpecVersion
+            archiveVersion = com.lunabee.onesafe.proto.ArchiveProtoConstants.ArchiveSpecVersion
             archiveKind = kind
             fromPlatform = platformInfo
             isFromOneSafePlus = false
             itemsCount = safeItemCount
-            createdAt = dateTimeFormatter.format(Instant.now().atZone(ZoneId.systemDefault()))
+            createdAt = dateTimeFormatter.format(ZonedDateTime.now())
         }
     }
 
@@ -234,7 +235,7 @@ class ExportEngineImpl @Inject constructor(
         return safeItems.map { safeItem ->
             archiveSafeItem {
                 id = safeItem.id.toString()
-                createdAt = dateTimeFormatter.format(Instant.now().atZone(ZoneId.systemDefault())) // TODO should be created
+                createdAt = dateTimeFormatter.format(ZonedDateTime.now()) // TODO should be created
                 deletedAt = safeItem.deletedAt?.let { dateTimeFormatter.format(it) }.orEmpty()
                 deletedParentId = safeItem.deletedParentId?.toString().orEmpty()
                 encColor = safeItem.encColor.byteStringOrEmpty()

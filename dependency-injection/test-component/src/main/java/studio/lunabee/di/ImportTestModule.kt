@@ -17,25 +17,29 @@
  * Last modified 4/7/23, 12:30 AM
  */
 
-package studio.lunabee.onesafe.di
+package studio.lunabee.di
 
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
-import studio.lunabee.di.JCEModule
-import studio.lunabee.onesafe.cryptography.ChachaPolyJCECryptoEngine
-import studio.lunabee.onesafe.cryptography.CryptoEngine
+import studio.lunabee.onesafe.domain.engine.ImportEngine
+import studio.lunabee.onesafe.importexport.ImportCacheDataSource
+import studio.lunabee.onesafe.importexport.ImportCacheDataSourceImpl
+import studio.lunabee.onesafe.importexport.ImportEngineImpl
 import javax.inject.Singleton
 
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
-    replaces = [JCEModule::class],
+    replaces = [ImportModule::class],
 )
-abstract class JceTestModule {
+interface ImportTestModule {
+    @Binds
+    @Singleton
+    fun bindImportEngine(importEngineImpl: ImportEngineImpl): ImportEngine
 
     @Binds
     @Singleton
-    internal abstract fun bindCrypto(crypto: ChachaPolyJCECryptoEngine): CryptoEngine
+    fun bindImportCacheDataSource(importCacheDataSourceImpl: ImportCacheDataSourceImpl): ImportCacheDataSource
 }

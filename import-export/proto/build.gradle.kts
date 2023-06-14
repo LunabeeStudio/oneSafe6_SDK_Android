@@ -63,7 +63,7 @@ protobuf {
 sourceSets {
     main {
         proto {
-            srcDir("${rootDir.path}/oneSafe6_common/proto")
+            srcDir("${rootDir.path}/oneSafe6_common/archive/proto")
         }
     }
 }

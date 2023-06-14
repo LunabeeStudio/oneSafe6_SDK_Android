@@ -13,12 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:24 AM
+ * Created by Lunabee Studio / Date - 6/5/2023 - for the oneSafe6 SDK.
+ * Last modified 6/5/23, 5:22 PM
  */
 
-package com.lunabee.onesafe.proto
+package studio.lunabee.onesafe.domain.model.importexport
 
-object Constants {
-    const val ArchiveSpecVersion: Int = 1
+// TODO improve progress (progress of BuildData step)
+
+enum class ExportProgress {
+    Init,
+    BuildMetadata,
+    BuildData,
+    CopyIcons,
+    ;
+
+    fun value(): Float {
+        return this.ordinal.toFloat() / ExportProgress.values().size
+    }
 }

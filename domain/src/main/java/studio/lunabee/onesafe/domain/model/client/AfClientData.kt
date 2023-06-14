@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2023 Lunabee Studio
+ * Copyright (c) 2023 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 5/26/2023 - for the oneSafe6 SDK.
- * Last modified 5/26/23, 9:28 AM
+ * Created by Lunabee Studio / Date - 6/12/2023 - for the oneSafe6 SDK.
+ * Last modified 6/12/23, 4:51 PM
  */
 
-package studio.lunabee.onesafe.domain.common
+package studio.lunabee.onesafe.domain.model.client
 
-interface FeatureFlags {
-    fun florisBoard(): Boolean
-    fun accessibilityService(): Boolean
-    fun oneSafeK(): Boolean
-    fun bubbles(): Boolean
-    fun quickSignIn(): Boolean
-}
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class AfClientData(
+    val name: String = "",
+    val domains: List<String> = listOf(),
+    val appPackage: String = "",
+)
