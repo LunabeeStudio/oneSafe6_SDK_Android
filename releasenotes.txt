@@ -1,20 +1,9 @@
 NEW in testing (last 24h)
-• (Android) Erreur biométrie - error 5
-• (Android)(oSK) Package name à envoyer à oneSafe
-• (Android) Update lien discord
+• (Android) Bug - Impossible de modifier une recherche
 
 ALL in testing
-• (Android) Erreur biométrie - error 5
+• (Android) Bug - Impossible de modifier une recherche
+• (Android)(oSK) Faire un flow Florisboard > Envoyer message > app source
 • (Android)(oSK) Package name à envoyer à oneSafe
-• (Android) Update lien discord
-• (Android) Creuser Credential provider site → OS6
 • (Android)(osK) Ecran de messagerie
-• (Android) Updated labels for oneSafe 5
 • (Android)(oneSafe K) Architecture d’intégration
-
-ALL tested
-• (Android) Lien discord
-• (Android) Noter l’app
-• (Android) Manque un titre au onboarding
-• (Android) Section favoris apparait vide a chaque navigation
-• (Android) Bug - Autolock en changeant d’app ne fonctionne pas Prod only

@@ -1,5 +1,7 @@
 # BouncyCastle PBKDF2
--keep class org.bouncycastle.jcajce.provider.symmetric.PBEPBKDF2$* { *; }
+-keepnames class org.bouncycastle.jcajce.provider.symmetric.PBEPBKDF2 { *; }
+-keep class org.bouncycastle.jcajce.provider.symmetric.PBEPBKDF2$PBKDF2withSHA512 { *; }
+-keep class org.bouncycastle.jcajce.provider.symmetric.PBEPBKDF2$Mappings { *; }
 
 # FIXME cf https://github.com/tuskyapp/Tusky/pull/3350 -> okhttp 4.10.1 (transitive from COIL)
 -dontwarn com.android.org.conscrypt.SSLParametersImpl
