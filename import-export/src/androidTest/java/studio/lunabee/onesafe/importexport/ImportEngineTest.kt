@@ -48,7 +48,7 @@ import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemFieldUseCase
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemUseCase
-import studio.lunabee.onesafe.domain.usecase.DecryptUseCase
+import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
 import studio.lunabee.onesafe.error.OSImportExportError
 import studio.lunabee.onesafe.test.ConsoleTree
 import studio.lunabee.onesafe.test.InitialTestState
@@ -82,7 +82,7 @@ class ImportEngineTest : OSHiltTest() {
 
     @Inject lateinit var iconRepository: IconRepository
 
-    @Inject lateinit var decryptUseCase: DecryptUseCase
+    @Inject lateinit var decryptUseCase: ItemDecryptUseCase
 
     @Inject lateinit var safeItemFieldRepository: SafeItemFieldRepository
 

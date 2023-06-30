@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.randomize
 
-internal class SafeDataMutableStateFlow private constructor(
+class SafeDataMutableStateFlow private constructor(
     private val overrideCode: OSCryptoError.Code,
     private val nullableCode: OSCryptoError.Code,
     private val internalFlow: MutableStateFlow<ByteArray?>,

@@ -29,6 +29,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
+import studio.lunabee.onesafe.storage.BubblesDatabase
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.OSForceUpgradeProto.ForceUpgradeProtoData
 import studio.lunabee.onesafe.storage.datastore.ForceUpgradeDataSerializer
@@ -40,18 +41,28 @@ import javax.inject.Singleton
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
-    replaces = [MainDatabaseModule::class],
+    replaces = [DatabaseModule::class],
 )
 object EmptyMainDatabaseModule
 
 @Module
 @InstallIn(SingletonComponent::class)
 object InMemoryMainDatabaseModule {
-
     @Provides
     @Singleton
     internal fun provideMainDatabase(@ApplicationContext appContext: Context): MainDatabase {
         return Room.inMemoryDatabaseBuilder(appContext, MainDatabase::class.java)
+            .build()
+    }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object InMemoryBubblesDatabaseModule {
+    @Provides
+    @Singleton
+    internal fun provideBubblesDatabase(@ApplicationContext appContext: Context): BubblesDatabase {
+        return Room.inMemoryDatabaseBuilder(appContext, BubblesDatabase::class.java)
             .build()
     }
 }

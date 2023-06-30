@@ -30,6 +30,4 @@ dependencies {
 
     implementation(project(":domain"))
     implementation(project(":error"))
-
-    testImplementation(Testing.junit.jupiter)
 }

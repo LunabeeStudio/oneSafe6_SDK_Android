@@ -23,7 +23,7 @@ import studio.lunabee.onesafe.error.OSCryptoError
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-internal fun <T> safeCryptoArrayDelete(safeDataMutableStateFlow: SafeDataMutableStateFlow): ReadWriteProperty<T, ByteArray?> {
+fun <T> safeCryptoArrayDelete(safeDataMutableStateFlow: SafeDataMutableStateFlow): ReadWriteProperty<T, ByteArray?> {
     return SafeCryptoArrayDelegate(safeDataMutableStateFlow)
 }
 

@@ -85,12 +85,18 @@ android {
             }
         }
     }
+
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+    }
 }
 
 val tinkImplementation: Configuration by configurations
 val jceImplementation: Configuration by configurations
 
 dependencies {
+    coreLibraryDesugaring(Android.tools.desugarJdkLibs)
+
     implementation(libs.kotlin.stdlib)
 
     implementation(AndroidX.dataStore)
@@ -114,6 +120,7 @@ dependencies {
     implementation(libs.kotlin.reflect)
 
     implementation(project(":domain"))
+    implementation(project(":bubbles-domain"))
     implementation(project(":error"))
     implementation(project(":common"))
     implementation(project(":import-export"))

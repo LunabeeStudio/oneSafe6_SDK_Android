@@ -23,8 +23,8 @@ import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
-import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
+import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import java.io.File
 import java.io.OutputStream
 import java.util.UUID
@@ -43,7 +43,7 @@ interface MainCryptoRepository {
     suspend fun generateKeyForItemId(itemId: UUID): SafeItemKey
     suspend fun importItemKey(rawKeyValue: ByteArray, keyId: UUID): SafeItemKey
     suspend fun resetCryptography()
-    fun unloadCryptographyKeys()
+    fun unloadMasterKeys()
     fun hasMasterSalt(): Boolean
     fun getCurrentSalt(): ByteArray
     suspend fun loadMasterKeyFromPassword(password: CharArray)
@@ -70,10 +70,14 @@ interface MainCryptoRepository {
     suspend fun loadMasterKeyExternal(masterKey: ByteArray)
     suspend fun decryptRecentSearch(encRecentSearch: List<ByteArray>): List<String>
     suspend fun encryptRecentSearch(plainRecentSearch: List<String>): List<ByteArray>
-    suspend fun encryptForBubblesContact(data: ByteArray): ByteArray
-    suspend fun generateBubblesContactKey()
-    suspend fun decryptForBubblesContact(data: ByteArray): ByteArray
-    suspend fun encryptWithBubbleContactKey(data: ByteArray, encContactKey: ByteArray): ByteArray
-    suspend fun encryptWithBubbleContactKey(outputStream: OutputStream, encContactKey: ByteArray): OutputStream
-    suspend fun decryptWithBubbleContactKey(data: ByteArray, encContactKey: ByteArray): ByteArray
+
+    /**
+     * Encrypt [data] with the bubbles master key
+     */
+    suspend fun encryptBubbles(data: ByteArray): ByteArray
+
+    /**
+     * Decrypt [data] with the bubbles master key
+     */
+    suspend fun decryptBubbles(data: ByteArray): ByteArray
 }

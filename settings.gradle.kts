@@ -64,6 +64,20 @@ include("import-export:proto")
 include("dependency-injection")
 include("dependency-injection:test-component")
 include("app:message-companion")
-include("bubbles")
 include("app:common-ui")
+
+include("bubbles")
+include(":bubbles-domain")
+project(":bubbles-domain").projectDir = File("bubbles/domain")
+include(":bubbles-repository")
+project(":bubbles-repository").projectDir = File("bubbles/repository")
+include(":bubbles-crypto-android")
+project(":bubbles-crypto-android").projectDir = File("bubbles/crypto-android")
+
+include("messaging")
+include(":messaging-domain")
+project(":messaging-domain").projectDir = File("messaging/domain")
+include(":messaging-repository")
+project(":messaging-repository").projectDir = File("messaging/repository")
+
 // include(":mockos5") // mockos5 apk is embedded for tests

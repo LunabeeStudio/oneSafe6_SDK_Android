@@ -72,12 +72,15 @@ class AndroidMainCryptoRepositoryTest {
     @Inject
     internal lateinit var dataStore: EncryptedDataStoreEngine
 
+    @Inject
+    internal lateinit var mapper: CryptoDataMapper
+
     private val featureFlags: FeatureFlags = mockk {
         every { this@mockk.bubbles() } returns false
     }
 
     private val repository: AndroidMainCryptoRepository by lazy {
-        AndroidMainCryptoRepository(crypto, hashEngine, mockk(), dataStore, featureFlags, itemKeyProvider)
+        AndroidMainCryptoRepository(crypto, hashEngine, mockk(), dataStore, featureFlags, itemKeyProvider, mapper)
     }
 
     @Before
@@ -318,19 +321,9 @@ class AndroidMainCryptoRepositoryTest {
     fun bubble_contacts_key_not_set_if_feature_not_enabled_test(): TestResult = runTest {
         loadMasterKey()
         val error = assertFailsWith<OSCryptoError> {
-            this@AndroidMainCryptoRepositoryTest.repository.encryptForBubblesContact(ByteArray(1))
+            this@AndroidMainCryptoRepositoryTest.repository.encryptBubbles(ByteArray(1))
         }
-        assertEquals(OSCryptoError.Code.BUBBLES_CONTACT_KEY_NOT_LOADED, error.code)
-    }
-
-    @Test
-    fun bubbles_contacts_key_set_if_feature_is_enabled(): TestResult = runTest {
-        every { featureFlags.bubbles() } returns true
-        this@AndroidMainCryptoRepositoryTest.repository.storeMasterKeyAndSalt(key, salt)
-        val error = assertFailsWith<OSCryptoError> {
-            this@AndroidMainCryptoRepositoryTest.repository.generateBubblesContactKey()
-        }
-        assertEquals(OSCryptoError.Code.BUBBLES_CONTACT_KEY_ALREADY_LOADED, error.code)
+        assertEquals(OSCryptoError.Code.BUBBLES_MASTER_KEY_NOT_LOADED, error.code)
     }
 
     @Test
@@ -338,8 +331,8 @@ class AndroidMainCryptoRepositoryTest {
         every { featureFlags.bubbles() } returns true
         this@AndroidMainCryptoRepositoryTest.repository.storeMasterKeyAndSalt(key, salt)
         val plainData = "contactName"
-        val encryptedData = this@AndroidMainCryptoRepositoryTest.repository.encryptForBubblesContact(plainData.encodeToByteArray())
-        val decryptedData = this@AndroidMainCryptoRepositoryTest.repository.decryptForBubblesContact(encryptedData)
+        val encryptedData = this@AndroidMainCryptoRepositoryTest.repository.encryptBubbles(plainData.encodeToByteArray())
+        val decryptedData = this@AndroidMainCryptoRepositoryTest.repository.decryptBubbles(encryptedData)
         assertEquals(plainData, decryptedData.decodeToString())
     }
 
@@ -348,7 +341,7 @@ class AndroidMainCryptoRepositoryTest {
     }
 
     private fun unloadMasterKey() {
-        this.repository.unloadCryptographyKeys()
+        this.repository.unloadMasterKeys()
     }
 
     companion object {

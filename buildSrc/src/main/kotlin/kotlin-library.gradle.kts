@@ -35,6 +35,7 @@ dependencies {
     kapt(Google.dagger.hilt.compiler)
     testImplementation(Testing.junit.jupiter)
     testImplementation(Kotlin.test)
+    testImplementation(KotlinX.Coroutines.test)
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {

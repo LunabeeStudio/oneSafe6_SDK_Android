@@ -27,6 +27,13 @@ import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import studio.lunabee.bubbles.repository.repository.ContactKeyRepositoryImpl
+import studio.lunabee.bubbles.repository.repository.ContactRepositoryImpl
+import studio.lunabee.messaging.repository.repository.MessageChannelRepositoryImpl
+import studio.lunabee.messaging.repository.repository.MessageOrderRepositoryImpl
+import studio.lunabee.messaging.repository.repository.MessageRepositoryImpl
+import studio.lunabee.onesafe.bubbles.domain.repository.ContactKeyRepository
+import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import studio.lunabee.onesafe.domain.repository.AutoLockRepository
 import studio.lunabee.onesafe.domain.repository.ClipboardRepository
@@ -42,6 +49,9 @@ import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
 import studio.lunabee.onesafe.domain.repository.SupportOSRepository
 import studio.lunabee.onesafe.domain.repository.UrlMetadataRepository
+import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
+import studio.lunabee.onesafe.messaging.domain.repository.MessageOrderRepository
+import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
 import studio.lunabee.onesafe.repository.repository.AutoLockRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.ClipboardRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.ForceUpgradeRepositoryImpl
@@ -62,7 +72,7 @@ import kotlin.time.Duration.Companion.seconds
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
-    replaces = [RepositoryModule::class, RepositoryGlobalModule::class],
+    replaces = [RepositoryModule::class, RepositoryGlobalModule::class, RepositoryServiceModule::class],
 )
 interface RepositoryTestModule {
     @Binds
@@ -118,6 +128,26 @@ interface RepositoryTestModule {
     @Binds
     @Singleton
     fun bindSupportOSRepository(supportOSRepository: SupportOSRepositoryImpl): SupportOSRepository
+
+    @Binds
+    @Singleton
+    fun bindsContactRepository(contactRepositoryImpl: ContactRepositoryImpl): ContactRepository
+
+    @Binds
+    @Singleton
+    fun bindsContactKeyRepository(contactRepositoryImpl: ContactKeyRepositoryImpl): ContactKeyRepository
+
+    @Binds
+    @Singleton
+    fun bindsMessageRepository(bubblesMessageRepositoryImpl: MessageRepositoryImpl): MessageRepository
+
+    @Binds
+    @Singleton
+    fun bindsMessageOrderRepository(bubblesMessageOrderRepositoryImpl: MessageOrderRepositoryImpl): MessageOrderRepository
+
+    @Binds
+    @Singleton
+    fun bindsMessageChannelRepository(messageChannelRepositoryImpl: MessageChannelRepositoryImpl): MessageChannelRepository
 }
 
 @Module

@@ -29,6 +29,7 @@ plugins {
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
     arg("room.incremental", "true")
+    arg("room.generateKotlin", "true")
 }
 
 android {
@@ -100,6 +101,12 @@ dependencies {
     implementation(project(":repository"))
     implementation(project(":error"))
     implementation(project(":common"))
+
+    implementation(project(":bubbles-domain"))
+    implementation(project(":bubbles-repository"))
+
+    implementation(project(":messaging-domain"))
+    implementation(project(":messaging-repository"))
 
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(project(":dependency-injection:test-component"))

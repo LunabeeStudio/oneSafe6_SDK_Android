@@ -1,9 +1,0 @@
-NEW in testing (last 24h)
-• (Android) Bug - Impossible de modifier une recherche
-
-ALL in testing
-• (Android) Bug - Impossible de modifier une recherche
-• (Android)(oSK) Faire un flow Florisboard > Envoyer message > app source
-• (Android)(oSK) Package name à envoyer à oneSafe
-• (Android)(osK) Ecran de messagerie
-• (Android)(oneSafe K) Architecture d’intégration

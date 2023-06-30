@@ -28,7 +28,6 @@ import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldValue
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
-import studio.lunabee.onesafe.domain.usecase.DecryptUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import studio.lunabee.onesafe.error.OSError
 import java.util.UUID
@@ -40,7 +39,7 @@ import javax.inject.Inject
 class GetSafeItemFieldValueUseCase @Inject constructor(
     private val safeItemFieldRepository: SafeItemFieldRepository,
     private val safeItemRepository: SafeItemRepository,
-    private val decryptUseCase: DecryptUseCase,
+    private val decryptUseCase: ItemDecryptUseCase,
     private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)

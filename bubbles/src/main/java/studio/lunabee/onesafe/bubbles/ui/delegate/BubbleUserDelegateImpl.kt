@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesUser
-import studio.lunabee.onesafe.bubbles.domain.usecase.StoreBubblesContactsListUseCase
+import studio.lunabee.onesafe.bubbles.domain.usecase.CreateContactUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import java.io.IOException
 import javax.inject.Inject
@@ -35,7 +35,7 @@ import javax.inject.Inject
 // TODO : Temporary class used to test the Bubbles feature with oneSafeK
 class BubbleUserDelegateImpl @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val storeBubblesContactsListUseCase: StoreBubblesContactsListUseCase,
+    private val createContactUseCase: CreateContactUseCase,
     private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
 ) : BubbleUserDelegate {
 
@@ -56,7 +56,7 @@ class BubbleUserDelegateImpl @Inject constructor(
     override suspend fun importContact(name: String) {
         if (isCryptoDataReadyInMemoryUseCase().first()) {
             availableBubbleUsers.value.firstOrNull { it.name == name }?.let {
-                storeBubblesContactsListUseCase(it.contacts)
+                createContactUseCase(it.contacts)
             }
         }
     }
