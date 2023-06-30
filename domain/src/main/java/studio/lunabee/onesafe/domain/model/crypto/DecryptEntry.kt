@@ -26,21 +26,21 @@ import kotlin.reflect.KClass
  *
  * @param data The encrypted data
  * @param clazz The target class to return after decrypt
- * @param mapper Optional mapper to map raw [ByteArray] to [Data]
+ * @param mapBlock Optional mapper to map raw [ByteArray] to [Data]
  */
 class DecryptEntry<Data : Any>(
     val data: ByteArray,
     val clazz: KClass<Data>,
-    val mapper: (ByteArray.() -> Data)? = null,
+    val mapBlock: (ByteArray.() -> Data)? = null,
 )
 
 /**
  * Wrapper for the data to encrypt
  *
  * @param data The plain data
- * @param mapper Optional mapper to map [Data] to raw [ByteArray]
+ * @param mapBlock Optional mapper to map [Data] to raw [ByteArray]
  */
 class EncryptEntry<Data : Any>(
     val data: Data,
-    val mapper: ((Data) -> ByteArray)? = null,
+    val mapBlock: ((Data) -> ByteArray)? = null,
 )

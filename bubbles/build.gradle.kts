@@ -19,14 +19,8 @@
 
 plugins {
     `android-library`
-    id("com.google.devtools.ksp")
     kotlin("plugin.serialization")
     id("kotlin-android")
-}
-
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
-    arg("room.incremental", "true")
 }
 
 android {
@@ -67,10 +61,10 @@ dependencies {
     debugImplementation(AndroidX.compose.ui.tooling)
     implementation(AndroidX.compose.ui.toolingPreview)
     implementation(AndroidX.compose.material3)
+    implementation(AndroidX.hilt.navigationCompose)
+    implementation(AndroidX.lifecycle.runtime.compose)
 
     implementation(KotlinX.coroutines.android)
-    implementation(AndroidX.room.ktx)
-    ksp(AndroidX.room.compiler)
     implementation(KotlinX.serialization.json)
     coreLibraryDesugaring(Android.tools.desugarJdkLibs)
 
@@ -78,11 +72,9 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":common"))
     implementation(project(":error"))
-    implementation(project(":local-android"))
     implementation(project(":app:core-ui"))
     implementation(project(":app:common-ui"))
+    api(project(":bubbles-domain"))
 
-    androidTestImplementation(KotlinX.coroutines.test)
     androidTestImplementation(project(":common-test-android"))
-    androidTestImplementation(project(":dependency-injection:test-component"))
 }

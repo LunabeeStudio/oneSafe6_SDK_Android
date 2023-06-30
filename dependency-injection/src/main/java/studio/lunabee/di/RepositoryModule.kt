@@ -23,8 +23,17 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
+import dagger.hilt.android.components.ServiceComponent
 import dagger.hilt.android.scopes.ActivityRetainedScoped
+import dagger.hilt.android.scopes.ServiceScoped
 import dagger.hilt.components.SingletonComponent
+import studio.lunabee.bubbles.repository.repository.ContactKeyRepositoryImpl
+import studio.lunabee.bubbles.repository.repository.ContactRepositoryImpl
+import studio.lunabee.messaging.repository.repository.MessageChannelRepositoryImpl
+import studio.lunabee.messaging.repository.repository.MessageOrderRepositoryImpl
+import studio.lunabee.messaging.repository.repository.MessageRepositoryImpl
+import studio.lunabee.onesafe.bubbles.domain.repository.ContactKeyRepository
+import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.domain.repository.AutoLockRepository
 import studio.lunabee.onesafe.domain.repository.ClipboardRepository
 import studio.lunabee.onesafe.domain.repository.ForceUpgradeRepository
@@ -39,6 +48,9 @@ import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
 import studio.lunabee.onesafe.domain.repository.SupportOSRepository
 import studio.lunabee.onesafe.domain.repository.UrlMetadataRepository
+import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
+import studio.lunabee.onesafe.messaging.domain.repository.MessageOrderRepository
+import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
 import studio.lunabee.onesafe.repository.repository.AutoLockRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.ClipboardRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.ForceUpgradeRepositoryImpl
@@ -53,7 +65,6 @@ import studio.lunabee.onesafe.repository.repository.SafeItemRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.SecurityOptionRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.SupportOSRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.UrlMetadataRepositoryImpl
-import javax.inject.Singleton
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
@@ -80,44 +91,63 @@ interface RepositoryModule {
     fun bindsPasswordGeneratorConfigRepository(
         passwordGeneratorConfigRepositoryImpl: PasswordGeneratorConfigRepositoryImpl,
     ): PasswordGeneratorConfigRepository
+
+    @Binds
+    @ActivityRetainedScoped
+    fun bindsMessageChannelRepository(
+        messageChannelRepositoryImpl: MessageChannelRepositoryImpl,
+    ): MessageChannelRepository
+}
+
+@Module
+@InstallIn(ServiceComponent::class)
+interface RepositoryServiceModule {
+    @Binds
+    @ServiceScoped
+    fun bindsMessageChannelRepository(
+        messageChannelRepositoryImpl: MessageChannelRepositoryImpl,
+    ): MessageChannelRepository
 }
 
 @Module
 @InstallIn(SingletonComponent::class)
 interface RepositoryGlobalModule {
     @Binds
-    @Singleton
     fun bindSecurityOptionRepository(securityOptionRepository: SecurityOptionRepositoryImpl): SecurityOptionRepository
 
     @Binds
-    @Singleton
     fun bindClipboardRepository(clipboardRepository: ClipboardRepositoryImpl): ClipboardRepository
 
     @Binds
-    @Singleton
     fun bindAutoLockRepository(autoLockRepositoryImpl: AutoLockRepositoryImpl): AutoLockRepository
 
     @Binds
-    @Singleton
     fun bindSafeItemRepository(safeItemRepository: SafeItemRepositoryImpl): SafeItemRepository
 
     @Binds
-    @Singleton
     fun bindSafeItemDeletedRepository(safeItemDeletedRepository: SafeItemDeletedRepositoryImpl): SafeItemDeletedRepository
 
     @Binds
-    @Singleton
     fun bindSafeItemKeyRepository(safeItemKeyRepository: SafeItemKeyRepositoryImpl): SafeItemKeyRepository
 
     @Binds
-    @Singleton
     fun bindSafeItemFieldRepository(safeItemFieldRepository: SafeItemFieldRepositoryImpl): SafeItemFieldRepository
 
     @Binds
-    @Singleton
     fun bindIconRepository(iconRepository: IconRepositoryImpl): IconRepository
 
     @Binds
-    @Singleton
     fun bindSupportOSRepository(supportOSRepository: SupportOSRepositoryImpl): SupportOSRepository
+
+    @Binds
+    fun bindsContactRepository(bubblesContactRepositoryImpl: ContactRepositoryImpl): ContactRepository
+
+    @Binds
+    fun bindsContactKeyRepository(bubblesContactKeyRepositoryImpl: ContactKeyRepositoryImpl): ContactKeyRepository
+
+    @Binds
+    fun bindsMessageRepository(bubblesMessageRepositoryImpl: MessageRepositoryImpl): MessageRepository
+
+    @Binds
+    fun bindsMessageOrderRepository(bubblesMessageOrderRepositoryImpl: MessageOrderRepositoryImpl): MessageOrderRepository
 }

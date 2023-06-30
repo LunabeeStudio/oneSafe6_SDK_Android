@@ -40,12 +40,37 @@ internal fun ByteArray.toInt(): Int {
         (this[0].toInt() and 0xff)
 }
 
+internal fun ByteArray.toLong(): Long {
+    if (this.size != 8) {
+        throw OSCryptoError(OSCryptoError.Code.ILLEGAL_VALUE, "ByteArray size must be 4. Got ${this.size}.")
+    }
+    return (this[7].toLong() shl 56) or
+        (this[6].toLong() and 0xff shl 48) or
+        (this[5].toLong() and 0xff shl 40) or
+        (this[4].toLong() and 0xff shl 32) or
+        (this[3].toLong() and 0xff shl 24) or
+        (this[2].toLong() and 0xff shl 16) or
+        (this[1].toLong() and 0xff shl 8) or
+        (this[0].toLong() and 0xff)
+}
+
 // https://stackoverflow.com/a/67229929/10935947
 internal fun Int.toByteArray(): ByteArray = ByteArray(4).apply {
     this[0] = (this@toByteArray shr 0).toByte()
     this[1] = (this@toByteArray shr 8).toByte()
     this[2] = (this@toByteArray shr 16).toByte()
     this[3] = (this@toByteArray shr 24).toByte()
+}
+
+internal fun Long.toByteArray(): ByteArray = ByteArray(8).apply {
+    this[0] = (this@toByteArray shr 0).toByte()
+    this[1] = (this@toByteArray shr 8).toByte()
+    this[2] = (this@toByteArray shr 16).toByte()
+    this[3] = (this@toByteArray shr 24).toByte()
+    this[4] = (this@toByteArray shr 32).toByte()
+    this[5] = (this@toByteArray shr 40).toByte()
+    this[6] = (this@toByteArray shr 48).toByte()
+    this[7] = (this@toByteArray shr 56).toByte()
 }
 
 // Copied from Room

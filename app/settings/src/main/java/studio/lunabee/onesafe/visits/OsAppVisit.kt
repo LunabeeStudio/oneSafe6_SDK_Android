@@ -21,14 +21,12 @@ package studio.lunabee.onesafe.visits
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.booleanPreferencesKey
-import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.Flow
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.map
 import androidx.datastore.preferences.core.Preferences
 import javax.inject.Inject
 
-@ActivityRetainedScoped
 class OsAppVisit @Inject constructor(
     private val dataStore: DataStore<Preferences>,
 ) {

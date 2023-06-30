@@ -35,5 +35,6 @@ data class OSDomainError(
         ZIP_FAILURE("Unable to zip selected file"),
         WRONG_CONFIRMATION_PASSWORD("Password confirmation does not match"),
         NO_MATCHING_CONTACT("No contact key matching the encrypted message"),
+        DUPLICATED_MESSAGE("The message has already been stored"),
     }
 }

@@ -28,6 +28,8 @@ data class OSStorageError(
     enum class Code(val message: String) {
         ITEM_KEY_NOT_FOUND("The item key does not exist"),
         ITEM_NOT_FOUND("The item does not exist"),
+        CONTACT_NOT_FOUND("The contact does not exist"),
+        CONTACT_KEY_NOT_FOUND("The contact key does not exist"),
         UNKNOWN_DATABASE_ERROR("Unknown database error"),
         PROTO_DATASTORE_READ_ERROR("Cannot read datastore proto"),
     }

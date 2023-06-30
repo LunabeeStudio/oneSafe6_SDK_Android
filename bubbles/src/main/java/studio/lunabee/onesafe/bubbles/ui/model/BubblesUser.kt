@@ -20,11 +20,11 @@
 package studio.lunabee.onesafe.bubbles.ui.model
 
 import kotlinx.serialization.Serializable
-import studio.lunabee.onesafe.bubbles.domain.model.PlainBubblesContact
+import studio.lunabee.onesafe.bubbles.domain.model.PlainContact
 
 // TODO : Temporary class used to test the Bubbles feature with oneSafeK
 @Serializable
 data class BubblesUser(
     val name: String,
-    val contacts: List<PlainBubblesContact>,
+    val contacts: List<PlainContact>,
 )

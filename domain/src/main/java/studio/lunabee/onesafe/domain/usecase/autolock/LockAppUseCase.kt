@@ -26,6 +26,6 @@ class LockAppUseCase @Inject constructor(
     private val mainCryptoRepository: MainCryptoRepository,
 ) {
     operator fun invoke() {
-        mainCryptoRepository.unloadCryptographyKeys()
+        mainCryptoRepository.unloadMasterKeys()
     }
 }

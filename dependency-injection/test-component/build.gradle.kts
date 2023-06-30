@@ -67,5 +67,10 @@ dependencies {
     implementation(project(":remote"))
     implementation(project(":dependency-injection"))
     implementation(project(":app:settings"))
+    implementation(project(":bubbles-domain"))
+    implementation(project(":bubbles-repository"))
+    implementation(project(":bubbles-crypto-android"))
+    implementation(project(":messaging-domain"))
+    implementation(project(":messaging-repository"))
     api(project(":common-test"))
 }

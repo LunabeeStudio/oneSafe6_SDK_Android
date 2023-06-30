@@ -1,0 +1,26 @@
+# Add project specific ProGuard rules here.
+# You can control the set of applied configuration files using the
+# proguardFiles setting in build.gradle.
+#
+# For more details, see
+#   http://developer.android.com/guide/developing/tools/proguard.html
+
+# Uncomment this to preserve the line number information for
+# debugging stack traces.
+#-keepattributes SourceFile,LineNumberTable
+
+# If you keep the line number information, uncomment this to
+# hide the original source file name.
+#-renamesourcefileattribute SourceFile
+
+-printseeds seeds.txt
+
+## https://gitlab.com/mvysny/slf4j-handroid/-/blob/master/README.md#L83
+-keep class com.google.firebase.crashlytics.FirebaseCrashlytics {
+    static com.google.firebase.crashlytics.FirebaseCrashlytics getInstance();
+    void log(java.lang.String);
+    void recordException(java.lang.Throwable);
+}
+
+# Protobuf https://github.com/protocolbuffers/protobuf/issues/6463#issuecomment-632884075
+-keep class * extends com.google.protobuf.GeneratedMessageLite { *; }

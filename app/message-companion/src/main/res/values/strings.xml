@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="oneSafeK_accessibilityService_description">Place holder overriden by the app</string>
+    <string name="oneSafeK_accessibilityService_plainLabel">Visible</string>
+    <string name="oneSafeK_accessibilityService_encryptedLabel">Encrypted</string>
+</resources>

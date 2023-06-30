@@ -23,7 +23,7 @@ import com.lunabee.lblogger.LBLogger
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityRetainedComponent
+import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -41,7 +41,7 @@ import studio.lunabee.onesafe.repository.datasource.ForceUpdateRemoteDatasource
 import studio.lunabee.onesafe.repository.datasource.UrlMetadataRemoteDataSource
 
 @Module
-@InstallIn(ActivityRetainedComponent::class)
+@InstallIn(SingletonComponent::class)
 object RemoteModule {
     @Provides
     fun provideKtorHttpClient(): HttpClient {
@@ -78,7 +78,7 @@ object RemoteModule {
 }
 
 @Module
-@InstallIn(ActivityRetainedComponent::class)
+@InstallIn(SingletonComponent::class)
 object RemoteUrlDatasourceModule {
     @Provides
     fun provideUrlMetadataRemoteDataSource(

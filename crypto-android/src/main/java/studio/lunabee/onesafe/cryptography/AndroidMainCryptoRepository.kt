@@ -25,9 +25,8 @@ import androidx.core.util.AtomicFile
 import com.lunabee.lblogger.LBLogger
 import com.lunabee.lblogger.v
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
 import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
 import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
 import studio.lunabee.onesafe.cryptography.utils.SafeDataMutableStateFlow
@@ -36,7 +35,6 @@ import studio.lunabee.onesafe.cryptography.utils.safeCryptoArrayDelete
 import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
-import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
@@ -63,6 +61,7 @@ class AndroidMainCryptoRepository @Inject constructor(
     @DatastoreEngineProvider(DataStoreType.Plain) private val dataStoreEngine: DatastoreEngine,
     private val featureFlags: FeatureFlags,
     private val itemKeyProvider: ItemKeyProvider,
+    private val mapper: CryptoDataMapper,
 ) : MainCryptoRepository {
 
     private val masterKeyFlow: SafeDataMutableStateFlow = SafeDataMutableStateFlow(
@@ -77,19 +76,16 @@ class AndroidMainCryptoRepository @Inject constructor(
     )
     private var searchIndexKey: ByteArray? by safeCryptoArrayDelete(searchIndexKeyFlow)
 
-    private val bubblesContactKeyFlow: SafeDataMutableStateFlow = SafeDataMutableStateFlow(
-        overrideCode = OSCryptoError.Code.BUBBLES_CONTACT_KEY_ALREADY_LOADED,
-        nullableCode = OSCryptoError.Code.BUBBLES_CONTACT_KEY_NOT_LOADED,
+    private val bubblesMasterKeyFlow: SafeDataMutableStateFlow = SafeDataMutableStateFlow(
+        overrideCode = OSCryptoError.Code.BUBBLES_MASTER_KEY_ALREADY_LOADED,
+        nullableCode = OSCryptoError.Code.BUBBLES_MASTER_KEY_NOT_LOADED,
     )
-    private var bubblesContactKey: ByteArray? by safeCryptoArrayDelete(bubblesContactKeyFlow)
+    private var bubblesMasterKey: ByteArray? by safeCryptoArrayDelete(bubblesMasterKeyFlow)
 
     override fun isCryptoDataInMemory(): Flow<Boolean> {
         val flows = mutableListOf(masterKeyFlow, searchIndexKeyFlow)
-        if (featureFlags.bubbles()) {
-            flows += bubblesContactKeyFlow
-        }
-        return flows.merge().map { masterKey ->
-            masterKey != null
+        return combine(flows) { keys ->
+            keys.all { it != null }
         }.distinctUntilChanged()
     }
 
@@ -111,7 +107,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         errorCodeIfOverrideExistingValue = OSCryptoError.Code.SEARCH_INDEX_KEY_ALREADY_GENERATED,
     )
 
-    private var bubblesContactKeyDataStore: ByteArray? by dataStoreValueDelegate(
+    private var bubblesMasterKeyDataStore: ByteArray? by dataStoreValueDelegate(
         key = DATASTORE_BUBBLES_CONTACT_KEY,
         datastoreEngine = dataStoreEngine,
         errorCodeIfOverrideExistingValue = OSCryptoError.Code.BUBBLES_CONTACT_KEY_ALREADY_GENERATED,
@@ -123,14 +119,14 @@ class AndroidMainCryptoRepository @Inject constructor(
 
     override suspend fun resetCryptography() {
         dataStoreEngine.clearDataStore()
-        unloadCryptographyKeys()
+        unloadMasterKeys()
     }
 
-    override fun unloadCryptographyKeys() {
+    override fun unloadMasterKeys() {
         masterKey = null
         searchIndexKey = null
         if (featureFlags.bubbles()) {
-            bubblesContactKey = null
+            bubblesMasterKey = null
         }
         log.v("cryptographic keys unloaded")
     }
@@ -150,7 +146,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         )
         generateIndexKey()
         if (featureFlags.bubbles()) {
-            generateBubblesContactKey()
+            generateBubblesKey()
         }
     }
 
@@ -195,9 +191,9 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    override suspend fun generateBubblesContactKey() {
-        bubblesContactKeyDataStore = itemKeyProvider().use { keyData ->
-            bubblesContactKey = keyData.copyOf()
+    private suspend fun generateBubblesKey() {
+        bubblesMasterKeyDataStore = itemKeyProvider().use { keyData ->
+            bubblesMasterKey = keyData.copyOf()
             crypto.encrypt(keyData, masterKey!!, null)
         }
     }
@@ -212,15 +208,15 @@ class AndroidMainCryptoRepository @Inject constructor(
     }
 
     private suspend fun retrieveKeyForBubblesContact() {
-        if (bubblesContactKeyDataStore != null) {
-            bubblesContactKey = crypto.decrypt(bubblesContactKeyDataStore!!, masterKey!!, null)
+        if (bubblesMasterKeyDataStore != null) {
+            bubblesMasterKey = crypto.decrypt(bubblesMasterKeyDataStore!!, masterKey!!, null)
         } else {
-            generateBubblesContactKey()
+            generateBubblesKey()
         }
     }
 
     private suspend fun reEncryptBubblesContactKey() {
-        val key = crypto.encrypt(bubblesContactKey!!, masterKey!!, null)
+        val key = crypto.encrypt(bubblesMasterKey!!, masterKey!!, null)
         dataStoreEngine.editValue(value = key, key = DATASTORE_BUBBLES_CONTACT_KEY)
     }
 
@@ -298,7 +294,7 @@ class AndroidMainCryptoRepository @Inject constructor(
                 crypto.decrypt(decryptEntry.data, rawKey, null)
             },
             clazz = decryptEntry.clazz,
-            mapper = decryptEntry.mapper,
+            mapBlock = decryptEntry.mapBlock,
         )
     }
 
@@ -310,7 +306,7 @@ class AndroidMainCryptoRepository @Inject constructor(
                         null
                     } else {
                         val rawData = crypto.decrypt(decryptEntry.data, rawKey, null)
-                        mapClearData(decryptEntry.mapper, rawData, decryptEntry.clazz)
+                        mapper(decryptEntry.mapBlock, rawData, decryptEntry.clazz)
                     }
                 }
             }
@@ -327,7 +323,7 @@ class AndroidMainCryptoRepository @Inject constructor(
                 crypto.decrypt(aFile, rawKey, null)
             },
             clazz = clazz,
-            mapper = mapper,
+            mapBlock = mapper,
         )
     }
 
@@ -335,7 +331,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         key: SafeItemKey,
         decrypt: suspend (rawKey: ByteArray) -> ByteArray,
         clazz: KClass<Data>,
-        mapper: (ByteArray.() -> Data)?,
+        mapBlock: (ByteArray.() -> Data)?,
     ): Data {
         val rawData = try {
             crypto.decrypt(key.encValue, masterKey!!, null).use { rawKey ->
@@ -345,34 +341,14 @@ class AndroidMainCryptoRepository @Inject constructor(
             throw OSCryptoError(OSCryptoError.Code.DECRYPTION_FAILED_WRONG_KEY, cause = e)
         }
 
-        return mapClearData(mapper, rawData, clazz)
-    }
-
-    private fun <Data : Any> mapClearData(
-        mapper: (ByteArray.() -> Data)?,
-        rawData: ByteArray,
-        clazz: KClass<out Data>,
-    ): Data {
-        @Suppress("UNCHECKED_CAST")
-        return when {
-            mapper != null -> rawData.mapper()
-            clazz == String::class -> rawData.decodeToString() as Data
-            clazz == Int::class -> rawData.toInt() as Data
-            clazz == SafeItemFieldKind::class -> rawData.toSafeItemFieldKind() as Data
-            clazz == UUID::class -> rawData.toUUID() as Data
-            clazz == ByteArray::class -> rawData as Data
-            else -> throw OSCryptoError(
-                OSCryptoError.Code.MISSING_MAPPER,
-                "No mapper found for type ${clazz.simpleName}",
-            )
-        }
+        return mapper(mapBlock, rawData, clazz)
     }
 
     override suspend fun <Data : Any> encrypt(key: SafeItemKey, encryptEntry: EncryptEntry<Data>): ByteArray {
         val data = encryptEntry.data
-        val mapper = encryptEntry.mapper
+        val mapBlock = encryptEntry.mapBlock
 
-        val rawData = mapToData(mapper, data)
+        val rawData = mapper(mapBlock, data)
 
         return try {
             crypto.decrypt(key.encValue, masterKey!!, null).use { rawKey ->
@@ -386,7 +362,7 @@ class AndroidMainCryptoRepository @Inject constructor(
     override suspend fun <Data : Any> encrypt(key: SafeItemKey, encryptEntries: List<EncryptEntry<Data>?>): List<ByteArray?> {
         val rawDataList = encryptEntries.map { entry ->
             entry?.let { encryptEntry ->
-                mapToData(encryptEntry.mapper, encryptEntry.data)
+                mapper(encryptEntry.mapBlock, encryptEntry.data)
             }
         }
 
@@ -443,50 +419,16 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    override suspend fun encryptForBubblesContact(data: ByteArray): ByteArray = try {
-        crypto.encrypt(data, bubblesContactKey!!, null)
+    override suspend fun encryptBubbles(data: ByteArray): ByteArray = try {
+        crypto.encrypt(data, bubblesMasterKey!!, null)
     } catch (e: GeneralSecurityException) {
         throw OSCryptoError(OSCryptoError.Code.BUBBLES_ENCRYPTION_FAILED_BAD_KEY, cause = e)
     }
 
-    override suspend fun decryptForBubblesContact(data: ByteArray): ByteArray = try {
-        crypto.decrypt(data, bubblesContactKey!!, null)
+    override suspend fun decryptBubbles(data: ByteArray): ByteArray = try {
+        crypto.decrypt(data, bubblesMasterKey!!, null)
     } catch (e: GeneralSecurityException) {
         throw OSCryptoError(OSCryptoError.Code.BUBBLES_DECRYPTION_FAILED_WRONG_KEY, cause = e)
-    }
-
-    override suspend fun encryptWithBubbleContactKey(data: ByteArray, encContactKey: ByteArray): ByteArray = try {
-        val contactKey = crypto.decrypt(encContactKey, bubblesContactKey!!, null)
-        crypto.encrypt(data, contactKey, null)
-    } catch (e: GeneralSecurityException) {
-        throw OSCryptoError(OSCryptoError.Code.BUBBLES_ENCRYPTION_FAILED_BAD_CONTACT_KEY, cause = e)
-    }
-
-    override suspend fun encryptWithBubbleContactKey(outputStream: OutputStream, encContactKey: ByteArray): OutputStream = try {
-        val contactKey = crypto.decrypt(encContactKey, bubblesContactKey!!, null)
-        crypto.getCipherOutputStream(outputStream, contactKey, null)
-    } catch (e: GeneralSecurityException) {
-        throw OSCryptoError(OSCryptoError.Code.BUBBLES_ENCRYPTION_FAILED_BAD_CONTACT_KEY, cause = e)
-    }
-
-    override suspend fun decryptWithBubbleContactKey(data: ByteArray, encContactKey: ByteArray): ByteArray = try {
-        val contactKey = crypto.decrypt(encContactKey, bubblesContactKey!!, null)
-        crypto.decrypt(data, contactKey, null)
-    } catch (e: GeneralSecurityException) {
-        throw OSCryptoError(OSCryptoError.Code.BUBBLES_DECRYPTION_FAILED_WRONG_CONTACT_KEY, cause = e)
-    }
-
-    private fun <Data : Any> mapToData(mapper: ((Data) -> ByteArray)?, data: Data) = when {
-        mapper != null -> mapper(data)
-        data is String -> data.encodeToByteArray()
-        data is Int -> data.toByteArray()
-        data is SafeItemFieldKind -> data.toByteArray()
-        data is UUID -> data.toByteArray()
-        data is ByteArray -> data
-        else -> throw OSCryptoError(
-            OSCryptoError.Code.MISSING_MAPPER,
-            "No mapper found or provided for type ${data::class.simpleName}",
-        )
     }
 
     companion object {

@@ -29,6 +29,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import studio.lunabee.bubbles.repository.datasource.ContactKeyLocalDataSource
+import studio.lunabee.bubbles.repository.datasource.ContactLocalDataSource
+import studio.lunabee.messaging.repository.datasource.MessageLocalDataSource
 import studio.lunabee.onesafe.domain.repository.PersistenceManager
 import studio.lunabee.onesafe.repository.datasource.ForceUpgradeLocalDatasource
 import studio.lunabee.onesafe.repository.datasource.IconLocalDataSource
@@ -38,18 +41,25 @@ import studio.lunabee.onesafe.repository.datasource.RecentSearchLocalDatasource
 import studio.lunabee.onesafe.repository.datasource.SafeItemFieldLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.SafeItemKeyLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.SafeItemLocalDataSource
+import studio.lunabee.onesafe.storage.BubblesDatabase
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.OSForceUpgradeProto.ForceUpgradeProtoData
 import studio.lunabee.onesafe.storage.OSPasswordGeneratorConfigProto.PasswordGeneratorConfigProto
 import studio.lunabee.onesafe.storage.OSRecentSearchProto.RecentSearchProto
 import studio.lunabee.onesafe.storage.PersistenceManagerImpl
+import studio.lunabee.onesafe.storage.dao.ContactDao
+import studio.lunabee.onesafe.storage.dao.ContactKeyDao
 import studio.lunabee.onesafe.storage.dao.IndexWordEntryDao
+import studio.lunabee.onesafe.storage.dao.MessageDao
 import studio.lunabee.onesafe.storage.dao.SafeItemDao
 import studio.lunabee.onesafe.storage.dao.SafeItemFieldDao
 import studio.lunabee.onesafe.storage.dao.SafeItemKeyDao
+import studio.lunabee.onesafe.storage.datasource.ContactKeyLocalDataSourceImpl
+import studio.lunabee.onesafe.storage.datasource.ContactLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.ForceUpgradeLocalDatasourceImpl
 import studio.lunabee.onesafe.storage.datasource.IconLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.IndexWordEntryLocalDataSourceImpl
+import studio.lunabee.onesafe.storage.datasource.MessageLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.PasswordGeneratorConfigLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.RecentSearchLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.SafeItemFieldLocalDataSourceImpl
@@ -96,11 +106,26 @@ interface StorageModule {
     fun bindPasswordGeneratorConfigLocalDatasource(
         passwordGeneratorConfigLocalDataSourceImpl: PasswordGeneratorConfigLocalDataSourceImpl,
     ): PasswordGeneratorConfigLocalDataSource
+
+    @Binds
+    fun bindContactLocalDataSource(
+        bindContactLocalDataSourceImpl: ContactLocalDataSourceImpl,
+    ): ContactLocalDataSource
+
+    @Binds
+    fun bindContactKeyLocalDataSource(
+        bindContactKeyLocalDataSourceImpl: ContactKeyLocalDataSourceImpl,
+    ): ContactKeyLocalDataSource
+
+    @Binds
+    fun bindMessageLocalDataSource(
+        bindBubblesMessageLocalDataSourceImpl: MessageLocalDataSourceImpl,
+    ): MessageLocalDataSource
 }
 
 @Module
 @InstallIn(SingletonComponent::class)
-object MainDatabaseModule {
+object DatabaseModule {
     @Provides
     @Singleton
     fun provideMainDatabase(@ApplicationContext appContext: Context): MainDatabase {
@@ -108,6 +133,16 @@ object MainDatabaseModule {
             appContext,
             MainDatabase::class.java,
             "bc9fe798-a4f0-402e-9f5b-80339d87a041",
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideBubblesDatabase(@ApplicationContext appContext: Context): BubblesDatabase {
+        return Room.databaseBuilder(
+            appContext,
+            BubblesDatabase::class.java,
+            "58252457-42de-4313-a007-1b7c80445bf6",
         ).build()
     }
 }
@@ -133,6 +168,21 @@ object MainDatabaseDaoModule {
     @Provides
     fun provideSafeItemKeyDao(mainDatabase: MainDatabase): SafeItemKeyDao {
         return mainDatabase.safeItemKeyDao()
+    }
+
+    @Provides
+    fun provideContactDao(bubblesDatabase: BubblesDatabase): ContactDao {
+        return bubblesDatabase.contactDao()
+    }
+
+    @Provides
+    fun provideContactKeyDao(bubblesDatabase: BubblesDatabase): ContactKeyDao {
+        return bubblesDatabase.contactKeyDao()
+    }
+
+    @Provides
+    fun provideMessageDao(bubblesDatabase: BubblesDatabase): MessageDao {
+        return bubblesDatabase.messageDao()
     }
 }
 

@@ -29,6 +29,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
+import studio.lunabee.onesafe.bubbles.crypto.AndroidBubblesCryptoRepository
+import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.onesafe.cryptography.AndroidEditCryptoRepository
 import studio.lunabee.onesafe.cryptography.AndroidMainCryptoRepository
 import studio.lunabee.onesafe.cryptography.ClearDatastoreEngine
@@ -46,7 +48,7 @@ import javax.inject.Singleton
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
-    replaces = [CryptoModule::class],
+    replaces = [CryptoModule::class, CryptoServiceModule::class],
 )
 abstract class CryptoTestModule {
     @Binds
@@ -60,6 +62,12 @@ abstract class CryptoTestModule {
     internal abstract fun bindOnboardingCryptoRepository(
         androidEditCryptoRepository: AndroidEditCryptoRepository,
     ): EditCryptoRepository
+
+    @Binds
+    @Singleton
+    internal abstract fun bindBubblesCryptoRepository(
+        androidBubblesCryptoRepository: AndroidBubblesCryptoRepository,
+    ): BubblesCryptoRepository
 }
 
 @Module
@@ -83,7 +91,7 @@ object CryptoDatastoreTestModule {
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
-    replaces = [DatastoreEngineModule::class],
+    replaces = [DatastoreEngineModule::class, DatastoreEngineServiceModule::class],
 )
 abstract class DatastoreEngineTestModule {
     @Binds
