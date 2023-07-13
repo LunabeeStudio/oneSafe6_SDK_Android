@@ -64,5 +64,7 @@ data class OSCryptoError(
         BUBBLES_DECRYPTION_FAILED_WRONG_KEY("Unable to decrypt with the provided key"),
         BUBBLES_ENCRYPTION_FAILED_BAD_CONTACT_KEY("Unable to encrypt with the provided key"),
         BUBBLES_DECRYPTION_FAILED_WRONG_CONTACT_KEY("Unable to decrypt with the provided key"),
+        BUBBLES_DECRYPTION_FAILED_QUEUE_KEY("Unable to decrypt the queue with the provided key"),
+        BUBBLES_ENCRYPTION_FAILED_QUEUE_KEY("Unable to encrypt the queue with the provided key"),
     }
 }

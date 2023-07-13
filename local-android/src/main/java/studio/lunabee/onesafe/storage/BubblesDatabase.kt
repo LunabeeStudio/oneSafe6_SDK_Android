@@ -25,22 +25,26 @@ import androidx.room.TypeConverters
 import studio.lunabee.onesafe.storage.converter.InstantConverter
 import studio.lunabee.onesafe.storage.dao.ContactDao
 import studio.lunabee.onesafe.storage.dao.ContactKeyDao
+import studio.lunabee.onesafe.storage.dao.EnqueuedMessageDao
 import studio.lunabee.onesafe.storage.dao.MessageDao
 import studio.lunabee.onesafe.storage.model.RoomContact
 import studio.lunabee.onesafe.storage.model.RoomContactKey
+import studio.lunabee.onesafe.storage.model.RoomEnqueuedMessage
 import studio.lunabee.onesafe.storage.model.RoomMessage
 
 @TypeConverters(InstantConverter::class)
 @Database(
-    version = 2,
+    version = 1,
     entities = [
         RoomContact::class,
         RoomMessage::class,
         RoomContactKey::class,
+        RoomEnqueuedMessage::class,
     ],
 )
 abstract class BubblesDatabase : RoomDatabase() {
     abstract fun contactDao(): ContactDao
     abstract fun contactKeyDao(): ContactKeyDao
     abstract fun messageDao(): MessageDao
+    abstract fun enqueuedMessageDao(): EnqueuedMessageDao
 }

@@ -31,6 +31,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import studio.lunabee.bubbles.repository.datasource.ContactKeyLocalDataSource
 import studio.lunabee.bubbles.repository.datasource.ContactLocalDataSource
+import studio.lunabee.messaging.repository.datasource.EnqueuedMessageLocalDataSource
 import studio.lunabee.messaging.repository.datasource.MessageLocalDataSource
 import studio.lunabee.onesafe.domain.repository.PersistenceManager
 import studio.lunabee.onesafe.repository.datasource.ForceUpgradeLocalDatasource
@@ -49,6 +50,7 @@ import studio.lunabee.onesafe.storage.OSRecentSearchProto.RecentSearchProto
 import studio.lunabee.onesafe.storage.PersistenceManagerImpl
 import studio.lunabee.onesafe.storage.dao.ContactDao
 import studio.lunabee.onesafe.storage.dao.ContactKeyDao
+import studio.lunabee.onesafe.storage.dao.EnqueuedMessageDao
 import studio.lunabee.onesafe.storage.dao.IndexWordEntryDao
 import studio.lunabee.onesafe.storage.dao.MessageDao
 import studio.lunabee.onesafe.storage.dao.SafeItemDao
@@ -58,6 +60,7 @@ import studio.lunabee.onesafe.storage.datasource.ContactKeyLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.ContactLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.ForceUpgradeLocalDatasourceImpl
 import studio.lunabee.onesafe.storage.datasource.IconLocalDataSourceImpl
+import studio.lunabee.onesafe.storage.datasource.EnqueuedMessageLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.IndexWordEntryLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.MessageLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.PasswordGeneratorConfigLocalDataSourceImpl
@@ -121,6 +124,11 @@ interface StorageModule {
     fun bindMessageLocalDataSource(
         bindBubblesMessageLocalDataSourceImpl: MessageLocalDataSourceImpl,
     ): MessageLocalDataSource
+
+    @Binds
+    fun bindEnqueuedMessageLocalDataSource(
+        enqueuedMessageLocalDataSourceImpl: EnqueuedMessageLocalDataSourceImpl,
+    ): EnqueuedMessageLocalDataSource
 }
 
 @Module
@@ -183,6 +191,11 @@ object MainDatabaseDaoModule {
     @Provides
     fun provideMessageDao(bubblesDatabase: BubblesDatabase): MessageDao {
         return bubblesDatabase.messageDao()
+    }
+
+    @Provides
+    fun provideEnqueuedMessageDao(bubblesDatabase: BubblesDatabase): EnqueuedMessageDao {
+        return bubblesDatabase.enqueuedMessageDao()
     }
 }
 

@@ -29,6 +29,7 @@ import dagger.hilt.android.scopes.ServiceScoped
 import dagger.hilt.components.SingletonComponent
 import studio.lunabee.bubbles.repository.repository.ContactKeyRepositoryImpl
 import studio.lunabee.bubbles.repository.repository.ContactRepositoryImpl
+import studio.lunabee.messaging.repository.repository.EnqueuedMessageRepositoryImpl
 import studio.lunabee.messaging.repository.repository.MessageChannelRepositoryImpl
 import studio.lunabee.messaging.repository.repository.MessageOrderRepositoryImpl
 import studio.lunabee.messaging.repository.repository.MessageRepositoryImpl
@@ -48,6 +49,7 @@ import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
 import studio.lunabee.onesafe.domain.repository.SupportOSRepository
 import studio.lunabee.onesafe.domain.repository.UrlMetadataRepository
+import studio.lunabee.onesafe.messaging.domain.repository.EnqueuedMessageRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessageOrderRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
@@ -69,10 +71,6 @@ import studio.lunabee.onesafe.repository.repository.UrlMetadataRepositoryImpl
 @Module
 @InstallIn(ActivityRetainedComponent::class)
 interface RepositoryModule {
-
-    @Binds
-    @ActivityRetainedScoped
-    fun bindUrlMetadataRepository(urlMetadataRepository: UrlMetadataRepositoryImpl): UrlMetadataRepository
 
     @Binds
     @ActivityRetainedScoped
@@ -113,6 +111,9 @@ interface RepositoryServiceModule {
 @InstallIn(SingletonComponent::class)
 interface RepositoryGlobalModule {
     @Binds
+    fun bindUrlMetadataRepository(urlMetadataRepository: UrlMetadataRepositoryImpl): UrlMetadataRepository
+
+    @Binds
     fun bindSecurityOptionRepository(securityOptionRepository: SecurityOptionRepositoryImpl): SecurityOptionRepository
 
     @Binds
@@ -150,4 +151,7 @@ interface RepositoryGlobalModule {
 
     @Binds
     fun bindsMessageOrderRepository(bubblesMessageOrderRepositoryImpl: MessageOrderRepositoryImpl): MessageOrderRepository
+
+    @Binds
+    fun bindsQueueMessageRepository(queueMessageRepositoryImpl: EnqueuedMessageRepositoryImpl): EnqueuedMessageRepository
 }

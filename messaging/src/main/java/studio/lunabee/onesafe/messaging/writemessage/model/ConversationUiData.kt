@@ -30,7 +30,7 @@ sealed interface ConversationUiData {
         val text: String,
         val direction: MessageDirection,
         val sendAt: Instant,
-        val channelName: String,
+        val channelName: String?,
     ) : ConversationUiData {
         fun wereSentOnSameDay(other: PlainMessageData?): Boolean =
             other?.let { sendAt.isSameDayAs(it.sendAt) } ?: false

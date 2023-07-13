@@ -26,4 +26,7 @@ dependencies {
     implementation(AndroidX.paging.commonKtx)
     implementation(libs.hilt.core)
     implementation(KotlinX.serialization.json)
+
+    implementation(platform(libs.lunabee.bom))
+    implementation(libs.lbcore)
 }

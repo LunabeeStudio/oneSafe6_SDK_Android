@@ -19,12 +19,16 @@
 
 package studio.lunabee.onesafe.bubbles.crypto
 
-import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
+import kotlinx.coroutines.flow.first
 import studio.lunabee.onesafe.bubbles.domain.model.ContactLocalKey
 import studio.lunabee.onesafe.bubbles.domain.model.ContactSharedKey
+import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.onesafe.cryptography.CryptoDataMapper
 import studio.lunabee.onesafe.cryptography.CryptoEngine
-import studio.lunabee.onesafe.cryptography.ItemKeyProvider
+import studio.lunabee.onesafe.cryptography.DatastoreEngine
+import studio.lunabee.onesafe.cryptography.RandomKeyProvider
+import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
+import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
@@ -37,12 +41,13 @@ import javax.inject.Inject
 class AndroidBubblesCryptoRepository @Inject constructor(
     private val mainCryptoRepository: MainCryptoRepository,
     private val crypto: CryptoEngine,
-    private val itemKeyProvider: ItemKeyProvider,
+    private val randomKeyProvider: RandomKeyProvider,
     private val mapper: CryptoDataMapper,
+    @DatastoreEngineProvider(DataStoreType.Encrypted) private val dataStoreEngine: DatastoreEngine,
 ) : BubblesCryptoRepository {
 
     override suspend fun generateLocalKeyForContact(): ContactLocalKey {
-        return itemKeyProvider().use { plainKey ->
+        return randomKeyProvider().use { plainKey ->
             val encKey = mainCryptoRepository.encryptBubbles(plainKey)
             ContactLocalKey(encKey)
         }
@@ -93,5 +98,43 @@ class AndroidBubblesCryptoRepository @Inject constructor(
         crypto.decrypt(data, plainSharedKey, null)
     } catch (e: GeneralSecurityException) {
         throw OSCryptoError(OSCryptoError.Code.BUBBLES_DECRYPTION_FAILED_WRONG_CONTACT_KEY, cause = e)
+    }
+
+    override suspend fun <Data : Any> queueEncrypt(encryptEntry: EncryptEntry<Data>): ByteArray {
+        return getOrCreateQueueKey().use { key ->
+            val data = encryptEntry.data
+            val mapBlock = encryptEntry.mapBlock
+            val rawData = mapper(mapBlock, data)
+            try {
+                crypto.encrypt(rawData, key, null)
+            } catch (e: GeneralSecurityException) {
+                throw OSCryptoError(OSCryptoError.Code.BUBBLES_ENCRYPTION_FAILED_QUEUE_KEY, cause = e)
+            }
+        }
+    }
+
+    override suspend fun <Data : Any> queueDecrypt(decryptEntry: DecryptEntry<Data>): Data {
+        return getOrCreateQueueKey().use { key ->
+            val rawData = try {
+                crypto.decrypt(decryptEntry.data, key, null)
+            } catch (e: GeneralSecurityException) {
+                throw OSCryptoError(OSCryptoError.Code.BUBBLES_DECRYPTION_FAILED_QUEUE_KEY, cause = e)
+            }
+
+            mapper(decryptEntry.mapBlock, rawData, decryptEntry.clazz)
+        }
+    }
+
+    private suspend fun getOrCreateQueueKey(): ByteArray {
+        var key = dataStoreEngine.retrieveValue(QUEUE_KEY_ALIAS).first()
+        if (key == null) {
+            key = randomKeyProvider()
+            dataStoreEngine.editValue(key, QUEUE_KEY_ALIAS)
+        }
+        return key
+    }
+
+    companion object {
+        private const val QUEUE_KEY_ALIAS = "bfe3f6a9-918a-4bf6-af38-786679fa0c82"
     }
 }

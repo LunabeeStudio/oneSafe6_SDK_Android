@@ -32,5 +32,7 @@ data class OSStorageError(
         CONTACT_KEY_NOT_FOUND("The contact key does not exist"),
         UNKNOWN_DATABASE_ERROR("Unknown database error"),
         PROTO_DATASTORE_READ_ERROR("Cannot read datastore proto"),
+        ENQUEUED_MESSAGE_ALREADY_EXIST_ERROR("The message has already been add in the table"),
+        ENQUEUED_MESSAGE_NOT_FOUND_FOR_DELETE("No message with the id provided found for delete"),
     }
 }

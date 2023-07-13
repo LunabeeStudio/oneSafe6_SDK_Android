@@ -51,7 +51,7 @@
 
         <!-- IME service subclass -->
         <service
-            android:name="studio.lunabee.onesafe.OSFlorisImeService"
+            android:name=".OSFlorisImeService"
             android:directBootAware="true"
             android:exported="true"
             android:label="@string/floris_app_name"

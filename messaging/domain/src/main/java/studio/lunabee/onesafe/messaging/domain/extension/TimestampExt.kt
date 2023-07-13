@@ -28,8 +28,7 @@ fun Timestamp.toInstant(): Instant = Instant.ofEpochSecond(
     this.nanos.toLong(),
 )
 
-fun TimestampKt.Dsl.now() {
-    val now = Instant.now()
-    seconds = now.epochSecond
-    nanos = now.nano
+fun TimestampKt.Dsl.withInstant(instant: Instant) {
+    seconds = instant.epochSecond
+    nanos = instant.nano
 }

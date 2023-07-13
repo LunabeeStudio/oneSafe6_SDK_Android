@@ -44,10 +44,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.OSScreen
-import studio.lunabee.onesafe.bubbles.R
+import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
-import studio.lunabee.onesafe.commonui.ResourcesLibrary
 import studio.lunabee.onesafe.commonui.localprovider.LocalKeyboardUiHeight
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
 import studio.lunabee.onesafe.extension.osShadowElevation
@@ -64,7 +63,7 @@ import java.util.UUID
 fun SelectContactRoute(
     navigateBack: () -> Unit,
     navigateToWriteMessage: (UUID) -> Unit,
-    @DrawableRes exitIcon: Int = ResourcesLibrary.icBack,
+    @DrawableRes exitIcon: Int = R.drawable.ic_back,
     viewModel: SelectContactViewModel = hiltViewModel(),
 ) {
     val contacts by viewModel.contacts.collectAsStateWithLifecycle()
@@ -83,7 +82,7 @@ fun SelectContactRoute(
 private fun SelectContactScreen(
     navigateBack: () -> Unit,
     contacts: List<BubblesContactInfo>?,
-    @DrawableRes exitIcon: Int = ResourcesLibrary.icBack,
+    @DrawableRes exitIcon: Int = R.drawable.ic_back,
     onClickOnContact: (UUID) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()

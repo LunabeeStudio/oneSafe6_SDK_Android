@@ -31,4 +31,6 @@ interface BubblesCryptoRepository {
     suspend fun <Data : Any> localDecrypt(key: ContactLocalKey, decryptEntry: DecryptEntry<Data>): Data
     suspend fun sharedEncrypt(outputStream: OutputStream, localKey: ContactLocalKey, sharedKey: ContactSharedKey): OutputStream
     suspend fun sharedDecrypt(data: ByteArray, localKey: ContactLocalKey, sharedKey: ContactSharedKey): ByteArray
+    suspend fun <Data : Any> queueEncrypt(encryptEntry: EncryptEntry<Data>): ByteArray
+    suspend fun <Data : Any> queueDecrypt(decryptEntry: DecryptEntry<Data>): Data
 }

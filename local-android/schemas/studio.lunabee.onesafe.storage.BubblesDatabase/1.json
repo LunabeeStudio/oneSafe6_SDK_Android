@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "949da552ed3ab2bb6d393c55ec191b68",
+    "identityHash": "3c5ddfc4957982b203402c8f43638116",
     "entities": [
       {
-        "tableName": "BubblesContact",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` BLOB NOT NULL, `enc_name` BLOB NOT NULL, `enc_key` BLOB NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "tableName": "Contact",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` BLOB NOT NULL, `enc_name` BLOB NOT NULL, `enc_shared_key` BLOB NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -21,8 +21,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "encKey",
-            "columnName": "enc_key",
+            "fieldPath": "encSharedKey",
+            "columnName": "enc_shared_key",
             "affinity": "BLOB",
             "notNull": true
           },
@@ -41,12 +41,183 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "Message",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `contact_id` BLOB NOT NULL, `enc_sent_at` BLOB NOT NULL, `enc_content` BLOB NOT NULL, `direction` TEXT NOT NULL, `order` REAL NOT NULL, `enc_channel` BLOB, FOREIGN KEY(`contact_id`) REFERENCES `Contact`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contactId",
+            "columnName": "contact_id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encSentAt",
+            "columnName": "enc_sent_at",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encContent",
+            "columnName": "enc_content",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "direction",
+            "columnName": "direction",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "order",
+            "columnName": "order",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encChannel",
+            "columnName": "enc_channel",
+            "affinity": "BLOB",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Message_order_contact_id",
+            "unique": true,
+            "columnNames": [
+              "order",
+              "contact_id"
+            ],
+            "orders": [
+              "DESC",
+              "DESC"
+            ],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Message_order_contact_id` ON `${TABLE_NAME}` (`order` DESC, `contact_id` DESC)"
+          },
+          {
+            "name": "index_Message_contact_id",
+            "unique": false,
+            "columnNames": [
+              "contact_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Message_contact_id` ON `${TABLE_NAME}` (`contact_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Contact",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "contact_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "ContactLocalKey",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`contact_id` BLOB NOT NULL, `enc_value` BLOB NOT NULL, PRIMARY KEY(`contact_id`), FOREIGN KEY(`contact_id`) REFERENCES `Contact`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "contactId",
+            "columnName": "contact_id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encLocalKey",
+            "columnName": "enc_value",
+            "affinity": "BLOB",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "contact_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "Contact",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "contact_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "EnqueuedMessage",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `enc_message` BLOB NOT NULL, `enc_channel` BLOB)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encMessage",
+            "columnName": "enc_message",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encChannel",
+            "columnName": "enc_channel",
+            "affinity": "BLOB",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_EnqueuedMessage_enc_message",
+            "unique": true,
+            "columnNames": [
+              "enc_message"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_EnqueuedMessage_enc_message` ON `${TABLE_NAME}` (`enc_message`)"
+          }
+        ],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '949da552ed3ab2bb6d393c55ec191b68')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3c5ddfc4957982b203402c8f43638116')"
     ]
   }
 }

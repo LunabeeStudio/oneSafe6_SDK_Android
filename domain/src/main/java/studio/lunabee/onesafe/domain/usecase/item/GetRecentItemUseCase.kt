@@ -27,6 +27,6 @@ import javax.inject.Inject
 class GetRecentItemUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
 ) {
-    private val itemDisplayedLimit: Int = 4
+    private val itemDisplayedLimit: Int = 12
     operator fun invoke(): Flow<List<SafeItem>> = safeItemRepository.getLastConsultedNotDeletedSafeItem(itemDisplayedLimit)
 }

@@ -22,7 +22,7 @@ package studio.lunabee.onesafe.bubbles.ui.selectcontact
 import androidx.compose.foundation.lazy.LazyListScope
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.osLazyCard
-import studio.lunabee.onesafe.bubbles.R
+import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.bubbles.ui.composables.ContactItemCardContent
 import studio.lunabee.onesafe.bubbles.ui.composables.EmptyContactCard
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo

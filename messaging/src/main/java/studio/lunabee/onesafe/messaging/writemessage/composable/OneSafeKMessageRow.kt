@@ -40,8 +40,8 @@ import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
 import studio.lunabee.onesafe.commonui.OSItemIllustrationHelper
 import studio.lunabee.onesafe.commonui.OSNameProvider
+import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.extension.loremIpsum
-import studio.lunabee.onesafe.messaging.R
 import studio.lunabee.onesafe.messaging.domain.model.MessageDirection
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
 import studio.lunabee.onesafe.model.OSSafeItemStyle
@@ -87,11 +87,16 @@ fun OneSafeKMessageRow(
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.fillMaxWidth(),
             )
+            val channelText = if (messageData.channelName != null) {
+                LbcTextSpec.Raw(messageData.channelName)
+            } else {
+                LbcTextSpec.StringResource(R.string.oneSafeK_channel_unknown)
+            }
             OSText(
                 text = LbcTextSpec.StringResource(
                     R.string.oneSafeK_messageRow_timeChannelLabel,
                     messageData.sendAt.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)),
-                    messageData.channelName,
+                    channelText,
                 ),
                 textAlign = style.textAlign,
                 color = style.textColor,

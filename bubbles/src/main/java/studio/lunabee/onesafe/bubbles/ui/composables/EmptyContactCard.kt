@@ -34,11 +34,10 @@ import studio.lunabee.onesafe.atom.OSIconDecorationButton
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.OSSmallDivider
 import studio.lunabee.onesafe.atom.button.defaults.OSTextButtonDefaults
-import studio.lunabee.onesafe.bubbles.R
+import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.molecule.OSTopImageBox
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
-import studio.lunabee.onesafe.commonui.ResourcesLibrary
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.organism.card.OSMessageCard
 import studio.lunabee.onesafe.ui.UiConstants
@@ -46,7 +45,7 @@ import studio.lunabee.onesafe.ui.UiConstants
 @Composable
 fun EmptyContactCard() {
     OSTopImageBox(
-        imageRes = ResourcesLibrary.characterJamyCool,
+        imageRes = R.drawable.character_jamy_cool,
     ) {
         CompositionLocalProvider(LocalCardContentExtraSpace.provides(null)) {
             OSMessageCard(
@@ -65,7 +64,7 @@ fun EmptyContactCard() {
                             text = LbcTextSpec.StringResource(id = R.string.bubbles_contact_manageButton),
                             onClick = {},
                             buttonColors = OSTextButtonDefaults.secondaryTextButtonColors(state = OSActionState.Enabled),
-                            leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = ResourcesLibrary.icPeople)) },
+                            leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = R.drawable.ic_people)) },
                         )
                     }
                 },

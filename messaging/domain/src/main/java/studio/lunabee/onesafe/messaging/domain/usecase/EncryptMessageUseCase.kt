@@ -27,8 +27,9 @@ import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.messagecompanion.OSMessage
 import studio.lunabee.onesafe.messagecompanion.messageData
-import studio.lunabee.onesafe.messaging.domain.extension.now
+import studio.lunabee.onesafe.messaging.domain.extension.withInstant
 import java.io.ByteArrayOutputStream
+import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
 import kotlin.io.encoding.Base64
@@ -43,13 +44,13 @@ class EncryptMessageUseCase @Inject constructor(
     private val bubblesCryptoRepository: BubblesCryptoRepository,
 ) {
     @OptIn(ExperimentalEncodingApi::class)
-    suspend operator fun invoke(plainMessage: String, contactId: UUID): LBResult<String> = OSError.runCatching {
+    suspend operator fun invoke(plainMessage: String, contactId: UUID, sentAt: Instant): LBResult<String> = OSError.runCatching {
         val sharedKey = contactRepository.getSharedKey(contactId)
         val localKey = contactKeyRepository.getContactLocalKey(contactId)
         val osMessage: OSMessage.MessageData = messageData {
             this.content = plainMessage
             this.recipientId = contactId.toString()
-            this.sentAt = timestamp { now() } // TODO don't get "now" here, add param
+            this.sentAt = timestamp { withInstant(sentAt) }
         }
         ByteArrayOutputStream().use { byteArrayOutputStream ->
             bubblesCryptoRepository.sharedEncrypt(byteArrayOutputStream, localKey, sharedKey).use { outputStream ->

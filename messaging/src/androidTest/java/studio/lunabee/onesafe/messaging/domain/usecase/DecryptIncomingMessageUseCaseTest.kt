@@ -34,6 +34,7 @@ import studio.lunabee.onesafe.bubbles.domain.usecase.CreateContactUseCase
 import studio.lunabee.onesafe.cryptography.CryptoEngine
 import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.domain.qualifier.VersionName
+import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.messagecompanion.messageData
 import studio.lunabee.onesafe.messaging.domain.extension.toInstant
@@ -103,14 +104,13 @@ class DecryptIncomingMessageUseCaseTest : OSHiltTest() {
             sentAt = plainTimestamp
         }
         val encData = crypto.encrypt(plainData.toByteArray(), Base64.decode(contact1.sharedKey), null)
-        val encodedEncData = Base64.encode(encData)
 
         val expected = studio.lunabee.onesafe.messaging.domain.model.OSPlainMessage(
             content = plainContent,
             recipientId = contact1.id,
             sentAt = plainDate,
         )
-        val actual = useCase(encodedEncData)
+        val actual = useCase(encData)
         assertSuccess(actual)
         assertEquals(expected, actual.successData.second)
     }
@@ -128,9 +128,8 @@ class DecryptIncomingMessageUseCaseTest : OSHiltTest() {
             sentAt = plainTimestamp
         }
         val encData = crypto.encrypt(plainData.toByteArray(), Base64.decode(contact2.sharedKey), null)
-        val encodedEncData = Base64.encode(encData)
 
-        val actual = useCase(encodedEncData)
+        val actual = useCase(encData)
         val error = assertFailure(actual).throwable
         assertIs<OSDomainError>(error)
         assertEquals(OSDomainError.Code.NO_MATCHING_CONTACT, error.code)
@@ -149,15 +148,36 @@ class DecryptIncomingMessageUseCaseTest : OSHiltTest() {
             sentAt = plainTimestamp
         }
         val encData = crypto.encrypt(plainData.toByteArray(), Base64.decode(contact2.sharedKey), null)
-        val encodedEncData = Base64.encode(encData)
 
         val expected = studio.lunabee.onesafe.messaging.domain.model.OSPlainMessage(
             content = plainContent,
             recipientId = contact2.id,
             sentAt = plainDate,
         )
-        val actual = useCase(encodedEncData)
+        val actual = useCase(encData)
         assertSuccess(actual)
         assertEquals(expected, actual.successData.second)
+    }
+
+    /**
+     * Try to decrypt without master key loaded
+     */
+    @Test
+    fun no_bubble_key_error_test(): TestResult = runTest {
+        createContactUseCase(listOf(contact1))
+        val plainContent = UUID.randomUUID().toString()
+        val plainData = messageData {
+            content = plainContent
+            recipientId = contact1.id.toString()
+            sentAt = plainTimestamp
+        }
+        val encData = crypto.encrypt(plainData.toByteArray(), Base64.decode(contact2.sharedKey), null)
+
+        lockAppUseCase()
+
+        val actual = useCase(encData)
+        val error = assertFailure(actual).throwable
+        assertIs<OSCryptoError>(error)
+        assertEquals(OSCryptoError.Code.BUBBLES_MASTER_KEY_NOT_LOADED, error.code)
     }
 }

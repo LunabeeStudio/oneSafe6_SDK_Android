@@ -19,7 +19,6 @@
 
 package studio.lunabee.onesafe.messaging.writemessage.screen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -53,19 +51,20 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.OSScreen
 import studio.lunabee.onesafe.atom.button.OSIconButton
 import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
 import studio.lunabee.onesafe.commonui.OSNameProvider
-import studio.lunabee.onesafe.commonui.ResourcesLibrary
+import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.localprovider.LocalKeyboardUiHeight
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
 import studio.lunabee.onesafe.extension.loremIpsum
 import studio.lunabee.onesafe.messaging.domain.model.MessageDirection
 import studio.lunabee.onesafe.messaging.writemessage.composable.ComposeMessageCard
-import studio.lunabee.onesafe.messaging.writemessage.composable.EmptyConversationCard
+import studio.lunabee.onesafe.messaging.writemessage.composable.ConversationDayHeader
 import studio.lunabee.onesafe.messaging.writemessage.composable.WriteMessageExitIcon
 import studio.lunabee.onesafe.messaging.writemessage.composable.WriteMessageTopBar
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
@@ -81,7 +80,7 @@ import kotlin.random.Random
 
 @Composable
 fun WriteMessageRoute(
-    onChangeRecipient: () -> Unit,
+    onChangeRecipient: (() -> Unit)?,
     sendMessage: (String) -> Unit,
     exitIcon: WriteMessageExitIcon,
     viewModel: WriteMessageViewModel = hiltViewModel(),
@@ -94,25 +93,29 @@ fun WriteMessageRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val conversation: LazyPagingItems<ConversationUiData> = viewModel.conversation.collectAsLazyPagingItems()
 
-    uiState.currentContact?.let { contact ->
-        val context = LocalContext.current
-        WriteMessageScreen(
-            contact = contact,
-            plainMessage = uiState.plainMessage,
-            encryptedMessage = uiState.encryptedMessage,
-            onChangeRecipient = onChangeRecipient,
-            onPlainMessageChange = viewModel::onPlainMessageChange,
-            sendMessage = {
-                viewModel.saveMessage(
-                    content = uiState.plainMessage,
-                    contactId = contact.id,
-                    context = context,
-                )
-                sendMessage(uiState.encryptedMessage)
-            },
-            exitIcon = exitIcon,
-            conversation = conversation,
-        )
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        uiState.currentContact?.let { contact ->
+            val context = LocalContext.current
+            WriteMessageScreen(
+                contact = contact,
+                plainMessage = uiState.plainMessage,
+                encryptedMessage = uiState.encryptedMessage,
+                onChangeRecipient = onChangeRecipient,
+                onPlainMessageChange = viewModel::onPlainMessageChange,
+                sendMessage = {
+                    viewModel.saveMessage(
+                        content = uiState.plainMessage,
+                        contactId = contact.id,
+                        context = context,
+                    )
+                    sendMessage(uiState.encryptedMessage)
+                },
+                exitIcon = exitIcon,
+                conversation = conversation,
+            )
+        }
     }
 }
 
@@ -121,7 +124,7 @@ fun WriteMessageScreen(
     contact: BubblesContactInfo,
     plainMessage: String,
     encryptedMessage: String,
-    onChangeRecipient: () -> Unit,
+    onChangeRecipient: (() -> Unit)?,
     onPlainMessageChange: (String) -> Unit,
     sendMessage: () -> Unit,
     conversation: LazyPagingItems<ConversationUiData>,
@@ -151,9 +154,10 @@ fun WriteMessageScreen(
             WriteMessageTopBar(
                 exitIcon = exitIcon,
                 contactNameProvider = contact.nameProvider,
+                canChangeRecipient = onChangeRecipient != null,
                 onClickOnChange = {
                     focusManager.clearFocus()
-                    onChangeRecipient()
+                    onChangeRecipient?.invoke()
                 },
                 modifier = Modifier
                     .statusBarsPadding()
@@ -169,8 +173,6 @@ fun WriteMessageScreen(
                     .weight(1f)
                     .fillMaxWidth(),
             ) {
-                val contactName = contact.nameProvider.name.string
-
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -178,21 +180,17 @@ fun WriteMessageScreen(
                     contentAlignment = Alignment.TopEnd,
                 ) {
                     when {
-                        isConversationHidden -> {
+                        isConversationHidden || conversation.itemCount == 0 -> {
                             Box(
-                                modifier = Modifier.fillMaxSize(),
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(bottom = OSDimens.SystemSpacing.Regular),
                                 contentAlignment = Alignment.BottomCenter,
                             ) {
-                                Image(
-                                    painter = painterResource(id = ResourcesLibrary.characterJamyHide),
-                                    contentDescription = null,
+                                ConversationDayHeader(
+                                    text = LbcTextSpec.StringResource(R.string.oneSafeK_messageDate_today),
                                 )
                             }
-                        }
-                        conversation.itemCount == 0 -> {
-                            EmptyConversationCard(
-                                contactName = contactName,
-                            )
                         }
                         else -> {
                             val context = LocalContext.current
@@ -218,9 +216,9 @@ fun WriteMessageScreen(
 
                     OSIconButton(
                         image = if (isConversationHidden) {
-                            OSImageSpec.Drawable(ResourcesLibrary.icVisibilityOn)
+                            OSImageSpec.Drawable(R.drawable.ic_visibility_on)
                         } else {
-                            OSImageSpec.Drawable(ResourcesLibrary.icVisibilityOff)
+                            OSImageSpec.Drawable(R.drawable.ic_visibility_off)
                         },
                         onClick = { isConversationHidden = !isConversationHidden },
                         buttonSize = OSDimens.SystemButtonDimension.Small,

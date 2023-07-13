@@ -50,7 +50,7 @@ class RoomMessage(
     @ColumnInfo(name = "enc_content") val encContent: ByteArray,
     @ColumnInfo(name = "direction") val direction: MessageDirection,
     @ColumnInfo(name = "order") val order: Float,
-    @ColumnInfo(name = "enc_channel") val encChannel: ByteArray,
+    @ColumnInfo(name = "enc_channel") val encChannel: ByteArray?,
 ) {
     fun toMessage(): Message = Message(
         id = id,

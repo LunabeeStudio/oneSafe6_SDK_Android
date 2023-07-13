@@ -67,7 +67,7 @@ class AndroidMainCryptoRepositoryTest {
     internal lateinit var hashEngine: HashEngine
 
     @Inject
-    internal lateinit var itemKeyProvider: ItemKeyProvider
+    internal lateinit var randomKeyProvider: RandomKeyProvider
 
     @Inject
     internal lateinit var dataStore: EncryptedDataStoreEngine
@@ -80,7 +80,7 @@ class AndroidMainCryptoRepositoryTest {
     }
 
     private val repository: AndroidMainCryptoRepository by lazy {
-        AndroidMainCryptoRepository(crypto, hashEngine, mockk(), dataStore, featureFlags, itemKeyProvider, mapper)
+        AndroidMainCryptoRepository(crypto, hashEngine, mockk(), dataStore, featureFlags, randomKeyProvider, mapper)
     }
 
     @Before

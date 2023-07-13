@@ -51,13 +51,14 @@ import studio.lunabee.onesafe.atom.button.OSIconButton
 import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.atom.textfield.OSTextField
+import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.localprovider.LocalKeyboardUiHeight
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
-import studio.lunabee.onesafe.messaging.R
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.OSColor
 import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
 import java.util.UUID
+import studio.lunabee.onesafe.messaging.R as MsgR
 
 @Composable
 fun ComposeMessageCard(
@@ -113,7 +114,7 @@ fun ComposeMessageCard(
                 modifier = Modifier.padding(start = OSDimens.SystemSpacing.Regular),
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_lock),
+                    painter = painterResource(id = MsgR.drawable.ic_lock),
                     contentDescription = null,
                     tint = OSColor.Neutral60,
                 )
@@ -147,7 +148,7 @@ fun ComposeMessageCard(
                 )
 
                 OSIconButton(
-                    image = OSImageSpec.Drawable(R.drawable.ic_send),
+                    image = OSImageSpec.Drawable(MsgR.drawable.ic_send),
                     onClick = onClickOnSend,
                     buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
                     contentDescription = LbcTextSpec.StringResource(R.string.accessibility_oneSafeK_sendAction),
