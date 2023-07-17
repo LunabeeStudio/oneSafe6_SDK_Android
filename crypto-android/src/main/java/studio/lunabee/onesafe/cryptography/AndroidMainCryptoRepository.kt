@@ -60,7 +60,7 @@ class AndroidMainCryptoRepository @Inject constructor(
     private val biometricEngine: BiometricEngine,
     @DatastoreEngineProvider(DataStoreType.Plain) private val dataStoreEngine: DatastoreEngine,
     private val featureFlags: FeatureFlags,
-    private val itemKeyProvider: ItemKeyProvider,
+    private val randomKeyProvider: RandomKeyProvider,
     private val mapper: CryptoDataMapper,
 ) : MainCryptoRepository {
 
@@ -185,14 +185,14 @@ class AndroidMainCryptoRepository @Inject constructor(
     }
 
     private suspend fun generateIndexKey() {
-        searchIndexKeyDataStore = itemKeyProvider().use { keyData ->
+        searchIndexKeyDataStore = randomKeyProvider().use { keyData ->
             searchIndexKey = keyData.copyOf()
             crypto.encrypt(keyData, masterKey!!, null)
         }
     }
 
     private suspend fun generateBubblesKey() {
-        bubblesMasterKeyDataStore = itemKeyProvider().use { keyData ->
+        bubblesMasterKeyDataStore = randomKeyProvider().use { keyData ->
             bubblesMasterKey = keyData.copyOf()
             crypto.encrypt(keyData, masterKey!!, null)
         }
@@ -276,7 +276,7 @@ class AndroidMainCryptoRepository @Inject constructor(
     }
 
     override suspend fun generateKeyForItemId(itemId: UUID): SafeItemKey {
-        return itemKeyProvider().use { keyData ->
+        return randomKeyProvider().use { keyData ->
             val encryptedKey = crypto.encrypt(keyData, masterKey!!, null)
             SafeItemKey(itemId, encryptedKey)
         }

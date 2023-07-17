@@ -45,7 +45,7 @@ import studio.lunabee.onesafe.bubbles.domain.usecase.GetContactUseCase
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
 import studio.lunabee.onesafe.commonui.ErrorNameProvider
 import studio.lunabee.onesafe.commonui.OSNameProvider
-import studio.lunabee.onesafe.messaging.R
+import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
 import studio.lunabee.onesafe.messaging.domain.usecase.EncryptMessageUseCase
@@ -71,6 +71,8 @@ class WriteMessageViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<WriteMessageUiState> = MutableStateFlow(WriteMessageUiState())
     val uiState: StateFlow<WriteMessageUiState> = _uiState.asStateFlow()
 
+    private var lastMessageChange = Instant.now()
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val conversation: Flow<PagingData<ConversationUiData>> =
         savedStateHandle
@@ -82,12 +84,14 @@ class WriteMessageViewModel @Inject constructor(
                     config = PagingConfig(pageSize = 15, jumpThreshold = 30),
                     contactId = contactId,
                 )
-            }.map {
-                it.map { message ->
+            }.map { pagingData ->
+                pagingData.map { message ->
                     // TODO handle decrypt error
                     val sentAt = contactLocalDecryptUseCase(message.encSentAt, message.fromContactId, Instant::class).data!!
                     val content = contactLocalDecryptUseCase(message.encContent, message.fromContactId, String::class).data!!
-                    val channel = contactLocalDecryptUseCase(message.encChannel, message.fromContactId, String::class).data!!
+                    val channel = message.encChannel?.let { encChannel ->
+                        contactLocalDecryptUseCase(encChannel, message.fromContactId, String::class).data!!
+                    }
                     ConversationUiData.PlainMessageData(
                         id = "contact_${message.id}",
                         text = content,
@@ -135,7 +139,8 @@ class WriteMessageViewModel @Inject constructor(
     private fun encryptPlainMessage() {
         viewModelScope.launch {
             val plainMessage = uiState.value.plainMessage
-            val encryptResult = encryptMessageUseCase(plainMessage, uiState.value.currentContact!!.id)
+            lastMessageChange = Instant.now()
+            val encryptResult = encryptMessageUseCase(plainMessage, uiState.value.currentContact!!.id, lastMessageChange)
             _uiState.value = _uiState.value.copy(
                 encryptedMessage = if (encryptResult is LBResult.Success) {
                     encryptResult.successData
@@ -150,7 +155,7 @@ class WriteMessageViewModel @Inject constructor(
         viewModelScope.launch {
             saveMessageUseCase(
                 plainMessage = content,
-                sentAt = Instant.now(),
+                sentAt = lastMessageChange,
                 contactId = contactId,
                 recipientId = contactId,
                 channel = channelRepository.channel ?: context.getString(R.string.oneSafeK_channel_oneSafeSharing),

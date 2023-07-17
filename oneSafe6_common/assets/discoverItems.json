@@ -1,0 +1,146 @@
+{
+    "labels":{
+        "en":{
+            "item0.discovery.title":"👋 Discover",
+            "item01.instagram.title":"My Instagram",
+            "item01.instagram.url.name":"URL",
+            "item01.instagram.url.value":"https://www.instagram.com",
+            "item01.instagram.url.placeholder":"-",
+            "item01.instagram.email.name":"Email",
+            "item01.instagram.email.value":"john.doe@onesafe.com",
+            "item01.instagram.email.placeholder":"-",
+            "item01.instagram.password.name":"Password",
+            "item01.instagram.password.value":"5VChNeO&aU9EK9%",
+            "item01.instagram.password.placeholder":"-",
+            "item01.instagram.note.name":"Note",
+            "item01.instagram.note.value":"In this item, you have a password. If you edit this item (with the pen icon), you can generate a new strong password one (with the key icon), or add new fields.\n\nMoreover, an item with an URL field can fetch automatically the icon from the URL and get its main color for the item's color!",
+            "item01.instagram.note.placeholder":"-",
+            "item02.creditcard.title":"💵 My credit card",
+            "item02.creditcard.creditCardNumber.name":"Credit card number",
+            "item02.creditcard.creditCardNumber.value":"5071914134444591",
+            "item02.creditcard.creditCardNumber.placeholder":"-",
+            "item02.creditcard.monthYear.name":"Expiration date",
+            "item02.creditcard.monthYear.value":"2035-07-31T00:00:00",
+            "item02.creditcard.monthYear.placeholder":"-",
+            "item02.creditcard.note.name":"Note",
+            "item02.creditcard.note.value":"We've added a smiley 💵 in the item's title: it's used for the item's icon and color (automatically).\n\nAlso note that you can add sub-items in items: with the bottom right \"+\" button, you have templates available, for instance to add a credit card or a web account with all necessary fields (and you can add more fields).",
+            "item02.creditcard.note.placeholder":"-"
+        },
+        "fr":{
+            "item0.discovery.title":"👋 Découvrir",
+            "item01.instagram.title":"Mon Instagram",
+            "item01.instagram.url.name":"URL",
+            "item01.instagram.url.value":"https://www.instagram.com",
+            "item01.instagram.url.placeholder":"-",
+            "item01.instagram.email.name":"Email",
+            "item01.instagram.email.value":"john.doe@onesafe.com",
+            "item01.instagram.email.placeholder":"-",
+            "item01.instagram.password.name":"Mot de passe",
+            "item01.instagram.password.value":"5VChNeO&aU9EK9%",
+            "item01.instagram.password.placeholder":"-",
+            "item01.instagram.note.name":"Note",
+            "item01.instagram.note.value":"Dans cet élément, vous avez un champ mot de passe. Si vous éditez cet élément (avec l'icône crayon), vous pouvez par exemple générer un nouveau mot de passe (avec l'icône de la clé) ou ajouter de nouveaux champs.\n\nDe plus, un élément avec un champ URL peut récupérer automatiquement l'icône de l'URL et obtenir sa couleur principale pour la couleur de l'élément !",
+            "item01.instagram.note.placeholder":"-",
+            "item02.creditcard.title":"💶 Ma carte de crédit",
+            "item02.creditcard.creditCardNumber.name":"Numéro de carte",
+            "item02.creditcard.creditCardNumber.value":"5071914134444591",
+            "item02.creditcard.creditCardNumber.placeholder":"-",
+            "item02.creditcard.monthYear.name":"Date expiration",
+            "item02.creditcard.monthYear.value":"2035-07-31T00:00:00",
+            "item02.creditcard.monthYear.placeholder":"-",
+            "item02.creditcard.note.name":"Note",
+            "item02.creditcard.note.value":"Nous avons ajouté un émoji 💶 dans le titre de l'élément : il est utilisé pour l'icône et la couleur de l'élément (automatiquement).\n\nNotez également que vous pouvez ajouter des sous-éléments dans chaque élément : avec le bouton \"+\" en bas à droite, vous avez des modèles disponibles, par exemple pour ajouter une carte de crédit ou un compte web avec tous les champs nécessaires (et vous pouvez en ajouter d'autres).",
+            "item02.creditcard.note.placeholder":"-"
+        }
+    },
+    "data":[
+        {
+            "title":"item0.discovery.title",
+            "items":[
+                {
+                    "title":"item01.instagram.title",
+                    "fields":[
+                        {
+                            "isItemIdentifier":false,
+                            "isSecured":false,
+                            "kind":"url",
+                            "position":0,
+                            "showPrediction":false,
+                            "name":"item01.instagram.url.name",
+                            "value":"item01.instagram.url.value",
+                            "placeholder":"item0.instagram.url.placeholder"
+                        },
+                        {
+                            "isItemIdentifier":true,
+                            "isSecured":false,
+                            "kind":"email",
+                            "position":1,
+                            "showPrediction":false,
+                            "name":"item01.instagram.email.name",
+                            "value":"item01.instagram.email.value",
+                            "placeholder":"item01.instagram.email.placeholder"
+                        },
+                        {
+                            "isItemIdentifier":false,
+                            "isSecured":true,
+                            "kind":"password",
+                            "position":2,
+                            "showPrediction":false,
+                            "name":"item01.instagram.password.name",
+                            "value":"item01.instagram.password.value",
+                            "placeholder":"item0.instagram.password.placeholder"
+                        },
+                        {
+                            "isItemIdentifier":false,
+                            "isSecured":false,
+                            "kind":"note",
+                            "position":3,
+                            "showPrediction":false,
+                            "name":"item01.instagram.note.name",
+                            "value":"item01.instagram.note.value",
+                            "placeholder":"item0.instagram.note.placeholder"
+                        }
+                    ]
+                },
+                {
+                    "title":"item02.creditcard.title",
+                    "isFavorite": false,
+                    "fields":[
+                        {
+                            "isItemIdentifier":false,
+                            "isSecured":false,
+                            "kind":"creditCardNumber",
+                            "position":0,
+                            "formattingMask":"#### #### #### ####",
+                            "secureDisplayMask" : "**•• •••• •••• ****",
+                            "showPrediction":false,
+                            "name":"item02.creditcard.creditCardNumber.name",
+                            "value":"item02.creditcard.creditCardNumber.value",
+                            "placeholder":"item02.creditcard.creditCardNumber.placeholder"
+                        },
+                        {
+                            "isItemIdentifier":false,
+                            "isSecured":false,
+                            "kind":"monthYear",
+                            "position":1,
+                            "showPrediction":false,
+                            "name":"item02.creditcard.monthYear.name",
+                            "value":"item02.creditcard.monthYear.value",
+                            "placeholder":"item02.creditcard.monthYear.placeholder"
+                        },
+                        {
+                            "isItemIdentifier":true,
+                            "isSecured":false,
+                            "kind":"note",
+                            "position":2,
+                            "showPrediction":false,
+                            "name":"item02.creditcard.note.name",
+                            "value":"item02.creditcard.note.value",
+                            "placeholder":"item02.creditcard.note.placeholder"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

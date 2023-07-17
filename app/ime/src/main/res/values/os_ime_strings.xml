@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="os_keyboard_name" tools:ignore="UnusedResources">placeholder os_keyboard_name</string>
-    <string name="oneSafeK_recipientLabel">placeholder</string>
-    <string name="oneSafeK_writeMessage_title">placholder</string>
-</resources>

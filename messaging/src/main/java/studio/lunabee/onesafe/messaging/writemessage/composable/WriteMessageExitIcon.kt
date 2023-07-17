@@ -24,8 +24,7 @@ import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.button.OSIconButton
 import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
-import studio.lunabee.onesafe.commonui.ResourcesLibrary
-import studio.lunabee.onesafe.messaging.R
+import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.ui.res.OSDimens
 
 interface WriteMessageExitIcon {
@@ -38,7 +37,7 @@ interface WriteMessageExitIcon {
         @Composable
         override fun Content() {
             OSIconButton(
-                image = OSImageSpec.Drawable(ResourcesLibrary.icClose),
+                image = OSImageSpec.Drawable(R.drawable.ic_close),
                 onClick = onClick,
                 buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
                 contentDescription = LbcTextSpec.StringResource(R.string.common_accessibility_back),
@@ -53,7 +52,7 @@ interface WriteMessageExitIcon {
         @Composable
         override fun Content() {
             OSIconButton(
-                image = OSImageSpec.Drawable(ResourcesLibrary.icBack),
+                image = OSImageSpec.Drawable(R.drawable.ic_back),
                 onClick = onClick,
                 buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
                 contentDescription = LbcTextSpec.StringResource(R.string.common_accessibility_back),

@@ -52,14 +52,14 @@ class SaveMessageUseCase @Inject constructor(
         sentAt: Instant,
         contactId: UUID,
         recipientId: UUID,
-        channel: String,
+        channel: String?,
     ): LBResult<Unit> = OSError.runCatching {
         mutex.withLock {
             val recipient = getContactUseCase(recipientId)
             val key = contactKeyRepository.getContactLocalKey(contactId)
             val encContent = bubblesCryptoRepository.localEncrypt(key, EncryptEntry(plainMessage))
             val encSentAt = bubblesCryptoRepository.localEncrypt(key, EncryptEntry(sentAt))
-            val encChannel = bubblesCryptoRepository.localEncrypt(key, EncryptEntry(channel))
+            val encChannel = channel?.let { bubblesCryptoRepository.localEncrypt(key, EncryptEntry(channel)) }
 
             // Test if we know the recipientId (= we are the sender)
             val direction = if (recipient != null) {

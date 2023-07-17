@@ -50,7 +50,7 @@ class MessageDaoTest {
      * Test getMessageOrderAtByContact is independent from the insertion order and is not impacted by other contact messages
      */
     @Test
-    fun getMessageOrderAtByContactTest(): TestResult = runTest {
+    fun getMessageOrderAtByContact_test(): TestResult = runTest {
         val contactId = UUID.randomUUID()
         val contactId2 = UUID.randomUUID()
         val expectedOrder = floatArrayOf(3.5f, 1.3f, 0f)

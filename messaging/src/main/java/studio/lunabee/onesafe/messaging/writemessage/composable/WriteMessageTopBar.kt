@@ -43,7 +43,7 @@ import studio.lunabee.onesafe.commonui.DefaultNameProvider
 import studio.lunabee.onesafe.commonui.OSItemIllustrationHelper
 import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.extension.loremIpsum
-import studio.lunabee.onesafe.messaging.R
+import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.model.OSItemIllustration
 import studio.lunabee.onesafe.model.OSSafeItemStyle
 import studio.lunabee.onesafe.ui.UiConstants
@@ -57,6 +57,7 @@ fun WriteMessageTopBar(
     exitIcon: WriteMessageExitIcon,
     modifier: Modifier = Modifier,
     onClickOnChange: () -> Unit,
+    canChangeRecipient: Boolean,
 ) {
     val illustration: OSItemIllustration by remember(contactNameProvider) {
         mutableStateOf(OSItemIllustrationHelper.get(contactNameProvider))
@@ -74,7 +75,13 @@ fun WriteMessageTopBar(
                 .testTag(UiConstants.TestTag.Item.OneSafeKWriteMessageRecipientCard)
                 .clip(RoundedCornerShape(OSDimens.SystemCornerRadius.Regular))
                 .background(MaterialTheme.colorScheme.secondaryContainer)
-                .clickable { onClickOnChange() },
+                .then(
+                    if (canChangeRecipient) {
+                        Modifier.clickable { onClickOnChange() }
+                    } else {
+                        Modifier
+                    },
+                ),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -91,11 +98,14 @@ fun WriteMessageTopBar(
                     style = MaterialTheme.typography.titleMediumBlack,
                     modifier = Modifier.weight(1f),
                 )
-                OSText(
-                    text = LbcTextSpec.StringResource(R.string.oneSafeK_changeRecipientButton_label),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.secondary,
-                )
+
+                if (canChangeRecipient) {
+                    OSText(
+                        text = LbcTextSpec.StringResource(R.string.oneSafeK_changeRecipientButton_label),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.secondary,
+                    )
+                }
             }
         }
     }
@@ -109,6 +119,7 @@ fun WriteMessageTopBarPreview() {
             contactNameProvider = DefaultNameProvider(loremIpsum(5)),
             exitIcon = WriteMessageExitIcon.WriteMessageCloseIcon {},
             onClickOnChange = {},
+            canChangeRecipient = true,
         )
     }
 }

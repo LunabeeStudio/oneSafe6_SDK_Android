@@ -21,7 +21,7 @@ package studio.lunabee.onesafe.messaging.utils
 
 import android.content.Context
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.messaging.R
+import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.messaging.extension.isSameDayAs
 import java.time.Instant
 import java.time.ZoneId

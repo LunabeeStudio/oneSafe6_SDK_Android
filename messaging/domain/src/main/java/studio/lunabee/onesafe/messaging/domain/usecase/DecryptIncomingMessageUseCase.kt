@@ -21,7 +21,6 @@ package studio.lunabee.onesafe.messaging.domain.usecase
 
 import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import studio.lunabee.onesafe.bubbles.domain.model.Contact
@@ -29,6 +28,7 @@ import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactKeyRepository
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.bubbles.domain.usecase.GetContactUseCase
+import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.messagecompanion.OSMessage
@@ -36,8 +36,6 @@ import studio.lunabee.onesafe.messaging.domain.extension.toInstant
 import studio.lunabee.onesafe.messaging.domain.model.OSPlainMessage
 import java.util.UUID
 import javax.inject.Inject
-import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
 
 /**
  * Try to decrypt a message with every contact key
@@ -48,16 +46,19 @@ class DecryptIncomingMessageUseCase @Inject constructor(
     private val bubblesCryptoRepository: BubblesCryptoRepository,
     private val getContactUseCase: GetContactUseCase,
 ) {
-    @OptIn(ExperimentalEncodingApi::class)
-    suspend operator fun invoke(value: String): LBResult<Pair<Contact, OSPlainMessage>> {
-        val cipherData = Base64.decode(value)
+    /**
+     * @param messageData The raw message
+     *
+     * @return failure with NO_MATCHING_CONTACT error code if no contact shared key has been found to decrypt the message.
+     */
+    suspend operator fun invoke(messageData: ByteArray): LBResult<Pair<Contact, OSPlainMessage>> {
         return getContactUseCase()
             .asFlow()
             .map { contact ->
                 OSError.runCatching {
                     val sharedKey = contactRepository.getSharedKey(contact.id)
                     val localKey = contactKeyRepository.getContactLocalKey(contact.id)
-                    val plainProto = bubblesCryptoRepository.sharedDecrypt(cipherData, localKey, sharedKey)
+                    val plainProto = bubblesCryptoRepository.sharedDecrypt(messageData, localKey, sharedKey)
                     val plainMessage = OSMessage.MessageData.parseFrom(plainProto)
                     contact to OSPlainMessage(
                         content = plainMessage.content,
@@ -65,8 +66,10 @@ class DecryptIncomingMessageUseCase @Inject constructor(
                         sentAt = plainMessage.sentAt.toInstant(),
                     )
                 }
-            }
-            .filterIsInstance<LBResult.Success<Pair<Contact, OSPlainMessage>>>()
-            .firstOrNull() ?: LBResult.Failure(OSDomainError(OSDomainError.Code.NO_MATCHING_CONTACT))
+            }.firstOrNull { result ->
+                // Get the first result different from BUBBLES_DECRYPTION_FAILED_WRONG_CONTACT_KEY and return it
+                val error = (result as? LBResult.Failure)?.throwable as? OSCryptoError
+                error?.code != OSCryptoError.Code.BUBBLES_DECRYPTION_FAILED_WRONG_CONTACT_KEY
+            } ?: LBResult.Failure(OSDomainError(OSDomainError.Code.NO_MATCHING_CONTACT))
     }
 }

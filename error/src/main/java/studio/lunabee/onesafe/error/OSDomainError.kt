@@ -36,5 +36,6 @@ data class OSDomainError(
         WRONG_CONFIRMATION_PASSWORD("Password confirmation does not match"),
         NO_MATCHING_CONTACT("No contact key matching the encrypted message"),
         DUPLICATED_MESSAGE("The message has already been stored"),
+        DECRYPT_MESSAGE_NOT_BASE64("The incoming message is not a base 64"),
     }
 }

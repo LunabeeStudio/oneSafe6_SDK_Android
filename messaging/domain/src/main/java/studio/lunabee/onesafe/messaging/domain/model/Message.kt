@@ -27,5 +27,5 @@ class Message(
     val encSentAt: ByteArray,
     val encContent: ByteArray,
     val direction: MessageDirection,
-    val encChannel: ByteArray,
+    val encChannel: ByteArray?,
 )

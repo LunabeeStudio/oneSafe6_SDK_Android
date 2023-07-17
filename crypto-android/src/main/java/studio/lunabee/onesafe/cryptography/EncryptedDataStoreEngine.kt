@@ -25,6 +25,7 @@ import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
+import androidx.annotation.RequiresApi
 import androidx.datastore.core.DataStore
 import com.google.protobuf.kotlin.toByteString
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -40,6 +41,7 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import javax.inject.Inject
 
+@RequiresApi(Build.VERSION_CODES.M)
 class EncryptedDataStoreEngine @Inject constructor(
     @ApplicationContext private val context: Context,
     private val androidKeyStoreEngine: AndroidKeyStoreEngine,
@@ -110,7 +112,6 @@ class EncryptedDataStoreEngine @Inject constructor(
             val cipher = getCipher()
             val iv = ivProvider(AES_GCM_IV_LENGTH)
             cipher.init(Cipher.ENCRYPT_MODE, masterKey, getGcmParameterSpec(iv))
-            @Suppress("BlockingMethodInNonBlockingContext")
             bos.write(iv)
             CipherOutputStream(bos, cipher).use { cos ->
                 value.inputStream().use { input ->
