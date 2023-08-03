@@ -22,10 +22,15 @@ plugins {
 }
 
 android {
-    namespace = "studio.lunabee.onesafe.bubbles"
+    namespace = "studio.lunabee.onesafe.bubbles.crypto"
 
     defaultConfig {
         missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
+    }
+
+    packaging {
+        resources.pickFirsts.add("META-INF/LICENSE.md")
+        resources.pickFirsts.add("META-INF/LICENSE-notice.md")
     }
 }
 
@@ -33,10 +38,16 @@ dependencies {
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)
     implementation(libs.lblogger.timber)
+    implementation(libs.double.ratchet)
+    implementation(libs.bcprov.jdk18on)
+    implementation(libs.double.ratchet)
 
     implementation(project(":bubbles-domain"))
     implementation(project(":domain"))
     implementation(project(":crypto-android"))
     implementation(project(":error"))
     implementation(project(":common"))
+
+    androidTestImplementation(KotlinX.coroutines.test)
+    androidTestImplementation(project(":common-test"))
 }

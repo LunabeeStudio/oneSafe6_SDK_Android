@@ -28,6 +28,12 @@ import java.util.UUID
 import kotlin.random.Random
 
 object OSTestUtils {
+
+    private val seed = Random.nextInt().also {
+        println("Random seed = $it")
+    }
+    val random = Random(seed)
+
     fun createSafeItem(
         id: UUID = UUID.randomUUID(),
         encName: ByteArray? = byteArrayOf(),
@@ -50,8 +56,21 @@ object OSTestUtils {
         encColor: ByteArray? = byteArrayOf(),
         identifier: ByteArray? = byteArrayOf(),
         encIdentifierKind: ByteArray? = byteArrayOf(),
+        position: Double = 0.0,
+        updatedAt: Instant = Instant.EPOCH,
     ): SafeItemWithIdentifier {
-        return SafeItemWithIdentifier(id, encName, iconId, encColor, identifier, null, null, encIdentifierKind)
+        return SafeItemWithIdentifier(
+            id = id,
+            encName = encName,
+            iconId = iconId,
+            encColor = encColor,
+            encIdentifier = identifier,
+            deletedAt = null,
+            encSecuredDisplayMask = null,
+            encIdentifierKind = encIdentifierKind,
+            position = position,
+            updatedAt = updatedAt,
+        )
     }
 
     fun createSafeItems(
@@ -122,11 +141,10 @@ object OSTestUtils {
  * @see [UUID.randomUUID] for implementation details
  */
 val testUUIDs: List<UUID> by lazy {
-    val ng = Random(0)
     val randomBytes = ByteArray(16)
     val buffer = ByteBuffer.wrap(randomBytes)
     (0..999).map {
-        ng.nextBytes(randomBytes)
+        OSTestUtils.random.nextBytes(randomBytes)
         randomBytes[6] = (randomBytes[6].toInt() and 0x0f).toByte() // clear version
         randomBytes[6] = (randomBytes[6].toInt() or 0x40).toByte() // set to version 4
         randomBytes[8] = (randomBytes[8].toInt() and 0x3f).toByte() // clear variant

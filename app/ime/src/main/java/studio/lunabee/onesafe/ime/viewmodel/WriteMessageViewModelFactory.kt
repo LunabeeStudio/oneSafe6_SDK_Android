@@ -27,6 +27,7 @@ import studio.lunabee.onesafe.bubbles.domain.usecase.GetContactUseCase
 import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
 import studio.lunabee.onesafe.messaging.domain.usecase.EncryptMessageUseCase
+import studio.lunabee.onesafe.messaging.domain.usecase.GetSendMessageDataUseCase
 import studio.lunabee.onesafe.messaging.domain.usecase.SaveMessageUseCase
 import studio.lunabee.onesafe.messaging.writemessage.viewmodel.WriteMessageViewModel
 import javax.inject.Inject
@@ -38,6 +39,7 @@ class WriteMessageViewModelFactory @Inject constructor(
     private val messageRepository: MessageRepository,
     private val saveMessageUseCase: SaveMessageUseCase,
     private val channelRepository: MessageChannelRepository,
+    private val getSendMessageDataUseCase: GetSendMessageDataUseCase,
 ) : AbstractSavedStateViewModelFactory() {
     override fun <T : ViewModel> create(key: String, modelClass: Class<T>, handle: SavedStateHandle): T {
         @Suppress("UNCHECKED_CAST")
@@ -49,6 +51,7 @@ class WriteMessageViewModelFactory @Inject constructor(
             messageRepository = messageRepository,
             saveMessageUseCase = saveMessageUseCase,
             channelRepository = channelRepository,
+            getSendMessageDataUseCase = getSendMessageDataUseCase,
         ) as T
     }
 }

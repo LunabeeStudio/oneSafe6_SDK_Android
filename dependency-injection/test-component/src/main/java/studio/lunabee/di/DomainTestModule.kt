@@ -25,6 +25,9 @@ import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import studio.lunabee.doubleratchet.DoubleRatchetEngine
+import studio.lunabee.doubleratchet.crypto.DoubleRatchetKeyRepository
+import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
 import studio.lunabee.onesafe.domain.common.IconIdProvider
 import studio.lunabee.onesafe.domain.common.ItemIdProvider
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
@@ -37,7 +40,7 @@ import javax.inject.Singleton
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
-    replaces = [DomainModule::class, GlobalDomainModule::class],
+    replaces = [GlobalDomainModule::class, DomainServiceModule::class, DomainActivityModule::class],
 )
 object DomainTestModule {
     @Provides
@@ -55,4 +58,13 @@ object DomainTestModule {
     @Provides
     fun provideSafeItemBuilder(cryptoRepository: MainCryptoRepository, setIconUseCase: SetIconUseCase): SafeItemBuilder =
         SafeItemBuilderImpl(cryptoRepository = cryptoRepository, setIconUseCase = setIconUseCase)
+
+    @Provides
+    fun provideDoubleRatchetEngine(
+        localDatasource: DoubleRatchetLocalDatasource,
+        doubleRatchetKeyRepository: DoubleRatchetKeyRepository,
+    ): DoubleRatchetEngine = DoubleRatchetEngine(
+        doubleRatchetKeyRepository = doubleRatchetKeyRepository,
+        doubleRatchetLocalDatasource = localDatasource,
+    )
 }

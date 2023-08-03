@@ -19,15 +19,12 @@
 
 package studio.lunabee.onesafe.bubbles.domain.model
 
-import kotlinx.serialization.Serializable
-import studio.lunabee.onesafe.converter.UUIDSerializer
 import java.util.UUID
 
-// TODO : Temporary class used to test the Bubbles feature with oneSafeK
-@Serializable
-data class PlainContact(
-    @Serializable(with = UUIDSerializer::class)
+class PlainContact(
     val id: UUID,
     val name: String,
-    val sharedKey: String,
+    val sharedKey: ByteArray?,
+    val sharedConversationId: UUID,
+    val isUsingDeepLink: Boolean = false,
 )

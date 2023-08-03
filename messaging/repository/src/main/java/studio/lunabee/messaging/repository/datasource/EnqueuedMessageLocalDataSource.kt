@@ -27,4 +27,5 @@ interface EnqueuedMessageLocalDataSource {
     suspend fun getAll(): List<EnqueuedMessage>
     suspend fun delete(id: Int)
     suspend fun getOldestAsFlow(): Flow<EnqueuedMessage?>
+    suspend fun deleteAll()
 }

@@ -81,7 +81,7 @@ fun OneSafeKMessageRow(
             verticalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.ExtraSmall),
         ) {
             OSText(
-                text = LbcTextSpec.Raw(messageData.text),
+                text = messageData.text,
                 textAlign = style.textAlign,
                 color = style.textColor,
                 style = MaterialTheme.typography.bodyMedium,
@@ -169,7 +169,7 @@ fun OneSafeKMessageRowPreview() {
             OneSafeKMessageRow(
                 messageData = ConversationUiData.PlainMessageData(
                     id = "contact_${Random.nextInt()}",
-                    text = loremIpsum(10),
+                    text = LbcTextSpec.Raw(loremIpsum(10)),
                     direction = MessageDirection.SENT,
                     sendAt = Instant.now(),
                     channelName = "Telegram",
@@ -179,7 +179,7 @@ fun OneSafeKMessageRowPreview() {
             OneSafeKMessageRow(
                 messageData = ConversationUiData.PlainMessageData(
                     id = "contact_${Random.nextInt()}",
-                    text = loremIpsum(10),
+                    text = LbcTextSpec.Raw(loremIpsum(10)),
                     direction = MessageDirection.RECEIVED,
                     sendAt = Instant.now(),
                     channelName = "Telegram",

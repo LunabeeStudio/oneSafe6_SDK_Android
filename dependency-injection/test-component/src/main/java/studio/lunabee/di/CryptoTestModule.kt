@@ -29,6 +29,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
+import kotlinx.coroutines.CoroutineDispatcher
 import studio.lunabee.onesafe.bubbles.crypto.AndroidBubblesCryptoRepository
 import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.onesafe.cryptography.AndroidEditCryptoRepository
@@ -36,13 +37,17 @@ import studio.lunabee.onesafe.cryptography.AndroidMainCryptoRepository
 import studio.lunabee.onesafe.cryptography.ClearDatastoreEngine
 import studio.lunabee.onesafe.cryptography.DatastoreEngine
 import studio.lunabee.onesafe.cryptography.EncryptedDataStoreEngine
+import studio.lunabee.onesafe.cryptography.PasswordHashEngine
+import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
 import studio.lunabee.onesafe.cryptography.ProtoData
+import studio.lunabee.onesafe.cryptography.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
 import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
-import studio.lunabee.onesafe.cryptography.qualifier.PBKDF2Iterations
 import studio.lunabee.onesafe.cryptography.utils.SecuredDataSerializer
 import studio.lunabee.onesafe.domain.repository.EditCryptoRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
+import studio.lunabee.onesafe.messaging.crypto.AndroidMessagingCryptoRepository
+import studio.lunabee.onesafe.messaging.domain.repository.MessagingCryptoRepository
 import javax.inject.Singleton
 
 @Module
@@ -68,6 +73,12 @@ abstract class CryptoTestModule {
     internal abstract fun bindBubblesCryptoRepository(
         androidBubblesCryptoRepository: AndroidBubblesCryptoRepository,
     ): BubblesCryptoRepository
+
+    @Binds
+    @Singleton
+    internal abstract fun bindMessagingCryptoRepository(
+        androidMessagingCryptoRepository: AndroidMessagingCryptoRepository,
+    ): MessagingCryptoRepository
 }
 
 @Module
@@ -112,9 +123,13 @@ object EmptyCryptoConstantModule
 
 @Module
 @InstallIn(SingletonComponent::class)
-object CryptoConstantsTestModule {
+object CryptoConstantsSessionTestModule {
+
     @Provides
-    @PBKDF2Iterations
-    @Suppress("FunctionOnlyReturningConstant")
-    fun providePBKDF2Iterations(): Int = 1
+    fun provideHashEngineSession(
+        @CryptoDispatcher coroutineDispatcher: CoroutineDispatcher,
+    ): PasswordHashEngine = PBKDF2JceHashEngine(
+        coroutineDispatcher,
+        1,
+    )
 }

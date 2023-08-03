@@ -22,10 +22,12 @@ package studio.lunabee.onesafe.messaging.domain.usecase
 import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.first
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
+import java.util.UUID
 import javax.inject.Inject
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
+// TODO fix double call
 class HandleIncomingMessageUseCase @Inject constructor(
     private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
     private val decryptIncomingMessageUseCase: DecryptIncomingMessageUseCase,
@@ -38,7 +40,7 @@ class HandleIncomingMessageUseCase @Inject constructor(
             Base64.decode(message)
         } catch (e: IllegalArgumentException) {
             // ignore base64 errors
-            return LBResult.Success(IncomingMessageState.NOT_BASE64)
+            return LBResult.Success(IncomingMessageState.NotBase64)
         }
 
         return if (isCryptoDataReadyInMemoryUseCase().first()) {
@@ -46,17 +48,20 @@ class HandleIncomingMessageUseCase @Inject constructor(
             when (decryptResult) {
                 is LBResult.Success -> {
                     val plainMessage = decryptResult.successData.second
-                    val saveResult = saveMessageUseCase(
-                        plainMessage = plainMessage.content,
-                        sentAt = plainMessage.sentAt,
-                        contactId = decryptResult.successData.first.id,
-                        recipientId = plainMessage.recipientId,
-                        channel = channel,
-                    )
-                    when (saveResult) {
-                        is LBResult.Failure -> LBResult.Failure(saveResult.throwable)
-                        is LBResult.Success -> LBResult.Success(IncomingMessageState.PROCESSED)
-                    }
+                    val contactId = decryptResult.successData.first.id
+                    plainMessage?.let {
+                        val saveResult = saveMessageUseCase(
+                            plainMessage = plainMessage.content,
+                            sentAt = plainMessage.sentAt,
+                            contactId = contactId,
+                            recipientId = plainMessage.recipientId,
+                            channel = channel,
+                        )
+                        when (saveResult) {
+                            is LBResult.Failure -> LBResult.Failure(saveResult.throwable)
+                            is LBResult.Success -> LBResult.Success(IncomingMessageState.Processed(contactId))
+                        }
+                    } ?: LBResult.Success(IncomingMessageState.Processed(contactId))
                 }
                 is LBResult.Failure -> LBResult.Failure(decryptResult.throwable)
             }
@@ -64,12 +69,14 @@ class HandleIncomingMessageUseCase @Inject constructor(
             val enqueueResult = enqueueMessageUseCase(cipherData, channel)
             when (enqueueResult) {
                 is LBResult.Failure -> LBResult.Failure(enqueueResult.throwable)
-                is LBResult.Success -> LBResult.Success(IncomingMessageState.ENQUEUED)
+                is LBResult.Success -> LBResult.Success(IncomingMessageState.Enqueued)
             }
         }
     }
 }
 
-enum class IncomingMessageState {
-    NOT_BASE64, ENQUEUED, PROCESSED
+sealed interface IncomingMessageState {
+    object NotBase64 : IncomingMessageState
+    object Enqueued : IncomingMessageState
+    class Processed(val contactId: UUID) : IncomingMessageState
 }

@@ -32,8 +32,8 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
+import studio.lunabee.onesafe.domain.repository.PersistenceManager
 import studio.lunabee.onesafe.domain.usecase.authentication.LocalSignInUseCase
-import studio.lunabee.onesafe.domain.usecase.authentication.LocalSignOutUseCase
 import studio.lunabee.onesafe.domain.usecase.autolock.LockAppUseCase
 import studio.lunabee.onesafe.domain.usecase.onboarding.CreateMasterKeyUseCase
 import studio.lunabee.onesafe.domain.usecase.onboarding.FinishOnboardingUseCase
@@ -66,7 +66,7 @@ import javax.inject.Inject
 abstract class OSHiltTest : OSTest() {
     abstract val hiltRule: HiltAndroidRule
 
-    @Inject lateinit var localSignOutUseCase: LocalSignOutUseCase
+    @Inject lateinit var persistenceManager: PersistenceManager
 
     @Inject lateinit var createMasterKeyUseCase: CreateMasterKeyUseCase
 
@@ -112,7 +112,7 @@ abstract class OSHiltTest : OSTest() {
      * Default is signing in and do things for logout
      */
     private suspend fun initialize() {
-        localSignOutUseCase()
+        signOut()
         when (initialTestState) {
             is InitialTestState.SignedUp -> {
                 signup()
@@ -125,6 +125,11 @@ abstract class OSHiltTest : OSTest() {
                 signup()
             }
         }
+    }
+
+    protected suspend fun signOut() {
+        cryptoRepository.resetCryptography()
+        persistenceManager.clearAll()
     }
 
     /**
@@ -155,6 +160,6 @@ abstract class OSHiltTest : OSTest() {
 
     @After
     fun cleanDataAfterTest() {
-        runTest { localSignOutUseCase() }
+        runTest { signOut() }
     }
 }

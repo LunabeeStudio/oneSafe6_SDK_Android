@@ -7,6 +7,32 @@ import "google/protobuf/timestamp.proto";
 
 message MessageData {
   string content = 1;
-  string recipient_id = 2;
   google.protobuf.Timestamp sent_at = 3;
 };
+
+message MessageHeader {
+  int32 message_number = 1;
+  int32 sequence_message_number = 2;
+  bytes public_key = 3;
+}
+
+message Message {
+  bytes body = 1;
+  MessageHeader header = 2;
+  string recipient_id = 3;
+}
+
+message HandShakeMessage {
+  bytes body = 1;
+  MessageHeader header = 2;
+  string conversation_id = 3;
+  bytes one_safe_public_key = 4;
+  string recipient_id = 5;
+}
+
+message InvitationMessage {
+  bytes double_ratchet_public_key = 1;
+  bytes one_safe_public_key = 2;
+  string conversation_id = 3;
+  string recipient_id = 4;
+}

@@ -29,7 +29,7 @@ import javax.inject.Inject
 
 class AndroidImportExportCryptoRepository @Inject constructor(
     private val crypto: CryptoEngine,
-    private val hashEngine: HashEngine,
+    private val hashEngine: PasswordHashEngine,
     private val saltProvider: SaltProvider,
 ) : ImportExportCryptoRepository {
 

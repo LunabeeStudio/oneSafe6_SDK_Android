@@ -24,13 +24,15 @@ import studio.lunabee.onesafe.bubbles.domain.model.ContactSharedKey
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import java.io.OutputStream
+import java.util.UUID
 
 interface BubblesCryptoRepository {
     suspend fun generateLocalKeyForContact(): ContactLocalKey
     suspend fun <Data : Any> localEncrypt(key: ContactLocalKey, encryptEntry: EncryptEntry<Data>): ByteArray
+    suspend fun <Data : Any> localEncrypt(key: ContactLocalKey, encryptEntries: List<EncryptEntry<Data>?>): List<ByteArray?>
     suspend fun <Data : Any> localDecrypt(key: ContactLocalKey, decryptEntry: DecryptEntry<Data>): Data
+    suspend fun localDecrypt(key: ContactLocalKey, decryptEntries: List<DecryptEntry<out Any>?>): List<Any?>
     suspend fun sharedEncrypt(outputStream: OutputStream, localKey: ContactLocalKey, sharedKey: ContactSharedKey): OutputStream
     suspend fun sharedDecrypt(data: ByteArray, localKey: ContactLocalKey, sharedKey: ContactSharedKey): ByteArray
-    suspend fun <Data : Any> queueEncrypt(encryptEntry: EncryptEntry<Data>): ByteArray
-    suspend fun <Data : Any> queueDecrypt(decryptEntry: DecryptEntry<Data>): Data
+    suspend fun deriveUUIDToKey(uuid: UUID, keyLength: Int): ByteArray
 }

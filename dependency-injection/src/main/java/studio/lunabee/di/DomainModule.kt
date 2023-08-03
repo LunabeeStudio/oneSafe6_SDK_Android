@@ -23,9 +23,13 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
+import dagger.hilt.android.components.ServiceComponent
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import studio.lunabee.doubleratchet.DoubleRatchetEngine
+import studio.lunabee.doubleratchet.crypto.DoubleRatchetKeyRepository
+import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
 import studio.lunabee.onesafe.domain.common.IconIdProvider
 import studio.lunabee.onesafe.domain.common.ItemIdProvider
 import studio.lunabee.onesafe.domain.common.UuidProvider
@@ -37,10 +41,32 @@ import studio.lunabee.onesafe.domain.utils.SafeItemBuilderImpl
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
-object DomainModule {
+object DomainActivityModule {
     @Provides
     fun provideSafeItemBuilder(cryptoRepository: MainCryptoRepository, setIconUseCase: SetIconUseCase): SafeItemBuilder =
         SafeItemBuilderImpl(cryptoRepository = cryptoRepository, setIconUseCase = setIconUseCase)
+
+    @Provides
+    fun provideDoubleRatchetEngine(
+        localDatasource: DoubleRatchetLocalDatasource,
+        doubleRatchetKeyRepository: DoubleRatchetKeyRepository,
+    ): DoubleRatchetEngine = DoubleRatchetEngine(
+        doubleRatchetKeyRepository = doubleRatchetKeyRepository,
+        doubleRatchetLocalDatasource = localDatasource,
+    )
+}
+
+@Module
+@InstallIn(ServiceComponent::class)
+object DomainServiceModule {
+    @Provides
+    fun provideDoubleRatchetEngine(
+        localDatasource: DoubleRatchetLocalDatasource,
+        doubleRatchetKeyRepository: DoubleRatchetKeyRepository,
+    ): DoubleRatchetEngine = DoubleRatchetEngine(
+        doubleRatchetKeyRepository = doubleRatchetKeyRepository,
+        doubleRatchetLocalDatasource = localDatasource,
+    )
 }
 
 @Module

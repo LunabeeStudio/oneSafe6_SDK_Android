@@ -25,6 +25,8 @@ import java.util.UUID
 class Contact(
     val id: UUID,
     val encName: ByteArray,
-    val encSharedKey: ContactSharedKey,
+    val encSharedKey: ContactSharedKey?,
     val updatedAt: Instant,
+    val encIsUsingDeeplink: ByteArray,
+    val sharedConversationId: UUID,
 )

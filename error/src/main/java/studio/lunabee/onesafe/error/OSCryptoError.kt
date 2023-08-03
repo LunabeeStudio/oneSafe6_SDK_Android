@@ -20,12 +20,12 @@
 package studio.lunabee.onesafe.error
 
 data class OSCryptoError(
-    val code: Code,
+    override val code: Code,
     override val message: String = code.message,
     override val cause: Throwable? = null,
-) : OSError(message, cause) {
+) : OSError(message, cause, code) {
 
-    enum class Code(val message: String) {
+    enum class Code(val message: String) : ErrorCode {
         MASTER_KEY_ALREADY_GENERATED("A master key have already been generated"),
         MASTER_KEY_NOT_LOADED("Master key not loaded in memory"),
         MASTER_KEY_ALREADY_LOADED("Master key already loaded in memory"),

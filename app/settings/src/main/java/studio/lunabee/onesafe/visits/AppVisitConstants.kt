@@ -25,4 +25,7 @@ object AppVisitConstants {
 
     const val hasFinishOneSafeKOnBoarding: String = "dbc410db-e7a9-4bbc-b94f-fb552572243a"
     const val hasFinishOneSafeKOnBoardingDefault: Boolean = false
+
+    const val hasDoneOnBoardingBubbles: String = "93d456b2-c8b5-4e35-a244-1b5a0752ed36"
+    const val hasDoneOnBoardingBubblesDefault: Boolean = false
 }

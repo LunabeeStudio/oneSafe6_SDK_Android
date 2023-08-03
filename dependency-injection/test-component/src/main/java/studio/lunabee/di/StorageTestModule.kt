@@ -23,15 +23,19 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
 import androidx.room.Room
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
-import studio.lunabee.onesafe.storage.BubblesDatabase
+import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
+import studio.lunabee.messaging.repository.datasource.HandShakeDataLocalDatasource
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.OSForceUpgradeProto.ForceUpgradeProtoData
+import studio.lunabee.onesafe.storage.datasource.DoubleRatchetDatasourceImpl
+import studio.lunabee.onesafe.storage.datasource.HandShakeDataLocalDatasourceImpl
 import studio.lunabee.onesafe.storage.datastore.ForceUpgradeDataSerializer
 import javax.inject.Singleton
 
@@ -57,17 +61,6 @@ object InMemoryMainDatabaseModule {
 }
 
 @Module
-@InstallIn(SingletonComponent::class)
-object InMemoryBubblesDatabaseModule {
-    @Provides
-    @Singleton
-    internal fun provideBubblesDatabase(@ApplicationContext appContext: Context): BubblesDatabase {
-        return Room.inMemoryDatabaseBuilder(appContext, BubblesDatabase::class.java)
-            .build()
-    }
-}
-
-@Module
 @TestInstallIn(
     components = [SingletonComponent::class],
     replaces = [AppMaintenanceDatastoreModule::class],
@@ -83,4 +76,19 @@ object AppMaintenanceDatastoreTestModule {
         fileName = datastoreFile,
         serializer = ForceUpgradeDataSerializer,
     )
+}
+
+@Module
+@TestInstallIn(
+    components = [SingletonComponent::class],
+    replaces = [DoubleRatchetActivityStorageModule::class, DoubleRatchetServiceStorageModule::class],
+)
+interface DoubleRatchetTestStorageModule {
+    @Binds
+    fun bindDoubleRatchetDatasource(
+        doubleRatchetDatasource: DoubleRatchetDatasourceImpl,
+    ): DoubleRatchetLocalDatasource
+
+    @Binds
+    fun bindsHandShakeDataLocalDatasource(handShakeDataLocalDatasourceImpl: HandShakeDataLocalDatasourceImpl): HandShakeDataLocalDatasource
 }

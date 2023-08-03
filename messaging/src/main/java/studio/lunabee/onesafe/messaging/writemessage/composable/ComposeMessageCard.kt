@@ -19,9 +19,6 @@
 
 package studio.lunabee.onesafe.messaging.writemessage.composable
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +27,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,8 +36,8 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -54,6 +53,7 @@ import studio.lunabee.onesafe.atom.textfield.OSTextField
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.localprovider.LocalKeyboardUiHeight
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
+import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.OSColor
 import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
@@ -66,6 +66,8 @@ fun ComposeMessageCard(
     encryptedMessage: String,
     onPlainMessageChange: (String) -> Unit,
     onClickOnSend: () -> Unit,
+    onPreviewClick: () -> Unit,
+    sendIcon: OSImageSpec,
 ) {
     val embeddedKeyboardHeight: Dp = LocalKeyboardUiHeight.current
 
@@ -107,6 +109,10 @@ fun ComposeMessageCard(
                     unfocusedTextColor = OSColor.Neutral10,
                     focusedLabelColor = OSColor.Neutral80,
                 ),
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions {
+                    if (plainMessage.isNotEmpty()) onClickOnSend()
+                },
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -114,7 +120,7 @@ fun ComposeMessageCard(
                 modifier = Modifier.padding(start = OSDimens.SystemSpacing.Regular),
             ) {
                 Icon(
-                    painter = painterResource(id = MsgR.drawable.ic_lock),
+                    painter = painterResource(id = R.drawable.ic_lock),
                     contentDescription = null,
                     tint = OSColor.Neutral60,
                 )
@@ -130,7 +136,6 @@ fun ComposeMessageCard(
                 horizontalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.Regular),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                val context = LocalContext.current
                 OSText(
                     text = LbcTextSpec.Raw(encryptedMessage),
                     style = MaterialTheme.typography.bodySmall,
@@ -139,20 +144,16 @@ fun ComposeMessageCard(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .weight(1f)
-                        .clickable {
-                            // TODO Temporary action used to test oneSafeK feature.
-                            val myClipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                            val myClip: ClipData = ClipData.newPlainText("copy", encryptedMessage)
-                            myClipboard.setPrimaryClip(myClip)
-                        },
+                        .clickable(onClick = onPreviewClick),
                 )
 
                 OSIconButton(
-                    image = OSImageSpec.Drawable(MsgR.drawable.ic_send),
+                    image = sendIcon,
                     onClick = onClickOnSend,
                     buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
                     contentDescription = LbcTextSpec.StringResource(R.string.accessibility_oneSafeK_sendAction),
                     colors = OSIconButtonDefaults.primaryIconButtonColors(),
+                    state = if (plainMessage.isEmpty()) OSActionState.Disabled else OSActionState.Enabled,
                 )
             }
         }
@@ -170,6 +171,8 @@ fun ComposeMessageCardPreview() {
             encryptedMessage = UUID.randomUUID().toString(),
             onPlainMessageChange = {},
             onClickOnSend = {},
+            sendIcon = OSImageSpec.Drawable(MsgR.drawable.ic_send),
+            onPreviewClick = {},
         )
     }
 }

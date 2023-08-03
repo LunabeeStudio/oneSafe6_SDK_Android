@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.messaging.domain.usecase
 
 import com.lunabee.lbcore.model.LBResult
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
@@ -55,7 +56,7 @@ class SaveMessageUseCase @Inject constructor(
         channel: String?,
     ): LBResult<Unit> = OSError.runCatching {
         mutex.withLock {
-            val recipient = getContactUseCase(recipientId)
+            val recipient = getContactUseCase(recipientId).first()
             val key = contactKeyRepository.getContactLocalKey(contactId)
             val encContent = bubblesCryptoRepository.localEncrypt(key, EncryptEntry(plainMessage))
             val encSentAt = bubblesCryptoRepository.localEncrypt(key, EncryptEntry(sentAt))

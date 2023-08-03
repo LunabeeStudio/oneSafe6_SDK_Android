@@ -25,6 +25,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestResult
@@ -64,7 +65,7 @@ class AndroidMainCryptoRepositoryTest {
     internal lateinit var crypto: CryptoEngine
 
     @Inject
-    internal lateinit var hashEngine: HashEngine
+    internal lateinit var hashEngine: PasswordHashEngine
 
     @Inject
     internal lateinit var randomKeyProvider: RandomKeyProvider
@@ -76,7 +77,7 @@ class AndroidMainCryptoRepositoryTest {
     internal lateinit var mapper: CryptoDataMapper
 
     private val featureFlags: FeatureFlags = mockk {
-        every { this@mockk.bubbles() } returns false
+        every { this@mockk.bubbles() } returns flowOf(false)
     }
 
     private val repository: AndroidMainCryptoRepository by lazy {
@@ -328,7 +329,7 @@ class AndroidMainCryptoRepositoryTest {
 
     @Test
     fun encrypt_decrypt_for_bubbles_test(): TestResult = runTest {
-        every { featureFlags.bubbles() } returns true
+        every { featureFlags.bubbles() } returns flowOf(true)
         this@AndroidMainCryptoRepositoryTest.repository.storeMasterKeyAndSalt(key, salt)
         val plainData = "contactName"
         val encryptedData = this@AndroidMainCryptoRepositoryTest.repository.encryptBubbles(plainData.encodeToByteArray())

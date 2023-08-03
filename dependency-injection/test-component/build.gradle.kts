@@ -59,6 +59,8 @@ dependencies {
     implementation(libs.lblogger)
     implementation(libs.lbcore)
 
+    implementation(libs.double.ratchet)
+
     implementation(project(":crypto-android"))
     implementation(project(":domain"))
     implementation(project(":import-export"))
@@ -72,5 +74,6 @@ dependencies {
     implementation(project(":bubbles-crypto-android"))
     implementation(project(":messaging-domain"))
     implementation(project(":messaging-repository"))
+    implementation(project(":messaging-crypto-android"))
     api(project(":common-test"))
 }

@@ -70,6 +70,8 @@ interface MainCryptoRepository {
     suspend fun loadMasterKeyExternal(masterKey: ByteArray)
     suspend fun decryptRecentSearch(encRecentSearch: List<ByteArray>): List<String>
     suspend fun encryptRecentSearch(plainRecentSearch: List<String>): List<ByteArray>
+    suspend fun generateBubblesKey()
+    suspend fun deleteBubblesCrypto()
 
     /**
      * Encrypt [data] with the bubbles master key

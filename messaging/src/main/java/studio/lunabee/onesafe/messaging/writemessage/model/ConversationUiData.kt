@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.messaging.writemessage.model
 
+import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.messaging.domain.model.MessageDirection
 import studio.lunabee.onesafe.messaging.extension.isSameDayAs
 import java.time.Instant
@@ -27,7 +28,7 @@ sealed interface ConversationUiData {
 
     data class PlainMessageData(
         val id: String,
-        val text: String,
+        val text: LbcTextSpec,
         val direction: MessageDirection,
         val sendAt: Instant,
         val channelName: String?,

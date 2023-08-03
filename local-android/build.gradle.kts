@@ -108,6 +108,8 @@ dependencies {
     implementation(project(":messaging-domain"))
     implementation(project(":messaging-repository"))
 
+    implementation(libs.double.ratchet)
+
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(project(":dependency-injection:test-component"))
     androidTestImplementation(KotlinX.coroutines.test)

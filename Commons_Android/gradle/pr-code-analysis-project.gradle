@@ -6,7 +6,7 @@ detekt {
     parallel = true
     source = files(rootProject.rootDir)
     buildUponDefaultConfig = true
-    config = files("$projectDir/Commons_Android/lunabee-detekt-config.yml")
+    config.setFrom(files("$projectDir/Commons_Android/lunabee-detekt-config.yml"))
     autoCorrect = true
     ignoreFailures = true
 }

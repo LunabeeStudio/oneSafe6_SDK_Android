@@ -20,19 +20,19 @@
 package studio.lunabee.onesafe.error
 
 data class OSStorageError(
-    val code: Code,
+    override val code: Code,
     override val message: String = code.message,
     override val cause: Throwable? = null,
-) : OSError(message, cause) {
+) : OSError(message, cause, code) {
 
-    enum class Code(val message: String) {
+    enum class Code(val message: String) : ErrorCode {
         ITEM_KEY_NOT_FOUND("The item key does not exist"),
         ITEM_NOT_FOUND("The item does not exist"),
         CONTACT_NOT_FOUND("The contact does not exist"),
         CONTACT_KEY_NOT_FOUND("The contact key does not exist"),
         UNKNOWN_DATABASE_ERROR("Unknown database error"),
         PROTO_DATASTORE_READ_ERROR("Cannot read datastore proto"),
-        ENQUEUED_MESSAGE_ALREADY_EXIST_ERROR("The message has already been add in the table"),
+        ENQUEUED_MESSAGE_ALREADY_EXIST_ERROR("The message has already been enqueued"),
         ENQUEUED_MESSAGE_NOT_FOUND_FOR_DELETE("No message with the id provided found for delete"),
     }
 }

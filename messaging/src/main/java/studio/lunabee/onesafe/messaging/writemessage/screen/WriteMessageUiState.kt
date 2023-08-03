@@ -21,10 +21,13 @@ package studio.lunabee.onesafe.messaging.writemessage.screen
 
 import androidx.compose.runtime.Stable
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
+import studio.lunabee.onesafe.error.OSError
 
 @Stable
 data class WriteMessageUiState(
     val currentContact: BubblesContactInfo? = null,
     val plainMessage: String = "",
-    val encryptedMessage: String = "",
+    val encryptedPreview: String = "",
+    val conversationError: OSError? = null,
+    val isUsingDeepLink: Boolean = false,
 )

@@ -22,7 +22,7 @@ package studio.lunabee.onesafe.cryptography
 import java.util.Base64
 import kotlin.test.assertContentEquals
 
-suspend fun HashEngine.deriveKey_stability_test(expectedKey: ByteArray) {
+suspend fun PasswordHashEngine.deriveKey_stability_test(expectedKey: ByteArray) {
     val salt = Base64.getDecoder().decode("YIktbwBFt+dWRN+xuw9kRd9zmChmCvW4+RlIj0dGpmw=")
     val derivedKey = deriveKey("azerty123456!@é".toCharArray(), salt)
     assertContentEquals(

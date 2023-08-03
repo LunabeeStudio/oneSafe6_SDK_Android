@@ -20,17 +20,17 @@
 package studio.lunabee.onesafe.messaging.domain.usecase
 
 import com.lunabee.lbcore.model.LBResult
-import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.messaging.domain.repository.EnqueuedMessageRepository
+import studio.lunabee.onesafe.messaging.domain.repository.MessagingCryptoRepository
 import javax.inject.Inject
 
 /**
  * Add an incoming message to the queue for future processing
  */
 class EnqueueMessageUseCase @Inject constructor(
-    private val bubblesCryptoRepository: BubblesCryptoRepository,
+    private val cryptoRepository: MessagingCryptoRepository,
     private val queueMessageRepository: EnqueuedMessageRepository,
 ) {
     /**
@@ -38,7 +38,7 @@ class EnqueueMessageUseCase @Inject constructor(
      * @param channel channel name
      */
     suspend operator fun invoke(encMessage: ByteArray, channel: String?): LBResult<Unit> = OSError.runCatching {
-        val encChannel = channel?.let { bubblesCryptoRepository.queueEncrypt(EncryptEntry(channel)) }
+        val encChannel = channel?.let { cryptoRepository.queueEncrypt(EncryptEntry(channel)) }
         queueMessageRepository.save(encMessage, encChannel)
         // TODO could be improve by checking the stored channel in order to update it if it was null
     }

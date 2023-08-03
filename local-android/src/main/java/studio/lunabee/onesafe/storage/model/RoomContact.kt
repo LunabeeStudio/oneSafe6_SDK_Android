@@ -35,8 +35,10 @@ data class RoomContact(
     @ColumnInfo(name = "id")
     val id: UUID,
     @ColumnInfo(name = "enc_name") val encName: ByteArray,
-    @ColumnInfo(name = "enc_shared_key") val encSharedKey: ContactSharedKey,
+    @ColumnInfo(name = "enc_shared_key") val encSharedKey: ContactSharedKey?,
     @ColumnInfo(name = "updated_at") val updatedAt: Instant,
+    @ColumnInfo(name = "shared_conversation_id") val sharedConversationId: UUID,
+    @ColumnInfo(name = "enc_is_using_deeplink") val encIsUsingDeeplink: ByteArray,
 ) {
     fun toContact(): Contact =
         Contact(
@@ -44,6 +46,8 @@ data class RoomContact(
             encName = encName,
             encSharedKey = encSharedKey,
             updatedAt = updatedAt,
+            sharedConversationId = sharedConversationId,
+            encIsUsingDeeplink = encIsUsingDeeplink,
         )
 
     override fun equals(other: Any?): Boolean {
@@ -54,7 +58,7 @@ data class RoomContact(
 
         if (id != other.id) return false
         if (!encName.contentEquals(other.encName)) return false
-        if (!encSharedKey.encKey.contentEquals(other.encSharedKey.encKey)) return false
+        if (!encSharedKey?.encKey.contentEquals(other.encSharedKey?.encKey)) return false
         if (updatedAt != other.updatedAt) return false
 
         return true
@@ -63,7 +67,7 @@ data class RoomContact(
     override fun hashCode(): Int {
         var result = id.hashCode()
         result = 31 * result + encName.contentHashCode()
-        result = 31 * result + encSharedKey.encKey.contentHashCode()
+        result = 31 * result + encSharedKey?.encKey.contentHashCode()
         result = 31 * result + updatedAt.hashCode()
         return result
     }
@@ -75,6 +79,8 @@ data class RoomContact(
                 encName = bubblesContact.encName,
                 encSharedKey = bubblesContact.encSharedKey,
                 updatedAt = bubblesContact.updatedAt,
+                sharedConversationId = bubblesContact.sharedConversationId,
+                encIsUsingDeeplink = bubblesContact.encIsUsingDeeplink,
             )
     }
 }

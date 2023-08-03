@@ -20,11 +20,11 @@
 package studio.lunabee.onesafe.error
 
 data class OSMigrationError(
-    val code: Code,
+    override val code: Code,
     override val message: String = code.message,
     override val cause: Throwable? = null,
-) : OSError(message, cause) {
-    enum class Code(val message: String) {
+) : OSError(message, cause, code) {
+    enum class Code(val message: String) : ErrorCode {
         USERNAME_REMOVAL_FAIL("Migration to remove the username failed"),
         SET_PASSWORD_VERIFICATION_FAIL("Migration to save password verification data failed"),
     }

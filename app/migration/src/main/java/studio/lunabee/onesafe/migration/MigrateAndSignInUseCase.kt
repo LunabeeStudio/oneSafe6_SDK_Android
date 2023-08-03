@@ -23,7 +23,7 @@ import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.OSAppSettings
 import studio.lunabee.onesafe.cryptography.BiometricEngine
 import studio.lunabee.onesafe.cryptography.DatastoreEngine
-import studio.lunabee.onesafe.cryptography.HashEngine
+import studio.lunabee.onesafe.cryptography.PasswordHashEngine
 import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
 import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
@@ -43,7 +43,7 @@ class MigrateAndSignInUseCase @Inject constructor(
     private val isSignUpUseCase: IsSignUpUseCase,
     private val mainCryptoRepository: MainCryptoRepository,
     biometricEngine: BiometricEngine,
-    hashEngine: HashEngine,
+    hashEngine: PasswordHashEngine,
     @DatastoreEngineProvider(DataStoreType.Plain) dataStoreEngine: DatastoreEngine,
 ) {
     private val migrationGetMasterKeyV0UseCase: MigrationGetMasterKeyV0UseCase = MigrationGetMasterKeyV0UseCase(

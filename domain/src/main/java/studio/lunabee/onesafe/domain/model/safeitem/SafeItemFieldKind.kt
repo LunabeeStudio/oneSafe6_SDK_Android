@@ -143,7 +143,7 @@ sealed class SafeItemFieldKind(
 
     object Iban : SafeItemFieldKind(
         font = SafeItemFieldFont.Default,
-        inputType = SafeItemInputType.Default,
+        inputType = SafeItemInputType.DefaultCap,
         maskList = FieldMask.IbanMasks,
     ) {
         override val id: String = "iban"

@@ -23,9 +23,14 @@ import com.lunabee.lbcore.model.LBFlowResult
 import com.lunabee.lbcore.model.LBResult
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
+import kotlin.reflect.KProperty1
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.typeOf
 import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 
 /**
  * Not [assertContentEquals]
@@ -101,4 +106,30 @@ inline fun <reified T> assertSuccess(value: LBFlowResult<T>?, message: String? =
 inline fun <reified T> assertFailure(value: LBFlowResult<T>?, message: String? = null): LBFlowResult.Failure<T> {
     contract { returns() implies (value is LBFlowResult.Failure<T>) }
     return assertIs(value, listOfNotNull(message, value?.toString()).joinToString("\n"))
+}
+
+inline fun <reified T : Any> assertPropertiesEquals(
+    expected: T,
+    actual: T,
+    properties: Collection<KProperty1<T, *>> = T::class.memberProperties,
+) {
+    val byteArrayType = typeOf<ByteArray?>()
+    properties.forEach { property ->
+        if (property.returnType == byteArrayType) {
+            val expectedProp = property.get(expected) as ByteArray?
+            val actualProp = property.get(actual) as ByteArray?
+
+            if (expectedProp != null) {
+                assertContentEquals(expectedProp, actualProp, "Property ${property.name} equality failed")
+            } else {
+                assertNull(actualProp, "Property ${property.name} nullity failed")
+            }
+        } else {
+            assertEquals(
+                property.get(expected),
+                property.get(actual),
+                "Property ${property.name} equality failed",
+            )
+        }
+    }
 }

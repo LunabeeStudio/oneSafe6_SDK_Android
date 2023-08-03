@@ -37,28 +37,9 @@ import java.util.UUID
         ),
     ],
 )
-data class RoomContactKey(
+class RoomContactKey(
     @PrimaryKey
     @ColumnInfo(name = "contact_id")
     val contactId: UUID,
     @ColumnInfo(name = "enc_value") val encLocalKey: ContactLocalKey,
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as RoomContactKey
-
-        if (contactId != other.contactId) return false
-        if (!encLocalKey.contentEquals(other.encLocalKey)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = contactId.hashCode()
-        result = 31 * result + encLocalKey.hashCode()
-        result = 31 * result + encLocalKey.contentHashCode()
-        return result
-    }
-}
+)

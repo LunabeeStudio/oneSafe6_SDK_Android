@@ -31,6 +31,8 @@ data class SafeItemWithIdentifier(
     val deletedAt: Instant? = null,
     val encSecuredDisplayMask: ByteArray?,
     val encIdentifierKind: ByteArray?,
+    val position: Double,
+    val updatedAt: Instant,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -52,18 +54,18 @@ data class SafeItemWithIdentifier(
             if (other.encIdentifier == null) return false
             if (!encIdentifier.contentEquals(other.encIdentifier)) return false
         } else if (other.encIdentifier != null) return false
-        if (deletedAt != null) {
-            if (other.deletedAt == null) return false
-            if (deletedAt != other.deletedAt) return false
-        } else if (other.deletedAt != null) return false
+        if (deletedAt != other.deletedAt) return false
         if (encSecuredDisplayMask != null) {
             if (other.encSecuredDisplayMask == null) return false
-            if (!encIdentifier.contentEquals(other.encSecuredDisplayMask)) return false
+            if (!encSecuredDisplayMask.contentEquals(other.encSecuredDisplayMask)) return false
         } else if (other.encSecuredDisplayMask != null) return false
         if (encIdentifierKind != null) {
             if (other.encIdentifierKind == null) return false
             if (!encIdentifierKind.contentEquals(other.encIdentifierKind)) return false
         } else if (other.encIdentifierKind != null) return false
+        if (position != other.position) return false
+        if (updatedAt != other.updatedAt) return false
+
         return true
     }
 
@@ -76,6 +78,8 @@ data class SafeItemWithIdentifier(
         result = 31 * result + (deletedAt?.hashCode() ?: 0)
         result = 31 * result + (encSecuredDisplayMask?.contentHashCode() ?: 0)
         result = 31 * result + (encIdentifierKind?.contentHashCode() ?: 0)
+        result = 31 * result + position.hashCode()
+        result = 31 * result + updatedAt.hashCode()
         return result
     }
 }

@@ -34,6 +34,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -51,20 +52,25 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.OSScreen
 import studio.lunabee.onesafe.atom.button.OSIconButton
 import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
+import studio.lunabee.onesafe.bubbles.ui.extension.getDeepLinkFromMessage
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
 import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
 import studio.lunabee.onesafe.commonui.localprovider.LocalKeyboardUiHeight
+import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
 import studio.lunabee.onesafe.extension.loremIpsum
 import studio.lunabee.onesafe.messaging.domain.model.MessageDirection
 import studio.lunabee.onesafe.messaging.writemessage.composable.ComposeMessageCard
 import studio.lunabee.onesafe.messaging.writemessage.composable.ConversationDayHeader
+import studio.lunabee.onesafe.messaging.writemessage.composable.ConversationNotReadyCard
 import studio.lunabee.onesafe.messaging.writemessage.composable.WriteMessageExitIcon
 import studio.lunabee.onesafe.messaging.writemessage.composable.WriteMessageTopBar
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
@@ -82,17 +88,22 @@ import kotlin.random.Random
 fun WriteMessageRoute(
     onChangeRecipient: (() -> Unit)?,
     sendMessage: (String) -> Unit,
+    navigationToInvitation: (UUID) -> Unit,
     exitIcon: WriteMessageExitIcon,
     viewModel: WriteMessageViewModel = hiltViewModel(),
     contactIdFlow: StateFlow<String?>,
+    sendIcon: OSImageSpec,
 ) {
     val updateContactId by contactIdFlow.collectAsStateWithLifecycle()
     updateContactId?.let {
         viewModel.savedStateHandle[WriteMessageDestination.ContactIdArgs] = updateContactId
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val dialogState by viewModel.dialogState.collectAsStateWithLifecycle()
     val conversation: LazyPagingItems<ConversationUiData> = viewModel.conversation.collectAsLazyPagingItems()
+    val coroutineScope = rememberCoroutineScope()
 
+    dialogState?.DefaultAlertDialog()
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -101,19 +112,31 @@ fun WriteMessageRoute(
             WriteMessageScreen(
                 contact = contact,
                 plainMessage = uiState.plainMessage,
-                encryptedMessage = uiState.encryptedMessage,
+                encryptedMessage = uiState.encryptedPreview,
                 onChangeRecipient = onChangeRecipient,
                 onPlainMessageChange = viewModel::onPlainMessageChange,
                 sendMessage = {
-                    viewModel.saveMessage(
-                        content = uiState.plainMessage,
-                        contactId = contact.id,
-                        context = context,
-                    )
-                    sendMessage(uiState.encryptedMessage)
+                    coroutineScope.launch {
+                        val messageToSend = viewModel.encryptAndSaveMessage(
+                            content = uiState.plainMessage,
+                            context = context,
+                        )
+                        messageToSend?.let {
+                            sendMessage(it.getDeepLinkFromMessage(uiState.isUsingDeepLink))
+                            viewModel.onPlainMessageChange("")
+                        }
+                    }
                 },
                 exitIcon = exitIcon,
                 conversation = conversation,
+                conversationError = uiState.conversationError,
+                onResendInvitationClick = {
+                    navigationToInvitation(UUID.fromString(viewModel.contactId.value))
+                },
+                sendIcon = sendIcon,
+                onPreviewClick = {
+                    viewModel.displayPreviewInfo()
+                },
             )
         }
     }
@@ -125,10 +148,14 @@ fun WriteMessageScreen(
     plainMessage: String,
     encryptedMessage: String,
     onChangeRecipient: (() -> Unit)?,
+    onResendInvitationClick: () -> Unit,
     onPlainMessageChange: (String) -> Unit,
     sendMessage: () -> Unit,
     conversation: LazyPagingItems<ConversationUiData>,
     exitIcon: WriteMessageExitIcon,
+    sendIcon: OSImageSpec,
+    conversationError: OSError?,
+    onPreviewClick: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
     val embeddedKeyboardHeight: Dp = LocalKeyboardUiHeight.current
@@ -180,6 +207,12 @@ fun WriteMessageScreen(
                     contentAlignment = Alignment.TopEnd,
                 ) {
                     when {
+                        conversationError != null -> {
+                            ConversationNotReadyCard(
+                                contactName = contact.nameProvider.name.string,
+                                onResendInvitationClick = onResendInvitationClick,
+                            )
+                        }
                         isConversationHidden || conversation.itemCount == 0 -> {
                             Box(
                                 modifier = Modifier
@@ -200,7 +233,10 @@ fun WriteMessageScreen(
                                     .landscapeSystemBarsPadding(),
                                 contentPadding = generateLazyColumnPaddingValue(conversation.itemCount, isConversationHidden),
                                 reverseLayout = true,
-                                verticalArrangement = generateLazyColumnVerticalArrangement(conversation.itemCount, isConversationHidden),
+                                verticalArrangement = generateLazyColumnVerticalArrangement(
+                                    conversation.itemCount,
+                                    isConversationHidden,
+                                ),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 state = lazyListState,
                             ) {
@@ -213,31 +249,35 @@ fun WriteMessageScreen(
                             }
                         }
                     }
-
-                    OSIconButton(
-                        image = if (isConversationHidden) {
-                            OSImageSpec.Drawable(R.drawable.ic_visibility_on)
-                        } else {
-                            OSImageSpec.Drawable(R.drawable.ic_visibility_off)
-                        },
-                        onClick = { isConversationHidden = !isConversationHidden },
-                        buttonSize = OSDimens.SystemButtonDimension.Small,
-                        contentDescription = null, // TODO @fngbala-luna
-                        colors = OSIconButtonDefaults.primaryIconButtonColors(),
-                        modifier = Modifier
-                            .padding(end = OSDimens.SystemSpacing.Regular, top = OSDimens.SystemSpacing.Small)
-                            .landscapeSystemBarsPadding()
-                            .shadow(elevation = OSDimens.Elevation.FloatingButton, shape = CircleShape),
-                    )
+                    if (conversationError == null) {
+                        OSIconButton(
+                            image = if (isConversationHidden) {
+                                OSImageSpec.Drawable(R.drawable.ic_visibility_on)
+                            } else {
+                                OSImageSpec.Drawable(R.drawable.ic_visibility_off)
+                            },
+                            onClick = { isConversationHidden = !isConversationHidden },
+                            buttonSize = OSDimens.SystemButtonDimension.Small,
+                            contentDescription = null, // TODO @fngbala-luna
+                            colors = OSIconButtonDefaults.primaryIconButtonColors(),
+                            modifier = Modifier
+                                .padding(end = OSDimens.SystemSpacing.Regular, top = OSDimens.SystemSpacing.Small)
+                                .landscapeSystemBarsPadding()
+                                .shadow(elevation = OSDimens.Elevation.FloatingButton, shape = CircleShape),
+                        )
+                    }
                 }
             }
-
-            ComposeMessageCard(
-                plainMessage = plainMessage,
-                encryptedMessage = encryptedMessage,
-                onPlainMessageChange = onPlainMessageChange,
-                onClickOnSend = sendMessage,
-            )
+            if (conversationError == null) {
+                ComposeMessageCard(
+                    plainMessage = plainMessage,
+                    encryptedMessage = encryptedMessage,
+                    onPlainMessageChange = onPlainMessageChange,
+                    onClickOnSend = sendMessage,
+                    sendIcon = sendIcon,
+                    onPreviewClick = onPreviewClick,
+                )
+            }
         }
     }
 }
@@ -282,14 +322,14 @@ fun WriteMessageScreenPreview() {
                 listOf<ConversationUiData>(
                     ConversationUiData.PlainMessageData(
                         id = "contact_${Random.nextInt()}",
-                        text = "hello",
+                        text = LbcTextSpec.Raw("hello"),
                         direction = MessageDirection.RECEIVED,
                         sendAt = Instant.ofEpochSecond(0),
                         channelName = loremIpsum(1),
                     ),
                     ConversationUiData.PlainMessageData(
                         id = "contact_${Random.nextInt()}",
-                        text = "hello hello",
+                        text = LbcTextSpec.Raw("hello hello"),
                         direction = MessageDirection.SENT,
                         sendAt = Instant.ofEpochSecond(0),
                         channelName = loremIpsum(1),
@@ -307,6 +347,10 @@ fun WriteMessageScreenPreview() {
             sendMessage = {},
             conversation = pagingItems,
             exitIcon = WriteMessageExitIcon.WriteMessageCloseIcon {},
+            conversationError = null,
+            onResendInvitationClick = {},
+            sendIcon = OSImageSpec.Drawable(studio.lunabee.onesafe.messaging.R.drawable.ic_send),
+            onPreviewClick = {},
         )
     }
 }

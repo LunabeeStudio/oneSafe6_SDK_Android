@@ -58,6 +58,16 @@ allprojects {
                 releasesOnly()
             }
         }
+        maven {
+            url = uri("https://artifactory.lunabee.studio/artifactory/double-ratchet-kmm/")
+            credentials {
+                username = artifactoryUsername
+                password = artifactoryPassword
+            }
+            mavenContent {
+                releasesOnly()
+            }
+        }
     }
 }
 
@@ -71,7 +81,7 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt> {
     exclude("**/build/**")
 }
 detekt {
-    config = files("$projectDir/Commons_Android/lunabee-detekt-config.yml", "$projectDir/onesafe-detekt-config.yml")
+    config.setFrom(files("$projectDir/Commons_Android/lunabee-detekt-config.yml", "$projectDir/onesafe-detekt-config.yml"))
 }
 
 apply("Commons_Android/gradle/lunabee-root.gradle.kts")

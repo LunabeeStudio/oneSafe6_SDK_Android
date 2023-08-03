@@ -56,3 +56,5 @@ nbvcxz = { module = "me.gosimple:nbvcxz", version = "_" }
 lint-api = { module = "com.android.tools.lint:lint-api", version = "_" }
 lint-checks = { module = "com.android.tools.lint:lint-checks", version = "_" }
 florisboard = { module = "studio.lunabee.florisboard:florisboard-library", version = "_" }
+double-ratchet = { module = "studio.lunabee.doubleratchet:doubleratchet-jvm", version = "_" }
+journeyappszxing = {  module = "com.journeyapps:zxing-android-embedded", version = "_" }

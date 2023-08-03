@@ -24,7 +24,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.GetAllContactsUseCase
-import studio.lunabee.onesafe.bubbles.ui.selectcontact.SelectContactViewModel
+import studio.lunabee.onesafe.bubbles.ui.onesafek.SelectContactViewModel
 import javax.inject.Inject
 
 class SelectContactViewModelFactory @Inject constructor(

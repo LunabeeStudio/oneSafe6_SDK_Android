@@ -26,4 +26,5 @@ enum class SafeItemInputType {
     Number,
     Password,
     Url,
+    DefaultCap,
 }

@@ -27,6 +27,7 @@ import com.lunabee.lblogger.v
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
 import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
 import studio.lunabee.onesafe.cryptography.utils.SafeDataMutableStateFlow
@@ -56,7 +57,7 @@ private val log = LBLogger.get<AndroidMainCryptoRepository>()
 @RequiresApi(Build.VERSION_CODES.M)
 class AndroidMainCryptoRepository @Inject constructor(
     private val crypto: CryptoEngine,
-    private val hashEngine: HashEngine,
+    private val hashEngine: PasswordHashEngine,
     private val biometricEngine: BiometricEngine,
     @DatastoreEngineProvider(DataStoreType.Plain) private val dataStoreEngine: DatastoreEngine,
     private val featureFlags: FeatureFlags,
@@ -125,9 +126,7 @@ class AndroidMainCryptoRepository @Inject constructor(
     override fun unloadMasterKeys() {
         masterKey = null
         searchIndexKey = null
-        if (featureFlags.bubbles()) {
-            bubblesMasterKey = null
-        }
+        bubblesMasterKey = null
         log.v("cryptographic keys unloaded")
     }
 
@@ -145,7 +144,7 @@ class AndroidMainCryptoRepository @Inject constructor(
             associatedData = null,
         )
         generateIndexKey()
-        if (featureFlags.bubbles()) {
+        if (featureFlags.bubbles().first()) {
             generateBubblesKey()
         }
     }
@@ -161,7 +160,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         )
         dataStoreEngine.editValue(value = masterKeyTestValue, key = DATASTORE_MASTER_KEY_TEST)
         reEncryptIndexKey()
-        if (featureFlags.bubbles()) {
+        if (featureFlags.bubbles().first()) {
             reEncryptBubblesContactKey()
         }
     }
@@ -169,7 +168,7 @@ class AndroidMainCryptoRepository @Inject constructor(
     override suspend fun loadMasterKeyFromBiometric(cipher: Cipher) {
         masterKey = biometricEngine.retrieveKey(cipher)
         retrieveKeyForIndex()
-        if (featureFlags.bubbles()) {
+        if (featureFlags.bubbles().first()) {
             retrieveKeyForBubblesContact()
         }
         log.v("cryptographic keys loaded using biometric")
@@ -178,7 +177,7 @@ class AndroidMainCryptoRepository @Inject constructor(
     override suspend fun loadMasterKeyExternal(masterKey: ByteArray) {
         this.masterKey = masterKey.copyOf()
         retrieveKeyForIndex()
-        if (featureFlags.bubbles()) {
+        if (featureFlags.bubbles().first()) {
             retrieveKeyForBubblesContact()
         }
         log.v("cryptographic keys externally loaded")
@@ -191,7 +190,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    private suspend fun generateBubblesKey() {
+    override suspend fun generateBubblesKey() {
         bubblesMasterKeyDataStore = randomKeyProvider().use { keyData ->
             bubblesMasterKey = keyData.copyOf()
             crypto.encrypt(keyData, masterKey!!, null)
@@ -213,6 +212,11 @@ class AndroidMainCryptoRepository @Inject constructor(
         } else {
             generateBubblesKey()
         }
+    }
+
+    override suspend fun deleteBubblesCrypto() {
+        bubblesMasterKey = null
+        dataStoreEngine.editValue(null, DATASTORE_BUBBLES_CONTACT_KEY)
     }
 
     private suspend fun reEncryptBubblesContactKey() {
@@ -241,7 +245,7 @@ class AndroidMainCryptoRepository @Inject constructor(
             retrieveMasterKeyFromPassword(password)?.let {
                 masterKey = it
                 retrieveKeyForIndex()
-                if (featureFlags.bubbles()) {
+                if (featureFlags.bubbles().first()) {
                     retrieveKeyForBubblesContact()
                 }
                 log.v("cryptographic keys loaded using password")

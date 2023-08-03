@@ -20,11 +20,11 @@
 package studio.lunabee.onesafe.error
 
 data class OSDomainError(
-    val code: Code,
+    override val code: Code,
     override val message: String = code.message,
     override val cause: Throwable? = null,
-) : OSError(message, cause) {
-    enum class Code(val message: String) {
+) : OSError(message, cause, code) {
+    enum class Code(val message: String) : ErrorCode {
         SAFE_ITEM_DELETE_FAILURE("The SafeItem couldn't be move to bin"),
         SAFE_ITEM_REMOVE_FAILURE("The SafeItem couldn't be move to permanently removed"),
         SAFE_ITEM_NO_ICON("The SafeItem does not have an icon set"),
@@ -37,5 +37,8 @@ data class OSDomainError(
         NO_MATCHING_CONTACT("No contact key matching the encrypted message"),
         DUPLICATED_MESSAGE("The message has already been stored"),
         DECRYPT_MESSAGE_NOT_BASE64("The incoming message is not a base 64"),
+        HAND_SHAKE_DATA_NOT_FOUND("The hand shake data required is missing and shouldn't be"),
+        WRONG_CONTACT("this message is not for this contact"),
+        NOT_AN_INVITATION_MESSAGE("this message is not an invitation message"),
     }
 }

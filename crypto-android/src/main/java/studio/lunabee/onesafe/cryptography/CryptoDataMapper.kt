@@ -35,6 +35,7 @@ class CryptoDataMapper @Inject constructor() {
         data is UUID -> data.toByteArray()
         data is ByteArray -> data
         data is Instant -> data.toEpochMilli().toByteArray()
+        data is Boolean -> data.toByteArray()
         else -> throw OSCryptoError(
             OSCryptoError.Code.MISSING_MAPPER,
             "No mapper found or provided for type ${data::class.simpleName}",
@@ -55,6 +56,7 @@ class CryptoDataMapper @Inject constructor() {
             clazz == UUID::class -> rawData.toUUID() as Data
             clazz == ByteArray::class -> rawData as Data
             clazz == Instant::class -> Instant.ofEpochMilli(rawData.toLong()) as Data
+            clazz == Boolean::class -> rawData.toBoolean() as Data
             else -> throw OSCryptoError(
                 OSCryptoError.Code.MISSING_MAPPER,
                 "No mapper found for type ${clazz.simpleName}",

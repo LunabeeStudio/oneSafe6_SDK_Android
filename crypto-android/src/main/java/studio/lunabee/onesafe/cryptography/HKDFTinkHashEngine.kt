@@ -29,7 +29,7 @@ import javax.inject.Inject
 
 class HKDFTinkHashEngine @Inject constructor(
     @CryptoDispatcher private val dispatcher: CoroutineDispatcher,
-) : HashEngine {
+) : PasswordHashEngine {
     override suspend fun deriveKey(password: CharArray, salt: ByteArray): ByteArray =
         withContext(dispatcher) {
             doHash(password, salt)

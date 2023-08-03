@@ -95,4 +95,15 @@ class OSAppSettings @Inject constructor(
             dataStore.edit { preferences -> preferences.remove(migrationVersionSettingKey) }
         }
     }
+
+    private val bubblesActivationSettingKey = booleanPreferencesKey(SettingsConstants.BubblesActivation)
+    fun bubblesActivationSetting(): Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[bubblesActivationSettingKey] ?: SettingsDefaults.BubblesActivationDefault
+    }
+
+    suspend fun setBubblesActivationSetting(value: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[bubblesActivationSettingKey] = value
+        }
+    }
 }

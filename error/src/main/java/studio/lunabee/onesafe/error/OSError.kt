@@ -26,7 +26,10 @@ import org.slf4j.Logger
 sealed class OSError(
     message: String,
     cause: Throwable?,
+    open val code: ErrorCode,
 ) : Exception(message, cause) {
+
+    interface ErrorCode
 
     companion object {
         inline fun <R> runCatching(

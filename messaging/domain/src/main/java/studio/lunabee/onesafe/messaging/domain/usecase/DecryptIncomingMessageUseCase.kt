@@ -19,21 +19,38 @@
 
 package studio.lunabee.onesafe.messaging.domain.usecase
 
+import com.google.protobuf.InvalidProtocolBufferException
 import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import studio.lunabee.doubleratchet.DoubleRatchetEngine
+import studio.lunabee.doubleratchet.crypto.DoubleRatchetKeyRepository
+import studio.lunabee.doubleratchet.model.DRPrivateKey
+import studio.lunabee.doubleratchet.model.DRPublicKey
+import studio.lunabee.doubleratchet.model.DoubleRatchetError
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.doubleratchet.model.MessageHeader
+import studio.lunabee.onesafe.bubbles.domain.BubbleConstant
 import studio.lunabee.onesafe.bubbles.domain.model.Contact
+import studio.lunabee.onesafe.bubbles.domain.model.ContactLocalKey
+import studio.lunabee.onesafe.bubbles.domain.model.ContactSharedKey
 import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactKeyRepository
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
-import studio.lunabee.onesafe.bubbles.domain.usecase.GetContactUseCase
+import studio.lunabee.onesafe.bubbles.domain.usecase.GetAllContactsUseCase
+import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSDomainError
+import studio.lunabee.onesafe.error.OSDoubleRatchetError
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.messagecompanion.OSMessage
 import studio.lunabee.onesafe.messaging.domain.extension.toInstant
+import studio.lunabee.onesafe.messaging.domain.model.OSEncryptedMessage
 import studio.lunabee.onesafe.messaging.domain.model.OSPlainMessage
+import studio.lunabee.onesafe.messaging.domain.repository.HandShakeDataRepository
+import studio.lunabee.onesafe.messaging.domain.repository.MessagingCryptoRepository
 import java.util.UUID
 import javax.inject.Inject
 
@@ -41,35 +58,162 @@ import javax.inject.Inject
  * Try to decrypt a message with every contact key
  */
 class DecryptIncomingMessageUseCase @Inject constructor(
-    private val contactRepository: ContactRepository,
-    private val contactKeyRepository: ContactKeyRepository,
     private val bubblesCryptoRepository: BubblesCryptoRepository,
-    private val getContactUseCase: GetContactUseCase,
+    private val messagingCryptoRepository: MessagingCryptoRepository,
+    private val getAllContactsUseCase: GetAllContactsUseCase,
+    private val doubleRatchetEngine: DoubleRatchetEngine,
+    private val handShakeDataRepository: HandShakeDataRepository,
+    private val contactKeyRepository: ContactKeyRepository,
+    private val doubleRatchetKeyRepository: DoubleRatchetKeyRepository,
+    private val contactRepository: ContactRepository,
 ) {
     /**
      * @param messageData The raw message
      *
      * @return failure with NO_MATCHING_CONTACT error code if no contact shared key has been found to decrypt the message.
      */
-    suspend operator fun invoke(messageData: ByteArray): LBResult<Pair<Contact, OSPlainMessage>> {
-        return getContactUseCase()
+    suspend operator fun invoke(messageData: ByteArray): LBResult<Pair<Contact, OSPlainMessage?>> {
+        // We try to parse the data as HandShakeMessage to know what kind of message we are dealing with
+        val handShakeMessage = tryParseHandShakeMessage(messageData)
+        return getAllContactsUseCase().first()
             .asFlow()
             .map { contact ->
-                OSError.runCatching {
-                    val sharedKey = contactRepository.getSharedKey(contact.id)
-                    val localKey = contactKeyRepository.getContactLocalKey(contact.id)
-                    val plainProto = bubblesCryptoRepository.sharedDecrypt(messageData, localKey, sharedKey)
-                    val plainMessage = OSMessage.MessageData.parseFrom(plainProto)
-                    contact to OSPlainMessage(
-                        content = plainMessage.content,
-                        recipientId = UUID.fromString(plainMessage.recipientId),
-                        sentAt = plainMessage.sentAt.toInstant(),
-                    )
+                val localKey = contactKeyRepository.getContactLocalKey(contact.id)
+                if (handShakeMessage != null) {
+                    handleHandShakeMessage(handShakeMessage, contact, localKey)
+                } else {
+                    handleMessage(messageData, contact, localKey)
                 }
             }.firstOrNull { result ->
                 // Get the first result different from BUBBLES_DECRYPTION_FAILED_WRONG_CONTACT_KEY and return it
-                val error = (result as? LBResult.Failure)?.throwable as? OSCryptoError
-                error?.code != OSCryptoError.Code.BUBBLES_DECRYPTION_FAILED_WRONG_CONTACT_KEY
+                val error = (result as? LBResult.Failure)?.throwable as? OSError
+                error?.code != OSCryptoError.Code.BUBBLES_DECRYPTION_FAILED_WRONG_CONTACT_KEY &&
+                    error?.code != OSDomainError.Code.WRONG_CONTACT
             } ?: LBResult.Failure(OSDomainError(OSDomainError.Code.NO_MATCHING_CONTACT))
+    }
+
+    private suspend fun handleHandShakeMessage(
+        handShakeMessage: OSMessage.HandShakeMessage,
+        contact: Contact,
+        localKey: ContactLocalKey,
+    ): LBResult<Pair<Contact, OSPlainMessage?>> = when {
+        // If the sharedConversationId don't correspond to the proto conversationId, it means that its the wrong contact
+        handShakeMessage.conversationId != contact.sharedConversationId.toString() -> LBResult.Failure(
+            OSDomainError(OSDomainError.Code.WRONG_CONTACT),
+        )
+        // If recipientID equals the contact id, it mean that its a message we send that message and we can't decrypt it
+        handShakeMessage.recipientId == contact.id.toString() -> LBResult.Failure(
+            OSDoubleRatchetError(OSDoubleRatchetError.Code.CantDecryptSentMessage),
+        )
+        else -> OSError.runCatching {
+            decryptHandShake(handShakeMessage, contact, localKey)
+        }
+    }
+
+    private suspend fun handleMessage(
+        messageData: ByteArray,
+        contact: Contact,
+        localKey: ContactLocalKey,
+    ): LBResult<Pair<Contact, OSPlainMessage>> {
+        val encSharedKey = contact.encSharedKey
+        return if (encSharedKey != null) {
+            OSError.runCatching { decryptMessage(messageData, contact, encSharedKey, localKey) }
+        } else {
+            LBResult.Failure(OSDomainError(OSDomainError.Code.WRONG_CONTACT))
+        }
+    }
+
+    private suspend fun decryptHandShake(
+        plainMessageProto: OSMessage.HandShakeMessage,
+        contact: Contact,
+        localKey: ContactLocalKey,
+    ): Pair<Contact, OSPlainMessage?> {
+        val plainMessage = OSEncryptedMessage(
+            body = plainMessageProto.body.toByteArray(),
+            messageHeader = MessageHeader(
+                messageNumber = plainMessageProto.header.messageNumber,
+                sequenceNumber = plainMessageProto.header.sequenceMessageNumber,
+                publicKey = DRPublicKey(plainMessageProto.header.publicKey.toByteArray()),
+            ),
+            recipientId = UUID.fromString(plainMessageProto.recipientId),
+        )
+        // We skip the hand step if we already did one
+        if (contact.encSharedKey == null) {
+            val privateKey = handShakeDataRepository.getById(contact.id)?.oneSafePrivateKey!!
+            val sharedSecret = doubleRatchetKeyRepository.createDiffieHellmanSharedSecret(
+                DRPublicKey(plainMessageProto.oneSafePublicKey.toByteArray()),
+                DRPrivateKey(privateKey),
+            )
+            val encSharedKey = bubblesCryptoRepository.localEncrypt(localKey, EncryptEntry(sharedSecret.value))
+            contactRepository.addContactSharedKey(contact.id, ContactSharedKey(encSharedKey))
+
+            // We remove handShake data since we don't need it anymore
+            handShakeDataRepository.delete(contact.id)
+        }
+        val messageKey = try {
+            doubleRatchetEngine.getReceiveKey(messageHeader = plainMessage.messageHeader, DoubleRatchetUUID(contact.id))
+        } catch (e: DoubleRatchetError) {
+            throw OSDoubleRatchetError.fromDoubleRatchetError(e)
+        }
+
+        val plainBody = messagingCryptoRepository.decryptMessage(plainMessage.body, messageKey)
+        val plainMessageDataProto = OSMessage.MessageData.parseFrom(plainBody)
+
+        // Don't return the message if it's an inviatation message and you already received the handShake
+        val osPlainMessage = if (plainMessageDataProto.content == BubbleConstant.FirstMessageData && contact.encSharedKey != null) {
+            null
+        } else {
+            OSPlainMessage(
+                content = plainMessageDataProto.content,
+                sentAt = plainMessageDataProto.sentAt.toInstant(),
+                recipientId = plainMessage.recipientId,
+            )
+        }
+        return contact to osPlainMessage
+    }
+
+    private suspend fun decryptMessage(
+        messageData: ByteArray,
+        contact: Contact,
+        sharedKey: ContactSharedKey,
+        localKey: ContactLocalKey,
+    ): Pair<Contact, OSPlainMessage> {
+        val plainData = bubblesCryptoRepository.sharedDecrypt(messageData, localKey, sharedKey)
+        val plainMessageProto = OSMessage.Message.parseFrom(plainData)
+        val plainMessage = OSEncryptedMessage(
+            body = plainMessageProto.body.toByteArray(),
+            messageHeader = MessageHeader(
+                messageNumber = plainMessageProto.header.messageNumber,
+                sequenceNumber = plainMessageProto.header.sequenceMessageNumber,
+                publicKey = DRPublicKey(plainMessageProto.header.publicKey.toByteArray()),
+            ),
+            recipientId = UUID.fromString(plainMessageProto.recipientId),
+        )
+        if (plainMessage.recipientId == contact.id) {
+            throw OSDoubleRatchetError(OSDoubleRatchetError.Code.CantDecryptSentMessage)
+        }
+        if (plainMessage.messageHeader.messageNumber == 0) {
+            handShakeDataRepository.delete(contact.id)
+        }
+        val messageKey = try {
+            doubleRatchetEngine.getReceiveKey(messageHeader = plainMessage.messageHeader, DoubleRatchetUUID(contact.id))
+        } catch (e: DoubleRatchetError) {
+            throw OSDoubleRatchetError.fromDoubleRatchetError(e)
+        }
+        val plainBody = messagingCryptoRepository.decryptMessage(plainMessage.body, messageKey)
+        val plainMessageDataProto = OSMessage.MessageData.parseFrom(plainBody)
+        return contact to OSPlainMessage(
+            content = plainMessageDataProto.content,
+            recipientId = plainMessage.recipientId,
+            sentAt = plainMessageDataProto.sentAt.toInstant(),
+        )
+    }
+
+    private fun tryParseHandShakeMessage(messageData: ByteArray): OSMessage.HandShakeMessage? {
+        return try {
+            OSMessage.HandShakeMessage.parseFrom(messageData)
+        } catch (e: InvalidProtocolBufferException) {
+            null
+        }
     }
 }

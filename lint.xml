@@ -29,6 +29,7 @@
     <issue id="NegativeMargin" severity="warning" />
     <issue id="NoHardKeywords" severity="warning" />
     <issue id="Registered" severity="warning" />
+    <issue id="MissingTranslation" severity="warning" />
 
     <issue id="VisibleForTests" severity="error" />
 </lint>

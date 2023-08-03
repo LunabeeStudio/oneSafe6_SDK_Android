@@ -27,11 +27,15 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityRetainedComponent
+import dagger.hilt.android.components.ServiceComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import studio.lunabee.bubbles.repository.datasource.ContactKeyLocalDataSource
 import studio.lunabee.bubbles.repository.datasource.ContactLocalDataSource
+import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
 import studio.lunabee.messaging.repository.datasource.EnqueuedMessageLocalDataSource
+import studio.lunabee.messaging.repository.datasource.HandShakeDataLocalDatasource
 import studio.lunabee.messaging.repository.datasource.MessageLocalDataSource
 import studio.lunabee.onesafe.domain.repository.PersistenceManager
 import studio.lunabee.onesafe.repository.datasource.ForceUpgradeLocalDatasource
@@ -42,7 +46,6 @@ import studio.lunabee.onesafe.repository.datasource.RecentSearchLocalDatasource
 import studio.lunabee.onesafe.repository.datasource.SafeItemFieldLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.SafeItemKeyLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.SafeItemLocalDataSource
-import studio.lunabee.onesafe.storage.BubblesDatabase
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.OSForceUpgradeProto.ForceUpgradeProtoData
 import studio.lunabee.onesafe.storage.OSPasswordGeneratorConfigProto.PasswordGeneratorConfigProto
@@ -50,7 +53,10 @@ import studio.lunabee.onesafe.storage.OSRecentSearchProto.RecentSearchProto
 import studio.lunabee.onesafe.storage.PersistenceManagerImpl
 import studio.lunabee.onesafe.storage.dao.ContactDao
 import studio.lunabee.onesafe.storage.dao.ContactKeyDao
+import studio.lunabee.onesafe.storage.dao.DoubleRatchetConversationDao
+import studio.lunabee.onesafe.storage.dao.DoubleRatchetKeyDao
 import studio.lunabee.onesafe.storage.dao.EnqueuedMessageDao
+import studio.lunabee.onesafe.storage.dao.HandShakeDataDao
 import studio.lunabee.onesafe.storage.dao.IndexWordEntryDao
 import studio.lunabee.onesafe.storage.dao.MessageDao
 import studio.lunabee.onesafe.storage.dao.SafeItemDao
@@ -58,9 +64,11 @@ import studio.lunabee.onesafe.storage.dao.SafeItemFieldDao
 import studio.lunabee.onesafe.storage.dao.SafeItemKeyDao
 import studio.lunabee.onesafe.storage.datasource.ContactKeyLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.ContactLocalDataSourceImpl
-import studio.lunabee.onesafe.storage.datasource.ForceUpgradeLocalDatasourceImpl
-import studio.lunabee.onesafe.storage.datasource.IconLocalDataSourceImpl
+import studio.lunabee.onesafe.storage.datasource.DoubleRatchetDatasourceImpl
 import studio.lunabee.onesafe.storage.datasource.EnqueuedMessageLocalDataSourceImpl
+import studio.lunabee.onesafe.storage.datasource.ForceUpgradeLocalDatasourceImpl
+import studio.lunabee.onesafe.storage.datasource.HandShakeDataLocalDatasourceImpl
+import studio.lunabee.onesafe.storage.datasource.IconLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.IndexWordEntryLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.MessageLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.PasswordGeneratorConfigLocalDataSourceImpl
@@ -132,6 +140,30 @@ interface StorageModule {
 }
 
 @Module
+@InstallIn(ActivityRetainedComponent::class)
+interface DoubleRatchetActivityStorageModule {
+    @Binds
+    fun bindDoubleRatchetDatasource(
+        doubleRatchetDatasource: DoubleRatchetDatasourceImpl,
+    ): DoubleRatchetLocalDatasource
+
+    @Binds
+    fun bindsHandShakeDataLocalDatasource(handShakeDataLocalDatasourceImpl: HandShakeDataLocalDatasourceImpl): HandShakeDataLocalDatasource
+}
+
+@Module
+@InstallIn(ServiceComponent::class)
+interface DoubleRatchetServiceStorageModule {
+    @Binds
+    fun bindDoubleRatchetDatasource(
+        doubleRatchetDatasource: DoubleRatchetDatasourceImpl,
+    ): DoubleRatchetLocalDatasource
+
+    @Binds
+    fun bindsHandShakeDataLocalDatasource(handShakeDataLocalDatasourceImpl: HandShakeDataLocalDatasourceImpl): HandShakeDataLocalDatasource
+}
+
+@Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
     @Provides
@@ -141,16 +173,6 @@ object DatabaseModule {
             appContext,
             MainDatabase::class.java,
             "bc9fe798-a4f0-402e-9f5b-80339d87a041",
-        ).build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideBubblesDatabase(@ApplicationContext appContext: Context): BubblesDatabase {
-        return Room.databaseBuilder(
-            appContext,
-            BubblesDatabase::class.java,
-            "58252457-42de-4313-a007-1b7c80445bf6",
         ).build()
     }
 }
@@ -179,23 +201,38 @@ object MainDatabaseDaoModule {
     }
 
     @Provides
-    fun provideContactDao(bubblesDatabase: BubblesDatabase): ContactDao {
-        return bubblesDatabase.contactDao()
+    fun provideContactDao(mainDatabase: MainDatabase): ContactDao {
+        return mainDatabase.contactDao()
     }
 
     @Provides
-    fun provideContactKeyDao(bubblesDatabase: BubblesDatabase): ContactKeyDao {
-        return bubblesDatabase.contactKeyDao()
+    fun provideContactKeyDao(mainDatabase: MainDatabase): ContactKeyDao {
+        return mainDatabase.contactKeyDao()
     }
 
     @Provides
-    fun provideMessageDao(bubblesDatabase: BubblesDatabase): MessageDao {
-        return bubblesDatabase.messageDao()
+    fun provideMessageDao(mainDatabase: MainDatabase): MessageDao {
+        return mainDatabase.messageDao()
     }
 
     @Provides
-    fun provideEnqueuedMessageDao(bubblesDatabase: BubblesDatabase): EnqueuedMessageDao {
-        return bubblesDatabase.enqueuedMessageDao()
+    fun provideEnqueuedMessageDao(mainDatabase: MainDatabase): EnqueuedMessageDao {
+        return mainDatabase.enqueuedMessageDao()
+    }
+
+    @Provides
+    fun provideMessageKeyDao(mainDatabase: MainDatabase): DoubleRatchetKeyDao {
+        return mainDatabase.doubleRatchetKeyDao()
+    }
+
+    @Provides
+    fun provideConversationDao(mainDatabase: MainDatabase): DoubleRatchetConversationDao {
+        return mainDatabase.doubleRatchetConversationDao()
+    }
+
+    @Provides
+    fun provideHandShakeDataDao(mainDatabase: MainDatabase): HandShakeDataDao {
+        return mainDatabase.handShakeDataDao()
     }
 }
 

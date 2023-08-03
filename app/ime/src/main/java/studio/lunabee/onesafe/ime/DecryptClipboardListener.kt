@@ -47,7 +47,7 @@ class DecryptClipboardListener @Inject constructor(
     val result: SharedFlow<LBResult<IncomingMessageState>> = _result.asSharedFlow()
 
     override fun onPrimaryClipChanged() {
-        // FIXME weird double call
+        // Avoid potential multiple call
         if (abs(lastClipCall - System.currentTimeMillis()) < 500) {
             return
         }
