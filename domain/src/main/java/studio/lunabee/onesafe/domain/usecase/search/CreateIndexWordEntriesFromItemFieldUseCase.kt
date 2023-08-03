@@ -23,7 +23,6 @@ import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.ItemFieldDataToIndex
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
-import studio.lunabee.onesafe.domain.utils.StringUtils
 import javax.inject.Inject
 
 class CreateIndexWordEntriesFromItemFieldUseCase @Inject constructor(
@@ -35,7 +34,7 @@ class CreateIndexWordEntriesFromItemFieldUseCase @Inject constructor(
         val plainIndexWordEntry = data.filter {
             !it.isSecured && it.value.isNotEmpty()
         }.flatMap {
-            StringUtils.getListStringSearch(it.value).map { word ->
+            SearchStringUtils.getListStringSearch(it.value).map { word ->
                 PlainIndexWordEntry(
                     word = word,
                     itemMatch = it.itemId,

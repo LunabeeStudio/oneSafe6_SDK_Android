@@ -27,6 +27,7 @@ android {
     namespace = "studio.lunabee.onesafe.bubbles"
 
     defaultConfig {
+        minSdk = AndroidConfig.MIN_APP_SDK
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
         missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
     }
@@ -67,14 +68,25 @@ dependencies {
     implementation(KotlinX.coroutines.android)
     implementation(KotlinX.serialization.json)
     coreLibraryDesugaring(Android.tools.desugarJdkLibs)
+    implementation(Google.Accompanist.permissions)
+    implementation(JakeWharton.timber)
+
+    implementation(AndroidX.palette.ktx)
+
+    implementation(libs.journeyappszxing)
+    implementation(libs.double.ratchet)
 
     implementation(project(":crypto-android"))
+    implementation(project(":messaging-domain"))
     implementation(project(":domain"))
     implementation(project(":common"))
     implementation(project(":error"))
     implementation(project(":app:core-ui"))
     implementation(project(":app:common-ui"))
+    implementation(project(":app:settings"))
     api(project(":bubbles-domain"))
+    implementation(project(":messaging-domain"))
+    implementation(project(":app:settings"))
 
     androidTestImplementation(project(":common-test-android"))
 }

@@ -19,15 +19,25 @@
 
 package studio.lunabee.onesafe.messaging.domain.usecase
 
+import com.google.protobuf.kotlin.toByteString
 import com.google.protobuf.timestamp
 import com.lunabee.lbcore.model.LBResult
+import studio.lunabee.doubleratchet.model.MessageHeader
+import studio.lunabee.doubleratchet.model.SendMessageData
 import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactKeyRepository
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.error.OSError
+import studio.lunabee.onesafe.error.OSStorageError
 import studio.lunabee.onesafe.messagecompanion.OSMessage
+import studio.lunabee.onesafe.messagecompanion.handShakeMessage
+import studio.lunabee.onesafe.messagecompanion.message
 import studio.lunabee.onesafe.messagecompanion.messageData
+import studio.lunabee.onesafe.messagecompanion.messageHeader
 import studio.lunabee.onesafe.messaging.domain.extension.withInstant
+import studio.lunabee.onesafe.messaging.domain.model.HandShakeData
+import studio.lunabee.onesafe.messaging.domain.repository.HandShakeDataRepository
+import studio.lunabee.onesafe.messaging.domain.repository.MessagingCryptoRepository
 import java.io.ByteArrayOutputStream
 import java.time.Instant
 import java.util.UUID
@@ -39,24 +49,92 @@ import kotlin.io.encoding.ExperimentalEncodingApi
  * Encrypt a message for a contact
  */
 class EncryptMessageUseCase @Inject constructor(
-    private val contactRepository: ContactRepository,
-    private val contactKeyRepository: ContactKeyRepository,
     private val bubblesCryptoRepository: BubblesCryptoRepository,
+    private val messagingCryptoRepository: MessagingCryptoRepository,
+    private val handShakeDataRepository: HandShakeDataRepository,
+    private val contactKeyRepository: ContactKeyRepository,
+    private val contactRepository: ContactRepository,
 ) {
     @OptIn(ExperimentalEncodingApi::class)
-    suspend operator fun invoke(plainMessage: String, contactId: UUID, sentAt: Instant): LBResult<String> = OSError.runCatching {
-        val sharedKey = contactRepository.getSharedKey(contactId)
-        val localKey = contactKeyRepository.getContactLocalKey(contactId)
-        val osMessage: OSMessage.MessageData = messageData {
+    suspend operator fun invoke(
+        plainMessage: String,
+        contactId: UUID,
+        sentAt: Instant,
+        sendMessageData: SendMessageData,
+    ): LBResult<String> = OSError.runCatching {
+        val messageBody: OSMessage.MessageData = messageData {
             this.content = plainMessage
-            this.recipientId = contactId.toString()
             this.sentAt = timestamp { withInstant(sentAt) }
         }
-        ByteArrayOutputStream().use { byteArrayOutputStream ->
+        // Encrypt the message body with the message Key
+        val encryptedMessageBody: ByteArray = ByteArrayOutputStream().use { byteArrayOutputStream ->
+            messagingCryptoRepository.encryptMessage(byteArrayOutputStream, sendMessageData.messageKey).use { outputStream ->
+                messageBody.writeTo(outputStream)
+            }
+            byteArrayOutputStream.toByteArray()
+        }
+        val handShakeData = handShakeDataRepository.getById(contactId)
+        if (handShakeData != null) {
+            createHandShakeMessage(
+                encryptedMessageBody = encryptedMessageBody,
+                messageHeader = sendMessageData.messageHeader,
+                contactId = contactId,
+                handShakeData = handShakeData,
+            )
+        } else {
+            createEncryptedMessage(
+                encryptedMessageBody = encryptedMessageBody,
+                messageHeader = sendMessageData.messageHeader,
+                contactId = contactId,
+            )
+        }
+    }
+
+    @OptIn(ExperimentalEncodingApi::class)
+    private suspend fun createEncryptedMessage(
+        encryptedMessageBody: ByteArray,
+        messageHeader: MessageHeader,
+        contactId: UUID,
+    ): String {
+        val sharedKey = contactRepository.getSharedKey(contactId)
+            ?: throw OSStorageError(OSStorageError.Code.CONTACT_NOT_FOUND)
+        val localKey = contactKeyRepository.getContactLocalKey(contactId)
+        val message: OSMessage.Message = message {
+            body = encryptedMessageBody.toByteString()
+            header = messageHeader {
+                messageNumber = messageHeader.messageNumber
+                sequenceMessageNumber = messageHeader.sequenceNumber
+                publicKey = messageHeader.publicKey.value.toByteString()
+            }
+            recipientId = contactId.toString()
+        }
+        return ByteArrayOutputStream().use { byteArrayOutputStream ->
+            // Decrypt the sharedKey and encrypt the whole message with it
             bubblesCryptoRepository.sharedEncrypt(byteArrayOutputStream, localKey, sharedKey).use { outputStream ->
-                osMessage.writeTo(outputStream)
+                message.writeTo(outputStream)
             }
             Base64.encode(byteArrayOutputStream.toByteArray())
         }
+    }
+
+    @OptIn(ExperimentalEncodingApi::class)
+    private fun createHandShakeMessage(
+        encryptedMessageBody: ByteArray,
+        messageHeader: MessageHeader,
+        contactId: UUID,
+        handShakeData: HandShakeData,
+    ): String {
+        val message: OSMessage.HandShakeMessage = handShakeMessage {
+            body = encryptedMessageBody.toByteString()
+            header = messageHeader {
+                messageNumber = messageHeader.messageNumber
+                sequenceMessageNumber = messageHeader.sequenceNumber
+                publicKey = messageHeader.publicKey.value.toByteString()
+            }
+            conversationId = handShakeData.conversationSharedId.toString()
+            oneSafePublicKey = handShakeData.oneSafePublicKey!!.toByteString()
+            recipientId = contactId.toString()
+        }
+        return Base64.encode(message.toByteArray())
     }
 }

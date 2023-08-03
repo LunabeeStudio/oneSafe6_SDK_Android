@@ -84,6 +84,7 @@ dependencies {
     implementation(project(":messaging-domain"))
     implementation(project(":app:settings"))
     implementation(project(":app:migration"))
+    implementation(project(":error"))
 
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(Testing.MockK.android)

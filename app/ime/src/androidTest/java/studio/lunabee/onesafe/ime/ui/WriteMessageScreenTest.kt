@@ -33,8 +33,10 @@ import kotlinx.coroutines.flow.emptyFlow
 import org.junit.Test
 import studio.lunabee.compose.androidtest.LbcComposeTest
 import studio.lunabee.compose.androidtest.extension.waitUntilExactlyOneExists
+import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
+import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.messaging.writemessage.composable.WriteMessageExitIcon
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageRoute
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageUiState
@@ -55,10 +57,12 @@ class WriteMessageScreenTest : LbcComposeTest() {
                     nameProvider = DefaultNameProvider("Florian"),
                 ),
                 plainMessage = plainMessage,
-                encryptedMessage = encryptedMessage,
+                encryptedPreview = encryptedMessage,
+                conversationError = null,
             ),
         )
         every { conversation } returns emptyFlow()
+        every { dialogState } returns MutableStateFlow(null)
     }
     private val onClickOnChangeContact: () -> Unit = spyk({})
 
@@ -89,6 +93,8 @@ class WriteMessageScreenTest : LbcComposeTest() {
                     exitIcon = WriteMessageExitIcon.WriteMessageCloseIcon {},
                     viewModel = mockkVm,
                     contactIdFlow = MutableStateFlow(null),
+                    navigationToInvitation = {},
+                    sendIcon = OSImageSpec.Drawable(R.drawable.ic_share),
                 )
             }
             block()

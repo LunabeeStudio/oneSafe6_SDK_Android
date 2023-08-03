@@ -36,4 +36,5 @@ internal object SettingsDefaults {
     val ClipboardClearDelayMsDefault: Long = Duration.INFINITE.inWholeMilliseconds
     const val DisplayShareWarningDefault: Boolean = true
     val VerifyPasswordIntervalDefault: VerifyPasswordInterval = VerifyPasswordInterval.NEVER
+    const val BubblesActivationDefault: Boolean = true
 }

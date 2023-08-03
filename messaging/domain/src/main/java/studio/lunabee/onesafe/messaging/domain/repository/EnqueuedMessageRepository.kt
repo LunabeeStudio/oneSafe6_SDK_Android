@@ -27,4 +27,5 @@ interface EnqueuedMessageRepository {
     suspend fun getAll(): List<EnqueuedMessage>
     suspend fun delete(id: Int)
     suspend fun save(encMessage: ByteArray, encChannel: ByteArray?)
+    suspend fun deleteAll()
 }

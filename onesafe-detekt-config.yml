@@ -6,6 +6,7 @@ comments:
       - '**/app/*'
       - '**/app/src/**'
       - '**/app/core-ui/**'
+      - '**/app/common-ui/**'
       - '**/Commons_Android/**'
       - '**/macrobenchmark-android/**'
       - '**/mockos5/*'

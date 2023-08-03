@@ -54,6 +54,13 @@ internal fun ByteArray.toLong(): Long {
         (this[0].toLong() and 0xff)
 }
 
+internal fun ByteArray.toBoolean(): Boolean {
+    if (this.size != 1) {
+        throw OSCryptoError(OSCryptoError.Code.ILLEGAL_VALUE, "ByteArray size must be 1. Got ${this.size}.")
+    }
+    return this[0] == 1.toByte()
+}
+
 // https://stackoverflow.com/a/67229929/10935947
 internal fun Int.toByteArray(): ByteArray = ByteArray(4).apply {
     this[0] = (this@toByteArray shr 0).toByte()
@@ -72,6 +79,8 @@ internal fun Long.toByteArray(): ByteArray = ByteArray(8).apply {
     this[6] = (this@toByteArray shr 48).toByte()
     this[7] = (this@toByteArray shr 56).toByte()
 }
+
+internal fun Boolean.toByteArray(): ByteArray = if (this) byteArrayOf(1) else byteArrayOf(0)
 
 // Copied from Room
 // https://android-review.googlesource.com/c/platform/frameworks/support/+/1812173/9/room/room-runtime/src/main/java/androidx/room/util/UUIDUtil.java

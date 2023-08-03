@@ -38,6 +38,8 @@ suspend fun ContactDao.insert(
             encName = encName,
             encSharedKey = encSharedKey,
             updatedAt = updatedAt,
+            sharedConversationId = UUID.randomUUID(),
+            encIsUsingDeeplink = byteArrayOf(),
         ),
     )
 }

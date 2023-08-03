@@ -23,7 +23,7 @@ import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.firstOrNull
 import studio.lunabee.onesafe.cryptography.BiometricEngine
 import studio.lunabee.onesafe.cryptography.DatastoreEngine
-import studio.lunabee.onesafe.cryptography.HashEngine
+import studio.lunabee.onesafe.cryptography.PasswordHashEngine
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.use
@@ -34,7 +34,7 @@ import javax.crypto.Cipher
  */
 internal class MigrationGetMasterKeyV0UseCase(
     private val biometricEngine: BiometricEngine,
-    private val hashEngine: HashEngine,
+    private val hashEngine: PasswordHashEngine,
     private val dataStoreEngine: DatastoreEngine,
 ) {
     suspend operator fun invoke(password: CharArray): LBResult<ByteArray> = OSError.runCatching {

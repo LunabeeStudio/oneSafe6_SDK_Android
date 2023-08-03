@@ -19,14 +19,14 @@
 
 package studio.lunabee.onesafe.bubbles.domain.usecase
 
+import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.bubbles.domain.model.Contact
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import java.util.UUID
 import javax.inject.Inject
 
 class GetContactUseCase @Inject constructor(
-    private val bubblesContactRepository: ContactRepository,
+    private val contactRepository: ContactRepository,
 ) {
-    suspend operator fun invoke(id: UUID): Contact? = bubblesContactRepository.getContact(id)
-    suspend operator fun invoke(): List<Contact> = bubblesContactRepository.getAllContacts()
+    suspend operator fun invoke(id: UUID): Flow<Contact?> = contactRepository.getContact(id)
 }

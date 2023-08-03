@@ -29,6 +29,7 @@ android {
     }
 
     defaultConfig {
+        minSdk = AndroidConfig.MIN_APP_SDK
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
         missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
     }

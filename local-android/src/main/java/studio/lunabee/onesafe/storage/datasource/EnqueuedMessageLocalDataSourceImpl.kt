@@ -52,4 +52,6 @@ class EnqueuedMessageLocalDataSourceImpl @Inject constructor(
         }.map {
             it?.toEnqueuedMessage()
         }
+
+    override suspend fun deleteAll(): Unit = dao.deleteAll()
 }

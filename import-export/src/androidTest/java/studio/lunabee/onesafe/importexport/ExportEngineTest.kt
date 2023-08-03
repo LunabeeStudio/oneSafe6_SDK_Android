@@ -25,14 +25,16 @@ import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
-import studio.lunabee.di.CryptoConstantsTestModule
+import studio.lunabee.di.CryptoConstantsSessionTestModule
 import studio.lunabee.onesafe.cryptography.CryptoConstants
-import studio.lunabee.onesafe.cryptography.qualifier.PBKDF2Iterations
+import studio.lunabee.onesafe.cryptography.PasswordHashEngine
+import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
 import studio.lunabee.onesafe.domain.engine.ExportEngine
 import studio.lunabee.onesafe.domain.model.importexport.OSArchiveKind
 import studio.lunabee.onesafe.test.InitialTestState
@@ -42,12 +44,11 @@ import java.io.File
 import javax.inject.Inject
 
 @HiltAndroidTest
-@UninstallModules(CryptoConstantsTestModule::class)
+@UninstallModules(CryptoConstantsSessionTestModule::class)
 class ExportEngineTest : OSHiltTest() {
 
     @BindValue
-    @PBKDF2Iterations
-    val iterationNumber: Int = CryptoConstants.PBKDF2Iterations
+    val hashEngine: PasswordHashEngine = PBKDF2JceHashEngine(Dispatchers.Default, CryptoConstants.PBKDF2Iterations)
 
     @get:Rule
     override val hiltRule: HiltAndroidRule = HiltAndroidRule(this)

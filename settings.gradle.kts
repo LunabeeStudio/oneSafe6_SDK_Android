@@ -79,5 +79,7 @@ include(":messaging-domain")
 project(":messaging-domain").projectDir = File("messaging/domain")
 include(":messaging-repository")
 project(":messaging-repository").projectDir = File("messaging/repository")
+include(":messaging-crypto-android")
+project(":messaging-crypto-android").projectDir = File("messaging/crypto-android")
 
 // include(":mockos5") // mockos5 apk is embedded for tests

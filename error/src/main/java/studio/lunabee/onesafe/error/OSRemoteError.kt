@@ -20,12 +20,12 @@
 package studio.lunabee.onesafe.error
 
 data class OSRemoteError(
-    val code: Code,
+    override val code: Code,
     override val message: String = code.message,
     override val cause: Throwable? = null,
-) : OSError(message, cause) {
+) : OSError(message, cause, code) {
 
-    enum class Code(val message: String) {
+    enum class Code(val message: String) : ErrorCode {
         UNKNOWN_HTTP_ERROR("Exception occurred during execution of HTTP request"),
     }
 }

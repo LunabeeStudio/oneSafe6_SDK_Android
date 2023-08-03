@@ -25,25 +25,73 @@ import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
 import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
-import studio.lunabee.onesafe.domain.utils.StringUtils
 import javax.inject.Inject
 
 /**
- * Usecase responsible of doing the match between a string and the index to return corresponding the [SafeItem] set
+ * Use case responsible of doing the match and ordering between a string and the index to return corresponding the [SafeItem] set
  */
 class GetMatchFromSearchUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
 ) {
-    operator fun invoke(searchValue: String, searchIndex: List<PlainIndexWordEntry>): Flow<LinkedHashSet<SafeItemWithIdentifier>> {
-        val searchedWords = StringUtils.getListStringSearch(searchValue)
-        val idMatching = searchedWords.flatMap { searchedWord ->
-            searchIndex.filter { it.word.contains(searchedWord) }.map { it.itemMatch }
+    operator fun invoke(searchValue: String, indexWordEntries: List<PlainIndexWordEntry>): Flow<List<SafeItemWithIdentifier>> {
+        val keywords = SearchStringUtils.getListStringSearch(searchValue)
+
+        val scoredMatches = indexWordEntries
+            .filter { entry -> keywords.any { keyword -> entry.word.contains(keyword) } } // keep only matching index
+            .groupBy { it.itemMatch } // group by item id
+            .mapValues { entry ->
+                val indexWords = indexWordEntries
+                    .filter { it.fieldMatch == null && it.itemMatch == entry.key }
+                    .map { wordEntry -> wordEntry.word }
+
+                val wordsMatched = indexWords.count { word -> word in keywords }
+                val keywordsMatched = keywords.count { keyword -> keyword in indexWords }
+                val ratio = minOf(keywordsMatched.toFloat() / keywords.size, wordsMatched.toFloat() / indexWords.size)
+
+                ScoredItemMatch(
+                    titleMatchRate = ratio, // item entry match ratio
+                    keywordsMatchScore = entry.value.distinctBy { it.word }.size, // distinct matched keyword
+                    totalMatchScore = entry.value.size, // total count of matches
+                )
+            }
+
+        return safeItemRepository.getSafeItemWithIdentifier(scoredMatches.keys.toList()).map { items ->
+            items.forEach { item ->
+                scoredMatches.getValue(item.id).item = item // Join items and index score
+            }
+            scoredMatches.values.sortedDescending().mapNotNull { it.item }
         }
-        val finalIds = idMatching.groupingBy { it }.eachCount().filter { it.value >= searchedWords.size }
-        return safeItemRepository.getSafeItemWithIdentifier(finalIds.keys.toList()).map { items ->
-            val searchResult = LinkedHashSet<SafeItemWithIdentifier>()
-            searchResult.addAll(items)
-            searchResult
+    }
+
+    /**
+     * @property titleMatchRate Min of keyword matched amount ratio and index word matched ratio
+     * @property keywordsMatchScore The number of distinct matched keyword
+     * @property totalMatchScore The total count of matches
+     */
+    private class ScoredItemMatch(
+        val titleMatchRate: Float,
+        val keywordsMatchScore: Int,
+        val totalMatchScore: Int,
+    ) : Comparable<ScoredItemMatch> {
+        var item: SafeItemWithIdentifier? = null
+
+        override fun compareTo(other: ScoredItemMatch): Int {
+            return titleMatchRate.compareTo(other.titleMatchRate).takeIf { it != 0 }
+                ?: keywordsMatchScore.compareTo(other.keywordsMatchScore).takeIf { it != 0 }
+                ?: totalMatchScore.compareTo(other.totalMatchScore).takeIf { it != 0 }
+                ?: item?.let { item ->
+                    item.updatedAt.compareTo(other.item?.updatedAt).takeIf { it != 0 }
+                        ?: other.item?.position?.compareTo(item.position)
+                } ?: 0
+        }
+
+        override fun toString(): String {
+            return "ScoredItemMatch(" +
+                "titleMatchRate=$titleMatchRate, " +
+                "keywordsMatchScore=$keywordsMatchScore, " +
+                "totalMatchScore=$totalMatchScore, " +
+                "item=${item?.id}" +
+                ")"
         }
     }
 }

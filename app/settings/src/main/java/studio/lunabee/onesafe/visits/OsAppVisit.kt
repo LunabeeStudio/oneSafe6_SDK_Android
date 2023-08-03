@@ -20,11 +20,11 @@
 package studio.lunabee.onesafe.visits
 
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import kotlinx.coroutines.flow.Flow
-import androidx.datastore.preferences.core.edit
-import kotlinx.coroutines.flow.map
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class OsAppVisit @Inject constructor(
@@ -51,6 +51,18 @@ class OsAppVisit @Inject constructor(
     suspend fun storeHasFinishOneSafeKOnBoarding() {
         dataStore.edit { preferences ->
             preferences[hasFinishOneSafeKOnBoardingKey] = true
+        }
+    }
+
+    private val hasDoneOnBoardingBubblesKey = booleanPreferencesKey(AppVisitConstants.hasDoneOnBoardingBubbles)
+
+    val hasDoneOnBoardingBubbles: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[hasDoneOnBoardingBubblesKey] ?: AppVisitConstants.hasDoneOnBoardingBubblesDefault
+    }
+
+    suspend fun storeHasDoneOnBoardingBubbles() {
+        dataStore.edit { preferences ->
+            preferences[hasDoneOnBoardingBubblesKey] = true
         }
     }
 }

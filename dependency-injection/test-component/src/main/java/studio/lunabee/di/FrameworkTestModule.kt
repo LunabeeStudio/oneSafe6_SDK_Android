@@ -23,6 +23,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import studio.lunabee.onesafe.domain.common.FeatureFlags
 
 @Module
@@ -33,7 +35,7 @@ object FrameworkTestModule {
         override fun florisBoard(): Boolean = false
         override fun accessibilityService(): Boolean = false
         override fun oneSafeK(): Boolean = false
-        override fun bubbles(): Boolean = false
+        override fun bubbles(): Flow<Boolean> = flowOf(true)
         override fun quickSignIn(): Boolean = false
     }
 }

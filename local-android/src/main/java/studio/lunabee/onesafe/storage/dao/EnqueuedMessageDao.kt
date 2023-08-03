@@ -38,4 +38,7 @@ interface EnqueuedMessageDao {
 
     @Insert
     suspend fun insert(message: RoomEnqueuedMessage)
+
+    @Query("DELETE FROM EnqueuedMessage")
+    suspend fun deleteAll()
 }

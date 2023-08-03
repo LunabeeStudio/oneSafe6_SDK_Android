@@ -21,10 +21,11 @@ package studio.lunabee.bubbles.repository.repository
 
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.bubbles.repository.datasource.ContactLocalDataSource
-import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.bubbles.domain.model.Contact
 import studio.lunabee.onesafe.bubbles.domain.model.ContactLocalKey
 import studio.lunabee.onesafe.bubbles.domain.model.ContactSharedKey
+import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
+import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
 
@@ -36,11 +37,20 @@ class ContactRepositoryImpl @Inject constructor(
 
     override fun getAllContactsFlow(): Flow<List<Contact>> = localDataSource.getAllContactsFlow()
 
-    override suspend fun getContact(id: UUID): Contact? = localDataSource.getContact(id)
+    override suspend fun getContact(id: UUID): Flow<Contact?> = localDataSource.getContact(id)
 
-    override suspend fun getSharedKey(id: UUID): ContactSharedKey = localDataSource.getContactSharedKey(id)
-
-    override suspend fun getAllContacts(): List<Contact> = localDataSource.getAllContacts()
+    override suspend fun getSharedKey(id: UUID): ContactSharedKey? = localDataSource.getContactSharedKey(id)
+    override suspend fun addContactSharedKey(id: UUID, sharedKey: ContactSharedKey) {
+        localDataSource.addContactSharedKey(id, sharedKey)
+    }
 
     override suspend fun clearAll(): Unit = localDataSource.clearAll()
+
+    override suspend fun deleteContact(id: UUID) {
+        localDataSource.deleteContact(id)
+    }
+
+    override suspend fun updateIsUsingDeeplink(id: UUID, encIsUsingDeeplink: ByteArray, updateAt: Instant) {
+        localDataSource.updateIsUsingDeeplink(id, encIsUsingDeeplink, updateAt)
+    }
 }

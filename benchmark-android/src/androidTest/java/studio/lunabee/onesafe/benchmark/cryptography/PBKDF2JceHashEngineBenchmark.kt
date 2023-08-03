@@ -26,6 +26,7 @@ import androidx.test.filters.LargeTest
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Rule
 import org.junit.Test
+import studio.lunabee.onesafe.cryptography.CryptoConstants
 import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
 import timber.log.Timber
 import java.lang.reflect.Method
@@ -40,7 +41,7 @@ class PBKDF2JceHashEngineBenchmark {
         Timber.plant(Timber.DebugTree())
     }
 
-    private val hashEngine: PBKDF2JceHashEngine = PBKDF2JceHashEngine(StandardTestDispatcher())
+    private val hashEngine: PBKDF2JceHashEngine = PBKDF2JceHashEngine(StandardTestDispatcher(), CryptoConstants.PBKDF2Iterations)
 
     private val password = "LTDf#@sGEdczDe?X@53TK&P4A^heLttP"
     private val salt = Base64.decode("rTygUEZCVBg4RNbJP1U16QFgIeIKwg/T0gEVA0cfIDU=", Base64.NO_WRAP)

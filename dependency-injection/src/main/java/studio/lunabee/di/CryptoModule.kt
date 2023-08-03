@@ -34,7 +34,13 @@ import dagger.hilt.android.scopes.ServiceScoped
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import studio.lunabee.doubleratchet.crypto.DoubleRatchetKeyRepository
 import studio.lunabee.onesafe.bubbles.crypto.AndroidBubblesCryptoRepository
+import studio.lunabee.onesafe.bubbles.crypto.AndroidDoubleRatchetKeyRepository
+import studio.lunabee.onesafe.bubbles.crypto.DataHashEngine
+import studio.lunabee.onesafe.bubbles.crypto.DiffieHellmanKeyExchangeEngine
+import studio.lunabee.onesafe.bubbles.crypto.HKDFHashEngine
+import studio.lunabee.onesafe.bubbles.crypto.KeyExchangeEngine
 import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.onesafe.cryptography.AndroidEditCryptoRepository
 import studio.lunabee.onesafe.cryptography.AndroidImportExportCryptoRepository
@@ -44,22 +50,23 @@ import studio.lunabee.onesafe.cryptography.ClearDatastoreEngine
 import studio.lunabee.onesafe.cryptography.CryptoConstants
 import studio.lunabee.onesafe.cryptography.DatastoreEngine
 import studio.lunabee.onesafe.cryptography.EncryptedDataStoreEngine
-import studio.lunabee.onesafe.cryptography.HashEngine
 import studio.lunabee.onesafe.cryptography.IVProvider
 import studio.lunabee.onesafe.cryptography.JceRsaCryptoEngine
 import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
+import studio.lunabee.onesafe.cryptography.PasswordHashEngine
 import studio.lunabee.onesafe.cryptography.ProtoData
 import studio.lunabee.onesafe.cryptography.RsaCryptoEngine
 import studio.lunabee.onesafe.cryptography.SecureIVProvider
 import studio.lunabee.onesafe.cryptography.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
 import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
-import studio.lunabee.onesafe.cryptography.qualifier.PBKDF2Iterations
 import studio.lunabee.onesafe.cryptography.utils.SecuredDataSerializer
 import studio.lunabee.onesafe.domain.repository.EditCryptoRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.MigrationCryptoRepository
 import studio.lunabee.onesafe.importexport.ImportExportCryptoRepository
+import studio.lunabee.onesafe.messaging.crypto.AndroidMessagingCryptoRepository
+import studio.lunabee.onesafe.messaging.domain.repository.MessagingCryptoRepository
 import javax.inject.Singleton
 
 @Module
@@ -81,6 +88,12 @@ abstract class CryptoModule {
     internal abstract fun bindBubblesCryptoRepository(
         androidBubblesCryptoRepository: AndroidBubblesCryptoRepository,
     ): BubblesCryptoRepository
+
+    @Binds
+    @ActivityRetainedScoped
+    internal abstract fun bindMessagingCryptoRepository(
+        androidMessagingCryptoRepository: AndroidMessagingCryptoRepository,
+    ): MessagingCryptoRepository
 }
 
 @Module
@@ -132,9 +145,14 @@ abstract class DatastoreEngineModule {
 @Module
 @InstallIn(SingletonComponent::class)
 object CryptoConstantsModule {
+
     @Provides
-    @PBKDF2Iterations
-    fun providePBKDF2Iterations(): Int = CryptoConstants.PBKDF2Iterations
+    fun provideHashEngineSession(
+        @CryptoDispatcher coroutineDispatcher: CoroutineDispatcher,
+    ): PasswordHashEngine = PBKDF2JceHashEngine(
+        coroutineDispatcher,
+        CryptoConstants.PBKDF2Iterations,
+    )
 }
 
 @Module
@@ -149,10 +167,18 @@ abstract class GlobalCryptoModule {
     internal abstract fun bindIVProvider(ivProvider: SecureIVProvider): IVProvider
 
     @Binds
-    internal abstract fun bindHashEngine(hashEngine: PBKDF2JceHashEngine): HashEngine
+    internal abstract fun rsaCryptoEngine(rsaCryptoEngine: JceRsaCryptoEngine): RsaCryptoEngine
 
     @Binds
-    internal abstract fun rsaCryptoEngine(rsaCryptoEngine: JceRsaCryptoEngine): RsaCryptoEngine
+    internal abstract fun bindDataHashEngine(hkdfHashEngine: HKDFHashEngine): DataHashEngine
+
+    @Binds
+    internal abstract fun bindKeyExchangeEngine(diffieHellmanKeyExchangeEngine: DiffieHellmanKeyExchangeEngine): KeyExchangeEngine
+
+    @Binds
+    internal abstract fun bindDoubleRatchetKeyRepository(
+        doubleRatchetCryptoRepository: AndroidDoubleRatchetKeyRepository,
+    ): DoubleRatchetKeyRepository
 }
 
 @Module
@@ -173,6 +199,12 @@ abstract class CryptoServiceModule {
     internal abstract fun bindBubblesCryptoRepository(
         androidBubblesCryptoRepository: AndroidBubblesCryptoRepository,
     ): BubblesCryptoRepository
+
+    @Binds
+    @ServiceScoped
+    internal abstract fun bindMessagingCryptoRepository(
+        androidMessagingCryptoRepository: AndroidMessagingCryptoRepository,
+    ): MessagingCryptoRepository
 }
 
 @Module

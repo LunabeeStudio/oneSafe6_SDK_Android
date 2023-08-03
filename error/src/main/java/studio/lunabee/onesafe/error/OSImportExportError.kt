@@ -20,12 +20,12 @@
 package studio.lunabee.onesafe.error
 
 data class OSImportExportError(
-    val code: Code,
+    override val code: Code,
     override val message: String = code.message,
     override val cause: Throwable? = null,
-) : OSError(message, cause) {
+) : OSError(message, cause, code) {
 
-    enum class Code(val message: String) {
+    enum class Code(val message: String) : ErrorCode {
         METADATA_FILE_NOT_FOUND("Metadata file was not found"),
         ARCHIVE_MALFORMED("Unexpected archive content"),
         DATA_FILE_NOT_FOUND("Data file was not found"),

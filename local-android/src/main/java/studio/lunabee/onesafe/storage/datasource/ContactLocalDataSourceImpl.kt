@@ -21,25 +21,26 @@ package studio.lunabee.onesafe.storage.datasource
 
 import com.lunabee.lbextensions.mapValues
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import studio.lunabee.bubbles.repository.datasource.ContactLocalDataSource
 import studio.lunabee.onesafe.bubbles.domain.model.Contact
 import studio.lunabee.onesafe.bubbles.domain.model.ContactLocalKey
 import studio.lunabee.onesafe.bubbles.domain.model.ContactSharedKey
-import studio.lunabee.onesafe.error.OSStorageError
-import studio.lunabee.onesafe.storage.BubblesDatabase
+import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.dao.ContactDao
 import studio.lunabee.onesafe.storage.dao.ContactKeyDao
 import studio.lunabee.onesafe.storage.model.RoomContact
 import studio.lunabee.onesafe.storage.model.RoomContactKey
 import studio.lunabee.onesafe.storage.utils.TransactionProvider
 import studio.lunabee.onesafe.storage.utils.runSQL
+import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
 
 class ContactLocalDataSourceImpl @Inject constructor(
     private val dao: ContactDao,
     private val keyDao: ContactKeyDao,
-    private val transactionProvider: TransactionProvider<BubblesDatabase>,
+    private val transactionProvider: TransactionProvider<MainDatabase>,
 ) : ContactLocalDataSource {
 
     override suspend fun clearAll() {
@@ -57,10 +58,18 @@ class ContactLocalDataSourceImpl @Inject constructor(
 
     override fun getAllContactsFlow(): Flow<List<Contact>> = dao.getAllInFlow().mapValues { it.toContact() }
 
-    override suspend fun getContact(id: UUID): Contact? = dao.getById(id)?.toContact()
+    override suspend fun getContact(id: UUID): Flow<Contact?> = dao.getById(id).map { it?.toContact() }
 
-    override suspend fun getContactSharedKey(id: UUID): ContactSharedKey = dao.getContactSharedKey(id)
-        ?: throw OSStorageError(OSStorageError.Code.CONTACT_NOT_FOUND)
+    override suspend fun getContactSharedKey(id: UUID): ContactSharedKey? = dao.getContactSharedKey(id)
+    override suspend fun addContactSharedKey(id: UUID, sharedKey: ContactSharedKey) {
+        dao.addContactSharedKey(id, sharedKey)
+    }
 
-    override suspend fun getAllContacts(): List<Contact> = dao.getAllContacts().map { it.toContact() }
+    override suspend fun deleteContact(id: UUID) {
+        dao.remote(id)
+    }
+
+    override suspend fun updateIsUsingDeeplink(id: UUID, encIsUsingDeeplink: ByteArray, updateAt: Instant) {
+        dao.updateIsUsingDeeplink(id, encIsUsingDeeplink, updateAt)
+    }
 }

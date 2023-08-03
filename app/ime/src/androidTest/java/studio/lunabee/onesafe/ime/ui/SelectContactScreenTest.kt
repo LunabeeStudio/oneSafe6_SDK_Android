@@ -35,8 +35,8 @@ import studio.lunabee.compose.androidtest.LbcComposeTest
 import studio.lunabee.compose.androidtest.extension.waitUntilExactlyOneExists
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
-import studio.lunabee.onesafe.bubbles.ui.selectcontact.SelectContactRoute
-import studio.lunabee.onesafe.bubbles.ui.selectcontact.SelectContactViewModel
+import studio.lunabee.onesafe.bubbles.ui.onesafek.SelectContactRoute
+import studio.lunabee.onesafe.bubbles.ui.onesafek.SelectContactViewModel
 import studio.lunabee.onesafe.ui.UiConstants
 import java.util.UUID
 

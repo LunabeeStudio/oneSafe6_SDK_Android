@@ -20,11 +20,11 @@
 package studio.lunabee.onesafe.error
 
 data class OSAppError(
-    val code: Code,
+    override val code: Code,
     override val message: String = code.message,
     override val cause: Throwable? = null,
-) : OSError(message, cause) {
-    enum class Code(val message: String) {
+) : OSError(message, cause, code) {
+    enum class Code(val message: String) : ErrorCode {
         UNIMPLEMENTED_FEATURE("The feature is not implemented yet"),
         NO_ITEM_FOUND_FOR_ID("No item found for the provided id"),
         SAFE_ITEM_CREATION_FAILURE("The SafeItem couldn't be created"),

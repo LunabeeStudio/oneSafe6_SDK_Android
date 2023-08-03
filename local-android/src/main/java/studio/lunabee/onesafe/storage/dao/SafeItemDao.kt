@@ -99,8 +99,10 @@ interface SafeItemDao {
             SafeItem.enc_color as encColor,
             SafeItem.deleted_at as deletedAt,
             identifier.enc_value as encIdentifier,
+            identifier.enc_secure_display_mask as encSecuredDisplayMask,
             identifier.enc_kind as encIdentifierKind,
-            identifier.enc_secure_display_mask as encSecuredDisplayMask
+            SafeItem.position as position,
+            SafeItem.updated_at as updatedAt
         FROM SafeItem
         LEFT JOIN (
             SELECT 
@@ -374,7 +376,9 @@ interface SafeItemDao {
             SafeItem.deleted_at as deletedAt,
             SafeItemField.enc_value as encIdentifier,
             SafeItemField.enc_kind as encIdentifierKind,
-            SafeItemField.enc_secure_display_mask as encSecuredDisplayMask
+            SafeItemField.enc_secure_display_mask as encSecuredDisplayMask,
+            SafeItem.position as position,
+            SafeItem.updated_at as updatedAt
         FROM SafeItem
         LEFT JOIN SafeItemField ON SafeItemField.item_id = SafeItem.id AND SafeItemField.is_item_identifier = 1 
         WHERE SafeItem.id NOT IN (:idsToExclude) AND encIdentifier IS NOT NULL

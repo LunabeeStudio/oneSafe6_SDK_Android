@@ -21,11 +21,13 @@ package studio.lunabee.onesafe.ime
 
 import android.content.Context
 import dev.patrickgold.florisboard.ime.editor.EditorInstance
+import dev.patrickgold.florisboard.ime.editor.ImeOptions
 
 class InterceptEditorInstance(context: Context) : EditorInstance(context) {
 
     var intercept: ((String) -> Boolean)? = null
     var deleteBackwards: (() -> Boolean)? = null
+    var interceptAction: ((action: ImeOptions.Action) -> Boolean) = { false }
     var blockInput: Boolean = false
 
     override fun commitChar(char: String): Boolean {
@@ -58,6 +60,14 @@ class InterceptEditorInstance(context: Context) : EditorInstance(context) {
             }
             blockInput -> true
             else -> super.deleteBackwards()
+        }
+    }
+
+    override fun performEnterAction(action: ImeOptions.Action): Boolean {
+        return if (interceptAction(action)) {
+            true
+        } else {
+            super.performEnterAction(action)
         }
     }
 }

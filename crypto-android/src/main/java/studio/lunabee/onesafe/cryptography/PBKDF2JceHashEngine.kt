@@ -23,20 +23,17 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import studio.lunabee.onesafe.cryptography.extension.use
-import studio.lunabee.onesafe.cryptography.qualifier.CryptoDispatcher
-import studio.lunabee.onesafe.cryptography.qualifier.PBKDF2Iterations
 import studio.lunabee.onesafe.error.OSCryptoError
 import timber.log.Timber
 import java.security.NoSuchAlgorithmException
 import java.security.Security
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
-import javax.inject.Inject
 
-class PBKDF2JceHashEngine @Inject constructor(
-    @CryptoDispatcher private val dispatcher: CoroutineDispatcher,
-    @PBKDF2Iterations private val iterationNumber: Int,
-) : HashEngine {
+class PBKDF2JceHashEngine(
+    private val dispatcher: CoroutineDispatcher,
+    private val iterationNumber: Int,
+) : PasswordHashEngine {
 
     private val secretKeyFactory: SecretKeyFactory
 

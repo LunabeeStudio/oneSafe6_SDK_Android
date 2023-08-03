@@ -24,13 +24,15 @@ import com.lunabee.lblogger.LBLogger
 import com.lunabee.lblogger.e
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.yield
-import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.messaging.domain.model.EnqueuedMessage
 import studio.lunabee.onesafe.messaging.domain.repository.EnqueuedMessageRepository
+import studio.lunabee.onesafe.messaging.domain.repository.MessagingCryptoRepository
 import javax.inject.Inject
 
 private val log = LBLogger.get<ProcessMessageQueueUseCase>()
@@ -40,17 +42,23 @@ class ProcessMessageQueueUseCase @Inject constructor(
     private val decryptIncomingMessageUseCase: DecryptIncomingMessageUseCase,
     private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
     private val saveMessageUseCase: SaveMessageUseCase,
-    private val bubblesCryptoRepository: BubblesCryptoRepository,
+    private val cryptoRepository: MessagingCryptoRepository,
 ) {
     /**
-     * Wait until crypto is ready and dequeue all messages to process them
+     * Wait until crypto is ready and dequeue all messages to process them. Skip the flush the observer is running.
      */
     suspend fun flush() {
         isCryptoDataReadyInMemoryUseCase().collectLatest { cryptoReady ->
             if (cryptoReady) {
-                enqueuedMessageRepository.getAll().forEach { enqueuedMessage ->
-                    processMessage(enqueuedMessage)
-                    yield()
+                if (mutex.tryLock()) {
+                    try {
+                        enqueuedMessageRepository.getAll().forEach { enqueuedMessage ->
+                            processMessage(enqueuedMessage)
+                            yield()
+                        }
+                    } finally {
+                        mutex.unlock()
+                    }
                 }
             }
         }
@@ -63,12 +71,14 @@ class ProcessMessageQueueUseCase @Inject constructor(
         isCryptoDataReadyInMemoryUseCase()
             .collectLatest { cryptoLoaded ->
                 if (cryptoLoaded) {
-                    enqueuedMessageRepository
-                        .getOldestAsFlow()
-                        .filterNotNull()
-                        .collect { enqueuedMessage ->
-                            processMessage(enqueuedMessage)
-                        }
+                    mutex.withLock {
+                        enqueuedMessageRepository
+                            .getOldestAsFlow()
+                            .filterNotNull()
+                            .collectLatest { enqueuedMessage ->
+                                processMessage(enqueuedMessage)
+                            }
+                    }
                 }
             }
     }
@@ -86,17 +96,19 @@ class ProcessMessageQueueUseCase @Inject constructor(
             is LBResult.Success -> {
                 val plainMessage = result.successData.second
                 val channel = getChannel(enqueuedMessage)
-                val saveResult = saveMessageUseCase(
-                    plainMessage = plainMessage.content,
-                    sentAt = plainMessage.sentAt,
-                    contactId = result.successData.first.id,
-                    recipientId = plainMessage.recipientId,
-                    channel = channel,
-                )
-                when (saveResult) {
-                    is LBResult.Failure -> log.e(saveResult.throwable)
-                    is LBResult.Success -> {
-                        /* no-op */
+                plainMessage?.let {
+                    val saveResult = saveMessageUseCase(
+                        plainMessage = plainMessage.content,
+                        sentAt = plainMessage.sentAt,
+                        contactId = result.successData.first.id,
+                        recipientId = plainMessage.recipientId,
+                        channel = channel,
+                    )
+                    when (saveResult) {
+                        is LBResult.Failure -> log.e(saveResult.throwable)
+                        is LBResult.Success -> {
+                            /* no-op */
+                        }
                     }
                 }
             }
@@ -108,9 +120,14 @@ class ProcessMessageQueueUseCase @Inject constructor(
     private suspend fun getChannel(enqueuedMessage: EnqueuedMessage): String? = runCatching {
         // Do not block the message decryption if we cannot decrypt the channel
         enqueuedMessage.encChannel?.let { encChannel ->
-            bubblesCryptoRepository.queueDecrypt(DecryptEntry(encChannel, String::class))
+            cryptoRepository.queueDecrypt(DecryptEntry(encChannel, String::class))
         }
     }.onFailure {
         log.e(it)
     }.getOrNull()
+
+    companion object {
+        // Make sure observe and flush cannot run concurrently
+        private val mutex = Mutex()
+    }
 }

@@ -23,7 +23,6 @@ import android.accessibilityservice.AccessibilityService
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.graphics.Rect
-import android.os.Build
 import android.provider.Settings
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -174,9 +173,7 @@ class OSAccessibilityService : AccessibilityService() {
         val mLayout = FrameLayout(this)
 
         val layoutParams = LayoutParams().apply {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                type = LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
-            }
+            type = LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
             format = PixelFormat.TRANSLUCENT
             flags = flags or LayoutParams.FLAG_NOT_FOCUSABLE
             width = LayoutParams.WRAP_CONTENT

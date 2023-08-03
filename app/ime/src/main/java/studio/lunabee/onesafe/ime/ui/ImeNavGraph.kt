@@ -28,22 +28,23 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
 import dagger.Lazy
-import studio.lunabee.onesafe.bubbles.ui.selectcontact.ChangeContactDestination
-import studio.lunabee.onesafe.bubbles.ui.selectcontact.SelectContactDestination
-import studio.lunabee.onesafe.bubbles.ui.selectcontact.SelectContactRoute
+import studio.lunabee.onesafe.atom.OSImageSpec
+import studio.lunabee.onesafe.bubbles.ui.onesafek.ChangeContactDestination
+import studio.lunabee.onesafe.bubbles.ui.onesafek.SelectContactDestination
+import studio.lunabee.onesafe.bubbles.ui.onesafek.SelectContactRoute
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.animation.slideHorizontalEnterTransition
 import studio.lunabee.onesafe.commonui.animation.slideHorizontalExitTransition
 import studio.lunabee.onesafe.commonui.animation.slideHorizontalPopEnterTransition
 import studio.lunabee.onesafe.commonui.animation.slideHorizontalPopExitTransition
-import studio.lunabee.onesafe.commonui.navigation.LoginDestination
 import studio.lunabee.onesafe.commonui.login.screen.KeyboardLoginRoute
-import studio.lunabee.onesafe.messaging.writemessage.composable.WriteMessageExitIcon
-import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
-import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageRoute
+import studio.lunabee.onesafe.commonui.navigation.LoginDestination
 import studio.lunabee.onesafe.ime.viewmodel.LoginViewModelFactory
 import studio.lunabee.onesafe.ime.viewmodel.SelectContactViewModelFactory
 import studio.lunabee.onesafe.ime.viewmodel.WriteMessageViewModelFactory
+import studio.lunabee.onesafe.messaging.writemessage.composable.WriteMessageExitIcon
+import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
+import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageRoute
 
 @Composable
 fun ImeNavGraph(
@@ -118,6 +119,10 @@ fun ImeNavGraph(
                     factory = writeMessageViewModelFactory.get(),
                 ),
                 contactIdFlow = backStackEntry.savedStateHandle.getStateFlow(WriteMessageDestination.ContactIdArgs, null),
+                navigationToInvitation = {
+                    // NO OP
+                },
+                sendIcon = OSImageSpec.Drawable(studio.lunabee.onesafe.messaging.R.drawable.ic_send),
             )
         }
 

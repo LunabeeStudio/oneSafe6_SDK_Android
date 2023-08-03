@@ -30,6 +30,7 @@ import dagger.hilt.components.SingletonComponent
 import studio.lunabee.bubbles.repository.repository.ContactKeyRepositoryImpl
 import studio.lunabee.bubbles.repository.repository.ContactRepositoryImpl
 import studio.lunabee.messaging.repository.repository.EnqueuedMessageRepositoryImpl
+import studio.lunabee.messaging.repository.repository.HandShakeDataRepositoryImpl
 import studio.lunabee.messaging.repository.repository.MessageChannelRepositoryImpl
 import studio.lunabee.messaging.repository.repository.MessageOrderRepositoryImpl
 import studio.lunabee.messaging.repository.repository.MessageRepositoryImpl
@@ -50,6 +51,7 @@ import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
 import studio.lunabee.onesafe.domain.repository.SupportOSRepository
 import studio.lunabee.onesafe.domain.repository.UrlMetadataRepository
 import studio.lunabee.onesafe.messaging.domain.repository.EnqueuedMessageRepository
+import studio.lunabee.onesafe.messaging.domain.repository.HandShakeDataRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessageOrderRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
@@ -95,6 +97,9 @@ interface RepositoryModule {
     fun bindsMessageChannelRepository(
         messageChannelRepositoryImpl: MessageChannelRepositoryImpl,
     ): MessageChannelRepository
+
+    @Binds
+    fun bindsHandShakeDataRepository(handShakeDataRepositoryImpl: HandShakeDataRepositoryImpl): HandShakeDataRepository
 }
 
 @Module
@@ -105,6 +110,9 @@ interface RepositoryServiceModule {
     fun bindsMessageChannelRepository(
         messageChannelRepositoryImpl: MessageChannelRepositoryImpl,
     ): MessageChannelRepository
+
+    @Binds
+    fun bindsHandShakeDataRepository(handShakeDataRepositoryImpl: HandShakeDataRepositoryImpl): HandShakeDataRepository
 }
 
 @Module

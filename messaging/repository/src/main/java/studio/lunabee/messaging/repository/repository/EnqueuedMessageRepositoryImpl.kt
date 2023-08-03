@@ -35,4 +35,6 @@ class EnqueuedMessageRepositoryImpl @Inject constructor(
         encMessage,
         encChannel,
     )
+
+    override suspend fun deleteAll(): Unit = localDataSource.deleteAll()
 }

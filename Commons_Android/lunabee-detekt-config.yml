@@ -147,6 +147,10 @@ formatting:
     maxLineLength: 140
   PropertyWrapping:
     maxLineLength: 140
+  Wrapping:
+    maxLineLength: 140
+  ParameterWrapping:
+    maxLineLength: 140
 
 naming:
   FunctionNaming:

@@ -49,7 +49,6 @@ class SearchItemUseCase @Inject constructor(
     private val getMatchFromSearchUseCase: GetMatchFromSearchUseCase,
     private val searchIndexManager: SearchIndexManager,
 ) {
-    var result: LinkedHashSet<SafeItemWithIdentifier>? = null
     private val searchQueryFlow: MutableStateFlow<SearchQuery> = MutableStateFlow(SearchQuery("", false))
     private val filteredSearchQueryFlow = searchQueryFlow.transformLatest { searchQuery ->
         val skipSearch = (actualSearchText == searchQuery.searchValue)
@@ -70,7 +69,7 @@ class SearchItemUseCase @Inject constructor(
         }
     }
 
-    val searchResultFlow: Flow<LinkedHashSet<SafeItemWithIdentifier>?> =
+    val searchResultFlow: Flow<List<SafeItemWithIdentifier>?> =
         searchIndexManager.decryptedIndex
             .filterIsInstance<LBFlowResult.Success<List<PlainIndexWordEntry>>>()
             .combine(filteredSearchQueryFlow) { decryptedIndex, searchValue ->
@@ -78,7 +77,7 @@ class SearchItemUseCase @Inject constructor(
             }.flatMapLatest { (decryptedIndex, searchValue) ->
                 searchValue?.let {
                     getMatchFromSearchUseCase(searchValue, decryptedIndex.successData)
-                } ?: flow<LinkedHashSet<SafeItemWithIdentifier>?> { emit(null) }
+                } ?: flow<List<SafeItemWithIdentifier>?> { emit(null) }
             }
 
     private var actualSearchText: String = ""

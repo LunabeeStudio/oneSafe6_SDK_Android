@@ -21,7 +21,6 @@ package studio.lunabee.onesafe.ime
 
 import android.content.ClipboardManager
 import android.view.KeyEvent
-import android.widget.Toast
 import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
@@ -36,10 +35,13 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -66,18 +68,19 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.lunabee.lbcore.model.LBResult
 import dagger.hilt.android.AndroidEntryPoint
 import dev.patrickgold.florisboard.FlorisImeService
 import dev.patrickgold.florisboard.themeManager
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.OSAppSettings
 import studio.lunabee.onesafe.atom.textfield.LocalTextFieldInteraction
-import studio.lunabee.onesafe.bubbles.ui.selectcontact.SelectContactDestination
+import studio.lunabee.onesafe.bubbles.ui.onesafek.SelectContactDestination
 import studio.lunabee.onesafe.commonui.localprovider.LocalKeyboardUiHeight
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import studio.lunabee.onesafe.ime.model.ImeClient
+import studio.lunabee.onesafe.ime.ui.ImeFeedbackManager
 import studio.lunabee.onesafe.ime.ui.ImeNavGraph
 import studio.lunabee.onesafe.ime.ui.OSKeyboardStatus
 import studio.lunabee.onesafe.ime.ui.extension.keyboardTextfield
@@ -115,9 +118,12 @@ class OSFlorisImeService : FlorisImeService() {
 
     @Inject lateinit var processMessageQueueUseCase: ProcessMessageQueueUseCase
 
+    @Inject lateinit var feedbackManager: ImeFeedbackManager
+
     private var isKeyboardVisible: Boolean by mutableStateOf(true)
     private var isOneSafeUiVisible: Boolean by mutableStateOf(false)
     private val imeClient: MutableStateFlow<ImeClient?> = MutableStateFlow(null)
+    private var clipboardResultJob: Job? = null
 
     private lateinit var navController: NavHostController
 
@@ -146,28 +152,35 @@ class OSFlorisImeService : FlorisImeService() {
 
     override fun onCreate() {
         super.onCreate()
-        observeClipboard()
         processMessageQueue()
     }
 
-    private fun observeClipboard() {
+    override fun onBindInput() {
+        super.onBindInput()
+        imeClient.value = ImeClient.fromUid(applicationContext, currentInputBinding.uid)
+        channelRepository.channel = imeClient.value?.applicationName
+
+        if (packageManager.getPackageUid(this.packageName, 0) == currentInputBinding.uid) {
+            // Don't observe clipboard in oneSafe
+            setupClipboardObserver(false)
+        } else {
+            setupClipboardObserver(true)
+        }
+    }
+
+    private fun setupClipboardObserver(observe: Boolean) {
         val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.addPrimaryClipChangedListener(decryptClipboardListener)
-        lifecycleScope.launch {
-            decryptClipboardListener.result.collect { result ->
-                when (result) {
-                    is LBResult.Failure -> Toast.makeText(
-                        this@OSFlorisImeService,
-                        result.throwable?.message,
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                    is LBResult.Success -> Toast.makeText(
-                        this@OSFlorisImeService,
-                        result.successData.name,
-                        Toast.LENGTH_SHORT,
-                    ).show()
+        clipboardResultJob?.cancel()
+        clipboard.removePrimaryClipChangedListener(decryptClipboardListener)
+        clipboardResultJob = if (observe) {
+            clipboard.addPrimaryClipChangedListener(decryptClipboardListener)
+            lifecycleScope.launch {
+                decryptClipboardListener.result.collect { result ->
+                    feedbackManager.sendIncomingMessageFeedback(result)
                 }
             }
+        } else {
+            null
         }
     }
 
@@ -175,12 +188,6 @@ class OSFlorisImeService : FlorisImeService() {
         lifecycleScope.launch {
             processMessageQueueUseCase.flush()
         }
-    }
-
-    override fun onWindowShown() {
-        super.onWindowShown()
-        currentInputBinding?.uid?.let { imeClient.value = ImeClient.fromUid(applicationContext, it) }
-        channelRepository.channel = imeClient.value?.applicationName
     }
 
     @Composable
@@ -191,8 +198,12 @@ class OSFlorisImeService : FlorisImeService() {
         val screenHeight = configuration.screenHeightDp.dp
         var osUiRequiredHeight: Dp by remember { mutableStateOf(0.dp) }
         var keyboardUiHeight: Dp by remember { mutableStateOf(0.dp) }
-        val statusBarHeightDp = getStatusBarHeight()
-        val navigationBarHeightDp = getNavigationBarHeight()
+        val statusBarHeightDp: Dp
+        val navigationBarHeightDp: Dp
+        with(density) {
+            statusBarHeightDp = (WindowInsets.statusBars.getBottom(density) + WindowInsets.statusBars.getTop(density)).toDp()
+            navigationBarHeightDp = (WindowInsets.navigationBars.getBottom(density) + WindowInsets.navigationBars.getTop(density)).toDp()
+        }
 
         val focusManager = LocalFocusManager.current
         val imeClient by this.imeClient.collectAsStateWithLifecycle()
@@ -212,13 +223,15 @@ class OSFlorisImeService : FlorisImeService() {
                 exit = shrinkVertically(),
             ) {
                 CompositionLocalProvider(
-                    LocalTextFieldInteraction.provides { textFieldValue, setTextFieldValue ->
+                    LocalTextFieldInteraction.provides { textFieldValue, setTextFieldValue, keyboardOptions, keyboardActions ->
                         Modifier
                             .keyboardTextfield(
                                 isKeyboardVisible = { isKeyboardVisible },
                                 toggleKeyboardVisibility = { isKeyboardVisible = !isKeyboardVisible },
                                 textFieldValue = textFieldValue,
                                 setTextFieldValue = setTextFieldValue,
+                                keyboardOptions = keyboardOptions,
+                                keyboardActions = keyboardActions,
                             )
                     },
                     LocalKeyboardUiHeight.provides(if (isKeyboardVisible) keyboardUiHeight else 0.dp),
@@ -355,26 +368,6 @@ class OSFlorisImeService : FlorisImeService() {
                     modifier = modifier,
                 )
             }
-        }
-    }
-
-    @Composable
-    private fun getStatusBarHeight(): Dp {
-        val density = LocalDensity.current
-        return with(density) {
-            this@OSFlorisImeService.resources.getDimensionPixelSize(
-                resources.getIdentifier("status_bar_height", "dimen", "android"),
-            ).toDp()
-        }
-    }
-
-    @Composable
-    private fun getNavigationBarHeight(): Dp {
-        val density = LocalDensity.current
-        return with(density) {
-            this@OSFlorisImeService.resources.getDimensionPixelSize(
-                resources.getIdentifier("navigation_bar_height", "dimen", "android"),
-            ).toDp()
         }
     }
 

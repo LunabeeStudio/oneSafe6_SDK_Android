@@ -20,19 +20,15 @@
 package studio.lunabee.onesafe.messaging.writemessage.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.messaging.domain.usecase.ProcessMessageQueueUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class MessagingViewModel @Inject constructor(
-    processMessageQueueUseCase: ProcessMessageQueueUseCase,
+    private val processMessageQueueUseCase: ProcessMessageQueueUseCase,
 ) : ViewModel() {
-    init {
-        viewModelScope.launch {
-            processMessageQueueUseCase.observe()
-        }
+    suspend fun observeQueue() {
+        processMessageQueueUseCase.observe()
     }
 }

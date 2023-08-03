@@ -23,13 +23,16 @@ import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.bubbles.domain.model.Contact
 import studio.lunabee.onesafe.bubbles.domain.model.ContactLocalKey
 import studio.lunabee.onesafe.bubbles.domain.model.ContactSharedKey
+import java.time.Instant
 import java.util.UUID
 
 interface ContactRepository {
     suspend fun save(contact: Contact, key: ContactLocalKey)
     fun getAllContactsFlow(): Flow<List<Contact>>
-    suspend fun getAllContacts(): List<Contact>
-    suspend fun getContact(id: UUID): Contact?
-    suspend fun getSharedKey(id: UUID): ContactSharedKey
+    suspend fun getContact(id: UUID): Flow<Contact?>
+    suspend fun getSharedKey(id: UUID): ContactSharedKey?
+    suspend fun addContactSharedKey(id: UUID, sharedKey: ContactSharedKey)
     suspend fun clearAll()
+    suspend fun deleteContact(id: UUID)
+    suspend fun updateIsUsingDeeplink(id: UUID, encIsUsingDeeplink: ByteArray, updateAt: Instant)
 }

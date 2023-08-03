@@ -30,7 +30,7 @@ import javax.inject.Inject
 
 class AndroidEditCryptoRepository @Inject constructor(
     private val saltProvider: SaltProvider,
-    private val hashEngine: HashEngine,
+    private val hashEngine: PasswordHashEngine,
     private val mainCryptoRepository: MainCryptoRepository,
 ) : EditCryptoRepository {
     private var salt: ByteArray? = null

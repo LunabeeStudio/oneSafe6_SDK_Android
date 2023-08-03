@@ -26,6 +26,7 @@ import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.test.runTest
@@ -34,9 +35,10 @@ import org.junit.Test
 import org.junit.jupiter.api.assertThrows
 import studio.lunabee.compose.androidtest.helper.LbcFolderResource
 import studio.lunabee.compose.androidtest.helper.LbcResourcesHelper
-import studio.lunabee.di.CryptoConstantsTestModule
+import studio.lunabee.di.CryptoConstantsSessionTestModule
 import studio.lunabee.onesafe.cryptography.CryptoConstants
-import studio.lunabee.onesafe.cryptography.qualifier.PBKDF2Iterations
+import studio.lunabee.onesafe.cryptography.PasswordHashEngine
+import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
 import studio.lunabee.onesafe.domain.engine.ImportEngine
 import studio.lunabee.onesafe.domain.model.importexport.ImportMetadata
 import studio.lunabee.onesafe.domain.model.importexport.ImportMode
@@ -46,32 +48,33 @@ import studio.lunabee.onesafe.domain.repository.IconRepository
 import studio.lunabee.onesafe.domain.repository.IndexWordEntryRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemFieldUseCase
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemUseCase
-import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
 import studio.lunabee.onesafe.error.OSImportExportError
 import studio.lunabee.onesafe.test.ConsoleTree
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltTest
 import studio.lunabee.onesafe.test.assertFailure
 import studio.lunabee.onesafe.test.assertSuccess
-import studio.lunabee.onesafe.test.testUUIDs
 import timber.log.Timber
 import java.io.File
+import java.nio.ByteBuffer
+import java.util.UUID
 import javax.inject.Inject
+import kotlin.random.Random
 import kotlin.system.measureTimeMillis
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @HiltAndroidTest
-@UninstallModules(CryptoConstantsTestModule::class)
+@UninstallModules(CryptoConstantsSessionTestModule::class)
 class ImportEngineTest : OSHiltTest() {
     @get:Rule
     override val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
 
     @BindValue
-    @PBKDF2Iterations
-    val iterationNumber: Int = CryptoConstants.PBKDF2Iterations
+    val hashEngine: PasswordHashEngine = PBKDF2JceHashEngine(Dispatchers.Default, CryptoConstants.PBKDF2Iterations)
 
     @Inject @ApplicationContext
     lateinit var context: Context
@@ -280,8 +283,26 @@ class ImportEngineTest : OSHiltTest() {
         private const val IconFolder: String = "icons"
         private const val DataFile: String = "data"
         private const val MetadataFile: String = "metadata"
-        private val Icons: List<String> = testUUIDs.take(3).map { it.toString() }
 
+        // Don't use common's testUUIDs to match the test archive
+        private val importTestUUIDs: List<UUID> by lazy {
+            val random = Random(0)
+            val randomBytes = ByteArray(16)
+            val buffer = ByteBuffer.wrap(randomBytes)
+            (0..10).map {
+                random.nextBytes(randomBytes)
+                randomBytes[6] = (randomBytes[6].toInt() and 0x0f).toByte() // clear version
+                randomBytes[6] = (randomBytes[6].toInt() or 0x40).toByte() // set to version 4
+                randomBytes[8] = (randomBytes[8].toInt() and 0x3f).toByte() // clear variant
+                randomBytes[8] = (randomBytes[8].toInt() or 0x80).toByte() // set to IETF variant
+                val firstLong = buffer.long
+                val secondLong = buffer.long
+                buffer.rewind()
+                UUID(firstLong, secondLong)
+            }
+        }
+
+        private val Icons: List<String> = importTestUUIDs.take(3).map { it.toString() }
         private val ArchiveResource = LbcFolderResource(
             resourceName = ArchiveFolder,
             isDirectory = true,
@@ -292,6 +313,7 @@ class ImportEngineTest : OSHiltTest() {
             isDirectory = true,
             parentResource = ArchiveResource,
         )
+
         private val ResourcesToCopy: List<LbcFolderResource> = listOf(
             LbcFolderResource(resourceName = IconFolder, isDirectory = true, parentResource = ArchiveResource),
             LbcFolderResource(resourceName = DataFile, isDirectory = false, parentResource = ArchiveResource),

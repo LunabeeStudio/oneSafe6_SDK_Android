@@ -25,6 +25,7 @@ import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.bubbles.domain.model.ContactSharedKey
 import studio.lunabee.onesafe.storage.model.RoomContact
+import java.time.Instant
 import java.util.UUID
 
 @Dao
@@ -39,11 +40,17 @@ interface ContactDao {
     fun getAllInFlow(): Flow<List<RoomContact>>
 
     @Query("SELECT * FROM Contact WHERE id = :id")
-    suspend fun getById(id: UUID): RoomContact?
+    fun getById(id: UUID): Flow<RoomContact?>
 
     @Query("SELECT enc_shared_key FROM Contact WHERE id = :id")
-    suspend fun getContactSharedKey(id: UUID): ContactSharedKey // FIXME nullable https://issuetracker.google.com/issues/281571241
+    suspend fun getContactSharedKey(id: UUID): ContactSharedKey?
 
-    @Query("SELECT * FROM Contact") // TODO order by last use
-    suspend fun getAllContacts(): List<RoomContact>
+    @Query("UPDATE Contact SET enc_shared_key = :sharedKey WHERE id = :id")
+    suspend fun addContactSharedKey(id: UUID, sharedKey: ContactSharedKey)
+
+    @Query("DELETE FROM Contact WHERE id = :id")
+    suspend fun remote(id: UUID)
+
+    @Query("UPDATE Contact SET enc_is_using_deeplink = :encIsUsingDeeplink, updated_at =:updateAt WHERE id = :id")
+    suspend fun updateIsUsingDeeplink(id: UUID, encIsUsingDeeplink: ByteArray, updateAt: Instant)
 }

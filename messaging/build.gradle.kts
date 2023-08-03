@@ -25,6 +25,7 @@ android {
     namespace = "studio.lunabee.onesafe.messaging"
 
     defaultConfig {
+        minSdk = AndroidConfig.MIN_APP_SDK
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
         missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
     }
@@ -62,6 +63,8 @@ dependencies {
 
     implementation(KotlinX.coroutines.android)
     coreLibraryDesugaring(Android.tools.desugarJdkLibs)
+
+    implementation(libs.double.ratchet)
 
     implementation(project(":app:core-ui"))
     implementation(project(":app:common-ui"))
