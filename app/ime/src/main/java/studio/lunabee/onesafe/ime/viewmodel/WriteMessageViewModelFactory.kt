@@ -22,11 +22,13 @@ package studio.lunabee.onesafe.ime.viewmodel
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import studio.lunabee.onesafe.OSAppSettings
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.GetContactUseCase
 import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
 import studio.lunabee.onesafe.messaging.domain.usecase.EncryptMessageUseCase
+import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCase
 import studio.lunabee.onesafe.messaging.domain.usecase.GetSendMessageDataUseCase
 import studio.lunabee.onesafe.messaging.domain.usecase.SaveMessageUseCase
 import studio.lunabee.onesafe.messaging.writemessage.viewmodel.WriteMessageViewModel
@@ -40,6 +42,8 @@ class WriteMessageViewModelFactory @Inject constructor(
     private val saveMessageUseCase: SaveMessageUseCase,
     private val channelRepository: MessageChannelRepository,
     private val getSendMessageDataUseCase: GetSendMessageDataUseCase,
+    private val osAppSettings: OSAppSettings,
+    private val getConversationStateUseCase: GetConversationStateUseCase,
 ) : AbstractSavedStateViewModelFactory() {
     override fun <T : ViewModel> create(key: String, modelClass: Class<T>, handle: SavedStateHandle): T {
         @Suppress("UNCHECKED_CAST")
@@ -52,6 +56,8 @@ class WriteMessageViewModelFactory @Inject constructor(
             saveMessageUseCase = saveMessageUseCase,
             channelRepository = channelRepository,
             getSendMessageDataUseCase = getSendMessageDataUseCase,
+            osAppSettings = osAppSettings,
+            getConversationStateUseCase = getConversationStateUseCase,
         ) as T
     }
 }

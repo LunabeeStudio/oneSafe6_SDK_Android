@@ -23,6 +23,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import studio.lunabee.messaging.repository.datasource.MessageLocalDataSource
 import studio.lunabee.onesafe.mapPagingValues
 import studio.lunabee.onesafe.messaging.domain.model.Message
@@ -40,6 +41,10 @@ class MessageLocalDataSourceImpl @Inject constructor(
         it.toMessage()
     }
 
+    override suspend fun getLastMessage(contactId: UUID): Flow<Message?> {
+        return dao.getLastMessage(contactId).map { it?.toMessage() }
+    }
+
     override suspend fun getLastByContact(contactId: UUID): MessageOrder? = dao.getLastMessageOrderByContact(contactId)
     override suspend fun getFirstByContact(contactId: UUID): MessageOrder? = dao.getFirstMessageOrderByContact(contactId)
     override suspend fun countByContact(contactId: UUID): Int = dao.countByContact(contactId)
@@ -49,5 +54,9 @@ class MessageLocalDataSourceImpl @Inject constructor(
         return Pager(config = config) {
             dao.getAllAsPagingSource(contactId)
         }.flow.mapPagingValues(RoomMessage::toMessage)
+    }
+
+    override suspend fun deleteAllMessages(contactId: UUID) {
+        dao.deleteAllMessages(contactId)
     }
 }

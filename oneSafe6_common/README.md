@@ -2,4 +2,4 @@
 
 Store common stuff for oneSafe6
 - [Archive](https://github.com/LunabeeStudio/oneSafe6_common/blob/master/archive)
-- [Bubble](https://github.com/LunabeeStudio/oneSafe6_common/blob/master/onesafe_k)
+- [Bubbles](https://github.com/LunabeeStudio/oneSafe6_common/blob/master/onesafe_k)

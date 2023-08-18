@@ -35,4 +35,5 @@ interface ContactRepository {
     suspend fun clearAll()
     suspend fun deleteContact(id: UUID)
     suspend fun updateIsUsingDeeplink(id: UUID, encIsUsingDeeplink: ByteArray, updateAt: Instant)
+    suspend fun updateUpdatedAt(id: UUID, updateAt: Instant)
 }

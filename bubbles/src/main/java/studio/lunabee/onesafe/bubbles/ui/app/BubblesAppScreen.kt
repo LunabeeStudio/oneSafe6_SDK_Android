@@ -38,16 +38,18 @@ import studio.lunabee.onesafe.bubbles.ui.contact.FilledContactsScreen
 import studio.lunabee.onesafe.bubbles.ui.contact.detail.EmptyContactsScreen
 import studio.lunabee.onesafe.bubbles.ui.conversation.AppEmptyConversationScreen
 import studio.lunabee.onesafe.bubbles.ui.conversation.AppFilledConversationScreen
+import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.action.TopAppBarOptionNavBack
 import studio.lunabee.onesafe.molecule.OSTabs
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
+import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import java.util.UUID
 
 @Composable
-fun BubbleAppRoute(
+fun BubblesAppRoute(
     navigateBack: () -> Unit,
     navigateToContact: (contactId: UUID) -> Unit,
     navigateToConversation: (contactId: UUID) -> Unit,
@@ -55,17 +57,18 @@ fun BubbleAppRoute(
     navigateToCreateContact: () -> Unit,
     navigateToSettings: () -> Unit,
     navigateToDecryptMessage: () -> Unit,
-    viewModel: BubbleAppScreenViewModel = hiltViewModel(),
+    viewModel: BubblesAppScreenViewModel = hiltViewModel(),
 ) {
     val contacts by viewModel.contacts.collectAsStateWithLifecycle()
-    val conversation by viewModel.conversation.collectAsStateWithLifecycle()
-    val tabs = remember { BubbleTab.values().toList() }
+    val conversation: List<BubblesConversationInfo>? by viewModel.conversation.collectAsStateWithLifecycle()
+    val tabs = remember { BubblesTab.values().toList() }
     var selectedTab by rememberSaveable(contacts) {
         mutableStateOf(if (contacts?.isEmpty() == true) tabs[1] else tabs[0])
     }
 
     OSScreen(
         testTag = UiConstants.TestTag.Screen.BubbleScreen,
+        background = LocalDesignSystem.current.bubblesBackGround(),
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -75,7 +78,7 @@ fun BubbleAppRoute(
                 options = listOf(TopAppBarOptionNavBack(navigateBack)),
             )
             OSTabs(
-                titles = BubbleTab.values().map { it.title to it.title },
+                titles = BubblesTab.values().map { it.title to it.title },
                 selectedTabIndex = tabs.indexOf(selectedTab),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -83,7 +86,7 @@ fun BubbleAppRoute(
                 onTabSelected = { idx -> selectedTab = (tabs.elementAt(idx)) },
             )
             when (selectedTab) {
-                BubbleTab.Conversation -> {
+                BubblesTab.Conversation -> {
                     if (contacts?.isEmpty() == true) {
                         AppEmptyConversationScreen()
                     } else {
@@ -96,7 +99,7 @@ fun BubbleAppRoute(
                         )
                     }
                 }
-                BubbleTab.Contacts -> {
+                BubblesTab.Contacts -> {
                     if (contacts?.isEmpty() == true) {
                         EmptyContactsScreen(
                             onAddContactClick = navigateToCreateContact,
@@ -116,7 +119,7 @@ fun BubbleAppRoute(
     }
 }
 
-enum class BubbleTab(val title: LbcTextSpec) {
+enum class BubblesTab(val title: LbcTextSpec) {
     Conversation(LbcTextSpec.StringResource(R.string.bubbles_conversations)),
     Contacts(LbcTextSpec.StringResource(R.string.bubbles_contacts)),
 }

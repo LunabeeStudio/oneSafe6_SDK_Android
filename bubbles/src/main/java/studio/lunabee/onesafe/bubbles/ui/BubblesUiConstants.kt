@@ -19,6 +19,6 @@
 
 package studio.lunabee.onesafe.bubbles.ui
 
-object BubbleUiConstants {
+object BubblesUiConstants {
     const val BarcodeSize: Int = 400
 }

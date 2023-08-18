@@ -30,4 +30,5 @@ data class WriteMessageUiState(
     val encryptedPreview: String = "",
     val conversationError: OSError? = null,
     val isUsingDeepLink: Boolean = false,
+    val isConversationReady: Boolean = true,
 )

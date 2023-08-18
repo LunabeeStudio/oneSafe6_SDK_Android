@@ -68,6 +68,7 @@ dependencies {
 
     implementation(project(":app:core-ui"))
     implementation(project(":app:common-ui"))
+    implementation(project(":app:settings"))
     implementation(project(":error"))
     implementation(project(":domain"))
     implementation(project(":bubbles"))

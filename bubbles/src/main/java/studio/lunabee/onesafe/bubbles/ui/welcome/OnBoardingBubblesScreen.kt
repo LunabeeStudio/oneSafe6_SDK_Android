@@ -46,6 +46,7 @@ import studio.lunabee.onesafe.commonui.extension.rtl
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
+import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 
 @Composable
 fun OnBoardingBubblesRoute(
@@ -69,6 +70,7 @@ fun OnBoardingBubblesScreen(
 ) {
     OSScreen(
         testTag = UiConstants.TestTag.Screen.OnBoardingBubblesScreen,
+        background = LocalDesignSystem.current.bubblesBackGround(),
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),

@@ -32,7 +32,6 @@ import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.OSAppSettings
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.GetContactUseCase
-import studio.lunabee.onesafe.bubbles.ui.extension.getNameProvider
 import studio.lunabee.onesafe.commonui.dialog.DialogAction
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.dialog.ErrorDialogState
@@ -71,7 +70,7 @@ class InvitationViewModel @Inject constructor(
                     )
                     _uiState.value = InvitationUiState.Data(
                         invitationString = getInvitationMessageUseCase(contactId),
-                        contactName = decryptedNameResult.getNameProvider(),
+                        contactName = decryptedNameResult.data.orEmpty(),
                     )
                 }
             } catch (error: OSError) {

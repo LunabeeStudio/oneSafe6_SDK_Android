@@ -358,6 +358,7 @@ class ImportEngineImpl @Inject constructor(
             .orEmpty()
         // First, we gather all the already used ids.
         val existingIconsIds: List<String> = iconRepository.getIcons().map { it.nameWithoutExtension }
+        val migratedIconIdsToImport = importCacheDataSource.migratedIconsToImport.map { it.nameWithoutExtension }
 
         // We iterate over all the items.
         safeItemsToImport.mapTo(importCacheDataSource.migratedSafeItemsToImport) { item ->
@@ -369,7 +370,7 @@ class ImportEngineImpl @Inject constructor(
             )
 
             // Re-generate and map icon ids to avoid collision with existing icons (double import)
-            item.iconId?.let { oldIconId ->
+            item.iconId?.takeIf { migratedIconIdsToImport.contains(it.toString()) }?.let { oldIconId ->
                 // Keep new icon id as UUID to let Room handle mapping later.
                 var newIconId: UUID = iconIdProvider()
                 // We create the new icon id.
@@ -377,7 +378,7 @@ class ImportEngineImpl @Inject constructor(
                 // We store the old and new ids into the mapping dictionary.
                 importCacheDataSource.newIconIdsByOldOnes[oldIconId] = newIconId
                 migratedItem.copy(iconId = newIconId)
-            } ?: migratedItem
+            } ?: migratedItem.copy(iconId = null)
         }
 
         importCacheDataSource.migratedSafeItemFieldsToImport = safeItemFieldsToImport.mapNotNull { field ->

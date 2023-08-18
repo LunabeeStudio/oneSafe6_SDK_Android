@@ -32,7 +32,7 @@ import studio.lunabee.doubleratchet.model.DRPublicKey
 import studio.lunabee.doubleratchet.model.DoubleRatchetError
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.doubleratchet.model.MessageHeader
-import studio.lunabee.onesafe.bubbles.domain.BubbleConstant
+import studio.lunabee.onesafe.bubbles.domain.BubblesConstant
 import studio.lunabee.onesafe.bubbles.domain.model.Contact
 import studio.lunabee.onesafe.bubbles.domain.model.ContactLocalKey
 import studio.lunabee.onesafe.bubbles.domain.model.ContactSharedKey
@@ -160,7 +160,7 @@ class DecryptIncomingMessageUseCase @Inject constructor(
         val plainMessageDataProto = OSMessage.MessageData.parseFrom(plainBody)
 
         // Don't return the message if it's an inviatation message and you already received the handShake
-        val osPlainMessage = if (plainMessageDataProto.content == BubbleConstant.FirstMessageData && contact.encSharedKey != null) {
+        val osPlainMessage = if (plainMessageDataProto.content == BubblesConstant.FirstMessageData && contact.encSharedKey != null) {
             null
         } else {
             OSPlainMessage(

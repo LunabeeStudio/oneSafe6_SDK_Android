@@ -32,7 +32,7 @@ import androidx.compose.ui.res.painterResource
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSCard
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
-import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
+import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
 import studio.lunabee.onesafe.bubbles.ui.onesafek.SelectContactFactory
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.molecule.OSRow
@@ -43,8 +43,7 @@ import java.util.UUID
 
 @Composable
 fun AppFilledConversationScreen(
-    // TODO change model to add the last message in subtitle.
-    contacts: List<BubblesContactInfo>,
+    contacts: List<BubblesConversationInfo>,
     onConversationClick: (UUID) -> Unit,
     onDecryptClick: () -> Unit,
     onSettingClick: () -> Unit,
@@ -54,8 +53,8 @@ fun AppFilledConversationScreen(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(OSDimens.SystemSpacing.Regular),
     ) {
-        SelectContactFactory.addContacts(
-            contacts = contacts,
+        SelectContactFactory.addConversations(
+            conversations = contacts,
             onClick = onConversationClick,
             lazyListScope = this,
         )

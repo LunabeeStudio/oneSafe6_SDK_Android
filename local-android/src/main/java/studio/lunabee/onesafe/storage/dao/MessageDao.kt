@@ -23,6 +23,7 @@ import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.messaging.domain.model.MessageOrder
 import studio.lunabee.onesafe.storage.model.RoomMessage
 import java.util.UUID
@@ -60,4 +61,10 @@ interface MessageDao {
 
     @Query("SELECT * FROM Message WHERE contact_id IS :contactId ORDER BY `order` DESC")
     fun getAllAsPagingSource(contactId: UUID): PagingSource<Int, RoomMessage>
+
+    @Query("DELETE FROM Message WHERE contact_id IS :contactId ")
+    suspend fun deleteAllMessages(contactId: UUID)
+
+    @Query("SELECT * FROM Message WHERE contact_id IS :contactId ORDER BY `order` DESC LIMIT 1")
+    fun getLastMessage(contactId: UUID): Flow<RoomMessage?>
 }

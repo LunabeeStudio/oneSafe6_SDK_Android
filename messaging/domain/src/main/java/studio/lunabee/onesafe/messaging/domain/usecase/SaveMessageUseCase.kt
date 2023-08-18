@@ -25,6 +25,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactKeyRepository
+import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.bubbles.domain.usecase.GetContactUseCase
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
@@ -46,6 +47,7 @@ class SaveMessageUseCase @Inject constructor(
     private val messageRepository: MessageRepository,
     private val contactKeyRepository: ContactKeyRepository,
     private val getContactUseCase: GetContactUseCase,
+    private val contactRepository: ContactRepository,
     private val messageOrderCalculator: MessageOrderCalculator,
 ) {
     suspend operator fun invoke(
@@ -82,6 +84,7 @@ class SaveMessageUseCase @Inject constructor(
             when (orderResult) {
                 is MessageOrderCalculator.OrderResult.Found -> {
                     messageRepository.save(message, orderResult.order)
+                    contactRepository.updateUpdatedAt(contactId, Instant.now())
                 }
                 is MessageOrderCalculator.OrderResult.Duplicated -> {
                     // If we have 2 messages with the same sentAt value, make sure this is a duplicate and return a failure (or save it)

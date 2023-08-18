@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2023-2023 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 7/20/2023 - for the oneSafe6 SDK.
- * Last modified 20/07/2023 15:49
+ * Created by Lunabee Studio / Date - 8/16/2023 - for the oneSafe6 SDK.
+ * Last modified 16/08/2023 09:59
  */
 
-package studio.lunabee.onesafe.bubbles.domain
+package studio.lunabee.onesafe.domain.usecase.support
 
-object BubbleConstant {
-    // Used to determine that the message is the invitation response message
-    const val FirstMessageData: String = "c08b1cb8-3a94-4e9a-af30-6677053b7a60"
+import java.util.Locale
+import javax.inject.Inject
+
+class IsLanguageGeneratedUseCase @Inject constructor() {
+    operator fun invoke(currentLocale: String): Boolean {
+        return currentLocale != Locale.FRENCH.language && currentLocale != Locale.ENGLISH.language
+    }
 }

@@ -20,13 +20,15 @@
 package studio.lunabee.onesafe.support
 
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.longPreferencesKey
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import studio.lunabee.onesafe.repository.datasource.SupportOSDataSource
 import java.time.Instant
 import javax.inject.Inject
@@ -38,9 +40,17 @@ class SupportOSDataStore @Inject constructor(
     private val appVisitsCountKey: Preferences.Key<Int> = intPreferencesKey(SupportOSConstants.AppVisitKey)
     private val ratingTimeStampKey: Preferences.Key<Long> = longPreferencesKey(SupportOSConstants.RatingTimeStampKey)
     private val dismissTimeStampKey: Preferences.Key<Long> = longPreferencesKey(SupportOSConstants.DismissTimeStampKey)
+    private val lastLanguageConfigKey: Preferences.Key<String> = stringPreferencesKey(SupportOSConstants.LastLanguageConfigKey)
+    private val languageConfigCountKey: Preferences.Key<Int> = intPreferencesKey(SupportOSConstants.LanguageConfigCountKey)
+    private val hasLanguageConfigBeenHandled: Preferences.Key<Boolean> =
+        booleanPreferencesKey(SupportOSConstants.HasLanguageConfigBeenHandled)
 
     override val appVisitsCount: Flow<Int> =
         datastore.data.map { preferences -> preferences[appVisitsCountKey] ?: SupportOSConstants.AppVisitDefault }
+
+    override val lastLanguageConfig: Flow<String?> = datastore.data.map { preferences -> preferences[lastLanguageConfigKey] }
+    override val languageConfigCount: Flow<Int> =
+        datastore.data.map { preferences -> preferences[languageConfigCountKey] ?: SupportOSConstants.LanguageConfigCountDefault }
 
     override val dismissInstant: Flow<Instant?> = datastore.data.map { preferences ->
         val timeStamp = preferences[dismissTimeStampKey]
@@ -62,8 +72,12 @@ class SupportOSDataStore @Inject constructor(
 
     override suspend fun incrementAppVisit() {
         val actualCount = appVisitsCount.first()
+        val actualLanguageCount = languageConfigCount.first()
         datastore.edit { preferences ->
             preferences[appVisitsCountKey] = actualCount + 1
+            if (preferences[hasLanguageConfigBeenHandled] != true) {
+                preferences[languageConfigCountKey] = actualLanguageCount + 1
+            }
         }
     }
 
@@ -96,6 +110,21 @@ class SupportOSDataStore @Inject constructor(
             } else {
                 preferences.remove(ratingTimeStampKey)
             }
+        }
+    }
+
+    override suspend fun markLanguageConfigAsHandled() {
+        datastore.edit { preferences ->
+            preferences[languageConfigCountKey] = SupportOSConstants.LanguageConfigCountDefault
+            preferences[hasLanguageConfigBeenHandled] = true
+        }
+    }
+
+    override suspend fun resetLanguageConfigWithNewLocale(newLocale: String) {
+        datastore.edit { preferences ->
+            preferences[lastLanguageConfigKey] = newLocale
+            preferences[languageConfigCountKey] = SupportOSConstants.LanguageConfigCountDefault
+            preferences[hasLanguageConfigBeenHandled] = false
         }
     }
 }

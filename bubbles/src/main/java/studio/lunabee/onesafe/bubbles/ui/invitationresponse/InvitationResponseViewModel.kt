@@ -31,10 +31,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.OSAppSettings
-import studio.lunabee.onesafe.bubbles.domain.BubbleConstant
+import studio.lunabee.onesafe.bubbles.domain.BubblesConstant
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.GetContactUseCase
-import studio.lunabee.onesafe.bubbles.ui.extension.getNameProvider
 import studio.lunabee.onesafe.bubbles.ui.invitation.InvitationUiState
 import studio.lunabee.onesafe.commonui.dialog.DialogAction
 import studio.lunabee.onesafe.commonui.dialog.DialogState
@@ -82,7 +81,7 @@ class InvitationResponseViewModel @Inject constructor(
                     val (message, isFirstMessage) = generateMessage()
                     _uiState.value = InvitationUiState.Data(
                         invitationString = message,
-                        contactName = decryptedNameResult.getNameProvider(),
+                        contactName = decryptedNameResult.data.orEmpty(),
                     )
                     if (isFirstMessage) {
                         saveMessageInDatabase()
@@ -103,7 +102,7 @@ class InvitationResponseViewModel @Inject constructor(
         return when (messageData) {
             is LBResult.Failure -> throw messageData.throwable ?: error("an error append")
             is LBResult.Success -> {
-                val plainMessage = BubbleConstant.FirstMessageData
+                val plainMessage = BubblesConstant.FirstMessageData
                 val encryptResult = encryptMessageUseCase(
                     plainMessage,
                     contactId,
@@ -121,7 +120,7 @@ class InvitationResponseViewModel @Inject constructor(
     private fun saveMessageInDatabase() {
         viewModelScope.launch {
             saveMessageUseCase(
-                plainMessage = BubbleConstant.FirstMessageData,
+                plainMessage = BubblesConstant.FirstMessageData,
                 sentAt = Instant.now(),
                 contactId = contactId,
                 recipientId = contactId,

@@ -26,12 +26,12 @@ import androidx.navigation.compose.composable
 import studio.lunabee.onesafe.commonui.navigation.OSDestination
 import java.util.UUID
 
-object BubbleDestination : OSDestination {
-    override val route: String = "bubble_home"
+object BubblesDestination : OSDestination {
+    override val route: String = "bubbles_home"
 }
 
 @Suppress("LongParameterList")
-fun NavGraphBuilder.bubbleHomeGraph(
+fun NavGraphBuilder.bubblesHomeGraph(
     navigateBack: () -> Unit,
     navigateToContact: (contactId: UUID) -> Unit,
     navigateToConversation: (contactId: UUID) -> Unit,
@@ -42,10 +42,10 @@ fun NavGraphBuilder.bubbleHomeGraph(
     createMessagingViewModel: @Composable (NavBackStackEntry) -> Unit,
 ) {
     composable(
-        route = BubbleDestination.route,
+        route = BubblesDestination.route,
     ) { backStackEntry ->
         createMessagingViewModel(backStackEntry)
-        BubbleAppRoute(
+        BubblesAppRoute(
             navigateBack = navigateBack,
             navigateToContact = navigateToContact,
             navigateToConversation = navigateToConversation,

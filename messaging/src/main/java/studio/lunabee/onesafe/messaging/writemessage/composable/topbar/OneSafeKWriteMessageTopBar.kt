@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 6/14/2023 - for the oneSafe6 SDK.
- * Last modified 6/14/23, 2:49 PM
+ * Created by Lunabee Studio / Date - 8/17/2023 - for the oneSafe6 SDK.
+ * Last modified 17/08/2023 09:53
  */
 
-package studio.lunabee.onesafe.messaging.writemessage.composable
+package studio.lunabee.onesafe.messaging.writemessage.composable.topbar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,26 +38,30 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import studio.lunabee.compose.core.LbcTextSpec
+import studio.lunabee.onesafe.atom.OSImageSpec
+import studio.lunabee.onesafe.atom.button.OSIconButton
+import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
 import studio.lunabee.onesafe.commonui.OSItemIllustrationHelper
 import studio.lunabee.onesafe.commonui.OSNameProvider
-import studio.lunabee.onesafe.extension.loremIpsum
 import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.extension.loremIpsum
+import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.model.OSItemIllustration
 import studio.lunabee.onesafe.model.OSSafeItemStyle
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
+import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
 import studio.lunabee.onesafe.ui.theme.OSTypography.titleMediumBlack
 
 @Composable
-fun WriteMessageTopBar(
+fun OneSafeKWriteMessageTopBar(
     contactNameProvider: OSNameProvider,
-    exitIcon: WriteMessageExitIcon,
     modifier: Modifier = Modifier,
     onClickOnChange: () -> Unit,
-    canChangeRecipient: Boolean,
+    onClose: () -> Unit,
 ) {
     val illustration: OSItemIllustration by remember(contactNameProvider) {
         mutableStateOf(OSItemIllustrationHelper.get(contactNameProvider))
@@ -68,20 +72,23 @@ fun WriteMessageTopBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.Medium),
     ) {
-        exitIcon.Content()
-
+        OSIconButton(
+            image = OSImageSpec.Drawable(R.drawable.ic_close),
+            onClick = onClose,
+            buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
+            contentDescription = LbcTextSpec.StringResource(R.string.common_accessibility_back),
+            colors = OSIconButtonDefaults.iconButtonColors(
+                containerColor = LocalDesignSystem.current.bubblesSecondaryContainer(),
+                contentColor = MaterialTheme.colorScheme.onSurface,
+                state = OSActionState.Enabled,
+            ),
+        )
         Box(
             modifier = Modifier
                 .testTag(UiConstants.TestTag.Item.OneSafeKWriteMessageRecipientCard)
                 .clip(RoundedCornerShape(OSDimens.SystemCornerRadius.Regular))
-                .background(MaterialTheme.colorScheme.secondaryContainer)
-                .then(
-                    if (canChangeRecipient) {
-                        Modifier.clickable { onClickOnChange() }
-                    } else {
-                        Modifier
-                    },
-                ),
+                .background(LocalDesignSystem.current.bubblesSecondaryContainer())
+                .clickable { onClickOnChange() },
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -98,14 +105,11 @@ fun WriteMessageTopBar(
                     style = MaterialTheme.typography.titleMediumBlack,
                     modifier = Modifier.weight(1f),
                 )
-
-                if (canChangeRecipient) {
-                    OSText(
-                        text = LbcTextSpec.StringResource(R.string.oneSafeK_changeRecipientButton_label),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.secondary,
-                    )
-                }
+                OSText(
+                    text = LbcTextSpec.StringResource(R.string.oneSafeK_changeRecipientButton_label),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.secondary,
+                )
             }
         }
     }
@@ -113,13 +117,12 @@ fun WriteMessageTopBar(
 
 @Preview
 @Composable
-fun WriteMessageTopBarPreview() {
+fun OneSafeKWriteMessageTopBarPreview() {
     OSPreviewBackgroundTheme {
-        WriteMessageTopBar(
+        OneSafeKWriteMessageTopBar(
             contactNameProvider = DefaultNameProvider(loremIpsum(5)),
-            exitIcon = WriteMessageExitIcon.WriteMessageCloseIcon {},
+            onClose = {},
             onClickOnChange = {},
-            canChangeRecipient = true,
         )
     }
 }

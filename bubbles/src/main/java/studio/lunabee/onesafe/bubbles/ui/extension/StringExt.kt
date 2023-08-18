@@ -24,7 +24,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
-import studio.lunabee.onesafe.bubbles.ui.BubbleUiConstants
+import studio.lunabee.onesafe.bubbles.ui.BubblesUiConstants
 import studio.lunabee.onesafe.commonui.CommonUiConstants
 
 fun String.toBarcodeBitmap(): ImageBitmap? {
@@ -33,8 +33,8 @@ fun String.toBarcodeBitmap(): ImageBitmap? {
         val bitmap = barcodeEncoder.encodeBitmap(
             this,
             BarcodeFormat.QR_CODE,
-            BubbleUiConstants.BarcodeSize,
-            BubbleUiConstants.BarcodeSize,
+            BubblesUiConstants.BarcodeSize,
+            BubblesUiConstants.BarcodeSize,
         )
         bitmap.asImageBitmap()
     } catch (e: Exception) {
@@ -42,14 +42,19 @@ fun String.toBarcodeBitmap(): ImageBitmap? {
     }
 }
 
-fun String.getDeepLinkFromMessage(isUsingDeppLink: Boolean = true): String {
+fun String.getDeepLinkFromMessage(isUsingDeppLink: Boolean): String {
     return if (isUsingDeppLink) {
-        "${CommonUiConstants.Deeplink.BubbleDeeplinkUrl}${Uri.encode(this)}"
+        CommonUiConstants.Deeplink.BubblesDeeplinkUrl.buildUpon()
+            .fragment(this)
+            .build()
+            .toString()
     } else {
         Uri.decode(this)
     }
 }
 
 fun String.getBase64FromMessage(): String {
-    return this.substringAfter(CommonUiConstants.Deeplink.BubbleDeeplinkUrl).let(Uri::decode)
+    return this.substringAfter("${CommonUiConstants.Deeplink.BubblesDeeplinkUrl}#").let(Uri::decode)
 }
+
+fun Uri.getBase64FromMessage(): String = Uri.decode(fragment)

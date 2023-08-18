@@ -53,4 +53,8 @@ class ContactRepositoryImpl @Inject constructor(
     override suspend fun updateIsUsingDeeplink(id: UUID, encIsUsingDeeplink: ByteArray, updateAt: Instant) {
         localDataSource.updateIsUsingDeeplink(id, encIsUsingDeeplink, updateAt)
     }
+
+    override suspend fun updateUpdatedAt(id: UUID, updateAt: Instant) {
+        localDataSource.updateUpdatedAt(id, updateAt)
+    }
 }

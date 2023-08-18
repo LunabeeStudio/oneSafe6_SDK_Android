@@ -29,12 +29,12 @@ object OnBoardingBubblesDestination : OSDestination {
 
 fun NavGraphBuilder.onBoardingBubblesGraph(
     navigateBack: () -> Unit,
-    navigateToBubbleHome: () -> Unit,
+    navigateToBubblesHome: () -> Unit,
 ) {
     composable(route = OnBoardingBubblesDestination.route) {
         OnBoardingBubblesRoute(
             navigateBack = navigateBack,
-            navigateToHome = navigateToBubbleHome,
+            navigateToHome = navigateToBubblesHome,
         )
     }
 }

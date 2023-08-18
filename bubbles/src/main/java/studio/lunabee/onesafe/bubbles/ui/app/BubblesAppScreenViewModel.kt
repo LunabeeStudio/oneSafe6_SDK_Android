@@ -25,23 +25,33 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import studio.lunabee.compose.core.LbcTextSpec
+import studio.lunabee.onesafe.bubbles.domain.BubblesConstant
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.GetAllContactsUseCase
 import studio.lunabee.onesafe.bubbles.ui.extension.getNameProvider
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
+import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
+import studio.lunabee.onesafe.bubbles.ui.model.ConversationSubtitle
+import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.domain.common.FeatureFlags
+import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCase
+import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class BubbleAppScreenViewModel @Inject constructor(
+class BubblesAppScreenViewModel @Inject constructor(
     getEncryptedBubblesContactList: GetAllContactsUseCase,
     contactLocalDecryptUseCase: ContactLocalDecryptUseCase,
+    private val getConversationStateUseCase: GetConversationStateUseCase,
+    private val messageRepository: MessageRepository,
     val osFeatureFlags: FeatureFlags,
 ) : ViewModel() {
 
-    private val _conversation = MutableStateFlow<List<BubblesContactInfo>?>(null)
-    val conversation: StateFlow<List<BubblesContactInfo>?> = _conversation.asStateFlow()
+    private val _conversation = MutableStateFlow<List<BubblesConversationInfo>?>(null)
+    val conversation: StateFlow<List<BubblesConversationInfo>?> = _conversation.asStateFlow()
 
     private val _contacts: MutableStateFlow<List<BubblesContactInfo>?> = MutableStateFlow(null)
     val contacts: StateFlow<List<BubblesContactInfo>?> = _contacts.asStateFlow()
@@ -52,13 +62,35 @@ class BubbleAppScreenViewModel @Inject constructor(
                 val contactLists = encryptedContacts.map { contact ->
                     val decryptedNameResult = contactLocalDecryptUseCase(contact.encName, contact.id, String::class)
                     Pair(
-                        BubblesContactInfo(id = contact.id, nameProvider = decryptedNameResult.getNameProvider()),
+                        BubblesContactInfo(
+                            id = contact.id,
+                            nameProvider = decryptedNameResult.getNameProvider(),
+                            conversationState = getConversationStateUseCase.invoke(contact.id),
+                        ),
                         // Use to know if we display the contact in the conversation tab
                         contact.encSharedKey != null,
                     )
                 }
                 _contacts.value = contactLists.map { it.first }
-                _conversation.value = contactLists.filter { it.second }.map { it.first }
+                _conversation.value = contactLists.map { (info, isConvReady) ->
+                    BubblesConversationInfo(
+                        nameProvider = info.nameProvider,
+                        subtitle = if (isConvReady) {
+                            messageRepository.getLastMessage(info.id).firstOrNull()?.let { message ->
+                                val content = contactLocalDecryptUseCase(message.encContent, info.id, String::class).data.orEmpty()
+                                val realContent = if (content == BubblesConstant.FirstMessageData) {
+                                    LbcTextSpec.StringResource(R.string.bubbles_acceptedInvitation)
+                                } else {
+                                    LbcTextSpec.Raw(content)
+                                }
+                                ConversationSubtitle.Message(content = realContent)
+                            }
+                        } else {
+                            ConversationSubtitle.NotReady
+                        },
+                        id = info.id,
+                    )
+                }
             }
         }
     }

@@ -24,7 +24,10 @@ import com.lunabee.lblogger.LBLogger
 import studio.lunabee.onesafe.domain.repository.IconRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
+import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSError
+import java.io.FileNotFoundException
 import java.util.UUID
 import javax.inject.Inject
 
@@ -36,6 +39,7 @@ private val log = LBLogger.get<GetIconUseCase>()
 class GetIconUseCase @Inject constructor(
     private val cryptoRepository: MainCryptoRepository,
     private val safeItemKeyRepository: SafeItemKeyRepository,
+    private val safeItemRepository: SafeItemRepository,
     private val iconRepository: IconRepository,
 ) {
 
@@ -47,12 +51,17 @@ class GetIconUseCase @Inject constructor(
      *
      * @return Clear data wrapped in a [LBResult]
      */
-    // TODO map and handle FileNotFoundException thrown by crypto when file does not exist
     suspend operator fun invoke(iconId: UUID, itemId: UUID): LBResult<ByteArray> {
         return OSError.runCatching(log) {
             val key = safeItemKeyRepository.getSafeItemKey(itemId)
             val iconFile = iconRepository.getIcon(iconId.toString())
-            cryptoRepository.decrypt(iconFile, key, ByteArray::class)
+            try {
+                cryptoRepository.decrypt(iconFile, key, ByteArray::class)
+            } catch (e: FileNotFoundException) {
+                // Avoid putting the whole item in "corrupt" mode just because icon file is not found.
+                safeItemRepository.updateIcon(itemId, null)
+                throw OSCryptoError(code = OSCryptoError.Code.DECRYPTION_FILE_NOT_FOUND, cause = e)
+            }
         }
     }
 }

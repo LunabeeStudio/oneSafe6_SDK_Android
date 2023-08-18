@@ -27,7 +27,7 @@ import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.lunabee.lbcore.model.LBResult
 import dagger.hilt.android.qualifiers.ApplicationContext
-import studio.lunabee.onesafe.bubbles.ui.app.BubbleDestination
+import studio.lunabee.onesafe.bubbles.ui.app.BubblesDestination
 import studio.lunabee.onesafe.commonui.CommonUiConstants
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.error.title
@@ -103,7 +103,7 @@ class ImeFeedbackManager @Inject constructor(
             val route = if (contactId != null) {
                 WriteMessageDestination.getRoute(contactId)
             } else {
-                BubbleDestination.route
+                BubblesDestination.route
             }
             data = Uri.Builder()
                 .scheme(CommonUiConstants.Deeplink.MAIN_NAV_SCHEME)

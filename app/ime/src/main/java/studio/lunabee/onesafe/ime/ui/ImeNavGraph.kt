@@ -42,7 +42,6 @@ import studio.lunabee.onesafe.commonui.navigation.LoginDestination
 import studio.lunabee.onesafe.ime.viewmodel.LoginViewModelFactory
 import studio.lunabee.onesafe.ime.viewmodel.SelectContactViewModelFactory
 import studio.lunabee.onesafe.ime.viewmodel.WriteMessageViewModelFactory
-import studio.lunabee.onesafe.messaging.writemessage.composable.WriteMessageExitIcon
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageRoute
 
@@ -111,9 +110,6 @@ fun ImeNavGraph(
             WriteMessageRoute(
                 onChangeRecipient = { navController.navigate(ChangeContactDestination.route) },
                 sendMessage = sendMessage,
-                exitIcon = WriteMessageExitIcon.WriteMessageCloseIcon(
-                    onClick = dismissUi,
-                ),
                 viewModel = viewModel(
                     viewModelStoreOwner = backStackEntry,
                     factory = writeMessageViewModelFactory.get(),
@@ -123,6 +119,8 @@ fun ImeNavGraph(
                     // NO OP
                 },
                 sendIcon = OSImageSpec.Drawable(studio.lunabee.onesafe.messaging.R.drawable.ic_send),
+                onBackClick = dismissUi,
+                navigateToContactDetail = {},
             )
         }
 

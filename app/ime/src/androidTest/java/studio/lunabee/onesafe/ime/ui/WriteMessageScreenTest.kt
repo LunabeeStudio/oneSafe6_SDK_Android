@@ -30,6 +30,7 @@ import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Test
 import studio.lunabee.compose.androidtest.LbcComposeTest
 import studio.lunabee.compose.androidtest.extension.waitUntilExactlyOneExists
@@ -37,7 +38,7 @@ import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
 import studio.lunabee.onesafe.commonui.R
-import studio.lunabee.onesafe.messaging.writemessage.composable.WriteMessageExitIcon
+import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageRoute
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageUiState
 import studio.lunabee.onesafe.messaging.writemessage.viewmodel.WriteMessageViewModel
@@ -55,6 +56,7 @@ class WriteMessageScreenTest : LbcComposeTest() {
                 currentContact = BubblesContactInfo(
                     id = UUID.randomUUID(),
                     nameProvider = DefaultNameProvider("Florian"),
+                    conversationState = ConversationState.FullySetup,
                 ),
                 plainMessage = plainMessage,
                 encryptedPreview = encryptedMessage,
@@ -63,6 +65,7 @@ class WriteMessageScreenTest : LbcComposeTest() {
         )
         every { conversation } returns emptyFlow()
         every { dialogState } returns MutableStateFlow(null)
+        every { isMaterialYouSettingsEnabled } returns flowOf(false)
     }
     private val onClickOnChangeContact: () -> Unit = spyk({})
 
@@ -90,11 +93,12 @@ class WriteMessageScreenTest : LbcComposeTest() {
                 WriteMessageRoute(
                     onChangeRecipient = onClickOnChangeContact,
                     sendMessage = {},
-                    exitIcon = WriteMessageExitIcon.WriteMessageCloseIcon {},
                     viewModel = mockkVm,
                     contactIdFlow = MutableStateFlow(null),
                     navigationToInvitation = {},
                     sendIcon = OSImageSpec.Drawable(R.drawable.ic_share),
+                    onBackClick = {},
+                    navigateToContactDetail = {},
                 )
             }
             block()
