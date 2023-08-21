@@ -55,6 +55,7 @@ import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
+import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import studio.lunabee.onesafe.ui.theme.OSColor
 import java.util.UUID
 
@@ -95,6 +96,7 @@ fun DecryptMessageScreen(
 ) {
     OSScreen(
         testTag = UiConstants.TestTag.Screen.DecryptMessageScreen,
+        background = LocalDesignSystem.current.bubblesBackGround(),
     ) {
         Column(
             modifier = Modifier

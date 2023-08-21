@@ -45,6 +45,7 @@ import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
+import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import studio.lunabee.onesafe.ui.theme.OSUserTheme
 import java.util.UUID
 
@@ -74,10 +75,16 @@ fun ContactDetailRoute(
                 onScanResponseClick = navigateToScanBarcodeScreen,
             )
         }
-        is ContactDetailUiState.Idle -> OSScreen(testTag = "") { Box(modifier = Modifier.fillMaxSize()) }
+        is ContactDetailUiState.Idle -> OSScreen(
+            testTag = "",
+            background = LocalDesignSystem.current.bubblesBackGround(),
+        ) { Box(modifier = Modifier.fillMaxSize()) }
         is ContactDetailUiState.Exit -> {
             LaunchedEffect(Unit) { navigateBack() }
-            OSScreen(testTag = "") { Box(modifier = Modifier.fillMaxSize()) }
+            OSScreen(
+                testTag = "",
+                background = LocalDesignSystem.current.bubblesBackGround(),
+            ) { Box(modifier = Modifier.fillMaxSize()) }
         }
     }
 }
@@ -99,6 +106,7 @@ fun ContactDetailScreen(
     OSUserTheme(customPrimaryColor = uiState.color) {
         OSScreen(
             testTag = UiConstants.TestTag.Screen.ContactDetailScreen,
+            background = LocalDesignSystem.current.bubblesBackGround(),
         ) {
             LazyColumn(
                 modifier = Modifier

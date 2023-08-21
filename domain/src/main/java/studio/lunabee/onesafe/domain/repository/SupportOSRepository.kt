@@ -26,9 +26,13 @@ interface SupportOSRepository {
     val appVisitsCount: Flow<Int>
     val dismissInstant: Flow<Instant?>
     val ratingInstant: Flow<Instant?>
+    val lastLanguageConfig: Flow<String?>
+    val languageConfigCount: Flow<Int>
     suspend fun incrementAppVisit()
     suspend fun setAppVisit(count: Int)
     suspend fun resetAppVisit()
+    suspend fun markLanguageConfigAsHandled()
+    suspend fun resetLanguageConfigWithNewLocale(newLocale: String)
     suspend fun setRatingInstant(instant: Instant?)
     suspend fun setDismissInstant(instant: Instant?)
 }

@@ -108,7 +108,7 @@
                     "fields":[
                         {
                             "isItemIdentifier":false,
-                            "isSecured":false,
+                            "isSecured":true,
                             "kind":"creditCardNumber",
                             "position":0,
                             "formattingMask":"#### #### #### ####",

@@ -32,6 +32,8 @@ class SupportOSRepositoryImpl @Inject constructor(
     override val appVisitsCount: Flow<Int> = supportOSDataSource.appVisitsCount
     override val dismissInstant: Flow<Instant?> = supportOSDataSource.dismissInstant
     override val ratingInstant: Flow<Instant?> = supportOSDataSource.ratingInstant
+    override val lastLanguageConfig: Flow<String?> = supportOSDataSource.lastLanguageConfig
+    override val languageConfigCount: Flow<Int> = supportOSDataSource.languageConfigCount
 
     override suspend fun incrementAppVisit() {
         supportOSDataSource.incrementAppVisit()
@@ -51,5 +53,13 @@ class SupportOSRepositoryImpl @Inject constructor(
 
     override suspend fun setDismissInstant(instant: Instant?) {
         supportOSDataSource.setRattingInstant(instant)
+    }
+
+    override suspend fun markLanguageConfigAsHandled() {
+        supportOSDataSource.markLanguageConfigAsHandled()
+    }
+
+    override suspend fun resetLanguageConfigWithNewLocale(newLocale: String) {
+        supportOSDataSource.resetLanguageConfigWithNewLocale(newLocale = newLocale)
     }
 }

@@ -33,7 +33,15 @@ class MessageRepositoryImpl @Inject constructor(
 ) : MessageRepository {
     override suspend fun save(message: Message, order: Float): Unit = datasource.save(message, order)
     override suspend fun getAllByContact(contactId: UUID): List<Message> = datasource.getAllByContact(contactId)
+    override suspend fun getLastMessage(contactId: UUID): Flow<Message?> {
+        return datasource.getLastMessage(contactId)
+    }
+
     override suspend fun getByContactByOrder(contactId: UUID, order: Float): Message = datasource.getByContactByOrder(contactId, order)
     override fun getAllPaged(config: PagingConfig, contactId: UUID): Flow<PagingData<Message>> =
         datasource.getAllPaged(config, contactId)
+
+    override suspend fun deleteAllMessages(contactId: UUID) {
+        datasource.deleteAllMessages(contactId)
+    }
 }

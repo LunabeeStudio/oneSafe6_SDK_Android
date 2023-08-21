@@ -25,14 +25,16 @@ import androidx.lifecycle.ViewModel
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.GetAllContactsUseCase
 import studio.lunabee.onesafe.bubbles.ui.onesafek.SelectContactViewModel
+import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCase
 import javax.inject.Inject
 
 class SelectContactViewModelFactory @Inject constructor(
     private val getEncryptedBubblesContactList: GetAllContactsUseCase,
     private val decryptForContactUseCase: ContactLocalDecryptUseCase,
+    private val getConversationStateUseCase: GetConversationStateUseCase,
 ) : AbstractSavedStateViewModelFactory() {
     override fun <T : ViewModel> create(key: String, modelClass: Class<T>, handle: SavedStateHandle): T {
         @Suppress("UNCHECKED_CAST")
-        return SelectContactViewModel(getEncryptedBubblesContactList, decryptForContactUseCase) as T
+        return SelectContactViewModel(getEncryptedBubblesContactList, decryptForContactUseCase, getConversationStateUseCase) as T
     }
 }

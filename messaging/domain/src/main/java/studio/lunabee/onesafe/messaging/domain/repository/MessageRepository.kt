@@ -28,6 +28,8 @@ import java.util.UUID
 interface MessageRepository {
     suspend fun save(message: Message, order: Float)
     suspend fun getAllByContact(contactId: UUID): List<Message>
+    suspend fun getLastMessage(contactId: UUID): Flow<Message?>
     suspend fun getByContactByOrder(contactId: UUID, order: Float): Message
     fun getAllPaged(config: PagingConfig, contactId: UUID): Flow<PagingData<Message>>
+    suspend fun deleteAllMessages(contactId: UUID)
 }

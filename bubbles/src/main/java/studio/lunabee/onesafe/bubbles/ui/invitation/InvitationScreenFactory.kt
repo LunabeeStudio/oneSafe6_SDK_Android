@@ -25,7 +25,6 @@ import studio.lunabee.onesafe.atom.OSClickableRow
 import studio.lunabee.onesafe.atom.OSIconDecorationButton
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.button.defaults.OSTextButtonDefaults
-import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.organism.card.OSMessageCard
@@ -33,14 +32,14 @@ import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 
 object InvitationScreenFactory {
     fun explanationCard(
-        contactName: OSNameProvider,
+        contactName: String,
         lazyListScope: LazyListScope,
     ) {
         lazyListScope.item {
             OSMessageCard(
                 description = LbcTextSpec.StringResource(
                     R.string.bubbles_invitationScreen_explanation,
-                    contactName.name,
+                    contactName,
                 ),
             )
         }

@@ -13,17 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 7/13/2023 - for the oneSafe6 SDK.
- * Last modified 13/07/2023 13:48
+ * Created by Lunabee Studio / Date - 8/17/2023 - for the oneSafe6 SDK.
+ * Last modified 17/08/2023 15:07
  */
 
-package studio.lunabee.onesafe.bubbles.ui.invitation
+package studio.lunabee.onesafe.bubbles.ui.model
 
-sealed interface InvitationUiState {
-    data class Data(
-        val contactName: String,
-        val invitationString: String,
-    ) : InvitationUiState
+import studio.lunabee.compose.core.LbcTextSpec
+import studio.lunabee.onesafe.commonui.OSNameProvider
+import java.util.UUID
 
-    object Exit : InvitationUiState
+data class BubblesConversationInfo(
+    val id: UUID,
+    val nameProvider: OSNameProvider,
+    val subtitle: ConversationSubtitle?,
+)
+
+sealed interface ConversationSubtitle {
+    data class Message(
+        val content: LbcTextSpec,
+    ) : ConversationSubtitle
+
+    data object NotReady : ConversationSubtitle
 }

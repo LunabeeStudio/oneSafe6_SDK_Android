@@ -70,7 +70,6 @@ fun ComposeMessageCard(
     sendIcon: OSImageSpec,
 ) {
     val embeddedKeyboardHeight: Dp = LocalKeyboardUiHeight.current
-
     Box(
         modifier = Modifier
             .background(OSColor.Neutral70)
@@ -98,7 +97,7 @@ fun ComposeMessageCard(
                 onValueChange = onPlainMessageChange,
                 modifier = Modifier
                     .fillMaxWidth(),
-                label = LbcTextSpec.StringResource(R.string.oneSafeK_composeMessageCard_label),
+                label = null,
                 placeholder = LbcTextSpec.StringResource(R.string.oneSafeK_composeMessageCard_label),
                 colors = TextFieldDefaults.colors(
                     unfocusedContainerColor = OSColor.Neutral80,
@@ -107,7 +106,8 @@ fun ComposeMessageCard(
                     unfocusedIndicatorColor = OSColor.Neutral80,
                     focusedTextColor = OSColor.Neutral10,
                     unfocusedTextColor = OSColor.Neutral10,
-                    focusedLabelColor = OSColor.Neutral80,
+                    unfocusedPlaceholderColor = OSColor.Neutral60,
+                    focusedLabelColor = OSColor.Neutral60,
                 ),
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions {

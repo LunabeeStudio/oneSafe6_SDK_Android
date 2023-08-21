@@ -32,8 +32,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import studio.lunabee.onesafe.atom.OSImageSpec
-import studio.lunabee.onesafe.bubbles.ui.app.BubbleDestination
-import studio.lunabee.onesafe.bubbles.ui.app.bubbleHomeGraph
+import studio.lunabee.onesafe.bubbles.ui.app.BubblesDestination
+import studio.lunabee.onesafe.bubbles.ui.app.bubblesHomeGraph
 import studio.lunabee.onesafe.bubbles.ui.barcode.ScanBarcodeDestination
 import studio.lunabee.onesafe.bubbles.ui.barcode.scanBarcodeDestination
 import studio.lunabee.onesafe.bubbles.ui.contact.detail.ContactDetailDestination
@@ -53,7 +53,6 @@ import studio.lunabee.onesafe.bubbles.ui.welcome.onBoardingBubblesGraph
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.extension.getTextSharingIntent
 import studio.lunabee.onesafe.commonui.navigation.OSDestination
-import studio.lunabee.onesafe.messaging.writemessage.composable.WriteMessageExitIcon
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageRoute
 import studio.lunabee.onesafe.messaging.writemessage.viewmodel.MessagingViewModel
@@ -63,8 +62,8 @@ fun NavGraphBuilder.messagingNavGraph(
     navController: NavController,
     navigateToOneSafeKSettings: () -> Unit,
 ) {
-    navigation(startDestination = BubbleDestination.route, route = MessagingDestination.route) {
-        bubbleHomeGraph(
+    navigation(startDestination = BubblesDestination.route, route = MessagingDestination.route) {
+        bubblesHomeGraph(
             navigateBack = navigateBack,
             navigateToContact = { contactId -> navController.navigate(ContactDetailDestination.getRoute(contactId)) },
             navigateToConversation = { contactId -> navController.navigate(WriteMessageDestination.getRoute(contactId)) },
@@ -87,14 +86,16 @@ fun NavGraphBuilder.messagingNavGraph(
             navigateBack = navigateBack,
             navigateToQrScan = { navController.navigate(ScanBarcodeDestination.route) },
             navigateToBubbleScreen = {
-                navController.navigate(BubbleDestination.route) { popUpTo(BubbleDestination.route) { inclusive = true } }
+                navController.navigate(BubblesDestination.route) { popUpTo(BubblesDestination.route) { inclusive = true } }
             },
         )
 
         invitationResponseGraph(
             navigateBack = navigateBack,
             navigateToConversation = { contactId ->
-                navController.navigate(WriteMessageDestination.getRoute(contactId))
+                navController.navigate(WriteMessageDestination.getRoute(contactId)) {
+                    popUpTo(BubblesDestination.route)
+                }
             },
         )
 
@@ -102,7 +103,7 @@ fun NavGraphBuilder.messagingNavGraph(
             navigateBack = navigateBack,
             navigateToInvitationScreen = {
                 navController.navigate(InvitationDestination.getRoute(it)) {
-                    popUpTo(BubbleDestination.route) { inclusive = false }
+                    popUpTo(BubblesDestination.route) { inclusive = false }
                 }
             },
         )
@@ -112,8 +113,8 @@ fun NavGraphBuilder.messagingNavGraph(
             navigateToInvitationResponseScreen = {
                 // pop self
                 navController.popBackStack()
-                // make sure we have bubble home in stack (deeplink case)
-                navController.navigate(BubbleDestination.route) {
+                // make sure we have bubbles home in stack (deeplink case)
+                navController.navigate(BubblesDestination.route) {
                     launchSingleTop = true
                 }
                 // don't use popUpTo so we handle both deeplink and standard nav
@@ -125,20 +126,20 @@ fun NavGraphBuilder.messagingNavGraph(
             navigateBack = navigateBack,
             navigateToCreateContact = {
                 navController.navigate(CreateContactFromInvitationDestination.getRoute(it)) {
-                    popUpTo(BubbleDestination.route) { inclusive = false }
+                    popUpTo(BubblesDestination.route) { inclusive = false }
                 }
             },
             navigateToConversation = { contactId ->
                 navController.navigate(WriteMessageDestination.getRoute(contactId)) {
-                    popUpTo(BubbleDestination.route) { inclusive = false }
+                    popUpTo(BubblesDestination.route) { inclusive = false }
                 }
             },
         )
 
         onBoardingBubblesGraph(
             navigateBack = navigateBack,
-            navigateToBubbleHome = {
-                navController.navigate(BubbleDestination.route) { popUpTo(OnBoardingBubblesDestination.route) { inclusive = true } }
+            navigateToBubblesHome = {
+                navController.navigate(BubblesDestination.route) { popUpTo(OnBoardingBubblesDestination.route) { inclusive = true } }
             },
         )
 
@@ -149,12 +150,12 @@ fun NavGraphBuilder.messagingNavGraph(
                 navigateBack = navigateBack,
                 navigateToCreateContactFromInvitation = { message ->
                     navController.navigate(CreateContactFromInvitationDestination.getRoute(message)) {
-                        popUpTo(BubbleDestination.route) { inclusive = false }
+                        popUpTo(BubblesDestination.route) { inclusive = false }
                     }
                 },
                 navigateToConversation = { contactId ->
                     navController.navigate(WriteMessageDestination.getRoute(contactId)) {
-                        popUpTo(BubbleDestination.route) { inclusive = false }
+                        popUpTo(BubblesDestination.route) { inclusive = false }
                     }
                 },
             )
@@ -172,11 +173,10 @@ fun NavGraphBuilder.messagingNavGraph(
                     context.startActivity(intent)
                 },
                 contactIdFlow = backStackEntry.savedStateHandle.getStateFlow(WriteMessageDestination.ContactIdArgs, null),
-                exitIcon = WriteMessageExitIcon.WriteMessageBackIcon(
-                    onClick = navigateBack,
-                ),
                 navigationToInvitation = { navController.navigate(InvitationDestination.getRoute(it)) },
                 sendIcon = OSImageSpec.Drawable(R.drawable.ic_share),
+                onBackClick = navigateBack,
+                navigateToContactDetail = { navController.navigate(ContactDetailDestination.getRoute(it)) },
             )
         }
     }

@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 7/13/2023 - for the oneSafe6 SDK.
- * Last modified 13/07/2023 13:48
+ * Created by Lunabee Studio / Date - 6/6/2023 - for the oneSafe6 SDK.
+ * Last modified 6/6/23, 3:09 PM
  */
 
-package studio.lunabee.onesafe.bubbles.ui.invitation
+package studio.lunabee.onesafe.domain.usecase.support
 
-sealed interface InvitationUiState {
-    data class Data(
-        val contactName: String,
-        val invitationString: String,
-    ) : InvitationUiState
+import studio.lunabee.onesafe.domain.repository.SupportOSRepository
+import javax.inject.Inject
 
-    object Exit : InvitationUiState
+class ResetLanguageConfigSupportUseCase @Inject constructor(
+    private val supportOSRepository: SupportOSRepository,
+) {
+    suspend operator fun invoke() {
+        supportOSRepository.markLanguageConfigAsHandled()
+    }
 }

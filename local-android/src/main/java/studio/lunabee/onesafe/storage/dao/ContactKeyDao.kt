@@ -32,5 +32,5 @@ interface ContactKeyDao {
     suspend fun insert(key: RoomContactKey)
 
     @Query("SELECT enc_value FROM ContactLocalKey WHERE contact_id = :contactId")
-    suspend fun getById(contactId: UUID): ContactLocalKey // FIXME nullable https://issuetracker.google.com/issues/281571241
+    suspend fun getById(contactId: UUID): ContactLocalKey?
 }

@@ -22,10 +22,7 @@ package studio.lunabee.onesafe.bubbles.ui.composables
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
-import studio.lunabee.onesafe.commonui.EmojiNameProvider
-import studio.lunabee.onesafe.model.OSItemIllustration
 import studio.lunabee.onesafe.model.OSLazyCardContent
-import studio.lunabee.onesafe.molecule.OSItemRow
 
 class ContactItemCardContent(
     private val contactInfo: BubblesContactInfo,
@@ -36,16 +33,10 @@ class ContactItemCardContent(
 
     @Composable
     override fun Content(padding: PaddingValues) {
-        val nameProvider = contactInfo.nameProvider
-        OSItemRow(
-            osItemIllustration = if (nameProvider is EmojiNameProvider) {
-                OSItemIllustration.Emoji(nameProvider.placeholderName, null)
-            } else {
-                OSItemIllustration.Text(nameProvider.placeholderName, null)
-            },
-            label = nameProvider.name,
-            paddingValues = padding,
+        ContactListCell(
+            bubblesContactInfo = contactInfo,
             onClick = onClick,
+            paddingValues = padding,
         )
     }
 }

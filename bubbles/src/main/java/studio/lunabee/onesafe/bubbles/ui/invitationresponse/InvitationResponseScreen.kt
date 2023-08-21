@@ -41,7 +41,6 @@ import studio.lunabee.onesafe.bubbles.ui.commoninvitation.CommonInvitationFactor
 import studio.lunabee.onesafe.bubbles.ui.extension.getDeepLinkFromMessage
 import studio.lunabee.onesafe.bubbles.ui.extension.toBarcodeBitmap
 import studio.lunabee.onesafe.bubbles.ui.invitation.InvitationUiState
-import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.action.TopAppBarOptionNavBack
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
@@ -49,6 +48,7 @@ import studio.lunabee.onesafe.commonui.extension.getTextSharingIntent
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
+import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import java.util.UUID
 
 @Composable
@@ -73,7 +73,7 @@ fun InvitationResponseRoute(
             }
             null -> OSScreen(testTag = "") { Box(modifier = Modifier.fillMaxSize()) }
             is InvitationUiState.Data -> {
-                val invitationLink = safeState.invitationString.getDeepLinkFromMessage()
+                val invitationLink = safeState.invitationString.getDeepLinkFromMessage(true)
                 InvitationResponseScreen(
                     onBackClick = navigateBack,
                     invitationLink = invitationLink,
@@ -93,13 +93,14 @@ fun InvitationResponseRoute(
 fun InvitationResponseScreen(
     onBackClick: () -> Unit,
     onShareInvitationClick: () -> Unit,
-    contactName: OSNameProvider,
+    contactName: String,
     invitationLink: String,
     onFinishClick: () -> Unit,
 ) {
     val invitationQr = remember(invitationLink) { invitationLink.toBarcodeBitmap() }
     OSScreen(
         testTag = UiConstants.TestTag.Screen.InvitationResponseScreen,
+        background = LocalDesignSystem.current.bubblesBackGround(),
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),

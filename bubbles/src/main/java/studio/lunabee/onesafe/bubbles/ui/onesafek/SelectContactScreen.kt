@@ -44,12 +44,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.OSScreen
-import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
+import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.localprovider.LocalKeyboardUiHeight
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
 import studio.lunabee.onesafe.extension.osShadowElevation
+import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.model.TopAppBarOptionNav
 import studio.lunabee.onesafe.molecule.OSTopAppBar
@@ -150,8 +151,8 @@ fun SelectContactScreenPreview() {
         SelectContactScreen(
             navigateBack = { },
             contacts = listOf(
-                BubblesContactInfo(UUID.randomUUID(), DefaultNameProvider("Rémi")),
-                BubblesContactInfo(UUID.randomUUID(), DefaultNameProvider("Florian")),
+                BubblesContactInfo(UUID.randomUUID(), DefaultNameProvider("Rémi"), ConversationState.FullySetup),
+                BubblesContactInfo(UUID.randomUUID(), DefaultNameProvider("Florian"), ConversationState.WaitingForReply),
             ),
             onClickOnContact = {},
         )

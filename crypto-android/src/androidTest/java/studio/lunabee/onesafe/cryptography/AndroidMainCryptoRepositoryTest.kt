@@ -319,7 +319,7 @@ class AndroidMainCryptoRepositoryTest {
     }
 
     @Test
-    fun bubble_contacts_key_not_set_if_feature_not_enabled_test(): TestResult = runTest {
+    fun bubbles_contacts_key_not_set_if_feature_not_enabled_test(): TestResult = runTest {
         loadMasterKey()
         val error = assertFailsWith<OSCryptoError> {
             this@AndroidMainCryptoRepositoryTest.repository.encryptBubbles(ByteArray(1))

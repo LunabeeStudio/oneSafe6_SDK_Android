@@ -22,7 +22,11 @@ package studio.lunabee.onesafe.support
 internal object SupportOSConstants {
     const val AppVisitKey: String = "36e45411-bdf7-4370-9c08-1db3cd42030b"
     const val AppVisitDefault: Int = 0
+    const val LanguageConfigCountDefault: Int = 0
 
     const val DismissTimeStampKey: String = "205a2f48-01bb-4ffc-92de-f60ed43777c1"
     const val RatingTimeStampKey: String = "3a68c5d9-0233-4e93-927d-a9fe88843fd0"
+    const val LastLanguageConfigKey: String = "afd53b20-36a8-11ee-be56-0242ac120002"
+    const val LanguageConfigCountKey: String = "c009b21e-36a8-11ee-be56-0242ac120002"
+    const val HasLanguageConfigBeenHandled: String = "cbdc6e7d-cb5a-47bc-a558-5a85a95dc827"
 }

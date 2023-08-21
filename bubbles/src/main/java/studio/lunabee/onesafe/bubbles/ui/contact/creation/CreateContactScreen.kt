@@ -44,6 +44,7 @@ import studio.lunabee.onesafe.model.OSItemIllustration
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
+import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import timber.log.Timber
 import java.util.UUID
 
@@ -114,9 +115,12 @@ fun CreateContactScreen(
 ) {
     OSScreen(
         testTag = UiConstants.TestTag.Screen.CreateContactScreen,
+        background = LocalDesignSystem.current.bubblesBackGround(),
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().imePadding(),
+            modifier = Modifier
+                .fillMaxSize()
+                .imePadding(),
         ) {
             OSTopAppBar(
                 title = type.title,

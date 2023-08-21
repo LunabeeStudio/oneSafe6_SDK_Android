@@ -30,12 +30,14 @@ import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.GetAllContactsUseCase
 import studio.lunabee.onesafe.bubbles.ui.extension.getNameProvider
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
+import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class SelectContactViewModel @Inject constructor(
     getEncryptedBubblesContactList: GetAllContactsUseCase,
     contactLocalDecryptUseCase: ContactLocalDecryptUseCase,
+    private val getConversationStateUseCase: GetConversationStateUseCase,
 ) : ViewModel() {
 
     private val _contacts = MutableStateFlow<List<BubblesContactInfo>?>(null)
@@ -49,6 +51,7 @@ class SelectContactViewModel @Inject constructor(
                     BubblesContactInfo(
                         id = contact.id,
                         nameProvider = decryptedNameResult.getNameProvider(),
+                        conversationState = getConversationStateUseCase(contact.id),
                     )
                 }
             }

@@ -35,4 +35,5 @@ interface ContactLocalDataSource {
     suspend fun addContactSharedKey(id: UUID, sharedKey: ContactSharedKey)
     suspend fun deleteContact(id: UUID)
     suspend fun updateIsUsingDeeplink(id: UUID, encIsUsingDeeplink: ByteArray, updateAt: Instant)
+    suspend fun updateUpdatedAt(id: UUID, updateAt: Instant)
 }

@@ -13,17 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 7/13/2023 - for the oneSafe6 SDK.
- * Last modified 13/07/2023 13:48
+ * Created by Lunabee Studio / Date - 7/20/2023 - for the oneSafe6 SDK.
+ * Last modified 20/07/2023 15:49
  */
 
-package studio.lunabee.onesafe.bubbles.ui.invitation
+package studio.lunabee.onesafe.bubbles.domain
 
-sealed interface InvitationUiState {
-    data class Data(
-        val contactName: String,
-        val invitationString: String,
-    ) : InvitationUiState
-
-    object Exit : InvitationUiState
+object BubblesConstant {
+    // Used to determine that the message is the invitation response message
+    const val FirstMessageData: String = "c08b1cb8-3a94-4e9a-af30-6677053b7a60"
 }
