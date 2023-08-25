@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.messaging.ui
 
+import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -61,6 +62,7 @@ fun NavGraphBuilder.messagingNavGraph(
     navigateBack: () -> Unit,
     navController: NavController,
     navigateToOneSafeKSettings: () -> Unit,
+    showSnackbar: (visuals: SnackbarVisuals) -> Unit,
 ) {
     navigation(startDestination = BubblesDestination.route, route = MessagingDestination.route) {
         bubblesHomeGraph(
@@ -134,6 +136,7 @@ fun NavGraphBuilder.messagingNavGraph(
                     popUpTo(BubblesDestination.route) { inclusive = false }
                 }
             },
+            showSnackbar = showSnackbar,
         )
 
         onBoardingBubblesGraph(

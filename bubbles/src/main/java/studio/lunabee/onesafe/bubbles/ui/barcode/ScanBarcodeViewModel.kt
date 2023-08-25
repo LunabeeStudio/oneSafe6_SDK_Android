@@ -85,10 +85,6 @@ class ScanBarcodeViewModel @Inject constructor(
         }
     }
 
-    fun resetUiState() {
-        _uiResultState.value = ScanBarcodeUiState.Idle
-    }
-
     private fun dismissDialog() {
         _dialogState.value = null
     }
