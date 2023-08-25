@@ -23,10 +23,12 @@ import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
+import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import studio.lunabee.onesafe.error.OSError
 import java.util.UUID
 import javax.inject.Inject
 import kotlin.reflect.KClass
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Decrypt any item or item field data
@@ -34,10 +36,11 @@ import kotlin.reflect.KClass
 class ItemDecryptUseCase @Inject constructor(
     private val cryptoRepository: MainCryptoRepository,
     private val safeItemKeyRepository: SafeItemKeyRepository,
+    private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
 ) {
 
     /**
-     * Decrypt the raw encrypted data to type [Data]
+     * Decrypt the raw encrypted data to type [Data]. If the crypto stuff is not loaded, wait 500ms before returning an error.
      *
      * @param data The data to decrypt
      * @param itemId The ID of the linked item
@@ -48,6 +51,7 @@ class ItemDecryptUseCase @Inject constructor(
     suspend operator fun <Data : Any> invoke(data: ByteArray, itemId: UUID, clazz: KClass<Data>): LBResult<Data> {
         return OSError.runCatching {
             val key = safeItemKeyRepository.getSafeItemKey(itemId)
+            isCryptoDataReadyInMemoryUseCase.wait(500.milliseconds)
             cryptoRepository.decrypt(key, DecryptEntry(data, clazz))
         }
     }

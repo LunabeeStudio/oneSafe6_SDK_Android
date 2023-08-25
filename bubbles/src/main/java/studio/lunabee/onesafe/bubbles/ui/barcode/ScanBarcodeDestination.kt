@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.bubbles.ui.barcode
 
+import androidx.compose.material3.SnackbarVisuals
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import studio.lunabee.onesafe.commonui.navigation.OSDestination
@@ -32,6 +33,7 @@ fun NavGraphBuilder.scanBarcodeDestination(
     navigateBack: () -> Unit,
     navigateToCreateContact: (String) -> Unit,
     navigateToConversation: (UUID) -> Unit,
+    showSnackbar: (visuals: SnackbarVisuals) -> Unit,
 ) {
     composable(
         route = ScanBarcodeDestination.route,
@@ -40,6 +42,7 @@ fun NavGraphBuilder.scanBarcodeDestination(
             navigateBack = navigateBack,
             navigateToCreateContact = navigateToCreateContact,
             navigateToConversation = navigateToConversation,
+            showSnackbar = showSnackbar,
         )
     }
 }

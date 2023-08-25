@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.bubbles.ui.barcode
 
+import android.Manifest
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -27,9 +28,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,14 +47,17 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import com.journeyapps.barcodescanner.BarcodeResult
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
+import studio.lunabee.onesafe.commonui.dialog.DialogState
+import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.model.TopAppBarOptionNav
 import studio.lunabee.onesafe.molecule.OSTopAppBar
@@ -56,33 +65,15 @@ import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
 import java.util.UUID
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ScanBarcodeRoute(
     navigateBack: () -> Unit,
     navigateToCreateContact: (String) -> Unit,
     navigateToConversation: (UUID) -> Unit,
+    showSnackbar: (visuals: SnackbarVisuals) -> Unit,
     viewModel: ScanBarcodeViewModel = hiltViewModel(),
 ) {
-    val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
-    when (cameraPermissionState.status) {
-        PermissionStatus.Granted -> {
-            ScanBarcodeScreen(
-                onCloseClick = navigateBack,
-                onBarcodeScan = viewModel::handleQrCode,
-            )
-        }
-        is PermissionStatus.Denied -> {
-            LaunchedEffect(Unit) {
-                cameraPermissionState.launchPermissionRequest()
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black),
-            )
-        }
-    }
+    CameraPermission(navigateBack, viewModel, showSnackbar)
 
     val dialogState by viewModel.dialogState.collectAsStateWithLifecycle()
     val uiState by viewModel.uiResultState.collectAsStateWithLifecycle()
@@ -95,6 +86,62 @@ fun ScanBarcodeRoute(
         }
         is ScanBarcodeUiState.NavigateToCreateContact -> {
             LaunchedEffect(Unit) { navigateToCreateContact(safeUiState.messageString) }
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalPermissionsApi::class)
+private fun CameraPermission(
+    navigateBack: () -> Unit,
+    viewModel: ScanBarcodeViewModel,
+    showSnackbar: (visuals: SnackbarVisuals) -> Unit,
+) {
+    var permissionDialogState: DialogState? by remember { mutableStateOf(null) }
+    permissionDialogState?.DefaultAlertDialog()
+    val deniedFeedbackSnackbar =
+        ErrorSnackbarState(
+            message = LbcTextSpec.StringResource(R.string.bubbles_scanbarcodeScreen_permission_deniedFeedback),
+            onClick = {},
+        ).snackbarVisuals
+
+    var hasRequested: Int by remember {
+        mutableIntStateOf(0)
+    }
+
+    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA) {
+        hasRequested++ // re-trigger permission state check & request
+    }
+
+    if (cameraPermissionState.status.isGranted) {
+        ScanBarcodeScreen(
+            onCloseClick = navigateBack,
+            onBarcodeScan = viewModel::handleQrCode,
+        )
+    } else {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black),
+        )
+        LaunchedEffect(hasRequested) {
+            when {
+                cameraPermissionState.status.shouldShowRationale -> {
+                    permissionDialogState = CameraScanPermissionRationaleDialogState(
+                        launchPermissionRequest = {
+                            cameraPermissionState.launchPermissionRequest()
+                            permissionDialogState = null
+                        },
+                        retry = { permissionDialogState = null },
+                        dismiss = navigateBack,
+                    )
+                }
+                hasRequested == 0 -> cameraPermissionState.launchPermissionRequest()
+                else -> {
+                    showSnackbar(deniedFeedbackSnackbar)
+                    navigateBack()
+                }
+            }
         }
     }
 }

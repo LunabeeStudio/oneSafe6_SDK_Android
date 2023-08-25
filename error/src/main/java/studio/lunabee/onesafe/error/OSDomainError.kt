@@ -40,5 +40,6 @@ data class OSDomainError(
         HAND_SHAKE_DATA_NOT_FOUND("The hand shake data required is missing and shouldn't be"),
         WRONG_CONTACT("this message is not for this contact"),
         NOT_AN_INVITATION_MESSAGE("this message is not an invitation message"),
+        CRYPTO_NOT_READY_TIMEOUT("Time out on waiting for cryptographic keys to be loaded in memory"),
     }
 }
