@@ -76,4 +76,8 @@ class ContactLocalDataSourceImpl @Inject constructor(
     override suspend fun updateUpdatedAt(id: UUID, updateAt: Instant) {
         dao.updateUpdatedAt(id, updateAt)
     }
+
+    override suspend fun updateContact(id: UUID, encIsUsingDeeplink: ByteArray, encName: ByteArray, updateAt: Instant) {
+        dao.updateContact(id, encIsUsingDeeplink, encName, updateAt)
+    }
 }

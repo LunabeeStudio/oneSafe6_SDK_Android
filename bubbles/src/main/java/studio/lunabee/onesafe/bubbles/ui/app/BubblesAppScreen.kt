@@ -19,14 +19,17 @@
 
 package studio.lunabee.onesafe.bubbles.ui.app
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -48,6 +51,7 @@ import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import java.util.UUID
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BubblesAppRoute(
     navigateBack: () -> Unit,
@@ -61,9 +65,19 @@ fun BubblesAppRoute(
 ) {
     val contacts by viewModel.contacts.collectAsStateWithLifecycle()
     val conversation: List<BubblesConversationInfo>? by viewModel.conversation.collectAsStateWithLifecycle()
-    val tabs = remember { BubblesTab.values().toList() }
-    var selectedTab by rememberSaveable(contacts) {
-        mutableStateOf(if (contacts?.isEmpty() == true) tabs[1] else tabs[0])
+    var currentPage by rememberSaveable(contacts) {
+        mutableIntStateOf(if (contacts?.isEmpty() == true) 1 else 0)
+    }
+    val pagerState = rememberPagerState(
+        initialPage = 0,
+        initialPageOffsetFraction = 0f,
+        pageCount = { BubblesTab.values().size },
+    )
+    LaunchedEffect(currentPage) {
+        pagerState.animateScrollToPage(currentPage)
+    }
+    LaunchedEffect(pagerState.currentPage) {
+        currentPage = pagerState.currentPage
     }
 
     OSScreen(
@@ -79,39 +93,44 @@ fun BubblesAppRoute(
             )
             OSTabs(
                 titles = BubblesTab.values().map { it.title to it.title },
-                selectedTabIndex = tabs.indexOf(selectedTab),
+                selectedTabIndex = currentPage,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = OSDimens.SystemSpacing.Small),
-                onTabSelected = { idx -> selectedTab = (tabs.elementAt(idx)) },
+                onTabSelected = { idx -> currentPage = idx },
             )
-            when (selectedTab) {
-                BubblesTab.Conversation -> {
-                    if (contacts?.isEmpty() == true) {
-                        AppEmptyConversationScreen()
-                    } else {
-                        AppFilledConversationScreen(
-                            contacts = conversation ?: listOf(),
-                            onConversationClick = navigateToConversation,
-                            onDecryptClick = navigateToDecryptMessage,
-                            onSettingClick = navigateToSettings,
-                            isOSKShown = viewModel.osFeatureFlags.oneSafeK(),
-                        )
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize(),
+            ) { pageNumber ->
+                when (pageNumber) {
+                    0 -> {
+                        if (contacts?.isEmpty() == true) {
+                            AppEmptyConversationScreen()
+                        } else {
+                            AppFilledConversationScreen(
+                                contacts = conversation ?: listOf(),
+                                onConversationClick = navigateToConversation,
+                                onDecryptClick = navigateToDecryptMessage,
+                                onSettingClick = navigateToSettings,
+                                isOSKShown = viewModel.osFeatureFlags.oneSafeK(),
+                            )
+                        }
                     }
-                }
-                BubblesTab.Contacts -> {
-                    if (contacts?.isEmpty() == true) {
-                        EmptyContactsScreen(
-                            onAddContactClick = navigateToCreateContact,
-                            onScanClick = navigateToQrScan,
-                        )
-                    } else {
-                        FilledContactsScreen(
-                            onAddContactClick = navigateToCreateContact,
-                            onScanClick = navigateToQrScan,
-                            contacts = contacts ?: listOf(),
-                            onContactClick = navigateToContact,
-                        )
+                    1 -> {
+                        if (contacts?.isEmpty() == true) {
+                            EmptyContactsScreen(
+                                onAddContactClick = navigateToCreateContact,
+                                onScanClick = navigateToQrScan,
+                            )
+                        } else {
+                            FilledContactsScreen(
+                                onAddContactClick = navigateToCreateContact,
+                                onScanClick = navigateToQrScan,
+                                contacts = contacts ?: listOf(),
+                                onContactClick = navigateToContact,
+                            )
+                        }
                     }
                 }
             }

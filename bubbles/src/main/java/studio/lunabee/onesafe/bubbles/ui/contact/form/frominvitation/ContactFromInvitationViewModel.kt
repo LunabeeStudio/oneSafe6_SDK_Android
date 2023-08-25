@@ -17,18 +17,16 @@
  * Last modified 17/07/2023 10:59
  */
 
-package studio.lunabee.onesafe.bubbles.ui.contact.frominvitation
+package studio.lunabee.onesafe.bubbles.ui.contact.form.frominvitation
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.lunabee.lbcore.model.LBResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import studio.lunabee.onesafe.bubbles.ui.contact.creation.CreateContactViewModel
+import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormDelegate
+import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormViewModel
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.messaging.domain.usecase.AcceptInvitationUseCase
@@ -38,11 +36,14 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 @HiltViewModel
-class CreateContactFromInvitationViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val acceptInvitationUseCase: AcceptInvitationUseCase,
-) : ViewModel(), CreateContactViewModel {
+class ContactFromInvitationViewModel @Inject constructor(
+    createContactFromInvitationDelegate: CreateContactFromInvitationDelegate,
+) : ContactFormViewModel(createContactFromInvitationDelegate)
 
+class CreateContactFromInvitationDelegate @Inject constructor(
+    private val acceptInvitationUseCase: AcceptInvitationUseCase,
+    savedStateHandle: SavedStateHandle,
+) : ContactFormDelegate {
     private val messageString: String = savedStateHandle.get<String>(CreateContactFromInvitationDestination.MessageString)
         ?: error("Missing message string in args")
 
@@ -50,17 +51,12 @@ class CreateContactFromInvitationViewModel @Inject constructor(
     override val createInvitationResult: StateFlow<LBResult<UUID>?> = _createInvitationResult.asStateFlow()
 
     @OptIn(ExperimentalEncodingApi::class)
-    override fun createContact(
-        contactName: String,
-        isUsingDeeplink: Boolean,
-    ) {
-        viewModelScope.launch {
-            _createInvitationResult.value = OSError.runCatching {
-                try {
-                    acceptInvitationUseCase(contactName, isUsingDeeplink, Base64.decode(messageString))
-                } catch (e: IllegalArgumentException) {
-                    throw OSDomainError(OSDomainError.Code.DECRYPT_MESSAGE_NOT_BASE64)
-                }
+    override suspend fun saveContact(contactName: String, isUsingDeeplink: Boolean) {
+        _createInvitationResult.value = OSError.runCatching {
+            try {
+                acceptInvitationUseCase(contactName, isUsingDeeplink, Base64.decode(messageString))
+            } catch (e: IllegalArgumentException) {
+                throw OSDomainError(OSDomainError.Code.DECRYPT_MESSAGE_NOT_BASE64)
             }
         }
     }

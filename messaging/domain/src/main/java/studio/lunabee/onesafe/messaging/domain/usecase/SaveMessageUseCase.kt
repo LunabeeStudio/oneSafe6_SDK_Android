@@ -34,6 +34,7 @@ import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.messaging.domain.MessageOrderCalculator
 import studio.lunabee.onesafe.messaging.domain.model.Message
 import studio.lunabee.onesafe.messaging.domain.model.MessageDirection
+import studio.lunabee.onesafe.messaging.domain.model.OSPlainMessage
 import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
 import java.time.Instant
 import java.util.UUID
@@ -51,17 +52,16 @@ class SaveMessageUseCase @Inject constructor(
     private val messageOrderCalculator: MessageOrderCalculator,
 ) {
     suspend operator fun invoke(
-        plainMessage: String,
-        sentAt: Instant,
+        plainMessage: OSPlainMessage,
         contactId: UUID,
-        recipientId: UUID,
         channel: String?,
-    ): LBResult<Unit> = OSError.runCatching {
+        id: UUID,
+    ): LBResult<Float> = OSError.runCatching {
         mutex.withLock {
-            val recipient = getContactUseCase(recipientId).first()
+            val recipient = getContactUseCase(plainMessage.recipientId).first()
             val key = contactKeyRepository.getContactLocalKey(contactId)
-            val encContent = bubblesCryptoRepository.localEncrypt(key, EncryptEntry(plainMessage))
-            val encSentAt = bubblesCryptoRepository.localEncrypt(key, EncryptEntry(sentAt))
+            val encContent = bubblesCryptoRepository.localEncrypt(key, EncryptEntry(plainMessage.content))
+            val encSentAt = bubblesCryptoRepository.localEncrypt(key, EncryptEntry(plainMessage.sentAt))
             val encChannel = channel?.let { bubblesCryptoRepository.localEncrypt(key, EncryptEntry(channel)) }
 
             // Test if we know the recipientId (= we are the sender)
@@ -72,6 +72,7 @@ class SaveMessageUseCase @Inject constructor(
             }
 
             val message = Message(
+                id = id,
                 fromContactId = contactId,
                 encSentAt = encSentAt,
                 encContent = encContent,
@@ -79,23 +80,25 @@ class SaveMessageUseCase @Inject constructor(
                 encChannel = encChannel,
             )
 
-            val orderResult = messageOrderCalculator.invoke(sentAt, contactId, key)
+            val orderResult: MessageOrderCalculator.OrderResult = messageOrderCalculator.invoke(plainMessage.sentAt, contactId, key)
 
-            when (orderResult) {
+            return@withLock when (orderResult) {
                 is MessageOrderCalculator.OrderResult.Found -> {
                     messageRepository.save(message, orderResult.order)
                     contactRepository.updateUpdatedAt(contactId, Instant.now())
+                    orderResult.order
                 }
                 is MessageOrderCalculator.OrderResult.Duplicated -> {
                     // If we have 2 messages with the same sentAt value, make sure this is a duplicate and return a failure (or save it)
                     val dupMessage = messageRepository.getByContactByOrder(contactId, orderResult.duplicatedOrder)
                     val dupContent = bubblesCryptoRepository.localDecrypt(key, DecryptEntry(dupMessage.encContent, String::class))
 
-                    if (dupContent == plainMessage) {
+                    if (dupContent == plainMessage.content) {
                         throw OSDomainError(OSDomainError.Code.DUPLICATED_MESSAGE)
                     } else {
                         messageRepository.save(message, orderResult.candidateOrder)
                     }
+                    orderResult.candidateOrder
                 }
             }
         }

@@ -26,6 +26,7 @@ import studio.lunabee.onesafe.test.testUUIDs
 import java.util.UUID
 
 suspend fun MessageDao.insert(
+    id: UUID,
     contactId: UUID = testUUIDs[0],
     encSentAt: ByteArray = byteArrayOf(),
     encContent: ByteArray = byteArrayOf(),
@@ -35,6 +36,7 @@ suspend fun MessageDao.insert(
 ) {
     insert(
         RoomMessage(
+            id = id,
             contactId = contactId,
             encSentAt = encSentAt,
             encContent = encContent,

@@ -13,22 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-<<<<<<<< HEAD:bubbles/src/main/java/studio/lunabee/onesafe/bubbles/ui/contact/creation/CreateContactViewModel.kt
- * Created by Lunabee Studio / Date - 7/13/2023 - for the oneSafe6 SDK.
- * Last modified 13/07/2023 11:34
+ * Created by Lunabee Studio / Date - 8/23/2023 - for the oneSafe6 SDK.
+ * Last modified 23/08/2023 13:14
  */
 
-package studio.lunabee.onesafe.bubbles.ui.contact.creation
+package studio.lunabee.messaging.repository.datasource
 
-import com.lunabee.lbcore.model.LBResult
-import kotlinx.coroutines.flow.StateFlow
+import studio.lunabee.onesafe.messaging.domain.model.SentMessage
 import java.util.UUID
 
-interface CreateContactViewModel {
-    val createInvitationResult: StateFlow<LBResult<UUID>?>
-
-    fun createContact(
-        contactName: String,
-        isUsingDeeplink: Boolean,
-    )
+interface SentMessageLocalDatasource {
+    suspend fun saveSentMessage(sentMessage: SentMessage)
+    suspend fun getSentMessage(id: UUID): SentMessage?
+    suspend fun deleteSentMessage(id: UUID)
+    suspend fun getOldestSentMessage(): SentMessage?
 }

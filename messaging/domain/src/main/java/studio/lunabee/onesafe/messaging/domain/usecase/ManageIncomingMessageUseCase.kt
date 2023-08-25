@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.messaging.domain.usecase
 import com.google.protobuf.InvalidProtocolBufferException
 import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.bubbles.domain.model.Contact
+import studio.lunabee.onesafe.domain.common.MessageIdProvider
 import studio.lunabee.onesafe.messagecompanion.OSMessage
 import studio.lunabee.onesafe.messaging.domain.model.OSPlainMessage
 import javax.inject.Inject
@@ -32,6 +33,7 @@ import javax.inject.Inject
 class ManageIncomingMessageUseCase @Inject constructor(
     private val decryptIncomingMessageUseCase: DecryptIncomingMessageUseCase,
     private val saveMessageUseCase: SaveMessageUseCase,
+    private val messageIdProvider: MessageIdProvider,
 ) {
     suspend operator fun invoke(data: ByteArray, channel: String?): LBResult<ManagingIncomingMessageResultData> {
         return if (tryParseInvitationMessage(data)) {
@@ -44,11 +46,10 @@ class ManageIncomingMessageUseCase @Inject constructor(
                     val contact = result.successData.first
                     message?.let {
                         saveMessageUseCase(
-                            plainMessage = message.content,
-                            sentAt = message.sentAt,
+                            plainMessage = message,
                             contactId = contact.id,
-                            recipientId = message.recipientId,
                             channel = channel,
+                            id = messageIdProvider(),
                         )
                     }
                     LBResult.Success(ManagingIncomingMessageResultData.Message(result.successData))

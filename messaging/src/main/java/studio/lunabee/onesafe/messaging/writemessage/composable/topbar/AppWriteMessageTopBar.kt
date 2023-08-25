@@ -64,6 +64,8 @@ fun AppWriteMessageTopBar(
     onBack: () -> Unit,
     onSeeContactClick: () -> Unit,
     onDeleteAllMessagesClick: () -> Unit,
+    onHideConversationClick: () -> Unit,
+    isConversationHidden: Boolean,
 ) {
     val illustration: OSItemIllustration by remember(contactNameProvider) {
         mutableStateOf(OSItemIllustrationHelper.get(contactNameProvider))
@@ -127,6 +129,11 @@ fun AppWriteMessageTopBar(
                     isActionMenuExpanded = false
                     onDeleteAllMessagesClick()
                 },
+                onHideConversation = {
+                    isActionMenuExpanded = false
+                    onHideConversationClick()
+                },
+                isConversationHidden = isConversationHidden,
             )
         }
     }
@@ -141,6 +148,8 @@ fun AppWriteMessageTopBarPreview() {
             onBack = {},
             onSeeContactClick = {},
             onDeleteAllMessagesClick = {},
+            onHideConversationClick = {},
+            isConversationHidden = true,
         )
     }
 }

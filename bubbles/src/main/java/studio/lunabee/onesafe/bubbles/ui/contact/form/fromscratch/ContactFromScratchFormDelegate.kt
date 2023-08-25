@@ -17,38 +17,35 @@
  * Last modified 17/07/2023 10:45
  */
 
-package studio.lunabee.onesafe.bubbles.ui.contact.fromscratch
+package studio.lunabee.onesafe.bubbles.ui.contact.form.fromscratch
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.lunabee.lbcore.model.LBResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import studio.lunabee.onesafe.bubbles.ui.contact.creation.CreateContactViewModel
+import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormDelegate
+import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormViewModel
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.messaging.domain.usecase.CreateInvitationUseCase
 import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
-class CreateContactFromScratchViewModel @Inject constructor(
+class ContactFromScratchFormDelegate @Inject constructor(
+    contactCreationFromScratchDelegate: ContactCreationFromScratchDelegate,
+) : ContactFormViewModel(contactCreationFromScratchDelegate)
+
+class ContactCreationFromScratchDelegate @Inject constructor(
     private val createInvitationUseCase: CreateInvitationUseCase,
-) : ViewModel(), CreateContactViewModel {
+) : ContactFormDelegate {
 
     private val _createInvitationResult: MutableStateFlow<LBResult<UUID>?> = MutableStateFlow(null)
     override val createInvitationResult: StateFlow<LBResult<UUID>?> = _createInvitationResult.asStateFlow()
 
-    override fun createContact(
-        contactName: String,
-        isUsingDeeplink: Boolean,
-    ) {
-        viewModelScope.launch {
-            _createInvitationResult.value = OSError.runCatching {
-                createInvitationUseCase(contactName, isUsingDeeplink)
-            }
+    override suspend fun saveContact(contactName: String, isUsingDeeplink: Boolean) {
+        _createInvitationResult.value = OSError.runCatching {
+            createInvitationUseCase(contactName, isUsingDeeplink)
         }
     }
 }

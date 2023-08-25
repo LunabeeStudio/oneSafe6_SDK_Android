@@ -27,6 +27,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import studio.lunabee.onesafe.storage.extension.insert
+import studio.lunabee.onesafe.test.testUUIDs
 import java.util.UUID
 import javax.inject.Inject
 import kotlin.test.assertEquals
@@ -58,12 +59,12 @@ class MessageDaoTest {
         contactDao.insert(id = contactId)
         contactDao.insert(id = contactId2)
 
-        dao.insert(contactId = contactId, order = expectedOrder[0])
-        dao.insert(contactId = contactId2, order = expectedOrder[0])
-        dao.insert(contactId = contactId2, order = expectedOrder[2])
-        dao.insert(contactId = contactId2, order = expectedOrder[1])
-        dao.insert(contactId = contactId, order = expectedOrder[2])
-        dao.insert(contactId = contactId, order = expectedOrder[1])
+        dao.insert(id = testUUIDs[0], contactId = contactId, order = expectedOrder[0])
+        dao.insert(id = testUUIDs[1], contactId = contactId2, order = expectedOrder[0])
+        dao.insert(id = testUUIDs[2], contactId = contactId2, order = expectedOrder[2])
+        dao.insert(id = testUUIDs[3], contactId = contactId2, order = expectedOrder[1])
+        dao.insert(id = testUUIDs[4], contactId = contactId, order = expectedOrder[2])
+        dao.insert(id = testUUIDs[5], contactId = contactId, order = expectedOrder[1])
 
         val actualOrder = Array<Float?>(4) { null }
         actualOrder[0] = dao.getMessageOrderAtByContact(0, contactId)?.order

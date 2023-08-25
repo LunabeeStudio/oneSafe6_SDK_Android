@@ -17,7 +17,7 @@
  * Last modified 17/07/2023 10:31
  */
 
-package studio.lunabee.onesafe.bubbles.ui.contact.frominvitation
+package studio.lunabee.onesafe.bubbles.ui.contact.form.frominvitation
 
 import android.net.Uri
 import androidx.navigation.NavGraphBuilder

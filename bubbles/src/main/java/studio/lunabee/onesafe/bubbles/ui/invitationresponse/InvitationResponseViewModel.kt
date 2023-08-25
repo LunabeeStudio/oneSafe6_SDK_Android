@@ -38,10 +38,13 @@ import studio.lunabee.onesafe.bubbles.ui.invitation.InvitationUiState
 import studio.lunabee.onesafe.commonui.dialog.DialogAction
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.dialog.ErrorDialogState
+import studio.lunabee.onesafe.domain.common.MessageIdProvider
 import studio.lunabee.onesafe.error.OSError
+import studio.lunabee.onesafe.messaging.domain.model.OSPlainMessage
 import studio.lunabee.onesafe.messaging.domain.usecase.EncryptMessageUseCase
 import studio.lunabee.onesafe.messaging.domain.usecase.GetSendMessageDataUseCase
 import studio.lunabee.onesafe.messaging.domain.usecase.SaveMessageUseCase
+import studio.lunabee.onesafe.messaging.domain.usecase.SaveSentMessageUseCase
 import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
@@ -53,6 +56,8 @@ class InvitationResponseViewModel @Inject constructor(
     private val contactLocalDecryptUseCase: ContactLocalDecryptUseCase,
     private val encryptMessageUseCase: EncryptMessageUseCase,
     private val saveMessageUseCase: SaveMessageUseCase,
+    private val saveSentMessageUseCase: SaveSentMessageUseCase,
+    private val messageIdProvider: MessageIdProvider,
     settings: OSAppSettings,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -84,7 +89,7 @@ class InvitationResponseViewModel @Inject constructor(
                         contactName = decryptedNameResult.data.orEmpty(),
                     )
                     if (isFirstMessage) {
-                        saveMessageInDatabase()
+                        saveMessageInDatabase(message)
                     }
                 }
             } catch (error: OSError) {
@@ -117,15 +122,28 @@ class InvitationResponseViewModel @Inject constructor(
         }
     }
 
-    private fun saveMessageInDatabase() {
+    private fun saveMessageInDatabase(messageData: String) {
         viewModelScope.launch {
-            saveMessageUseCase(
-                plainMessage = BubblesConstant.FirstMessageData,
-                sentAt = Instant.now(),
+            val messageId = messageIdProvider()
+            val messageOrder = saveMessageUseCase(
+                plainMessage = OSPlainMessage(
+                    content = BubblesConstant.FirstMessageData,
+                    recipientId = contactId,
+                    sentAt = Instant.now(),
+                ),
                 contactId = contactId,
-                recipientId = contactId,
                 channel = null,
-            )
+                id = messageId,
+            ).data
+            messageOrder?.let {
+                saveSentMessageUseCase.invoke(
+                    contactId = contactId,
+                    id = messageId,
+                    messageString = messageData,
+                    createdAt = Instant.now(),
+                    order = messageOrder,
+                )
+            }
         }
     }
 

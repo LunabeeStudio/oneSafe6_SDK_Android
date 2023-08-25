@@ -35,12 +35,14 @@ object ContactDetailDestination : OSDestination {
     ): String = route.replace("{$ContactIdArgs}", contactId.toString())
 }
 
+@Suppress("LongParameterList")
 fun NavGraphBuilder.contactDetailGraph(
     navigateBack: () -> Unit,
     navigateToConversation: (UUID) -> Unit,
     navigateToInvitationScreen: (UUID) -> Unit,
     navigateToResponseScreen: (UUID) -> Unit,
     navigateToScanBarcodeScreen: () -> Unit,
+    navigateToContactEdition: (UUID) -> Unit,
 ) {
     composable(
         route = ContactDetailDestination.route,
@@ -56,6 +58,7 @@ fun NavGraphBuilder.contactDetailGraph(
             navigateToInvitationScreen = navigateToInvitationScreen,
             navigateToResponseScreen = navigateToResponseScreen,
             navigateToScanBarcodeScreen = navigateToScanBarcodeScreen,
+            navigateToContactEdition = navigateToContactEdition,
         )
     }
 }

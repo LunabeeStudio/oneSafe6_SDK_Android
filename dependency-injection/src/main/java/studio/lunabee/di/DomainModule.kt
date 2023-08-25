@@ -32,6 +32,7 @@ import studio.lunabee.doubleratchet.crypto.DoubleRatchetKeyRepository
 import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
 import studio.lunabee.onesafe.domain.common.IconIdProvider
 import studio.lunabee.onesafe.domain.common.ItemIdProvider
+import studio.lunabee.onesafe.domain.common.MessageIdProvider
 import studio.lunabee.onesafe.domain.common.UuidProvider
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
@@ -78,6 +79,9 @@ object GlobalDomainModule {
 
     @Provides
     fun provideIconIdProvider(): IconIdProvider = UuidProvider()
+
+    @Provides
+    fun provideMessageIdProvider(): MessageIdProvider = UuidProvider()
 
     @Provides
     @FileDispatcher

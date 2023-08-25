@@ -37,6 +37,7 @@ import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
 import studio.lunabee.messaging.repository.datasource.EnqueuedMessageLocalDataSource
 import studio.lunabee.messaging.repository.datasource.HandShakeDataLocalDatasource
 import studio.lunabee.messaging.repository.datasource.MessageLocalDataSource
+import studio.lunabee.messaging.repository.datasource.SentMessageLocalDatasource
 import studio.lunabee.onesafe.domain.repository.PersistenceManager
 import studio.lunabee.onesafe.repository.datasource.ForceUpgradeLocalDatasource
 import studio.lunabee.onesafe.repository.datasource.IconLocalDataSource
@@ -47,6 +48,7 @@ import studio.lunabee.onesafe.repository.datasource.SafeItemFieldLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.SafeItemKeyLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.SafeItemLocalDataSource
 import studio.lunabee.onesafe.storage.MainDatabase
+import studio.lunabee.onesafe.storage.Migration3to4
 import studio.lunabee.onesafe.storage.OSForceUpgradeProto.ForceUpgradeProtoData
 import studio.lunabee.onesafe.storage.OSPasswordGeneratorConfigProto.PasswordGeneratorConfigProto
 import studio.lunabee.onesafe.storage.OSRecentSearchProto.RecentSearchProto
@@ -62,6 +64,7 @@ import studio.lunabee.onesafe.storage.dao.MessageDao
 import studio.lunabee.onesafe.storage.dao.SafeItemDao
 import studio.lunabee.onesafe.storage.dao.SafeItemFieldDao
 import studio.lunabee.onesafe.storage.dao.SafeItemKeyDao
+import studio.lunabee.onesafe.storage.dao.SentMessageDao
 import studio.lunabee.onesafe.storage.datasource.ContactKeyLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.ContactLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.DoubleRatchetDatasourceImpl
@@ -76,6 +79,7 @@ import studio.lunabee.onesafe.storage.datasource.RecentSearchLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.SafeItemFieldLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.SafeItemKeyLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.SafeItemLocalDataSourceImpl
+import studio.lunabee.onesafe.storage.datasource.SentMessageLocalDatasourceImpl
 import studio.lunabee.onesafe.storage.datastore.ForceUpgradeDataSerializer
 import studio.lunabee.onesafe.storage.datastore.PasswordGeneratorConfigSerializer
 import studio.lunabee.onesafe.storage.datastore.RecentSearchSerializer
@@ -134,6 +138,11 @@ interface StorageModule {
     ): MessageLocalDataSource
 
     @Binds
+    fun bindSentMessageLocalDataSource(
+        bindSentBubblesMessageLocalDataSourceImpl: SentMessageLocalDatasourceImpl,
+    ): SentMessageLocalDatasource
+
+    @Binds
     fun bindEnqueuedMessageLocalDataSource(
         enqueuedMessageLocalDataSourceImpl: EnqueuedMessageLocalDataSourceImpl,
     ): EnqueuedMessageLocalDataSource
@@ -168,12 +177,16 @@ interface DoubleRatchetServiceStorageModule {
 object DatabaseModule {
     @Provides
     @Singleton
-    fun provideMainDatabase(@ApplicationContext appContext: Context): MainDatabase {
+    fun provideMainDatabase(@ApplicationContext appContext: Context, migration3to4: Migration3to4): MainDatabase {
         return Room.databaseBuilder(
             appContext,
             MainDatabase::class.java,
             "bc9fe798-a4f0-402e-9f5b-80339d87a041",
-        ).build()
+        )
+            .addMigrations(
+                migration3to4,
+            )
+            .build()
     }
 }
 
@@ -233,6 +246,11 @@ object MainDatabaseDaoModule {
     @Provides
     fun provideHandShakeDataDao(mainDatabase: MainDatabase): HandShakeDataDao {
         return mainDatabase.handShakeDataDao()
+    }
+
+    @Provides
+    fun provideSentMessageDao(mainDatabase: MainDatabase): SentMessageDao {
+        return mainDatabase.sentMessageDao()
     }
 }
 

@@ -43,8 +43,7 @@ import java.util.UUID
     ],
 )
 class RoomMessage(
-    @PrimaryKey(autoGenerate = true)
-    var id: Int = 0,
+    @PrimaryKey val id: UUID,
     @ColumnInfo(name = "contact_id", index = true) val contactId: UUID,
     @ColumnInfo(name = "enc_sent_at") val encSentAt: ByteArray,
     @ColumnInfo(name = "enc_content") val encContent: ByteArray,
@@ -63,6 +62,7 @@ class RoomMessage(
 
     companion object {
         fun fromMessage(message: Message, order: Float): RoomMessage = RoomMessage(
+            id = message.id,
             contactId = message.fromContactId,
             encSentAt = message.encSentAt,
             encContent = message.encContent,

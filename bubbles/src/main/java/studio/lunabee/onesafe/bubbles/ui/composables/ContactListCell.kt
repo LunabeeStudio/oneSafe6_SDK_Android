@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.bubbles.ui.composables
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import studio.lunabee.onesafe.atom.OSRegularSpacer
 import studio.lunabee.onesafe.atom.text.OSText
@@ -39,6 +41,7 @@ import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.model.OSItemIllustration
 import studio.lunabee.onesafe.model.OSSafeItemStyle
 import studio.lunabee.onesafe.ui.res.OSDimens
+import studio.lunabee.onesafe.ui.theme.OSColor
 
 @Composable
 fun ContactListCell(
@@ -63,10 +66,11 @@ fun ContactListCell(
         Spacer(modifier = Modifier.size(OSDimens.SystemSpacing.Regular))
         OSText(
             text = bubblesContactInfo.nameProvider.name,
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelLarge,
             maxLines = NameMaxLine,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1.0f),
+            color = if (isSystemInDarkTheme()) OSColor.Neutral10 else Color.Unspecified,
         )
         if (bubblesContactInfo.conversationState == ConversationState.WaitingForReply) {
             OSRegularSpacer()

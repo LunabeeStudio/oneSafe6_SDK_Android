@@ -53,14 +53,19 @@ import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.dialog.DialogAction
 import studio.lunabee.onesafe.commonui.dialog.DialogState
+import studio.lunabee.onesafe.commonui.dialog.ErrorDialogState
+import studio.lunabee.onesafe.domain.common.MessageIdProvider
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
+import studio.lunabee.onesafe.messaging.domain.model.OSPlainMessage
 import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
+import studio.lunabee.onesafe.messaging.domain.repository.SentMessageRepository
 import studio.lunabee.onesafe.messaging.domain.usecase.EncryptMessageUseCase
 import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCase
 import studio.lunabee.onesafe.messaging.domain.usecase.GetSendMessageDataUseCase
 import studio.lunabee.onesafe.messaging.domain.usecase.SaveMessageUseCase
+import studio.lunabee.onesafe.messaging.domain.usecase.SaveSentMessageUseCase
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageUiState
@@ -82,6 +87,9 @@ class WriteMessageViewModel @Inject constructor(
     private val channelRepository: MessageChannelRepository,
     private val getSendMessageDataUseCase: GetSendMessageDataUseCase,
     private val getConversationStateUseCase: GetConversationStateUseCase,
+    private val saveSentMessageUseCase: SaveSentMessageUseCase,
+    private val sentMessageRepository: SentMessageRepository,
+    private val messageIdProvider: MessageIdProvider,
     osAppSettings: OSAppSettings,
 ) : ViewModel() {
 
@@ -122,7 +130,7 @@ class WriteMessageViewModel @Inject constructor(
                         LbcTextSpec.Raw(content)
                     }
                     ConversationUiData.PlainMessageData(
-                        id = "contact_${message.id}",
+                        id = message.id,
                         text = realContent,
                         direction = message.direction,
                         sendAt = sentAt,
@@ -176,7 +184,13 @@ class WriteMessageViewModel @Inject constructor(
             when (result) {
                 is LBResult.Success -> result.successData
                 is LBResult.Failure -> {
-                    _uiState.value = uiState.value.copy(conversationError = result.throwable as? OSError)
+                    _dialogState.value = ErrorDialogState(
+                        error = result.throwable as? OSError,
+                        actions = listOf(
+                            DialogAction.commonOk(::dismissDialog),
+                        ),
+                        dismiss = ::dismissDialog,
+                    )
                     null
                 }
             }
@@ -187,19 +201,48 @@ class WriteMessageViewModel @Inject constructor(
         return generateSendMessageData()?.let { sendMessageData ->
             lastMessageChange = Instant.now()
             val contactId = UUID.fromString(contactId.value)
-            saveMessageUseCase(
-                plainMessage = content,
-                sentAt = lastMessageChange,
+            val messageId = messageIdProvider()
+            val messageOrder = saveMessageUseCase(
+                plainMessage = OSPlainMessage(
+                    content = content,
+                    recipientId = contactId,
+                    sentAt = lastMessageChange,
+                ),
                 contactId = contactId,
-                recipientId = contactId,
                 channel = channelRepository.channel ?: context.getString(R.string.oneSafeK_channel_oneSafeSharing),
-            )
-            encryptMessageUseCase(
-                content,
-                uiState.value.currentContact!!.id,
-                lastMessageChange,
-                sendMessageData,
+                id = messageId,
             ).data
+            messageOrder?.let {
+                val messageToSend = encryptMessageUseCase(
+                    content,
+                    uiState.value.currentContact!!.id,
+                    lastMessageChange,
+                    sendMessageData,
+                ).data
+                messageToSend?.let {
+                    saveSentMessageUseCase(
+                        id = messageId,
+                        messageString = messageToSend,
+                        contactId = contactId,
+                        createdAt = lastMessageChange,
+                        order = messageOrder,
+                    )
+                }
+                messageToSend
+            }
+        }
+    }
+
+    suspend fun getSentMessage(sentMessageId: UUID): String? {
+        val encMessage = sentMessageRepository.getSentMessage(sentMessageId)
+        val contactId = UUID.fromString(contactId.value)
+        val result = encMessage?.let { contactLocalDecryptUseCase(encMessage.encContent, contactId, String::class) }
+        return when (result) {
+            is LBResult.Success -> result.data
+            else -> {
+                displayTooOldMessageDialog()
+                null
+            }
         }
     }
 
@@ -234,6 +277,15 @@ class WriteMessageViewModel @Inject constructor(
             override val dismiss: () -> Unit = ::dismissDialog
             override val actions: List<DialogAction> = listOf(DialogAction.commonOk(::dismissDialog))
             override val title: LbcTextSpec = LbcTextSpec.StringResource(R.string.writeMessageScreen_previewInfo_title)
+        }
+    }
+
+    private fun displayTooOldMessageDialog() {
+        _dialogState.value = object : DialogState {
+            override val dismiss: () -> Unit = ::dismissDialog
+            override val actions: List<DialogAction> = listOf(DialogAction.commonOk(::dismissDialog))
+            override val title: LbcTextSpec = LbcTextSpec.StringResource(R.string.common_warning)
+            override val message: LbcTextSpec = LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_tooOldMessage)
         }
     }
 

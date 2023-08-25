@@ -22,7 +22,7 @@ package studio.lunabee.onesafe.messaging.domain.model
 import java.util.UUID
 
 class Message(
-    val id: Int = -1, // -1 for non-stored messages
+    val id: UUID,
     val fromContactId: UUID,
     val encSentAt: ByteArray,
     val encContent: ByteArray,

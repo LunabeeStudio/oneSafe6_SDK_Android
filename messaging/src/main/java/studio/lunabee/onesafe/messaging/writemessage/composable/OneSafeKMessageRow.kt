@@ -19,7 +19,9 @@
 
 package studio.lunabee.onesafe.messaging.writemessage.composable
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,10 +30,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,9 +50,11 @@ import studio.lunabee.onesafe.commonui.DefaultNameProvider
 import studio.lunabee.onesafe.commonui.OSItemIllustrationHelper
 import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.extension.copyToClipBoard
 import studio.lunabee.onesafe.extension.loremIpsum
 import studio.lunabee.onesafe.messaging.domain.model.MessageDirection
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
+import studio.lunabee.onesafe.messaging.writemessage.model.MessageAction
 import studio.lunabee.onesafe.model.OSSafeItemStyle
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
@@ -52,16 +63,41 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import kotlin.random.Random
+import java.util.UUID
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OneSafeKMessageRow(
     messageData: ConversationUiData.PlainMessageData,
     contactName: OSNameProvider,
+    onResendClick: (UUID) -> Unit,
 ) {
+    var isActionMenuExpanded: Boolean by rememberSaveable { mutableStateOf(false) }
+    val haptics = LocalHapticFeedback.current
+    val messageText = messageData.text.string
+    val context = LocalContext.current
     val style: MessageRowStyle = when (messageData.direction) {
         MessageDirection.SENT -> MessageRowDefault.send()
         MessageDirection.RECEIVED -> MessageRowDefault.received()
+    }
+    val actions: List<MessageAction> = when (messageData.direction) {
+        MessageDirection.SENT -> listOf(
+            MessageAction.Resend { messageData.id.let(onResendClick) },
+            MessageAction.Copy {
+                context.copyToClipBoard(
+                    messageText,
+                    LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_copyLabel),
+                )
+            },
+        )
+        MessageDirection.RECEIVED -> listOf(
+            MessageAction.Copy {
+                context.copyToClipBoard(
+                    messageText,
+                    LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_copyLabel),
+                )
+            },
+        )
     }
     Row(
         modifier = Modifier
@@ -77,6 +113,13 @@ fun OneSafeKMessageRow(
                 .clip(style.shape)
                 .background(style.backgroundColor)
                 .fillMaxWidth(style.widthRow)
+                .combinedClickable(
+                    onLongClick = {
+                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                        isActionMenuExpanded = true
+                    },
+                    onClick = {},
+                )
                 .padding(horizontal = OSDimens.SystemSpacing.Regular, vertical = OSDimens.SystemSpacing.Small),
             verticalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.ExtraSmall),
         ) {
@@ -105,6 +148,11 @@ fun OneSafeKMessageRow(
                 modifier = Modifier.fillMaxWidth(),
             )
         }
+        MessageActionMenu(
+            isMenuExpended = isActionMenuExpanded,
+            onDismiss = { isActionMenuExpanded = false },
+            actions = actions,
+        )
     }
 }
 
@@ -168,23 +216,25 @@ fun OneSafeKMessageRowPreview() {
         ) {
             OneSafeKMessageRow(
                 messageData = ConversationUiData.PlainMessageData(
-                    id = "contact_${Random.nextInt()}",
+                    id = UUID.randomUUID(),
                     text = LbcTextSpec.Raw(loremIpsum(10)),
                     direction = MessageDirection.SENT,
                     sendAt = Instant.now(),
                     channelName = "Telegram",
                 ),
                 contactName = DefaultNameProvider("Flo"),
+                onResendClick = {},
             )
             OneSafeKMessageRow(
                 messageData = ConversationUiData.PlainMessageData(
-                    id = "contact_${Random.nextInt()}",
+                    id = UUID.randomUUID(),
                     text = LbcTextSpec.Raw(loremIpsum(10)),
                     direction = MessageDirection.RECEIVED,
                     sendAt = Instant.now(),
                     channelName = "Telegram",
                 ),
                 contactName = DefaultNameProvider("Flo"),
+                onResendClick = {},
             )
         }
     }

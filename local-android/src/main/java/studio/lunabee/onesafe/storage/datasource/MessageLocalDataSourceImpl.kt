@@ -34,29 +34,35 @@ import java.util.UUID
 import javax.inject.Inject
 
 class MessageLocalDataSourceImpl @Inject constructor(
-    private val dao: MessageDao,
+    private val messageDao: MessageDao,
 ) : MessageLocalDataSource {
-    override suspend fun save(message: Message, order: Float): Unit = dao.insert(RoomMessage.fromMessage(message, order))
-    override suspend fun getAllByContact(contactId: UUID): List<Message> = dao.getAllByContact(contactId).map {
+    override suspend fun save(message: Message, order: Float): Unit = messageDao.insert(RoomMessage.fromMessage(message, order))
+    override suspend fun getAllByContact(contactId: UUID): List<Message> = messageDao.getAllByContact(contactId).map {
         it.toMessage()
     }
 
     override suspend fun getLastMessage(contactId: UUID): Flow<Message?> {
-        return dao.getLastMessage(contactId).map { it?.toMessage() }
+        return messageDao.getLastMessage(contactId).map { it?.toMessage() }
     }
 
-    override suspend fun getLastByContact(contactId: UUID): MessageOrder? = dao.getLastMessageOrderByContact(contactId)
-    override suspend fun getFirstByContact(contactId: UUID): MessageOrder? = dao.getFirstMessageOrderByContact(contactId)
-    override suspend fun countByContact(contactId: UUID): Int = dao.countByContact(contactId)
-    override suspend fun getAtByContact(position: Int, contactId: UUID): MessageOrder? = dao.getMessageOrderAtByContact(position, contactId)
-    override suspend fun getByContactByOrder(contactId: UUID, order: Float): Message = dao.getByContactByOrder(contactId, order).toMessage()
+    override suspend fun getLastByContact(contactId: UUID): MessageOrder? = messageDao.getLastMessageOrderByContact(contactId)
+    override suspend fun getFirstByContact(contactId: UUID): MessageOrder? = messageDao.getFirstMessageOrderByContact(contactId)
+    override suspend fun countByContact(contactId: UUID): Int = messageDao.countByContact(contactId)
+    override suspend fun getAtByContact(position: Int, contactId: UUID): MessageOrder? = messageDao.getMessageOrderAtByContact(
+        position,
+        contactId,
+    )
+
+    override suspend fun getByContactByOrder(contactId: UUID, order: Float): Message = messageDao.getByContactByOrder(contactId, order)
+        .toMessage()
+
     override fun getAllPaged(config: PagingConfig, contactId: UUID): Flow<PagingData<Message>> {
         return Pager(config = config) {
-            dao.getAllAsPagingSource(contactId)
+            messageDao.getAllAsPagingSource(contactId)
         }.flow.mapPagingValues(RoomMessage::toMessage)
     }
 
     override suspend fun deleteAllMessages(contactId: UUID) {
-        dao.deleteAllMessages(contactId)
+        messageDao.deleteAllMessages(contactId)
     }
 }

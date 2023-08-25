@@ -14,26 +14,26 @@
  * limitations under the License.
  *
  * Created by Lunabee Studio / Date - 7/17/2023 - for the oneSafe6 SDK.
- * Last modified 17/07/2023 10:30
+ * Last modified 17/07/2023 10:48
  */
 
-package studio.lunabee.onesafe.bubbles.ui.contact.frominvitation
+package studio.lunabee.onesafe.bubbles.ui.contact.form.fromscratch
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
-import studio.lunabee.onesafe.bubbles.ui.contact.creation.ContactCreationType
-import studio.lunabee.onesafe.bubbles.ui.contact.creation.CreateContactRoute
+import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormType
+import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormRoute
 import java.util.UUID
 
 @Composable
-fun CreateContactFromInvitationRoute(
+fun CreateContactFromScratchRoute(
     navigateBack: () -> Unit,
-    navigateToInvitationResponseScreen: (UUID) -> Unit,
+    navigateToInvitationScreen: (UUID) -> Unit,
 ) {
-    CreateContactRoute(
+    ContactFormRoute(
         navigateBack = navigateBack,
-        navigateToNextScreen = navigateToInvitationResponseScreen,
-        viewModel = hiltViewModel<CreateContactFromInvitationViewModel>(),
-        type = ContactCreationType.FromInvitation,
+        navigateToNextScreen = navigateToInvitationScreen,
+        viewModel = hiltViewModel<ContactFromScratchFormDelegate>(),
+        type = ContactFormType.FromScratch,
     )
 }

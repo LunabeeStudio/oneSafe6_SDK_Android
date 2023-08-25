@@ -25,8 +25,8 @@ import org.junit.Test
 import studio.lunabee.doubleratchet.model.DRChainKey
 import studio.lunabee.doubleratchet.model.DRRootKey
 import studio.lunabee.doubleratchet.model.DRSharedSecret
-import studio.lunabee.onesafe.cryptography.toByteArray
 import studio.lunabee.onesafe.test.testUUIDs
+import studio.lunabee.onesafe.toByteArray
 import kotlin.test.assertContentEquals
 
 class AndroidDoubleRatchetKeyRepositoryTest {

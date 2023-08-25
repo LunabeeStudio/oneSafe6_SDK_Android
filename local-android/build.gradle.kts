@@ -49,6 +49,10 @@ android {
         resources.pickFirsts.add("META-INF/LICENSE-notice.md")
     }
 
+    sourceSets {
+        getByName("androidTest").assets.srcDir("$projectDir/schemas")
+    }
+
     val properties: Properties = Properties()
     File(rootDir.path + "/versions.properties").inputStream().use { properties.load(it) }
 
@@ -113,6 +117,7 @@ dependencies {
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(project(":dependency-injection:test-component"))
     androidTestImplementation(KotlinX.coroutines.test)
+    androidTestImplementation(AndroidX.room.testing)
 }
 
 tasks.register("cleanProtobuf") {

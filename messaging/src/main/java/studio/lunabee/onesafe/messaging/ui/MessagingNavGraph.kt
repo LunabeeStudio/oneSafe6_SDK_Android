@@ -39,10 +39,12 @@ import studio.lunabee.onesafe.bubbles.ui.barcode.ScanBarcodeDestination
 import studio.lunabee.onesafe.bubbles.ui.barcode.scanBarcodeDestination
 import studio.lunabee.onesafe.bubbles.ui.contact.detail.ContactDetailDestination
 import studio.lunabee.onesafe.bubbles.ui.contact.detail.contactDetailGraph
-import studio.lunabee.onesafe.bubbles.ui.contact.frominvitation.CreateContactFromInvitationDestination
-import studio.lunabee.onesafe.bubbles.ui.contact.frominvitation.createContactFromInvitationGraph
-import studio.lunabee.onesafe.bubbles.ui.contact.fromscratch.CreateContactFromScratchDestination
-import studio.lunabee.onesafe.bubbles.ui.contact.fromscratch.createContactFromScratchDestination
+import studio.lunabee.onesafe.bubbles.ui.contact.form.edit.EditContactDestination
+import studio.lunabee.onesafe.bubbles.ui.contact.form.edit.editContact
+import studio.lunabee.onesafe.bubbles.ui.contact.form.frominvitation.CreateContactFromInvitationDestination
+import studio.lunabee.onesafe.bubbles.ui.contact.form.frominvitation.createContactFromInvitationGraph
+import studio.lunabee.onesafe.bubbles.ui.contact.form.fromscratch.CreateContactFromScratchDestination
+import studio.lunabee.onesafe.bubbles.ui.contact.form.fromscratch.createContactFromScratchDestination
 import studio.lunabee.onesafe.bubbles.ui.decryptmessage.DecryptMessageDestination
 import studio.lunabee.onesafe.bubbles.ui.decryptmessage.DecryptMessageRoute
 import studio.lunabee.onesafe.bubbles.ui.invitation.InvitationDestination
@@ -82,6 +84,7 @@ fun NavGraphBuilder.messagingNavGraph(
             navigateToInvitationScreen = { contactId -> navController.navigate(InvitationDestination.getRoute(contactId)) },
             navigateToResponseScreen = { contactId -> navController.navigate(InvitationResponseDestination.getRoute(contactId)) },
             navigateToScanBarcodeScreen = { navController.navigate(ScanBarcodeDestination.route) },
+            navigateToContactEdition = { contactId -> navController.navigate(EditContactDestination.getRoute(contactId)) },
         )
 
         invitationGraph(
@@ -108,6 +111,10 @@ fun NavGraphBuilder.messagingNavGraph(
                     popUpTo(BubblesDestination.route) { inclusive = false }
                 }
             },
+        )
+
+        editContact(
+            navigateBack = navigateBack,
         )
 
         createContactFromInvitationGraph(

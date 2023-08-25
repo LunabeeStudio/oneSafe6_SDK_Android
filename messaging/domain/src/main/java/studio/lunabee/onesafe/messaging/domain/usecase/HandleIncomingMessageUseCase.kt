@@ -21,6 +21,7 @@ package studio.lunabee.onesafe.messaging.domain.usecase
 
 import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.first
+import studio.lunabee.onesafe.domain.common.MessageIdProvider
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import java.util.UUID
 import javax.inject.Inject
@@ -33,6 +34,7 @@ class HandleIncomingMessageUseCase @Inject constructor(
     private val decryptIncomingMessageUseCase: DecryptIncomingMessageUseCase,
     private val enqueueMessageUseCase: EnqueueMessageUseCase,
     private val saveMessageUseCase: SaveMessageUseCase,
+    private val messageIdProvider: MessageIdProvider,
 ) {
     @OptIn(ExperimentalEncodingApi::class)
     suspend operator fun invoke(message: String, channel: String?): LBResult<IncomingMessageState> {
@@ -51,11 +53,10 @@ class HandleIncomingMessageUseCase @Inject constructor(
                     val contactId = decryptResult.successData.first.id
                     plainMessage?.let {
                         val saveResult = saveMessageUseCase(
-                            plainMessage = plainMessage.content,
-                            sentAt = plainMessage.sentAt,
+                            plainMessage = plainMessage,
                             contactId = contactId,
-                            recipientId = plainMessage.recipientId,
                             channel = channel,
+                            id = messageIdProvider(),
                         )
                         when (saveResult) {
                             is LBResult.Failure -> LBResult.Failure(saveResult.throwable)

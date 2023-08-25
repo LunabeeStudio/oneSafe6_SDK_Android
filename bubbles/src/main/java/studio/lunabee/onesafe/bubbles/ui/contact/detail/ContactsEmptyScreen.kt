@@ -21,7 +21,7 @@ package studio.lunabee.onesafe.bubbles.ui.contact.detail
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -41,7 +41,7 @@ fun EmptyContactsScreen(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(OSDimens.SystemSpacing.Regular),
         verticalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.Regular),
     ) {

@@ -20,8 +20,8 @@
 package studio.lunabee.onesafe.bubbles.crypto
 
 import org.junit.Test
-import studio.lunabee.onesafe.cryptography.toByteArray
 import studio.lunabee.onesafe.test.testUUIDs
+import studio.lunabee.onesafe.toByteArray
 import kotlin.test.assertContentEquals
 
 class HKDFHashEngineTest {

@@ -34,12 +34,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.animation.OSTopBarAnimatedVisibility
 import studio.lunabee.onesafe.animation.rememberOSTopBarVisibilityNestedScrollConnection
 import studio.lunabee.onesafe.atom.OSScreen
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
 import studio.lunabee.onesafe.bubbles.ui.contact.composables.DeeplinkSwitchRow
+import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.action.TopAppBarOptionNavBack
+import studio.lunabee.onesafe.commonui.action.topAppBarOptionEdit
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.molecule.OSTopAppBar
@@ -56,6 +59,7 @@ fun ContactDetailRoute(
     navigateToInvitationScreen: (UUID) -> Unit,
     navigateToResponseScreen: (UUID) -> Unit,
     navigateToScanBarcodeScreen: () -> Unit,
+    navigateToContactEdition: (UUID) -> Unit,
     viewModel: ContactDetailViewModel = hiltViewModel(),
 ) {
     val dialogState by viewModel.dialogState.collectAsStateWithLifecycle()
@@ -73,6 +77,7 @@ fun ContactDetailRoute(
                 onResendInvitationClick = { navigateToInvitationScreen(viewModel.contactId) },
                 onResendResponseClick = { navigateToResponseScreen(viewModel.contactId) },
                 onScanResponseClick = navigateToScanBarcodeScreen,
+                onEditClick = { navigateToContactEdition(viewModel.contactId) },
             )
         }
         is ContactDetailUiState.Idle -> OSScreen(
@@ -96,6 +101,7 @@ fun ContactDetailScreen(
     onResendInvitationClick: () -> Unit,
     onResendResponseClick: () -> Unit,
     onRemoveClick: () -> Unit,
+    onEditClick: () -> Unit,
     uiState: ContactDetailUiState.Data,
     onIsUsingDeepLinkChange: (Boolean) -> Unit,
     onScanResponseClick: () -> Unit,
@@ -148,6 +154,10 @@ fun ContactDetailScreen(
                         .align(Alignment.TopCenter),
                     options = listOfNotNull(
                         TopAppBarOptionNavBack(onBackClick),
+                        topAppBarOptionEdit(
+                            description = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_editAction),
+                            onEditItemClick = onEditClick,
+                        ),
                     ),
                 )
             }

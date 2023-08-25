@@ -34,6 +34,7 @@ import studio.lunabee.messaging.repository.repository.HandShakeDataRepositoryImp
 import studio.lunabee.messaging.repository.repository.MessageChannelRepositoryImpl
 import studio.lunabee.messaging.repository.repository.MessageOrderRepositoryImpl
 import studio.lunabee.messaging.repository.repository.MessageRepositoryImpl
+import studio.lunabee.messaging.repository.repository.SentMessageRepositoryImpl
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactKeyRepository
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.domain.repository.AutoLockRepository
@@ -55,6 +56,7 @@ import studio.lunabee.onesafe.messaging.domain.repository.HandShakeDataRepositor
 import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessageOrderRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
+import studio.lunabee.onesafe.messaging.domain.repository.SentMessageRepository
 import studio.lunabee.onesafe.repository.repository.AutoLockRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.ClipboardRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.ForceUpgradeRepositoryImpl
@@ -156,6 +158,9 @@ interface RepositoryGlobalModule {
 
     @Binds
     fun bindsMessageRepository(bubblesMessageRepositoryImpl: MessageRepositoryImpl): MessageRepository
+
+    @Binds
+    fun bindsSentMessageRepository(bubblesSentMessageRepositoryImpl: SentMessageRepositoryImpl): SentMessageRepository
 
     @Binds
     fun bindsMessageOrderRepository(bubblesMessageOrderRepositoryImpl: MessageOrderRepositoryImpl): MessageOrderRepository

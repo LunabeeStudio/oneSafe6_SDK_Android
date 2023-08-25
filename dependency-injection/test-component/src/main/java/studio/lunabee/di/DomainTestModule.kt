@@ -30,6 +30,7 @@ import studio.lunabee.doubleratchet.crypto.DoubleRatchetKeyRepository
 import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
 import studio.lunabee.onesafe.domain.common.IconIdProvider
 import studio.lunabee.onesafe.domain.common.ItemIdProvider
+import studio.lunabee.onesafe.domain.common.MessageIdProvider
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.usecase.SetIconUseCase
@@ -50,6 +51,10 @@ object DomainTestModule {
     @Provides
     @Singleton
     fun provideIconIdProvider(): IconIdProvider = IncrementalIdProvider()
+
+    @Provides
+    @Singleton
+    fun provideMessageIdProvider(): MessageIdProvider = IncrementalIdProvider()
 
     @Provides
     @FileDispatcher
