@@ -54,6 +54,9 @@ interface ContactDao {
     @Query("UPDATE Contact SET enc_is_using_deeplink = :encIsUsingDeeplink, updated_at =:updateAt WHERE id = :id")
     suspend fun updateIsUsingDeeplink(id: UUID, encIsUsingDeeplink: ByteArray, updateAt: Instant)
 
+    @Query("UPDATE Contact SET enc_is_using_deeplink = :encIsUsingDeeplink, updated_at =:updateAt, enc_name = :encName WHERE id = :id")
+    suspend fun updateContact(id: UUID, encIsUsingDeeplink: ByteArray, encName: ByteArray, updateAt: Instant)
+
     @Query("UPDATE Contact SET updated_at =:updateAt WHERE id = :id")
     suspend fun updateUpdatedAt(id: UUID, updateAt: Instant)
 }

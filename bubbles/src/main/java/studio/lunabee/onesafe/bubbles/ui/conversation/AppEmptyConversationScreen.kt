@@ -19,6 +19,8 @@
 
 package studio.lunabee.onesafe.bubbles.ui.conversation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -30,14 +32,16 @@ import studio.lunabee.onesafe.ui.res.OSDimens
 
 @Composable
 fun AppEmptyConversationScreen() {
-    OSTopImageBox(
-        imageRes = R.drawable.character_sabine_oups_center,
-        modifier = Modifier.padding(OSDimens.SystemSpacing.Regular),
-        offset = null,
-    ) {
-        OSMessageCard(
-            title = LbcTextSpec.StringResource(R.string.bubbles_noContact_title),
-            description = LbcTextSpec.StringResource(R.string.bubbles_noContact_subtitle),
-        )
+    Box(modifier = Modifier.fillMaxSize()) {
+        OSTopImageBox(
+            imageRes = R.drawable.character_sabine_oups_center,
+            modifier = Modifier.padding(OSDimens.SystemSpacing.Regular),
+            offset = null,
+        ) {
+            OSMessageCard(
+                title = LbcTextSpec.StringResource(R.string.bubbles_noContact_title),
+                description = LbcTextSpec.StringResource(R.string.bubbles_noContact_subtitle),
+            )
+        }
     }
 }

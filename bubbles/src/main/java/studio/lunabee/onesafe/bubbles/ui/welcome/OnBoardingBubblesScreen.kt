@@ -22,9 +22,16 @@ package studio.lunabee.onesafe.bubbles.ui.welcome
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -47,6 +54,8 @@ import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
+import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
+import studio.lunabee.onesafe.utils.OsDefaultPreview
 
 @Composable
 fun OnBoardingBubblesRoute(
@@ -71,9 +80,12 @@ fun OnBoardingBubblesScreen(
     OSScreen(
         testTag = UiConstants.TestTag.Screen.OnBoardingBubblesScreen,
         background = LocalDesignSystem.current.bubblesBackGround(),
+        modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Bottom)),
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
         ) {
             OSTopAppBar(
                 options = listOf(
@@ -91,11 +103,11 @@ fun OnBoardingBubblesScreen(
                 verticalArrangement = Arrangement.Center,
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.bubbles_onboarding),
+                    painter = painterResource(id = R.drawable.illustration_bubbles_onboarding),
                     contentDescription = null,
                     modifier = Modifier
                         .rtl(LocalLayoutDirection.current)
-                        .fillMaxWidth()
+                        .fillMaxWidth(0.75f)
                         .padding(bottom = OSDimens.SystemSpacing.Regular),
                     contentScale = ContentScale.FillWidth,
                 )
@@ -121,5 +133,16 @@ fun OnBoardingBubblesScreen(
                 )
             }
         }
+    }
+}
+
+@OsDefaultPreview
+@Composable
+private fun OnBoardingBubblesScreenPreview() {
+    OSPreviewBackgroundTheme {
+        OnBoardingBubblesScreen(
+            onBackClick = {},
+            onStartClick = {},
+        )
     }
 }

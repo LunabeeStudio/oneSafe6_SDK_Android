@@ -37,7 +37,9 @@ fun ContactActionMenu(
     onDismiss: () -> Unit,
     onSeeContactClick: () -> Unit,
     onDeleteMessages: () -> Unit,
+    onHideConversation: () -> Unit,
     modifier: Modifier = Modifier,
+    isConversationHidden: Boolean,
 ) {
     DropdownMenu(
         expanded = isMenuExpended,
@@ -48,6 +50,25 @@ fun ContactActionMenu(
             text = LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_action_seeContact),
             onClick = onSeeContactClick,
             leadingIcon = { OSIconDecorationButton(OSImageSpec.Drawable(drawable = R.drawable.ic_person)) },
+            buttonColors = OSTextButtonDefaults.secondaryTextButtonColors(state = OSActionState.Enabled),
+        )
+        OSClickableRow(
+            onClick = onHideConversation,
+            text =
+            if (isConversationHidden) {
+                LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_showConversation)
+            } else {
+                LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_hideConversation)
+            },
+            leadingIcon = {
+                OSIconDecorationButton(
+                    image = if (isConversationHidden) {
+                        OSImageSpec.Drawable(R.drawable.ic_visibility_on)
+                    } else {
+                        OSImageSpec.Drawable(R.drawable.ic_visibility_off)
+                    },
+                )
+            },
             buttonColors = OSTextButtonDefaults.secondaryTextButtonColors(state = OSActionState.Enabled),
         )
         OSClickableRow(

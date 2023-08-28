@@ -25,11 +25,11 @@ import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.onesafe.cryptography.CryptoDataMapper
 import studio.lunabee.onesafe.cryptography.CryptoEngine
 import studio.lunabee.onesafe.cryptography.RandomKeyProvider
-import studio.lunabee.onesafe.cryptography.toByteArray
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.error.OSCryptoError
+import studio.lunabee.onesafe.toByteArray
 import studio.lunabee.onesafe.use
 import java.io.OutputStream
 import java.security.GeneralSecurityException

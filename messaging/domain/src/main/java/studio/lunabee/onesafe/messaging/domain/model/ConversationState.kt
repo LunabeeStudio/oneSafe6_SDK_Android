@@ -20,6 +20,9 @@
 package studio.lunabee.onesafe.messaging.domain.model
 
 enum class ConversationState {
+    // The conversation has messages, and not only handShake messages
+    Running,
+
     // Invitation flow has been completed on both devices and the inviter has send at least one encrypted message
     FullySetup,
 

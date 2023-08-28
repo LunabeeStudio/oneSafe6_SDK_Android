@@ -71,6 +71,7 @@ object ContactDetailScreenFactory {
                         ).markdown(),
                     )
                 }
+                ConversationState.Running -> {}
             }
         }
     }
@@ -147,11 +148,18 @@ object ContactDetailScreenFactory {
                     leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = R.drawable.ic_message)) },
                     contentPadding = LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
                         index = 0,
-                        elementsCount = if (conversationState == ConversationState.FullySetup) 1 else 2,
+                        elementsCount = if (
+                            (conversationState == ConversationState.FullySetup) ||
+                            (conversationState == ConversationState.Running)
+                        ) {
+                            1
+                        } else {
+                            2
+                        },
                     ),
                 )
                 when (conversationState) {
-                    ConversationState.FullySetup -> {}
+                    ConversationState.Running, ConversationState.FullySetup -> {}
                     ConversationState.WaitingForReply -> {
                         OSClickableRow(
                             text = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_resendInvitation),

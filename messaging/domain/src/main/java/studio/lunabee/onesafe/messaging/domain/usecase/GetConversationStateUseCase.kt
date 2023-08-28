@@ -19,8 +19,11 @@
 
 package studio.lunabee.onesafe.messaging.domain.usecase
 
+import studio.lunabee.onesafe.bubbles.domain.BubblesConstant
+import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.messaging.domain.model.HandShakeData
+import studio.lunabee.onesafe.messaging.domain.model.Message
 import studio.lunabee.onesafe.messaging.domain.repository.HandShakeDataRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
 import java.util.UUID
@@ -29,15 +32,24 @@ import javax.inject.Inject
 class GetConversationStateUseCase @Inject constructor(
     private val handShakeDataRepository: HandShakeDataRepository,
     private val messageRepository: MessageRepository,
+    private val contactLocalDecryptUseCase: ContactLocalDecryptUseCase,
 ) {
 
     suspend operator fun invoke(contactId: UUID): ConversationState {
         val handShakeData: HandShakeData? = handShakeDataRepository.getById(contactId)
         val messages = messageRepository.getAllByContact(contactId)
+        val isLastMessageSavedNotHandShake = messages.firstOrNull()?.let {
+            isLastMessageSavedNotHandShake(it, contactId)
+        } ?: false
         return when {
+            isLastMessageSavedNotHandShake -> ConversationState.Running
             handShakeData == null -> ConversationState.FullySetup
             messages.isEmpty() -> ConversationState.WaitingForReply
             else -> ConversationState.WaitingForFirstMessage
         }
+    }
+
+    private suspend fun isLastMessageSavedNotHandShake(message: Message, contactId: UUID): Boolean {
+        return contactLocalDecryptUseCase(message.encContent, contactId, String::class).data != BubblesConstant.FirstMessageData
     }
 }

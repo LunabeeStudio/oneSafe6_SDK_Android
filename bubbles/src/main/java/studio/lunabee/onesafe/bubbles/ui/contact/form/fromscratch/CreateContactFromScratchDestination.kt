@@ -17,7 +17,7 @@
  * Last modified 13/07/2023 11:03
  */
 
-package studio.lunabee.onesafe.bubbles.ui.contact.fromscratch
+package studio.lunabee.onesafe.bubbles.ui.contact.form.fromscratch
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable

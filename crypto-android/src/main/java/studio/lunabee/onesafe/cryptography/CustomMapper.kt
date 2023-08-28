@@ -22,8 +22,6 @@ package studio.lunabee.onesafe.cryptography
 import studio.lunabee.onesafe.domain.model.common.IdentifiableObject
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.error.OSCryptoError
-import java.nio.ByteBuffer
-import java.util.UUID
 
 internal fun IdentifiableObject.toByteArray(): ByteArray = id.encodeToByteArray()
 
@@ -81,20 +79,3 @@ internal fun Long.toByteArray(): ByteArray = ByteArray(8).apply {
 }
 
 internal fun Boolean.toByteArray(): ByteArray = if (this) byteArrayOf(1) else byteArrayOf(0)
-
-// Copied from Room
-// https://android-review.googlesource.com/c/platform/frameworks/support/+/1812173/9/room/room-runtime/src/main/java/androidx/room/util/UUIDUtil.java
-fun ByteArray.toUUID(): UUID {
-    val buffer = ByteBuffer.wrap(this)
-    val firstLong = buffer.long
-    val secondLong = buffer.long
-    return UUID(firstLong, secondLong)
-}
-
-fun UUID.toByteArray(): ByteArray {
-    val bytes = ByteArray(16)
-    val buffer = ByteBuffer.wrap(bytes)
-    buffer.putLong(mostSignificantBits)
-    buffer.putLong(leastSignificantBits)
-    return buffer.array()
-}

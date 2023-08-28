@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2023-2023 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 7/17/2023 - for the oneSafe6 SDK.
- * Last modified 7/17/23, 2:07 PM
+ * Created by Lunabee Studio / Date - 8/22/2023 - for the oneSafe6 SDK.
+ * Last modified 22/08/2023 10:06
  */
 
-package studio.lunabee.onesafe.bubbles.ui.contact
+package studio.lunabee.onesafe.bubbles.ui.contact.detail
 
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.commonui.R
@@ -31,11 +31,11 @@ class ConfirmDeleteContactDialogState(
     override val title: LbcTextSpec = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_delete_title)
     override val message: LbcTextSpec = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_delete_description)
     override val actions: List<DialogAction> = listOf(
-        DialogAction.commonCancel(dismiss),
         DialogAction(
             text = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_delete_confirm),
             type = DialogAction.Type.Dangerous,
             onClick = deleteAction,
         ),
+        DialogAction.commonCancel(dismiss),
     )
 }

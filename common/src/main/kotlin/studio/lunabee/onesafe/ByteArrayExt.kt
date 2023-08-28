@@ -22,6 +22,7 @@ package studio.lunabee.onesafe
 import java.nio.ByteBuffer
 import java.security.SecureRandom
 import java.util.Arrays
+import java.util.UUID
 
 fun ByteArray.randomize(): ByteArray {
     SecureRandom().nextBytes(this)
@@ -44,4 +45,21 @@ fun ByteArray.toCharArray(): CharArray {
         charBuffer.position(),
         charBuffer.limit(),
     )
+}
+
+// Copied from Room
+// https://android-review.googlesource.com/c/platform/frameworks/support/+/1812173/9/room/room-runtime/src/main/java/androidx/room/util/UUIDUtil.java
+fun ByteArray.toUUID(): UUID {
+    val buffer = ByteBuffer.wrap(this)
+    val firstLong = buffer.long
+    val secondLong = buffer.long
+    return UUID(firstLong, secondLong)
+}
+
+fun UUID.toByteArray(): ByteArray {
+    val bytes = ByteArray(16)
+    val buffer = ByteBuffer.wrap(bytes)
+    buffer.putLong(mostSignificantBits)
+    buffer.putLong(leastSignificantBits)
+    return buffer.array()
 }

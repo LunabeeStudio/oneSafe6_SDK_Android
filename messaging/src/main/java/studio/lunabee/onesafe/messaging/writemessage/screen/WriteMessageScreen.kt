@@ -30,7 +30,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,7 +38,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,15 +54,12 @@ import kotlinx.coroutines.launch
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.OSScreen
-import studio.lunabee.onesafe.atom.button.OSIconButton
-import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.bubbles.ui.extension.getDeepLinkFromMessage
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
 import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
 import studio.lunabee.onesafe.commonui.localprovider.LocalKeyboardUiHeight
-import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
 import studio.lunabee.onesafe.extension.loremIpsum
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
@@ -84,7 +79,6 @@ import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import studio.lunabee.onesafe.ui.theme.OSTheme
 import java.time.Instant
 import java.util.UUID
-import kotlin.random.Random
 
 @Composable
 fun WriteMessageRoute(
@@ -132,7 +126,6 @@ fun WriteMessageRoute(
                     }
                 },
                 conversation = conversation,
-                conversationError = uiState.conversationError,
                 onResendInvitationClick = {
                     navigationToInvitation(UUID.fromString(viewModel.contactId.value))
                 },
@@ -147,6 +140,13 @@ fun WriteMessageRoute(
                     navigateToContactDetail(UUID.fromString(viewModel.contactId.value))
                 },
                 onDeleteAllMessagesClick = viewModel::displayRemoveConversationDialog,
+                onResendMessageClick = { sentMessageId ->
+                    coroutineScope.launch {
+                        viewModel.getSentMessage(sentMessageId)?.let {
+                            sendMessage(it.getDeepLinkFromMessage(uiState.isUsingDeepLink))
+                        }
+                    }
+                },
             )
         }
     }
@@ -164,11 +164,11 @@ fun WriteMessageScreen(
     conversation: LazyPagingItems<ConversationUiData>,
     onBackClick: () -> Unit,
     sendIcon: OSImageSpec,
-    conversationError: OSError?,
     isMaterialYouEnabled: Boolean,
     isConversationReady: Boolean,
     onPreviewClick: () -> Unit,
     onDeleteAllMessagesClick: () -> Unit,
+    onResendMessageClick: (UUID) -> Unit,
     onSeeContactClick: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
@@ -222,6 +222,8 @@ fun WriteMessageScreen(
                     onBack = onBackClick,
                     onSeeContactClick = onSeeContactClick,
                     onDeleteAllMessagesClick = onDeleteAllMessagesClick,
+                    onHideConversationClick = { isConversationHidden = !isConversationHidden },
+                    isConversationHidden = isConversationHidden,
                 )
             }
 
@@ -275,26 +277,10 @@ fun WriteMessageScreen(
                                     conversation = conversation,
                                     contactNameProvider = contact.nameProvider,
                                     context = context,
+                                    onResendMessageClick = onResendMessageClick,
                                 )
                             }
                         }
-                    }
-                    if (conversationError == null) {
-                        OSIconButton(
-                            image = if (isConversationHidden) {
-                                OSImageSpec.Drawable(R.drawable.ic_visibility_on)
-                            } else {
-                                OSImageSpec.Drawable(R.drawable.ic_visibility_off)
-                            },
-                            onClick = { isConversationHidden = !isConversationHidden },
-                            buttonSize = OSDimens.SystemButtonDimension.Small,
-                            contentDescription = null, // TODO @fngbala-luna
-                            colors = OSIconButtonDefaults.primaryIconButtonColors(),
-                            modifier = Modifier
-                                .padding(end = OSDimens.SystemSpacing.Regular, top = OSDimens.SystemSpacing.Small)
-                                .landscapeSystemBarsPadding()
-                                .shadow(elevation = OSDimens.Elevation.FloatingButton, shape = CircleShape),
-                        )
                     }
                 }
             }
@@ -356,14 +342,14 @@ fun WriteMessageScreenPreview() {
             PagingData.from(
                 listOf<ConversationUiData>(
                     ConversationUiData.PlainMessageData(
-                        id = "contact_${Random.nextInt()}",
+                        id = UUID.randomUUID(),
                         text = LbcTextSpec.Raw("hello"),
                         direction = MessageDirection.RECEIVED,
                         sendAt = Instant.ofEpochSecond(0),
                         channelName = loremIpsum(1),
                     ),
                     ConversationUiData.PlainMessageData(
-                        id = "contact_${Random.nextInt()}",
+                        id = UUID.randomUUID(),
                         text = LbcTextSpec.Raw("hello hello"),
                         direction = MessageDirection.SENT,
                         sendAt = Instant.ofEpochSecond(0),
@@ -381,7 +367,6 @@ fun WriteMessageScreenPreview() {
             onPlainMessageChange = {},
             sendMessage = {},
             conversation = pagingItems,
-            conversationError = null,
             onResendInvitationClick = {},
             sendIcon = OSImageSpec.Drawable(studio.lunabee.onesafe.messaging.R.drawable.ic_send),
             onPreviewClick = {},
@@ -390,6 +375,7 @@ fun WriteMessageScreenPreview() {
             onDeleteAllMessagesClick = {},
             onSeeContactClick = {},
             isConversationReady = false,
+            onResendMessageClick = {},
         )
     }
 }

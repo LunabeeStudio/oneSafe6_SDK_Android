@@ -19,16 +19,33 @@
 
 package studio.lunabee.onesafe.bubbles.ui.composables
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import studio.lunabee.compose.core.LbcTextSpec
+import studio.lunabee.onesafe.atom.OSSmallSpacer
+import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
 import studio.lunabee.onesafe.bubbles.ui.model.ConversationSubtitle
 import studio.lunabee.onesafe.commonui.EmojiNameProvider
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.model.OSItemIllustration
 import studio.lunabee.onesafe.model.OSLazyCardContent
-import studio.lunabee.onesafe.molecule.OSItemRow
+import studio.lunabee.onesafe.model.OSSafeItemStyle
+import studio.lunabee.onesafe.ui.res.OSDimens
+import studio.lunabee.onesafe.ui.theme.OSColor
 
 class ConversationCardContent(
     private val conversationInfo: BubblesConversationInfo,
@@ -40,7 +57,7 @@ class ConversationCardContent(
     @Composable
     override fun Content(padding: PaddingValues) {
         val nameProvider = conversationInfo.nameProvider
-        OSItemRow(
+        ConversationRow(
             osItemIllustration = if (nameProvider is EmojiNameProvider) {
                 OSItemIllustration.Emoji(nameProvider.placeholderName, null)
             } else {
@@ -63,5 +80,46 @@ class ConversationCardContent(
                 null -> 1
             },
         )
+    }
+}
+
+@Composable
+fun ConversationRow(
+    paddingValues: PaddingValues,
+    onClick: () -> Unit,
+    osItemIllustration: OSItemIllustration,
+    label: LbcTextSpec,
+    subtitle: LbcTextSpec?,
+    itemSubtitleMaxLine: Int,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(paddingValues)
+            .padding(horizontal = OSDimens.SystemSpacing.Regular),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        osItemIllustration.ImageComposable(contentDescription = null, style = OSSafeItemStyle.Small)
+        Spacer(modifier = Modifier.size(OSDimens.SystemSpacing.Regular))
+        Column {
+            OSText(
+                text = label,
+                style = MaterialTheme.typography.labelLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = if (isSystemInDarkTheme()) OSColor.Neutral10 else Color.Unspecified,
+            )
+            OSSmallSpacer()
+            if (subtitle != null) { // TODO removed isNotEmpty check, should be handle before
+                OSText(
+                    text = subtitle,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (isSystemInDarkTheme()) OSColor.Neutral20 else OSColor.Neutral60,
+                    maxLines = itemSubtitleMaxLine,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
     }
 }

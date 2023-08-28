@@ -60,7 +60,6 @@ class WriteMessageScreenTest : LbcComposeTest() {
                 ),
                 plainMessage = plainMessage,
                 encryptedPreview = encryptedMessage,
-                conversationError = null,
             ),
         )
         every { conversation } returns emptyFlow()

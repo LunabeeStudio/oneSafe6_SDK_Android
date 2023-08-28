@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.yield
+import studio.lunabee.onesafe.domain.common.MessageIdProvider
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import studio.lunabee.onesafe.error.OSCryptoError
@@ -43,6 +44,7 @@ class ProcessMessageQueueUseCase @Inject constructor(
     private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
     private val saveMessageUseCase: SaveMessageUseCase,
     private val cryptoRepository: MessagingCryptoRepository,
+    private val messageIdProvider: MessageIdProvider,
 ) {
     /**
      * Wait until crypto is ready and dequeue all messages to process them. Skip the flush the observer is running.
@@ -98,11 +100,10 @@ class ProcessMessageQueueUseCase @Inject constructor(
                 val channel = getChannel(enqueuedMessage)
                 plainMessage?.let {
                     val saveResult = saveMessageUseCase(
-                        plainMessage = plainMessage.content,
-                        sentAt = plainMessage.sentAt,
+                        plainMessage = plainMessage,
                         contactId = result.successData.first.id,
-                        recipientId = plainMessage.recipientId,
                         channel = channel,
+                        id = messageIdProvider(),
                     )
                     when (saveResult) {
                         is LBResult.Failure -> log.e(saveResult.throwable)

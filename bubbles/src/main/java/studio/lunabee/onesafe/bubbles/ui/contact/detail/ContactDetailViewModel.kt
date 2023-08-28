@@ -32,7 +32,6 @@ import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.GetContactUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.UpdateIsUsingDeeplinkContactUseCase
-import studio.lunabee.onesafe.bubbles.ui.contact.ConfirmDeleteContactDialogState
 import studio.lunabee.onesafe.bubbles.ui.extension.getNameProvider
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.extension.startEmojiOrNull

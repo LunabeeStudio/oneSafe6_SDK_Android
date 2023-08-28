@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2023-2023 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 7/20/2023 - for the oneSafe6 SDK.
- * Last modified 20/07/2023 16:26
+ * Created by Lunabee Studio / Date - 8/23/2023 - for the oneSafe6 SDK.
+ * Last modified 22/08/2023 09:50
  */
 
-package studio.lunabee.onesafe.bubbles.ui.contact.creation
+package studio.lunabee.onesafe.bubbles.ui.contact.form.common
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth

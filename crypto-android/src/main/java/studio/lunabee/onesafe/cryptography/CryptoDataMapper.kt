@@ -21,6 +21,8 @@ package studio.lunabee.onesafe.cryptography
 
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.error.OSCryptoError
+import studio.lunabee.onesafe.toByteArray
+import studio.lunabee.onesafe.toUUID
 import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
