@@ -20,20 +20,15 @@
 package studio.lunabee.onesafe.bubbles.ui.commoninvitation
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.CardDefaults
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSCard
-import studio.lunabee.onesafe.atom.button.OSFilledButton
-import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.ui.res.OSDimens
 
 object CommonInvitationFactory {
@@ -53,21 +48,6 @@ object CommonInvitationFactory {
                         .padding(OSDimens.SystemSpacing.Huge),
                     contentScale = ContentScale.FillWidth,
                     bitmap = invitationQr,
-                )
-            }
-        }
-    }
-
-    fun finishButtonScreen(
-        onClick: () -> Unit,
-        lazyListScope: LazyListScope,
-    ) {
-        lazyListScope.item {
-            Box(modifier = Modifier.fillMaxWidth()) {
-                OSFilledButton(
-                    text = LbcTextSpec.StringResource(R.string.common_finish),
-                    onClick = onClick,
-                    modifier = Modifier.align(Alignment.CenterEnd),
                 )
             }
         }

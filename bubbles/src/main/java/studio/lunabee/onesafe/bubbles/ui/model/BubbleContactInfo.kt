@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2023 Lunabee Studio
+ * Copyright (c) 2023 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 6/7/2023 - for the oneSafe6 SDK.
- * Last modified 6/7/23, 4:41 PM
+ * Created by Lunabee Studio / Date - 8/30/2023 - for the oneSafe6 SDK.
+ * Last modified 30/08/2023 15:26
  */
 
 package studio.lunabee.onesafe.bubbles.ui.model
 
-import studio.lunabee.onesafe.commonui.OSNameProvider
+import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
+import java.time.Instant
 import java.util.UUID
 
-data class BubblesContactInfo(
+data class BubbleContactInfo(
     val id: UUID,
-    val nameProvider: OSNameProvider,
     val conversationState: ConversationState,
+    val isConvReady: Boolean,
+    val rawName: LBResult<String>,
+    val updatedAt: Instant,
 )

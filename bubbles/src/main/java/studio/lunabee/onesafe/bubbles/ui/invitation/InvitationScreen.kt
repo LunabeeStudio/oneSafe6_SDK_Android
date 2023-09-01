@@ -134,7 +134,7 @@ fun InvitationScreen(
                 lazyVerticalOSRegularSpacer()
                 InvitationScreenFactory.sharedCard(lazyListScope = this, onShareClick = onShareInvitationClick)
                 lazyVerticalOSRegularSpacer()
-                CommonInvitationFactory.finishButtonScreen(lazyListScope = this, onClick = onFinishClick)
+                InvitationScreenFactory.finishButtonScreen(lazyListScope = this, onClick = onFinishClick)
             }
         }
     }

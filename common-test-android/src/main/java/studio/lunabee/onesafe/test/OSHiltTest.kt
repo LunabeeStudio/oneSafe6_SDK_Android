@@ -26,6 +26,7 @@ import androidx.work.Configuration
 import androidx.work.testing.SynchronousExecutor
 import androidx.work.testing.WorkManagerTestInitHelper
 import dagger.hilt.android.testing.HiltAndroidRule
+import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -161,5 +162,10 @@ abstract class OSHiltTest : OSTest() {
     @After
     fun cleanDataAfterTest() {
         runTest { signOut() }
+    }
+
+    @After
+    fun teardown() {
+        unmockkAll()
     }
 }

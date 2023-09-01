@@ -32,7 +32,7 @@ import studio.lunabee.onesafe.atom.OSIconDecorationButton
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.button.defaults.OSTextButtonDefaults
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
-import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
+import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.bubbles.ui.onesafek.SelectContactFactory
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.model.OSActionState
@@ -44,7 +44,7 @@ import java.util.UUID
 fun FilledContactsScreen(
     onAddContactClick: () -> Unit,
     onScanClick: () -> Unit,
-    contacts: List<BubblesContactInfo>,
+    contacts: List<UIBubblesContactInfo>,
     onContactClick: (UUID) -> Unit,
 ) {
     LazyColumn(

@@ -86,7 +86,7 @@ object ContactDetailScreenFactory {
                     .fillMaxWidth(),
             ) {
                 OSClickableRow(
-                    text = LbcTextSpec.StringResource(R.string.common_delete),
+                    text = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_deleteContact),
                     onClick = onClick,
                     buttonColors = OSTextButtonDefaults.secondaryAlertTextButtonColors(state = OSActionState.Enabled),
                     leadingIcon = { OSIconAlertDecorationButton(image = OSImageSpec.Drawable(drawable = R.drawable.ic_delete)) },

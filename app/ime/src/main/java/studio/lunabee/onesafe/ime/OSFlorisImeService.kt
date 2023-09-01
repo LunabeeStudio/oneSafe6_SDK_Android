@@ -97,6 +97,11 @@ import studio.lunabee.onesafe.ui.theme.OSColor
 import studio.lunabee.onesafe.ui.theme.OSTheme
 import javax.inject.Inject
 
+/**
+ * oneSafe overload of [FlorisImeService] with custom UI injection & clipboard listener
+ *
+ * @see FlorisImeService
+ */
 @AndroidEntryPoint
 class OSFlorisImeService : FlorisImeService() {
 
@@ -192,142 +197,150 @@ class OSFlorisImeService : FlorisImeService() {
 
     @Composable
     override fun DecoratedIme(ImeUi: @Composable () -> Unit) {
-        navController = rememberNavController()
-        val density = LocalDensity.current
-        val configuration = LocalConfiguration.current
-        val screenHeight = configuration.screenHeightDp.dp
-        var osUiRequiredHeight: Dp by remember { mutableStateOf(0.dp) }
-        var keyboardUiHeight: Dp by remember { mutableStateOf(0.dp) }
-        val statusBarHeightDp: Dp
-        val navigationBarHeightDp: Dp
-        with(density) {
-            statusBarHeightDp = (WindowInsets.statusBars.getBottom(density) + WindowInsets.statusBars.getTop(density)).toDp()
-            navigationBarHeightDp = (WindowInsets.navigationBars.getBottom(density) + WindowInsets.navigationBars.getTop(density)).toDp()
-        }
-
-        val focusManager = LocalFocusManager.current
         val imeClient by this.imeClient.collectAsStateWithLifecycle()
+        if (imeClient?.packageName == packageName) {
+            // Disable oneSafe K when using oneSafe
+            super.DecoratedIme(ImeUi)
+        } else {
+            navController = rememberNavController()
+            val density = LocalDensity.current
+            val configuration = LocalConfiguration.current
+            val screenHeight = configuration.screenHeightDp.dp
+            var osUiRequiredHeight: Dp by remember { mutableStateOf(0.dp) }
+            var keyboardUiHeight: Dp by remember { mutableStateOf(0.dp) }
+            val statusBarHeightDp: Dp
+            val navigationBarHeightDp: Dp
+            with(density) {
+                statusBarHeightDp = (WindowInsets.statusBars.getBottom(density) + WindowInsets.statusBars.getTop(density)).toDp()
+                navigationBarHeightDp =
+                    (WindowInsets.navigationBars.getBottom(density) + WindowInsets.navigationBars.getTop(density)).toDp()
+            }
 
-        Box(
-            Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.BottomCenter,
-        ) {
-            AnimatedVisibility(
-                visible = isOneSafeUiVisible,
-                modifier = Modifier
-                    .background(Color.Transparent),
-                enter = expandVertically(
-                    expandFrom = Alignment.Top,
-                    animationSpec = tween(durationMillis = KeyboardUiAnimationDuration),
-                ),
-                exit = shrinkVertically(),
+            val focusManager = LocalFocusManager.current
+
+            Box(
+                Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.BottomCenter,
             ) {
-                CompositionLocalProvider(
-                    LocalTextFieldInteraction.provides { textFieldValue, setTextFieldValue, keyboardOptions, keyboardActions ->
-                        Modifier
-                            .keyboardTextfield(
-                                isKeyboardVisible = { isKeyboardVisible },
-                                toggleKeyboardVisibility = { isKeyboardVisible = !isKeyboardVisible },
-                                textFieldValue = textFieldValue,
-                                setTextFieldValue = setTextFieldValue,
-                                keyboardOptions = keyboardOptions,
-                                keyboardActions = keyboardActions,
-                            )
-                    },
-                    LocalKeyboardUiHeight.provides(if (isKeyboardVisible) keyboardUiHeight else 0.dp),
-                    LocalOnBackPressedDispatcherOwner.provides(object : OnBackPressedDispatcherOwner {
-                        override val lifecycle: Lifecycle = this@OSFlorisImeService.lifecycle
-                        override val onBackPressedDispatcher: OnBackPressedDispatcher = OnBackPressedDispatcher(null)
-                    }),
+                AnimatedVisibility(
+                    visible = isOneSafeUiVisible,
+                    modifier = Modifier
+                        .background(Color.Transparent),
+                    enter = expandVertically(
+                        expandFrom = Alignment.Top,
+                        animationSpec = tween(durationMillis = KeyboardUiAnimationDuration),
+                    ),
+                    exit = shrinkVertically(),
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(screenHeight + statusBarHeightDp + navigationBarHeightDp),
-                    ) {
-                        OneSafeKUi(
-                            modifier = Modifier,
-                        )
-                    }
-                }
-            }
-            AnimatedVisibility(
-                visible = isKeyboardVisible,
-                enter = expandVertically(
-                    expandFrom = Alignment.Top,
-                    animationSpec = tween(durationMillis = KeyboardUiAnimationDuration),
-                ),
-                exit = slideOutVertically(
-                    animationSpec = tween(durationMillis = KeyboardUiAnimationDuration),
-                    targetOffsetY = { fullHeight -> fullHeight },
-                ),
-            ) {
-                val entry by navController.currentBackStackEntryAsState()
-                val forceDark = entry?.destination?.route == WriteMessageDestination.route && isOneSafeUiVisible
-                val background: Color
-                val contentColor: Color
-                when {
-                    forceDark -> {
-                        themeManager.updateActiveTheme(forceNight = true)
-                        background = OSColor.Neutral70
-                        contentColor = OSColor.Neutral00
-                    }
-                    isSystemInDarkTheme() -> {
-                        themeManager.updateActiveTheme()
-                        background = Color.Transparent
-                        contentColor = OSColor.Neutral00
-                    }
-                    else -> {
-                        themeManager.updateActiveTheme()
-                        background = Color.Transparent
-                        contentColor = LocalContentColor.current
-                    }
-                }
-
-                Surface(color = background, contentColor = contentColor) {
-                    Column(
-                        modifier = Modifier
-                            .onGloballyPositioned { layoutCoordinate ->
-                                val size = layoutCoordinate.size
-                                val height = with(density) { size.height.toDp() }
-                                keyboardUiHeight = height
-                                if (osUiRequiredHeight == 0.dp) {
-                                    osUiRequiredHeight = (screenHeight - height) + statusBarHeightDp + navigationBarHeightDp
-                                }
-                            },
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            val isCryptoDataReady by isCryptoDataReadyInMemoryUseCase().collectAsStateWithLifecycle(initialValue = false)
-                            val osStatus = if (isCryptoDataReady) {
-                                OSKeyboardStatus.LoggedIn
-                            } else {
-                                OSKeyboardStatus.LoggedOut
-                            }
-                            osStatus.Logo(
-                                modifier = Modifier
-                                    .clip(ImeShape.Key)
-                                    .clickable { isOneSafeUiVisible = true }
-                                    .padding(vertical = ImeDimens.LogoVerticalPadding, horizontal = ImeDimens.LogoHorizontalPadding),
-                                isDark = themeManager.activeThemeInfo.value?.config?.isNightTheme ?: false,
-                            )
-                            imeClient?.let {
-                                it.Logo(
-                                    Modifier.padding(end = OSDimens.SystemSpacing.Small),
+                    CompositionLocalProvider(
+                        LocalTextFieldInteraction.provides { textFieldValue, setTextFieldValue, keyboardOptions, keyboardActions ->
+                            Modifier
+                                .keyboardTextfield(
+                                    isKeyboardVisible = { isKeyboardVisible },
+                                    toggleKeyboardVisibility = { isKeyboardVisible = !isKeyboardVisible },
+                                    textFieldValue = textFieldValue,
+                                    setTextFieldValue = setTextFieldValue,
+                                    keyboardOptions = keyboardOptions,
+                                    keyboardActions = keyboardActions,
                                 )
-                                it.Name()
-                            }
+                        },
+                        LocalKeyboardUiHeight.provides(if (isKeyboardVisible) keyboardUiHeight else 0.dp),
+                        LocalOnBackPressedDispatcherOwner.provides(object : OnBackPressedDispatcherOwner {
+                            override val lifecycle: Lifecycle = this@OSFlorisImeService.lifecycle
+                            override val onBackPressedDispatcher: OnBackPressedDispatcher = OnBackPressedDispatcher(null)
+                        }),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(screenHeight + statusBarHeightDp + navigationBarHeightDp),
+                        ) {
+                            OneSafeKUi(
+                                modifier = Modifier,
+                            )
                         }
-                        ImeUi()
+                    }
+                }
+                AnimatedVisibility(
+                    visible = isKeyboardVisible,
+                    enter = expandVertically(
+                        expandFrom = Alignment.Top,
+                        animationSpec = tween(durationMillis = KeyboardUiAnimationDuration),
+                    ),
+                    exit = slideOutVertically(
+                        animationSpec = tween(durationMillis = KeyboardUiAnimationDuration),
+                        targetOffsetY = { fullHeight -> fullHeight },
+                    ),
+                ) {
+                    val entry by navController.currentBackStackEntryAsState()
+                    val forceDark = entry?.destination?.route == WriteMessageDestination.route && isOneSafeUiVisible
+                    val background: Color
+                    val contentColor: Color
+                    when {
+                        forceDark -> {
+                            themeManager.updateActiveTheme(forceNight = true)
+                            background = OSColor.Neutral70
+                            contentColor = OSColor.Neutral00
+                        }
+                        isSystemInDarkTheme() -> {
+                            themeManager.updateActiveTheme()
+                            background = Color.Transparent
+                            contentColor = OSColor.Neutral00
+                        }
+                        else -> {
+                            themeManager.updateActiveTheme()
+                            background = Color.Transparent
+                            contentColor = LocalContentColor.current
+                        }
+                    }
+
+                    Surface(color = background, contentColor = contentColor) {
+                        Column(
+                            modifier = Modifier
+                                .onGloballyPositioned { layoutCoordinate ->
+                                    val size = layoutCoordinate.size
+                                    val height = with(density) { size.height.toDp() }
+                                    keyboardUiHeight = height
+                                    if (osUiRequiredHeight == 0.dp) {
+                                        osUiRequiredHeight = (screenHeight - height) + statusBarHeightDp + navigationBarHeightDp
+                                    }
+                                },
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                val isCryptoDataReady by isCryptoDataReadyInMemoryUseCase().collectAsStateWithLifecycle(
+                                    initialValue = false,
+                                )
+                                val osStatus = if (isCryptoDataReady) {
+                                    OSKeyboardStatus.LoggedIn
+                                } else {
+                                    OSKeyboardStatus.LoggedOut
+                                }
+                                osStatus.Logo(
+                                    modifier = Modifier
+                                        .clip(ImeShape.Key)
+                                        .clickable { isOneSafeUiVisible = true }
+                                        .padding(vertical = ImeDimens.LogoVerticalPadding, horizontal = ImeDimens.LogoHorizontalPadding),
+                                    isDark = themeManager.activeThemeInfo.value?.config?.isNightTheme ?: false,
+                                )
+                                imeClient?.let {
+                                    it.Logo(
+                                        Modifier.padding(end = OSDimens.SystemSpacing.Small),
+                                    )
+                                    it.Name()
+                                }
+                            }
+                            ImeUi()
+                        }
                     }
                 }
             }
-        }
 
-        LaunchedEffect(isKeyboardVisible) {
-            if (!isKeyboardVisible) {
-                focusManager.clearFocus()
+            LaunchedEffect(isKeyboardVisible) {
+                if (!isKeyboardVisible) {
+                    focusManager.clearFocus()
+                }
             }
         }
     }

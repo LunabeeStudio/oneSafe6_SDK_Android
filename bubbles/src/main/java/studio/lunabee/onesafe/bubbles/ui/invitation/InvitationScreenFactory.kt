@@ -19,11 +19,16 @@
 
 package studio.lunabee.onesafe.bubbles.ui.invitation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSClickableRow
 import studio.lunabee.onesafe.atom.OSIconDecorationButton
 import studio.lunabee.onesafe.atom.OSImageSpec
+import studio.lunabee.onesafe.atom.button.OSFilledButton
 import studio.lunabee.onesafe.atom.button.defaults.OSTextButtonDefaults
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.model.OSActionState
@@ -65,6 +70,21 @@ object InvitationScreenFactory {
                     )
                 },
             )
+        }
+    }
+
+    fun finishButtonScreen(
+        onClick: () -> Unit,
+        lazyListScope: LazyListScope,
+    ) {
+        lazyListScope.item {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                OSFilledButton(
+                    text = LbcTextSpec.StringResource(R.string.bubbles_invitationScreen_continueButton),
+                    onClick = onClick,
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                )
+            }
         }
     }
 }

@@ -105,7 +105,7 @@ fun ConversationRow(
         Column {
             OSText(
                 text = label,
-                style = MaterialTheme.typography.labelLarge,
+                style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 color = if (isSystemInDarkTheme()) OSColor.Neutral10 else Color.Unspecified,

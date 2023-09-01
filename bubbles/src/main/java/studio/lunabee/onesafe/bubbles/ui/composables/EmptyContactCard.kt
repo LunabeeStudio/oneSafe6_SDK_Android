@@ -61,7 +61,7 @@ fun EmptyContactCard() {
                             modifier = Modifier.padding(horizontal = OSDimens.SystemSpacing.Regular),
                         )
                         OSClickableRow(
-                            text = LbcTextSpec.StringResource(id = R.string.bubbles_contact_manageButton),
+                            text = LbcTextSpec.StringResource(id = R.string.oneSafeK_contact_manageButton),
                             onClick = {},
                             buttonColors = OSTextButtonDefaults.secondaryTextButtonColors(state = OSActionState.Enabled),
                             leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = R.drawable.ic_people)) },

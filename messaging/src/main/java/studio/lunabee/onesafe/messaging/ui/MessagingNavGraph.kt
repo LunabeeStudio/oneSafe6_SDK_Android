@@ -85,6 +85,7 @@ fun NavGraphBuilder.messagingNavGraph(
             navigateToResponseScreen = { contactId -> navController.navigate(InvitationResponseDestination.getRoute(contactId)) },
             navigateToScanBarcodeScreen = { navController.navigate(ScanBarcodeDestination.route) },
             navigateToContactEdition = { contactId -> navController.navigate(EditContactDestination.getRoute(contactId)) },
+            navigateBackToBubbles = { navController.popBackStack(BubblesDestination.route, inclusive = false) },
         )
 
         invitationGraph(

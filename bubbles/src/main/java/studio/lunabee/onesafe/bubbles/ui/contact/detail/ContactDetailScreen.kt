@@ -59,6 +59,7 @@ fun ContactDetailRoute(
     navigateToInvitationScreen: (UUID) -> Unit,
     navigateToResponseScreen: (UUID) -> Unit,
     navigateToScanBarcodeScreen: () -> Unit,
+    navigateBackToBubbles: () -> Unit,
     navigateToContactEdition: (UUID) -> Unit,
     viewModel: ContactDetailViewModel = hiltViewModel(),
 ) {
@@ -85,7 +86,7 @@ fun ContactDetailRoute(
             background = LocalDesignSystem.current.bubblesBackGround(),
         ) { Box(modifier = Modifier.fillMaxSize()) }
         is ContactDetailUiState.Exit -> {
-            LaunchedEffect(Unit) { navigateBack() }
+            LaunchedEffect(Unit) { navigateBackToBubbles() }
             OSScreen(
                 testTag = "",
                 background = LocalDesignSystem.current.bubblesBackGround(),

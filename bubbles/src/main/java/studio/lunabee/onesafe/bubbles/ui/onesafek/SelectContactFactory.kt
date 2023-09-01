@@ -24,7 +24,7 @@ import studio.lunabee.onesafe.atom.osLazyCard
 import studio.lunabee.onesafe.bubbles.ui.composables.ContactItemCardContent
 import studio.lunabee.onesafe.bubbles.ui.composables.ConversationCardContent
 import studio.lunabee.onesafe.bubbles.ui.composables.EmptyContactCard
-import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
+import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
 import studio.lunabee.onesafe.model.OSLazyCardContent
 import java.util.UUID
@@ -42,7 +42,7 @@ object SelectContactFactory {
     }
 
     fun addContacts(
-        contacts: List<BubblesContactInfo>,
+        contacts: List<UIBubblesContactInfo>,
         onClick: (UUID) -> Unit,
         lazyListScope: LazyListScope,
     ) {

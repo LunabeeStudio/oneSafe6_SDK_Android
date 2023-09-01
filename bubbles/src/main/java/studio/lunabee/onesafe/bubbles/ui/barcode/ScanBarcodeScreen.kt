@@ -23,11 +23,13 @@ import android.Manifest
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
@@ -159,38 +162,55 @@ fun ScanBarcodeScreen(
         BarcodeView(
             onBarcodeScan = onBarcodeScan,
         )
-        OSTopAppBar(
-            modifier = Modifier.statusBarsPadding(),
-            options = listOf(
-                object : TopAppBarOptionNav(
-                    image = OSImageSpec.Drawable(R.drawable.ic_close),
-                    contentDescription = LbcTextSpec.StringResource(R.string.common_accessibility_back),
-                    onClick = onCloseClick,
-                    state = OSActionState.Enabled,
-                ) {},
-            ),
-        )
-        Image(
-            painter = painterResource(id = R.drawable.ic_qr_indicator),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.Center)
-                .padding(OSDimens.SystemSpacing.Huge),
-            contentScale = ContentScale.FillWidth,
-        )
-        OSText(
-            text = LbcTextSpec.StringResource(R.string.bubbles_scanbarcodeScreen_description),
-            textAlign = TextAlign.Center,
-            color = Color.White,
-            modifier = Modifier
-                .navigationBarsPadding()
-                .align(Alignment.BottomCenter)
-                .padding(
-                    horizontal = OSDimens.SystemSpacing.Regular,
-                    vertical = OSDimens.SystemSpacing.Huge,
+        Column {
+            Column(
+                modifier = Modifier.background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Black,
+                            Color.Transparent,
+                        ),
+                    ),
                 ),
-        )
+            ) {
+                OSTopAppBar(
+                    modifier = Modifier.statusBarsPadding(),
+                    options = listOf(
+                        object : TopAppBarOptionNav(
+                            image = OSImageSpec.Drawable(R.drawable.ic_close),
+                            contentDescription = LbcTextSpec.StringResource(R.string.common_accessibility_back),
+                            onClick = onCloseClick,
+                            state = OSActionState.Enabled,
+                        ) {},
+                    ),
+                )
+                OSText(
+                    text = LbcTextSpec.StringResource(R.string.bubbles_scanbarcodeScreen_description),
+                    textAlign = TextAlign.Center,
+                    color = Color.White,
+                    modifier = Modifier
+                        .navigationBarsPadding()
+                        .align(Alignment.CenterHorizontally)
+                        .padding(
+                            horizontal = OSDimens.SystemSpacing.Regular,
+                            vertical = OSDimens.SystemSpacing.Large,
+                        ),
+                    style = MaterialTheme.typography.titleLarge,
+                )
+            }
+            Image(
+                painter = painterResource(id = R.drawable.ic_qr_indicator),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally)
+                    .padding(
+                        vertical = OSDimens.SystemSpacing.Large,
+                        horizontal = OSDimens.SystemSpacing.Huge,
+                    ),
+                contentScale = ContentScale.FillWidth,
+            )
+        }
     }
 }
 
