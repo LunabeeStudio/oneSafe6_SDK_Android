@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2023-2023 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 5/29/2023 - for the oneSafe6 SDK.
- * Last modified 5/29/23, 4:51 PM
+ * Created by Lunabee Studio / Date - 6/7/2023 - for the oneSafe6 SDK.
+ * Last modified 6/7/23, 4:41 PM
  */
 
-package studio.lunabee.onesafe.messaging.writemessage.screen
+package studio.lunabee.onesafe.bubbles.ui.model
 
-import androidx.compose.runtime.Stable
-import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
+import studio.lunabee.onesafe.commonui.OSNameProvider
+import studio.lunabee.onesafe.messaging.domain.model.ConversationState
+import java.util.UUID
 
-@Stable
-data class WriteMessageUiState(
-    val currentContact: UIBubblesContactInfo? = null,
-    val plainMessage: String = "",
-    val encryptedPreview: String = "",
-    val isUsingDeepLink: Boolean = false,
-    val isConversationReady: Boolean = true,
+data class UIBubblesContactInfo(
+    val id: UUID,
+    val nameProvider: OSNameProvider,
+    val conversationState: ConversationState,
 )

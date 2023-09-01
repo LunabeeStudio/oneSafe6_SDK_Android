@@ -35,7 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import studio.lunabee.onesafe.atom.OSRegularSpacer
 import studio.lunabee.onesafe.atom.text.OSText
-import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
+import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.EmojiNameProvider
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.model.OSItemIllustration
@@ -45,7 +45,7 @@ import studio.lunabee.onesafe.ui.theme.OSColor
 
 @Composable
 fun ContactListCell(
-    bubblesContactInfo: BubblesContactInfo,
+    uiBubblesContactInfo: UIBubblesContactInfo,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues,
@@ -58,21 +58,21 @@ fun ContactListCell(
             .padding(horizontal = OSDimens.SystemSpacing.Regular),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (bubblesContactInfo.nameProvider is EmojiNameProvider) {
-            OSItemIllustration.Emoji(bubblesContactInfo.nameProvider.placeholderName, null)
+        if (uiBubblesContactInfo.nameProvider is EmojiNameProvider) {
+            OSItemIllustration.Emoji(uiBubblesContactInfo.nameProvider.placeholderName, null)
         } else {
-            OSItemIllustration.Text(bubblesContactInfo.nameProvider.placeholderName, null)
-        }.ImageComposable(contentDescription = bubblesContactInfo.nameProvider.name, style = OSSafeItemStyle.Small)
+            OSItemIllustration.Text(uiBubblesContactInfo.nameProvider.placeholderName, null)
+        }.ImageComposable(contentDescription = uiBubblesContactInfo.nameProvider.name, style = OSSafeItemStyle.Small)
         Spacer(modifier = Modifier.size(OSDimens.SystemSpacing.Regular))
         OSText(
-            text = bubblesContactInfo.nameProvider.name,
-            style = MaterialTheme.typography.labelLarge,
+            text = uiBubblesContactInfo.nameProvider.name,
+            style = MaterialTheme.typography.titleMedium,
             maxLines = NameMaxLine,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1.0f),
             color = if (isSystemInDarkTheme()) OSColor.Neutral10 else Color.Unspecified,
         )
-        if (bubblesContactInfo.conversationState == ConversationState.WaitingForReply) {
+        if (uiBubblesContactInfo.conversationState == ConversationState.WaitingForReply) {
             OSRegularSpacer()
             PendingInputChip()
         }

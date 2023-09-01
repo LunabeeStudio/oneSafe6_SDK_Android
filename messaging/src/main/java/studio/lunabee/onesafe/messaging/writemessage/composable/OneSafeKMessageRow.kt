@@ -71,6 +71,7 @@ fun OneSafeKMessageRow(
     messageData: ConversationUiData.PlainMessageData,
     contactName: OSNameProvider,
     onResendClick: (UUID) -> Unit,
+    onDeleteMessageClick: (UUID) -> Unit,
 ) {
     var isActionMenuExpanded: Boolean by rememberSaveable { mutableStateOf(false) }
     val haptics = LocalHapticFeedback.current
@@ -89,6 +90,7 @@ fun OneSafeKMessageRow(
                     LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_copyLabel),
                 )
             },
+            MessageAction.Delete { messageData.id.let(onDeleteMessageClick) },
         )
         MessageDirection.RECEIVED -> listOf(
             MessageAction.Copy {
@@ -97,6 +99,7 @@ fun OneSafeKMessageRow(
                     LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_copyLabel),
                 )
             },
+            MessageAction.Delete { messageData.id.let(onDeleteMessageClick) },
         )
     }
     Row(
@@ -224,6 +227,7 @@ fun OneSafeKMessageRowPreview() {
                 ),
                 contactName = DefaultNameProvider("Flo"),
                 onResendClick = {},
+                onDeleteMessageClick = {},
             )
             OneSafeKMessageRow(
                 messageData = ConversationUiData.PlainMessageData(
@@ -235,6 +239,7 @@ fun OneSafeKMessageRowPreview() {
                 ),
                 contactName = DefaultNameProvider("Flo"),
                 onResendClick = {},
+                onDeleteMessageClick = {},
             )
         }
     }

@@ -44,7 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.OSScreen
-import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
+import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.localprovider.LocalKeyboardUiHeight
@@ -82,7 +82,7 @@ fun SelectContactRoute(
 @Composable
 private fun SelectContactScreen(
     navigateBack: () -> Unit,
-    contacts: List<BubblesContactInfo>?,
+    contacts: List<UIBubblesContactInfo>?,
     @DrawableRes exitIcon: Int = R.drawable.ic_back,
     onClickOnContact: (UUID) -> Unit,
 ) {
@@ -151,8 +151,8 @@ fun SelectContactScreenPreview() {
         SelectContactScreen(
             navigateBack = { },
             contacts = listOf(
-                BubblesContactInfo(UUID.randomUUID(), DefaultNameProvider("Rémi"), ConversationState.FullySetup),
-                BubblesContactInfo(UUID.randomUUID(), DefaultNameProvider("Florian"), ConversationState.WaitingForReply),
+                UIBubblesContactInfo(UUID.randomUUID(), DefaultNameProvider("Rémi"), ConversationState.FullySetup),
+                UIBubblesContactInfo(UUID.randomUUID(), DefaultNameProvider("Florian"), ConversationState.WaitingForReply),
             ),
             onClickOnContact = {},
         )

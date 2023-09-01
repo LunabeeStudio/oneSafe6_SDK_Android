@@ -19,7 +19,6 @@
 
 package studio.lunabee.onesafe.messaging.writemessage.viewmodel
 
-import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -47,7 +46,7 @@ import studio.lunabee.onesafe.OSAppSettings
 import studio.lunabee.onesafe.bubbles.domain.BubblesConstant
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.GetContactUseCase
-import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
+import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.ErrorNameProvider
 import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.R
@@ -150,7 +149,7 @@ class WriteMessageViewModel @Inject constructor(
                 getContactUseCase(UUID.fromString(contactId!!)).first()?.let { encContact ->
                     val decryptedNameResult = contactLocalDecryptUseCase(encContact.encName, encContact.id, String::class)
                     _uiState.value = _uiState.value.copy(
-                        currentContact = BubblesContactInfo(
+                        currentContact = UIBubblesContactInfo(
                             id = encContact.id,
                             nameProvider = if (decryptedNameResult is LBResult.Failure) {
                                 ErrorNameProvider
@@ -197,7 +196,7 @@ class WriteMessageViewModel @Inject constructor(
         }
     }
 
-    suspend fun encryptAndSaveMessage(content: String, context: Context): String? {
+    suspend fun encryptAndSaveMessage(content: String): String? {
         return generateSendMessageData()?.let { sendMessageData ->
             lastMessageChange = Instant.now()
             val contactId = UUID.fromString(contactId.value)
@@ -209,7 +208,7 @@ class WriteMessageViewModel @Inject constructor(
                     sentAt = lastMessageChange,
                 ),
                 contactId = contactId,
-                channel = channelRepository.channel ?: context.getString(R.string.oneSafeK_channel_oneSafeSharing),
+                channel = channelRepository.channel,
                 id = messageId,
             ).data
             messageOrder?.let {
@@ -243,6 +242,25 @@ class WriteMessageViewModel @Inject constructor(
                 displayTooOldMessageDialog()
                 null
             }
+        }
+    }
+
+    fun deleteMessage(messageId: UUID) {
+        _dialogState.value = object : DialogState {
+            override val message: LbcTextSpec = LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_deleteMessage_message)
+            override val title: LbcTextSpec = LbcTextSpec.StringResource(R.string.common_warning)
+            override val dismiss: () -> Unit = ::dismissDialog
+            override val actions: List<DialogAction> = listOf(
+                DialogAction(
+                    text = LbcTextSpec.StringResource(R.string.common_confirm),
+                    type = DialogAction.Type.Dangerous,
+                    onClick = {
+                        dismissDialog()
+                        viewModelScope.launch { messageRepository.deleteMessage(messageId) }
+                    },
+                ),
+                DialogAction.commonCancel(::dismissDialog),
+            )
         }
     }
 

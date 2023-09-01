@@ -52,6 +52,7 @@ dependencies {
     implementation(JakeWharton.timber)
     implementation(AndroidX.Work.testing)
     api(AndroidX.Hilt.work)
+    implementation(Testing.MockK.android)
 
     implementation(libs.lunabee.bom)
     implementation(libs.lbcore)

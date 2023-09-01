@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Test
 import studio.lunabee.compose.androidtest.LbcComposeTest
 import studio.lunabee.compose.androidtest.extension.waitUntilExactlyOneExists
-import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
+import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
 import studio.lunabee.onesafe.bubbles.ui.onesafek.SelectContactRoute
 import studio.lunabee.onesafe.bubbles.ui.onesafek.SelectContactViewModel
@@ -59,8 +59,16 @@ class SelectContactScreenTest : LbcComposeTest() {
     fun test_full_select_contact_screen() {
         val contact1Name = "toto"
         val contact2Name = "tata"
-        val contact1 = BubblesContactInfo(UUID.randomUUID(), nameProvider = DefaultNameProvider(contact1Name), ConversationState.FullySetup)
-        val contact2 = BubblesContactInfo(UUID.randomUUID(), nameProvider = DefaultNameProvider(contact2Name), ConversationState.FullySetup)
+        val contact1 = UIBubblesContactInfo(
+            UUID.randomUUID(),
+            nameProvider = DefaultNameProvider(contact1Name),
+            ConversationState.FullySetup,
+        )
+        val contact2 = UIBubblesContactInfo(
+            UUID.randomUUID(),
+            nameProvider = DefaultNameProvider(contact2Name),
+            ConversationState.FullySetup,
+        )
 
         every { mockkVM.contacts } returns MutableStateFlow(listOf(contact1, contact2))
         setScreen(mockkVM) {

@@ -55,7 +55,7 @@ import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.OSScreen
 import studio.lunabee.onesafe.bubbles.ui.extension.getDeepLinkFromMessage
-import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
+import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
@@ -106,7 +106,6 @@ fun WriteMessageRoute(
         modifier = Modifier.fillMaxSize(),
     ) {
         uiState.currentContact?.let { contact ->
-            val context = LocalContext.current
             WriteMessageScreen(
                 contact = contact,
                 plainMessage = uiState.plainMessage,
@@ -117,7 +116,6 @@ fun WriteMessageRoute(
                     coroutineScope.launch {
                         val messageToSend = viewModel.encryptAndSaveMessage(
                             content = uiState.plainMessage,
-                            context = context,
                         )
                         messageToSend?.let {
                             sendMessage(it.getDeepLinkFromMessage(uiState.isUsingDeepLink))
@@ -147,6 +145,7 @@ fun WriteMessageRoute(
                         }
                     }
                 },
+                onDeleteMessageClick = viewModel::deleteMessage,
             )
         }
     }
@@ -154,7 +153,7 @@ fun WriteMessageRoute(
 
 @Composable
 fun WriteMessageScreen(
-    contact: BubblesContactInfo,
+    contact: UIBubblesContactInfo,
     plainMessage: String,
     encryptedMessage: String,
     onChangeRecipient: (() -> Unit)?,
@@ -169,6 +168,7 @@ fun WriteMessageScreen(
     onPreviewClick: () -> Unit,
     onDeleteAllMessagesClick: () -> Unit,
     onResendMessageClick: (UUID) -> Unit,
+    onDeleteMessageClick: (UUID) -> Unit,
     onSeeContactClick: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
@@ -278,6 +278,7 @@ fun WriteMessageScreen(
                                     contactNameProvider = contact.nameProvider,
                                     context = context,
                                     onResendMessageClick = onResendMessageClick,
+                                    onDeleteMessageClick = onDeleteMessageClick,
                                 )
                             }
                         }
@@ -360,7 +361,7 @@ fun WriteMessageScreenPreview() {
         ).collectAsLazyPagingItems()
 
         WriteMessageScreen(
-            contact = BubblesContactInfo(UUID.randomUUID(), OSNameProvider.fromName("A", false), ConversationState.FullySetup),
+            contact = UIBubblesContactInfo(UUID.randomUUID(), OSNameProvider.fromName("A", false), ConversationState.FullySetup),
             plainMessage = loremIpsum(10),
             encryptedMessage = loremIpsum(10),
             onChangeRecipient = {},
@@ -376,6 +377,7 @@ fun WriteMessageScreenPreview() {
             onSeeContactClick = {},
             isConversationReady = false,
             onResendMessageClick = {},
+            onDeleteMessageClick = {},
         )
     }
 }

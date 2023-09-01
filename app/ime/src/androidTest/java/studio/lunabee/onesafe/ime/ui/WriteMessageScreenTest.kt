@@ -35,7 +35,7 @@ import org.junit.Test
 import studio.lunabee.compose.androidtest.LbcComposeTest
 import studio.lunabee.compose.androidtest.extension.waitUntilExactlyOneExists
 import studio.lunabee.onesafe.atom.OSImageSpec
-import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
+import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
@@ -53,7 +53,7 @@ class WriteMessageScreenTest : LbcComposeTest() {
     private val mockkVm: WriteMessageViewModel = mockk {
         every { uiState } returns MutableStateFlow(
             WriteMessageUiState(
-                currentContact = BubblesContactInfo(
+                currentContact = UIBubblesContactInfo(
                     id = UUID.randomUUID(),
                     nameProvider = DefaultNameProvider("Florian"),
                     conversationState = ConversationState.FullySetup,

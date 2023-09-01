@@ -67,4 +67,7 @@ interface MessageDao {
 
     @Query("SELECT * FROM Message WHERE contact_id IS :contactId ORDER BY `order` DESC LIMIT 1")
     fun getLastMessage(contactId: UUID): Flow<RoomMessage?>
+
+    @Query("DELETE FROM Message WHERE id IS :messageId")
+    suspend fun deleteMessage(messageId: UUID)
 }

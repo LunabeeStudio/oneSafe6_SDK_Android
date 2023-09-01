@@ -32,13 +32,14 @@ import studio.lunabee.onesafe.bubbles.domain.BubblesConstant
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.GetAllContactsUseCase
 import studio.lunabee.onesafe.bubbles.ui.extension.getNameProvider
-import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
+import studio.lunabee.onesafe.bubbles.ui.model.BubbleContactInfo
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
 import studio.lunabee.onesafe.bubbles.ui.model.ConversationSubtitle
+import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.domain.common.FeatureFlags
-import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCase
 import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
+import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCase
 import javax.inject.Inject
 
 @HiltViewModel
@@ -53,29 +54,33 @@ class BubblesAppScreenViewModel @Inject constructor(
     private val _conversation = MutableStateFlow<List<BubblesConversationInfo>?>(null)
     val conversation: StateFlow<List<BubblesConversationInfo>?> = _conversation.asStateFlow()
 
-    private val _contacts: MutableStateFlow<List<BubblesContactInfo>?> = MutableStateFlow(null)
-    val contacts: StateFlow<List<BubblesContactInfo>?> = _contacts.asStateFlow()
+    private val _contacts: MutableStateFlow<List<UIBubblesContactInfo>?> = MutableStateFlow(null)
+    val contacts: StateFlow<List<UIBubblesContactInfo>?> = _contacts.asStateFlow()
 
     init {
         viewModelScope.launch {
             getEncryptedBubblesContactList().collect { encryptedContacts ->
                 val contactLists = encryptedContacts.map { contact ->
                     val decryptedNameResult = contactLocalDecryptUseCase(contact.encName, contact.id, String::class)
-                    Pair(
-                        BubblesContactInfo(
-                            id = contact.id,
-                            nameProvider = decryptedNameResult.getNameProvider(),
-                            conversationState = getConversationStateUseCase.invoke(contact.id),
-                        ),
-                        // Use to know if we display the contact in the conversation tab
-                        contact.encSharedKey != null,
+                    BubbleContactInfo(
+                        id = contact.id,
+                        conversationState = getConversationStateUseCase.invoke(contact.id),
+                        isConvReady = contact.encSharedKey != null,
+                        rawName = decryptedNameResult,
+                        updatedAt = contact.updatedAt,
                     )
                 }
-                _contacts.value = contactLists.map { it.first }
-                _conversation.value = contactLists.map { (info, isConvReady) ->
+                _contacts.value = contactLists.sortedBy { it.rawName.data }.map {
+                    UIBubblesContactInfo(
+                        id = it.id,
+                        conversationState = it.conversationState,
+                        nameProvider = it.rawName.getNameProvider(),
+                    )
+                }
+                _conversation.value = contactLists.sortedByDescending { it.updatedAt }.map { info ->
                     BubblesConversationInfo(
-                        nameProvider = info.nameProvider,
-                        subtitle = if (isConvReady) {
+                        nameProvider = info.rawName.getNameProvider(),
+                        subtitle = if (info.isConvReady) {
                             messageRepository.getLastMessage(info.id).firstOrNull()?.let { message ->
                                 val content = contactLocalDecryptUseCase(message.encContent, info.id, String::class).data.orEmpty()
                                 val realContent = if (content == BubblesConstant.FirstMessageData) {

@@ -42,6 +42,7 @@ fun NavGraphBuilder.contactDetailGraph(
     navigateToInvitationScreen: (UUID) -> Unit,
     navigateToResponseScreen: (UUID) -> Unit,
     navigateToScanBarcodeScreen: () -> Unit,
+    navigateBackToBubbles: () -> Unit,
     navigateToContactEdition: (UUID) -> Unit,
 ) {
     composable(
@@ -59,6 +60,7 @@ fun NavGraphBuilder.contactDetailGraph(
             navigateToResponseScreen = navigateToResponseScreen,
             navigateToScanBarcodeScreen = navigateToScanBarcodeScreen,
             navigateToContactEdition = navigateToContactEdition,
+            navigateBackToBubbles = navigateBackToBubbles,
         )
     }
 }

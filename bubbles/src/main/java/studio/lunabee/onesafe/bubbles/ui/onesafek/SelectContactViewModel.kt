@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.GetAllContactsUseCase
 import studio.lunabee.onesafe.bubbles.ui.extension.getNameProvider
-import studio.lunabee.onesafe.bubbles.ui.model.BubblesContactInfo
+import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCase
 import javax.inject.Inject
 
@@ -40,15 +40,15 @@ class SelectContactViewModel @Inject constructor(
     private val getConversationStateUseCase: GetConversationStateUseCase,
 ) : ViewModel() {
 
-    private val _contacts = MutableStateFlow<List<BubblesContactInfo>?>(null)
-    val contacts: StateFlow<List<BubblesContactInfo>?> get() = _contacts.asStateFlow()
+    private val _contacts = MutableStateFlow<List<UIBubblesContactInfo>?>(null)
+    val contacts: StateFlow<List<UIBubblesContactInfo>?> get() = _contacts.asStateFlow()
 
     init {
         viewModelScope.launch {
             getEncryptedBubblesContactList().collect { encryptedContacts ->
                 _contacts.value = encryptedContacts.map { contact ->
                     val decryptedNameResult = contactLocalDecryptUseCase(contact.encName, contact.id, String::class)
-                    BubblesContactInfo(
+                    UIBubblesContactInfo(
                         id = contact.id,
                         nameProvider = decryptedNameResult.getNameProvider(),
                         conversationState = getConversationStateUseCase(contact.id),

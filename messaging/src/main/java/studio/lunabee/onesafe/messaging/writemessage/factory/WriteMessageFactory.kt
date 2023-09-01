@@ -30,11 +30,13 @@ import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
 import java.util.UUID
 
 object WriteMessageFactory {
+    @Suppress("LongParameterList")
     fun addPagingConversation(
         lazyListScope: LazyListScope,
         conversation: LazyPagingItems<ConversationUiData>,
         contactNameProvider: OSNameProvider,
         onResendMessageClick: (UUID) -> Unit,
+        onDeleteMessageClick: (UUID) -> Unit,
         context: Context,
     ) {
         val messageSectionDateFormatter = MessageSectionDateFormatter(context)
@@ -60,6 +62,7 @@ object WriteMessageFactory {
                         messageData = item,
                         contactName = contactNameProvider,
                         onResendClick = onResendMessageClick,
+                        onDeleteMessageClick = onDeleteMessageClick,
                     )
                     is ConversationUiData.DateHeader -> ConversationDayHeader(
                         text = messageSectionDateFormatter(item.date),

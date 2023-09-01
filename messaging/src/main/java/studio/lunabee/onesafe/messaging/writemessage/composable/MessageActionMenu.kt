@@ -22,8 +22,13 @@ package studio.lunabee.onesafe.messaging.writemessage.composable
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import studio.lunabee.onesafe.atom.OSClickableRow
+import studio.lunabee.onesafe.atom.OSIconAlertDecorationButton
+import studio.lunabee.onesafe.atom.OSIconDecorationButton
+import studio.lunabee.onesafe.atom.OSImageSpec
+import studio.lunabee.onesafe.atom.button.defaults.OSTextButtonDefaults
 import studio.lunabee.onesafe.messaging.writemessage.model.MessageAction
-import studio.lunabee.onesafe.molecule.OSDropdownMenuItem
+import studio.lunabee.onesafe.model.OSActionState
 
 @Composable
 fun MessageActionMenu(
@@ -38,12 +43,23 @@ fun MessageActionMenu(
         modifier = modifier,
     ) {
         actions.forEach { action ->
-            OSDropdownMenuItem(
-                text = action.text,
-                icon = action.icon,
+            OSClickableRow(
                 onClick = {
                     action.onClick()
                     onDismiss()
+                },
+                text = action.text,
+                leadingIcon = {
+                    if (action.isCritical) {
+                        OSIconAlertDecorationButton(image = OSImageSpec.Drawable(action.icon))
+                    } else {
+                        OSIconDecorationButton(image = OSImageSpec.Drawable(action.icon))
+                    }
+                },
+                buttonColors = if (action.isCritical) {
+                    OSTextButtonDefaults.secondaryAlertTextButtonColors(state = OSActionState.Enabled)
+                } else {
+                    OSTextButtonDefaults.secondaryTextButtonColors(state = OSActionState.Enabled)
                 },
             )
         }
