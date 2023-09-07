@@ -52,15 +52,9 @@ import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import studio.lunabee.onesafe.ui.theme.OSUserTheme
 import java.util.UUID
 
+context(ContactDetailNavScope)
 @Composable
 fun ContactDetailRoute(
-    navigateBack: () -> Unit,
-    navigateToConversation: (UUID) -> Unit,
-    navigateToInvitationScreen: (UUID) -> Unit,
-    navigateToResponseScreen: (UUID) -> Unit,
-    navigateToScanBarcodeScreen: () -> Unit,
-    navigateBackToBubbles: () -> Unit,
-    navigateToContactEdition: (UUID) -> Unit,
     viewModel: ContactDetailViewModel = hiltViewModel(),
 ) {
     val dialogState by viewModel.dialogState.collectAsStateWithLifecycle()
@@ -75,9 +69,9 @@ fun ContactDetailRoute(
                 onRemoveClick = viewModel::deleteContact,
                 onIsUsingDeepLinkChange = viewModel::updateIsUsingDeeplink,
                 conversationState = safeUiState.conversationState,
-                onResendInvitationClick = { navigateToInvitationScreen(viewModel.contactId) },
-                onResendResponseClick = { navigateToResponseScreen(viewModel.contactId) },
-                onScanResponseClick = navigateToScanBarcodeScreen,
+                onResendInvitationClick = { navigateToInvitation(viewModel.contactId) },
+                onResendResponseClick = { navigateToResponse(viewModel.contactId) },
+                onScanResponseClick = navigateToScanBarcode,
                 onEditClick = { navigateToContactEdition(viewModel.contactId) },
             )
         }
@@ -164,4 +158,14 @@ fun ContactDetailScreen(
             }
         }
     }
+}
+
+interface ContactDetailNavScope {
+    val navigateBack: () -> Unit
+    val navigateToConversation: (UUID) -> Unit
+    val navigateToInvitation: (UUID) -> Unit
+    val navigateToResponse: (UUID) -> Unit
+    val navigateToScanBarcode: () -> Unit
+    val navigateToContactEdition: (UUID) -> Unit
+    val navigateBackToBubbles: () -> Unit
 }

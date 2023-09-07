@@ -29,6 +29,6 @@ enum class ExportProgress {
     ;
 
     fun value(): Float {
-        return this.ordinal.toFloat() / ExportProgress.values().size
+        return this.ordinal.toFloat() / ExportProgress.entries.size
     }
 }

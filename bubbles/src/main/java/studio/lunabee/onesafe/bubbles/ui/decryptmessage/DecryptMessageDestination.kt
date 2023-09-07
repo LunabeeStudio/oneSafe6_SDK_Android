@@ -19,8 +19,19 @@
 
 package studio.lunabee.onesafe.bubbles.ui.decryptmessage
 
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import studio.lunabee.onesafe.commonui.navigation.OSDestination
 
 object DecryptMessageDestination : OSDestination {
     override val route: String = "decrypt_message"
+}
+
+context(DecryptMessageNavScope)
+fun NavGraphBuilder.decryptMessageScreen() {
+    composable(
+        route = DecryptMessageDestination.route,
+    ) {
+        DecryptMessageRoute()
+    }
 }

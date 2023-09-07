@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe
 
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
+import kotlin.time.Duration.Companion.days
 
 internal object SettingsDefaults {
     const val AutoLockInactivityDelayMsDefault: Long = 30_000
@@ -30,5 +31,6 @@ internal object SettingsDefaults {
     const val ClipboardClearDelayMsDefault: Long = 30_000
     const val DisplayShareWarningDefault: Boolean = true
     val VerifyPasswordIntervalDefault: VerifyPasswordInterval = VerifyPasswordInterval.EVERY_TWO_MONTHS
-    const val BubblesActivationDefault: Boolean = false
+    val BubblesResendMessageDelayMsDefault: Long = 1.days.inWholeMilliseconds
+    const val BubblesPreviewDefault: Boolean = false
 }

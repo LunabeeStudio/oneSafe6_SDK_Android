@@ -78,6 +78,7 @@ class SaveMessageUseCase @Inject constructor(
                 encContent = encContent,
                 direction = direction,
                 encChannel = encChannel,
+                isRead = direction == MessageDirection.SENT,
             )
 
             val orderResult: MessageOrderCalculator.OrderResult = messageOrderCalculator.invoke(plainMessage.sentAt, contactId, key)

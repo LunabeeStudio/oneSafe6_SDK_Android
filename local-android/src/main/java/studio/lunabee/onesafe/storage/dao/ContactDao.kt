@@ -59,4 +59,7 @@ interface ContactDao {
 
     @Query("UPDATE Contact SET updated_at =:updateAt WHERE id = :id")
     suspend fun updateUpdatedAt(id: UUID, updateAt: Instant)
+
+    @Query("UPDATE Contact SET consulted_at =:consultedAt WHERE id = :id")
+    suspend fun updateContactConsultedAt(id: UUID, consultedAt: Instant)
 }

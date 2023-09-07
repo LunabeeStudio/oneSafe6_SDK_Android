@@ -37,4 +37,5 @@ interface ContactLocalDataSource {
     suspend fun updateIsUsingDeeplink(id: UUID, encIsUsingDeeplink: ByteArray, updateAt: Instant)
     suspend fun updateUpdatedAt(id: UUID, updateAt: Instant)
     suspend fun updateContact(id: UUID, encIsUsingDeeplink: ByteArray, encName: ByteArray, updateAt: Instant)
+    suspend fun updateContactConsultedAt(id: UUID, consultedAt: Instant)
 }

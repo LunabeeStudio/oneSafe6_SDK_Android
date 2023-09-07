@@ -71,4 +71,11 @@ class SecurityOptionRepositoryImpl @Inject constructor(
     override fun setLastPasswordVerification(timeStamp: Long) {
         securityOptionDataSource.setLastPasswordVerificationTimeStamp(timeStamp)
     }
+
+    override val bubblesResendMessageDelayFlow: Flow<Duration>
+        get() = securityOptionDataSource.bubblesResendMessageDelayFlow
+
+    override fun setBubblesResendMessageDelay(delay: Duration) {
+        securityOptionDataSource.setBubblesResendMessageDelay(delay)
+    }
 }

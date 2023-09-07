@@ -47,6 +47,7 @@ class CreateContactUseCase @Inject constructor(
             updatedAt = Instant.now(),
             sharedConversationId = plainContact.sharedConversationId,
             encIsUsingDeeplink = bubblesCryptoRepository.localEncrypt(localKey, EncryptEntry(plainContact.isUsingDeepLink)),
+            consultedAt = Instant.now(),
         )
         contactRepository.save(contact, localKey)
     }

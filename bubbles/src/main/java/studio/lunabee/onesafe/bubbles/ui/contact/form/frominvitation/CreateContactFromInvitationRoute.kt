@@ -21,19 +21,26 @@ package studio.lunabee.onesafe.bubbles.ui.contact.form.frominvitation
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
-import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormType
+import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormNavScope
 import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormRoute
+import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormType
 import java.util.UUID
 
+context(CreateContactFromInvitationNavScope)
 @Composable
-fun CreateContactFromInvitationRoute(
-    navigateBack: () -> Unit,
-    navigateToInvitationResponseScreen: (UUID) -> Unit,
-) {
-    ContactFormRoute(
-        navigateBack = navigateBack,
-        navigateToNextScreen = navigateToInvitationResponseScreen,
-        viewModel = hiltViewModel<ContactFromInvitationViewModel>(),
-        type = ContactFormType.FromInvitation,
-    )
+fun CreateContactFromInvitationRoute() {
+    with(object : ContactFormNavScope {
+        override val navigateBack: () -> Unit = this@CreateContactFromInvitationNavScope.navigateBack
+        override val navigateToNextScreen: (UUID) -> Unit = this@CreateContactFromInvitationNavScope.navigateToInvitationResponse
+    }) {
+        ContactFormRoute(
+            viewModel = hiltViewModel<ContactFromInvitationViewModel>(),
+            type = ContactFormType.FromInvitation,
+        )
+    }
+}
+
+interface CreateContactFromInvitationNavScope {
+    val navigateBack: () -> Unit
+    val navigateToInvitationResponse: (UUID) -> Unit
 }

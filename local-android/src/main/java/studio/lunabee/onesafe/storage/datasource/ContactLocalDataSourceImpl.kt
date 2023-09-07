@@ -80,4 +80,8 @@ class ContactLocalDataSourceImpl @Inject constructor(
     override suspend fun updateContact(id: UUID, encIsUsingDeeplink: ByteArray, encName: ByteArray, updateAt: Instant) {
         dao.updateContact(id, encIsUsingDeeplink, encName, updateAt)
     }
+
+    override suspend fun updateContactConsultedAt(id: UUID, consultedAt: Instant) {
+        dao.updateContactConsultedAt(id, consultedAt)
+    }
 }

@@ -31,22 +31,25 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.doubleratchet.model.SendMessageData
 import studio.lunabee.onesafe.OSAppSettings
 import studio.lunabee.onesafe.bubbles.domain.BubblesConstant
+import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.GetContactUseCase
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
+import studio.lunabee.onesafe.commonui.CommonUiConstants
 import studio.lunabee.onesafe.commonui.ErrorNameProvider
 import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.R
@@ -75,6 +78,7 @@ import javax.inject.Inject
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class WriteMessageViewModel @Inject constructor(
     val savedStateHandle: SavedStateHandle,
@@ -89,6 +93,7 @@ class WriteMessageViewModel @Inject constructor(
     private val saveSentMessageUseCase: SaveSentMessageUseCase,
     private val sentMessageRepository: SentMessageRepository,
     private val messageIdProvider: MessageIdProvider,
+    private val contactRepository: ContactRepository,
     osAppSettings: OSAppSettings,
 ) : ViewModel() {
 
@@ -99,8 +104,22 @@ class WriteMessageViewModel @Inject constructor(
     val dialogState: StateFlow<DialogState?> get() = _dialogState.asStateFlow()
 
     val isMaterialYouSettingsEnabled: Flow<Boolean> = osAppSettings.materialYouSetting
+    val isPreviewEnabled: StateFlow<Boolean> = osAppSettings.bubblesPreview.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(),
+        true,
+    )
 
-    val contactId: StateFlow<String?> = savedStateHandle.getStateFlow<String?>(WriteMessageDestination.ContactIdArgs, null)
+    val contactId: StateFlow<UUID?> = savedStateHandle.getStateFlow(
+        WriteMessageDestination.ContactIdArgs,
+        savedStateHandle.get<String>(WriteMessageDestination.ContactIdArgs),
+    ).map {
+        it.let(UUID::fromString)
+    }.stateIn(
+        viewModelScope,
+        CommonUiConstants.Flow.DefaultSharingStarted,
+        savedStateHandle.get<String>(WriteMessageDestination.ContactIdArgs)?.let(UUID::fromString),
+    )
 
     private var lastMessageChange = Instant.now()
 
@@ -116,24 +135,33 @@ class WriteMessageViewModel @Inject constructor(
                     contactId = contactId,
                 )
             }.map { pagingData ->
+                contactId.value?.let { contactId ->
+                    messageRepository.markMessagesAsRead(contactId)
+                    contactRepository.updateContactConsultedAt(contactId, Instant.now())
+                }
                 pagingData.map { message ->
-                    // TODO handle decrypt error
+                    // TODO bubbles handle decrypt error
                     val sentAt = contactLocalDecryptUseCase(message.encSentAt, message.fromContactId, Instant::class).data!!
-                    val content = contactLocalDecryptUseCase(message.encContent, message.fromContactId, String::class).data!!
+                    val plainContent = contactLocalDecryptUseCase(message.encContent, message.fromContactId, String::class).data!!
                     val channel = message.encChannel?.let { encChannel ->
                         contactLocalDecryptUseCase(encChannel, message.fromContactId, String::class).data!!
                     }
-                    val realContent = if (content == BubblesConstant.FirstMessageData) {
-                        LbcTextSpec.StringResource(R.string.bubbles_acceptedInvitation)
+                    val text: LbcTextSpec
+                    val type: ConversationUiData.MessageType
+                    if (plainContent == BubblesConstant.FirstMessageData) {
+                        text = LbcTextSpec.StringResource(R.string.bubbles_acceptedInvitation)
+                        type = ConversationUiData.MessageType.Invitation
                     } else {
-                        LbcTextSpec.Raw(content)
+                        text = LbcTextSpec.Raw(plainContent)
+                        type = ConversationUiData.MessageType.Message
                     }
-                    ConversationUiData.PlainMessageData(
+                    ConversationUiData.Message(
                         id = message.id,
-                        text = realContent,
+                        text = text,
                         direction = message.direction,
                         sendAt = sentAt,
                         channelName = channel,
+                        type = type,
                     )
                 }.insertSeparators { before, after ->
                     when {
@@ -144,9 +172,9 @@ class WriteMessageViewModel @Inject constructor(
             }
 
     init {
-        contactId
-            .onEach { contactId ->
-                getContactUseCase(UUID.fromString(contactId!!)).first()?.let { encContact ->
+        viewModelScope.launch {
+            contactId.filterNotNull().flatMapLatest { contactId ->
+                getContactUseCase(contactId).filterNotNull().distinctUntilChanged().map { encContact ->
                     val decryptedNameResult = contactLocalDecryptUseCase(encContact.encName, encContact.id, String::class)
                     _uiState.value = _uiState.value.copy(
                         currentContact = UIBubblesContactInfo(
@@ -163,23 +191,24 @@ class WriteMessageViewModel @Inject constructor(
                         ),
                         isUsingDeepLink = contactLocalDecryptUseCase(encContact.encIsUsingDeeplink, encContact.id, Boolean::class).data
                             ?: true,
-                        isConversationReady = getConversationStateUseCase(contactId = UUID.fromString(contactId))
+                        isConversationReady = getConversationStateUseCase(contactId = contactId)
                             != ConversationState.WaitingForReply,
                     )
                 }
-            }.launchIn(viewModelScope)
+            }.collect()
+        }
     }
 
     fun onPlainMessageChange(value: String) {
         _uiState.value = _uiState.value.copy(
             plainMessage = value,
-            encryptedPreview = generatePreview(),
+            encryptedPreview = if (isPreviewEnabled.value) generatePreview() else "",
         )
     }
 
     private suspend fun generateSendMessageData(): SendMessageData? {
         return contactId.value?.let {
-            val result = getSendMessageDataUseCase(UUID.fromString(it))
+            val result = getSendMessageDataUseCase(it)
             when (result) {
                 is LBResult.Success -> result.successData
                 is LBResult.Failure -> {
@@ -197,9 +226,10 @@ class WriteMessageViewModel @Inject constructor(
     }
 
     suspend fun encryptAndSaveMessage(content: String): String? {
+        onPlainMessageChange("")
         return generateSendMessageData()?.let { sendMessageData ->
             lastMessageChange = Instant.now()
-            val contactId = UUID.fromString(contactId.value)
+            val contactId = contactId.value!!
             val messageId = messageIdProvider()
             val messageOrder = saveMessageUseCase(
                 plainMessage = OSPlainMessage(
@@ -234,8 +264,7 @@ class WriteMessageViewModel @Inject constructor(
 
     suspend fun getSentMessage(sentMessageId: UUID): String? {
         val encMessage = sentMessageRepository.getSentMessage(sentMessageId)
-        val contactId = UUID.fromString(contactId.value)
-        val result = encMessage?.let { contactLocalDecryptUseCase(encMessage.encContent, contactId, String::class) }
+        val result = encMessage?.let { contactLocalDecryptUseCase(encMessage.encContent, contactId.value!!, String::class) }
         return when (result) {
             is LBResult.Success -> result.data
             else -> {
@@ -275,7 +304,7 @@ class WriteMessageViewModel @Inject constructor(
                     type = DialogAction.Type.Dangerous,
                     onClick = {
                         dismissDialog()
-                        viewModelScope.launch { messageRepository.deleteAllMessages(UUID.fromString(contactId.value)) }
+                        viewModelScope.launch { messageRepository.deleteAllMessages(contactId.value!!) }
                     },
                 ),
                 DialogAction.commonCancel(::dismissDialog),

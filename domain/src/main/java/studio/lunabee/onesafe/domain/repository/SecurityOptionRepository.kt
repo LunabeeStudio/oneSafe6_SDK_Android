@@ -43,4 +43,7 @@ interface SecurityOptionRepository {
 
     val lastPasswordVerificationTimeStamp: Long?
     fun setLastPasswordVerification(timeStamp: Long)
+
+    val bubblesResendMessageDelayFlow: Flow<Duration>
+    fun setBubblesResendMessageDelay(delay: Duration)
 }

@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 7/12/2023 - for the oneSafe6 SDK.
- * Last modified 12/07/2023 10:53
+ * Created by Lunabee Studio / Date - 8/25/2023 - for the oneSafe6 SDK.
+ * Last modified 8/25/23, 5:37 PM
  */
 
-package studio.lunabee.onesafe.bubbles.ui.contact.detail
+package studio.lunabee.onesafe.bubbles.ui.contact
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImage
 import studio.lunabee.onesafe.atom.OSImageSpec
@@ -32,15 +33,19 @@ import studio.lunabee.onesafe.atom.button.OSFilledButton
 import studio.lunabee.onesafe.atom.button.defaults.OSFilledButtonDefaults
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.organism.card.OSMessageCard
+import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
+import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
+import studio.lunabee.onesafe.utils.OsDefaultPreview
 
 @Composable
 fun EmptyContactsScreen(
     onAddContactClick: () -> Unit,
     onScanClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(OSDimens.SystemSpacing.Regular),
         verticalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.Regular),
@@ -74,5 +79,17 @@ fun EmptyContactsScreen(
             },
         )
         // TODO = Implement the know more screen
+    }
+}
+
+@OsDefaultPreview
+@Composable
+private fun EmptyContactsScreenPreview() {
+    OSPreviewBackgroundTheme {
+        EmptyContactsScreen(
+            onAddContactClick = {},
+            onScanClick = {},
+            modifier = Modifier.Companion.testTag(UiConstants.TestTag.Screen.BubblesHomeScreenContactTab),
+        )
     }
 }

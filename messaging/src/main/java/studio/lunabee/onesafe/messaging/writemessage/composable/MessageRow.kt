@@ -23,6 +23,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,16 +31,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -50,11 +46,9 @@ import studio.lunabee.onesafe.commonui.DefaultNameProvider
 import studio.lunabee.onesafe.commonui.OSItemIllustrationHelper
 import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.R
-import studio.lunabee.onesafe.commonui.extension.copyToClipBoard
 import studio.lunabee.onesafe.extension.loremIpsum
 import studio.lunabee.onesafe.messaging.domain.model.MessageDirection
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
-import studio.lunabee.onesafe.messaging.writemessage.model.MessageAction
 import studio.lunabee.onesafe.model.OSSafeItemStyle
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
@@ -67,40 +61,15 @@ import java.util.UUID
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OneSafeKMessageRow(
-    messageData: ConversationUiData.PlainMessageData,
+fun MessageRow(
+    messageData: ConversationUiData.Message,
     contactName: OSNameProvider,
-    onResendClick: (UUID) -> Unit,
-    onDeleteMessageClick: (UUID) -> Unit,
+    messageLongPress: MessageLongPress,
 ) {
-    var isActionMenuExpanded: Boolean by rememberSaveable { mutableStateOf(false) }
     val haptics = LocalHapticFeedback.current
-    val messageText = messageData.text.string
-    val context = LocalContext.current
     val style: MessageRowStyle = when (messageData.direction) {
         MessageDirection.SENT -> MessageRowDefault.send()
         MessageDirection.RECEIVED -> MessageRowDefault.received()
-    }
-    val actions: List<MessageAction> = when (messageData.direction) {
-        MessageDirection.SENT -> listOf(
-            MessageAction.Resend { messageData.id.let(onResendClick) },
-            MessageAction.Copy {
-                context.copyToClipBoard(
-                    messageText,
-                    LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_copyLabel),
-                )
-            },
-            MessageAction.Delete { messageData.id.let(onDeleteMessageClick) },
-        )
-        MessageDirection.RECEIVED -> listOf(
-            MessageAction.Copy {
-                context.copyToClipBoard(
-                    messageText,
-                    LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_copyLabel),
-                )
-            },
-            MessageAction.Delete { messageData.id.let(onDeleteMessageClick) },
-        )
     }
     Row(
         modifier = Modifier
@@ -117,22 +86,26 @@ fun OneSafeKMessageRow(
                 .background(style.backgroundColor)
                 .fillMaxWidth(style.widthRow)
                 .combinedClickable(
+                    enabled = messageLongPress.enabled(messageData.type),
                     onLongClick = {
                         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                        isActionMenuExpanded = true
+                        messageLongPress.onLongClick(messageData.id)
                     },
                     onClick = {},
                 )
                 .padding(horizontal = OSDimens.SystemSpacing.Regular, vertical = OSDimens.SystemSpacing.Small),
             verticalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.ExtraSmall),
         ) {
-            OSText(
-                text = messageData.text,
-                textAlign = style.textAlign,
-                color = style.textColor,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            Box {
+                OSText(
+                    text = messageData.text,
+                    textAlign = style.textAlign,
+                    color = style.textColor,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                messageLongPress.Content(messageData)
+            }
             val channelText = if (messageData.channelName != null) {
                 LbcTextSpec.Raw(messageData.channelName)
             } else {
@@ -151,11 +124,6 @@ fun OneSafeKMessageRow(
                 modifier = Modifier.fillMaxWidth(),
             )
         }
-        MessageActionMenu(
-            isMenuExpended = isActionMenuExpanded,
-            onDismiss = { isActionMenuExpanded = false },
-            actions = actions,
-        )
     }
 }
 
@@ -217,29 +185,32 @@ fun OneSafeKMessageRowPreview() {
                 .padding(OSDimens.SystemSpacing.Regular),
             verticalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.Regular),
         ) {
-            OneSafeKMessageRow(
-                messageData = ConversationUiData.PlainMessageData(
+            val messageRowLongPress = object : MessageLongPress() {
+                override fun onLongClick(id: UUID) {}
+            }
+            MessageRow(
+                messageData = ConversationUiData.Message(
                     id = UUID.randomUUID(),
                     text = LbcTextSpec.Raw(loremIpsum(10)),
                     direction = MessageDirection.SENT,
                     sendAt = Instant.now(),
                     channelName = "Telegram",
+                    type = ConversationUiData.MessageType.Message,
                 ),
                 contactName = DefaultNameProvider("Flo"),
-                onResendClick = {},
-                onDeleteMessageClick = {},
+                messageLongPress = messageRowLongPress,
             )
-            OneSafeKMessageRow(
-                messageData = ConversationUiData.PlainMessageData(
+            MessageRow(
+                messageData = ConversationUiData.Message(
                     id = UUID.randomUUID(),
                     text = LbcTextSpec.Raw(loremIpsum(10)),
                     direction = MessageDirection.RECEIVED,
                     sendAt = Instant.now(),
                     channelName = "Telegram",
+                    type = ConversationUiData.MessageType.Message,
                 ),
                 contactName = DefaultNameProvider("Flo"),
-                onResendClick = {},
-                onDeleteMessageClick = {},
+                messageLongPress = messageRowLongPress,
             )
         }
     }

@@ -19,6 +19,18 @@
 
 package studio.lunabee.onesafe.messaging.writemessage.destination
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import studio.lunabee.onesafe.atom.OSImageSpec
+import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.extension.getTextSharingIntent
+import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageNavScope
+import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageRoute
 import java.util.UUID
 
 object WriteMessageDestination {
@@ -29,4 +41,31 @@ object WriteMessageDestination {
     fun getRoute(
         contactId: UUID,
     ): String = route.replace("{$ContactIdArgs}", contactId.toString())
+}
+
+context(WriteMessageNavScope)
+fun NavGraphBuilder.writeMessageScreen(
+    createMessagingViewModel: @Composable (NavBackStackEntry) -> Unit,
+) {
+    composable(
+        route = WriteMessageDestination.route,
+        arguments = listOf(
+            navArgument(WriteMessageDestination.ContactIdArgs) {
+                type = NavType.StringType
+            },
+        ),
+    ) { backStackEntry ->
+        val context = LocalContext.current
+        createMessagingViewModel(backStackEntry)
+        WriteMessageRoute(
+            onChangeRecipient = null,
+            sendMessage = { encMessage ->
+                val intent = context.getTextSharingIntent(encMessage)
+                context.startActivity(intent)
+            },
+            contactIdFlow = backStackEntry.savedStateHandle.getStateFlow(WriteMessageDestination.ContactIdArgs, null),
+            sendIcon = OSImageSpec.Drawable(R.drawable.ic_share),
+            hideKeyboard = null,
+        )
+    }
 }

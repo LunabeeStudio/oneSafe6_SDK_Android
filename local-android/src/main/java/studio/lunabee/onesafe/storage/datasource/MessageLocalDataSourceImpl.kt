@@ -69,4 +69,8 @@ class MessageLocalDataSourceImpl @Inject constructor(
     override suspend fun deleteMessage(messageId: UUID) {
         messageDao.deleteMessage(messageId)
     }
+
+    override suspend fun markMessagesAsRead(contactId: UUID) {
+        messageDao.markMessagesAsRead(contactId)
+    }
 }

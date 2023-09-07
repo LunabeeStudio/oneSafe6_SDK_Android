@@ -34,11 +34,10 @@ import studio.lunabee.onesafe.model.OSItemIllustration
 import timber.log.Timber
 import java.util.UUID
 
+context(ContactFormNavScope)
 @Composable
 fun ContactFormRoute(
     type: ContactFormType,
-    navigateBack: () -> Unit,
-    navigateToNextScreen: (UUID) -> Unit,
     viewModel: ContactFormViewModel,
 ) {
     val state by viewModel.formState.collectAsStateWithLifecycle()
@@ -85,4 +84,9 @@ fun ContactFormRoute(
         onContactNameChange = viewModel::setName,
         contactName = state.name,
     )
+}
+
+interface ContactFormNavScope {
+    val navigateBack: () -> Unit
+    val navigateToNextScreen: (UUID) -> Unit
 }

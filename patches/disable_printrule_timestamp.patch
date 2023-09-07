@@ -1,0 +1,13 @@
+diff --git forkSrcPrefix/app/src/androidTest/java/studio/lunabee/onesafe/OSMainActivityTest.kt forkDstPrefix/app/src/androidTest/java/studio/lunabee/onesafe/OSMainActivityTest.kt
+index 3f2d3dfdee3c152f66060b020695e1126c905dd3..f460e0707c4f0775917a4fe6e1f233fd7c083b1d 100644
+--- forkSrcPrefix/app/src/androidTest/java/studio/lunabee/onesafe/OSMainActivityTest.kt
++++ forkDstPrefix/app/src/androidTest/java/studio/lunabee/onesafe/OSMainActivityTest.kt
+@@ -74,7 +74,7 @@ abstract class OSMainActivityTest : OSHiltTest() {
+     @get:Rule
+     val printRule: LbcPrintRule = LbcPrintRule(
+         appName = InstrumentationRegistry.getInstrumentation().targetContext.packageName,
+-        appendTimestamp = true,
++        appendTimestamp = false,
+     )
+ 
+     /**

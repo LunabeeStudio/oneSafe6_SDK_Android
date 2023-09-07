@@ -35,10 +35,8 @@ object InvitationResponseDestination : OSDestination {
     ): String = route.replace("{$ContactIdArgs}", contactId.toString())
 }
 
-fun NavGraphBuilder.invitationResponseGraph(
-    navigateBack: () -> Unit,
-    navigateToConversation: (UUID) -> Unit,
-) {
+context (InvitationResponseNavScope)
+fun NavGraphBuilder.invitationResponseScreen() {
     composable(
         route = InvitationResponseDestination.route,
         arguments = listOf(
@@ -47,9 +45,6 @@ fun NavGraphBuilder.invitationResponseGraph(
             },
         ),
     ) {
-        InvitationResponseRoute(
-            navigateBack = navigateBack,
-            navigateToConversation = navigateToConversation,
-        )
+        InvitationResponseRoute()
     }
 }

@@ -19,30 +19,19 @@
 
 package studio.lunabee.onesafe.bubbles.ui.barcode
 
-import androidx.compose.material3.SnackbarVisuals
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import studio.lunabee.onesafe.commonui.navigation.OSDestination
-import java.util.UUID
 
 object ScanBarcodeDestination : OSDestination {
     override val route: String = "scan_barcode"
 }
 
-fun NavGraphBuilder.scanBarcodeDestination(
-    navigateBack: () -> Unit,
-    navigateToCreateContact: (String) -> Unit,
-    navigateToConversation: (UUID) -> Unit,
-    showSnackbar: (visuals: SnackbarVisuals) -> Unit,
-) {
+context(ScanBarcodeNavScope)
+fun NavGraphBuilder.scanBarcodeScreen() {
     composable(
         route = ScanBarcodeDestination.route,
     ) {
-        ScanBarcodeRoute(
-            navigateBack = navigateBack,
-            navigateToCreateContact = navigateToCreateContact,
-            navigateToConversation = navigateToConversation,
-            showSnackbar = showSnackbar,
-        )
+        ScanBarcodeRoute()
     }
 }

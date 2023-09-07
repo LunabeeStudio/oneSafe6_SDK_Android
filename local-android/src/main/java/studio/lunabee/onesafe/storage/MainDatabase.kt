@@ -51,13 +51,13 @@ import studio.lunabee.onesafe.storage.model.RoomMessage
 import studio.lunabee.onesafe.storage.model.RoomSafeItem
 import studio.lunabee.onesafe.storage.model.RoomSafeItemField
 import studio.lunabee.onesafe.storage.model.RoomSafeItemKey
+import studio.lunabee.onesafe.storage.model.RoomSentMessage
 import studio.lunabee.onesafe.toByteArray
 import javax.inject.Inject
-import studio.lunabee.onesafe.storage.model.RoomSentMessage
 
 @TypeConverters(InstantConverter::class)
 @Database(
-    version = 5,
+    version = 6,
     entities = [
         RoomSafeItem::class,
         RoomSafeItemField::class,
@@ -76,6 +76,7 @@ import studio.lunabee.onesafe.storage.model.RoomSentMessage
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 4, to = 5),
+        AutoMigration(from = 5, to = 6),
     ],
 )
 abstract class MainDatabase : RoomDatabase() {

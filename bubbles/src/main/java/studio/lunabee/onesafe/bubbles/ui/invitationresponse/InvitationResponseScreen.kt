@@ -52,10 +52,9 @@ import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import java.util.UUID
 
+context(InvitationResponseNavScope)
 @Composable
 fun InvitationResponseRoute(
-    navigateBack: () -> Unit,
-    navigateToConversation: (UUID) -> Unit,
     viewModel: InvitationResponseViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -128,4 +127,9 @@ fun InvitationResponseScreen(
             }
         }
     }
+}
+
+interface InvitationResponseNavScope {
+    val navigateBack: () -> Unit
+    val navigateToConversation: (UUID) -> Unit
 }

@@ -40,6 +40,8 @@ android {
         sourceCompatibility = ProjectConfig.JDK_VERSION
         targetCompatibility = ProjectConfig.JDK_VERSION
     }
+
+    kotlinOptions.freeCompilerArgs += "-Xcontext-receivers"
 }
 
 kapt {

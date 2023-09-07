@@ -68,12 +68,9 @@ import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
 import java.util.UUID
 
+context(ScanBarcodeNavScope)
 @Composable
 fun ScanBarcodeRoute(
-    navigateBack: () -> Unit,
-    navigateToCreateContact: (String) -> Unit,
-    navigateToConversation: (UUID) -> Unit,
-    showSnackbar: (visuals: SnackbarVisuals) -> Unit,
     viewModel: ScanBarcodeViewModel = hiltViewModel(),
 ) {
     CameraPermission(navigateBack, viewModel, showSnackbar)
@@ -85,10 +82,10 @@ fun ScanBarcodeRoute(
     when (val safeUiState = uiState) {
         is ScanBarcodeUiState.Idle -> {}
         is ScanBarcodeUiState.NavigateToConversation -> {
-            LaunchedEffect(Unit) { navigateToConversation(safeUiState.contactId) }
+            LaunchedEffect(Unit) { navigateToConversationPopToHome(safeUiState.contactId) }
         }
         is ScanBarcodeUiState.NavigateToCreateContact -> {
-            LaunchedEffect(Unit) { navigateToCreateContact(safeUiState.messageString) }
+            LaunchedEffect(Unit) { navigateToCreateContactPopToHome(safeUiState.messageString) }
         }
     }
 }
@@ -234,4 +231,11 @@ fun BarcodeView(
             it.stopDecoding()
         },
     )
+}
+
+interface ScanBarcodeNavScope {
+    val navigateBack: () -> Unit
+    val navigateToCreateContactPopToHome: (String) -> Unit
+    val navigateToConversationPopToHome: (UUID) -> Unit
+    val showSnackbar: (visuals: SnackbarVisuals) -> Unit
 }

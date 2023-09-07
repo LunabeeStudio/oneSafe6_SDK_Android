@@ -25,18 +25,16 @@ import androidx.paging.compose.LazyPagingItems
 import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.messaging.utils.MessageSectionDateFormatter
 import studio.lunabee.onesafe.messaging.writemessage.composable.ConversationDayHeader
-import studio.lunabee.onesafe.messaging.writemessage.composable.OneSafeKMessageRow
+import studio.lunabee.onesafe.messaging.writemessage.composable.MessageLongPress
+import studio.lunabee.onesafe.messaging.writemessage.composable.MessageRow
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
-import java.util.UUID
 
 object WriteMessageFactory {
-    @Suppress("LongParameterList")
     fun addPagingConversation(
         lazyListScope: LazyListScope,
         conversation: LazyPagingItems<ConversationUiData>,
         contactNameProvider: OSNameProvider,
-        onResendMessageClick: (UUID) -> Unit,
-        onDeleteMessageClick: (UUID) -> Unit,
+        messageLongPress: MessageLongPress,
         context: Context,
     ) {
         val messageSectionDateFormatter = MessageSectionDateFormatter(context)
@@ -44,26 +42,27 @@ object WriteMessageFactory {
             count = conversation.itemCount,
             contentType = { index ->
                 when (conversation.peek(index)) {
-                    is ConversationUiData.PlainMessageData -> MessageContentType
+                    is ConversationUiData.Message -> MessageContentType
                     is ConversationUiData.DateHeader -> DateHeaderContentType
                     else -> null
                 }
             },
             key = { index ->
                 when (val item = conversation.peek(index)) {
-                    is ConversationUiData.PlainMessageData -> item.id
+                    is ConversationUiData.Message -> item.id
                     else -> index
                 }
             },
         ) { index ->
             conversation[index]?.let { item ->
                 when (item) {
-                    is ConversationUiData.PlainMessageData -> OneSafeKMessageRow(
-                        messageData = item,
-                        contactName = contactNameProvider,
-                        onResendClick = onResendMessageClick,
-                        onDeleteMessageClick = onDeleteMessageClick,
-                    )
+                    is ConversationUiData.Message -> {
+                        MessageRow(
+                            messageData = item,
+                            contactName = contactNameProvider,
+                            messageLongPress = messageLongPress,
+                        )
+                    }
                     is ConversationUiData.DateHeader -> ConversationDayHeader(
                         text = messageSectionDateFormatter(item.date),
                     )

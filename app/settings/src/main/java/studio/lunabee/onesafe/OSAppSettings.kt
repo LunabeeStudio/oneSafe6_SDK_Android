@@ -54,6 +54,11 @@ class OSAppSettings @Inject constructor(
     val allowScreenshotFlow: Flow<Boolean> = dataStore.data
         .map { preferences -> preferences[allowScreenshotKey] ?: SettingsDefaults.AllowScreenshotSettingDefault }
 
+    private val bubblesPreviewKey = booleanPreferencesKey(SettingsConstants.BubblesPreview)
+
+    val bubblesPreview: Flow<Boolean> = dataStore.data
+        .map { preferences -> preferences[bubblesPreviewKey] ?: SettingsDefaults.BubblesPreviewDefault }
+
     suspend fun allowScreenshot(): Boolean = dataStore.data
         .map { preferences -> preferences[allowScreenshotKey] ?: SettingsDefaults.AllowScreenshotSettingDefault }.first()
 
@@ -96,14 +101,9 @@ class OSAppSettings @Inject constructor(
         }
     }
 
-    private val bubblesActivationSettingKey = booleanPreferencesKey(SettingsConstants.BubblesActivation)
-    fun bubblesActivationSetting(): Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[bubblesActivationSettingKey] ?: SettingsDefaults.BubblesActivationDefault
-    }
-
-    suspend fun setBubblesActivationSetting(value: Boolean) {
+    suspend fun setBubblesPreviewSettings(value: Boolean) {
         dataStore.edit { preferences ->
-            preferences[bubblesActivationSettingKey] = value
+            preferences[bubblesPreviewKey] = value
         }
     }
 }

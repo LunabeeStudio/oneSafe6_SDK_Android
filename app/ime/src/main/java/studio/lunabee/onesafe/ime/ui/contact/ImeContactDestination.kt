@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2023-2023 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 5/29/2023 - for the oneSafe6 SDK.
- * Last modified 5/29/23, 4:22 PM
+ * Created by Lunabee Studio / Date - 8/25/2023 - for the oneSafe6 SDK.
+ * Last modified 8/25/23, 5:58 PM
  */
 
-package studio.lunabee.onesafe.bubbles.ui.onesafek
+package studio.lunabee.onesafe.ime.ui.contact
 
 object SelectContactDestination {
     const val route: String = "select_contact"

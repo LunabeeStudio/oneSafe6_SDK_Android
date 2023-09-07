@@ -33,6 +33,7 @@ suspend fun MessageDao.insert(
     direction: MessageDirection = MessageDirection.SENT,
     order: Float = 0f,
     encChannel: ByteArray = byteArrayOf(),
+    isRead: Boolean = true,
 ) {
     insert(
         RoomMessage(
@@ -43,6 +44,7 @@ suspend fun MessageDao.insert(
             direction = direction,
             order = order,
             encChannel = encChannel,
+            isRead = isRead,
         ),
     )
 }

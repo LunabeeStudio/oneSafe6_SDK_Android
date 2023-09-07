@@ -39,6 +39,7 @@ data class RoomContact(
     @ColumnInfo(name = "updated_at") val updatedAt: Instant,
     @ColumnInfo(name = "shared_conversation_id") val sharedConversationId: UUID,
     @ColumnInfo(name = "enc_is_using_deeplink") val encIsUsingDeeplink: ByteArray,
+    @ColumnInfo(name = "consulted_at", defaultValue = "null") val consultedAt: Instant?,
 ) {
     fun toContact(): Contact =
         Contact(
@@ -48,6 +49,7 @@ data class RoomContact(
             updatedAt = updatedAt,
             sharedConversationId = sharedConversationId,
             encIsUsingDeeplink = encIsUsingDeeplink,
+            consultedAt = consultedAt,
         )
 
     override fun equals(other: Any?): Boolean {
@@ -81,6 +83,7 @@ data class RoomContact(
                 updatedAt = bubblesContact.updatedAt,
                 sharedConversationId = bubblesContact.sharedConversationId,
                 encIsUsingDeeplink = bubblesContact.encIsUsingDeeplink,
+                consultedAt = bubblesContact.consultedAt,
             )
     }
 }

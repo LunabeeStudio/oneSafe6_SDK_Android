@@ -22,6 +22,8 @@ package studio.lunabee.onesafe.messaging.writemessage.composable.topbar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.dp
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSClickableRow
 import studio.lunabee.onesafe.atom.OSIconAlertDecorationButton
@@ -38,12 +40,14 @@ fun ContactActionMenu(
     onSeeContactClick: () -> Unit,
     onDeleteMessages: () -> Unit,
     onHideConversation: () -> Unit,
-    modifier: Modifier = Modifier,
     isConversationHidden: Boolean,
+    modifier: Modifier = Modifier,
+    offset: DpOffset = DpOffset(0.dp, 0.dp),
 ) {
     DropdownMenu(
         expanded = isMenuExpended,
         onDismissRequest = onDismiss,
+        offset = offset,
         modifier = modifier,
     ) {
         OSClickableRow(

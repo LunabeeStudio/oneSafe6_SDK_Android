@@ -35,21 +35,23 @@ import studio.lunabee.compose.androidtest.LbcComposeTest
 import studio.lunabee.compose.androidtest.extension.waitUntilExactlyOneExists
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
-import studio.lunabee.onesafe.bubbles.ui.onesafek.SelectContactRoute
-import studio.lunabee.onesafe.bubbles.ui.onesafek.SelectContactViewModel
+import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.ime.ui.contact.ImeContactRoute
+import studio.lunabee.onesafe.ime.ui.contact.ImeContactUiState
+import studio.lunabee.onesafe.ime.ui.contact.ImeContactViewModel
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.ui.UiConstants
 import java.util.UUID
 
 @OptIn(ExperimentalTestApi::class)
-class SelectContactScreenTest : LbcComposeTest() {
+class ImeContactScreenTest : LbcComposeTest() {
 
-    private val mockkVM: SelectContactViewModel = mockk()
+    private val mockkVM: ImeContactViewModel = mockk()
     private val onClickOnContact: (UUID) -> Unit = spyk({})
 
     @Test
     fun test_empty_select_contact_screen() {
-        every { mockkVM.contacts } returns MutableStateFlow(listOf())
+        every { mockkVM.uiState } returns MutableStateFlow(ImeContactUiState.Empty)
         setScreen(mockkVM) {
             hasTestTag(UiConstants.TestTag.Item.BubblesNoContactCard)
         }
@@ -70,7 +72,7 @@ class SelectContactScreenTest : LbcComposeTest() {
             ConversationState.FullySetup,
         )
 
-        every { mockkVM.contacts } returns MutableStateFlow(listOf(contact1, contact2))
+        every { mockkVM.uiState } returns MutableStateFlow(ImeContactUiState.Data(listOf(contact1, contact2)))
         setScreen(mockkVM) {
             onNodeWithTag(UiConstants.TestTag.Item.BubblesNoContactCard).assertDoesNotExist()
             hasText(contact1Name).waitUntilExactlyOneExists(this).performClick()
@@ -82,15 +84,18 @@ class SelectContactScreenTest : LbcComposeTest() {
     }
 
     private fun setScreen(
-        viewModel: SelectContactViewModel,
+        viewModel: ImeContactViewModel,
         block: ComposeUiTest.() -> Unit,
     ) {
         invoke {
             setContent {
-                SelectContactRoute(
+                ImeContactRoute(
                     navigateToWriteMessage = onClickOnContact,
                     viewModel = viewModel,
                     navigateBack = {},
+                    exitIcon = R.drawable.ic_close,
+                    deeplinkBubblesHomeContact = {},
+                    deeplinkBubblesWriteMessage = {},
                 )
             }
             block()

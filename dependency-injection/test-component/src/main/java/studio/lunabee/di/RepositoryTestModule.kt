@@ -73,6 +73,7 @@ import studio.lunabee.onesafe.repository.repository.SupportOSRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.UrlMetadataRepositoryImpl
 import javax.inject.Singleton
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 
 @Module
@@ -223,6 +224,11 @@ internal object SecurityOptionModule {
             override fun setLastPasswordVerification(timeStamp: Long) {
                 lastPasswordVerif = timeStamp
             }
+
+            override val bubblesResendMessageDelayFlow: Flow<Duration>
+                get() = flowOf(1.days)
+
+            override fun setBubblesResendMessageDelay(delay: Duration) {}
 
             override fun setPasswordInterval(passwordInterval: VerifyPasswordInterval) {
                 verifInterval = passwordInterval

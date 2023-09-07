@@ -60,6 +60,7 @@ interface MainCryptoRepository {
     suspend fun testPassword(password: CharArray): Boolean
 
     suspend fun loadMasterKeyFromBiometric(cipher: Cipher)
+    suspend fun retrieveMasterKeyFromBiometric(cipher: Cipher): ByteArray
     fun getCipherForBiometricForVerify(): Cipher
     fun getCipherForBiometricForCreate(): Cipher
     fun isBiometricEnabledFlow(): Flow<Boolean>

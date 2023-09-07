@@ -19,19 +19,23 @@
 
 package studio.lunabee.onesafe.messaging.domain.usecase
 
+import kotlinx.coroutines.flow.first
 import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactKeyRepository
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
+import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
 import studio.lunabee.onesafe.messaging.domain.model.SentMessage
 import studio.lunabee.onesafe.messaging.domain.repository.SentMessageRepository
 import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.time.Duration
 
 class SaveSentMessageUseCase @Inject constructor(
     private val bubblesCryptoRepository: BubblesCryptoRepository,
     private val sentMessageRepository: SentMessageRepository,
     private val contactKeyRepository: ContactKeyRepository,
+    private val securityOptionRepository: SecurityOptionRepository,
 ) {
 
     suspend operator fun invoke(
@@ -41,16 +45,18 @@ class SaveSentMessageUseCase @Inject constructor(
         createdAt: Instant,
         order: Float,
     ) {
-        val key = contactKeyRepository.getContactLocalKey(contactId)
-        val encContent = bubblesCryptoRepository.localEncrypt(key, EncryptEntry(messageString))
-        sentMessageRepository.saveSentMessage(
-            SentMessage(
-                id = id,
-                encContent = encContent,
-                encCreatedAt = bubblesCryptoRepository.localEncrypt(key, EncryptEntry(createdAt)),
-                contactId = contactId,
-                order = order,
-            ),
-        )
+        if (securityOptionRepository.bubblesResendMessageDelayFlow.first() != Duration.ZERO) {
+            val key = contactKeyRepository.getContactLocalKey(contactId)
+            val encContent = bubblesCryptoRepository.localEncrypt(key, EncryptEntry(messageString))
+            sentMessageRepository.saveSentMessage(
+                SentMessage(
+                    id = id,
+                    encContent = encContent,
+                    encCreatedAt = bubblesCryptoRepository.localEncrypt(key, EncryptEntry(createdAt)),
+                    contactId = contactId,
+                    order = order,
+                ),
+            )
+        }
     }
 }

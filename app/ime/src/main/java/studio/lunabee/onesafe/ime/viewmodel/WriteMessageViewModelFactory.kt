@@ -23,6 +23,7 @@ import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import studio.lunabee.onesafe.OSAppSettings
+import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.GetContactUseCase
 import studio.lunabee.onesafe.domain.common.MessageIdProvider
@@ -50,6 +51,7 @@ class WriteMessageViewModelFactory @Inject constructor(
     private val saveSentMessageUseCase: SaveSentMessageUseCase,
     private val sentMessageRepository: SentMessageRepository,
     private val messageIdProvider: MessageIdProvider,
+    private val contactRepository: ContactRepository,
 ) : AbstractSavedStateViewModelFactory() {
     override fun <T : ViewModel> create(key: String, modelClass: Class<T>, handle: SavedStateHandle): T {
         @Suppress("UNCHECKED_CAST")
@@ -67,6 +69,7 @@ class WriteMessageViewModelFactory @Inject constructor(
             saveSentMessageUseCase = saveSentMessageUseCase,
             sentMessageRepository = sentMessageRepository,
             messageIdProvider = messageIdProvider,
+            contactRepository = contactRepository,
         ) as T
     }
 }

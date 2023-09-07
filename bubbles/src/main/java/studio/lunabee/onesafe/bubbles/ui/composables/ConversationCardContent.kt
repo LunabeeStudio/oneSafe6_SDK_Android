@@ -21,6 +21,7 @@ package studio.lunabee.onesafe.bubbles.ui.composables
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -79,6 +80,7 @@ class ConversationCardContent(
                 ConversationSubtitle.NotReady -> 2
                 null -> 1
             },
+            hasUnreadMessage = conversationInfo.hasUnreadMessage,
         )
     }
 }
@@ -88,37 +90,52 @@ fun ConversationRow(
     paddingValues: PaddingValues,
     onClick: () -> Unit,
     osItemIllustration: OSItemIllustration,
+    hasUnreadMessage: Boolean,
     label: LbcTextSpec,
     subtitle: LbcTextSpec?,
     itemSubtitleMaxLine: Int,
 ) {
-    Row(
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(paddingValues)
-            .padding(horizontal = OSDimens.SystemSpacing.Regular),
-        verticalAlignment = Alignment.CenterVertically,
+            .padding(paddingValues),
     ) {
-        osItemIllustration.ImageComposable(contentDescription = null, style = OSSafeItemStyle.Small)
-        Spacer(modifier = Modifier.size(OSDimens.SystemSpacing.Regular))
-        Column {
-            OSText(
-                text = label,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = if (isSystemInDarkTheme()) OSColor.Neutral10 else Color.Unspecified,
+        if (hasUnreadMessage) {
+            NotificationIndicator(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(
+                        horizontal = OSDimens.SystemSpacing.Regular,
+                        vertical = OSDimens.SystemSpacing.Small,
+                    ),
             )
-            OSSmallSpacer()
-            if (subtitle != null) { // TODO removed isNotEmpty check, should be handle before
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = OSDimens.SystemSpacing.Regular),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            osItemIllustration.ImageComposable(contentDescription = null, style = OSSafeItemStyle.Small)
+            Spacer(modifier = Modifier.size(OSDimens.SystemSpacing.Regular))
+            Column {
                 OSText(
-                    text = subtitle,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = if (isSystemInDarkTheme()) OSColor.Neutral20 else OSColor.Neutral60,
-                    maxLines = itemSubtitleMaxLine,
+                    text = label,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    color = if (isSystemInDarkTheme()) OSColor.Neutral10 else Color.Unspecified,
                 )
+                OSSmallSpacer()
+                if (subtitle != null) { // TODO removed isNotEmpty check, should be handle before
+                    OSText(
+                        text = subtitle,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (isSystemInDarkTheme()) OSColor.Neutral20 else OSColor.Neutral60,
+                        maxLines = itemSubtitleMaxLine,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
         }
     }

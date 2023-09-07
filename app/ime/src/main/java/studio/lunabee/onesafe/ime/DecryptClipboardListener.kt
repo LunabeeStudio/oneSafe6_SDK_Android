@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import studio.lunabee.onesafe.bubbles.ui.extension.getBase64FromMessage
 import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
 import studio.lunabee.onesafe.messaging.domain.usecase.HandleIncomingMessageUseCase
 import studio.lunabee.onesafe.messaging.domain.usecase.IncomingMessageState
@@ -56,7 +57,7 @@ class DecryptClipboardListener @Inject constructor(
         val primaryClip = clipboard.primaryClip
         primaryClip?.getItemAt(0)?.text?.toString()?.let { clipText ->
             lifecycleScope.launch {
-                _result.emit(handleIncomingMessageUseCase(clipText, channelRepository.channel))
+                _result.emit(handleIncomingMessageUseCase(clipText.getBase64FromMessage(), channelRepository.channel))
             }
         }
     }

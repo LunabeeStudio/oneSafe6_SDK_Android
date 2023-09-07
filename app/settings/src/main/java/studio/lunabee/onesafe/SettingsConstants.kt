@@ -31,5 +31,6 @@ internal object SettingsConstants {
     const val MigrationVersionSetting: String = "6997642a-497b-4615-b431-058d131eee7e"
     const val VerifyPasswordIntervalKey: String = "472e7ca7-0784-41a3-bbcf-f963c93503d2"
     const val LastPasswordVerification: String = "17b8f6fe-ecb4-408e-8315-257f6db69210"
-    const val BubblesActivation: String = "ebb8bf03-8323-4190-8256-2023b11aab77"
+    const val BubblesPreview: String = "1d9ac366-e506-49c6-bb2a-945c50016079"
+    const val BubblesResendMessageDelay: String = "bcbcc192-8d14-4351-9cf4-c44a3f59568a"
 }

@@ -57,17 +57,16 @@ import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
 
+context(OnBoardingBubblesNavScope)
 @Composable
 fun OnBoardingBubblesRoute(
-    navigateBack: () -> Unit,
-    navigateToHome: () -> Unit,
     viewModel: OnBoardingBubblesViewModel = hiltViewModel(),
 ) {
     OnBoardingBubblesScreen(
         onBackClick = navigateBack,
         onStartClick = {
             viewModel.setHasDoneOnBoarding()
-            navigateToHome()
+            navigateOnBoardingToBubblesHome()
         },
     )
 }
@@ -134,6 +133,11 @@ fun OnBoardingBubblesScreen(
             }
         }
     }
+}
+
+interface OnBoardingBubblesNavScope {
+    val navigateBack: () -> Unit
+    val navigateOnBoardingToBubblesHome: () -> Unit
 }
 
 @OsDefaultPreview

@@ -32,8 +32,8 @@ import androidx.compose.ui.res.painterResource
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSCard
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
+import studio.lunabee.onesafe.bubbles.ui.contact.ContactScreenFactory
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
-import studio.lunabee.onesafe.bubbles.ui.onesafek.SelectContactFactory
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.molecule.OSRow
 import studio.lunabee.onesafe.ui.res.OSDimens
@@ -48,12 +48,13 @@ fun AppFilledConversationScreen(
     onDecryptClick: () -> Unit,
     onSettingClick: () -> Unit,
     isOSKShown: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(OSDimens.SystemSpacing.Regular),
     ) {
-        SelectContactFactory.addConversations(
+        ContactScreenFactory.addConversations(
             conversations = contacts,
             onClick = onConversationClick,
             lazyListScope = this,

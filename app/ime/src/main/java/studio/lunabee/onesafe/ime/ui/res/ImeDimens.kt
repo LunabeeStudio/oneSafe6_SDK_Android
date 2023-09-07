@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 object ImeDimens {
-    val ItemBarSpacing: Dp = 2.dp
     val LogoHorizontalPadding: Dp = 12.dp
     val LogoVerticalPadding: Dp = 16.dp
     val ClientAppLogoSize: Dp = 24.dp

@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.ime.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -29,33 +30,41 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
 import dagger.Lazy
 import studio.lunabee.onesafe.atom.OSImageSpec
-import studio.lunabee.onesafe.bubbles.ui.onesafek.ChangeContactDestination
-import studio.lunabee.onesafe.bubbles.ui.onesafek.SelectContactDestination
-import studio.lunabee.onesafe.bubbles.ui.onesafek.SelectContactRoute
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.animation.slideHorizontalEnterTransition
 import studio.lunabee.onesafe.commonui.animation.slideHorizontalExitTransition
 import studio.lunabee.onesafe.commonui.animation.slideHorizontalPopEnterTransition
 import studio.lunabee.onesafe.commonui.animation.slideHorizontalPopExitTransition
-import studio.lunabee.onesafe.commonui.login.screen.KeyboardLoginRoute
 import studio.lunabee.onesafe.commonui.navigation.LoginDestination
-import studio.lunabee.onesafe.ime.viewmodel.LoginViewModelFactory
+import studio.lunabee.onesafe.ime.ImeDeeplinkHelper
+import studio.lunabee.onesafe.ime.ui.contact.ChangeContactDestination
+import studio.lunabee.onesafe.ime.ui.contact.ImeContactRoute
+import studio.lunabee.onesafe.ime.ui.contact.SelectContactDestination
+import studio.lunabee.onesafe.ime.viewmodel.ImeLoginViewModelFactory
 import studio.lunabee.onesafe.ime.viewmodel.SelectContactViewModelFactory
 import studio.lunabee.onesafe.ime.viewmodel.WriteMessageViewModelFactory
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageRoute
 
+internal const val ImeNavGraphRoute: String = "ime_nav_host"
+
+// TODO oSK extract NavGraphBuilder extensions
+
 @Composable
 fun ImeNavGraph(
     navController: NavHostController,
-    loginViewModelFactory: Lazy<LoginViewModelFactory>,
+    imeLoginViewModelFactory: Lazy<ImeLoginViewModelFactory>,
     selectContactViewModelFactory: Lazy<SelectContactViewModelFactory>,
     writeMessageViewModelFactory: Lazy<WriteMessageViewModelFactory>,
     onLoginSuccess: () -> Unit,
     dismissUi: () -> Unit,
     sendMessage: (String) -> Unit,
+    hasDoneOnBoardingBubbles: Boolean,
     modifier: Modifier = Modifier,
+    hideKeyboard: () -> Unit,
 ) {
+    val context = LocalContext.current
+
     NavHost(
         navController = navController,
         startDestination = LoginDestination.route,
@@ -63,12 +72,13 @@ fun ImeNavGraph(
         exitTransition = slideHorizontalExitTransition,
         popEnterTransition = slideHorizontalPopEnterTransition,
         popExitTransition = slideHorizontalPopExitTransition,
+        route = ImeNavGraphRoute,
         modifier = modifier,
     ) {
         composable(
             route = LoginDestination.route,
         ) { backStackEntry ->
-            KeyboardLoginRoute(
+            ImeLoginRoute(
                 onSuccess = {
                     onLoginSuccess()
                     navController.navigate(
@@ -83,7 +93,7 @@ fun ImeNavGraph(
                 onClose = dismissUi,
                 viewModel = viewModel(
                     viewModelStoreOwner = backStackEntry,
-                    factory = loginViewModelFactory.get(),
+                    factory = imeLoginViewModelFactory.get(),
                 ),
             )
         }
@@ -91,7 +101,7 @@ fun ImeNavGraph(
         composable(
             route = SelectContactDestination.route,
         ) { backStackEntry ->
-            SelectContactRoute(
+            ImeContactRoute(
                 navigateBack = dismissUi,
                 navigateToWriteMessage = {
                     navController.navigate(WriteMessageDestination.getRoute(it))
@@ -101,27 +111,37 @@ fun ImeNavGraph(
                     factory = selectContactViewModelFactory.get(),
                 ),
                 exitIcon = R.drawable.ic_close,
+                deeplinkBubblesHomeContact = {
+                    dismissUi()
+                    if (hasDoneOnBoardingBubbles) {
+                        ImeDeeplinkHelper.deeplinkBubblesHomeContact(context)
+                    } else {
+                        ImeDeeplinkHelper.deeplinkBubblesOnboarding(context)
+                    }
+                },
+                deeplinkBubblesWriteMessage = { contactId ->
+                    dismissUi()
+                    ImeDeeplinkHelper.deeplinkBubblesWriteMessage(context, contactId)
+                },
             )
         }
 
         composable(
             route = WriteMessageDestination.route,
         ) { backStackEntry ->
-            WriteMessageRoute(
-                onChangeRecipient = { navController.navigate(ChangeContactDestination.route) },
-                sendMessage = sendMessage,
-                viewModel = viewModel(
-                    viewModelStoreOwner = backStackEntry,
-                    factory = writeMessageViewModelFactory.get(),
-                ),
-                contactIdFlow = backStackEntry.savedStateHandle.getStateFlow(WriteMessageDestination.ContactIdArgs, null),
-                navigationToInvitation = {
-                    // NO OP
-                },
-                sendIcon = OSImageSpec.Drawable(studio.lunabee.onesafe.messaging.R.drawable.ic_send),
-                onBackClick = dismissUi,
-                navigateToContactDetail = {},
-            )
+            with(ImeWriteMessageNav(dismissUi, context)) {
+                WriteMessageRoute(
+                    onChangeRecipient = { navController.navigate(ChangeContactDestination.route) },
+                    sendMessage = sendMessage,
+                    viewModel = viewModel(
+                        viewModelStoreOwner = backStackEntry,
+                        factory = writeMessageViewModelFactory.get(),
+                    ),
+                    contactIdFlow = backStackEntry.savedStateHandle.getStateFlow(WriteMessageDestination.ContactIdArgs, null),
+                    sendIcon = OSImageSpec.Drawable(R.drawable.ic_send),
+                    hideKeyboard = hideKeyboard,
+                )
+            }
         }
 
         composable(
@@ -130,7 +150,7 @@ fun ImeNavGraph(
             val viewModelStoreOwner = remember(backStackEntry) {
                 navController.getBackStackEntry(SelectContactDestination.route)
             }
-            SelectContactRoute(
+            ImeContactRoute(
                 navigateBack = { navController.popBackStack() },
                 navigateToWriteMessage = { contactId ->
                     navController.getBackStackEntry(WriteMessageDestination.route)
@@ -141,6 +161,15 @@ fun ImeNavGraph(
                     viewModelStoreOwner = viewModelStoreOwner,
                     factory = selectContactViewModelFactory.get(),
                 ),
+                exitIcon = R.drawable.ic_back,
+                deeplinkBubblesHomeContact = {
+                    dismissUi()
+                    ImeDeeplinkHelper.deeplinkBubblesHomeContact(context)
+                },
+                deeplinkBubblesWriteMessage = { contactId ->
+                    dismissUi()
+                    ImeDeeplinkHelper.deeplinkBubblesWriteMessage(context, contactId)
+                },
             )
         }
     }

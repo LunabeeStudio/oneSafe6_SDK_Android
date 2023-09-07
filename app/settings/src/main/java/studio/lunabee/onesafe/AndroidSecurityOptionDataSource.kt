@@ -39,10 +39,10 @@ class AndroidSecurityOptionDataSource @Inject constructor(
 ) : SecurityOptionDataSource {
     private val autoLockInactivityDelayKey = longPreferencesKey(SettingsConstants.AutoLockInactivityDelay)
     private val autoLockAppChangeDelayKey = longPreferencesKey(SettingsConstants.AutoLockAppChangeDelay)
-    private val clipboardClearDelaySecondsSettingKey =
-        longPreferencesKey(SettingsConstants.ClipboardClearDelayMsSetting)
+    private val clipboardClearDelaySecondsSettingKey = longPreferencesKey(SettingsConstants.ClipboardClearDelayMsSetting)
     private val verifyPasswordIntervalKey = stringPreferencesKey(SettingsConstants.VerifyPasswordIntervalKey)
     private val lastPasswordVerificationKey = longPreferencesKey(SettingsConstants.LastPasswordVerification)
+    private val bubblesResendMessageDelayKey = longPreferencesKey(SettingsConstants.BubblesResendMessageDelay)
 
     override val autoLockInactivityDelay: Duration
         get() = runBlocking {
@@ -76,6 +76,21 @@ class AndroidSecurityOptionDataSource @Inject constructor(
                 preferences[clipboardClearDelaySecondsSettingKey]?.milliseconds
                     ?: SettingsDefaults.ClipboardClearDelayMsDefault.milliseconds
             }
+
+    override val bubblesResendMessageDelayFlow: Flow<Duration>
+        get() = dataStore.data
+            .map { preferences ->
+                preferences[bubblesResendMessageDelayKey]?.milliseconds
+                    ?: SettingsDefaults.BubblesResendMessageDelayMsDefault.milliseconds
+            }
+
+    override fun setBubblesResendMessageDelay(delay: Duration) {
+        runBlocking {
+            dataStore.edit { settings ->
+                settings[bubblesResendMessageDelayKey] = delay.inWholeMilliseconds
+            }
+        }
+    }
 
     override val passwordVerificationInterval: VerifyPasswordInterval
         get() = runBlocking {

@@ -13,38 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 6/23/2023 - for the oneSafe6 SDK.
- * Last modified 6/12/23, 10:41 AM
+ * Created by Lunabee Studio / Date - 8/25/2023 - for the oneSafe6 SDK.
+ * Last modified 8/25/23, 5:45 PM
  */
 
-package studio.lunabee.onesafe.bubbles.ui.onesafek
+package studio.lunabee.onesafe.bubbles.ui.contact
 
 import androidx.compose.foundation.lazy.LazyListScope
 import studio.lunabee.onesafe.atom.osLazyCard
 import studio.lunabee.onesafe.bubbles.ui.composables.ContactItemCardContent
 import studio.lunabee.onesafe.bubbles.ui.composables.ConversationCardContent
-import studio.lunabee.onesafe.bubbles.ui.composables.EmptyContactCard
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
 import studio.lunabee.onesafe.model.OSLazyCardContent
 import java.util.UUID
 
-object SelectContactFactory {
-
-    fun addEmptyCard(
-        lazyListScope: LazyListScope,
-    ) {
-        lazyListScope.item(
-            key = EmptyCardKey,
-        ) {
-            EmptyContactCard()
-        }
-    }
+object ContactScreenFactory {
 
     fun addContacts(
+        lazyListScope: LazyListScope,
         contacts: List<UIBubblesContactInfo>,
         onClick: (UUID) -> Unit,
-        lazyListScope: LazyListScope,
     ) {
         val cardContents = mutableListOf<OSLazyCardContent>()
 
@@ -74,6 +63,4 @@ object SelectContactFactory {
         }
         osLazyCard(lazyListScope, cardContents)
     }
-
-    private const val EmptyCardKey: String = "EmptyCardKey"
 }
