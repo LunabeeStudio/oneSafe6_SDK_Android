@@ -52,7 +52,7 @@ dependencies {
     implementation(AndroidX.test.runner)
     implementation(AndroidX.compose.ui.test)
     implementation(AndroidX.compose.ui.testJunit4)
-    implementation("io.ktor:ktor-serialization-kotlinx-json:_")
+    implementation(Ktor.plugins.serialization.kotlinx.json)
     implementation(Ktor.client.contentNegotiation)
 
     implementation(platform(libs.lunabee.bom))

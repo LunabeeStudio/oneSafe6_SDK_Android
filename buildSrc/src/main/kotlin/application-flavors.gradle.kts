@@ -29,7 +29,7 @@ android {
     flavorDimensions += "environment"
     productFlavors {
         create("dev") {
-            minSdk = AndroidConfig.MIN_DEV_APP_SDK
+            minSdk = AndroidConfig.MIN_APP_SDK
 
             dimension = "environment"
             applicationIdSuffix = ".dev"

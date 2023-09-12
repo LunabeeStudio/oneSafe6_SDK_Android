@@ -49,7 +49,7 @@ dependencies {
     implementation(AndroidX.dataStore)
     implementation(Ktor.client.android)
     implementation(Ktor.client.logging)
-    implementation("io.ktor:ktor-serialization-kotlinx-json:_")
+    implementation(Ktor.plugins.serialization.kotlinx.json)
     implementation(Ktor.client.contentNegotiation)
     implementation(libs.lblogger)
 

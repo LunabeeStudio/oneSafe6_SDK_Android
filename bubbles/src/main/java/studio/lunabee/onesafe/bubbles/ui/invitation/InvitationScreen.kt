@@ -52,11 +52,9 @@ import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 
+context(InvitationNavScope)
 @Composable
 fun InvitationRoute(
-    navigateToQrScan: () -> Unit,
-    navigateToBubbleScreen: () -> Unit,
-    navigateBack: () -> Unit,
     viewModel: InvitationViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -88,9 +86,9 @@ fun InvitationRoute(
                     contactName = safeState.contactName,
                     onFinishClick = {
                         if (hasClickedShare.value) {
-                            navigateToBubbleScreen()
+                            navigateToBubblesHome()
                         } else {
-                            navigateToQrScan()
+                            navigateToScanBarcode()
                         }
                     },
                 )
@@ -138,4 +136,10 @@ fun InvitationScreen(
             }
         }
     }
+}
+
+interface InvitationNavScope {
+    val navigateBack: () -> Unit
+    val navigateToScanBarcode: () -> Unit
+    val navigateToBubblesHome: () -> Unit
 }

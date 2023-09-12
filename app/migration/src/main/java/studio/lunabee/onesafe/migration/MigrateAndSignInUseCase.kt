@@ -40,6 +40,7 @@ class MigrateAndSignInUseCase @Inject constructor(
     private val appSettings: OSAppSettings,
     private val migrationFromV0ToV1: MigrationFromV0ToV1,
     private val migrationFromV1ToV2: MigrationFromV1ToV2,
+    private val migrationFromV2ToV3: MigrationFromV2ToV3,
     private val isSignUpUseCase: IsSignUpUseCase,
     private val mainCryptoRepository: MainCryptoRepository,
     biometricEngine: BiometricEngine,
@@ -71,7 +72,8 @@ class MigrateAndSignInUseCase @Inject constructor(
     }
 
     private suspend fun doMigrations(masterKey: ByteArray): LBResult<Unit> {
-        var version = getCurrentVersion()
+        val initialVersion = getCurrentVersion()
+        var version = initialVersion
         val results = mutableListOf<LBResult<Unit>>()
 
         if (version == 0) {
@@ -84,13 +86,20 @@ class MigrateAndSignInUseCase @Inject constructor(
             version++
         }
 
+        if (version == 2) {
+            results += migrationFromV2ToV3()
+            version++
+        }
+
+        // ⚠️ Add further migration here, don't forget to bump MigrationConstant.LastVersion
+
         val result = results.firstOrNull { it is LBResult.Failure } ?: LBResult.Success(Unit)
 
         if (result is LBResult.Success) {
             mainCryptoRepository.loadMasterKeyExternal(masterKey)
             appSettings.setMigrationVersionSetting(MigrationConstant.LastVersion)
 
-            Timber.i("Migration to $version succeed")
+            Timber.i("Migration from v$initialVersion to v$version succeeded")
         }
 
         return result

@@ -28,4 +28,5 @@ class Message(
     val encContent: ByteArray,
     val direction: MessageDirection,
     val encChannel: ByteArray?,
+    val isRead: Boolean,
 )

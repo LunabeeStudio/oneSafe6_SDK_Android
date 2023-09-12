@@ -21,6 +21,7 @@ package studio.lunabee.onesafe
 
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 
 /**
  * ⚠️ Debug defaults values
@@ -36,5 +37,6 @@ internal object SettingsDefaults {
     val ClipboardClearDelayMsDefault: Long = Duration.INFINITE.inWholeMilliseconds
     const val DisplayShareWarningDefault: Boolean = true
     val VerifyPasswordIntervalDefault: VerifyPasswordInterval = VerifyPasswordInterval.NEVER
-    const val BubblesActivationDefault: Boolean = true
+    const val BubblesPreviewDefault: Boolean = true
+    val BubblesResendMessageDelayMsDefault: Long = 1.days.inWholeMilliseconds
 }

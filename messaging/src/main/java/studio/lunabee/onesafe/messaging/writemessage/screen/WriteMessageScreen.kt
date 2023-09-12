@@ -23,26 +23,35 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
@@ -54,11 +63,15 @@ import kotlinx.coroutines.launch
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.OSScreen
+import studio.lunabee.onesafe.atom.button.OSIconButton
+import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.bubbles.ui.extension.getDeepLinkFromMessage
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
+import studio.lunabee.onesafe.commonui.dialog.ImeDialog
+import studio.lunabee.onesafe.commonui.localprovider.LocalIsOneSafeK
 import studio.lunabee.onesafe.commonui.localprovider.LocalKeyboardUiHeight
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
 import studio.lunabee.onesafe.extension.loremIpsum
@@ -67,29 +80,36 @@ import studio.lunabee.onesafe.messaging.domain.model.MessageDirection
 import studio.lunabee.onesafe.messaging.writemessage.composable.ComposeMessageCard
 import studio.lunabee.onesafe.messaging.writemessage.composable.ConversationDayHeader
 import studio.lunabee.onesafe.messaging.writemessage.composable.ConversationNotReadyCard
-import studio.lunabee.onesafe.messaging.writemessage.composable.topbar.AppWriteMessageTopBar
-import studio.lunabee.onesafe.messaging.writemessage.composable.topbar.OneSafeKWriteMessageTopBar
+import studio.lunabee.onesafe.messaging.writemessage.composable.DropDownMenuMessageLongPress
+import studio.lunabee.onesafe.messaging.writemessage.composable.MessageLongPress
+import studio.lunabee.onesafe.messaging.writemessage.composable.NoPreviewComposeMessageCard
+import studio.lunabee.onesafe.messaging.writemessage.composable.topbar.ContactActionMenu
+import studio.lunabee.onesafe.messaging.writemessage.composable.topbar.WriteMessageTopBar
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
 import studio.lunabee.onesafe.messaging.writemessage.factory.WriteMessageFactory
+import studio.lunabee.onesafe.messaging.writemessage.model.ConversationMoreOptionsSnackbarState
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
 import studio.lunabee.onesafe.messaging.writemessage.viewmodel.WriteMessageViewModel
+import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import studio.lunabee.onesafe.ui.theme.OSTheme
+import studio.lunabee.onesafe.utils.OsDefaultPreview
 import java.time.Instant
 import java.util.UUID
 
+// TODO oSK separate WriteMessage IME and OS
+
+context(WriteMessageNavScope)
 @Composable
 fun WriteMessageRoute(
     onChangeRecipient: (() -> Unit)?,
     sendMessage: (String) -> Unit,
-    navigationToInvitation: (UUID) -> Unit,
-    viewModel: WriteMessageViewModel = hiltViewModel(),
     contactIdFlow: StateFlow<String?>,
     sendIcon: OSImageSpec,
-    navigateToContactDetail: (UUID) -> Unit,
-    onBackClick: () -> Unit,
+    viewModel: WriteMessageViewModel = hiltViewModel(),
+    hideKeyboard: (() -> Unit)?,
 ) {
     val updateContactId by contactIdFlow.collectAsStateWithLifecycle()
     updateContactId?.let {
@@ -100,17 +120,68 @@ fun WriteMessageRoute(
     val conversation: LazyPagingItems<ConversationUiData> = viewModel.conversation.collectAsLazyPagingItems()
     val coroutineScope = rememberCoroutineScope()
     val isMaterialYouEnabled by viewModel.isMaterialYouSettingsEnabled.collectAsStateWithLifecycle(initialValue = false)
+    val isPreviewEnabled by viewModel.isPreviewEnabled.collectAsStateWithLifecycle(initialValue = false)
+    val isOneSafeK = LocalIsOneSafeK.current
+    val keyboardUiHeight = LocalKeyboardUiHeight.current
+    val density = LocalDensity.current
+    val snackBarHostState = remember { SnackbarHostState() }
+    var snackbarState: ConversationMoreOptionsSnackbarState? by remember { mutableStateOf(null) }
 
-    dialogState?.DefaultAlertDialog()
+    val messageLongPress: MessageLongPress
+    if (isOneSafeK) {
+        dialogState?.let { dialog ->
+            dialog.ImeDialog()
+            LaunchedEffect(dialog, hideKeyboard) {
+                hideKeyboard?.invoke()
+            }
+        }
+        snackbarState?.SnackBar(snackBarHostState)
+        messageLongPress = object : MessageLongPress() {
+            override fun onLongClick(id: UUID) {
+                deeplinkBubblesWriteMessage?.let { deeplink ->
+                    snackbarState = ConversationMoreOptionsSnackbarState {
+                        deeplink(viewModel.contactId.value!!)
+                    }
+                }
+            }
+        }
+    } else {
+        dialogState?.DefaultAlertDialog()
+        messageLongPress = DropDownMenuMessageLongPress(
+            onResendClick = { sentMessageId ->
+                coroutineScope.launch {
+                    viewModel.getSentMessage(sentMessageId)?.let {
+                        sendMessage(it.getDeepLinkFromMessage(uiState.isUsingDeepLink))
+                    }
+                }
+            },
+            onDeleteMessageClick = viewModel::deleteMessage,
+        )
+    }
+
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
+        if (isOneSafeK) {
+            val bottomSystemPaddingDp = with(density) { WindowInsets.systemBars.getBottom(density).toDp() }
+            SnackbarHost(
+                hostState = snackBarHostState,
+                modifier = Modifier
+                    .padding(bottom = keyboardUiHeight.coerceAtLeast(bottomSystemPaddingDp))
+                    .zIndex(UiConstants.SnackBar.ZIndex)
+                    .align(Alignment.BottomCenter),
+            )
+        }
+
         uiState.currentContact?.let { contact ->
             WriteMessageScreen(
                 contact = contact,
                 plainMessage = uiState.plainMessage,
                 encryptedMessage = uiState.encryptedPreview,
                 onChangeRecipient = onChangeRecipient,
+                onResendInvitationClick = {
+                    navigationToInvitation(viewModel.contactId.value!!)
+                },
                 onPlainMessageChange = viewModel::onPlainMessageChange,
                 sendMessage = {
                     coroutineScope.launch {
@@ -119,33 +190,24 @@ fun WriteMessageRoute(
                         )
                         messageToSend?.let {
                             sendMessage(it.getDeepLinkFromMessage(uiState.isUsingDeepLink))
-                            viewModel.onPlainMessageChange("")
                         }
                     }
                 },
                 conversation = conversation,
-                onResendInvitationClick = {
-                    navigationToInvitation(UUID.fromString(viewModel.contactId.value))
-                },
+                onBackClick = navigateBack,
                 sendIcon = sendIcon,
+                isMaterialYouEnabled = isMaterialYouEnabled,
+                isConversationReady = uiState.isConversationReady,
+                isPreviewEnabled = isPreviewEnabled,
                 onPreviewClick = {
                     viewModel.displayPreviewInfo()
                 },
-                isMaterialYouEnabled = isMaterialYouEnabled,
-                isConversationReady = uiState.isConversationReady,
-                onBackClick = onBackClick,
-                onSeeContactClick = {
-                    navigateToContactDetail(UUID.fromString(viewModel.contactId.value))
-                },
                 onDeleteAllMessagesClick = viewModel::displayRemoveConversationDialog,
-                onResendMessageClick = { sentMessageId ->
-                    coroutineScope.launch {
-                        viewModel.getSentMessage(sentMessageId)?.let {
-                            sendMessage(it.getDeepLinkFromMessage(uiState.isUsingDeepLink))
-                        }
-                    }
+                onSeeContactClick = {
+                    navigateToContactDetail(viewModel.contactId.value!!)
                 },
-                onDeleteMessageClick = viewModel::deleteMessage,
+                isOneSafeK = isOneSafeK,
+                messageLongPress = messageLongPress,
             )
         }
     }
@@ -165,11 +227,12 @@ fun WriteMessageScreen(
     sendIcon: OSImageSpec,
     isMaterialYouEnabled: Boolean,
     isConversationReady: Boolean,
+    isPreviewEnabled: Boolean,
     onPreviewClick: () -> Unit,
     onDeleteAllMessagesClick: () -> Unit,
-    onResendMessageClick: (UUID) -> Unit,
-    onDeleteMessageClick: (UUID) -> Unit,
     onSeeContactClick: () -> Unit,
+    isOneSafeK: Boolean,
+    messageLongPress: MessageLongPress,
 ) {
     val focusManager = LocalFocusManager.current
     val embeddedKeyboardHeight: Dp = LocalKeyboardUiHeight.current
@@ -177,7 +240,7 @@ fun WriteMessageScreen(
     var isConversationHidden: Boolean by rememberSaveable { mutableStateOf(false) }
 
     OSScreen(
-        testTag = UiConstants.TestTag.Screen.OneSafeKSelectContactScreen,
+        testTag = UiConstants.TestTag.Screen.WriteMessageScreen,
         background = LocalDesignSystem.current.bubblesBackGround(),
         applySystemBarPadding = false,
         modifier = Modifier.fillMaxSize(),
@@ -193,94 +256,91 @@ fun WriteMessageScreen(
                     },
                 ),
         ) {
-            if (onChangeRecipient != null) {
-                OneSafeKWriteMessageTopBar(
-                    contactNameProvider = contact.nameProvider,
-                    onClickOnChange = {
+            WriteMessageTopBar(
+                contactNameProvider = contact.nameProvider,
+                onClickOnChange = onChangeRecipient?.let { onClick ->
+                    {
                         focusManager.clearFocus()
-                        onChangeRecipient()
-                    },
-                    modifier = Modifier
-                        .statusBarsPadding()
-                        .landscapeSystemBarsPadding()
-                        .padding(
-                            horizontal = OSDimens.SystemSpacing.Regular,
-                            vertical = OSDimens.SystemSpacing.Small,
-                        ),
-                    onClose = onBackClick,
-                )
-            } else {
-                AppWriteMessageTopBar(
-                    contactNameProvider = contact.nameProvider,
-                    modifier = Modifier
-                        .statusBarsPadding()
-                        .landscapeSystemBarsPadding()
-                        .padding(
-                            horizontal = OSDimens.SystemSpacing.Regular,
-                            vertical = OSDimens.SystemSpacing.Small,
-                        ),
-                    onBack = onBackClick,
-                    onSeeContactClick = onSeeContactClick,
-                    onDeleteAllMessagesClick = onDeleteAllMessagesClick,
-                    onHideConversationClick = { isConversationHidden = !isConversationHidden },
-                    isConversationHidden = isConversationHidden,
-                )
-            }
-
-            Column(
+                        onClick()
+                    }
+                },
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
+                    .statusBarsPadding()
+                    .landscapeSystemBarsPadding()
+                    .padding(
+                        horizontal = OSDimens.SystemSpacing.Regular,
+                        vertical = OSDimens.SystemSpacing.Small,
+                    ),
+                leadingSlot = {
+                    LeadingSlot(
+                        isOneSafeK = isOneSafeK,
+                        onBackClick = onBackClick,
+                    )
+                },
+                trailingSlot = {
+                    if (isOneSafeK) {
+                        ImeTrailingSlot(
+                            onHideConversationClick = { isConversationHidden = !isConversationHidden },
+                            isConversationHidden = isConversationHidden,
+                        )
+                    } else {
+                        TrailingSlot(
+                            onSeeContactClick = onSeeContactClick,
+                            onDeleteAllMessagesClick = onDeleteAllMessagesClick,
+                            onHideConversationClick = { isConversationHidden = !isConversationHidden },
+                            isConversationHidden = isConversationHidden,
+                        )
+                    }
+                },
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentAlignment = Alignment.TopEnd,
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    contentAlignment = Alignment.TopEnd,
-                ) {
-                    when {
-                        !isConversationReady -> {
-                            ConversationNotReadyCard(
-                                contactName = contact.nameProvider.name.string,
-                                onResendInvitationClick = onResendInvitationClick,
+                when {
+                    !isConversationReady -> {
+                        ConversationNotReadyCard(
+                            contactName = contact.nameProvider.name.string,
+                            onResendInvitationClick = onResendInvitationClick,
+                        )
+                    }
+                    isConversationHidden || conversation.itemCount == 0 -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(bottom = OSDimens.SystemSpacing.Regular),
+                            contentAlignment = Alignment.BottomCenter,
+                        ) {
+                            ConversationDayHeader(
+                                text = LbcTextSpec.StringResource(R.string.oneSafeK_messageDate_today),
                             )
                         }
-                        isConversationHidden || conversation.itemCount == 0 -> {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(bottom = OSDimens.SystemSpacing.Regular),
-                                contentAlignment = Alignment.BottomCenter,
-                            ) {
-                                ConversationDayHeader(
-                                    text = LbcTextSpec.StringResource(R.string.oneSafeK_messageDate_today),
-                                )
-                            }
-                        }
-                        else -> {
-                            val context = LocalContext.current
-                            LazyColumn(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .landscapeSystemBarsPadding(),
-                                contentPadding = generateLazyColumnPaddingValue(conversation.itemCount, isConversationHidden),
-                                reverseLayout = true,
-                                verticalArrangement = generateLazyColumnVerticalArrangement(
-                                    conversation.itemCount,
-                                    isConversationHidden,
-                                ),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                state = lazyListState,
-                            ) {
-                                WriteMessageFactory.addPagingConversation(
-                                    lazyListScope = this,
-                                    conversation = conversation,
-                                    contactNameProvider = contact.nameProvider,
-                                    context = context,
-                                    onResendMessageClick = onResendMessageClick,
-                                    onDeleteMessageClick = onDeleteMessageClick,
-                                )
-                            }
+                    }
+                    else -> {
+                        val context = LocalContext.current
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .landscapeSystemBarsPadding(),
+                            contentPadding = generateLazyColumnPaddingValue(conversation.itemCount, isConversationHidden),
+                            reverseLayout = true,
+                            verticalArrangement = generateLazyColumnVerticalArrangement(
+                                conversation.itemCount,
+                                isConversationHidden,
+                            ),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            state = lazyListState,
+                        ) {
+                            WriteMessageFactory.addPagingConversation(
+                                lazyListScope = this,
+                                conversation = conversation,
+                                contactNameProvider = contact.nameProvider,
+                                context = context,
+                                messageLongPress = messageLongPress,
+                            )
                         }
                     }
                 }
@@ -290,14 +350,23 @@ fun WriteMessageScreen(
                     isSystemInDarkTheme = true,
                     isMaterialYouSettingsEnabled = isMaterialYouEnabled,
                 ) {
-                    ComposeMessageCard(
-                        plainMessage = plainMessage,
-                        encryptedMessage = encryptedMessage,
-                        onPlainMessageChange = onPlainMessageChange,
-                        onClickOnSend = sendMessage,
-                        sendIcon = sendIcon,
-                        onPreviewClick = onPreviewClick,
-                    )
+                    if (isPreviewEnabled) {
+                        ComposeMessageCard(
+                            plainMessage = plainMessage,
+                            encryptedMessage = encryptedMessage,
+                            onPlainMessageChange = onPlainMessageChange,
+                            onClickOnSend = sendMessage,
+                            sendIcon = sendIcon,
+                            onPreviewClick = onPreviewClick,
+                        )
+                    } else {
+                        NoPreviewComposeMessageCard(
+                            plainMessage = plainMessage,
+                            onPlainMessageChange = onPlainMessageChange,
+                            onClickOnSend = sendMessage,
+                            sendIcon = sendIcon,
+                        )
+                    }
                 }
             }
         }
@@ -335,26 +404,182 @@ private fun generateLazyColumnVerticalArrangement(
         )
     }
 
-@Preview
+@Composable
+private fun LeadingSlot(
+    isOneSafeK: Boolean,
+    onBackClick: () -> Unit,
+) {
+    if (isOneSafeK) {
+        OSIconButton(
+            image = OSImageSpec.Drawable(R.drawable.ic_close),
+            onClick = onBackClick,
+            buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
+            contentDescription = LbcTextSpec.StringResource(R.string.common_accessibility_back),
+            colors = OSIconButtonDefaults.iconButtonColors(
+                containerColor = LocalDesignSystem.current.bubblesSecondaryContainer(),
+                contentColor = MaterialTheme.colorScheme.onSurface,
+                state = OSActionState.Enabled,
+            ),
+        )
+    } else {
+        OSIconButton(
+            image = OSImageSpec.Drawable(R.drawable.ic_back),
+            onClick = onBackClick,
+            buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
+            contentDescription = LbcTextSpec.StringResource(R.string.common_accessibility_back),
+            colors = OSIconButtonDefaults.iconButtonColors(
+                containerColor = LocalDesignSystem.current.bubblesSecondaryContainer(),
+                contentColor = MaterialTheme.colorScheme.onSurface,
+                state = OSActionState.Enabled,
+            ),
+        )
+    }
+}
+
+@Composable
+private fun TrailingSlot(
+    onSeeContactClick: () -> Unit,
+    onDeleteAllMessagesClick: () -> Unit,
+    onHideConversationClick: () -> Unit,
+    isConversationHidden: Boolean,
+) {
+    var isActionMenuExpanded: Boolean by rememberSaveable { mutableStateOf(false) }
+    Box {
+        OSIconButton(
+            image = OSImageSpec.Drawable(R.drawable.ic_more),
+            onClick = { isActionMenuExpanded = true },
+            buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
+            colors = OSIconButtonDefaults.iconButtonColors(
+                containerColor = LocalDesignSystem.current.bubblesSecondaryContainer(),
+                contentColor = MaterialTheme.colorScheme.onSurface,
+                state = OSActionState.Enabled,
+            ),
+        )
+        ContactActionMenu(
+            isMenuExpended = isActionMenuExpanded,
+            onDismiss = { isActionMenuExpanded = false },
+            onSeeContactClick = {
+                isActionMenuExpanded = false
+                onSeeContactClick()
+            },
+            onDeleteMessages = {
+                isActionMenuExpanded = false
+                onDeleteAllMessagesClick()
+            },
+            onHideConversation = {
+                isActionMenuExpanded = false
+                onHideConversationClick()
+            },
+            isConversationHidden = isConversationHidden,
+            offset = DpOffset(0.dp, OSDimens.SystemSpacing.ExtraSmall),
+        )
+    }
+}
+
+@Composable
+private fun ImeTrailingSlot(
+    onHideConversationClick: () -> Unit,
+    isConversationHidden: Boolean,
+) {
+    val image = if (isConversationHidden) {
+        OSImageSpec.Drawable(R.drawable.ic_visibility_on)
+    } else {
+        OSImageSpec.Drawable(R.drawable.ic_visibility_off)
+    }
+
+    OSIconButton(
+        image = image,
+        onClick = onHideConversationClick,
+        buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
+        colors = OSIconButtonDefaults.iconButtonColors(
+            containerColor = LocalDesignSystem.current.bubblesSecondaryContainer(),
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            state = OSActionState.Enabled,
+        ),
+    )
+}
+
+interface WriteMessageNavScope {
+    val navigationToInvitation: (UUID) -> Unit
+    val navigateToContactDetail: (UUID) -> Unit
+    val navigateBack: () -> Unit
+    val deeplinkBubblesWriteMessage: ((contactId: UUID) -> Unit)?
+}
+
+@OsDefaultPreview
 @Composable
 fun WriteMessageScreenPreview() {
     OSTheme {
         val pagingItems: LazyPagingItems<ConversationUiData> = MutableStateFlow(
             PagingData.from(
                 listOf<ConversationUiData>(
-                    ConversationUiData.PlainMessageData(
+                    ConversationUiData.Message(
                         id = UUID.randomUUID(),
                         text = LbcTextSpec.Raw("hello"),
                         direction = MessageDirection.RECEIVED,
                         sendAt = Instant.ofEpochSecond(0),
                         channelName = loremIpsum(1),
+                        type = ConversationUiData.MessageType.Message,
                     ),
-                    ConversationUiData.PlainMessageData(
+                    ConversationUiData.Message(
                         id = UUID.randomUUID(),
                         text = LbcTextSpec.Raw("hello hello"),
                         direction = MessageDirection.SENT,
                         sendAt = Instant.ofEpochSecond(0),
                         channelName = loremIpsum(1),
+                        type = ConversationUiData.MessageType.Message,
+                    ),
+                ),
+            ),
+        ).collectAsLazyPagingItems()
+
+        WriteMessageScreen(
+            contact = UIBubblesContactInfo(UUID.randomUUID(), OSNameProvider.fromName("A", false), ConversationState.FullySetup),
+            plainMessage = loremIpsum(10),
+            encryptedMessage = loremIpsum(10),
+            onChangeRecipient = null,
+            onResendInvitationClick = {},
+            onPlainMessageChange = {},
+            sendMessage = {},
+            conversation = pagingItems,
+            onBackClick = {},
+            sendIcon = OSImageSpec.Drawable(R.drawable.ic_send),
+            isMaterialYouEnabled = false,
+            isConversationReady = true,
+            isPreviewEnabled = true,
+            onPreviewClick = {},
+            onDeleteAllMessagesClick = {},
+            onSeeContactClick = {},
+            isOneSafeK = false,
+            messageLongPress = object : MessageLongPress() {
+                override fun onLongClick(id: UUID) {}
+            },
+        )
+    }
+}
+
+@OsDefaultPreview
+@Composable
+fun ImeWriteMessageScreenPreview() {
+    OSTheme {
+        val pagingItems: LazyPagingItems<ConversationUiData> = MutableStateFlow(
+            PagingData.from(
+                listOf<ConversationUiData>(
+                    ConversationUiData.Message(
+                        id = UUID.randomUUID(),
+                        text = LbcTextSpec.Raw("hello"),
+                        direction = MessageDirection.RECEIVED,
+                        sendAt = Instant.ofEpochSecond(0),
+                        channelName = loremIpsum(1),
+                        type = ConversationUiData.MessageType.Message,
+                    ),
+                    ConversationUiData.Message(
+                        id = UUID.randomUUID(),
+                        text = LbcTextSpec.Raw("hello hello"),
+                        direction = MessageDirection.SENT,
+                        sendAt = Instant.ofEpochSecond(0),
+                        channelName = loremIpsum(1),
+                        type = ConversationUiData.MessageType.Message,
                     ),
                 ),
             ),
@@ -365,19 +590,22 @@ fun WriteMessageScreenPreview() {
             plainMessage = loremIpsum(10),
             encryptedMessage = loremIpsum(10),
             onChangeRecipient = {},
+            onResendInvitationClick = {},
             onPlainMessageChange = {},
             sendMessage = {},
             conversation = pagingItems,
-            onResendInvitationClick = {},
-            sendIcon = OSImageSpec.Drawable(studio.lunabee.onesafe.messaging.R.drawable.ic_send),
-            onPreviewClick = {},
-            isMaterialYouEnabled = false,
             onBackClick = {},
+            sendIcon = OSImageSpec.Drawable(R.drawable.ic_send),
+            isMaterialYouEnabled = false,
+            isConversationReady = true,
+            isPreviewEnabled = true,
+            onPreviewClick = {},
             onDeleteAllMessagesClick = {},
             onSeeContactClick = {},
-            isConversationReady = false,
-            onResendMessageClick = {},
-            onDeleteMessageClick = {},
+            isOneSafeK = false,
+            messageLongPress = object : MessageLongPress() {
+                override fun onLongClick(id: UUID) {}
+            },
         )
     }
 }

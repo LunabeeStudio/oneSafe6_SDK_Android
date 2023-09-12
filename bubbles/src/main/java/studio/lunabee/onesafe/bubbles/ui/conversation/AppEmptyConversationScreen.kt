@@ -31,8 +31,10 @@ import studio.lunabee.onesafe.organism.card.OSMessageCard
 import studio.lunabee.onesafe.ui.res.OSDimens
 
 @Composable
-fun AppEmptyConversationScreen() {
-    Box(modifier = Modifier.fillMaxSize()) {
+fun AppEmptyConversationScreen(
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier.fillMaxSize()) {
         OSTopImageBox(
             imageRes = R.drawable.character_sabine_oups_center,
             modifier = Modifier.padding(OSDimens.SystemSpacing.Regular),

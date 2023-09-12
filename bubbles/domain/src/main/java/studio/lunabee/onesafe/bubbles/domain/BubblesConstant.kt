@@ -19,12 +19,7 @@
 
 package studio.lunabee.onesafe.bubbles.domain
 
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.days
-
 object BubblesConstant {
     // Used to determine that the message is the invitation response message
     const val FirstMessageData: String = "c08b1cb8-3a94-4e9a-af30-6677053b7a60"
-
-    val SentMessageTimeToLive: Duration = 1.days
 }

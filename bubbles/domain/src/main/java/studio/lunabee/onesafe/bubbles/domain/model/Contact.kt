@@ -29,4 +29,5 @@ class Contact(
     val updatedAt: Instant,
     val encIsUsingDeeplink: ByteArray,
     val sharedConversationId: UUID,
+    val consultedAt: Instant?,
 )

@@ -33,4 +33,5 @@ interface MessageRepository {
     fun getAllPaged(config: PagingConfig, contactId: UUID): Flow<PagingData<Message>>
     suspend fun deleteAllMessages(contactId: UUID)
     suspend fun deleteMessage(messageId: UUID)
+    suspend fun markMessagesAsRead(contactId: UUID)
 }

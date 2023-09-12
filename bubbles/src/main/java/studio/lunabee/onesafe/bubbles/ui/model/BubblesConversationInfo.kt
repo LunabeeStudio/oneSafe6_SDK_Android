@@ -27,6 +27,7 @@ data class BubblesConversationInfo(
     val id: UUID,
     val nameProvider: OSNameProvider,
     val subtitle: ConversationSubtitle?,
+    val hasUnreadMessage: Boolean,
 )
 
 sealed interface ConversationSubtitle {

@@ -27,18 +27,24 @@ import java.util.UUID
 
 sealed interface ConversationUiData {
 
-    data class PlainMessageData(
+    data class Message(
         val id: UUID,
         val text: LbcTextSpec,
         val direction: MessageDirection,
         val sendAt: Instant,
         val channelName: String?,
+        val type: MessageType,
     ) : ConversationUiData {
-        fun wereSentOnSameDay(other: PlainMessageData?): Boolean =
+        fun wereSentOnSameDay(other: Message?): Boolean =
             other?.let { sendAt.isSameDayAs(it.sendAt) } ?: false
     }
 
     data class DateHeader(
         val date: Instant,
     ) : ConversationUiData
+
+    enum class MessageType {
+        Message,
+        Invitation,
+    }
 }

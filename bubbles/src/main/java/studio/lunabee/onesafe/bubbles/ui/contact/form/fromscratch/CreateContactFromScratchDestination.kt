@@ -22,22 +22,16 @@ package studio.lunabee.onesafe.bubbles.ui.contact.form.fromscratch
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import studio.lunabee.onesafe.commonui.navigation.OSDestination
-import java.util.UUID
 
 object CreateContactFromScratchDestination : OSDestination {
     override val route: String = "create_contact"
 }
 
-fun NavGraphBuilder.createContactFromScratchDestination(
-    navigateBack: () -> Unit,
-    navigateToInvitationScreen: (UUID) -> Unit,
-) {
+context (CreateContactFromScratchNavScope)
+fun NavGraphBuilder.createContactFromScratchScreen() {
     composable(
         route = CreateContactFromScratchDestination.route,
     ) {
-        CreateContactFromScratchRoute(
-            navigateBack = navigateBack,
-            navigateToInvitationScreen = navigateToInvitationScreen,
-        )
+        CreateContactFromScratchRoute()
     }
 }

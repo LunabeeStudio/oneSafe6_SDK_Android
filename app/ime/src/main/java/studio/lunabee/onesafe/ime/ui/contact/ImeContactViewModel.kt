@@ -13,48 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 5/24/2023 - for the oneSafe6 SDK.
- * Last modified 5/24/23, 3:39 PM
+ * Created by Lunabee Studio / Date - 8/30/2023 - for the oneSafe6 SDK.
+ * Last modified 8/30/23, 2:19 PM
  */
 
-package studio.lunabee.onesafe.bubbles.ui.onesafek
+package studio.lunabee.onesafe.ime.ui.contact
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.GetAllContactsUseCase
 import studio.lunabee.onesafe.bubbles.ui.extension.getNameProvider
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
+import studio.lunabee.onesafe.commonui.CommonUiConstants
 import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCase
 import javax.inject.Inject
 
 @HiltViewModel
-class SelectContactViewModel @Inject constructor(
+class ImeContactViewModel @Inject constructor(
     getEncryptedBubblesContactList: GetAllContactsUseCase,
     contactLocalDecryptUseCase: ContactLocalDecryptUseCase,
     private val getConversationStateUseCase: GetConversationStateUseCase,
 ) : ViewModel() {
 
-    private val _contacts = MutableStateFlow<List<UIBubblesContactInfo>?>(null)
-    val contacts: StateFlow<List<UIBubblesContactInfo>?> get() = _contacts.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            getEncryptedBubblesContactList().collect { encryptedContacts ->
-                _contacts.value = encryptedContacts.map { contact ->
-                    val decryptedNameResult = contactLocalDecryptUseCase(contact.encName, contact.id, String::class)
-                    UIBubblesContactInfo(
-                        id = contact.id,
-                        nameProvider = decryptedNameResult.getNameProvider(),
-                        conversationState = getConversationStateUseCase(contact.id),
-                    )
-                }
+    val uiState: StateFlow<ImeContactUiState> = getEncryptedBubblesContactList().map { encryptedContacts ->
+        if (encryptedContacts.isEmpty()) {
+            ImeContactUiState.Empty
+        } else {
+            val plainContacts = encryptedContacts.map { contact ->
+                val decryptedNameResult = contactLocalDecryptUseCase(contact.encName, contact.id, String::class)
+                UIBubblesContactInfo(
+                    id = contact.id,
+                    nameProvider = decryptedNameResult.getNameProvider(),
+                    conversationState = getConversationStateUseCase(contact.id),
+                )
             }
+            ImeContactUiState.Data(plainContacts)
         }
-    }
+    }.stateIn(
+        viewModelScope,
+        CommonUiConstants.Flow.DefaultSharingStarted,
+        ImeContactUiState.Initializing,
+    )
 }

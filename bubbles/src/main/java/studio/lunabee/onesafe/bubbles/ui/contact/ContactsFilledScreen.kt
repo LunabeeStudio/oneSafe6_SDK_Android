@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSCard
 import studio.lunabee.onesafe.atom.OSClickableRow
@@ -33,11 +34,15 @@ import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.button.defaults.OSTextButtonDefaults
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
-import studio.lunabee.onesafe.bubbles.ui.onesafek.SelectContactFactory
+import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.model.OSActionState
+import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
+import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
+import studio.lunabee.onesafe.utils.OsDefaultPreview
 import java.util.UUID
 
 @Composable
@@ -46,9 +51,10 @@ fun FilledContactsScreen(
     onScanClick: () -> Unit,
     contacts: List<UIBubblesContactInfo>,
     onContactClick: (UUID) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(OSDimens.SystemSpacing.Regular),
     ) {
         item {
@@ -78,10 +84,26 @@ fun FilledContactsScreen(
             }
         }
         lazyVerticalOSRegularSpacer()
-        SelectContactFactory.addContacts(
+        ContactScreenFactory.addContacts(
+            lazyListScope = this,
             contacts = contacts,
             onClick = onContactClick,
-            lazyListScope = this,
+        )
+    }
+}
+
+@OsDefaultPreview
+@Composable
+private fun FilledContactsScreenPreview() {
+    OSPreviewBackgroundTheme {
+        FilledContactsScreen(
+            onAddContactClick = {},
+            onScanClick = {},
+            contacts = ConversationState.entries.map { state ->
+                UIBubblesContactInfo(UUID.randomUUID(), OSNameProvider.fromName(state.name, false), state)
+            },
+            onContactClick = {},
+            modifier = Modifier.Companion.testTag(UiConstants.TestTag.Screen.BubblesHomeScreenContactTab),
         )
     }
 }

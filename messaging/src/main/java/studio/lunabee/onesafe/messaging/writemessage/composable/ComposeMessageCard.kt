@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CardDefaults
@@ -58,7 +59,6 @@ import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.OSColor
 import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
 import java.util.UUID
-import studio.lunabee.onesafe.messaging.R as MsgR
 
 @Composable
 fun ComposeMessageCard(
@@ -120,6 +120,7 @@ fun ComposeMessageCard(
                 modifier = Modifier.padding(start = OSDimens.SystemSpacing.Regular),
             ) {
                 Icon(
+                    modifier = Modifier.size(LockIconSize),
                     painter = painterResource(id = R.drawable.ic_lock),
                     contentDescription = null,
                     tint = OSColor.Neutral60,
@@ -161,6 +162,7 @@ fun ComposeMessageCard(
 }
 
 private const val EncryptedMessageMaxLines: Int = 2
+private val LockIconSize = 18.dp
 
 @Preview
 @Composable
@@ -171,7 +173,7 @@ fun ComposeMessageCardPreview() {
             encryptedMessage = UUID.randomUUID().toString(),
             onPlainMessageChange = {},
             onClickOnSend = {},
-            sendIcon = OSImageSpec.Drawable(MsgR.drawable.ic_send),
+            sendIcon = OSImageSpec.Drawable(R.drawable.ic_send),
             onPreviewClick = {},
         )
     }

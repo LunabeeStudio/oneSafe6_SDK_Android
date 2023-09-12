@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.ime.model
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
@@ -59,7 +60,7 @@ data class ImeClient(
     }
 
     companion object {
-        fun fromUid(appContext: Context, uid: Int): ImeClient? {
+        fun fromUid(appContext: Context, uid: Int, notFoundFallbackClient: ImeClient?): ImeClient? {
             val pm = appContext.packageManager
             return pm.getNameForUid(uid)?.let { packageName ->
                 val info = pm.getPackageInfoCompat(packageName, 0)
@@ -69,6 +70,8 @@ data class ImeClient(
                         info?.applicationInfo?.let { pm.getApplicationLabel(it).toString() },
                         pm.getApplicationIcon(packageName),
                     )
+                } catch (e: PackageManager.NameNotFoundException) {
+                    notFoundFallbackClient
                 } catch (e: Throwable) {
                     Timber.e(e)
                     null

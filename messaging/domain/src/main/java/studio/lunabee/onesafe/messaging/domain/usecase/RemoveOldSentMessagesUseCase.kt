@@ -19,20 +19,24 @@
 
 package studio.lunabee.onesafe.messaging.domain.usecase
 
-import studio.lunabee.onesafe.bubbles.domain.BubblesConstant
+import kotlinx.coroutines.flow.first
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
+import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
 import studio.lunabee.onesafe.messaging.domain.model.SentMessage
 import studio.lunabee.onesafe.messaging.domain.repository.SentMessageRepository
 import java.time.Instant
 import javax.inject.Inject
+import kotlin.time.Duration
 
 class RemoveOldSentMessagesUseCase @Inject constructor(
     private val sentMessageRepository: SentMessageRepository,
     private val localContactLocalDecryptUseCase: ContactLocalDecryptUseCase,
+    private val securityOptionRepository: SecurityOptionRepository,
 ) {
 
     suspend operator fun invoke() {
         var actualSentMessage: SentMessage? = sentMessageRepository.getOldestSentMessage()
+        val sentMessageTimeToLive: Duration = securityOptionRepository.bubblesResendMessageDelayFlow.first()
         while (actualSentMessage != null) {
             val createdAt: Instant? = localContactLocalDecryptUseCase(
                 data = actualSentMessage.encCreatedAt,
@@ -41,7 +45,7 @@ class RemoveOldSentMessagesUseCase @Inject constructor(
             ).data
             if (createdAt != null) {
                 val messageAge = Instant.now().minusMillis(createdAt.toEpochMilli())
-                if (messageAge.toEpochMilli() > BubblesConstant.SentMessageTimeToLive.inWholeMilliseconds) {
+                if (messageAge.toEpochMilli() > sentMessageTimeToLive.inWholeMilliseconds) {
                     sentMessageRepository.deleteSentMessage(actualSentMessage.id)
                     actualSentMessage = sentMessageRepository.getOldestSentMessage()
                 } else {

@@ -19,13 +19,10 @@
 
 package studio.lunabee.onesafe.bubbles.ui.contact.form.edit
 
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormRoute
-import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormType
 import studio.lunabee.onesafe.commonui.navigation.OSDestination
 import java.util.UUID
 
@@ -38,9 +35,8 @@ object EditContactDestination : OSDestination {
     ): String = route.replace("{$ContactIdArgs}", contactId.toString())
 }
 
-fun NavGraphBuilder.editContact(
-    navigateBack: () -> Unit,
-) {
+context(EditContactNavScope)
+fun NavGraphBuilder.editContactScreen() {
     composable(
         route = EditContactDestination.route,
         arguments = listOf(
@@ -49,11 +45,6 @@ fun NavGraphBuilder.editContact(
             },
         ),
     ) {
-        ContactFormRoute(
-            navigateBack = navigateBack,
-            navigateToNextScreen = { navigateBack() },
-            viewModel = hiltViewModel<EditContactViewModel>(),
-            type = ContactFormType.Edit,
-        )
+        EditContactRoute()
     }
 }

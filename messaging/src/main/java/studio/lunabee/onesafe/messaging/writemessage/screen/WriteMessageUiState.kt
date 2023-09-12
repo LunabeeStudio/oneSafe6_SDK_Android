@@ -22,6 +22,12 @@ package studio.lunabee.onesafe.messaging.writemessage.screen
 import androidx.compose.runtime.Stable
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 
+// TODO bubbles real UiState
+//  • currentContact must not be null
+//  • error state (no contact found on deeplink for example)
+//  • initializing state ?
+//  • remove default values
+
 @Stable
 data class WriteMessageUiState(
     val currentContact: UIBubblesContactInfo? = null,

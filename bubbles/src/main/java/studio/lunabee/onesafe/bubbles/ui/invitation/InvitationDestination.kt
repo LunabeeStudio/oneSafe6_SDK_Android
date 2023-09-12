@@ -35,11 +35,8 @@ object InvitationDestination : OSDestination {
     ): String = route.replace("{$ContactIdArgs}", contactId.toString())
 }
 
-fun NavGraphBuilder.invitationGraph(
-    navigateBack: () -> Unit,
-    navigateToQrScan: () -> Unit,
-    navigateToBubbleScreen: () -> Unit,
-) {
+context(InvitationNavScope)
+fun NavGraphBuilder.invitationScreen() {
     composable(
         route = InvitationDestination.route,
         arguments = listOf(
@@ -48,10 +45,6 @@ fun NavGraphBuilder.invitationGraph(
             },
         ),
     ) {
-        InvitationRoute(
-            navigateBack = navigateBack,
-            navigateToQrScan = navigateToQrScan,
-            navigateToBubbleScreen = navigateToBubbleScreen,
-        )
+        InvitationRoute()
     }
 }

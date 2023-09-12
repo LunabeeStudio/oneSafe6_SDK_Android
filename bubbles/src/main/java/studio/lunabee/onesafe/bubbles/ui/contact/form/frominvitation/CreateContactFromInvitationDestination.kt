@@ -23,7 +23,6 @@ import android.net.Uri
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import studio.lunabee.onesafe.commonui.navigation.OSDestination
-import java.util.UUID
 
 object CreateContactFromInvitationDestination : OSDestination {
 
@@ -35,16 +34,11 @@ object CreateContactFromInvitationDestination : OSDestination {
     ): String = route.replace("{$MessageString}", Uri.encode(messageString))
 }
 
-fun NavGraphBuilder.createContactFromInvitationGraph(
-    navigateBack: () -> Unit,
-    navigateToInvitationResponseScreen: (UUID) -> Unit,
-) {
+context(CreateContactFromInvitationNavScope)
+fun NavGraphBuilder.createContactFromInvitationScreen() {
     composable(
         route = CreateContactFromInvitationDestination.route,
     ) {
-        CreateContactFromInvitationRoute(
-            navigateBack = navigateBack,
-            navigateToInvitationResponseScreen = navigateToInvitationResponseScreen,
-        )
+        CreateContactFromInvitationRoute()
     }
 }

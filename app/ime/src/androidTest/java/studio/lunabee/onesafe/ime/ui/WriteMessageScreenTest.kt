@@ -39,6 +39,7 @@ import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
+import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageNavScope
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageRoute
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageUiState
 import studio.lunabee.onesafe.messaging.writemessage.viewmodel.WriteMessageViewModel
@@ -63,6 +64,7 @@ class WriteMessageScreenTest : LbcComposeTest() {
             ),
         )
         every { conversation } returns emptyFlow()
+        every { isPreviewEnabled } returns MutableStateFlow(true)
         every { dialogState } returns MutableStateFlow(null)
         every { isMaterialYouSettingsEnabled } returns flowOf(false)
     }
@@ -76,7 +78,7 @@ class WriteMessageScreenTest : LbcComposeTest() {
             hasText(encryptedMessage)
 
             // Test change contact interaction
-            hasTestTag(UiConstants.TestTag.Item.OneSafeKWriteMessageRecipientCard)
+            hasTestTag(UiConstants.TestTag.Item.WriteMessageTopBar)
                 .waitUntilExactlyOneExists(this)
                 .performClick()
             verify(exactly = 1) { onClickOnChangeContact.invoke() }
@@ -89,16 +91,21 @@ class WriteMessageScreenTest : LbcComposeTest() {
     ) {
         invoke {
             setContent {
-                WriteMessageRoute(
-                    onChangeRecipient = onClickOnChangeContact,
-                    sendMessage = {},
-                    viewModel = mockkVm,
-                    contactIdFlow = MutableStateFlow(null),
-                    navigationToInvitation = {},
-                    sendIcon = OSImageSpec.Drawable(R.drawable.ic_share),
-                    onBackClick = {},
-                    navigateToContactDetail = {},
-                )
+                with(object : WriteMessageNavScope {
+                    override val navigationToInvitation: (UUID) -> Unit = {}
+                    override val navigateToContactDetail: (UUID) -> Unit = {}
+                    override val navigateBack: () -> Unit = {}
+                    override val deeplinkBubblesWriteMessage: ((contactId: UUID) -> Unit)? = { _ -> }
+                }) {
+                    WriteMessageRoute(
+                        onChangeRecipient = onClickOnChangeContact,
+                        sendMessage = {},
+                        contactIdFlow = MutableStateFlow(null),
+                        sendIcon = OSImageSpec.Drawable(R.drawable.ic_share),
+                        viewModel = mockkVm,
+                        hideKeyboard = null,
+                    )
+                }
             }
             block()
         }

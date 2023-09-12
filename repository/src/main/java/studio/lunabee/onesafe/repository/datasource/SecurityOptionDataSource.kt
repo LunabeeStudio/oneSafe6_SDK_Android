@@ -42,4 +42,7 @@ interface SecurityOptionDataSource {
 
     fun setPasswordVerificationInterval(interval: VerifyPasswordInterval)
     fun setLastPasswordVerificationTimeStamp(timeStamp: Long)
+
+    val bubblesResendMessageDelayFlow: Flow<Duration>
+    fun setBubblesResendMessageDelay(delay: Duration)
 }

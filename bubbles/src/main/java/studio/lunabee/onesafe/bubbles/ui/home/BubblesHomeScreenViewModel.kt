@@ -17,10 +17,12 @@
  * Last modified 10/07/2023 15:30
  */
 
-package studio.lunabee.onesafe.bubbles.ui.app
+package studio.lunabee.onesafe.bubbles.ui.home
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lunabee.lbextensions.enumValueOfOrNull
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -43,12 +45,13 @@ import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCa
 import javax.inject.Inject
 
 @HiltViewModel
-class BubblesAppScreenViewModel @Inject constructor(
+class BubblesHomeScreenViewModel @Inject constructor(
     getEncryptedBubblesContactList: GetAllContactsUseCase,
     contactLocalDecryptUseCase: ContactLocalDecryptUseCase,
     private val getConversationStateUseCase: GetConversationStateUseCase,
     private val messageRepository: MessageRepository,
     val osFeatureFlags: FeatureFlags,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val _conversation = MutableStateFlow<List<BubblesConversationInfo>?>(null)
@@ -56,6 +59,8 @@ class BubblesAppScreenViewModel @Inject constructor(
 
     private val _contacts: MutableStateFlow<List<UIBubblesContactInfo>?> = MutableStateFlow(null)
     val contacts: StateFlow<List<UIBubblesContactInfo>?> = _contacts.asStateFlow()
+
+    val initialTab: BubblesHomeTab? = enumValueOfOrNull<BubblesHomeTab>(savedStateHandle[BubblesHomeDestination.BubblesHomeTabArg])
 
     init {
         viewModelScope.launch {
@@ -78,10 +83,11 @@ class BubblesAppScreenViewModel @Inject constructor(
                     )
                 }
                 _conversation.value = contactLists.sortedByDescending { it.updatedAt }.map { info ->
+                    val lastMessage = messageRepository.getLastMessage(info.id).firstOrNull()
                     BubblesConversationInfo(
                         nameProvider = info.rawName.getNameProvider(),
                         subtitle = if (info.isConvReady) {
-                            messageRepository.getLastMessage(info.id).firstOrNull()?.let { message ->
+                            lastMessage?.let { message ->
                                 val content = contactLocalDecryptUseCase(message.encContent, info.id, String::class).data.orEmpty()
                                 val realContent = if (content == BubblesConstant.FirstMessageData) {
                                     LbcTextSpec.StringResource(R.string.bubbles_acceptedInvitation)
@@ -94,6 +100,7 @@ class BubblesAppScreenViewModel @Inject constructor(
                             ConversationSubtitle.NotReady
                         },
                         id = info.id,
+                        hasUnreadMessage = lastMessage?.isRead == false,
                     )
                 }
             }

@@ -31,7 +31,7 @@ sealed class MessageAction(
     abstract val onClick: () -> Unit
 
     class Resend(override val onClick: () -> Unit) : MessageAction(
-        icon = studio.lunabee.onesafe.messaging.R.drawable.ic_send,
+        icon = R.drawable.ic_send,
         text = LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_resend),
         isCritical = false,
     )

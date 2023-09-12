@@ -27,14 +27,9 @@ object OnBoardingBubblesDestination : OSDestination {
     override val route: String = "onBoarding_bubbles"
 }
 
-fun NavGraphBuilder.onBoardingBubblesGraph(
-    navigateBack: () -> Unit,
-    navigateToBubblesHome: () -> Unit,
-) {
+context(OnBoardingBubblesNavScope)
+fun NavGraphBuilder.onBoardingBubblesScreen() {
     composable(route = OnBoardingBubblesDestination.route) {
-        OnBoardingBubblesRoute(
-            navigateBack = navigateBack,
-            navigateToHome = navigateToBubblesHome,
-        )
+        OnBoardingBubblesRoute()
     }
 }

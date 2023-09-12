@@ -174,6 +174,10 @@ class AndroidMainCryptoRepository @Inject constructor(
         log.v("cryptographic keys loaded using biometric")
     }
 
+    override suspend fun retrieveMasterKeyFromBiometric(cipher: Cipher): ByteArray {
+        return biometricEngine.retrieveKey(cipher)
+    }
+
     override suspend fun loadMasterKeyExternal(masterKey: ByteArray) {
         this.masterKey = masterKey.copyOf()
         retrieveKeyForIndex()

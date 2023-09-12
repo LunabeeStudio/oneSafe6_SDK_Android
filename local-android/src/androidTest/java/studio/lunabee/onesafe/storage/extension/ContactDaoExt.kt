@@ -31,6 +31,7 @@ suspend fun ContactDao.insert(
     encName: ByteArray = byteArrayOf(),
     encSharedKey: ContactSharedKey = ContactSharedKey(byteArrayOf()),
     updatedAt: Instant = Instant.ofEpochSecond(0),
+    consultedAt: Instant? = null,
 ) {
     insert(
         RoomContact(
@@ -40,6 +41,7 @@ suspend fun ContactDao.insert(
             updatedAt = updatedAt,
             sharedConversationId = UUID.randomUUID(),
             encIsUsingDeeplink = byteArrayOf(),
+            consultedAt = consultedAt,
         ),
     )
 }

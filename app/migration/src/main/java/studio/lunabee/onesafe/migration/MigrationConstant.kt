@@ -20,5 +20,5 @@
 package studio.lunabee.onesafe.migration
 
 object MigrationConstant {
-    const val LastVersion: Int = 1
+    const val LastVersion: Int = 3
 }

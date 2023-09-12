@@ -24,7 +24,9 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 class OsAppVisit @Inject constructor(
@@ -56,9 +58,16 @@ class OsAppVisit @Inject constructor(
 
     private val hasDoneOnBoardingBubblesKey = booleanPreferencesKey(AppVisitConstants.hasDoneOnBoardingBubbles)
 
-    val hasDoneOnBoardingBubbles: Flow<Boolean> = dataStore.data.map { preferences ->
+    val hasDoneOnBoardingBubblesFlow: Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[hasDoneOnBoardingBubblesKey] ?: AppVisitConstants.hasDoneOnBoardingBubblesDefault
     }
+
+    val hasDoneOnBoardingBubbles: Boolean
+        get() = runBlocking {
+            dataStore.data.map { preferences ->
+                preferences[hasDoneOnBoardingBubblesKey]
+            }.firstOrNull() ?: AppVisitConstants.hasDoneOnBoardingBubblesDefault
+        }
 
     suspend fun storeHasDoneOnBoardingBubbles() {
         dataStore.edit { preferences ->

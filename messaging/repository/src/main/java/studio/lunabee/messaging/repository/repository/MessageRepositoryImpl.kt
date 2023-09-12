@@ -48,4 +48,8 @@ class MessageRepositoryImpl @Inject constructor(
     override suspend fun deleteMessage(messageId: UUID) {
         datasource.deleteMessage(messageId)
     }
+
+    override suspend fun markMessagesAsRead(contactId: UUID) {
+        datasource.markMessagesAsRead(contactId)
+    }
 }

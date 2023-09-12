@@ -20,14 +20,18 @@
 package studio.lunabee.onesafe.ime.ui
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.ui.theme.OSColor
+import studio.lunabee.onesafe.utils.OsDefaultPreview
 import studio.lunabee.onesafe.ime.R as imeR
 
 enum class OSKeyboardStatus {
@@ -76,4 +80,14 @@ enum class OSKeyboardStatus {
     abstract val logo: Int
     abstract val lightTint: Color
     abstract val darkTint: Color
+}
+
+@Composable
+@OsDefaultPreview
+private fun OSKeyboardStatusLogoPreview() {
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        OSKeyboardStatus.entries.forEach {
+            it.Logo()
+        }
+    }
 }

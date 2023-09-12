@@ -177,16 +177,17 @@ interface DoubleRatchetServiceStorageModule {
 object DatabaseModule {
     @Provides
     @Singleton
-    fun provideMainDatabase(@ApplicationContext appContext: Context, migration3to4: Migration3to4): MainDatabase {
+    fun provideMainDatabase(
+        @ApplicationContext appContext: Context,
+        migration3to4: Migration3to4,
+    ): MainDatabase {
         return Room.databaseBuilder(
             appContext,
             MainDatabase::class.java,
             "bc9fe798-a4f0-402e-9f5b-80339d87a041",
-        )
-            .addMigrations(
-                migration3to4,
-            )
-            .build()
+        ).addMigrations(
+            migration3to4,
+        ).build()
     }
 }
 

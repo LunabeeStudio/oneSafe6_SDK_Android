@@ -17,42 +17,35 @@
  * Last modified 12/07/2023 10:40
  */
 
-package studio.lunabee.onesafe.bubbles.ui.app
+package studio.lunabee.onesafe.bubbles.ui.home
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import studio.lunabee.onesafe.commonui.navigation.OSDestination
-import java.util.UUID
 
-object BubblesDestination : OSDestination {
-    override val route: String = "bubbles_home"
+object BubblesHomeDestination : OSDestination {
+    const val BubblesHomeTabArg: String = "tab"
+
+    override val route: String = "bubbles_home?" +
+        "$BubblesHomeTabArg={$BubblesHomeTabArg}"
+
+    fun getRoute(tab: BubblesHomeTab?): String = if (tab != null) {
+        this.route.replace("{$BubblesHomeTabArg}", tab.name)
+    } else {
+        this.route
+    }
 }
 
-@Suppress("LongParameterList")
-fun NavGraphBuilder.bubblesHomeGraph(
-    navigateBack: () -> Unit,
-    navigateToContact: (contactId: UUID) -> Unit,
-    navigateToConversation: (contactId: UUID) -> Unit,
-    navigateToQrScan: () -> Unit,
-    navigateToCreateContact: () -> Unit,
-    navigateToSettings: () -> Unit,
-    navigateToDecryptMessage: () -> Unit,
+context(BubblesHomeNavScope)
+fun NavGraphBuilder.bubblesHomeScreen(
     createMessagingViewModel: @Composable (NavBackStackEntry) -> Unit,
 ) {
     composable(
-        route = BubblesDestination.route,
+        route = BubblesHomeDestination.route,
     ) { backStackEntry ->
         createMessagingViewModel(backStackEntry)
-        BubblesAppRoute(
-            navigateBack = navigateBack,
-            navigateToContact = navigateToContact,
-            navigateToConversation = navigateToConversation,
-            navigateToCreateContact = navigateToCreateContact,
-            navigateToQrScan = navigateToQrScan,
-            navigateToSettings = navigateToSettings,
-            navigateToDecryptMessage = navigateToDecryptMessage,
-        )
+        BubblesHomeRoute()
     }
 }

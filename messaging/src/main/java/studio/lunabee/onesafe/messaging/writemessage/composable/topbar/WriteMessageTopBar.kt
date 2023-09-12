@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2023 Lunabee Studio
+ * Copyright (c) 2023 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Created by Lunabee Studio / Date - 8/17/2023 - for the oneSafe6 SDK.
- * Last modified 17/08/2023 09:53
+ * Last modified 17/08/2023 10:01
  */
 
 package studio.lunabee.onesafe.messaging.writemessage.composable.topbar
@@ -22,8 +22,8 @@ package studio.lunabee.onesafe.messaging.writemessage.composable.topbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -57,11 +57,12 @@ import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
 import studio.lunabee.onesafe.ui.theme.OSTypography.titleMediumBlack
 
 @Composable
-fun OneSafeKWriteMessageTopBar(
+fun WriteMessageTopBar(
     contactNameProvider: OSNameProvider,
     modifier: Modifier = Modifier,
-    onClickOnChange: () -> Unit,
-    onClose: () -> Unit,
+    onClickOnChange: (() -> Unit)?,
+    leadingSlot: @Composable RowScope.() -> Unit,
+    trailingSlot: @Composable RowScope.() -> Unit,
 ) {
     val illustration: OSItemIllustration by remember(contactNameProvider) {
         mutableStateOf(OSItemIllustrationHelper.get(contactNameProvider))
@@ -72,57 +73,81 @@ fun OneSafeKWriteMessageTopBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.Medium),
     ) {
-        OSIconButton(
-            image = OSImageSpec.Drawable(R.drawable.ic_close),
-            onClick = onClose,
-            buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
-            contentDescription = LbcTextSpec.StringResource(R.string.common_accessibility_back),
-            colors = OSIconButtonDefaults.iconButtonColors(
-                containerColor = LocalDesignSystem.current.bubblesSecondaryContainer(),
-                contentColor = MaterialTheme.colorScheme.onSurface,
-                state = OSActionState.Enabled,
-            ),
+        leadingSlot()
+        Title(onClickOnChange, illustration, contactNameProvider)
+        trailingSlot()
+    }
+}
+
+@Composable
+private fun RowScope.Title(
+    onClickOnChange: (() -> Unit)?,
+    illustration: OSItemIllustration,
+    contactNameProvider: OSNameProvider,
+) {
+    val titleRowModifier = if (onClickOnChange == null) {
+        Modifier
+    } else {
+        Modifier.clickable { onClickOnChange() }
+    }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.Small),
+        modifier = Modifier
+            .testTag(UiConstants.TestTag.Item.WriteMessageTopBar)
+            .clip(RoundedCornerShape(OSDimens.SystemCornerRadius.Regular))
+            .then(titleRowModifier)
+            .background(LocalDesignSystem.current.bubblesSecondaryContainer())
+            .padding(
+                horizontal = OSDimens.SystemSpacing.Medium,
+                vertical = OSDimens.SystemSpacing.Small,
+            )
+            .weight(1f),
+    ) {
+        illustration.ImageComposable(contentDescription = null, style = OSSafeItemStyle.Tiny)
+        OSText(
+            text = contactNameProvider.name,
+            style = MaterialTheme.typography.titleMediumBlack,
+            modifier = Modifier.weight(1f),
         )
-        Box(
-            modifier = Modifier
-                .testTag(UiConstants.TestTag.Item.OneSafeKWriteMessageRecipientCard)
-                .clip(RoundedCornerShape(OSDimens.SystemCornerRadius.Regular))
-                .background(LocalDesignSystem.current.bubblesSecondaryContainer())
-                .clickable { onClickOnChange() },
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.Small),
-                modifier = Modifier
-                    .padding(
-                        horizontal = OSDimens.SystemSpacing.Medium,
-                        vertical = OSDimens.SystemSpacing.Small,
-                    ),
-            ) {
-                illustration.ImageComposable(contentDescription = null, style = OSSafeItemStyle.Tiny)
-                OSText(
-                    text = contactNameProvider.name,
-                    style = MaterialTheme.typography.titleMediumBlack,
-                    modifier = Modifier.weight(1f),
-                )
-                OSText(
-                    text = LbcTextSpec.StringResource(R.string.oneSafeK_changeRecipientButton_label),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.secondary,
-                )
-            }
-        }
     }
 }
 
 @Preview
 @Composable
-fun OneSafeKWriteMessageTopBarPreview() {
+fun AppWriteMessageTopBarPreview() {
     OSPreviewBackgroundTheme {
-        OneSafeKWriteMessageTopBar(
-            contactNameProvider = DefaultNameProvider(loremIpsum(5)),
-            onClose = {},
+        WriteMessageTopBar(
+            contactNameProvider = DefaultNameProvider(loremIpsum(1)),
             onClickOnChange = {},
+            leadingSlot = {
+                OSIconButton(
+                    image = OSImageSpec.Drawable(R.drawable.ic_back),
+                    onClick = {},
+                    buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
+                    contentDescription = LbcTextSpec.StringResource(R.string.common_accessibility_back),
+                    colors = OSIconButtonDefaults.iconButtonColors(
+                        containerColor = LocalDesignSystem.current.bubblesSecondaryContainer(),
+                        contentColor = MaterialTheme.colorScheme.onSurface,
+                        state = OSActionState.Enabled,
+                    ),
+                )
+            },
+            trailingSlot = {
+                OSIconButton(
+                    image = OSImageSpec.Drawable(R.drawable.ic_more),
+                    onClick = { },
+                    colors = OSIconButtonDefaults.secondaryIconButtonColors(state = OSActionState.Enabled),
+                )
+                ContactActionMenu(
+                    isMenuExpended = false,
+                    onDismiss = { },
+                    onSeeContactClick = {},
+                    onDeleteMessages = {},
+                    onHideConversation = {},
+                    isConversationHidden = false,
+                )
+            },
         )
     }
 }

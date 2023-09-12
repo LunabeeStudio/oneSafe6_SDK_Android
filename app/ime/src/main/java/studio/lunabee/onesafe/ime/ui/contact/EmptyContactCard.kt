@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2023-2023 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 5/23/2023 - for the oneSafe6 SDK.
- * Last modified 5/23/23, 5:11 PM
+ * Created by Lunabee Studio / Date - 8/30/2023 - for the oneSafe6 SDK.
+ * Last modified 8/29/23, 6:19 PM
  */
 
-package studio.lunabee.onesafe.bubbles.ui.composables
+package studio.lunabee.onesafe.ime.ui.contact
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -29,18 +27,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.LocalCardContentExtraSpace
-import studio.lunabee.onesafe.atom.OSClickableRow
-import studio.lunabee.onesafe.atom.OSIconDecorationButton
-import studio.lunabee.onesafe.atom.OSImageSpec
-import studio.lunabee.onesafe.atom.OSSmallDivider
-import studio.lunabee.onesafe.atom.button.defaults.OSTextButtonDefaults
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.molecule.OSTopImageBox
-import studio.lunabee.onesafe.ui.res.OSDimens
-import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
-import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.organism.card.OSMessageCard
 import studio.lunabee.onesafe.ui.UiConstants
+import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
 
 @Composable
 fun EmptyContactCard() {
@@ -53,21 +44,6 @@ fun EmptyContactCard() {
                 description = LbcTextSpec.StringResource(id = R.string.bubbles_emptyContactCard_description),
                 title = LbcTextSpec.StringResource(id = R.string.bubbles_emptyContactCard_title),
                 contentAlignment = Alignment.BottomCenter,
-                action = {
-                    Column(
-                        modifier = Modifier.padding(top = OSDimens.SystemSpacing.Regular),
-                    ) {
-                        OSSmallDivider(
-                            modifier = Modifier.padding(horizontal = OSDimens.SystemSpacing.Regular),
-                        )
-                        OSClickableRow(
-                            text = LbcTextSpec.StringResource(id = R.string.oneSafeK_contact_manageButton),
-                            onClick = {},
-                            buttonColors = OSTextButtonDefaults.secondaryTextButtonColors(state = OSActionState.Enabled),
-                            leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = R.drawable.ic_people)) },
-                        )
-                    }
-                },
             )
         }
     }

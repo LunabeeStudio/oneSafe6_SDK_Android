@@ -1,0 +1,101 @@
+/*
+ * Copyright (c) 2023-2023 Lunabee Studio
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Created by Lunabee Studio / Date - 8/30/2023 - for the oneSafe6 SDK.
+ * Last modified 8/30/23, 2:17 PM
+ */
+
+package studio.lunabee.onesafe.ime.ui.contact
+
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import studio.lunabee.compose.core.LbcTextSpec
+import studio.lunabee.onesafe.atom.OSImageSpec
+import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
+import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.localprovider.LocalKeyboardUiHeight
+import studio.lunabee.onesafe.ime.ui.OSImeScreen
+import studio.lunabee.onesafe.model.OSActionState
+import studio.lunabee.onesafe.model.TopAppBarOptionNav
+import studio.lunabee.onesafe.molecule.ElevatedTopAppBar
+import studio.lunabee.onesafe.ui.UiConstants
+import studio.lunabee.onesafe.ui.extensions.topAppBarElevation
+import studio.lunabee.onesafe.ui.res.OSDimens
+import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
+import studio.lunabee.onesafe.utils.OsDefaultPreview
+
+@Composable
+fun ImeContactEmptyScreen(
+    navigateBack: () -> Unit,
+    navigateToBubblesHomeContact: () -> Unit,
+) {
+    val lazyListState = rememberLazyListState()
+    val embeddedKeyboardHeight: Dp = LocalKeyboardUiHeight.current
+
+    OSImeScreen(
+        testTag = UiConstants.TestTag.Screen.EmptyContactScreen,
+        modifier = Modifier.statusBarsPadding(),
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = OSDimens.ItemTopBar.Height)
+                .padding(bottom = embeddedKeyboardHeight),
+            contentPadding = PaddingValues(
+                horizontal = OSDimens.SystemSpacing.Regular,
+                vertical = OSDimens.SystemSpacing.Regular,
+            ),
+            state = lazyListState,
+        ) {
+            ImeContactScreenFactory.addEmptyCard(this)
+            lazyVerticalOSRegularSpacer()
+            ImeContactScreenFactory.addManageContactsCard(
+                lazyListScope = this,
+                onClick = navigateToBubblesHomeContact,
+            )
+        }
+
+        ElevatedTopAppBar(
+            title = LbcTextSpec.StringResource(R.string.oneSafeK_selectContact_title),
+            options = listOf(
+                TopAppBarOptionNav(
+                    image = OSImageSpec.Drawable(R.drawable.ic_close),
+                    contentDescription = LbcTextSpec.StringResource(R.string.common_accessibility_back),
+                    onClick = navigateBack,
+                    state = OSActionState.Enabled,
+                ),
+            ),
+            elevation = lazyListState.topAppBarElevation,
+        )
+    }
+}
+
+@Composable
+@OsDefaultPreview
+private fun EmptyContactScreenPreview() {
+    OSPreviewBackgroundTheme {
+        ImeContactEmptyScreen(
+            navigateBack = { },
+            navigateToBubblesHomeContact = {},
+        )
+    }
+}

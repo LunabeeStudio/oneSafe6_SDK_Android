@@ -19,6 +19,12 @@
 
 package studio.lunabee.onesafe.bubbles.ui
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+
 object BubblesUiConstants {
     const val BarcodeSize: Int = 400
+    val NotificationIndicatorSize: Dp = 8.dp
+    val NotificationColor: Color = Color(0xFF3C850F)
 }

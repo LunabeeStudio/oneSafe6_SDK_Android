@@ -25,7 +25,7 @@ android {
     namespace = "studio.lunabee.onesafe.ime"
 
     defaultConfig {
-        minSdk = AndroidConfig.MIN_DEV_APP_SDK
+        minSdk = AndroidConfig.MIN_APP_SDK
     }
 
     buildFeatures {
@@ -73,10 +73,11 @@ dependencies {
     implementation(COIL.compose)
     implementation(AndroidX.paging.compose)
     implementation(Google.accompanist.systemUiController)
+    implementation(AndroidX.biometric)
+    implementation(AndroidX.startup.runtime)
 
     implementation(project(":app:core-ui"))
     implementation(project(":app:common-ui"))
-    implementation(project(":app:message-companion"))
     implementation(project(":bubbles"))
     implementation(project(":common"))
     implementation(project(":domain"))
