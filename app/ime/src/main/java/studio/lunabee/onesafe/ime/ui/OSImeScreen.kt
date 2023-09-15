@@ -29,10 +29,8 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import studio.lunabee.onesafe.atom.OSScreen
-import studio.lunabee.onesafe.commonui.localprovider.LocalKeyboardUiHeight
+import studio.lunabee.onesafe.commonui.localprovider.LocalIsKeyBoardVisible
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
 import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 
@@ -44,11 +42,10 @@ fun OSImeScreen(
     applySystemBarPadding: Boolean = false,
     content: @Composable (BoxScope.() -> Unit),
 ) {
-    val embeddedKeyboardHeight: Dp = LocalKeyboardUiHeight.current
-
+    val isKeyBoardVisible = LocalIsKeyBoardVisible.current
     OSScreen(
         testTag = testTag,
-        modifier = if (embeddedKeyboardHeight != 0.dp) {
+        modifier = if (isKeyBoardVisible) {
             Modifier.fillMaxSize()
         } else {
             Modifier

@@ -25,20 +25,22 @@ import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -46,18 +48,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -73,8 +68,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.OSAppSettings
 import studio.lunabee.onesafe.atom.textfield.LocalTextFieldInteraction
+import studio.lunabee.onesafe.commonui.localprovider.LocalIsKeyBoardVisible
 import studio.lunabee.onesafe.commonui.localprovider.LocalIsOneSafeK
-import studio.lunabee.onesafe.commonui.localprovider.LocalKeyboardUiHeight
 import studio.lunabee.onesafe.commonui.navigation.LoginDestination
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSignUpUseCase
@@ -92,6 +87,7 @@ import studio.lunabee.onesafe.ime.viewmodel.WriteMessageViewModelFactory
 import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
 import studio.lunabee.onesafe.messaging.domain.usecase.ProcessMessageQueueUseCase
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
+import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.OSColor
 import studio.lunabee.onesafe.ui.theme.OSTheme
 import studio.lunabee.onesafe.visits.OsAppVisit
@@ -107,31 +103,43 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OSFlorisImeService : FlorisImeService() {
 
-    @Inject lateinit var imeLoginViewModelFactory: dagger.Lazy<ImeLoginViewModelFactory>
+    @Inject
+    lateinit var imeLoginViewModelFactory: dagger.Lazy<ImeLoginViewModelFactory>
 
-    @Inject lateinit var selectContactViewModelFactory: dagger.Lazy<SelectContactViewModelFactory>
+    @Inject
+    lateinit var selectContactViewModelFactory: dagger.Lazy<SelectContactViewModelFactory>
 
-    @Inject lateinit var writeMessageViewModelFactory: dagger.Lazy<WriteMessageViewModelFactory>
+    @Inject
+    lateinit var writeMessageViewModelFactory: dagger.Lazy<WriteMessageViewModelFactory>
 
-    @Inject lateinit var settings: OSAppSettings
+    @Inject
+    lateinit var settings: OSAppSettings
 
-    @Inject lateinit var channelRepository: MessageChannelRepository
+    @Inject
+    lateinit var channelRepository: MessageChannelRepository
 
-    @Inject lateinit var isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase
+    @Inject
+    lateinit var isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase
 
     private val themeManager by themeManager()
 
-    @Inject lateinit var decryptClipboardListener: DecryptClipboardListener
+    @Inject
+    lateinit var decryptClipboardListener: DecryptClipboardListener
 
-    @Inject lateinit var processMessageQueueUseCase: ProcessMessageQueueUseCase
+    @Inject
+    lateinit var processMessageQueueUseCase: ProcessMessageQueueUseCase
 
-    @Inject lateinit var feedbackManager: ImeFeedbackManager
+    @Inject
+    lateinit var feedbackManager: ImeFeedbackManager
 
-    @Inject lateinit var lockUseCase: LockAppUseCase
+    @Inject
+    lateinit var lockUseCase: LockAppUseCase
 
-    @Inject lateinit var isSignUpUseCase: IsSignUpUseCase
+    @Inject
+    lateinit var isSignUpUseCase: IsSignUpUseCase
 
-    @Inject lateinit var osAppVisit: OsAppVisit
+    @Inject
+    lateinit var osAppVisit: OsAppVisit
 
     private var isKeyboardVisibleFlow: MutableStateFlow<Boolean> = MutableStateFlow(true)
     private var isOneSafeUiVisibleFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -168,7 +176,8 @@ class OSFlorisImeService : FlorisImeService() {
             isOneSafeUiVisibleFlow.value = false
         }
         super.onWindowShown()
-        (editorInstance().value as? InterceptEditorInstance)?.blockInput = isOneSafeUiVisibleFlow.value
+        (editorInstance().value as? InterceptEditorInstance)?.blockInput =
+            isOneSafeUiVisibleFlow.value
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -178,9 +187,11 @@ class OSFlorisImeService : FlorisImeService() {
                     isKeyboardVisibleFlow.value = false
                     return true
                 }
+
                 isKeyboardVisibleFlow.value && !isOneSafeUiVisibleFlow.value -> {
                     isKeyboardVisibleFlow.value = false
                 }
+
                 !isKeyboardVisibleFlow.value -> {
                     isOneSafeUiVisibleFlow.value = false
                 }
@@ -239,22 +250,71 @@ class OSFlorisImeService : FlorisImeService() {
     }
 
     @Composable
-    override fun DecoratedIme(ImeUi: @Composable () -> Unit) {
+    override fun ThemeImeView() {
+        val imeClient by imeClientFlow.collectAsStateWithLifecycle()
+        if (imeClient?.packageName == packageName) {
+            // Disable oneSafe K when using oneSafe
+            super.ThemeImeView()
+        } else {
+            val isCryptoDataReady by isCryptoDataReadyInMemoryUseCase().collectAsStateWithLifecycle(
+                false,
+            )
+            val isOneSafeUiVisible by isOneSafeUiVisibleFlow.collectAsStateWithLifecycle()
+            val entry by navController.currentBackStackEntryAsState()
+            val forceDark =
+                entry?.destination?.route == WriteMessageDestination.route && isOneSafeUiVisible
+            val background: Color
+            val contentColor: Color
+            when {
+                forceDark -> {
+                    themeManager.updateActiveTheme(forceNight = true)
+                    background = OSColor.Neutral70
+                    contentColor = OSColor.Neutral00
+                }
+
+                isSystemInDarkTheme() -> {
+                    themeManager.updateActiveTheme()
+                    background = Color.Transparent
+                    contentColor = OSColor.Neutral00
+                }
+
+                else -> {
+                    themeManager.updateActiveTheme()
+                    background = Color.Transparent
+                    contentColor = LocalContentColor.current
+                }
+            }
+
+            Surface(color = background, contentColor = contentColor) {
+                ImeOSTopBar(
+                    imeClient = imeClient,
+                    isCryptoDataReady = isCryptoDataReady,
+                    onLogoClick = ::showOneSafeUi,
+                    isDark = themeManager.activeThemeInfo.value?.config?.isNightTheme ?: false,
+                    onLockClick = {
+                        if (isCryptoDataReady) {
+                            lockUseCase()
+                        } else {
+                            showOneSafeUi()
+                        }
+                    },
+                )
+            }
+        }
+    }
+
+    override fun calculateTouchableTopY(visibleTopY: Int, needAdditionalOverlay: Boolean): Int {
+        return if (isOneSafeUiVisibleFlow.value) {
+            0
+        } else {
+            super.calculateTouchableTopY(visibleTopY, needAdditionalOverlay)
+        }
+    }
+
+    @Composable
+    override fun AboveImeView(ImeUi: @Composable () -> Unit) {
         val imeClient by imeClientFlow.collectAsStateWithLifecycle()
         navController = rememberNavController()
-
-        val density = LocalDensity.current
-        val configuration = LocalConfiguration.current
-        val screenHeight = configuration.screenHeightDp.dp
-        var osUiRequiredHeight: Dp by remember { mutableStateOf(0.dp) }
-        var keyboardUiHeight: Dp by remember { mutableStateOf(0.dp) }
-        val statusBarHeightDp: Dp
-        val navigationBarHeightDp: Dp
-        with(density) {
-            statusBarHeightDp = (WindowInsets.statusBars.getBottom(density) + WindowInsets.statusBars.getTop(density)).toDp()
-            navigationBarHeightDp =
-                (WindowInsets.navigationBars.getBottom(density) + WindowInsets.navigationBars.getTop(density)).toDp()
-        }
         val isCryptoDataReady by isCryptoDataReadyInMemoryUseCase().collectAsStateWithLifecycle(
             initialValue = false,
         )
@@ -281,112 +341,92 @@ class OSFlorisImeService : FlorisImeService() {
 
         if (imeClient?.packageName == packageName) {
             // Disable oneSafe K when using oneSafe
-            super.DecoratedIme(ImeUi)
+            super.AboveImeView(ImeUi)
         } else {
-            Box(
-                Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.BottomCenter,
-            ) {
+            Column {
+                OneSafeKView(isOneSafeUiVisible, isKeyboardVisible)
                 AnimatedVisibility(
-                    visible = isOneSafeUiVisible,
-                    modifier = Modifier
-                        .background(Color.Transparent),
-                    enter = expandVertically(
-                        expandFrom = Alignment.Top,
-                        animationSpec = tween(durationMillis = KeyboardUiAnimationDuration),
-                    ),
-                    exit = shrinkVertically(),
+                    visible = isKeyboardVisible,
+                    enter = expandVertically(expandFrom = Alignment.Top),
+                    exit = shrinkVertically(shrinkTowards = Alignment.Top),
                 ) {
-                    CompositionLocalProvider(
-                        LocalTextFieldInteraction.provides { textFieldValue, setTextFieldValue, keyboardOptions, keyboardActions ->
-                            Modifier
-                                .keyboardTextfield(
-                                    isKeyboardVisible = { isKeyboardVisible },
-                                    toggleKeyboardVisibility = { isKeyboardVisibleFlow.value = !isKeyboardVisible },
-                                    textFieldValue = textFieldValue,
-                                    setTextFieldValue = setTextFieldValue,
-                                    keyboardOptions = keyboardOptions,
-                                    keyboardActions = keyboardActions,
-                                )
+                    ImeUi()
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun ColumnScope.OneSafeKView(
+        isOneSafeVisible: Boolean,
+        isKeyboardVisible: Boolean,
+    ) {
+        CompositionLocalProvider(
+            LocalTextFieldInteraction.provides { textFieldValue, setTextFieldValue, keyboardOptions, keyboardActions ->
+                Modifier
+                    .keyboardTextfield(
+                        isKeyboardVisible = { isKeyboardVisible },
+                        toggleKeyboardVisibility = {
+                            isKeyboardVisibleFlow.value = !isKeyboardVisible
                         },
-                        LocalKeyboardUiHeight.provides(if (isKeyboardVisible) keyboardUiHeight else 0.dp),
-                        LocalIsOneSafeK.provides(true),
-                        LocalOnBackPressedDispatcherOwner.provides(object : OnBackPressedDispatcherOwner {
-                            override val lifecycle: Lifecycle = this@OSFlorisImeService.lifecycle
-                            override val onBackPressedDispatcher: OnBackPressedDispatcher = OnBackPressedDispatcher(null)
-                        }),
+                        textFieldValue = textFieldValue,
+                        setTextFieldValue = setTextFieldValue,
+                        keyboardOptions = keyboardOptions,
+                        keyboardActions = keyboardActions,
+                    )
+            },
+            LocalIsOneSafeK.provides(true),
+            LocalIsKeyBoardVisible.provides(isKeyboardVisible),
+            LocalOnBackPressedDispatcherOwner.provides(object : OnBackPressedDispatcherOwner {
+                override val lifecycle: Lifecycle = this@OSFlorisImeService.lifecycle
+                override val onBackPressedDispatcher: OnBackPressedDispatcher =
+                    OnBackPressedDispatcher(null)
+            }),
+        ) {
+            Box(
+                modifier = Modifier.Companion.weight(1f, true),
+            ) {
+                Column(Modifier.fillMaxSize()) {
+                    AnimatedVisibility(
+                        visible = isOneSafeVisible,
+                        enter = fadeIn(),
+                        exit = fadeOut(),
                     ) {
                         Box(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .height(screenHeight + statusBarHeightDp + navigationBarHeightDp),
-                        ) {
-                            OneSafeKUi(
-                                modifier = Modifier,
-                            )
-                        }
+                                .background(Color.Black.copy(0.5f))
+                                .fillMaxSize()
+                                .clickable(
+                                    onClick = {
+                                        isOneSafeUiVisibleFlow.value = false
+                                        isKeyboardVisibleFlow.value = true
+                                    },
+                                ),
+                        )
                     }
                 }
-                AnimatedVisibility(
-                    visible = isKeyboardVisible,
-                    enter = expandVertically(
-                        expandFrom = Alignment.Top,
-                        animationSpec = tween(durationMillis = KeyboardUiAnimationDuration),
-                    ),
-                    exit = slideOutVertically(
-                        animationSpec = tween(durationMillis = KeyboardUiAnimationDuration),
-                        targetOffsetY = { fullHeight -> fullHeight },
-                    ),
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .statusBarsPadding()
+                        .padding(top = OSDimens.SystemSpacing.ExtraLarge),
                 ) {
-                    val entry by navController.currentBackStackEntryAsState()
-                    val forceDark = entry?.destination?.route == WriteMessageDestination.route && isOneSafeUiVisible
-                    val background: Color
-                    val contentColor: Color
-                    when {
-                        forceDark -> {
-                            themeManager.updateActiveTheme(forceNight = true)
-                            background = OSColor.Neutral70
-                            contentColor = OSColor.Neutral00
-                        }
-                        isSystemInDarkTheme() -> {
-                            themeManager.updateActiveTheme()
-                            background = Color.Transparent
-                            contentColor = OSColor.Neutral00
-                        }
-                        else -> {
-                            themeManager.updateActiveTheme()
-                            background = Color.Transparent
-                            contentColor = LocalContentColor.current
-                        }
-                    }
-
-                    Surface(color = background, contentColor = contentColor) {
-                        Column(
+                    AnimatedVisibility(
+                        visible = isOneSafeVisible,
+                        enter = expandVertically(expandFrom = Alignment.Top),
+                        exit = shrinkVertically(shrinkTowards = Alignment.Top),
+                    ) {
+                        OneSafeKUi(
                             modifier = Modifier
-                                .onGloballyPositioned { layoutCoordinate ->
-                                    val size = layoutCoordinate.size
-                                    val height = with(density) { size.height.toDp() }
-                                    keyboardUiHeight = height
-                                    if (osUiRequiredHeight == 0.dp) {
-                                        osUiRequiredHeight = (screenHeight - height) + statusBarHeightDp + navigationBarHeightDp
-                                    }
-                                },
-                        ) {
-                            ImeOSTopBar(
-                                imeClient = imeClient,
-                                isCryptoDataReady = isCryptoDataReady,
-                                onLogoClick = ::showOneSafeUi,
-                                isDark = themeManager.activeThemeInfo.value?.config?.isNightTheme ?: false,
-                                onLockClick = {
-                                    if (isCryptoDataReady) {
-                                        lockUseCase()
-                                    } else {
-                                        showOneSafeUi()
-                                    }
-                                },
-                            )
-                            ImeUi()
-                        }
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                                .clip(
+                                    RoundedCornerShape(
+                                        topStart = OSDimens.SystemSpacing.Regular,
+                                        topEnd = OSDimens.SystemSpacing.Regular,
+                                    ),
+                                ),
+                        )
                     }
                 }
             }
@@ -405,13 +445,15 @@ class OSFlorisImeService : FlorisImeService() {
     fun OneSafeKUi(
         modifier: Modifier,
     ) {
-        val isMaterialYouSettingsEnabled: Boolean by settings.materialYouSetting.collectAsStateWithLifecycle(false)
+        val isMaterialYouSettingsEnabled: Boolean by settings.materialYouSetting.collectAsStateWithLifecycle(
+            false,
+        )
 
         OSTheme(
             isMaterialYouSettingsEnabled = isMaterialYouSettingsEnabled,
         ) {
             Surface(
-                modifier = Modifier.fillMaxSize(),
+                modifier = modifier,
                 color = MaterialTheme.colorScheme.background,
             ) {
                 ImeNavGraph(
@@ -419,9 +461,7 @@ class OSFlorisImeService : FlorisImeService() {
                     imeLoginViewModelFactory = imeLoginViewModelFactory,
                     selectContactViewModelFactory = selectContactViewModelFactory,
                     writeMessageViewModelFactory = writeMessageViewModelFactory,
-                    onLoginSuccess = {
-                        isKeyboardVisibleFlow.value = false
-                    },
+                    onLoginSuccess = { isKeyboardVisibleFlow.value = false },
                     dismissUi = {
                         isOneSafeUiVisibleFlow.value = false
                         isKeyboardVisibleFlow.value = true
@@ -435,16 +475,9 @@ class OSFlorisImeService : FlorisImeService() {
                         }
                     },
                     hasDoneOnBoardingBubbles = osAppVisit.hasDoneOnBoardingBubbles,
-                    modifier = modifier,
-                    hideKeyboard = {
-                        isKeyboardVisibleFlow.value = false
-                    },
+                    hideKeyboard = { isKeyboardVisibleFlow.value = false },
                 )
             }
         }
-    }
-
-    companion object {
-        private const val KeyboardUiAnimationDuration: Int = 800
     }
 }

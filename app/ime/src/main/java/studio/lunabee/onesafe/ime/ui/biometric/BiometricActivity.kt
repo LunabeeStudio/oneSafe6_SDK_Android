@@ -22,16 +22,13 @@ package studio.lunabee.onesafe.ime.ui.biometric
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.graphics.Color
-import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentActivity
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import studio.lunabee.onesafe.commonui.biometric.DisplayBiometricLabels
 import studio.lunabee.onesafe.commonui.biometric.biometricPrompt
 import studio.lunabee.onesafe.ui.theme.OSTheme
+import studio.lunabee.onesafe.utils.oSDefaultEnableEdgeToEdge
 
 @AndroidEntryPoint
 class BiometricActivity : FragmentActivity() {
@@ -39,8 +36,8 @@ class BiometricActivity : FragmentActivity() {
     val viewModel: ImeBiometricViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        oSDefaultEnableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
             val biometricPrompt: (() -> Unit) = biometricPrompt(
@@ -62,12 +59,6 @@ class BiometricActivity : FragmentActivity() {
                 biometricPrompt.invoke()
             }
 
-            val systemUiController = rememberSystemUiController()
-            systemUiController.setSystemBarsColor(
-                color = Color.Transparent,
-                isNavigationBarContrastEnforced = false,
-                darkIcons = !isSystemInDarkTheme(),
-            )
             OSTheme {
                 ImeBiometricScreen()
             }
