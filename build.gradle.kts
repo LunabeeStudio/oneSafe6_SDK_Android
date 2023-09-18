@@ -31,7 +31,7 @@ buildscript {
         classpath(libs.kotlin.gradle.plugin)
         classpath(Google.dagger.hilt.android.gradlePlugin)
         classpath(libs.protobuf.plugin)
-        classpath("org.jetbrains.kotlin:kotlin-serialization:_")
+        classpath(libs.kotlin.serialization)
     }
 }
 

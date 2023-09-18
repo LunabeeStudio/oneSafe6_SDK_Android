@@ -33,8 +33,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSCard
 import studio.lunabee.onesafe.atom.OSImageSpec
@@ -42,7 +40,7 @@ import studio.lunabee.onesafe.atom.button.OSIconButton
 import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.atom.textfield.OSTextField
 import studio.lunabee.onesafe.commonui.R
-import studio.lunabee.onesafe.commonui.localprovider.LocalKeyboardUiHeight
+import studio.lunabee.onesafe.commonui.localprovider.LocalIsKeyBoardVisible
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.ui.res.OSDimens
@@ -55,7 +53,7 @@ fun NoPreviewComposeMessageCard(
     onClickOnSend: () -> Unit,
     sendIcon: OSImageSpec,
 ) {
-    val embeddedKeyboardHeight: Dp = LocalKeyboardUiHeight.current
+    val isKeyboardVisible: Boolean = LocalIsKeyBoardVisible.current
     Box(
         modifier = Modifier
             .background(OSColor.Neutral70)
@@ -71,10 +69,10 @@ fun NoPreviewComposeMessageCard(
                     vertical = OSDimens.SystemSpacing.Regular,
                 )
                 .then(
-                    if (embeddedKeyboardHeight == 0.dp) {
-                        Modifier.navigationBarsPadding()
-                    } else {
+                    if (isKeyboardVisible) {
                         Modifier
+                    } else {
+                        Modifier.navigationBarsPadding()
                     },
                 ),
         ) {

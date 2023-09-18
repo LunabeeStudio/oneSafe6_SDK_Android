@@ -23,13 +23,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
@@ -46,9 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -72,7 +67,6 @@ import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
 import studio.lunabee.onesafe.commonui.dialog.ImeDialog
 import studio.lunabee.onesafe.commonui.localprovider.LocalIsOneSafeK
-import studio.lunabee.onesafe.commonui.localprovider.LocalKeyboardUiHeight
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
 import studio.lunabee.onesafe.extension.loremIpsum
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
@@ -122,8 +116,6 @@ fun WriteMessageRoute(
     val isMaterialYouEnabled by viewModel.isMaterialYouSettingsEnabled.collectAsStateWithLifecycle(initialValue = false)
     val isPreviewEnabled by viewModel.isPreviewEnabled.collectAsStateWithLifecycle(initialValue = false)
     val isOneSafeK = LocalIsOneSafeK.current
-    val keyboardUiHeight = LocalKeyboardUiHeight.current
-    val density = LocalDensity.current
     val snackBarHostState = remember { SnackbarHostState() }
     var snackbarState: ConversationMoreOptionsSnackbarState? by remember { mutableStateOf(null) }
 
@@ -163,11 +155,9 @@ fun WriteMessageRoute(
         modifier = Modifier.fillMaxSize(),
     ) {
         if (isOneSafeK) {
-            val bottomSystemPaddingDp = with(density) { WindowInsets.systemBars.getBottom(density).toDp() }
             SnackbarHost(
                 hostState = snackBarHostState,
                 modifier = Modifier
-                    .padding(bottom = keyboardUiHeight.coerceAtLeast(bottomSystemPaddingDp))
                     .zIndex(UiConstants.SnackBar.ZIndex)
                     .align(Alignment.BottomCenter),
             )
@@ -235,26 +225,18 @@ fun WriteMessageScreen(
     messageLongPress: MessageLongPress,
 ) {
     val focusManager = LocalFocusManager.current
-    val embeddedKeyboardHeight: Dp = LocalKeyboardUiHeight.current
     val lazyListState = rememberLazyListState()
     var isConversationHidden: Boolean by rememberSaveable { mutableStateOf(false) }
-
     OSScreen(
         testTag = UiConstants.TestTag.Screen.WriteMessageScreen,
         background = LocalDesignSystem.current.bubblesBackGround(),
-        applySystemBarPadding = false,
+        applySystemBarPadding = !LocalIsOneSafeK.current,
         modifier = Modifier.fillMaxSize(),
     ) {
         Column(
             Modifier
                 .fillMaxSize()
-                .then(
-                    if (embeddedKeyboardHeight != 0.dp) {
-                        Modifier.padding(bottom = embeddedKeyboardHeight)
-                    } else {
-                        Modifier.imePadding()
-                    },
-                ),
+                .imePadding(),
         ) {
             WriteMessageTopBar(
                 contactNameProvider = contact.nameProvider,
@@ -265,7 +247,6 @@ fun WriteMessageScreen(
                     }
                 },
                 modifier = Modifier
-                    .statusBarsPadding()
                     .landscapeSystemBarsPadding()
                     .padding(
                         horizontal = OSDimens.SystemSpacing.Regular,

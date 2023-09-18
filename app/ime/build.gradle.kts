@@ -72,7 +72,7 @@ dependencies {
     implementation(JakeWharton.timber)
     implementation(COIL.compose)
     implementation(AndroidX.paging.compose)
-    implementation(Google.accompanist.systemUiController)
+    implementation(AndroidX.Activity.ktx)
     implementation(AndroidX.biometric)
     implementation(AndroidX.startup.runtime)
 

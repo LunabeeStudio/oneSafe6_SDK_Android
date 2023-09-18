@@ -22,17 +22,14 @@ package studio.lunabee.onesafe.ime.ui.contact
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
 import studio.lunabee.onesafe.commonui.R
-import studio.lunabee.onesafe.commonui.localprovider.LocalKeyboardUiHeight
 import studio.lunabee.onesafe.ime.ui.OSImeScreen
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.model.TopAppBarOptionNav
@@ -49,17 +46,13 @@ fun ImeContactEmptyScreen(
     navigateToBubblesHomeContact: () -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
-    val embeddedKeyboardHeight: Dp = LocalKeyboardUiHeight.current
-
     OSImeScreen(
         testTag = UiConstants.TestTag.Screen.EmptyContactScreen,
-        modifier = Modifier.statusBarsPadding(),
     ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = OSDimens.ItemTopBar.Height)
-                .padding(bottom = embeddedKeyboardHeight),
+                .padding(top = OSDimens.ItemTopBar.Height),
             contentPadding = PaddingValues(
                 horizontal = OSDimens.SystemSpacing.Regular,
                 vertical = OSDimens.SystemSpacing.Regular,

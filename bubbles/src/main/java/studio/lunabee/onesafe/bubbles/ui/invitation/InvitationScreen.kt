@@ -37,12 +37,12 @@ import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.atom.OSForcedLightScreen
 import studio.lunabee.onesafe.atom.OSScreen
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
 import studio.lunabee.onesafe.bubbles.ui.commoninvitation.CommonInvitationFactory
 import studio.lunabee.onesafe.bubbles.ui.extension.getDeepLinkFromMessage
 import studio.lunabee.onesafe.bubbles.ui.extension.toBarcodeBitmap
+import studio.lunabee.onesafe.commonui.OSForcedLightScreen
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.action.TopAppBarOptionNavBack
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
