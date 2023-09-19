@@ -461,7 +461,10 @@ class OSFlorisImeService : FlorisImeService() {
                     imeLoginViewModelFactory = imeLoginViewModelFactory,
                     selectContactViewModelFactory = selectContactViewModelFactory,
                     writeMessageViewModelFactory = writeMessageViewModelFactory,
-                    onLoginSuccess = { isKeyboardVisibleFlow.value = false },
+                    onLoginSuccess = {
+                        // TODO: Fix navigation glitch on keyboard close
+                        // isKeyboardVisibleFlow.value = false
+                    },
                     dismissUi = {
                         isOneSafeUiVisibleFlow.value = false
                         isKeyboardVisibleFlow.value = true

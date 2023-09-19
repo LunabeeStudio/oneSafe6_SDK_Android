@@ -168,7 +168,7 @@ fun WriteMessageRoute(
                 contact = contact,
                 plainMessage = uiState.plainMessage,
                 encryptedMessage = uiState.encryptedPreview,
-                onChangeRecipient = onChangeRecipient,
+                onContactNameClick = onChangeRecipient ?: { navigateToContactDetail(contact.id) },
                 onResendInvitationClick = {
                     navigationToInvitation(viewModel.contactId.value!!)
                 },
@@ -193,9 +193,6 @@ fun WriteMessageRoute(
                     viewModel.displayPreviewInfo()
                 },
                 onDeleteAllMessagesClick = viewModel::displayRemoveConversationDialog,
-                onSeeContactClick = {
-                    navigateToContactDetail(viewModel.contactId.value!!)
-                },
                 isOneSafeK = isOneSafeK,
                 messageLongPress = messageLongPress,
             )
@@ -208,7 +205,7 @@ fun WriteMessageScreen(
     contact: UIBubblesContactInfo,
     plainMessage: String,
     encryptedMessage: String,
-    onChangeRecipient: (() -> Unit)?,
+    onContactNameClick: () -> Unit,
     onResendInvitationClick: () -> Unit,
     onPlainMessageChange: (String) -> Unit,
     sendMessage: () -> Unit,
@@ -220,7 +217,6 @@ fun WriteMessageScreen(
     isPreviewEnabled: Boolean,
     onPreviewClick: () -> Unit,
     onDeleteAllMessagesClick: () -> Unit,
-    onSeeContactClick: () -> Unit,
     isOneSafeK: Boolean,
     messageLongPress: MessageLongPress,
 ) {
@@ -240,11 +236,9 @@ fun WriteMessageScreen(
         ) {
             WriteMessageTopBar(
                 contactNameProvider = contact.nameProvider,
-                onClickOnChange = onChangeRecipient?.let { onClick ->
-                    {
-                        focusManager.clearFocus()
-                        onClick()
-                    }
+                onContactNameClick = {
+                    focusManager.clearFocus()
+                    onContactNameClick()
                 },
                 modifier = Modifier
                     .landscapeSystemBarsPadding()
@@ -266,7 +260,6 @@ fun WriteMessageScreen(
                         )
                     } else {
                         TrailingSlot(
-                            onSeeContactClick = onSeeContactClick,
                             onDeleteAllMessagesClick = onDeleteAllMessagesClick,
                             onHideConversationClick = { isConversationHidden = !isConversationHidden },
                             isConversationHidden = isConversationHidden,
@@ -419,7 +412,6 @@ private fun LeadingSlot(
 
 @Composable
 private fun TrailingSlot(
-    onSeeContactClick: () -> Unit,
     onDeleteAllMessagesClick: () -> Unit,
     onHideConversationClick: () -> Unit,
     isConversationHidden: Boolean,
@@ -439,10 +431,6 @@ private fun TrailingSlot(
         ContactActionMenu(
             isMenuExpended = isActionMenuExpanded,
             onDismiss = { isActionMenuExpanded = false },
-            onSeeContactClick = {
-                isActionMenuExpanded = false
-                onSeeContactClick()
-            },
             onDeleteMessages = {
                 isActionMenuExpanded = false
                 onDeleteAllMessagesClick()
@@ -518,7 +506,7 @@ fun WriteMessageScreenPreview() {
             contact = UIBubblesContactInfo(UUID.randomUUID(), OSNameProvider.fromName("A", false), ConversationState.FullySetup),
             plainMessage = loremIpsum(10),
             encryptedMessage = loremIpsum(10),
-            onChangeRecipient = null,
+            onContactNameClick = {},
             onResendInvitationClick = {},
             onPlainMessageChange = {},
             sendMessage = {},
@@ -530,7 +518,6 @@ fun WriteMessageScreenPreview() {
             isPreviewEnabled = true,
             onPreviewClick = {},
             onDeleteAllMessagesClick = {},
-            onSeeContactClick = {},
             isOneSafeK = false,
             messageLongPress = object : MessageLongPress() {
                 override fun onLongClick(id: UUID) {}
@@ -570,7 +557,7 @@ fun ImeWriteMessageScreenPreview() {
             contact = UIBubblesContactInfo(UUID.randomUUID(), OSNameProvider.fromName("A", false), ConversationState.FullySetup),
             plainMessage = loremIpsum(10),
             encryptedMessage = loremIpsum(10),
-            onChangeRecipient = {},
+            onContactNameClick = {},
             onResendInvitationClick = {},
             onPlainMessageChange = {},
             sendMessage = {},
@@ -582,7 +569,6 @@ fun ImeWriteMessageScreenPreview() {
             isPreviewEnabled = true,
             onPreviewClick = {},
             onDeleteAllMessagesClick = {},
-            onSeeContactClick = {},
             isOneSafeK = false,
             messageLongPress = object : MessageLongPress() {
                 override fun onLongClick(id: UUID) {}

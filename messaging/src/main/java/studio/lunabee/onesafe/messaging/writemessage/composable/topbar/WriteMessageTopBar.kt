@@ -60,7 +60,7 @@ import studio.lunabee.onesafe.ui.theme.OSTypography.titleMediumBlack
 fun WriteMessageTopBar(
     contactNameProvider: OSNameProvider,
     modifier: Modifier = Modifier,
-    onClickOnChange: (() -> Unit)?,
+    onContactNameClick: (() -> Unit)?,
     leadingSlot: @Composable RowScope.() -> Unit,
     trailingSlot: @Composable RowScope.() -> Unit,
 ) {
@@ -74,7 +74,7 @@ fun WriteMessageTopBar(
         horizontalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.Medium),
     ) {
         leadingSlot()
-        Title(onClickOnChange, illustration, contactNameProvider)
+        Title(onContactNameClick, illustration, contactNameProvider)
         trailingSlot()
     }
 }
@@ -119,7 +119,7 @@ fun AppWriteMessageTopBarPreview() {
     OSPreviewBackgroundTheme {
         WriteMessageTopBar(
             contactNameProvider = DefaultNameProvider(loremIpsum(1)),
-            onClickOnChange = {},
+            onContactNameClick = {},
             leadingSlot = {
                 OSIconButton(
                     image = OSImageSpec.Drawable(R.drawable.ic_back),
@@ -142,7 +142,6 @@ fun AppWriteMessageTopBarPreview() {
                 ContactActionMenu(
                     isMenuExpended = false,
                     onDismiss = { },
-                    onSeeContactClick = {},
                     onDeleteMessages = {},
                     onHideConversation = {},
                     isConversationHidden = false,
