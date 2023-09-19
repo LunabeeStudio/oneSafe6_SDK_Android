@@ -30,11 +30,16 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     defaultConfig {
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
         missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
+
+        val imeProcessName = ":ime"
+        buildConfigField("String", "IME_PROCESS_NAME", "\"$imeProcessName\"")
+        manifestPlaceholders["imeProcessName"] = imeProcessName
     }
 
     packaging {

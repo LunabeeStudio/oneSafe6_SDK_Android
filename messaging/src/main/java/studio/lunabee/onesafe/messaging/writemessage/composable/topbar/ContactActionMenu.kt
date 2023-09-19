@@ -37,7 +37,6 @@ import studio.lunabee.onesafe.model.OSActionState
 fun ContactActionMenu(
     isMenuExpended: Boolean,
     onDismiss: () -> Unit,
-    onSeeContactClick: () -> Unit,
     onDeleteMessages: () -> Unit,
     onHideConversation: () -> Unit,
     isConversationHidden: Boolean,
@@ -50,12 +49,6 @@ fun ContactActionMenu(
         offset = offset,
         modifier = modifier,
     ) {
-        OSClickableRow(
-            text = LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_action_seeContact),
-            onClick = onSeeContactClick,
-            leadingIcon = { OSIconDecorationButton(OSImageSpec.Drawable(drawable = R.drawable.ic_person)) },
-            buttonColors = OSTextButtonDefaults.secondaryTextButtonColors(state = OSActionState.Enabled),
-        )
         OSClickableRow(
             onClick = onHideConversation,
             text =

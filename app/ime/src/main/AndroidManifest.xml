@@ -8,15 +8,15 @@
     <application>
         <activity
             android:name="dev.patrickgold.florisboard.app.FlorisAppActivity"
-            android:process=":ime"
+            android:process="${imeProcessName}"
             tools:node="merge" />
         <activity
             android:name="dev.patrickgold.florisboard.app.ext.ImportFileActivity"
-            android:process=":ime"
+            android:process="${imeProcessName}"
             tools:node="merge" />
         <activity
             android:name="dev.patrickgold.florisboard.lib.crashutility.CrashDialogActivity"
-            android:process=":ime"
+            android:process="${imeProcessName}"
             tools:node="merge" />
 
         <activity-alias
@@ -71,7 +71,7 @@
             android:exported="true"
             android:label="@string/floris_app_name"
             android:permission="android.permission.BIND_INPUT_METHOD"
-            android:process=":ime">
+            android:process="${imeProcessName}">
             <intent-filter>
                 <action android:name="android.view.InputMethod" />
             </intent-filter>
@@ -84,7 +84,7 @@
         <activity
             android:name=".ui.biometric.BiometricActivity"
             android:exported="false"
-            android:process=":ime"
+            android:process="${imeProcessName}"
             android:taskAffinity="" />
 
     </application>

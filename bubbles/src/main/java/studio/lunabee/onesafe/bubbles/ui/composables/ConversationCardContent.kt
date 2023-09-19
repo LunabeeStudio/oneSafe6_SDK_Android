@@ -36,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.atom.OSSmallSpacer
 import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
 import studio.lunabee.onesafe.bubbles.ui.model.ConversationSubtitle
@@ -126,7 +125,6 @@ fun ConversationRow(
                     overflow = TextOverflow.Ellipsis,
                     color = if (isSystemInDarkTheme()) OSColor.Neutral10 else Color.Unspecified,
                 )
-                OSSmallSpacer()
                 if (subtitle != null) { // TODO removed isNotEmpty check, should be handle before
                     OSText(
                         text = subtitle,
