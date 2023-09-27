@@ -62,15 +62,7 @@ interface MessageDao {
     @Query("SELECT * FROM Message WHERE contact_id IS :contactId ORDER BY `order` DESC")
     fun getAllAsPagingSource(contactId: UUID): PagingSource<Int, RoomMessage>
 
-    // TODO bubbles for now do not remove the first message (invitation message)
-    //  https://www.notion.so/lunabeestudio/Android-Bubbles-Delete-all-messages-reset-conversation-8fe86012ef63465299aaadf7d6336744?pvs=4
-    @Query(
-        """
-        DELETE FROM Message 
-        WHERE contact_id IS :contactId
-        AND `order` != 0
-        """,
-    )
+    @Query("DELETE FROM Message WHERE contact_id IS :contactId ")
     suspend fun deleteAllMessages(contactId: UUID)
 
     @Query("SELECT * FROM Message WHERE contact_id IS :contactId ORDER BY `order` DESC LIMIT 1")

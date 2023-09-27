@@ -28,6 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import studio.lunabee.onesafe.ime.ui.OSImeScreen
 import studio.lunabee.onesafe.ui.UiConstants
+import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import java.util.UUID
 
 @Composable
@@ -66,6 +67,7 @@ fun ImeContactRoute(
         ImeContactUiState.Initializing -> {
             OSImeScreen(
                 testTag = UiConstants.TestTag.Screen.FilledContactScreen,
+                background = LocalDesignSystem.current.bubblesBackGround(),
             ) {
                 Box(Modifier.fillMaxSize())
             }

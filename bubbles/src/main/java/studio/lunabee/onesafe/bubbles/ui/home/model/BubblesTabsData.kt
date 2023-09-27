@@ -32,8 +32,8 @@ import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.bubbles.ui.composables.NotificationIndicator
 import studio.lunabee.onesafe.molecule.tabs.TabsData
 import studio.lunabee.onesafe.ui.res.OSDimens
+import studio.lunabee.onesafe.ui.theme.LocalColorPalette
 import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
-import studio.lunabee.onesafe.ui.theme.OSColor
 import studio.lunabee.onesafe.ui.theme.OSTypography
 
 class BubblesTabsData(
@@ -62,7 +62,7 @@ class BubblesTabsData(
                 color = when {
                     isEnabled -> Color.Unspecified
                     index == selectedTabIndex -> LocalDesignSystem.current.tabPrimaryDisabledColor
-                    else -> OSColor.Neutral30
+                    else -> LocalColorPalette.current.Neutral30
                 },
             )
             if (hasNotification) {

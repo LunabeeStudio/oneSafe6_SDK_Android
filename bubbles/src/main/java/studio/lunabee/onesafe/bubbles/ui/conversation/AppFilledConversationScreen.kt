@@ -37,8 +37,8 @@ import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.molecule.OSRow
 import studio.lunabee.onesafe.ui.res.OSDimens
+import studio.lunabee.onesafe.ui.theme.LocalColorPalette
 import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
-import studio.lunabee.onesafe.ui.theme.OSColor
 import java.util.UUID
 
 @Composable
@@ -73,7 +73,7 @@ fun AppFilledConversationScreen(
                     endContent = {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_navigate_next),
-                            tint = OSColor.Neutral30,
+                            tint = LocalColorPalette.current.Neutral30,
                             contentDescription = null,
                         )
                     },
@@ -95,13 +95,14 @@ fun AppFilledConversationScreen(
                     OSRow(
                         text = LbcTextSpec.StringResource(R.string.bubbles_configureOneSafeK),
                         secondaryText = LbcTextSpec.StringResource(R.string.bubbles_configureOneSafeK_subtitle),
+                        textMaxLines = Int.MAX_VALUE,
                         startContent = {
                             Icon(painter = painterResource(id = R.drawable.ic_settings), contentDescription = null)
                         },
                         endContent = {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_navigate_next),
-                                tint = OSColor.Neutral30,
+                                tint = LocalColorPalette.current.Neutral30,
                                 contentDescription = null,
                             )
                         },

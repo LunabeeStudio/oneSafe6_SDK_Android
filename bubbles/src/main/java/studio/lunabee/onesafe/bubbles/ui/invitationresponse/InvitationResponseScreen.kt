@@ -43,7 +43,7 @@ import studio.lunabee.onesafe.bubbles.ui.extension.toBarcodeBitmap
 import studio.lunabee.onesafe.bubbles.ui.invitation.InvitationUiState
 import studio.lunabee.onesafe.commonui.OSForcedLightScreen
 import studio.lunabee.onesafe.commonui.R
-import studio.lunabee.onesafe.commonui.action.TopAppBarOptionNavBack
+import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
 import studio.lunabee.onesafe.commonui.extension.getTextSharingIntent
 import studio.lunabee.onesafe.molecule.OSTopAppBar
@@ -109,7 +109,7 @@ fun InvitationResponseScreen(
         ) {
             OSTopAppBar(
                 title = LbcTextSpec.StringResource(R.string.bubbles_invitationResponseScreen_title),
-                options = listOf(TopAppBarOptionNavBack(onBackClick)),
+                options = listOf(topAppBarOptionNavBack(onBackClick)),
             )
             LazyColumn(
                 contentPadding = PaddingValues(OSDimens.SystemSpacing.Regular),

@@ -30,7 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.commonui.R
-import studio.lunabee.onesafe.ui.theme.OSColor
+import studio.lunabee.onesafe.ui.theme.LocalColorPalette
 import studio.lunabee.onesafe.utils.OsDefaultPreview
 import studio.lunabee.onesafe.ime.R as imeR
 
@@ -38,29 +38,29 @@ enum class OSKeyboardStatus {
     LoggedIn {
         override val contentDescription: LbcTextSpec = LbcTextSpec.StringResource(R.string.oneSafeK_ime_status_login_description)
         override val logo: Int = imeR.drawable.onesafek_logo_login
-        override val lightTint: Color = OSColor.Primary40
-        override val darkTint: Color = OSColor.Primary20
+        override val lightTint: @Composable () -> Color = { LocalColorPalette.current.Primary40 }
+        override val darkTint: @Composable () -> Color = { LocalColorPalette.current.Primary20 }
     },
 
     LoggedOut {
         override val contentDescription: LbcTextSpec = LbcTextSpec.StringResource(R.string.oneSafeK_ime_status_logout_description)
         override val logo: Int = imeR.drawable.onesafek_logo_logout
-        override val lightTint: Color = OSColor.Neutral60
-        override val darkTint: Color = OSColor.Neutral10
+        override val lightTint: @Composable () -> Color = { LocalColorPalette.current.Neutral60 }
+        override val darkTint: @Composable () -> Color = { LocalColorPalette.current.Neutral10 }
     },
 
     Love {
         override val contentDescription: LbcTextSpec = LbcTextSpec.StringResource(R.string.oneSafeK_ime_status_love_description)
         override val logo: Int = imeR.drawable.onesafek_logo_love
-        override val lightTint: Color = OSColor.Success40
-        override val darkTint: Color = OSColor.Success20
+        override val lightTint: @Composable () -> Color = { LocalColorPalette.current.Success40 }
+        override val darkTint: @Composable () -> Color = { LocalColorPalette.current.Success20 }
     },
 
     Secured {
         override val contentDescription: LbcTextSpec = LbcTextSpec.StringResource(R.string.oneSafeK_ime_status_secured_description)
         override val logo: Int = imeR.drawable.onesafek_logo_secured
-        override val lightTint: Color = OSColor.Alert35
-        override val darkTint: Color = OSColor.Alert20
+        override val lightTint: @Composable () -> Color = { LocalColorPalette.current.Alert35 }
+        override val darkTint: @Composable () -> Color = { LocalColorPalette.current.Alert20 }
     },
     ;
 
@@ -70,7 +70,7 @@ enum class OSKeyboardStatus {
             painter = painterResource(logo),
             contentDescription = contentDescription.string,
             modifier = modifier,
-            tint = if (isDark) darkTint else lightTint,
+            tint = if (isDark) darkTint() else lightTint(),
         )
     }
 
@@ -78,8 +78,8 @@ enum class OSKeyboardStatus {
 
     @get:DrawableRes
     abstract val logo: Int
-    abstract val lightTint: Color
-    abstract val darkTint: Color
+    abstract val lightTint: @Composable () -> Color
+    abstract val darkTint: @Composable () -> Color
 }
 
 @Composable

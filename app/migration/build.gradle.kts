@@ -30,7 +30,7 @@ android {
 }
 
 dependencies {
-    implementation(AndroidX.dataStore.preferences)
+    implementation(libs.datastore.preferences)
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)

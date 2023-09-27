@@ -38,9 +38,8 @@ dependencies {
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)
     implementation(libs.lblogger.timber)
-    implementation(libs.double.ratchet)
-    implementation(libs.bcprov.jdk18on)
-    implementation(libs.double.ratchet)
+    implementation(libs.bouncycastle)
+    implementation(libs.doubleratchet)
 
     implementation(project(":bubbles-domain"))
     implementation(project(":domain"))
@@ -48,6 +47,6 @@ dependencies {
     implementation(project(":error"))
     implementation(project(":common"))
 
-    androidTestImplementation(KotlinX.coroutines.test)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(project(":common-test"))
 }

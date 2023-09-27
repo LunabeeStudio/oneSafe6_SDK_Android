@@ -45,7 +45,7 @@ import studio.lunabee.onesafe.model.OSItemIllustration
 import studio.lunabee.onesafe.model.OSLazyCardContent
 import studio.lunabee.onesafe.model.OSSafeItemStyle
 import studio.lunabee.onesafe.ui.res.OSDimens
-import studio.lunabee.onesafe.ui.theme.OSColor
+import studio.lunabee.onesafe.ui.theme.LocalColorPalette
 
 class ConversationCardContent(
     private val conversationInfo: BubblesConversationInfo,
@@ -123,13 +123,13 @@ fun ConversationRow(
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = if (isSystemInDarkTheme()) OSColor.Neutral10 else Color.Unspecified,
+                    color = if (isSystemInDarkTheme()) LocalColorPalette.current.Neutral10 else Color.Unspecified,
                 )
                 if (subtitle != null) { // TODO removed isNotEmpty check, should be handle before
                     OSText(
                         text = subtitle,
                         style = MaterialTheme.typography.labelSmall,
-                        color = if (isSystemInDarkTheme()) OSColor.Neutral20 else OSColor.Neutral60,
+                        color = if (isSystemInDarkTheme()) LocalColorPalette.current.Neutral20 else LocalColorPalette.current.Neutral60,
                         maxLines = itemSubtitleMaxLine,
                         overflow = TextOverflow.Ellipsis,
                     )

@@ -47,7 +47,7 @@ import studio.lunabee.onesafe.bubbles.ui.home.model.BubblesTabsData
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.R
-import studio.lunabee.onesafe.commonui.action.TopAppBarOptionNavBack
+import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.model.TopAppBarOptionTrailing
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.molecule.tabs.OSTabs
@@ -112,7 +112,7 @@ private fun BubblesHomeScreen(
             OSTopAppBar(
                 title = LbcTextSpec.StringResource(R.string.bubbles_title),
                 options = listOf(
-                    TopAppBarOptionNavBack(navigateBack),
+                    topAppBarOptionNavBack(navigateBack),
                     TopAppBarOptionTrailing.secondaryIconAction(
                         image = OSImageSpec.Drawable(R.drawable.ic_add),
                         onClick = navigateToCreateContact,

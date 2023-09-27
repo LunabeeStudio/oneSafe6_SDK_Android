@@ -17,25 +17,24 @@
  * Last modified 4/7/23, 12:24 AM
  */
 
+import org.gradle.accessors.dm.LibrariesForLibs
+
 plugins {
     id("java-library")
     id("kotlin")
-    kotlin("kapt")
 }
 
 version = AndroidConfig.ONESAFE_SDK_VERSION
 group = ProjectConfig.GROUP_ID
 
-kapt {
-    correctErrorTypes = true
-}
+// FIXME workaround https://github.com/gradle/gradle/issues/15383#issuecomment-779893192
+val libs: LibrariesForLibs = the<LibrariesForLibs>()
 
 dependencies {
-    implementation("com.google.dagger:hilt-core:_")
-    kapt(Google.dagger.hilt.compiler)
-    testImplementation(Testing.junit.jupiter)
-    testImplementation(Kotlin.test)
-    testImplementation(KotlinX.Coroutines.test)
+    implementation(libs.javax.inject)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
@@ -45,6 +44,9 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
 }
 
 java {
+    sourceCompatibility = ProjectConfig.JDK_VERSION
+    targetCompatibility = ProjectConfig.JDK_VERSION
+
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(ProjectConfig.JDK_VERSION.toString()))
     }

@@ -23,12 +23,12 @@ import java.util.Properties
 
 plugins {
     `kotlin-library`
-    id("com.google.protobuf")
+    alias(libs.plugins.protobuf)
 }
 
 dependencies {
     implementation(libs.kotlin.stdlib)
-    implementation(KotlinX.coroutines.core)
+    implementation(libs.kotlinx.coroutines.core)
 
     api(libs.protobuf.kotlinlite)
 
@@ -41,8 +41,8 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":error"))
 
-    implementation(libs.double.ratchet)
-    testImplementation(Testing.MockK)
+    implementation(libs.doubleratchet)
+    testImplementation(libs.mockk)
     testImplementation(project(":common-test"))
 }
 // TODO proto in domain
@@ -51,7 +51,7 @@ File(rootDir.path + "/versions.properties").inputStream().use { properties.load(
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:${properties.getProperty("version.com.google.protobuf..protobuf-kotlin-lite")}"
+        artifact = libs.protoc.get().toString()
     }
 
     // Add Kotlin protobuf plugin

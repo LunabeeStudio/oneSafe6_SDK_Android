@@ -23,10 +23,8 @@ plugins {
 
 dependencies {
     implementation(libs.kotlin.stdlib)
-    implementation(KotlinX.coroutines.core)
-    implementation(AndroidX.paging.commonKtx)
-
-    implementation(libs.kotlin.logging.jvm)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.paging.common.ktx)
 
     implementation(project(":domain"))
     implementation(project(":error"))

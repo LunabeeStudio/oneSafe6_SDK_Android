@@ -30,9 +30,10 @@ android {
 }
 
 dependencies {
-    implementation(AndroidX.dataStore.preferences)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    implementation(libs.datastore.preferences)
 
     implementation(project(":domain"))
     implementation(project(":repository"))
-    coreLibraryDesugaring(Android.tools.desugarJdkLibs)
 }

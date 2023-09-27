@@ -45,16 +45,16 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring(Android.tools.desugarJdkLibs)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lblogger.timber)
     implementation(libs.protobuf.kotlinlite)
     implementation(libs.lbcore)
 
-    implementation(Google.android.material)
-    implementation(AndroidX.Core.ktx)
-    implementation(AndroidX.AppCompat)
+    implementation(libs.android.material)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.appcompat)
 
     implementation(project(":bubbles-domain"))
     implementation(project(":domain"))
@@ -66,7 +66,7 @@ dependencies {
     androidTestImplementation(project(":remote"))
     androidTestImplementation(project(":repository"))
     androidTestImplementation(project(":crypto-android"))
-    androidTestImplementation(AndroidX.room.testing)
+    androidTestImplementation(libs.room.testing)
 }
 
 tasks.register("cleanProtobuf") {

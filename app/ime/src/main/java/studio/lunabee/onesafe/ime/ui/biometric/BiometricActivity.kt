@@ -27,7 +27,7 @@ import androidx.fragment.app.FragmentActivity
 import dagger.hilt.android.AndroidEntryPoint
 import studio.lunabee.onesafe.commonui.biometric.DisplayBiometricLabels
 import studio.lunabee.onesafe.commonui.biometric.biometricPrompt
-import studio.lunabee.onesafe.ui.theme.OSTheme
+import studio.lunabee.onesafe.ime.ImeOSTheme
 import studio.lunabee.onesafe.utils.oSDefaultEnableEdgeToEdge
 
 @AndroidEntryPoint
@@ -59,7 +59,7 @@ class BiometricActivity : FragmentActivity() {
                 biometricPrompt.invoke()
             }
 
-            OSTheme {
+            ImeOSTheme {
                 ImeBiometricScreen()
             }
         }

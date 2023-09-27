@@ -43,6 +43,8 @@ class AndroidSecurityOptionDataSource @Inject constructor(
     private val verifyPasswordIntervalKey = stringPreferencesKey(SettingsConstants.VerifyPasswordIntervalKey)
     private val lastPasswordVerificationKey = longPreferencesKey(SettingsConstants.LastPasswordVerification)
     private val bubblesResendMessageDelayKey = longPreferencesKey(SettingsConstants.BubblesResendMessageDelay)
+    private val autoLockOSKInactivityDelayKey = longPreferencesKey(SettingsConstants.AutoLockOSKInactivityDelay)
+    private val autoLockOSKHiddenDelayKey = longPreferencesKey(SettingsConstants.AutoLockOSKHiddenDelay)
 
     override val autoLockInactivityDelay: Duration
         get() = runBlocking {
@@ -50,19 +52,33 @@ class AndroidSecurityOptionDataSource @Inject constructor(
                 ?: SettingsDefaults.AutoLockInactivityDelayMsDefault.milliseconds
         }
 
-    override val autoLockInactivityDelayFlow: Flow<Duration> = dataStore.data.map { preferences ->
-        preferences[autoLockInactivityDelayKey]?.milliseconds ?: SettingsDefaults.AutoLockInactivityDelayMsDefault.milliseconds
-    }
-
     override val autoLockAppChangeDelay: Duration
         get() = runBlocking {
             dataStore.data.map { preferences -> preferences[autoLockAppChangeDelayKey]?.milliseconds }.firstOrNull()
                 ?: SettingsDefaults.AutoLockAppChangeDelayMsDefault.milliseconds
         }
 
-    override val autoLockAppChangeDelayFlow: Flow<Duration> = dataStore.data.map { preferences ->
-        preferences[autoLockAppChangeDelayKey]?.milliseconds ?: SettingsDefaults.AutoLockAppChangeDelayMsDefault.milliseconds
-    }
+    override val autoLockOSKHiddenDelay: Duration
+        get() = runBlocking {
+            dataStore.data.map { preferences -> preferences[autoLockOSKHiddenDelayKey]?.milliseconds }.firstOrNull()
+                ?: autoLockAppChangeDelay
+        }
+
+    override val autoLockOSKInactivityDelay: Duration
+        get() = runBlocking {
+            dataStore.data.map { preferences -> preferences[autoLockOSKInactivityDelayKey]?.milliseconds }.firstOrNull()
+                ?: autoLockInactivityDelay
+        }
+
+    override val autoLockInactivityDelayFlow: Flow<Duration>
+        get() = dataStore.data.map { preferences ->
+            preferences[autoLockInactivityDelayKey]?.milliseconds ?: SettingsDefaults.AutoLockInactivityDelayMsDefault.milliseconds
+        }
+
+    override val autoLockAppChangeDelayFlow: Flow<Duration>
+        get() = dataStore.data.map { preferences ->
+            preferences[autoLockAppChangeDelayKey]?.milliseconds ?: SettingsDefaults.AutoLockAppChangeDelayMsDefault.milliseconds
+        }
 
     override val clipboardDelay: Duration
         get() = runBlocking {
@@ -83,14 +99,15 @@ class AndroidSecurityOptionDataSource @Inject constructor(
                 preferences[bubblesResendMessageDelayKey]?.milliseconds
                     ?: SettingsDefaults.BubblesResendMessageDelayMsDefault.milliseconds
             }
-
-    override fun setBubblesResendMessageDelay(delay: Duration) {
-        runBlocking {
-            dataStore.edit { settings ->
-                settings[bubblesResendMessageDelayKey] = delay.inWholeMilliseconds
-            }
+    override val autoLockOSKInactivityDelayFlow: Flow<Duration>
+        get() = dataStore.data.map { preferences ->
+            preferences[autoLockOSKInactivityDelayKey]?.milliseconds ?: autoLockAppChangeDelay
         }
-    }
+
+    override val autoLockOSKHiddenFlow: Flow<Duration>
+        get() = dataStore.data.map { preferences ->
+            preferences[autoLockOSKHiddenDelayKey]?.milliseconds ?: autoLockInactivityDelay
+        }
 
     override val passwordVerificationInterval: VerifyPasswordInterval
         get() = runBlocking {
@@ -110,6 +127,30 @@ class AndroidSecurityOptionDataSource @Inject constructor(
                 preferences[lastPasswordVerificationKey]
             }.firstOrNull()
         }
+
+    override fun setBubblesResendMessageDelay(delay: Duration) {
+        runBlocking {
+            dataStore.edit { settings ->
+                settings[bubblesResendMessageDelayKey] = delay.inWholeMilliseconds
+            }
+        }
+    }
+
+    override fun setAutoLockOSKInactivityDelay(delay: Duration) {
+        runBlocking {
+            dataStore.edit { settings ->
+                settings[autoLockOSKInactivityDelayKey] = delay.inWholeMilliseconds
+            }
+        }
+    }
+
+    override fun setAutoLockOSKHiddenDelay(delay: Duration) {
+        runBlocking {
+            dataStore.edit { settings ->
+                settings[autoLockOSKHiddenDelayKey] = delay.inWholeMilliseconds
+            }
+        }
+    }
 
     override fun setAutoLockInactivityDelay(delay: Duration) {
         runBlocking {

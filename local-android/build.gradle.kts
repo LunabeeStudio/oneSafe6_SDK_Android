@@ -22,8 +22,10 @@ import java.util.Properties
 
 plugins {
     `android-library`
-    id("com.google.devtools.ksp")
-    id("com.google.protobuf")
+    kotlin("kapt")
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.protobuf)
+    alias(libs.plugins.hilt)
 }
 
 ksp {
@@ -58,7 +60,7 @@ android {
 
     protobuf {
         protoc {
-            artifact = "com.google.protobuf:protoc:${properties.getProperty("version.com.google.protobuf..protobuf-kotlin-lite")}"
+            artifact = libs.protoc.get().toString()
         }
 
         // Add Kotlin protobuf plugin
@@ -83,20 +85,26 @@ android {
     }
 }
 
+kapt {
+    correctErrorTypes = true
+}
+
 dependencies {
     implementation(libs.kotlin.stdlib)
-    coreLibraryDesugaring(Android.tools.desugarJdkLibs)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+    implementation(libs.hilt.android)
 
-    implementation(AndroidX.room.ktx)
-    implementation(AndroidX.room.paging)
-    implementation(AndroidX.paging.runtime)
+    implementation(libs.room.ktx)
+    implementation(libs.room.paging)
+    implementation(libs.paging.runtime)
+    implementation(libs.androidx.core.ktx)
 
-    implementation(AndroidX.dataStore)
+    implementation(libs.datastore)
     implementation(libs.protobuf.kotlinlite)
 
-    ksp(AndroidX.room.compiler)
+    ksp(libs.room.compiler)
 
-    implementation(JakeWharton.timber)
+    implementation(libs.timber)
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbextensions)
@@ -112,12 +120,14 @@ dependencies {
     implementation(project(":messaging-domain"))
     implementation(project(":messaging-repository"))
 
-    implementation(libs.double.ratchet)
+    implementation(libs.doubleratchet)
+
+    kaptAndroidTest(libs.dagger.hilt.compiler)
 
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(project(":dependency-injection:test-component"))
-    androidTestImplementation(KotlinX.coroutines.test)
-    androidTestImplementation(AndroidX.room.testing)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.room.testing)
 }
 
 tasks.register("cleanProtobuf") {

@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.bubbles.ui.barcode
 
+import androidx.compose.runtime.Composable
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.dialog.DialogAction
@@ -40,4 +41,5 @@ internal class CameraScanPermissionRationaleDialogState(
     )
     override val title: LbcTextSpec = LbcTextSpec.StringResource(R.string.bubbles_scanbarcodeScreen_permission_rationale_title)
     override val message: LbcTextSpec = LbcTextSpec.StringResource(R.string.bubbles_scanbarcodeScreen_permission_rationale_message)
+    override val customContent: (@Composable () -> Unit)? = null
 }

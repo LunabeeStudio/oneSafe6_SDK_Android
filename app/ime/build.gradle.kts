@@ -19,6 +19,8 @@
 
 plugins {
     `android-library`
+    kotlin("kapt")
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -48,7 +50,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "_"
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 
     compileOptions {
@@ -56,8 +58,15 @@ android {
     }
 }
 
+kapt {
+    correctErrorTypes = true
+}
+
 dependencies {
-    coreLibraryDesugaring(Android.tools.desugarJdkLibs)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    implementation(libs.hilt.android)
+    kapt(libs.dagger.hilt.compiler)
 
     api(libs.florisboard)
 
@@ -67,19 +76,19 @@ dependencies {
     implementation(libs.protobuf.kotlinlite)
 
     implementation(platform(libs.compose.beta.bom))
-    implementation(AndroidX.hilt.navigationCompose)
-    implementation(AndroidX.compose.ui)
-    debugImplementation(AndroidX.compose.ui.tooling)
-    implementation(AndroidX.compose.ui.toolingPreview)
-    implementation(AndroidX.compose.material3)
-    implementation(AndroidX.navigation.compose)
-    implementation(AndroidX.lifecycle.runtime.compose)
-    implementation(JakeWharton.timber)
-    implementation(COIL.compose)
-    implementation(AndroidX.paging.compose)
-    implementation(AndroidX.Activity.ktx)
-    implementation(AndroidX.biometric)
-    implementation(AndroidX.startup.runtime)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.compose.ui)
+    debugImplementation(libs.compose.ui.tooling)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.compose.material3)
+    implementation(libs.navigation.compose)
+    implementation(libs.lifecycle.runtime.compose)
+    implementation(libs.timber)
+    implementation(libs.coil.compose)
+    implementation(libs.paging.compose)
+    implementation(libs.activity.ktx)
+    implementation(libs.biometric)
+    implementation(libs.startup.runtime)
 
     implementation(project(":app:core-ui"))
     implementation(project(":app:common-ui"))
@@ -93,5 +102,5 @@ dependencies {
     implementation(project(":error"))
 
     androidTestImplementation(project(":common-test-android"))
-    androidTestImplementation(Testing.MockK.android)
+    androidTestImplementation(libs.mockk.android)
 }

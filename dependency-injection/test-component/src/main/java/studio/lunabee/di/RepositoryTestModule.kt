@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import studio.lunabee.bubbles.repository.repository.ContactKeyRepositoryImpl
 import studio.lunabee.bubbles.repository.repository.ContactRepositoryImpl
+import studio.lunabee.messaging.repository.repository.ConversationRepositoryImpl
 import studio.lunabee.messaging.repository.repository.EnqueuedMessageRepositoryImpl
 import studio.lunabee.messaging.repository.repository.HandShakeDataRepositoryImpl
 import studio.lunabee.messaging.repository.repository.MessageChannelRepositoryImpl
@@ -52,6 +53,7 @@ import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
 import studio.lunabee.onesafe.domain.repository.SupportOSRepository
 import studio.lunabee.onesafe.domain.repository.UrlMetadataRepository
+import studio.lunabee.onesafe.messaging.domain.repository.ConversationRepository
 import studio.lunabee.onesafe.messaging.domain.repository.EnqueuedMessageRepository
 import studio.lunabee.onesafe.messaging.domain.repository.HandShakeDataRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
@@ -83,89 +85,72 @@ import kotlin.time.Duration.Companion.seconds
 )
 interface RepositoryTestModule {
     @Binds
-    @Singleton
     fun bindUrlMetadataRepository(urlMetadataRepository: UrlMetadataRepositoryImpl): UrlMetadataRepository
 
     @Binds
-    @Singleton
     fun bindIndexWordEntryRepository(indexWordEntryRepository: IndexWordEntryRepositoryImpl): IndexWordEntryRepository
 
     @Binds
-    @Singleton
     fun bindForceUpgradeRepository(forceUpgradeRepositoryImpl: ForceUpgradeRepositoryImpl): ForceUpgradeRepository
 
     @Binds
-    @Singleton
     fun bindsRecentSearchRepository(recentSearchRepositoryImpl: RecentSearchRepositoryImpl): RecentSearchRepository
 
     @Binds
-    @Singleton
     fun bindsPasswordGeneratorConfigRepository(
         passwordGeneratorConfigRepositoryImpl: PasswordGeneratorConfigRepositoryImpl,
     ): PasswordGeneratorConfigRepository
 
     @Binds
-    @Singleton
     fun bindClipboardRepository(clipboardRepository: ClipboardRepositoryImpl): ClipboardRepository
 
     @Binds
-    @Singleton
     fun bindSafeItemRepository(safeItemRepository: SafeItemRepositoryImpl): SafeItemRepository
 
     @Binds
-    @Singleton
     fun bindSafeItemDeletedRepository(safeItemDeletedRepository: SafeItemDeletedRepositoryImpl): SafeItemDeletedRepository
 
     @Binds
-    @Singleton
     fun bindSafeItemKeyRepository(safeItemKeyRepository: SafeItemKeyRepositoryImpl): SafeItemKeyRepository
 
     @Binds
-    @Singleton
     fun bindSafeItemFieldRepository(safeItemFieldRepository: SafeItemFieldRepositoryImpl): SafeItemFieldRepository
 
     @Binds
-    @Singleton
     fun bindIconRepository(iconRepository: IconRepositoryImpl): IconRepository
 
     @Binds
-    @Singleton
     fun bindsAutoLockRepository(autoLockRepositoryImpl: AutoLockRepositoryImpl): AutoLockRepository
 
     @Binds
-    @Singleton
     fun bindSupportOSRepository(supportOSRepository: SupportOSRepositoryImpl): SupportOSRepository
 
     @Binds
-    @Singleton
     fun bindsContactRepository(contactRepositoryImpl: ContactRepositoryImpl): ContactRepository
 
     @Binds
-    @Singleton
     fun bindsContactKeyRepository(contactRepositoryImpl: ContactKeyRepositoryImpl): ContactKeyRepository
 
     @Binds
-    @Singleton
     fun bindsMessageRepository(bubblesMessageRepositoryImpl: MessageRepositoryImpl): MessageRepository
 
     @Binds
-    @Singleton
     fun bindsMessageOrderRepository(bubblesMessageOrderRepositoryImpl: MessageOrderRepositoryImpl): MessageOrderRepository
 
     @Binds
-    @Singleton
     fun bindsMessageChannelRepository(messageChannelRepositoryImpl: MessageChannelRepositoryImpl): MessageChannelRepository
 
     @Binds
-    @Singleton
     fun bindsEnqueuedMessageRepository(enqueuedMessageRepositoryImpl: EnqueuedMessageRepositoryImpl): EnqueuedMessageRepository
 
     @Binds
-    @Singleton
     fun bindsHandShakeDataRepository(handShakeDataRepositoryImpl: HandShakeDataRepositoryImpl): HandShakeDataRepository
 
     @Binds
     fun bindsSentMessageRepository(bubblesSentMessageRepositoryImpl: SentMessageRepositoryImpl): SentMessageRepository
+
+    @Binds
+    fun bindsConversationRepository(conversationRepositoryImpl: ConversationRepositoryImpl): ConversationRepository
 }
 
 @Module
@@ -173,20 +158,23 @@ interface RepositoryTestModule {
 internal object SecurityOptionModule {
 
     /**
-     * Fix current clipboard delay
+     * [SecurityOptionRepository] implementation with fixed value
      */
-    @Provides
     @Singleton
+    @Provides
     fun provideSecurityOptionRepository(): SecurityOptionRepository {
         return object : SecurityOptionRepository {
             private var internalClipboardDelay: Duration = 10.seconds
             private var internalAutoLockInactivityDelay = 30.seconds
             private var internalAutoLockAppChangeDelay = 10.seconds
+            private var internalAutoLockOSKInactivityDelay = 30.seconds
+            private var internalAutoLockOSKHiddenDelay = 10.seconds
             private var lastPasswordVerif: Long? = null
             private var verifInterval = VerifyPasswordInterval.EVERY_MONTH
 
             override val autoLockInactivityDelay: Duration
                 get() = internalAutoLockInactivityDelay
+
             override val autoLockInactivityDelayFlow: Flow<Duration>
                 get() = flowOf(internalAutoLockInactivityDelay)
 
@@ -196,6 +184,7 @@ internal object SecurityOptionModule {
 
             override val autoLockAppChangeDelay: Duration
                 get() = internalAutoLockAppChangeDelay
+
             override val autoLockAppChangeDelayFlow: Flow<Duration>
                 get() = flowOf(internalAutoLockAppChangeDelay)
 
@@ -229,6 +218,24 @@ internal object SecurityOptionModule {
                 get() = flowOf(1.days)
 
             override fun setBubblesResendMessageDelay(delay: Duration) {}
+            override val autoLockOSKInactivityDelay: Duration
+                get() = internalAutoLockOSKInactivityDelay
+            override val autoLockOSKInactivityDelayFlow: Flow<Duration>
+                get() = flowOf(internalAutoLockOSKInactivityDelay)
+
+            override fun setAutoLockOSKInactivityDelay(delay: Duration) {
+                internalAutoLockOSKInactivityDelay = delay
+            }
+
+            override val autoLockOSKHiddenDelay: Duration
+                get() = internalAutoLockOSKHiddenDelay
+
+            override val autoLockOSKHiddenDelayFlow: Flow<Duration>
+                get() = flowOf(internalAutoLockOSKHiddenDelay)
+
+            override fun setAutoLockOSKHiddenDelay(delay: Duration) {
+                internalAutoLockOSKHiddenDelay = delay
+            }
 
             override fun setPasswordInterval(passwordInterval: VerifyPasswordInterval) {
                 verifInterval = passwordInterval

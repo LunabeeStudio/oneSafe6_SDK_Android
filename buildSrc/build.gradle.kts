@@ -29,8 +29,11 @@ repositories {
 }
 
 dependencies {
-    implementation(Android.tools.build.gradlePlugin)
+    implementation(libs.android.gradle.plugin)
     implementation(libs.kotlin.gradle.plugin)
-    implementation(Google.dagger.hilt.android.gradlePlugin)
-    implementation(Firebase.crashlyticsGradlePlugin)
+
+    implementation(libs.firebase.crashlytics.gradle)
+    implementation(libs.javapoet)
+
+    implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
 }

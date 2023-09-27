@@ -23,7 +23,9 @@ import java.util.Properties
 plugins {
     `android-library`
     `onesafe-publish`
-    id("com.google.protobuf")
+    kotlin("kapt")
+    alias(libs.plugins.protobuf)
+    alias(libs.plugins.hilt)
 }
 
 description = "Android implementation of oneSafe cryptography"
@@ -62,7 +64,7 @@ android {
 
     protobuf {
         protoc {
-            artifact = "com.google.protobuf:protoc:${properties.getProperty("version.com.google.protobuf..protobuf-kotlin-lite")}"
+            artifact = libs.protoc.get().toString()
         }
 
         // Add Kotlin protobuf plugin
@@ -91,28 +93,31 @@ android {
     }
 }
 
+kapt {
+    correctErrorTypes = true
+}
+
 val tinkImplementation: Configuration by configurations
 val jceImplementation: Configuration by configurations
 
 dependencies {
-    coreLibraryDesugaring(Android.tools.desugarJdkLibs)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     implementation(libs.kotlin.stdlib)
+    implementation(libs.hilt.android)
 
-    implementation(AndroidX.dataStore)
+    implementation(libs.datastore)
     implementation(libs.protobuf.kotlinlite)
 
     tinkImplementation(libs.tink.android)
 
-    implementation(libs.bcprov.jdk18on)
+    implementation(libs.bouncycastle)
     implementation(libs.tink.android) // Used for HKDF
     implementation(libs.conscrypt.android) // Used for chachapoly in Jce flavor & as fallback for Rsa
 
-    implementation(AndroidX.preference.ktx.toString()) {
+    implementation(libs.preference.ktx) {
         exclude("androidx.lifecycle", "lifecycle-viewmodel-ktx")
     }
-
-    implementation(libs.kotlin.logging.jvm)
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbextensions.android)
@@ -125,10 +130,12 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":import-export"))
 
+    kaptAndroidTest(libs.dagger.hilt.compiler)
+
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(project(":dependency-injection:test-component"))
-    androidTestImplementation(Testing.MockK.android)
-    androidTestImplementation(AndroidX.biometric) // used to check if device has biometric
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.biometric) // used to check if device has biometric
 
     testImplementation(project(":common-test-android"))
 }

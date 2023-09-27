@@ -45,4 +45,10 @@ interface SecurityOptionDataSource {
 
     val bubblesResendMessageDelayFlow: Flow<Duration>
     fun setBubblesResendMessageDelay(delay: Duration)
+    fun setAutoLockOSKInactivityDelay(delay: Duration)
+    fun setAutoLockOSKHiddenDelay(delay: Duration)
+    val autoLockOSKInactivityDelay: Duration
+    val autoLockOSKInactivityDelayFlow: Flow<Duration>
+    val autoLockOSKHiddenDelay: Duration
+    val autoLockOSKHiddenFlow: Flow<Duration>
 }

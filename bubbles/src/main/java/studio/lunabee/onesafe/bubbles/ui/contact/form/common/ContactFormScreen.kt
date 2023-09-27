@@ -29,7 +29,7 @@ import androidx.compose.ui.Modifier
 import studio.lunabee.onesafe.atom.OSScreen
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
 import studio.lunabee.onesafe.bubbles.ui.contact.composables.DeeplinkSwitchRow
-import studio.lunabee.onesafe.commonui.action.TopAppBarOptionNavBack
+import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.model.OSItemIllustration
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
@@ -58,7 +58,7 @@ fun ContactFormScreen(
         ) {
             OSTopAppBar(
                 title = type.title,
-                options = listOf(TopAppBarOptionNavBack(onBackClick)),
+                options = listOf(topAppBarOptionNavBack(onBackClick)),
             )
             LazyColumn(
                 contentPadding = PaddingValues(OSDimens.SystemSpacing.Regular),

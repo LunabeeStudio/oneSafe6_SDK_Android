@@ -20,18 +20,9 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-
     repositories {
         google()
         mavenCentral()
-    }
-
-    dependencies {
-        classpath(Android.tools.build.gradlePlugin)
-        classpath(libs.kotlin.gradle.plugin)
-        classpath(Google.dagger.hilt.android.gradlePlugin)
-        classpath(libs.protobuf.plugin)
-        classpath(libs.kotlin.serialization)
     }
 }
 
@@ -72,10 +63,12 @@ allprojects {
 }
 
 plugins {
-    id("io.gitlab.arturbosch.detekt")
-    id("androidx.benchmark") apply false
-    id("com.android.test") apply false
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.hilt) apply false
+    alias(libs.plugins.ksp) apply false
 }
+
+// Detekt config
 apply("Commons_Android/gradle/pr-code-analysis-project.gradle")
 tasks.withType<io.gitlab.arturbosch.detekt.Detekt> {
     exclude("**/build/**")

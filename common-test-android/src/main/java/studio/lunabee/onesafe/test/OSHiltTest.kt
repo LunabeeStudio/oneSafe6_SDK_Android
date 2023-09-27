@@ -27,17 +27,18 @@ import androidx.work.testing.SynchronousExecutor
 import androidx.work.testing.WorkManagerTestInitHelper
 import dagger.hilt.android.testing.HiltAndroidRule
 import io.mockk.unmockkAll
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
+import studio.lunabee.onesafe.OSAppSettings
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.PersistenceManager
 import studio.lunabee.onesafe.domain.usecase.authentication.LocalSignInUseCase
 import studio.lunabee.onesafe.domain.usecase.autolock.LockAppUseCase
 import studio.lunabee.onesafe.domain.usecase.onboarding.CreateMasterKeyUseCase
 import studio.lunabee.onesafe.domain.usecase.onboarding.FinishOnboardingUseCase
+import studio.lunabee.onesafe.migration.MigrationConstant
 import javax.inject.Inject
 
 /**
@@ -63,7 +64,6 @@ import javax.inject.Inject
  * }
  * ```
  */
-@OptIn(ExperimentalCoroutinesApi::class)
 abstract class OSHiltTest : OSTest() {
     abstract val hiltRule: HiltAndroidRule
 
@@ -80,6 +80,8 @@ abstract class OSHiltTest : OSTest() {
     @Inject lateinit var localSignInUseCase: LocalSignInUseCase
 
     @Inject lateinit var workerFactory: HiltWorkerFactory
+
+    @Inject lateinit var osAppSettings: OSAppSettings
 
     /**
      * See [InitialTestState] for more details.
@@ -137,6 +139,7 @@ abstract class OSHiltTest : OSTest() {
      * Signup user with [password] and save credential. A master key will be generated at this point.
      */
     suspend fun signup(password: CharArray = testPassword.toCharArray()) {
+        osAppSettings.setMigrationVersionSetting(MigrationConstant.LastVersion)
         createMasterKeyUseCase(password)
         finishOnboardingUseCase()
     }

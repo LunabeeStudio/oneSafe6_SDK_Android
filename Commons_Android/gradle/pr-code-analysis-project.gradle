@@ -1,5 +1,5 @@
 dependencies {
-    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:_"
+    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:${libs.versions.detekt.get()}"
 }
 
 detekt {
@@ -18,9 +18,9 @@ tasks.named("detekt").configure {
 
     reports {
         xml.required.set(true)
-        xml.outputLocation.set(file("$buildDir/reports/detekt/detekt-report.xml"))
+        xml.outputLocation.set(file("${getLayout().getBuildDirectory().asFile.get().absolutePath}/reports/detekt/detekt-report.xml"))
 
         html.required.set(true)
-        html.outputLocation.set(file("$buildDir/reports/detekt/detekt-report.html"))
+        html.outputLocation.set(file("${getLayout().getBuildDirectory().asFile.get().absolutePath}/reports/detekt/detekt-report.html"))
     }
 }

@@ -24,10 +24,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
+import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.ime.ui.OSImeScreen
@@ -37,6 +39,7 @@ import studio.lunabee.onesafe.molecule.ElevatedTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.extensions.topAppBarElevation
 import studio.lunabee.onesafe.ui.res.OSDimens
+import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
 
@@ -48,6 +51,7 @@ fun ImeContactEmptyScreen(
     val lazyListState = rememberLazyListState()
     OSImeScreen(
         testTag = UiConstants.TestTag.Screen.EmptyContactScreen,
+        background = LocalDesignSystem.current.bubblesBackGround(),
     ) {
         LazyColumn(
             modifier = Modifier
@@ -75,6 +79,13 @@ fun ImeContactEmptyScreen(
                     contentDescription = LbcTextSpec.StringResource(R.string.common_accessibility_back),
                     onClick = navigateBack,
                     state = OSActionState.Enabled,
+                    color = {
+                        OSIconButtonDefaults.iconButtonColors(
+                            containerColor = LocalDesignSystem.current.bubblesSecondaryContainer(),
+                            contentColor = MaterialTheme.colorScheme.onSurface,
+                            state = it,
+                        )
+                    },
                 ),
             ),
             elevation = lazyListState.topAppBarElevation,

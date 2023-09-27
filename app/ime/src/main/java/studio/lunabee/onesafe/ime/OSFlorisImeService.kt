@@ -19,8 +19,12 @@
 
 package studio.lunabee.onesafe.ime
 
+import android.app.ActivityManager
 import android.content.ClipboardManager
+import android.content.Context
 import android.view.KeyEvent
+import android.view.MotionEvent
+import android.view.View
 import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
@@ -65,6 +69,9 @@ import dev.patrickgold.florisboard.editorInstance
 import dev.patrickgold.florisboard.themeManager
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.OSAppSettings
 import studio.lunabee.onesafe.atom.textfield.LocalTextFieldInteraction
@@ -75,6 +82,7 @@ import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInM
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSignUpUseCase
 import studio.lunabee.onesafe.domain.usecase.autolock.LockAppUseCase
 import studio.lunabee.onesafe.ime.model.ImeClient
+import studio.lunabee.onesafe.ime.model.OSKImeState
 import studio.lunabee.onesafe.ime.ui.ImeFeedbackManager
 import studio.lunabee.onesafe.ime.ui.ImeNavGraph
 import studio.lunabee.onesafe.ime.ui.ImeNavGraphRoute
@@ -88,8 +96,7 @@ import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelReposito
 import studio.lunabee.onesafe.messaging.domain.usecase.ProcessMessageQueueUseCase
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
 import studio.lunabee.onesafe.ui.res.OSDimens
-import studio.lunabee.onesafe.ui.theme.OSColor
-import studio.lunabee.onesafe.ui.theme.OSTheme
+import studio.lunabee.onesafe.ui.theme.LocalColorPalette
 import studio.lunabee.onesafe.visits.OsAppVisit
 import javax.inject.Inject
 
@@ -103,47 +110,54 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OSFlorisImeService : FlorisImeService() {
 
-    @Inject
-    lateinit var imeLoginViewModelFactory: dagger.Lazy<ImeLoginViewModelFactory>
+    @Inject lateinit var imeLoginViewModelFactory: dagger.Lazy<ImeLoginViewModelFactory>
 
-    @Inject
-    lateinit var selectContactViewModelFactory: dagger.Lazy<SelectContactViewModelFactory>
+    @Inject lateinit var selectContactViewModelFactory: dagger.Lazy<SelectContactViewModelFactory>
 
-    @Inject
-    lateinit var writeMessageViewModelFactory: dagger.Lazy<WriteMessageViewModelFactory>
+    @Inject lateinit var writeMessageViewModelFactory: dagger.Lazy<WriteMessageViewModelFactory>
 
-    @Inject
-    lateinit var settings: OSAppSettings
+    @Inject lateinit var settings: OSAppSettings
 
-    @Inject
-    lateinit var channelRepository: MessageChannelRepository
+    @Inject lateinit var channelRepository: MessageChannelRepository
 
-    @Inject
-    lateinit var isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase
+    @Inject lateinit var isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase
+
+    @Inject lateinit var decryptClipboardListener: DecryptClipboardListener
+
+    @Inject lateinit var processMessageQueueUseCase: ProcessMessageQueueUseCase
+
+    @Inject lateinit var feedbackManager: ImeFeedbackManager
+
+    @Inject lateinit var lockUseCase: LockAppUseCase
+
+    @Inject lateinit var isSignUpUseCase: IsSignUpUseCase
+
+    @Inject lateinit var osAppVisit: OsAppVisit
+
+    @Inject lateinit var autolockVisibilityManager: OSKAutoLockVisibilityManager
+
+    @Inject lateinit var autoLockInactivityManager: OSKAutoLockInactivityManager
+
+    @Inject lateinit var lockAppUseCase: LockAppUseCase
 
     private val themeManager by themeManager()
-
-    @Inject
-    lateinit var decryptClipboardListener: DecryptClipboardListener
-
-    @Inject
-    lateinit var processMessageQueueUseCase: ProcessMessageQueueUseCase
-
-    @Inject
-    lateinit var feedbackManager: ImeFeedbackManager
-
-    @Inject
-    lateinit var lockUseCase: LockAppUseCase
-
-    @Inject
-    lateinit var isSignUpUseCase: IsSignUpUseCase
-
-    @Inject
-    lateinit var osAppVisit: OsAppVisit
-
-    private var isKeyboardVisibleFlow: MutableStateFlow<Boolean> = MutableStateFlow(true)
-    private var isOneSafeUiVisibleFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val isWindowVisibleFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val isKeyboardVisibleFlow: MutableStateFlow<Boolean> = MutableStateFlow(true)
+    private val isOneSafeUiVisibleFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val imeClientFlow: MutableStateFlow<ImeClient?> = MutableStateFlow(null)
+    private val oskImeStateFlow = combine(
+        isKeyboardVisibleFlow,
+        isOneSafeUiVisibleFlow,
+        isWindowVisibleFlow,
+    ) { keyboardVisible, uiVisible, imeVisible ->
+        when {
+            !imeVisible -> OSKImeState.Hidden
+            uiVisible && keyboardVisible -> OSKImeState.ScreenWithKeyboard
+            uiVisible -> OSKImeState.Screen
+            keyboardVisible -> OSKImeState.Keyboard
+            else -> OSKImeState.Hidden
+        }
+    }.stateIn(lifecycleScope, SharingStarted.Lazily, OSKImeState.Hidden)
 
     /**
      * Last [ImeClient] bound when keyboard was visible
@@ -160,6 +174,7 @@ class OSFlorisImeService : FlorisImeService() {
 
     override fun onWindowHidden() {
         super.onWindowHidden()
+        isWindowVisibleFlow.value = false
         lastImeClient = imeClientFlow.value
     }
 
@@ -176,24 +191,29 @@ class OSFlorisImeService : FlorisImeService() {
             isOneSafeUiVisibleFlow.value = false
         }
         super.onWindowShown()
-        (editorInstance().value as? InterceptEditorInstance)?.blockInput =
-            isOneSafeUiVisibleFlow.value
+        isWindowVisibleFlow.value = true
+        refreshBlockInput()
+    }
+
+    private fun refreshBlockInput() {
+        // Block client text field inputs if oneSafe K is visible (else unblock)
+        (editorInstance().value as? InterceptEditorInstance)?.blockInput = oskImeStateFlow.value.isOneSafeUiVisible
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (event?.keyCode == KeyEvent.KEYCODE_BACK) {
-            when {
-                isKeyboardVisibleFlow.value && isOneSafeUiVisibleFlow.value -> {
+            when (oskImeStateFlow.value) {
+                OSKImeState.Hidden -> {
+                    /* no-op */
+                }
+                // hide oSK UI and let ime handle back
+                OSKImeState.Screen -> isOneSafeUiVisibleFlow.value = false
+                // hide keyboard and let ime handle back
+                OSKImeState.Keyboard -> isKeyboardVisibleFlow.value = false
+                // hide keyboard and consume event
+                OSKImeState.ScreenWithKeyboard -> {
                     isKeyboardVisibleFlow.value = false
                     return true
-                }
-
-                isKeyboardVisibleFlow.value && !isOneSafeUiVisibleFlow.value -> {
-                    isKeyboardVisibleFlow.value = false
-                }
-
-                !isKeyboardVisibleFlow.value -> {
-                    isOneSafeUiVisibleFlow.value = false
                 }
             }
         }
@@ -203,11 +223,21 @@ class OSFlorisImeService : FlorisImeService() {
     override fun onCreate() {
         super.onCreate()
         processMessageQueue()
+
         lifecycleScope.launch {
-            isOneSafeUiVisibleFlow.collect {
-                (editorInstance().value as? InterceptEditorInstance)?.blockInput = it
+            oskImeStateFlow.collect { state ->
+                // Call state listeners
+                autolockVisibilityManager.onStateChange(state)
+                autoLockInactivityManager.onStateChange(state)
+                refreshBlockInput()
             }
         }
+    }
+
+    override fun onCreateInputView(): View {
+        // Always lock on UI (re)creation
+        lockAppUseCase()
+        return super.onCreateInputView()
     }
 
     override fun onBindInput() {
@@ -222,6 +252,7 @@ class OSFlorisImeService : FlorisImeService() {
         if (packageManager.getPackageUid(this.packageName, 0) == currentInputBinding.uid) {
             // Don't observe clipboard in oneSafe
             setupClipboardObserver(false)
+            isOneSafeUiVisibleFlow.value = false
         } else {
             setupClipboardObserver(true)
         }
@@ -268,16 +299,14 @@ class OSFlorisImeService : FlorisImeService() {
             when {
                 forceDark -> {
                     themeManager.updateActiveTheme(forceNight = true)
-                    background = OSColor.Neutral70
-                    contentColor = OSColor.Neutral00
+                    background = LocalColorPalette.current.Neutral70
+                    contentColor = LocalColorPalette.current.Neutral00
                 }
-
                 isSystemInDarkTheme() -> {
                     themeManager.updateActiveTheme()
                     background = Color.Transparent
-                    contentColor = OSColor.Neutral00
+                    contentColor = LocalColorPalette.current.Neutral00
                 }
-
                 else -> {
                     themeManager.updateActiveTheme()
                     background = Color.Transparent
@@ -304,10 +333,16 @@ class OSFlorisImeService : FlorisImeService() {
     }
 
     override fun calculateTouchableTopY(visibleTopY: Int, needAdditionalOverlay: Boolean): Int {
-        return if (isOneSafeUiVisibleFlow.value) {
+        return if (oskImeStateFlow.value.isOneSafeUiVisible) {
             0
         } else {
             super.calculateTouchableTopY(visibleTopY, needAdditionalOverlay)
+        }
+    }
+
+    override fun onComposeViewTouchEvent(ev: MotionEvent?) {
+        if (ev?.action == MotionEvent.ACTION_DOWN || ev?.action == MotionEvent.ACTION_UP) {
+            autoLockInactivityManager.refreshLastUserInteraction()
         }
     }
 
@@ -445,13 +480,7 @@ class OSFlorisImeService : FlorisImeService() {
     fun OneSafeKUi(
         modifier: Modifier,
     ) {
-        val isMaterialYouSettingsEnabled: Boolean by settings.materialYouSetting.collectAsStateWithLifecycle(
-            false,
-        )
-
-        OSTheme(
-            isMaterialYouSettingsEnabled = isMaterialYouSettingsEnabled,
-        ) {
+        ImeOSTheme {
             Surface(
                 modifier = modifier,
                 color = MaterialTheme.colorScheme.background,
@@ -462,8 +491,8 @@ class OSFlorisImeService : FlorisImeService() {
                     selectContactViewModelFactory = selectContactViewModelFactory,
                     writeMessageViewModelFactory = writeMessageViewModelFactory,
                     onLoginSuccess = {
-                        // TODO: Fix navigation glitch on keyboard close
-                        // isKeyboardVisibleFlow.value = false
+                        // TODO = Fix navigation glitch on keyboard close
+                        //  isKeyboardVisibleFlow.value = false
                     },
                     dismissUi = {
                         isOneSafeUiVisibleFlow.value = false
@@ -480,6 +509,17 @@ class OSFlorisImeService : FlorisImeService() {
                     hasDoneOnBoardingBubbles = osAppVisit.hasDoneOnBoardingBubbles,
                     hideKeyboard = { isKeyboardVisibleFlow.value = false },
                 )
+            }
+        }
+    }
+
+    companion object {
+        fun kill(context: Context) {
+            val activityManager = context.getSystemService(ActivityManager::class.java)
+            activityManager.runningAppProcesses.firstOrNull {
+                it.processName == context.packageName + BuildConfig.IME_PROCESS_NAME
+            }?.pid?.let {
+                android.os.Process.killProcess(it)
             }
         }
     }

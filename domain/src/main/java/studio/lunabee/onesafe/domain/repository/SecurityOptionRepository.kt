@@ -46,4 +46,12 @@ interface SecurityOptionRepository {
 
     val bubblesResendMessageDelayFlow: Flow<Duration>
     fun setBubblesResendMessageDelay(delay: Duration)
+
+    val autoLockOSKInactivityDelay: Duration
+    val autoLockOSKInactivityDelayFlow: Flow<Duration>
+    fun setAutoLockOSKInactivityDelay(delay: Duration)
+
+    val autoLockOSKHiddenDelay: Duration
+    val autoLockOSKHiddenDelayFlow: Flow<Duration>
+    fun setAutoLockOSKHiddenDelay(delay: Duration)
 }

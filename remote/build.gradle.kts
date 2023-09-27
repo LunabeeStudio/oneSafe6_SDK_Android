@@ -19,17 +19,17 @@
 
 plugins {
     `kotlin-library`
-    id("kotlinx-serialization")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 dependencies {
     implementation(libs.kotlin.stdlib)
-    implementation(Ktor.client.android)
+    implementation(libs.ktor.client.android)
 
-    implementation(Ktor.client.logging)
+    implementation(libs.ktor.client.logging)
 
     implementation(platform(libs.lunabee.bom))
-    implementation(KotlinX.serialization.json)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.lblogger)
 
     implementation(project(":repository"))

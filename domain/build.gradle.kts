@@ -20,18 +20,16 @@
 plugins {
     `kotlin-library`
     `onesafe-publish`
-    kotlin("plugin.serialization")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 description = "Business layer of oneSafe"
 
 dependencies {
     implementation(libs.kotlin.stdlib)
-    implementation(KotlinX.coroutines.core)
-    api(AndroidX.paging.commonKtx)
-    implementation(KotlinX.serialization.json)
-
-    implementation(libs.kotlin.logging.jvm)
+    implementation(libs.kotlinx.coroutines.core)
+    api(libs.paging.common.ktx)
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)
@@ -42,5 +40,5 @@ dependencies {
     implementation(project(":error"))
 
     testImplementation(project(":common-test"))
-    testImplementation(Testing.MockK)
+    testImplementation(libs.mockk)
 }

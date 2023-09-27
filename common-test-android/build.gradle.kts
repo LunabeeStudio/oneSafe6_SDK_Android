@@ -29,6 +29,7 @@ android {
 
     defaultConfig {
         minSdk = AndroidConfig.MIN_LIB_SDK
+        manifestPlaceholders["testTargetSdk"] = AndroidConfig.TARGET_SDK
     }
 
     sourceSets["main"].resources {
@@ -42,22 +43,24 @@ android {
 }
 
 dependencies {
-    implementation(Google.dagger.hilt.android.testing)
+    implementation(libs.hilt.android.testing)
 
     implementation(platform(libs.compose.beta.bom))
-    implementation(AndroidX.test.runner)
-    implementation(AndroidX.compose.ui.test)
-    implementation(AndroidX.compose.ui.testJunit4)
-    implementation(AndroidX.test.coreKtx)
-    implementation(JakeWharton.timber)
-    implementation(AndroidX.Work.testing)
-    api(AndroidX.Hilt.work)
-    implementation(Testing.MockK.android)
+    implementation(libs.androidx.test.runner)
+    implementation(libs.compose.ui.test)
+    implementation(libs.compose.ui.test.junit4)
+    implementation(libs.androidx.test.core.ktx)
+    implementation(libs.timber)
+    implementation(libs.work.testing)
+    api(libs.hilt.work)
+    implementation(libs.mockk.android)
 
     implementation(libs.lunabee.bom)
     implementation(libs.lbcore)
 
     implementation(project(":domain"))
+    implementation(project(":app:settings"))
+    implementation(project(":app:migration"))
     api(project(":common-test"))
     api(libs.lbcandroidtest)
 }

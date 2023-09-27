@@ -20,15 +20,28 @@
 package studio.lunabee.onesafe.messaging.domain.model
 
 enum class ConversationState {
-    // The conversation has messages, and not only handShake messages
+    /**
+     * The conversation has messages, and not only handShake messages
+     */
     Running,
 
-    // Invitation flow has been completed on both devices and the inviter has send at least one encrypted message
+    /**
+     * Invitation flow has been completed on both devices and the inviter has send at least one encrypted message
+     */
     FullySetup,
 
-    // The contact has been invited but did not reply to the invitation
+    /**
+     * The contact has been invited but did not reply to the invitation
+     */
     WaitingForReply,
 
-    // the invitation has been accepted, but the inviter did not sent an encrypted message yet
+    /**
+     * The invitation has been accepted, but the inviter did not sent an encrypted message yet
+     */
     WaitingForFirstMessage,
+
+    /**
+     * The conversation is in an unexpected state
+     */
+    Error,
 }

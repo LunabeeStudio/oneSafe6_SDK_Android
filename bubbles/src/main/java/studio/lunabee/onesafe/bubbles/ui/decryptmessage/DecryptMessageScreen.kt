@@ -48,15 +48,15 @@ import studio.lunabee.onesafe.atom.button.OSIconButton
 import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.atom.textfield.OSTextField
 import studio.lunabee.onesafe.commonui.R
-import studio.lunabee.onesafe.commonui.action.TopAppBarOptionNavBack
+import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.commonui.error.description
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
+import studio.lunabee.onesafe.ui.theme.LocalColorPalette
 import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
-import studio.lunabee.onesafe.ui.theme.OSColor
 import java.util.UUID
 
 context(DecryptMessageNavScope)
@@ -105,7 +105,7 @@ fun DecryptMessageScreen(
         ) {
             OSTopAppBar(
                 title = LbcTextSpec.StringResource(R.string.bubbles_decrypMessageScreen_title),
-                options = listOf(TopAppBarOptionNavBack(onBackClick)),
+                options = listOf(topAppBarOptionNavBack(onBackClick)),
             )
             Column(
                 modifier = Modifier
@@ -121,8 +121,16 @@ fun DecryptMessageScreen(
                     errorLabel = error.description(),
                     isError = error != null,
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = if (isSystemInDarkTheme()) OSColor.Neutral70 else OSColor.Neutral30,
-                        unfocusedLabelColor = if (isSystemInDarkTheme()) OSColor.Neutral10 else OSColor.Neutral80,
+                        unfocusedBorderColor = if (isSystemInDarkTheme()) {
+                            LocalColorPalette.current.Neutral70
+                        } else {
+                            LocalColorPalette.current.Neutral30
+                        },
+                        unfocusedLabelColor = if (isSystemInDarkTheme()) {
+                            LocalColorPalette.current.Neutral10
+                        } else {
+                            LocalColorPalette.current.Neutral80
+                        },
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
                         unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                         errorContainerColor = MaterialTheme.colorScheme.surface,
