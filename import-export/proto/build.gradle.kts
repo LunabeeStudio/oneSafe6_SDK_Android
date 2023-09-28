@@ -22,7 +22,7 @@ import java.util.Properties
 
 plugins {
     `kotlin-library`
-    id("com.google.protobuf")
+    alias(libs.plugins.protobuf)
     `onesafe-publish`
 }
 
@@ -36,7 +36,7 @@ File(rootDir.path + "/versions.properties").inputStream().use { properties.load(
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:${properties.getProperty("version.com.google.protobuf..protobuf-kotlin-lite")}"
+        artifact = libs.protoc.get().toString()
     }
 
     // Add Kotlin protobuf plugin

@@ -23,8 +23,10 @@ plugins {
 
 dependencies {
     implementation(libs.kotlin.stdlib)
-    implementation(KotlinX.coroutines.core)
-    implementation(AndroidX.paging.commonKtx)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.paging.common.ktx)
+
+    implementation(libs.doubleratchet)
 
     implementation(project(":messaging-domain"))
 }

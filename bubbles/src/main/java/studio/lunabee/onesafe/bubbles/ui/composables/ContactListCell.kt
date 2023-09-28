@@ -41,7 +41,7 @@ import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.model.OSItemIllustration
 import studio.lunabee.onesafe.model.OSSafeItemStyle
 import studio.lunabee.onesafe.ui.res.OSDimens
-import studio.lunabee.onesafe.ui.theme.OSColor
+import studio.lunabee.onesafe.ui.theme.LocalColorPalette
 
 @Composable
 fun ContactListCell(
@@ -70,7 +70,7 @@ fun ContactListCell(
             maxLines = NameMaxLine,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1.0f),
-            color = if (isSystemInDarkTheme()) OSColor.Neutral10 else Color.Unspecified,
+            color = if (isSystemInDarkTheme()) LocalColorPalette.current.Neutral10 else Color.Unspecified,
         )
         if (uiBubblesContactInfo.conversationState == ConversationState.WaitingForReply) {
             OSRegularSpacer()

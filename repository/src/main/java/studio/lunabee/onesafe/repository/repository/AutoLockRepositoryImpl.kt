@@ -20,9 +20,15 @@
 package studio.lunabee.onesafe.repository.repository
 
 import studio.lunabee.onesafe.domain.repository.AutoLockRepository
+import java.time.Clock
 import java.time.Instant
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class AutoLockRepositoryImpl @Inject constructor() : AutoLockRepository {
-    override var lastUserInteractionInstant: Instant = Instant.MAX
+@Singleton
+class AutoLockRepositoryImpl @Inject constructor(
+    clock: Clock,
+) : AutoLockRepository {
+    // Initialize last user interaction with repository instantiation time to always have a consistent value
+    override var lastUserInteractionInstant: Instant = Instant.now(clock)
 }

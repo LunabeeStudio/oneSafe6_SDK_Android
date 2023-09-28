@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.messaging.writemessage.viewmodel
 
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -290,6 +291,9 @@ class WriteMessageViewModel @Inject constructor(
                 ),
                 DialogAction.commonCancel(::dismissDialog),
             )
+            override val customContent:
+                @Composable()
+                (() -> Unit)? = null
         }
     }
 
@@ -309,6 +313,9 @@ class WriteMessageViewModel @Inject constructor(
                 ),
                 DialogAction.commonCancel(::dismissDialog),
             )
+            override val customContent:
+                @Composable()
+                (() -> Unit)? = null
         }
     }
 
@@ -324,6 +331,9 @@ class WriteMessageViewModel @Inject constructor(
             override val dismiss: () -> Unit = ::dismissDialog
             override val actions: List<DialogAction> = listOf(DialogAction.commonOk(::dismissDialog))
             override val title: LbcTextSpec = LbcTextSpec.StringResource(R.string.writeMessageScreen_previewInfo_title)
+            override val customContent:
+                @Composable()
+                (() -> Unit)? = null
         }
     }
 
@@ -333,6 +343,9 @@ class WriteMessageViewModel @Inject constructor(
             override val actions: List<DialogAction> = listOf(DialogAction.commonOk(::dismissDialog))
             override val title: LbcTextSpec = LbcTextSpec.StringResource(R.string.common_warning)
             override val message: LbcTextSpec = LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_tooOldMessage)
+            override val customContent:
+                @Composable()
+                (() -> Unit)? = null
         }
     }
 

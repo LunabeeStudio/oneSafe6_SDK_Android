@@ -53,7 +53,8 @@ class SecurityOptionRepositoryImpl @Inject constructor(
     override val clipboardDelayFlow: Flow<Duration>
         get() = securityOptionDataSource.clipboardDelayFlow
 
-    override fun setClipboardClearDelay(delay: Duration): Unit = securityOptionDataSource.setClipboardClearDelay(delay)
+    override fun setClipboardClearDelay(delay: Duration): Unit =
+        securityOptionDataSource.setClipboardClearDelay(delay)
 
     override val verifyPasswordInterval: VerifyPasswordInterval
         get() = securityOptionDataSource.passwordVerificationInterval
@@ -78,4 +79,22 @@ class SecurityOptionRepositoryImpl @Inject constructor(
     override fun setBubblesResendMessageDelay(delay: Duration) {
         securityOptionDataSource.setBubblesResendMessageDelay(delay)
     }
+
+    override val autoLockOSKInactivityDelay: Duration
+        get() = securityOptionDataSource.autoLockOSKInactivityDelay
+
+    override val autoLockOSKInactivityDelayFlow: Flow<Duration>
+        get() = securityOptionDataSource.autoLockOSKInactivityDelayFlow
+
+    override fun setAutoLockOSKInactivityDelay(delay: Duration): Unit =
+        securityOptionDataSource.setAutoLockOSKInactivityDelay(delay)
+
+    override val autoLockOSKHiddenDelay: Duration
+        get() = securityOptionDataSource.autoLockOSKHiddenDelay
+
+    override val autoLockOSKHiddenDelayFlow: Flow<Duration>
+        get() = securityOptionDataSource.autoLockOSKHiddenFlow
+
+    override fun setAutoLockOSKHiddenDelay(delay: Duration): Unit =
+        securityOptionDataSource.setAutoLockOSKHiddenDelay(delay)
 }

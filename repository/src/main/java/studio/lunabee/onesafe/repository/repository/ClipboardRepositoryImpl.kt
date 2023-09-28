@@ -21,7 +21,9 @@ package studio.lunabee.onesafe.repository.repository
 
 import studio.lunabee.onesafe.domain.repository.ClipboardRepository
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class ClipboardRepositoryImpl @Inject constructor() : ClipboardRepository {
     override var hasCopiedValue: Boolean = false
 }

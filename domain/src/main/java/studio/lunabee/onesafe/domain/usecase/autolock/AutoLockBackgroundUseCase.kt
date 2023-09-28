@@ -20,19 +20,31 @@
 package studio.lunabee.onesafe.domain.usecase.autolock
 
 import kotlinx.coroutines.delay
+import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
 import javax.inject.Inject
+import kotlin.time.Duration
 
 /**
  * Retrieve the user param delay before automatically locking app when app change
  */
-
-class AutoLockAppChangeUseCase @Inject constructor(
-    private val autoLockGetAppChangeDelayUseCase: AutoLockGetAppChangeDelayUseCase,
+class AutoLockBackgroundUseCase @Inject constructor(
+    private val securityOptionRepository: SecurityOptionRepository,
     private val lockAppUseCase: LockAppUseCase,
 ) {
-    suspend operator fun invoke() {
-        val duration = autoLockGetAppChangeDelayUseCase()
-        delay(duration)
-        lockAppUseCase()
+    suspend fun app() {
+        val duration = securityOptionRepository.autoLockAppChangeDelay
+        doAutoLock(duration)
+    }
+
+    suspend fun osk() {
+        val duration = securityOptionRepository.autoLockOSKHiddenDelay
+        doAutoLock(duration)
+    }
+
+    private suspend fun doAutoLock(duration: Duration) {
+        if (duration != Duration.INFINITE) {
+            delay(duration)
+            lockAppUseCase()
+        }
     }
 }

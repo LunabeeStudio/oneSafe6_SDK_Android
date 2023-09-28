@@ -173,12 +173,12 @@ fun ScanBarcodeScreen(
                 OSTopAppBar(
                     modifier = Modifier.statusBarsPadding(),
                     options = listOf(
-                        object : TopAppBarOptionNav(
+                        TopAppBarOptionNav(
                             image = OSImageSpec.Drawable(R.drawable.ic_close),
                             contentDescription = LbcTextSpec.StringResource(R.string.common_accessibility_back),
                             onClick = onCloseClick,
                             state = OSActionState.Enabled,
-                        ) {},
+                        ),
                     ),
                 )
                 OSText(

@@ -20,6 +20,8 @@
 package studio.lunabee.onesafe.domain.usecase.autolock
 
 import studio.lunabee.onesafe.domain.repository.AutoLockRepository
+import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
+import java.time.Clock
 import java.time.Instant
 import javax.inject.Inject
 import kotlin.time.Duration
@@ -27,14 +29,23 @@ import kotlin.time.toKotlinDuration
 import java.time.Duration as JavaDuration
 
 class AutoLockInactivityGetRemainingTimeUseCase @Inject constructor(
-    private val autoLockGetInactivityDelayUseCase: AutoLockGetInactivityDelayUseCase,
+    private val securityOptionRepository: SecurityOptionRepository,
     private val autoLockRepository: AutoLockRepository,
+    private val clock: Clock,
 ) {
-    operator fun invoke(): Duration {
-        val inactivityDelay = autoLockGetInactivityDelayUseCase()
-        val lastUserInteraction = autoLockRepository.lastUserInteractionInstant
-        val currentInactivity = JavaDuration.between(lastUserInteraction, Instant.now()).toKotlinDuration()
+    fun app(): Duration {
+        val inactivityDelay = securityOptionRepository.autoLockInactivityDelay
+        return computeRemainingTime(inactivityDelay)
+    }
 
+    fun osk(): Duration {
+        val inactivityDelay = securityOptionRepository.autoLockOSKInactivityDelay
+        return computeRemainingTime(inactivityDelay)
+    }
+
+    private fun computeRemainingTime(inactivityDelay: Duration): Duration {
+        val lastUserInteraction = autoLockRepository.lastUserInteractionInstant
+        val currentInactivity = JavaDuration.between(lastUserInteraction, Instant.now(clock)).toKotlinDuration()
         return maxOf(inactivityDelay - currentInactivity, Duration.ZERO)
     }
 }

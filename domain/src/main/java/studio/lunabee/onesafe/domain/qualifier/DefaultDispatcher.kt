@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/11/2023 - for the oneSafe6 SDK.
- * Last modified 4/11/23, 10:45 AM
+ * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
+ * Last modified 4/7/23, 12:24 AM
  */
 
-package studio.lunabee.onesafe.domain.usecase.autolock
+package studio.lunabee.onesafe.domain.qualifier
 
-import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
-import javax.inject.Inject
-import kotlin.time.Duration
+import javax.inject.Qualifier
 
-class AutoLockSetInactivityDelayUseCase @Inject constructor(
-    private val securityOptionRepository: SecurityOptionRepository,
-) {
-    operator fun invoke(delay: Duration) {
-        securityOptionRepository.setAutoLockInactivityDelay(delay)
-    }
-}
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class DefaultDispatcher

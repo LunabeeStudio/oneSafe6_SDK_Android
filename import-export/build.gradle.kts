@@ -20,6 +20,8 @@
 plugins {
     `android-library`
     `onesafe-publish`
+    kotlin("kapt")
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -40,19 +42,28 @@ android {
     }
 }
 
+kapt {
+    correctErrorTypes = true
+}
+
 dependencies {
-    implementation(project(":import-export:proto"))
-    implementation(project(":domain"))
-    implementation(project(":error"))
-    implementation(project(":common"))
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    implementation(libs.hilt.android)
 
     implementation(platform(libs.lunabee.bom))
     api(libs.lbcore)
     implementation(libs.lblogger)
 
-    coreLibraryDesugaring(Android.tools.desugarJdkLibs)
+    implementation(project(":import-export:proto"))
+    implementation(project(":domain"))
+    implementation(project(":error"))
+    implementation(project(":common"))
+
+    kaptAndroidTest(libs.dagger.hilt.compiler)
 
     androidTestImplementation(project(":common-test-android"))
+    androidTestImplementation(project(":app:settings"))
     androidTestImplementation(project(":dependency-injection:test-component"))
     androidTestImplementation(project(":crypto-android"))
     androidTestImplementation(libs.lblogger.timber)

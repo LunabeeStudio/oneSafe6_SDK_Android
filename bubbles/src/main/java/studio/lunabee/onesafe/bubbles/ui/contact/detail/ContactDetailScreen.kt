@@ -41,7 +41,7 @@ import studio.lunabee.onesafe.atom.OSScreen
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
 import studio.lunabee.onesafe.bubbles.ui.contact.composables.DeeplinkSwitchRow
 import studio.lunabee.onesafe.commonui.R
-import studio.lunabee.onesafe.commonui.action.TopAppBarOptionNavBack
+import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.commonui.action.topAppBarOptionEdit
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
@@ -148,7 +148,7 @@ fun ContactDetailScreen(
                         .statusBarsPadding()
                         .align(Alignment.TopCenter),
                     options = listOfNotNull(
-                        TopAppBarOptionNavBack(onBackClick),
+                        topAppBarOptionNavBack(onBackClick),
                         topAppBarOptionEdit(
                             description = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_editAction),
                             onEditItemClick = onEditClick,

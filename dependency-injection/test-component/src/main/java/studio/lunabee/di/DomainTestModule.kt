@@ -31,11 +31,14 @@ import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
 import studio.lunabee.onesafe.domain.common.IconIdProvider
 import studio.lunabee.onesafe.domain.common.ItemIdProvider
 import studio.lunabee.onesafe.domain.common.MessageIdProvider
+import studio.lunabee.onesafe.domain.qualifier.DefaultDispatcher
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.usecase.SetIconUseCase
 import studio.lunabee.onesafe.domain.utils.SafeItemBuilder
 import studio.lunabee.onesafe.domain.utils.SafeItemBuilderImpl
+import studio.lunabee.onesafe.test.testClock
+import java.time.Clock
 import javax.inject.Singleton
 
 @Module
@@ -61,6 +64,10 @@ object DomainTestModule {
     fun providesFileDispatcher(): CoroutineDispatcher = Dispatchers.IO
 
     @Provides
+    @DefaultDispatcher
+    fun providesDefaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
+
+    @Provides
     fun provideSafeItemBuilder(cryptoRepository: MainCryptoRepository, setIconUseCase: SetIconUseCase): SafeItemBuilder =
         SafeItemBuilderImpl(cryptoRepository = cryptoRepository, setIconUseCase = setIconUseCase)
 
@@ -72,4 +79,7 @@ object DomainTestModule {
         doubleRatchetKeyRepository = doubleRatchetKeyRepository,
         doubleRatchetLocalDatasource = localDatasource,
     )
+
+    @Provides
+    fun providesClock(): Clock = testClock
 }

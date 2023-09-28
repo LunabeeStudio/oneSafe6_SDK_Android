@@ -19,7 +19,8 @@
 
 plugins {
     `android-library`
-    id("kotlinx-serialization")
+    kotlin("kapt")
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -41,19 +42,27 @@ android {
     }
 }
 
+kapt {
+    correctErrorTypes = true
+}
+
 dependencies {
-    coreLibraryDesugaring(Android.tools.desugarJdkLibs)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 
-    implementation(AndroidX.room.ktx)
+    implementation(libs.hilt.android)
+    kapt(libs.dagger.hilt.compiler)
+
+    implementation(libs.room.ktx)
+    implementation(libs.datastore.preferences)
+    implementation(libs.datastore)
+    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.logging)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.doubleratchet)
+
     implementation(platform(libs.lunabee.bom))
-    implementation(AndroidX.dataStore)
-    implementation(Ktor.client.android)
-    implementation(Ktor.client.logging)
-    implementation(Ktor.plugins.serialization.kotlinx.json)
-    implementation(Ktor.client.contentNegotiation)
     implementation(libs.lblogger)
-
-    implementation(libs.double.ratchet)
 
     implementation(project(":crypto-android"))
     implementation(project(":domain"))

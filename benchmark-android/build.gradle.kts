@@ -19,7 +19,7 @@
 
 plugins {
     `android-library`
-    id("androidx.benchmark")
+    alias(libs.plugins.androidx.benchmark)
 }
 
 android {
@@ -61,12 +61,12 @@ android {
 }
 
 dependencies {
-    androidTestImplementation(AndroidX.test.runner)
-    androidTestImplementation(AndroidX.test.ext.junit)
-    androidTestImplementation(Testing.junit4)
-    androidTestImplementation(AndroidX.benchmark.junit4)
-    androidTestImplementation(JakeWharton.timber)
-    androidTestImplementation(KotlinX.coroutines.test)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.junit4)
+    androidTestImplementation(libs.benchmark.junit4)
+    androidTestImplementation(libs.timber)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(project(":domain"))

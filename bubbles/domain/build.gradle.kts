@@ -19,13 +19,13 @@
 
 plugins {
     `kotlin-library`
-    kotlin("plugin.serialization")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 dependencies {
     implementation(libs.kotlin.stdlib)
-    implementation(KotlinX.coroutines.core)
-    implementation(KotlinX.serialization.json)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)
@@ -35,6 +35,6 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":error"))
 
-    testImplementation(Testing.MockK)
+    testImplementation(libs.mockk)
     testImplementation(project(":common-test"))
 }

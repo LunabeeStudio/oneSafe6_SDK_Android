@@ -19,9 +19,16 @@
 
 package studio.lunabee.di
 
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStoreFile
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import studio.lunabee.onesafe.AndroidSecurityOptionDataSource
 import studio.lunabee.onesafe.repository.datasource.SecurityOptionDataSource
@@ -39,4 +46,21 @@ interface SettingsModule {
     @Binds
     @Singleton
     fun bindSupportOSDataSource(supportOSDataStore: SupportOSDataStore): SupportOSDataSource
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object SettingsPreferenceDataStoreModule {
+
+    private const val SettingsName: String = "4077d1e6-cc0f-47d3-8fff-2d79aaac6ced"
+
+    @Provides
+    @Singleton
+    fun providePreferenceDataStore(
+        @ApplicationContext context: Context,
+    ): DataStore<Preferences> {
+        return PreferenceDataStoreFactory.create {
+            context.preferencesDataStoreFile(SettingsName)
+        }
+    }
 }

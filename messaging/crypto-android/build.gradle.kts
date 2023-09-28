@@ -34,7 +34,7 @@ dependencies {
     implementation(libs.lbcore)
     implementation(libs.lblogger.timber)
 
-    implementation(libs.double.ratchet)
+    implementation(libs.doubleratchet)
 
     implementation(project(":messaging-domain"))
     implementation(project(":crypto-android"))

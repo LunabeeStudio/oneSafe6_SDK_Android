@@ -22,16 +22,17 @@ plugins {
 }
 
 dependencies {
-    implementation(AndroidX.annotation)
+    implementation(libs.annotation)
     implementation(libs.kotlin.reflect)
+    api(libs.threeten.extra)
 
     implementation(project(":domain"))
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)
 
-    api(KotlinX.coroutines.test)
-    api(Testing.junit.jupiter)
-    api(Testing.junit4)
-    api(Kotlin.test)
+    api(libs.kotlinx.coroutines.test)
+    api(libs.junit.jupiter)
+    api(libs.junit4)
+    api(libs.kotlin.test)
 }

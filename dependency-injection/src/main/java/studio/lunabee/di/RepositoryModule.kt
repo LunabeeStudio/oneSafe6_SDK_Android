@@ -29,6 +29,7 @@ import dagger.hilt.android.scopes.ServiceScoped
 import dagger.hilt.components.SingletonComponent
 import studio.lunabee.bubbles.repository.repository.ContactKeyRepositoryImpl
 import studio.lunabee.bubbles.repository.repository.ContactRepositoryImpl
+import studio.lunabee.messaging.repository.repository.ConversationRepositoryImpl
 import studio.lunabee.messaging.repository.repository.EnqueuedMessageRepositoryImpl
 import studio.lunabee.messaging.repository.repository.HandShakeDataRepositoryImpl
 import studio.lunabee.messaging.repository.repository.MessageChannelRepositoryImpl
@@ -51,6 +52,7 @@ import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
 import studio.lunabee.onesafe.domain.repository.SupportOSRepository
 import studio.lunabee.onesafe.domain.repository.UrlMetadataRepository
+import studio.lunabee.onesafe.messaging.domain.repository.ConversationRepository
 import studio.lunabee.onesafe.messaging.domain.repository.EnqueuedMessageRepository
 import studio.lunabee.onesafe.messaging.domain.repository.HandShakeDataRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
@@ -102,6 +104,9 @@ interface RepositoryModule {
 
     @Binds
     fun bindsHandShakeDataRepository(handShakeDataRepositoryImpl: HandShakeDataRepositoryImpl): HandShakeDataRepository
+
+    @Binds
+    fun bindsConversationRepository(conversationRepositoryImpl: ConversationRepositoryImpl): ConversationRepository
 }
 
 @Module
@@ -115,6 +120,9 @@ interface RepositoryServiceModule {
 
     @Binds
     fun bindsHandShakeDataRepository(handShakeDataRepositoryImpl: HandShakeDataRepositoryImpl): HandShakeDataRepository
+
+    @Binds
+    fun bindsConversationRepository(conversationRepositoryImpl: ConversationRepositoryImpl): ConversationRepository
 }
 
 @Module
@@ -166,5 +174,5 @@ interface RepositoryGlobalModule {
     fun bindsMessageOrderRepository(bubblesMessageOrderRepositoryImpl: MessageOrderRepositoryImpl): MessageOrderRepository
 
     @Binds
-    fun bindsQueueMessageRepository(queueMessageRepositoryImpl: EnqueuedMessageRepositoryImpl): EnqueuedMessageRepository
+    fun bindsEnqueuedMessageRepository(enqueuedMessageRepositoryImpl: EnqueuedMessageRepositoryImpl): EnqueuedMessageRepository
 }

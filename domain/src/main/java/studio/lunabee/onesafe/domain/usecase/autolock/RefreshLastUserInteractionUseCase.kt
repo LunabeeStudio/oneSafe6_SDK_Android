@@ -20,14 +20,16 @@
 package studio.lunabee.onesafe.domain.usecase.autolock
 
 import studio.lunabee.onesafe.domain.repository.AutoLockRepository
+import java.time.Clock
 import java.time.Instant
 import javax.inject.Inject
 
 class RefreshLastUserInteractionUseCase @Inject constructor(
     private val autoLockRepository: AutoLockRepository,
+    private val clock: Clock,
 ) {
 
     operator fun invoke() {
-        autoLockRepository.lastUserInteractionInstant = Instant.now()
+        autoLockRepository.lastUserInteractionInstant = Instant.now(clock)
     }
 }

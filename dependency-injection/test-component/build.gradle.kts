@@ -19,7 +19,8 @@
 
 plugins {
     `android-library`
-    id("kotlinx-serialization")
+    kotlin("kapt")
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -37,29 +38,35 @@ android {
     }
 }
 
-dependencies {
-    implementation(Google.dagger.hilt.android.testing)
+kapt {
+    correctErrorTypes = true
+}
 
-    implementation(AndroidX.room.ktx)
-    implementation(AndroidX.test.coreKtx)
-    implementation(JakeWharton.timber)
-    implementation(Ktor.client.android)
-    implementation(Ktor.client.logging)
-    implementation(AndroidX.dataStore)
-    implementation(AndroidX.dataStore.preferences)
+dependencies {
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.android.testing)
+    kapt(libs.dagger.hilt.compiler)
+
+    implementation(libs.room.ktx)
+    implementation(libs.androidx.test.core.ktx)
+    implementation(libs.timber)
+    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.logging)
+    implementation(libs.datastore)
+    implementation(libs.datastore.preferences)
 
     implementation(platform(libs.compose.beta.bom))
-    implementation(AndroidX.test.runner)
-    implementation(AndroidX.compose.ui.test)
-    implementation(AndroidX.compose.ui.testJunit4)
-    implementation(Ktor.plugins.serialization.kotlinx.json)
-    implementation(Ktor.client.contentNegotiation)
+    implementation(libs.androidx.test.runner)
+    implementation(libs.compose.ui.test)
+    implementation(libs.compose.ui.test.junit4)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.client.content.negotiation)
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lblogger)
     implementation(libs.lbcore)
 
-    implementation(libs.double.ratchet)
+    implementation(libs.doubleratchet)
 
     implementation(project(":crypto-android"))
     implementation(project(":domain"))

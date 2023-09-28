@@ -20,38 +20,53 @@
 package studio.lunabee.onesafe.domain.usecase.autolock
 
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import javax.inject.Inject
 import kotlin.time.Duration
 
 class AutoLockInactivityUseCase @Inject constructor(
-    private val autoLockGetInactivityDelayUseCase: AutoLockGetInactivityDelayUseCase,
+    private val securityOptionRepository: SecurityOptionRepository,
     private val autoLockInactivityGetRemainingTimeUseCase: AutoLockInactivityGetRemainingTimeUseCase,
     private val lockAppUseCase: LockAppUseCase,
     private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
 ) {
 
-    suspend operator fun invoke() {
+    suspend fun app() {
+        doAutoLock(
+            securityOptionRepository.autoLockInactivityDelayFlow,
+            autoLockInactivityGetRemainingTimeUseCase::app,
+        )
+    }
+
+    suspend fun osk() {
+        doAutoLock(
+            securityOptionRepository.autoLockOSKInactivityDelayFlow,
+            autoLockInactivityGetRemainingTimeUseCase::osk,
+        )
+    }
+
+    private suspend fun doAutoLock(
+        inactivityDelayFlow: Flow<Duration>,
+        remainingDelay: () -> Duration,
+    ) {
         combine(
-            autoLockGetInactivityDelayUseCase.getAsFlow(),
+            inactivityDelayFlow,
             isCryptoDataReadyInMemoryUseCase(),
         ) { inactivityDelay, isCryptoDataReady ->
             inactivityDelay to isCryptoDataReady
         }.collectLatest { (inactivityDelay, isCryptoDataReady) ->
             if (isCryptoDataReady && inactivityDelay != Duration.INFINITE) {
-                waitAndCheckRemainingTime(inactivityDelay)
+                var currentDelay = inactivityDelay
+                while (currentDelay > Duration.ZERO) {
+                    delay(currentDelay)
+                    currentDelay = remainingDelay()
+                }
+                lockAppUseCase()
             }
         }
-    }
-
-    private suspend fun waitAndCheckRemainingTime(remainingTime: Duration) {
-        var currentDelay = remainingTime
-        while (currentDelay > Duration.ZERO) {
-            delay(currentDelay)
-            currentDelay = autoLockInactivityGetRemainingTimeUseCase()
-        }
-        lockAppUseCase()
     }
 }

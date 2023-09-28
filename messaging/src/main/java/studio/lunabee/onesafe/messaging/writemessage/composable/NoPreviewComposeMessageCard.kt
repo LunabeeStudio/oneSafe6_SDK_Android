@@ -44,7 +44,7 @@ import studio.lunabee.onesafe.commonui.localprovider.LocalIsKeyBoardVisible
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.ui.res.OSDimens
-import studio.lunabee.onesafe.ui.theme.OSColor
+import studio.lunabee.onesafe.ui.theme.LocalColorPalette
 
 @Composable
 fun NoPreviewComposeMessageCard(
@@ -56,12 +56,12 @@ fun NoPreviewComposeMessageCard(
     val isKeyboardVisible: Boolean = LocalIsKeyBoardVisible.current
     Box(
         modifier = Modifier
-            .background(OSColor.Neutral70)
+            .background(LocalColorPalette.current.Neutral70)
             .landscapeSystemBarsPadding(),
     ) {
         OSCard(
             colors = CardDefaults.cardColors(
-                containerColor = OSColor.Neutral80,
+                containerColor = LocalColorPalette.current.Neutral80,
             ),
             modifier = Modifier
                 .padding(
@@ -90,14 +90,14 @@ fun NoPreviewComposeMessageCard(
                     label = null,
                     placeholder = LbcTextSpec.StringResource(R.string.oneSafeK_composeMessageCard_label),
                     colors = TextFieldDefaults.colors(
-                        unfocusedContainerColor = OSColor.Neutral80,
-                        focusedContainerColor = OSColor.Neutral80,
-                        focusedIndicatorColor = OSColor.Neutral80,
-                        unfocusedIndicatorColor = OSColor.Neutral80,
-                        focusedTextColor = OSColor.Neutral10,
-                        unfocusedTextColor = OSColor.Neutral10,
-                        unfocusedPlaceholderColor = OSColor.Neutral60,
-                        focusedLabelColor = OSColor.Neutral60,
+                        unfocusedContainerColor = LocalColorPalette.current.Neutral80,
+                        focusedContainerColor = LocalColorPalette.current.Neutral80,
+                        focusedIndicatorColor = LocalColorPalette.current.Neutral80,
+                        unfocusedIndicatorColor = LocalColorPalette.current.Neutral80,
+                        focusedTextColor = LocalColorPalette.current.Neutral10,
+                        unfocusedTextColor = LocalColorPalette.current.Neutral10,
+                        unfocusedPlaceholderColor = LocalColorPalette.current.Neutral60,
+                        focusedLabelColor = LocalColorPalette.current.Neutral60,
                     ),
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions {

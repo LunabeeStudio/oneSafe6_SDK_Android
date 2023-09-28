@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.bubbles.ui.contact.detail
 
+import androidx.compose.runtime.Composable
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.dialog.DialogAction
@@ -38,4 +39,5 @@ class ConfirmDeleteContactDialogState(
         ),
         DialogAction.commonCancel(dismiss),
     )
+    override val customContent: (@Composable () -> Unit)? = null
 }

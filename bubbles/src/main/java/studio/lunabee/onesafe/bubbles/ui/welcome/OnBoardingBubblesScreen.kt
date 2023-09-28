@@ -48,7 +48,7 @@ import studio.lunabee.onesafe.atom.OSScreen
 import studio.lunabee.onesafe.atom.button.OSFilledButton
 import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.commonui.R
-import studio.lunabee.onesafe.commonui.action.TopAppBarOptionNavBack
+import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.commonui.extension.rtl
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
@@ -88,7 +88,7 @@ fun OnBoardingBubblesScreen(
         ) {
             OSTopAppBar(
                 options = listOf(
-                    TopAppBarOptionNavBack(
+                    topAppBarOptionNavBack(
                         onBackClick,
                         true,
                     ),

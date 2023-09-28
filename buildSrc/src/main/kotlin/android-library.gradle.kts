@@ -17,11 +17,11 @@
  * Last modified 4/7/23, 12:24 AM
  */
 
+import org.gradle.accessors.dm.LibrariesForLibs
+
 plugins {
     id("com.android.library")
     id("kotlin-android")
-    kotlin("kapt")
-    id("dagger.hilt.android.plugin")
 }
 
 version = AndroidConfig.ONESAFE_SDK_VERSION
@@ -44,23 +44,20 @@ android {
     kotlinOptions.freeCompilerArgs += "-Xcontext-receivers"
 }
 
-kapt {
-    correctErrorTypes = true
-}
+// FIXME workaround https://github.com/gradle/gradle/issues/15383#issuecomment-779893192
+val libs: LibrariesForLibs = the<LibrariesForLibs>()
 
 dependencies {
-    implementation(Google.dagger.hilt.android)
-    kapt(Google.dagger.hilt.compiler)
-    kaptAndroidTest(Google.dagger.hilt.compiler)
+    implementation(libs.javax.inject)
 
-    testImplementation(Testing.junit.jupiter)
-    testImplementation(Kotlin.test)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.kotlin.test)
 
-    androidTestImplementation(Kotlin.test)
-    androidTestImplementation(Testing.junit4)
-    androidTestImplementation(AndroidX.test.coreKtx)
-    androidTestImplementation(AndroidX.test.runner)
-    androidTestImplementation(Google.dagger.hilt.android.testing)
+    androidTestImplementation(libs.kotlin.test)
+    androidTestImplementation(libs.junit4)
+    androidTestImplementation(libs.androidx.test.core.ktx)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.hilt.android.testing)
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {

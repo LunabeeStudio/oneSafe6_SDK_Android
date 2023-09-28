@@ -71,7 +71,7 @@ object ContactDetailScreenFactory {
                         ).markdown(),
                     )
                 }
-                ConversationState.Running -> {}
+                ConversationState.Running, ConversationState.Error -> {}
             }
         }
     }
@@ -159,7 +159,7 @@ object ContactDetailScreenFactory {
                     ),
                 )
                 when (conversationState) {
-                    ConversationState.Running, ConversationState.FullySetup -> {}
+                    ConversationState.Running, ConversationState.FullySetup, ConversationState.Error -> {}
                     ConversationState.WaitingForReply -> {
                         OSClickableRow(
                             text = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_resendInvitation),

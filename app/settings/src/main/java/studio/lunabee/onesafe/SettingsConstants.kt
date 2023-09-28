@@ -20,7 +20,6 @@
 package studio.lunabee.onesafe
 
 internal object SettingsConstants {
-    const val SettingsName: String = "4077d1e6-cc0f-47d3-8fff-2d79aaac6ced"
     const val AutoLockInactivityDelay: String = "2174ec00-c7e9-11ed-afa1-0242ac120002"
     const val AutoLockAppChangeDelay: String = "2a903ac4-c7e9-11ed-afa1-0242ac120002"
     const val MaterialYouSetting: String = "0a2cb720-38b2-45a5-9696-9916825ea98a"
@@ -33,4 +32,6 @@ internal object SettingsConstants {
     const val LastPasswordVerification: String = "17b8f6fe-ecb4-408e-8315-257f6db69210"
     const val BubblesPreview: String = "1d9ac366-e506-49c6-bb2a-945c50016079"
     const val BubblesResendMessageDelay: String = "bcbcc192-8d14-4351-9cf4-c44a3f59568a"
+    const val AutoLockOSKInactivityDelay: String = "18c6ef99-8d21-4977-bebc-97b0e6f88d1f"
+    const val AutoLockOSKHiddenDelay: String = "98ce4448-efb6-477d-92dc-1b1741bde987"
 }

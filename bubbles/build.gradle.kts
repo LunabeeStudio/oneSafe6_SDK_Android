@@ -19,8 +19,9 @@
 
 plugins {
     `android-library`
-    kotlin("plugin.serialization")
-    id("kotlin-android")
+    alias(libs.plugins.kotlin.serialization)
+    kotlin("kapt")
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -45,36 +46,44 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "_"
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 }
 
+kapt {
+    correctErrorTypes = true
+}
+
 dependencies {
+    implementation(libs.hilt.android)
+    kapt(libs.dagger.hilt.compiler)
+    kaptAndroidTest(libs.dagger.hilt.compiler)
+
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbextensions)
     implementation(libs.lbcore)
     implementation(libs.lbccore)
 
-    implementation(Google.android.material)
-    implementation(AndroidX.Core.ktx)
+    implementation(libs.android.material)
+    implementation(libs.androidx.core.ktx)
     implementation(platform(libs.compose.beta.bom))
-    implementation(AndroidX.compose.ui)
-    debugImplementation(AndroidX.compose.ui.tooling)
-    implementation(AndroidX.compose.ui.toolingPreview)
-    implementation(AndroidX.compose.material3)
-    implementation(AndroidX.hilt.navigationCompose)
-    implementation(AndroidX.lifecycle.runtime.compose)
+    implementation(libs.compose.ui)
+    debugImplementation(libs.compose.ui.tooling)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.compose.material3)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.lifecycle.runtime.compose)
 
-    implementation(KotlinX.coroutines.android)
-    implementation(KotlinX.serialization.json)
-    coreLibraryDesugaring(Android.tools.desugarJdkLibs)
-    implementation(Google.Accompanist.permissions)
-    implementation(JakeWharton.timber)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.serialization.json)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.timber)
 
-    implementation(AndroidX.palette.ktx)
+    implementation(libs.palette.ktx)
 
     implementation(libs.journeyappszxing)
-    implementation(libs.double.ratchet)
+    implementation(libs.doubleratchet)
 
     implementation(project(":crypto-android"))
     implementation(project(":messaging-domain"))

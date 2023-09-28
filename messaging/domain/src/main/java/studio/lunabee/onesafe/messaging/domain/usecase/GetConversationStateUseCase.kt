@@ -19,37 +19,42 @@
 
 package studio.lunabee.onesafe.messaging.domain.usecase
 
-import studio.lunabee.onesafe.bubbles.domain.BubblesConstant
-import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
+import com.lunabee.lblogger.LBLogger
+import com.lunabee.lblogger.e
+import studio.lunabee.doubleratchet.model.Conversation
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.messaging.domain.model.HandShakeData
-import studio.lunabee.onesafe.messaging.domain.model.Message
+import studio.lunabee.onesafe.messaging.domain.repository.ConversationRepository
 import studio.lunabee.onesafe.messaging.domain.repository.HandShakeDataRepository
-import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
 import java.util.UUID
 import javax.inject.Inject
 
+private val log = LBLogger.get<GetConversationStateUseCase>()
+
 class GetConversationStateUseCase @Inject constructor(
     private val handShakeDataRepository: HandShakeDataRepository,
-    private val messageRepository: MessageRepository,
-    private val contactLocalDecryptUseCase: ContactLocalDecryptUseCase,
+    private val conversationRepository: ConversationRepository,
 ) {
-
     suspend operator fun invoke(contactId: UUID): ConversationState {
         val handShakeData: HandShakeData? = handShakeDataRepository.getById(contactId)
-        val messages = messageRepository.getAllByContact(contactId)
-        val isLastMessageSavedNotHandShake = messages.firstOrNull()?.let {
-            isLastMessageSavedNotHandShake(it, contactId)
-        } ?: false
+        val conversation: Conversation? = conversationRepository.getConversation(contactId)
+        val nextMessageNumber = conversation?.nextMessageNumber
+        val hasSendingKey = conversation?.sendingChainKey != null
         return when {
-            isLastMessageSavedNotHandShake -> ConversationState.Running
-            handShakeData == null -> ConversationState.FullySetup
-            messages.isEmpty() -> ConversationState.WaitingForReply
-            else -> ConversationState.WaitingForFirstMessage
+            // Conversation does not exist
+            conversation == null -> ConversationState.Error
+            // Conversation does not have a sending key
+            !hasSendingKey -> ConversationState.WaitingForReply
+            // Conversation has a sending key but still have handshake data
+            hasSendingKey && handShakeData != null -> ConversationState.WaitingForFirstMessage
+            // Conversation is setup but you never sent a message
+            nextMessageNumber == 0 -> ConversationState.FullySetup
+            // Conversation has sent at least one message
+            nextMessageNumber!! > 0 -> ConversationState.Running
+            else -> {
+                log.e("Unexpected conversation error state")
+                ConversationState.Error
+            }
         }
-    }
-
-    private suspend fun isLastMessageSavedNotHandShake(message: Message, contactId: UUID): Boolean {
-        return contactLocalDecryptUseCase(message.encContent, contactId, String::class).data != BubblesConstant.FirstMessageData
     }
 }
