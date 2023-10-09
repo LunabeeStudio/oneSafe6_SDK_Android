@@ -19,27 +19,32 @@
 
 package studio.lunabee.di
 
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.android.components.ServiceComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import studio.lunabee.doubleratchet.DoubleRatchetEngine
 import studio.lunabee.doubleratchet.crypto.DoubleRatchetKeyRepository
 import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
+import studio.lunabee.onesafe.domain.common.FileIdProvider
 import studio.lunabee.onesafe.domain.common.IconIdProvider
 import studio.lunabee.onesafe.domain.common.ItemIdProvider
 import studio.lunabee.onesafe.domain.common.MessageIdProvider
 import studio.lunabee.onesafe.domain.common.UuidProvider
 import studio.lunabee.onesafe.domain.qualifier.DefaultDispatcher
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
+import studio.lunabee.onesafe.domain.qualifier.InternalDir
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.usecase.SetIconUseCase
 import studio.lunabee.onesafe.domain.utils.SafeItemBuilder
 import studio.lunabee.onesafe.domain.utils.SafeItemBuilderImpl
+import java.io.File
 import java.time.Clock
 
 @Module
@@ -86,6 +91,9 @@ object GlobalDomainModule {
     fun provideMessageIdProvider(): MessageIdProvider = UuidProvider()
 
     @Provides
+    fun provideFileIdProvider(): FileIdProvider = UuidProvider()
+
+    @Provides
     @FileDispatcher
     fun providesFileDispatcher(): CoroutineDispatcher = Dispatchers.IO
 
@@ -95,4 +103,10 @@ object GlobalDomainModule {
 
     @Provides
     fun providesClock(): Clock = Clock.systemDefaultZone()
+
+    @Provides
+    @InternalDir(InternalDir.Type.Backups)
+    fun providesInternalDirBackups(
+        @ApplicationContext context: Context,
+    ): File = File(context.filesDir, "backups")
 }

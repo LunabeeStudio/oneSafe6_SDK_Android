@@ -26,6 +26,7 @@ import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import java.io.File
+import java.io.InputStream
 import java.io.OutputStream
 import java.util.UUID
 import javax.crypto.Cipher
@@ -34,9 +35,17 @@ import kotlin.reflect.KClass
 interface MainCryptoRepository {
     suspend fun <Data : Any> decrypt(key: SafeItemKey, decryptEntry: DecryptEntry<Data>): Data
     suspend fun decrypt(key: SafeItemKey, decryptEntries: List<DecryptEntry<out Any>?>): List<Any?>
+
+    suspend fun <Data : Any?, Output : Any> decryptWithData(
+        key: SafeItemKey,
+        decryptEntries: List<Pair<Data, DecryptEntry<out Output>?>>,
+    ): List<Pair<Data, Output?>>
+
     suspend fun <Data : Any> decrypt(file: File, key: SafeItemKey, clazz: KClass<Data>, mapper: (ByteArray.() -> Data)? = null): Data
     suspend fun <Data : Any> encrypt(key: SafeItemKey, encryptEntry: EncryptEntry<Data>): ByteArray
     suspend fun <Data : Any> encrypt(key: SafeItemKey, encryptEntries: List<EncryptEntry<Data>?>): List<ByteArray?>
+    suspend fun getDecryptStream(cipherFile: File, key: SafeItemKey): InputStream
+    suspend fun getEncryptStream(cipherFile: File, key: SafeItemKey): OutputStream
     suspend fun encrypt(outputStream: OutputStream, key: ByteArray): OutputStream
     suspend fun encryptIndexWord(indexWordEntry: List<PlainIndexWordEntry>): List<IndexWordEntry>
     suspend fun decryptIndexWord(encIndexWordEntry: List<IndexWordEntry>): List<PlainIndexWordEntry>

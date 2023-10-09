@@ -21,6 +21,7 @@ package studio.lunabee.onesafe.cryptography
 
 import androidx.core.util.AtomicFile
 import java.io.File
+import java.io.InputStream
 import java.io.OutputStream
 
 interface CryptoEngine {
@@ -28,5 +29,6 @@ interface CryptoEngine {
     suspend fun decrypt(cipherData: ByteArray, key: ByteArray, associatedData: ByteArray?): ByteArray
     suspend fun decrypt(cipherFile: AtomicFile, key: ByteArray, associatedData: ByteArray?): ByteArray
     fun getEncryptStream(file: File, key: ByteArray, associatedData: ByteArray?): OutputStream
+    fun getDecryptStream(cipherFile: AtomicFile, key: ByteArray, associatedData: ByteArray?): InputStream
     fun getCipherOutputStream(outputStream: OutputStream, key: ByteArray, associatedData: ByteArray?): OutputStream
 }

@@ -34,15 +34,10 @@ import studio.lunabee.onesafe.bubbles.crypto.AndroidBubblesCryptoRepository
 import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.onesafe.cryptography.AndroidEditCryptoRepository
 import studio.lunabee.onesafe.cryptography.AndroidMainCryptoRepository
-import studio.lunabee.onesafe.cryptography.ClearDatastoreEngine
-import studio.lunabee.onesafe.cryptography.DatastoreEngine
-import studio.lunabee.onesafe.cryptography.EncryptedDataStoreEngine
-import studio.lunabee.onesafe.cryptography.PasswordHashEngine
 import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
+import studio.lunabee.onesafe.cryptography.PasswordHashEngine
 import studio.lunabee.onesafe.cryptography.ProtoData
 import studio.lunabee.onesafe.cryptography.qualifier.CryptoDispatcher
-import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
-import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
 import studio.lunabee.onesafe.cryptography.utils.SecuredDataSerializer
 import studio.lunabee.onesafe.domain.repository.EditCryptoRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
@@ -97,21 +92,6 @@ object CryptoDatastoreTestModule {
         fileName = EncProtoDatastoreFile,
         serializer = SecuredDataSerializer,
     )
-}
-
-@Module
-@TestInstallIn(
-    components = [SingletonComponent::class],
-    replaces = [DatastoreEngineModule::class, DatastoreEngineServiceModule::class],
-)
-abstract class DatastoreEngineTestModule {
-    @Binds
-    @DatastoreEngineProvider(DataStoreType.Plain)
-    internal abstract fun bindClearDatastoreEngine(datastore: ClearDatastoreEngine): DatastoreEngine
-
-    @Binds
-    @DatastoreEngineProvider(DataStoreType.Encrypted)
-    internal abstract fun bindEncryptedDatastoreEngine(datastore: EncryptedDataStoreEngine): DatastoreEngine
 }
 
 @Module

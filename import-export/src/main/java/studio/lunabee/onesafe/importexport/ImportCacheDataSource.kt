@@ -54,6 +54,7 @@ interface ImportCacheDataSource {
     val newItemIdsByOldOnes: MutableMap<UUID, UUID>
     val newIconIdsByOldOnes: MutableMap<UUID, UUID>
     val newFieldIdsByOldOnes: MutableMap<UUID, UUID>
+    val newFileIdsByOldOnes: MutableMap<UUID, UUID>
     val reEncryptedSafeItemKeys: MutableMap<UUID, SafeItemKey?>
 
     // Following variables contains the final object to save in database.
@@ -62,6 +63,8 @@ interface ImportCacheDataSource {
     var migratedSafeItemFieldsToImport: List<SafeItemField>
     var migratedSearchIndexToImport: MutableList<IndexWordEntry>
     var migratedIconsToImport: List<File>
+    var migratedFilesToImport: List<File>
+    var newEncryptedValue: MutableMap<UUID, ByteArray>
 
     /**
      * Clean cache if an error occurred during authentication phase.
@@ -79,10 +82,13 @@ interface ImportCacheDataSource {
         newItemIdsByOldOnes.clear()
         newIconIdsByOldOnes.clear()
         newFieldIdsByOldOnes.clear()
+        newFieldIdsByOldOnes.clear()
         reEncryptedSafeItemKeys.clear()
         migratedSafeItemsToImport.clear()
         migratedSafeItemFieldsToImport = emptyList()
         migratedSearchIndexToImport.clear()
         migratedIconsToImport = emptyList()
+        migratedFilesToImport = emptyList()
+        newEncryptedValue.clear()
     }
 }

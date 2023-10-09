@@ -49,7 +49,7 @@ class GetIconUseCase @Inject constructor(
      * @param iconId The encrypted icon ref to decrypt
      * @param itemId The ID of the linked item
      *
-     * @return Clear data wrapped in a [LBResult]
+     * @return Plain data wrapped in a [LBResult]
      */
     suspend operator fun invoke(iconId: UUID, itemId: UUID): LBResult<ByteArray> {
         return OSError.runCatching(log) {

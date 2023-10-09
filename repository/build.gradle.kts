@@ -27,5 +27,6 @@ dependencies {
     implementation(libs.paging.common.ktx)
 
     implementation(project(":domain"))
+    implementation(project(":import-export-domain"))
     implementation(project(":error"))
 }

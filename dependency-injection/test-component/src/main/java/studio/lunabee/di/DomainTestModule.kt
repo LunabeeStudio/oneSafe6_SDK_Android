@@ -19,8 +19,10 @@
 
 package studio.lunabee.di
 
+import android.content.Context
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.CoroutineDispatcher
@@ -28,16 +30,19 @@ import kotlinx.coroutines.Dispatchers
 import studio.lunabee.doubleratchet.DoubleRatchetEngine
 import studio.lunabee.doubleratchet.crypto.DoubleRatchetKeyRepository
 import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
+import studio.lunabee.onesafe.domain.common.FileIdProvider
 import studio.lunabee.onesafe.domain.common.IconIdProvider
 import studio.lunabee.onesafe.domain.common.ItemIdProvider
 import studio.lunabee.onesafe.domain.common.MessageIdProvider
 import studio.lunabee.onesafe.domain.qualifier.DefaultDispatcher
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
+import studio.lunabee.onesafe.domain.qualifier.InternalDir
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.usecase.SetIconUseCase
 import studio.lunabee.onesafe.domain.utils.SafeItemBuilder
 import studio.lunabee.onesafe.domain.utils.SafeItemBuilderImpl
 import studio.lunabee.onesafe.test.testClock
+import java.io.File
 import java.time.Clock
 import javax.inject.Singleton
 
@@ -54,6 +59,10 @@ object DomainTestModule {
     @Provides
     @Singleton
     fun provideIconIdProvider(): IconIdProvider = IncrementalIdProvider()
+
+    @Provides
+    @Singleton
+    fun provideFileIdProvider(): FileIdProvider = IncrementalIdProvider()
 
     @Provides
     @Singleton
@@ -82,4 +91,10 @@ object DomainTestModule {
 
     @Provides
     fun providesClock(): Clock = testClock
+
+    @Provides
+    @InternalDir(InternalDir.Type.Backups)
+    fun providesInternalDirBackups(
+        @ApplicationContext context: Context,
+    ): File = File(context.cacheDir, "test_backups")
 }

@@ -39,4 +39,6 @@ internal object SettingsDefaults {
     val VerifyPasswordIntervalDefault: VerifyPasswordInterval = VerifyPasswordInterval.NEVER
     const val BubblesPreviewDefault: Boolean = true
     val BubblesResendMessageDelayMsDefault: Long = 1.days.inWholeMilliseconds
+    const val autoBackupEnabledDefault: Boolean = false
+    val autoBackupFrequencyMsDefault: Long = 1.days.inWholeMilliseconds
 }

@@ -27,7 +27,7 @@ pluginManagement {
 
 plugins {
     // See https://jmfayard.github.io/refreshVersions
-    id("de.fayard.refreshVersions") version "0.60.2"
+    id("de.fayard.refreshVersions") version "0.60.3"
 }
 
 refreshVersions {
@@ -60,7 +60,10 @@ include("remote")
 include("benchmark-android")
 include("macrobenchmark-android")
 include("import-export")
-include("import-export:proto")
+include("import-export-proto")
+project(":import-export-proto").projectDir = File("import-export/proto")
+include(":import-export-domain")
+project(":import-export-domain").projectDir = File("import-export/domain")
 include("dependency-injection")
 include("dependency-injection:test-component")
 include("app:message-companion")

@@ -32,18 +32,21 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.withContext
+import studio.lunabee.onesafe.domain.Constant
+import studio.lunabee.onesafe.domain.common.FileIdProvider
 import studio.lunabee.onesafe.domain.common.IconIdProvider
 import studio.lunabee.onesafe.domain.common.ItemIdProvider
 import studio.lunabee.onesafe.domain.common.SortedAncestors
-import studio.lunabee.onesafe.domain.engine.ImportEngine
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.domain.model.importexport.ImportMetadata
 import studio.lunabee.onesafe.domain.model.importexport.ImportMode
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
+import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.model.search.ItemFieldDataToIndex
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
+import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.repository.IconRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.PersistenceManager
@@ -54,6 +57,8 @@ import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromIt
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.error.OSImportExportError
+import studio.lunabee.onesafe.importexport.engine.ImportEngine
+import studio.lunabee.onesafe.importexport.repository.ImportExportCryptoRepository
 import studio.lunabee.onesafe.proto.OSExportProto
 import studio.lunabee.onesafe.proto.OSExportProto.ArchiveSafeItem
 import studio.lunabee.onesafe.proto.OSExportProto.ArchiveSafeItemField
@@ -74,8 +79,10 @@ class ImportEngineImpl @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
     private val safeItemFieldRepository: SafeItemFieldRepository,
     private val iconRepository: IconRepository,
+    private val fileRepository: FileRepository,
     private val idProvider: ItemIdProvider,
     private val iconIdProvider: IconIdProvider,
+    private val fileIdProvider: FileIdProvider,
     private val importCacheDataSource: ImportCacheDataSource,
     private val persistenceManager: PersistenceManager,
     private val createIndexWordEntriesFromItemUseCase: CreateIndexWordEntriesFromItemUseCase,
@@ -168,6 +175,7 @@ class ImportEngineImpl @Inject constructor(
         return flow {
             try {
                 generateNewIdsForSafeItemsAndFields()
+                generateNewIdsForFiles()
                 mapAndReEncryptSafeItemKeyFromArchive()
                 finishIdsMigration(archiveExtractedDirectory = archiveExtractedDirectory)
                 emit(LBFlowResult.Success(Unit))
@@ -233,6 +241,14 @@ class ImportEngineImpl @Inject constructor(
                     }
                 }
 
+                // We iterate over all the file urls to rename them using the new file ids.
+                importCacheDataSource.migratedFilesToImport.map { file ->
+                    val oldFileId = file.nameWithoutExtension.let(UUID::fromString)
+                    importCacheDataSource.newFileIdsByOldOnes[oldFileId]?.let { newFileId ->
+                        fileRepository.copyAndDeleteFile(file = file, fileId = newFileId)
+                    }
+                }
+
                 val safeItems =
                     SortedAncestors(safeItemsNotSorted = importCacheDataSource.migratedSafeItemsToImport).sortByAncestors()
 
@@ -268,6 +284,37 @@ class ImportEngineImpl @Inject constructor(
             var newItemFieldId: UUID = idProvider()
             while (existingItemFieldIds.contains(newItemFieldId)) newItemFieldId = idProvider()
             oldItemFieldId to newItemFieldId
+        }
+    }
+
+    private suspend fun generateNewIdsForFiles() {
+        val itemFieldList = importCacheDataSource.archiveContent?.fieldsList.orEmpty()
+        itemFieldList.forEach { archiveSafeItemField ->
+            val encKey = importCacheDataSource.archiveContent?.keysList?.firstOrNull { it.id == archiveSafeItemField.itemId }
+                ?: return@forEach
+            val decryptedKey: ByteArray = importCryptoRepository.decryptRawItemKey(
+                cipherData = encKey.value.toByteArray(),
+                key = importCacheDataSource.archiveMasterKey!!,
+            )
+            val itemFieldKind = SafeItemFieldKind.fromString(
+                importCryptoRepository.decrypt(
+                    cipherData = archiveSafeItemField.encKind.toByteArray(),
+                    key = decryptedKey,
+                ).decodeToString(),
+            )
+            if (SafeItemFieldKind.isKindFile(itemFieldKind)) {
+                val decryptedValue = importCryptoRepository.decrypt(
+                    cipherData = archiveSafeItemField.encValue.toByteArray(),
+                    key = decryptedKey,
+                ).decodeToString()
+                val fileId = decryptedValue.substringBefore(Constant.FileTypeExtSeparator)
+                val newId = fileIdProvider()
+                val fieldId = UUID.fromString(archiveSafeItemField.id)
+                val newValue = decryptedValue.replace(fileId, newId.toString())
+                val newEncValue = importCryptoRepository.encrypt(newValue.encodeToByteArray(), decryptedKey)
+                importCacheDataSource.newEncryptedValue[fieldId] = newEncValue
+                importCacheDataSource.newFileIdsByOldOnes[UUID.fromString(fileId)] = newId
+            }
         }
     }
 
@@ -319,8 +366,12 @@ class ImportEngineImpl @Inject constructor(
         val itemIndexEntries = createIndexWordEntriesFromItemUseCase(name = plainName, id = newItemId)
         importCacheDataSource.migratedSearchIndexToImport += itemIndexEntries
 
+        // Ignore media and files fields for search index
+        val fieldsToIgnore = importCacheDataSource.newEncryptedValue.keys
         // Search index for fields
-        val archiveSafeItemFields = importCacheDataSource.archiveContent!!.fieldsList.filter { it.itemId == safeItemId }
+        val archiveSafeItemFields = importCacheDataSource.archiveContent!!.fieldsList.filter {
+            it.itemId == safeItemId && !fieldsToIgnore.contains(UUID.fromString(it.id))
+        }
         val itemFieldsDataToIndex = archiveSafeItemFields
             .mapNotNull { archiveSafeItemField ->
                 val oldFieldIdKey = archiveSafeItemField.id.let(UUID::fromString)
@@ -356,6 +407,9 @@ class ImportEngineImpl @Inject constructor(
         importCacheDataSource.migratedIconsToImport = File(archiveExtractedDirectory, ArchiveConstants.IconFolder).listFiles()
             ?.toList()
             .orEmpty()
+        importCacheDataSource.migratedFilesToImport = File(archiveExtractedDirectory, ArchiveConstants.FileFolder).listFiles()
+            ?.toList()
+            .orEmpty()
         // First, we gather all the already used ids.
         val existingIconsIds: List<String> = iconRepository.getIcons().map { it.nameWithoutExtension }
         val migratedIconIdsToImport = importCacheDataSource.migratedIconsToImport.map { it.nameWithoutExtension }
@@ -384,8 +438,13 @@ class ImportEngineImpl @Inject constructor(
         importCacheDataSource.migratedSafeItemFieldsToImport = safeItemFieldsToImport.mapNotNull { field ->
             val oldItemFieldId: UUID = field.id
             val newItemFieldId = newSafeItemFieldIdsByOldOnes.getValue(key = oldItemFieldId)
+            val newItemFieldEncryptedValue = importCacheDataSource.newEncryptedValue[oldItemFieldId] ?: field.encValue
             newSafeItemIdsByOldOnes[field.itemId]?.let { itemId ->
-                field.copy(id = newItemFieldId, itemId = itemId)
+                field.copy(
+                    id = newItemFieldId,
+                    itemId = itemId,
+                    encValue = newItemFieldEncryptedValue,
+                )
             }.apply {
                 if (this == null) {
                     LOG.e("Field as no associated SafeItem")

@@ -34,4 +34,6 @@ internal object SettingsConstants {
     const val BubblesResendMessageDelay: String = "bcbcc192-8d14-4351-9cf4-c44a3f59568a"
     const val AutoLockOSKInactivityDelay: String = "18c6ef99-8d21-4977-bebc-97b0e6f88d1f"
     const val AutoLockOSKHiddenDelay: String = "98ce4448-efb6-477d-92dc-1b1741bde987"
+    const val autoBackupEnabledKeyVal: String = "11349132-0642-433b-8324-c57acb9a1296"
+    const val autoBackupFrequencyKeyVal: String = "35917f5a-7ed8-45e0-8e13-908cf0a30c48"
 }

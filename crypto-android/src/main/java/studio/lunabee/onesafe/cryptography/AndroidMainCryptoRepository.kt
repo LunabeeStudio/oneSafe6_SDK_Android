@@ -44,6 +44,7 @@ import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.randomize
 import studio.lunabee.onesafe.use
 import java.io.File
+import java.io.InputStream
 import java.io.OutputStream
 import java.security.GeneralSecurityException
 import java.util.UUID
@@ -323,6 +324,26 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
+    override suspend fun <Data : Any?, Out : Any> decryptWithData(
+        key: SafeItemKey,
+        decryptEntries: List<Pair<Data, DecryptEntry<out Out>?>>,
+    ): List<Pair<Data, Out?>> {
+        return try {
+            crypto.decrypt(key.encValue, masterKey!!, null).use { rawKey ->
+                decryptEntries.map { (data, decryptEntry) ->
+                    if (decryptEntry == null) {
+                        data to null
+                    } else {
+                        val rawData = crypto.decrypt(decryptEntry.data, rawKey, null)
+                        data to mapper(decryptEntry.mapBlock, rawData, decryptEntry.clazz)
+                    }
+                }
+            }
+        } catch (e: GeneralSecurityException) {
+            throw OSCryptoError(OSCryptoError.Code.DECRYPTION_FAILED_WRONG_KEY, cause = e)
+        }
+    }
+
     override suspend fun <Data : Any> decrypt(file: File, key: SafeItemKey, clazz: KClass<Data>, mapper: (ByteArray.() -> Data)?): Data {
         val aFile = AtomicFile(file)
         return doDecrypt(
@@ -333,6 +354,18 @@ class AndroidMainCryptoRepository @Inject constructor(
             clazz = clazz,
             mapBlock = mapper,
         )
+    }
+
+    override suspend fun getDecryptStream(cipherFile: File, key: SafeItemKey): InputStream {
+        return crypto.decrypt(key.encValue, masterKey!!, null).use { rawKey ->
+            crypto.getDecryptStream(AtomicFile(cipherFile), rawKey, null)
+        }
+    }
+
+    override suspend fun getEncryptStream(cipherFile: File, key: SafeItemKey): OutputStream {
+        return crypto.decrypt(key.encValue, masterKey!!, null).use { rawKey ->
+            crypto.getEncryptStream(cipherFile, rawKey, null)
+        }
     }
 
     private suspend fun <Data : Any> doDecrypt(
@@ -441,7 +474,7 @@ class AndroidMainCryptoRepository @Inject constructor(
 
     companion object {
         private const val DATASTORE_SEARCH_INDEX_KEY = "f0ab7671-5314-41dc-9f57-3c689180ab33"
-        private const val DATASTORE_MASTER_SALT = "b282a019-4337-45a3-8bf6-da657ad39a6c"
+        const val DATASTORE_MASTER_SALT: String = "b282a019-4337-45a3-8bf6-da657ad39a6c"
         private const val DATASTORE_MASTER_KEY_TEST = "f9e3fa44-2f54-4246-8ba6-2784a18b63ea"
         private const val DATASTORE_BUBBLES_CONTACT_KEY: String = "2b96478c-cbd4-4150-b591-6fe5a4dffc5f"
 

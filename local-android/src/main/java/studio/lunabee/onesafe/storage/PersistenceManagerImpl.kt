@@ -23,6 +23,7 @@ import androidx.room.withTransaction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import studio.lunabee.onesafe.domain.repository.PersistenceManager
+import studio.lunabee.onesafe.repository.datasource.FileLocalDatasource
 import studio.lunabee.onesafe.repository.datasource.IconLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.RecentSearchLocalDatasource
 import javax.inject.Inject
@@ -30,12 +31,14 @@ import javax.inject.Inject
 class PersistenceManagerImpl @Inject constructor(
     private val mainDatabase: MainDatabase,
     private val iconLocalDataSource: IconLocalDataSource,
+    private val fileLocalDatasource: FileLocalDatasource,
     private val recentSearchDatasource: RecentSearchLocalDatasource,
 ) : PersistenceManager {
     override suspend fun clearAll() {
         withContext(Dispatchers.IO) {
             mainDatabase.clearAllTables()
             iconLocalDataSource.removeAllIcons()
+            fileLocalDatasource.removeAllFiles()
             recentSearchDatasource.clear()
         }
     }

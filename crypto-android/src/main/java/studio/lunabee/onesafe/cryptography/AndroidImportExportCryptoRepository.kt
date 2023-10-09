@@ -19,9 +19,15 @@
 
 package studio.lunabee.onesafe.cryptography
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
+import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.error.OSCryptoError
-import studio.lunabee.onesafe.importexport.ImportExportCryptoRepository
+import studio.lunabee.onesafe.importexport.repository.ImportExportCryptoRepository
 import studio.lunabee.onesafe.use
 import java.security.GeneralSecurityException
 import java.util.UUID
@@ -31,6 +37,7 @@ class AndroidImportExportCryptoRepository @Inject constructor(
     private val crypto: CryptoEngine,
     private val hashEngine: PasswordHashEngine,
     private val saltProvider: SaltProvider,
+    @DatastoreEngineProvider(DataStoreType.Plain) private val dataStoreEngine: DatastoreEngine,
 ) : ImportExportCryptoRepository {
 
     override suspend fun deriveKey(password: CharArray, salt: ByteArray): ByteArray {
@@ -64,6 +71,14 @@ class AndroidImportExportCryptoRepository @Inject constructor(
         }
     }
 
+    override suspend fun encrypt(plainData: ByteArray, key: ByteArray): ByteArray {
+        return try {
+            crypto.encrypt(plainData = plainData, key, null)
+        } catch (e: GeneralSecurityException) {
+            throw OSCryptoError(OSCryptoError.Code.ENCRYPTION_FAILED_BAD_KEY, cause = e)
+        }
+    }
+
     override suspend fun createSafeItemKeyFromRaw(
         itemId: UUID,
         rawItemKey: ByteArray,
@@ -71,5 +86,12 @@ class AndroidImportExportCryptoRepository @Inject constructor(
     ): SafeItemKey {
         val itemKey = crypto.encrypt(rawItemKey, cryptoKey, null)
         return SafeItemKey(itemId, itemKey)
+    }
+
+    @Suppress("ObsoleteSdkInt")
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun getMasterSalt(): ByteArray {
+        return runBlocking { dataStoreEngine.retrieveValue(AndroidMainCryptoRepository.DATASTORE_MASTER_SALT).first() }
+            ?: throw OSCryptoError(OSCryptoError.Code.MASTER_SALT_NOT_GENERATED)
     }
 }

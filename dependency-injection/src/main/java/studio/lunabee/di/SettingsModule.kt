@@ -30,8 +30,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import studio.lunabee.onesafe.AndroidSecurityOptionDataSource
-import studio.lunabee.onesafe.repository.datasource.SecurityOptionDataSource
+import studio.lunabee.onesafe.DatastoreSettingsDataSource
+import studio.lunabee.onesafe.repository.datasource.SettingsDataSource
 import studio.lunabee.onesafe.repository.datasource.SupportOSDataSource
 import studio.lunabee.onesafe.support.SupportOSDataStore
 import javax.inject.Singleton
@@ -41,7 +41,7 @@ import javax.inject.Singleton
 interface SettingsModule {
     @Binds
     @Singleton
-    fun bindsSecurityOptionDataSource(androidSecurityOptionDataSource: AndroidSecurityOptionDataSource): SecurityOptionDataSource
+    fun bindsSecurityOptionDataSource(androidSecurityOptionDataSource: DatastoreSettingsDataSource): SettingsDataSource
 
     @Binds
     @Singleton

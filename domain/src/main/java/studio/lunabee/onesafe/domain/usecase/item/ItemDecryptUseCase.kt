@@ -21,6 +21,7 @@ package studio.lunabee.onesafe.domain.usecase.item
 
 import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
+import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
@@ -51,8 +52,27 @@ class ItemDecryptUseCase @Inject constructor(
     suspend operator fun <Data : Any> invoke(data: ByteArray, itemId: UUID, clazz: KClass<Data>): LBResult<Data> {
         return OSError.runCatching {
             val key = safeItemKeyRepository.getSafeItemKey(itemId)
-            isCryptoDataReadyInMemoryUseCase.wait(500.milliseconds)
-            cryptoRepository.decrypt(key, DecryptEntry(data, clazz))
+            decrypt(data, clazz, key)
         }
+    }
+
+    /**
+     * Decrypt the raw encrypted data to type [Data]. If the crypto stuff is not loaded, wait 500ms before returning an error.
+     *
+     * @param data The data to decrypt
+     * @param clazz The output type expected
+     * @param key The key associated to the item
+     *
+     * @return Plain data wrapped in a [LBResult]
+     */
+    suspend operator fun <Data : Any> invoke(data: ByteArray, key: SafeItemKey, clazz: KClass<Data>): LBResult<Data> {
+        return OSError.runCatching {
+            decrypt(data, clazz, key)
+        }
+    }
+
+    private suspend fun <Data : Any> decrypt(data: ByteArray, clazz: KClass<Data>, key: SafeItemKey): Data {
+        isCryptoDataReadyInMemoryUseCase.wait(500.milliseconds)
+        return cryptoRepository.decrypt(key, DecryptEntry(data, clazz))
     }
 }

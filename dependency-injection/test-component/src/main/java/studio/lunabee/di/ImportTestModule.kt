@@ -23,10 +23,10 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
-import studio.lunabee.onesafe.domain.engine.ImportEngine
 import studio.lunabee.onesafe.importexport.ImportCacheDataSource
 import studio.lunabee.onesafe.importexport.ImportCacheDataSourceImpl
 import studio.lunabee.onesafe.importexport.ImportEngineImpl
+import studio.lunabee.onesafe.importexport.engine.ImportEngine
 import javax.inject.Singleton
 
 @Module

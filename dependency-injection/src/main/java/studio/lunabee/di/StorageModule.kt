@@ -39,6 +39,8 @@ import studio.lunabee.messaging.repository.datasource.HandShakeDataLocalDatasour
 import studio.lunabee.messaging.repository.datasource.MessageLocalDataSource
 import studio.lunabee.messaging.repository.datasource.SentMessageLocalDatasource
 import studio.lunabee.onesafe.domain.repository.PersistenceManager
+import studio.lunabee.onesafe.repository.datasource.BackupLocalDataSource
+import studio.lunabee.onesafe.repository.datasource.FileLocalDatasource
 import studio.lunabee.onesafe.repository.datasource.ForceUpgradeLocalDatasource
 import studio.lunabee.onesafe.repository.datasource.IconLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.IndexWordEntryLocalDataSource
@@ -65,10 +67,12 @@ import studio.lunabee.onesafe.storage.dao.SafeItemDao
 import studio.lunabee.onesafe.storage.dao.SafeItemFieldDao
 import studio.lunabee.onesafe.storage.dao.SafeItemKeyDao
 import studio.lunabee.onesafe.storage.dao.SentMessageDao
+import studio.lunabee.onesafe.storage.datasource.BackupLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.ContactKeyLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.ContactLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.DoubleRatchetDatasourceImpl
 import studio.lunabee.onesafe.storage.datasource.EnqueuedMessageLocalDataSourceImpl
+import studio.lunabee.onesafe.storage.datasource.FileLocalDatasourceImpl
 import studio.lunabee.onesafe.storage.datasource.ForceUpgradeLocalDatasourceImpl
 import studio.lunabee.onesafe.storage.datasource.HandShakeDataLocalDatasourceImpl
 import studio.lunabee.onesafe.storage.datasource.IconLocalDataSourceImpl
@@ -101,6 +105,9 @@ interface StorageModule {
 
     @Binds
     fun bindIconLocalDataSource(iconLocalDataSourceImpl: IconLocalDataSourceImpl): IconLocalDataSource
+
+    @Binds
+    fun bindFileLocalDataSource(fileLocalDatasource: FileLocalDatasourceImpl): FileLocalDatasource
 
     @Binds
     fun bindIndexWordEntryLocalDataSource(
@@ -146,6 +153,11 @@ interface StorageModule {
     fun bindEnqueuedMessageLocalDataSource(
         enqueuedMessageLocalDataSourceImpl: EnqueuedMessageLocalDataSourceImpl,
     ): EnqueuedMessageLocalDataSource
+
+    @Binds
+    fun bindBackupLocalDataSource(
+        backupMessageLocalDataSourceImpl: BackupLocalDataSourceImpl,
+    ): BackupLocalDataSource
 }
 
 @Module
@@ -263,8 +275,14 @@ object PersistenceManagerModule {
         mainDatabase: MainDatabase,
         iconLocalDataSource: IconLocalDataSource,
         recentSearchLocalDatasource: RecentSearchLocalDatasource,
+        fileLocalDatasource: FileLocalDatasource,
     ): PersistenceManager {
-        return PersistenceManagerImpl(mainDatabase, iconLocalDataSource, recentSearchLocalDatasource)
+        return PersistenceManagerImpl(
+            mainDatabase,
+            iconLocalDataSource,
+            fileLocalDatasource,
+            recentSearchLocalDatasource,
+        )
     }
 }
 

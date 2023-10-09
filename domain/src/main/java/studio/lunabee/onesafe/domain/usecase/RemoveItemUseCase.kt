@@ -30,6 +30,7 @@ class RemoveItemUseCase @Inject constructor(
     private val safeItemDeletedRepository: SafeItemDeletedRepository,
     private val deleteIconUseCase: DeleteIconUseCase,
     private val reorderChildrenAtParentLastPositionUseCase: ReorderChildrenAtParentLastPositionUseCase,
+    private val deleteFileAssociatedWithItemsUseCase: DeleteFileAssociatedWithItemsUseCase,
 ) {
 
     suspend operator fun invoke(
@@ -50,6 +51,7 @@ class RemoveItemUseCase @Inject constructor(
 
             val deletedItemsToRemove = safeItemDeletedRepository.findDeletedByIdWithDeletedDescendants(safeItem.id)
             val idsToRemove = deletedItemsToRemove.map { it.id }
+            deleteFileAssociatedWithItemsUseCase(idsToRemove)
 
             deleteIconUseCase.invoke(deletedItemsToRemove)
             safeItemDeletedRepository.removeItems(idsToRemove)

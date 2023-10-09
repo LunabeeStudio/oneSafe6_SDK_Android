@@ -37,13 +37,16 @@ import studio.lunabee.compose.androidtest.helper.LbcFolderResource
 import studio.lunabee.compose.androidtest.helper.LbcResourcesHelper
 import studio.lunabee.di.CryptoConstantsSessionTestModule
 import studio.lunabee.onesafe.cryptography.CryptoConstants
-import studio.lunabee.onesafe.cryptography.PasswordHashEngine
 import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
-import studio.lunabee.onesafe.domain.engine.ImportEngine
+import studio.lunabee.onesafe.cryptography.PasswordHashEngine
+import studio.lunabee.onesafe.domain.Constant
 import studio.lunabee.onesafe.domain.model.importexport.ImportMetadata
 import studio.lunabee.onesafe.domain.model.importexport.ImportMode
+import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
+import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind.Companion.isKindFile
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.ItemFieldDataToIndex
+import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.repository.IconRepository
 import studio.lunabee.onesafe.domain.repository.IndexWordEntryRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
@@ -52,6 +55,7 @@ import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemFieldUseCase
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemUseCase
 import studio.lunabee.onesafe.error.OSImportExportError
+import studio.lunabee.onesafe.importexport.engine.ImportEngine
 import studio.lunabee.onesafe.test.ConsoleTree
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltTest
@@ -84,6 +88,8 @@ class ImportEngineTest : OSHiltTest() {
     @Inject lateinit var safeItemRepository: SafeItemRepository
 
     @Inject lateinit var iconRepository: IconRepository
+
+    @Inject lateinit var fileRepository: FileRepository
 
     @Inject lateinit var decryptUseCase: ItemDecryptUseCase
 
@@ -180,11 +186,22 @@ class ImportEngineTest : OSHiltTest() {
                         val nameResult = decryptUseCase(it, safeItem.id, String::class)
                         assertSuccess(nameResult)
                     }
-
+                    var value = ""
                     safeItemField.encValue?.let {
                         val valueResult = decryptUseCase(it, safeItem.id, String::class)
+                        value = valueResult.data!!
                         assertSuccess(valueResult)
-                        valueResult.data?.let { value ->
+                    }
+
+                    safeItemField.encKind?.let {
+                        val kind = decryptUseCase(it, safeItem.id, String::class).data
+                        if (isKindFile(SafeItemFieldKind.fromString(kind!!))) {
+                            val file = fileRepository.getFile(fileId = value.substringBefore(Constant.FileTypeExtSeparator))
+                            file.inputStream().use { inputStream ->
+                                assertSuccess(decryptUseCase(inputStream.readBytes(), safeItem.id, ByteArray::class))
+                            }
+                            assertTrue(file.exists())
+                        } else {
                             itemFieldDataToIndex += ItemFieldDataToIndex(value, safeItemField.isSecured, safeItem.id, safeItemField.id)
                         }
                     }
@@ -281,6 +298,7 @@ class ImportEngineTest : OSHiltTest() {
     companion object {
         private const val ArchiveFolder: String = "testArchiveExtracted"
         private const val IconFolder: String = "icons"
+        private const val FileFolder: String = "files"
         private const val DataFile: String = "data"
         private const val MetadataFile: String = "metadata"
 
@@ -303,6 +321,7 @@ class ImportEngineTest : OSHiltTest() {
         }
 
         private val Icons: List<String> = importTestUUIDs.take(3).map { it.toString() }
+        private val Files: List<String> = importTestUUIDs.take(3).map { it.toString() }
         private val ArchiveResource = LbcFolderResource(
             resourceName = ArchiveFolder,
             isDirectory = true,
@@ -313,11 +332,23 @@ class ImportEngineTest : OSHiltTest() {
             isDirectory = true,
             parentResource = ArchiveResource,
         )
+        private val FileResource = LbcFolderResource(
+            resourceName = FileFolder,
+            isDirectory = true,
+            parentResource = ArchiveResource,
+        )
 
-        private val ResourcesToCopy: List<LbcFolderResource> = listOf(
-            LbcFolderResource(resourceName = IconFolder, isDirectory = true, parentResource = ArchiveResource),
-            LbcFolderResource(resourceName = DataFile, isDirectory = false, parentResource = ArchiveResource),
-            LbcFolderResource(resourceName = MetadataFile, isDirectory = false, parentResource = ArchiveResource),
-        ) + Icons.map { LbcFolderResource(resourceName = it, isDirectory = false, parentResource = IconResource) }
+        private val ResourcesToCopy: List<LbcFolderResource> = buildList {
+            addAll(
+                listOf(
+                    LbcFolderResource(resourceName = IconFolder, isDirectory = true, parentResource = ArchiveResource),
+                    LbcFolderResource(resourceName = FileFolder, isDirectory = true, parentResource = ArchiveResource),
+                    LbcFolderResource(resourceName = DataFile, isDirectory = false, parentResource = ArchiveResource),
+                    LbcFolderResource(resourceName = MetadataFile, isDirectory = false, parentResource = ArchiveResource),
+                ),
+            )
+            addAll(Icons.map { LbcFolderResource(resourceName = it, isDirectory = false, parentResource = IconResource) })
+            addAll(Files.map { LbcFolderResource(resourceName = it, isDirectory = false, parentResource = FileResource) })
+        }
     }
 }

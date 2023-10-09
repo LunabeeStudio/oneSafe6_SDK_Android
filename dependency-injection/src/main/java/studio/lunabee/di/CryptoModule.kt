@@ -64,7 +64,7 @@ import studio.lunabee.onesafe.cryptography.utils.SecuredDataSerializer
 import studio.lunabee.onesafe.domain.repository.EditCryptoRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.MigrationCryptoRepository
-import studio.lunabee.onesafe.importexport.ImportExportCryptoRepository
+import studio.lunabee.onesafe.importexport.repository.ImportExportCryptoRepository
 import studio.lunabee.onesafe.messaging.crypto.AndroidMessagingCryptoRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessagingCryptoRepository
 import javax.inject.Singleton
@@ -131,7 +131,7 @@ object CryptoDatastoreModule {
 }
 
 @Module
-@InstallIn(ActivityRetainedComponent::class)
+@InstallIn(SingletonComponent::class)
 abstract class DatastoreEngineModule {
     @Binds
     @DatastoreEngineProvider(DataStoreType.Plain)
@@ -205,18 +205,6 @@ abstract class CryptoServiceModule {
     internal abstract fun bindMessagingCryptoRepository(
         androidMessagingCryptoRepository: AndroidMessagingCryptoRepository,
     ): MessagingCryptoRepository
-}
-
-@Module
-@InstallIn(ServiceComponent::class)
-abstract class DatastoreEngineServiceModule {
-    @Binds
-    @DatastoreEngineProvider(DataStoreType.Plain)
-    internal abstract fun bindClearDatastoreEngine(datastore: ClearDatastoreEngine): DatastoreEngine
-
-    @Binds
-    @DatastoreEngineProvider(DataStoreType.Encrypted)
-    internal abstract fun bindEncryptedDatastoreEngine(datastore: EncryptedDataStoreEngine): DatastoreEngine
 }
 
 @Module

@@ -41,5 +41,6 @@ data class OSDomainError(
         WRONG_CONTACT("this message is not for this contact"),
         NOT_AN_INVITATION_MESSAGE("this message is not an invitation message"),
         CRYPTO_NOT_READY_TIMEOUT("Time out on waiting for cryptographic keys to be loaded in memory"),
+        MISSING_FILE_ID_IN_FIELD("The field does not contain the file id"),
     }
 }

@@ -23,4 +23,5 @@ object ArchiveConstants {
     const val MetadataFile: String = "metadata"
     const val DataFile: String = "data"
     const val IconFolder: String = "icons"
+    const val FileFolder: String = "files"
 }

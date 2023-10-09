@@ -88,6 +88,12 @@ class AesCryptoEngine @Inject constructor(
         return getCipherOutputStream(fos, key, associatedData)
     }
 
+    override fun getDecryptStream(cipherFile: AtomicFile, key: ByteArray, associatedData: ByteArray?): InputStream {
+        val secretKey = getSecretKeySpec(key)
+        val fis = cipherFile.openRead()
+        return getCipherInputStream(fis, secretKey)
+    }
+
     @Suppress("NOTHING_TO_INLINE")
     private inline fun doEncrypt(plainData: ByteArray, key: ByteArray): ByteArray {
         val bos = ByteArrayOutputStream()

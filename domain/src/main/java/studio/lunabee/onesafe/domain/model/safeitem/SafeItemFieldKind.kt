@@ -24,6 +24,7 @@ import studio.lunabee.onesafe.domain.model.common.IdentifiableObject
 sealed class SafeItemFieldKind(
     val font: SafeItemFieldFont,
     val inputType: SafeItemInputType,
+    val mimeType: String,
     val maskList: List<FieldMask> = listOf(),
 ) : IdentifiableObject {
 
@@ -44,34 +45,56 @@ sealed class SafeItemFieldKind(
                 Iban.id -> Iban
                 SocialSecurityNumber.id -> SocialSecurityNumber
                 YearMonth.id -> YearMonth
+                Photo.id -> Photo
+                Video.id -> Video
+                File.id -> File
                 else -> Unknown(raw)
             }
         }
+
+        fun isKindFile(kind: SafeItemFieldKind): Boolean {
+            return when (kind) {
+                is File,
+                is Photo,
+                is Video,
+                -> true
+                else -> false
+            }
+        }
+
+        const val textMimeType: String = "text/plain"
+        const val allMimeType: String = "*/*"
+        const val imageMimeType: String = "image/*"
+        const val videoMimeType: String = "video/*"
     }
 
     data class Unknown(override val id: String) : SafeItemFieldKind(
         font = SafeItemFieldFont.Default,
         inputType = SafeItemInputType.Default,
+        mimeType = textMimeType,
     )
 
-    object Text : SafeItemFieldKind(
+    data object Text : SafeItemFieldKind(
         font = SafeItemFieldFont.Default,
         inputType = SafeItemInputType.Default,
+        mimeType = textMimeType,
     ) {
         override val id: String = "text"
     }
 
-    object Url : SafeItemFieldKind(
+    data object Url : SafeItemFieldKind(
         font = SafeItemFieldFont.Default,
         inputType = SafeItemInputType.Url,
+        mimeType = textMimeType,
     ) {
         override val id: String = "url"
     }
 
-    object Password : SafeItemFieldKind(
+    data object Password : SafeItemFieldKind(
         font = SafeItemFieldFont.Legibility,
         inputType = SafeItemInputType.Password,
         maskList = FieldMask.PasswordMaks,
+        mimeType = textMimeType,
     ) {
         override val id: String = "password"
     }
@@ -79,48 +102,55 @@ sealed class SafeItemFieldKind(
     object Email : SafeItemFieldKind(
         font = SafeItemFieldFont.Default,
         inputType = SafeItemInputType.Email,
+        mimeType = textMimeType,
     ) {
         override val id: String = "email"
     }
 
-    object Note : SafeItemFieldKind(
+    data object Note : SafeItemFieldKind(
         font = SafeItemFieldFont.Default,
         inputType = SafeItemInputType.Default,
+        mimeType = textMimeType,
     ) {
         override val id: String = "note"
     }
 
-    object Phone : SafeItemFieldKind(
+    data object Phone : SafeItemFieldKind(
         font = SafeItemFieldFont.Default,
         inputType = SafeItemInputType.Phone,
+        mimeType = textMimeType,
     ) {
         override val id: String = "phone"
     }
 
-    object Date : SafeItemFieldKind(
+    data object Date : SafeItemFieldKind(
         font = SafeItemFieldFont.Default,
         inputType = SafeItemInputType.Default,
+        mimeType = textMimeType,
     ) {
         override val id: String = "date"
     }
 
-    object Hour : SafeItemFieldKind(
+    data object Hour : SafeItemFieldKind(
         font = SafeItemFieldFont.Default,
         inputType = SafeItemInputType.Default,
+        mimeType = textMimeType,
     ) {
         override val id: String = "time"
     }
 
-    object DateAndHour : SafeItemFieldKind(
+    data object DateAndHour : SafeItemFieldKind(
         font = SafeItemFieldFont.Default,
         inputType = SafeItemInputType.Default,
+        mimeType = textMimeType,
     ) {
         override val id: String = "dateAndTime"
     }
 
-    object Number : SafeItemFieldKind(
+    data object Number : SafeItemFieldKind(
         font = SafeItemFieldFont.Default,
         inputType = SafeItemInputType.Number,
+        mimeType = textMimeType,
     ) {
         override val id: String = "number"
     }
@@ -129,6 +159,7 @@ sealed class SafeItemFieldKind(
         font = SafeItemFieldFont.Default,
         inputType = SafeItemInputType.Number,
         maskList = FieldMask.CreditCardMasks,
+        mimeType = textMimeType,
     ) {
         override val id: String = "creditCardNumber"
     }
@@ -137,23 +168,50 @@ sealed class SafeItemFieldKind(
         font = SafeItemFieldFont.Default,
         inputType = SafeItemInputType.Number,
         maskList = FieldMask.MonthYearDateMasks,
+        mimeType = textMimeType,
     ) {
         override val id: String = "monthYear"
     }
 
-    object Iban : SafeItemFieldKind(
+    data object Iban : SafeItemFieldKind(
         font = SafeItemFieldFont.Default,
         inputType = SafeItemInputType.DefaultCap,
         maskList = FieldMask.IbanMasks,
+        mimeType = textMimeType,
     ) {
         override val id: String = "iban"
     }
 
-    object SocialSecurityNumber : SafeItemFieldKind(
+    data object SocialSecurityNumber : SafeItemFieldKind(
         font = SafeItemFieldFont.Default,
         inputType = SafeItemInputType.Number,
         maskList = FieldMask.SocialSecurityNumberMasks,
+        mimeType = textMimeType,
     ) {
         override val id: String = "socialSecurityNumber"
+    }
+
+    data object File : SafeItemFieldKind(
+        font = SafeItemFieldFont.Default,
+        inputType = SafeItemInputType.Default,
+        mimeType = allMimeType,
+    ) {
+        override val id: String = "file"
+    }
+
+    data object Photo : SafeItemFieldKind(
+        font = SafeItemFieldFont.Default,
+        inputType = SafeItemInputType.Default,
+        mimeType = imageMimeType,
+    ) {
+        override val id: String = "photo"
+    }
+
+    data object Video : SafeItemFieldKind(
+        font = SafeItemFieldFont.Default,
+        inputType = SafeItemInputType.Default,
+        mimeType = videoMimeType,
+    ) {
+        override val id: String = "video"
     }
 }
