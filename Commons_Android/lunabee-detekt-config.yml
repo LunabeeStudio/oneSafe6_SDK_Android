@@ -175,3 +175,5 @@ style:
     active: false # https://detekt.dev/formatting.html#finalnewline
   UnusedPrivateMember:
     ignoreAnnotated: [ 'Preview' ]
+  FunctionOnlyReturningConstant:
+    ignoreAnnotated: [ 'Provides' ]

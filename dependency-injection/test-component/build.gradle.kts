@@ -71,6 +71,7 @@ dependencies {
     implementation(project(":crypto-android"))
     implementation(project(":domain"))
     implementation(project(":import-export"))
+    implementation(project(":import-export-domain"))
     implementation(project(":repository"))
     implementation(project(":local-android"))
     implementation(project(":remote"))

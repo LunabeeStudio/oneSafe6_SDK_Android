@@ -41,6 +41,12 @@ android {
         targetCompatibility = ProjectConfig.JDK_VERSION
     }
 
+    buildTypes {
+        debug {
+            defaultConfig.minSdk = AndroidConfig.MIN_APP_SDK
+        }
+    }
+
     kotlinOptions.freeCompilerArgs += "-Xcontext-receivers"
 }
 

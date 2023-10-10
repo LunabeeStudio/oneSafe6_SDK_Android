@@ -39,7 +39,9 @@ import studio.lunabee.messaging.repository.repository.SentMessageRepositoryImpl
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactKeyRepository
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.domain.repository.AutoLockRepository
+import studio.lunabee.onesafe.domain.repository.BackupRepository
 import studio.lunabee.onesafe.domain.repository.ClipboardRepository
+import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.repository.ForceUpgradeRepository
 import studio.lunabee.onesafe.domain.repository.IconRepository
 import studio.lunabee.onesafe.domain.repository.IndexWordEntryRepository
@@ -52,6 +54,7 @@ import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
 import studio.lunabee.onesafe.domain.repository.SupportOSRepository
 import studio.lunabee.onesafe.domain.repository.UrlMetadataRepository
+import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.messaging.domain.repository.ConversationRepository
 import studio.lunabee.onesafe.messaging.domain.repository.EnqueuedMessageRepository
 import studio.lunabee.onesafe.messaging.domain.repository.HandShakeDataRepository
@@ -60,7 +63,9 @@ import studio.lunabee.onesafe.messaging.domain.repository.MessageOrderRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
 import studio.lunabee.onesafe.messaging.domain.repository.SentMessageRepository
 import studio.lunabee.onesafe.repository.repository.AutoLockRepositoryImpl
+import studio.lunabee.onesafe.repository.repository.BackupRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.ClipboardRepositoryImpl
+import studio.lunabee.onesafe.repository.repository.FileRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.ForceUpgradeRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.IconRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.IndexWordEntryRepositoryImpl
@@ -70,7 +75,7 @@ import studio.lunabee.onesafe.repository.repository.SafeItemDeletedRepositoryImp
 import studio.lunabee.onesafe.repository.repository.SafeItemFieldRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.SafeItemKeyRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.SafeItemRepositoryImpl
-import studio.lunabee.onesafe.repository.repository.SecurityOptionRepositoryImpl
+import studio.lunabee.onesafe.repository.repository.SettingsRepository
 import studio.lunabee.onesafe.repository.repository.SupportOSRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.UrlMetadataRepositoryImpl
 
@@ -132,9 +137,6 @@ interface RepositoryGlobalModule {
     fun bindUrlMetadataRepository(urlMetadataRepository: UrlMetadataRepositoryImpl): UrlMetadataRepository
 
     @Binds
-    fun bindSecurityOptionRepository(securityOptionRepository: SecurityOptionRepositoryImpl): SecurityOptionRepository
-
-    @Binds
     fun bindClipboardRepository(clipboardRepository: ClipboardRepositoryImpl): ClipboardRepository
 
     @Binds
@@ -156,6 +158,9 @@ interface RepositoryGlobalModule {
     fun bindIconRepository(iconRepository: IconRepositoryImpl): IconRepository
 
     @Binds
+    fun bindFileRepository(fileRepository: FileRepositoryImpl): FileRepository
+
+    @Binds
     fun bindSupportOSRepository(supportOSRepository: SupportOSRepositoryImpl): SupportOSRepository
 
     @Binds
@@ -175,4 +180,17 @@ interface RepositoryGlobalModule {
 
     @Binds
     fun bindsEnqueuedMessageRepository(enqueuedMessageRepositoryImpl: EnqueuedMessageRepositoryImpl): EnqueuedMessageRepository
+
+    @Binds
+    fun bindsBackupRepository(backupRepositoryImpl: BackupRepositoryImpl): BackupRepository
+
+    @Binds
+    fun bindsAutoBackupSettingsRepository(settingsRepository: SettingsRepository): AutoBackupSettingsRepository
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+interface SecurityOptionModule {
+    @Binds
+    fun bindSecurityOptionRepository(settingsRepository: SettingsRepository): SecurityOptionRepository
 }

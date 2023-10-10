@@ -34,5 +34,6 @@ data class OSStorageError(
         PROTO_DATASTORE_READ_ERROR("Cannot read datastore proto"),
         ENQUEUED_MESSAGE_ALREADY_EXIST_ERROR("The message has already been enqueued"),
         ENQUEUED_MESSAGE_NOT_FOUND_FOR_DELETE("No message with the id provided found for delete"),
+        UNKNOWN_FILE_ERROR("Unknown file error"),
     }
 }

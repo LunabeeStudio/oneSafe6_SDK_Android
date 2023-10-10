@@ -99,6 +99,12 @@ class ChachaPolyJCECryptoEngine @Inject constructor(
         return getCipherOutputStream(fos, key, associatedData)
     }
 
+    override fun getDecryptStream(cipherFile: AtomicFile, key: ByteArray, associatedData: ByteArray?): InputStream {
+        val secretKey = getSecretKeySpec(key)
+        val fis = cipherFile.openRead()
+        return getCipherInputStream(fis, secretKey, associatedData)
+    }
+
     @Suppress("NOTHING_TO_INLINE")
     private inline fun doEncrypt(plainData: ByteArray, key: ByteArray, associatedData: ByteArray?): ByteArray {
         val bos = ByteArrayOutputStream()

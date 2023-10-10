@@ -26,5 +26,5 @@ object Constant {
     const val DefinitiveItemRemoveAfterDays: Int = 30
     const val MinimumCharForSearch: Int = 2
     val DelayBeforeSearch: Duration = 500.milliseconds
-    const val ArchiveToImportCopyFileName: String = "archiveToImportCopy.os6lsb"
+    const val FileTypeExtSeparator: Char = '|'
 }

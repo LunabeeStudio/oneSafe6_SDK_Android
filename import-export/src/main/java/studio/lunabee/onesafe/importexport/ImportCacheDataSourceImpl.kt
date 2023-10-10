@@ -35,6 +35,8 @@ class ImportCacheDataSourceImpl @Inject constructor() : ImportCacheDataSource {
 
     override var archiveContent: OSExportProto.Archive? = null
 
+    override var newEncryptedValue: MutableMap<UUID, ByteArray> = mutableMapOf()
+    override val newFileIdsByOldOnes: MutableMap<UUID, UUID> = mutableMapOf()
     override var newItemIdsByOldOnes: MutableMap<UUID, UUID> = mutableMapOf()
     override var newIconIdsByOldOnes: MutableMap<UUID, UUID> = mutableMapOf()
     override var newFieldIdsByOldOnes: MutableMap<UUID, UUID> = mutableMapOf()
@@ -44,4 +46,5 @@ class ImportCacheDataSourceImpl @Inject constructor() : ImportCacheDataSource {
     override var migratedSafeItemFieldsToImport: List<SafeItemField> = emptyList()
     override var migratedSearchIndexToImport: MutableList<IndexWordEntry> = mutableListOf()
     override var migratedIconsToImport: List<File> = emptyList()
+    override var migratedFilesToImport: List<File> = emptyList()
 }

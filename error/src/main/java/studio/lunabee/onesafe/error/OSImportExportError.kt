@@ -33,9 +33,11 @@ data class OSImportExportError(
         EXPORT_METADATA_FAILURE("Fail to export metadata"),
         EXPORT_DATA_FAILURE("Fail to export data"),
         EXPORT_ICON_FAILURE("Fail to export icons"),
+        EXPORT_FILE_FAILURE("Fail to export files"),
         WRONG_CREDENTIALS("Wrong credentials"),
         UNEXPECTED_ERROR("Unexpected error occurred"),
         METADATA_NOT_IN_CACHE("Metadata not in cache"),
         SALT_INVALID("Salt is empty or invalid"),
+        ENGINE_NOT_PREPARED("Export engine is not initialized with required values"),
     }
 }

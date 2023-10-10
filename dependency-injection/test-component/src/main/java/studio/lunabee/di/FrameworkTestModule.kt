@@ -13,29 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 5/26/2023 - for the oneSafe6 SDK.
- * Last modified 5/26/23, 10:40 AM
+ * Created by Lunabee Studio / Date - 9/29/2023 - for the oneSafe6 SDK.
+ * Last modified 9/29/23, 9:58 PM
  */
 
 package studio.lunabee.di
 
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
-import studio.lunabee.onesafe.domain.common.FeatureFlags
+import studio.lunabee.onesafe.domain.qualifier.ArchiveCacheDir
+import studio.lunabee.onesafe.domain.qualifier.BuildNumber
+import studio.lunabee.onesafe.domain.qualifier.VersionName
+import java.io.File
 
 @Module
 @InstallIn(SingletonComponent::class)
 object FrameworkTestModule {
     @Provides
-    fun provideFeatureFlags(): FeatureFlags = object : FeatureFlags {
-        override fun florisBoard(): Boolean = false
-        override fun accessibilityService(): Boolean = false
-        override fun oneSafeK(): Boolean = false
-        override fun bubbles(): Flow<Boolean> = flowOf(true)
-        override fun quickSignIn(): Boolean = false
+    @BuildNumber
+    fun provideBuildNumber(): Int = 0
+
+    @Provides
+    @VersionName
+    fun provideVersionName(): String = "6.0.0.0"
+
+    @Provides
+    @ArchiveCacheDir(type = ArchiveCacheDir.Type.AutoBackup)
+    fun provideArchiveAutoBackupDirectory(@ApplicationContext context: Context): File {
+        return File(context.cacheDir, "test_archiveAutoBackup")
+    }
+
+    @Provides
+    @ArchiveCacheDir(type = ArchiveCacheDir.Type.Export)
+    fun provideArchiveExportedDirectory(@ApplicationContext context: Context): File {
+        return File(context.cacheDir, "test_archiveExported")
     }
 }

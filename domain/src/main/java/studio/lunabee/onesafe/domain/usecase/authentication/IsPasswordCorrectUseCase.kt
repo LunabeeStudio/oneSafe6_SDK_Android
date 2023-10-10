@@ -30,7 +30,7 @@ private val log = LBLogger.get<IsPasswordCorrectUseCase>()
 class IsPasswordCorrectUseCase @Inject constructor(
     private val cryptoRepository: MainCryptoRepository,
 ) {
-    suspend operator fun invoke(password: CharArray): LBResult<Boolean> = OSError.runCatching(log) {
+    suspend operator fun invoke(password: CharArray): LBResult<Unit> = OSError.runCatching(log) {
         cryptoRepository.testPassword(password)
     }
 }

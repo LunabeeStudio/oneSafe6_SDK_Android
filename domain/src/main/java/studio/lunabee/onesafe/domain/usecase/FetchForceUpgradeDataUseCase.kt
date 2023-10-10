@@ -31,16 +31,16 @@ class FetchForceUpgradeDataUseCase @Inject constructor(
 ) {
 
     suspend operator fun invoke() {
-        forceUpgradeRepository.fetchForceUpgradeInfo()?.let { _info ->
-            if (_info.forceUpdateBuildNumber > buildNumber || _info.softUpdateBuildNumber > buildNumber) {
-                val languageFileUrl = Locale.getDefault().language.let { _language ->
-                    _info.languageFiles[_language] ?: _info.fallbackLanguageFile
+        forceUpgradeRepository.fetchForceUpgradeInfo()?.let { info ->
+            if (info.forceUpdateBuildNumber > buildNumber || info.softUpdateBuildNumber > buildNumber) {
+                val languageFileUrl = Locale.getDefault().language.let { language ->
+                    info.languageFiles[language] ?: info.fallbackLanguageFile
                 }
-                forceUpgradeRepository.fetchForceUpgradeStrings(languageFileUrl)?.let { _strings ->
+                forceUpgradeRepository.fetchForceUpgradeStrings(languageFileUrl)?.let { strings ->
                     val data = ForceUpgradeData(
-                        forceBuildNumber = _info.forceUpdateBuildNumber,
-                        softBuildNumber = _info.softUpdateBuildNumber,
-                        strings = _strings,
+                        forceBuildNumber = info.forceUpdateBuildNumber,
+                        softBuildNumber = info.softUpdateBuildNumber,
+                        strings = strings,
                     )
                     forceUpgradeRepository.saveForceUpgradeData(data)
                 }

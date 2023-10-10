@@ -22,7 +22,9 @@ package studio.lunabee.onesafe.domain.usecase
 import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
 import com.lunabee.lblogger.e
+import studio.lunabee.onesafe.domain.Constant
 import studio.lunabee.onesafe.domain.common.DuplicatedNameTransform
+import studio.lunabee.onesafe.domain.common.FileIdProvider
 import studio.lunabee.onesafe.domain.common.ItemIdProvider
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.safeitem.ItemFieldData
@@ -32,6 +34,7 @@ import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.ItemFieldDataToIndex
+import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
@@ -60,9 +63,11 @@ class DuplicateItemUseCase @Inject constructor(
     private val safeItemFieldRepository: SafeItemFieldRepository,
     private val duplicateNameTransform: DuplicatedNameTransform,
     private val itemIdProvider: ItemIdProvider,
+    private val fileIdProvider: FileIdProvider,
     private val safeItemBuilder: SafeItemBuilder,
     private val deleteIconUseCase: DeleteIconUseCase,
     private val encryptFieldsUseCase: EncryptFieldsUseCase,
+    private val fileRepository: FileRepository,
 ) {
     suspend operator fun invoke(
         itemId: UUID,
@@ -199,6 +204,7 @@ class DuplicateItemUseCase @Inject constructor(
             item = duplicatedItem,
             plainName = transformedName,
             fields = itemFieldsData,
+            originalKey = originalKey,
         )
     }
 
@@ -208,9 +214,39 @@ class DuplicateItemUseCase @Inject constructor(
         return data.flatMap { entry ->
             val itemFieldsData = entry.fields
             val key = entry.key
-            val itemId = entry.item.id
+            // Copy file fields
+            val finalItemFieldsData = itemFieldsData.mapNotNull { data ->
+                if (data.kind?.let(SafeItemFieldKind::isKindFile) != true) {
+                    data
+                } else {
+                    var newFileId = fileIdProvider()
+                    while (fileRepository.getFile(newFileId.toString()).exists()) {
+                        newFileId = fileIdProvider()
+                    }
+                    val originalFileId = data.value?.substringBefore(Constant.FileTypeExtSeparator) ?: return@mapNotNull null
+                    val originalFile = fileRepository.getFile(originalFileId)
+                    val tempFile = fileRepository.createTempFile(newFileId.toString())
+                    val inputStream = cryptoRepository.getDecryptStream(originalFile, entry.originalKey)
+                    val outputStream = cryptoRepository.getEncryptStream(tempFile, key)
+                    try {
+                        inputStream.use {
+                            outputStream.use {
+                                inputStream.copyTo(outputStream)
+                            }
+                        }
+                        fileRepository.copyAndDeleteFile(tempFile, newFileId)
+                    } catch (e: Throwable) {
+                        // If error, remove file, don't save the field
+                        fileRepository.deleteFile(newFileId)
+                        return@mapNotNull null
+                    }
+                    val newValue = "$newFileId${Constant.FileTypeExtSeparator}${data.value.substringAfter(Constant.FileTypeExtSeparator)}"
+                    data.copy(value = newValue)
+                }
+            }
 
-            encryptFieldsUseCase(itemId, itemFieldsData, key)
+            val itemId = entry.item.id
+            encryptFieldsUseCase(itemId, finalItemFieldsData, key)
         }
     }
 
@@ -243,6 +279,7 @@ class DuplicateItemUseCase @Inject constructor(
 
     private class DuplicationData(
         val key: SafeItemKey,
+        val originalKey: SafeItemKey,
         val item: SafeItem,
         val plainName: String?,
         val fields: List<ItemFieldData>,

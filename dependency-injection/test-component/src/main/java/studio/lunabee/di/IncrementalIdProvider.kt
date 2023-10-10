@@ -19,13 +19,14 @@
 
 package studio.lunabee.di
 
+import studio.lunabee.onesafe.domain.common.FileIdProvider
 import studio.lunabee.onesafe.domain.common.IconIdProvider
 import studio.lunabee.onesafe.domain.common.ItemIdProvider
 import studio.lunabee.onesafe.domain.common.MessageIdProvider
 import studio.lunabee.onesafe.test.testUUIDs
 import java.util.UUID
 
-class IncrementalIdProvider : ItemIdProvider, IconIdProvider, MessageIdProvider {
+class IncrementalIdProvider : ItemIdProvider, IconIdProvider, MessageIdProvider, FileIdProvider {
     private var idx = 0
     override fun invoke(): UUID = testUUIDs[idx++]
 }

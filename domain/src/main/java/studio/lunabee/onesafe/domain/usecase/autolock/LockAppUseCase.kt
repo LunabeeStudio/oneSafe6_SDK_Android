@@ -19,13 +19,16 @@
 
 package studio.lunabee.onesafe.domain.usecase.autolock
 
+import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import javax.inject.Inject
 
 class LockAppUseCase @Inject constructor(
     private val mainCryptoRepository: MainCryptoRepository,
+    private val fileRepository: FileRepository,
 ) {
     operator fun invoke() {
+        fileRepository.deleteCacheDir()
         mainCryptoRepository.unloadMasterKeys()
     }
 }

@@ -128,7 +128,7 @@ dependencies {
     implementation(project(":bubbles-domain"))
     implementation(project(":error"))
     implementation(project(":common"))
-    implementation(project(":import-export"))
+    implementation(project(":import-export-domain"))
 
     kaptAndroidTest(libs.dagger.hilt.compiler)
 

@@ -40,17 +40,17 @@ class ForceUpgradeLocalDatasourceImpl @Inject constructor(
     @FileDispatcher private val fileDispatcher: CoroutineDispatcher,
 ) : ForceUpgradeLocalDatasource {
 
-    override fun getForceUpgradeData(): Flow<ForceUpgradeData?> = dataStore.data.map { _data ->
-        if (_data.buildNumber == buildNumber) {
+    override fun getForceUpgradeData(): Flow<ForceUpgradeData?> = dataStore.data.map { data ->
+        if (data.buildNumber == buildNumber) {
             ForceUpgradeData(
                 strings = ForceUpgradeStrings(
-                    title = _data.title.orEmpty(),
-                    forceDescription = _data.forceDescription.orEmpty(),
-                    softDescription = _data.softDescription.orEmpty(),
-                    buttonLabel = _data.buttonLabel.orEmpty(),
+                    title = data.title.orEmpty(),
+                    forceDescription = data.forceDescription.orEmpty(),
+                    softDescription = data.softDescription.orEmpty(),
+                    buttonLabel = data.buttonLabel.orEmpty(),
                 ),
-                softBuildNumber = _data.softBuildNumber,
-                forceBuildNumber = _data.forceBuildNumber,
+                softBuildNumber = data.softBuildNumber,
+                forceBuildNumber = data.forceBuildNumber,
             )
         } else {
             null

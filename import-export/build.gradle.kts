@@ -40,6 +40,14 @@ android {
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
     }
+
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
+    }
 }
 
 kapt {
@@ -50,21 +58,44 @@ dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     implementation(libs.hilt.android)
+    kapt(libs.androidx.hilt.compiler)
+    kapt(libs.dagger.hilt.compiler)
+
+    implementation(libs.hilt.work)
+    implementation(libs.work.runtime)
+    implementation(libs.timber)
+    implementation(libs.datastore.preferences)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.navigation.compose)
+    implementation(libs.lifecycle.runtime.compose)
+    implementation(libs.accompanist.permissions)
+
+    implementation(platform(libs.compose.beta.bom))
+    implementation(libs.compose.material3)
 
     implementation(platform(libs.lunabee.bom))
-    api(libs.lbcore)
+    implementation(libs.lbcore)
     implementation(libs.lblogger)
 
-    implementation(project(":import-export:proto"))
+    implementation(libs.lbccore)
+
+    debugImplementation(libs.compose.ui.tooling)
+    implementation(libs.compose.ui.tooling.preview)
+
+    implementation(project(":import-export-proto"))
+    implementation(project(":import-export-domain"))
     implementation(project(":domain"))
     implementation(project(":error"))
     implementation(project(":common"))
+    implementation(project(":app:common-ui"))
+    implementation(project(":app:core-ui"))
+    implementation(project(":app:settings"))
 
     kaptAndroidTest(libs.dagger.hilt.compiler)
-
+    androidTestImplementation(project(":dependency-injection"))
+    androidTestImplementation(project(":dependency-injection:test-component"))
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(project(":app:settings"))
-    androidTestImplementation(project(":dependency-injection:test-component"))
     androidTestImplementation(project(":crypto-android"))
     androidTestImplementation(libs.lblogger.timber)
 }

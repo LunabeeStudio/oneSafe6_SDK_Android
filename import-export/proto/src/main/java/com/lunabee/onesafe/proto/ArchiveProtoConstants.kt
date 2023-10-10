@@ -20,5 +20,5 @@
 package com.lunabee.onesafe.proto
 
 object ArchiveProtoConstants {
-    const val ArchiveSpecVersion: Int = 1
+    const val ArchiveSpecVersion: Int = 2
 }

@@ -29,6 +29,7 @@ import kotlinx.coroutines.withContext
 import studio.lunabee.onesafe.cryptography.qualifier.CryptoDispatcher
 import timber.log.Timber
 import java.io.File
+import java.io.InputStream
 import java.io.OutputStream
 import java.nio.ByteBuffer
 import javax.inject.Inject
@@ -66,6 +67,10 @@ class ChachaPolyTinkCryptoEngine @Inject constructor(
     }
 
     override fun getEncryptStream(file: File, key: ByteArray, associatedData: ByteArray?): OutputStream {
+        throw NotImplementedError("Use JCE implementation instead")
+    }
+
+    override fun getDecryptStream(cipherFile: AtomicFile, key: ByteArray, associatedData: ByteArray?): InputStream {
         throw NotImplementedError("Use JCE implementation instead")
     }
 

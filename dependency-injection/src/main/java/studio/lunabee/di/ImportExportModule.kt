@@ -27,17 +27,17 @@ import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.android.components.ServiceComponent
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import dagger.hilt.components.SingletonComponent
-import studio.lunabee.onesafe.domain.engine.ExportEngine
-import studio.lunabee.onesafe.domain.engine.ImportEngine
+import studio.lunabee.onesafe.domain.qualifier.BackupType
 import studio.lunabee.onesafe.domain.qualifier.DateFormatterType
-import studio.lunabee.onesafe.importexport.ExportCacheDataSource
-import studio.lunabee.onesafe.importexport.ExportCacheDataSourceImpl
-import studio.lunabee.onesafe.importexport.ExportEngineImpl
+import studio.lunabee.onesafe.importexport.BackupExportEngineImpl
 import studio.lunabee.onesafe.importexport.ImportCacheDataSource
 import studio.lunabee.onesafe.importexport.ImportCacheDataSourceImpl
 import studio.lunabee.onesafe.importexport.ImportEngineImpl
+import studio.lunabee.onesafe.importexport.ShareExportEngineImpl
+import studio.lunabee.onesafe.importexport.engine.BackupExportEngine
+import studio.lunabee.onesafe.importexport.engine.ImportEngine
+import studio.lunabee.onesafe.importexport.engine.ShareExportEngine
 import java.time.format.DateTimeFormatter
-import javax.inject.Singleton
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
@@ -55,12 +55,15 @@ interface ImportModule {
 @InstallIn(SingletonComponent::class)
 interface ExportModule {
     @Binds
-    @Singleton
-    fun bindExportEngine(exportEngineImpl: ExportEngineImpl): ExportEngine
+    fun bindShareExportEngine(shareExportEngineImpl: ShareExportEngineImpl): ShareExportEngine
 
     @Binds
-    @Singleton
-    fun bindExportCacheDataSource(exportCacheDataSourceImpl: ExportCacheDataSourceImpl): ExportCacheDataSource
+    @BackupType(BackupType.Type.Auto)
+    fun bindAutoBackupExportEngine(backupExportEngineImpl: BackupExportEngineImpl): BackupExportEngine
+
+    @Binds
+    @BackupType(BackupType.Type.Foreground)
+    fun bindForegroundBackupExportEngine(backupExportEngineImpl: BackupExportEngineImpl): BackupExportEngine
 }
 
 @Module
