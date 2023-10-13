@@ -27,8 +27,6 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityRetainedComponent
-import dagger.hilt.android.components.ServiceComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import studio.lunabee.bubbles.repository.datasource.ContactKeyLocalDataSource
@@ -158,23 +156,7 @@ interface StorageModule {
     fun bindBackupLocalDataSource(
         backupMessageLocalDataSourceImpl: BackupLocalDataSourceImpl,
     ): BackupLocalDataSource
-}
 
-@Module
-@InstallIn(ActivityRetainedComponent::class)
-interface DoubleRatchetActivityStorageModule {
-    @Binds
-    fun bindDoubleRatchetDatasource(
-        doubleRatchetDatasource: DoubleRatchetDatasourceImpl,
-    ): DoubleRatchetLocalDatasource
-
-    @Binds
-    fun bindsHandShakeDataLocalDatasource(handShakeDataLocalDatasourceImpl: HandShakeDataLocalDatasourceImpl): HandShakeDataLocalDatasource
-}
-
-@Module
-@InstallIn(ServiceComponent::class)
-interface DoubleRatchetServiceStorageModule {
     @Binds
     fun bindDoubleRatchetDatasource(
         doubleRatchetDatasource: DoubleRatchetDatasourceImpl,

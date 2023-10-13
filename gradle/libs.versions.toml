@@ -16,7 +16,7 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "google-dagger" }
 
 [versions]
 
-benchmark = "1.2.0-rc01"
+benchmark = "1.2.0-rc02"
 
 android-gradle-plugin = "8.1.2"
 ##                 ⬆ = "8.2.0-alpha01"
@@ -47,6 +47,7 @@ android-gradle-plugin = "8.1.2"
 ##                 ⬆ = "8.3.0-alpha04"
 ##                 ⬆ = "8.3.0-alpha05"
 ##                 ⬆ = "8.3.0-alpha06"
+##                 ⬆ = "8.3.0-alpha07"
 
 kotlin = "1.9.10"
 ##  ⬆ = "1.9.20-Beta"
@@ -105,15 +106,7 @@ androidx-lifecycle = "2.6.2"
 
 compose-bom-alpha = "2023.11.00-alpha01"
 
-google-android-material = "1.9.0"
-##                   ⬆ = "1.10.0-alpha01"
-##                   ⬆ = "1.10.0-alpha02"
-##                   ⬆ = "1.10.0-alpha03"
-##                   ⬆ = "1.10.0-alpha04"
-##                   ⬆ = "1.10.0-alpha05"
-##                   ⬆ = "1.10.0-alpha06"
-##                   ⬆ = "1.10.0-beta01"
-##                   ⬆ = "1.10.0-rc01"
+google-android-material = "1.10.0"
 ##                   ⬆ = "1.11.0-alpha01"
 ##                   ⬆ = "1.11.0-alpha02"
 ##                   ⬆ = "1.11.0-alpha03"
@@ -153,7 +146,7 @@ androidx-activity = "1.8.0"
 
 androidx-hilt-navigation-compose = "1.1.0-beta01"
 
-kotlinx-collections-immutable = "0.3.5"
+kotlinx-collections-immutable = "0.3.6"
 
 google-accompanist = "0.33.2-alpha"
 
@@ -168,7 +161,7 @@ compose-compiler = "1.5.3"
 
 androidx-test-ext-junit = "1.2.0-alpha01"
 
-androidx-benchmark = "1.2.0-rc01"
+androidx-benchmark = "1.2.0-rc02"
 
 jakewharton-timber = "5.0.1"
 
@@ -207,6 +200,9 @@ protobuf = "3.24.4"
 protobuf-plugin = "0.9.4"
 
 lunabee-library = "3.24.0"
+##           ⬆ = "3.24.0-agp8-0-SNAPSHOT"
+##           ⬆ = "3.24.0.syncOperatorAPI34-SNAPSHOT"
+##           ⬆ = "3.24.0.syncOperatorAPI34-0-SNAPSHOT"
 ##           ⬆ = "3.25.0-develop-78-snapshot"
 
 compose-color-picker = "0.7.0"
@@ -260,8 +256,13 @@ lint = "31.1.2"
 ##⬆ = "31.3.0-alpha04"
 ##⬆ = "31.3.0-alpha05"
 ##⬆ = "31.3.0-alpha06"
+##⬆ = "31.3.0-alpha07"
 
 javapoet = "1.13.0"
+
+bouquet = "1.1.2"
+
+zoomable = "1.5.1"
 
 exifinterface = "1.3.6"
 
@@ -411,3 +412,5 @@ accompanist-permissions = { group = "com.google.accompanist", name = "accompanis
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "jakewharton-timber" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil-kt" }
 javapoet = { group = "com.squareup", name = "javapoet", version.ref = "javapoet" }
+bouquet = { group = "io.github.grizzi91", name = "bouquet", version.ref = "bouquet" }
+zoomable = { group = "net.engawapg.lib", name = "zoomable", version.ref = "zoomable" }

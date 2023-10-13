@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 6/23/2023 - for the oneSafe6 SDK.
- * Last modified 6/23/23, 4:09 PM
+ * Created by Lunabee Studio / Date - 10/12/2023 - for the oneSafe6 SDK.
+ * Last modified 10/12/23, 5:59 PM
  */
 
-package studio.lunabee.messaging.repository.repository
+package studio.lunabee.onesafe.domain
 
-import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
-import javax.inject.Inject
-import javax.inject.Singleton
+import java.util.UUID
 
-@Singleton
-class MessageChannelRepositoryImpl @Inject constructor() : MessageChannelRepository {
-    override var channel: String? = null
+interface LoadFileCancelAllUseCase {
+    operator fun invoke(itemId: UUID)
+    operator fun invoke()
 }

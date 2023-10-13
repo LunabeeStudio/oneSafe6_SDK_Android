@@ -24,6 +24,7 @@ import java.io.InputStream
 import java.util.UUID
 
 interface FileLocalDatasource {
+    fun getPlainFile(itemId: UUID, fieldId: UUID, filename: String): File
     fun getFile(filename: String): File
     fun createTempFile(fileId: String): File
     fun addFile(filename: String, file: ByteArray): File

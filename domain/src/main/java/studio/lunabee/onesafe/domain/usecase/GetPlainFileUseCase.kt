@@ -53,26 +53,30 @@ class GetPlainFileUseCase @Inject constructor(
     suspend operator fun invoke(field: SafeItemField): LBResult<File> {
         return OSError.runCatching(log) {
             val key = safeItemKeyRepository.getSafeItemKey(field.itemId)
-            val encFileId = field.encValue
-                ?: throw OSDomainError(OSDomainError.Code.MISSING_FILE_ID_IN_FIELD)
-            val plainFileResult = decryptUseCase(encFileId, key, String::class)
             val name = field.encName?.let { decryptUseCase(it, field.itemId, String::class).data }
                 ?: field.id.toString() // fallback to field id if the name is null
-
-            when (plainFileResult) {
-                is LBResult.Failure -> return LBResult.Failure(plainFileResult.throwable)
-                is LBResult.Success -> {
-                    val fileId = plainFileResult.successData.substringBefore(Constant.FileTypeExtSeparator)
-                    val file = fileRepository.getFile(fileId = fileId)
-                    try {
-                        fileRepository.savePlainFile(
-                            inputStream = cryptoRepository.getDecryptStream(cipherFile = file, key = key),
-                            filename = name,
-                            itemId = field.itemId,
-                            fieldId = field.id,
-                        )
-                    } catch (e: FileNotFoundException) {
-                        throw OSCryptoError(code = OSCryptoError.Code.DECRYPTION_FILE_NOT_FOUND, cause = e)
+            val existingFile = fileRepository.getPlainFile(itemId = field.itemId, fieldId = field.id, filename = name)
+            if (existingFile.exists()) {
+                existingFile
+            } else {
+                val encFileId = field.encValue
+                    ?: throw OSDomainError(OSDomainError.Code.MISSING_FILE_ID_IN_FIELD)
+                val plainFileResult = decryptUseCase(encFileId, key, String::class)
+                when (plainFileResult) {
+                    is LBResult.Failure -> return LBResult.Failure(plainFileResult.throwable)
+                    is LBResult.Success -> {
+                        val fileId = plainFileResult.successData.substringBefore(Constant.FileTypeExtSeparator)
+                        val file = fileRepository.getFile(fileId = fileId)
+                        try {
+                            fileRepository.savePlainFile(
+                                inputStream = cryptoRepository.getDecryptStream(cipherFile = file, key = key),
+                                filename = name,
+                                itemId = field.itemId,
+                                fieldId = field.id,
+                            )
+                        } catch (e: FileNotFoundException) {
+                            throw OSCryptoError(code = OSCryptoError.Code.DECRYPTION_FILE_NOT_FOUND, cause = e)
+                        }
                     }
                 }
             }

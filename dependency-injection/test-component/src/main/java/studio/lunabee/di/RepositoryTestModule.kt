@@ -19,30 +19,14 @@
 
 package studio.lunabee.di
 
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import studio.lunabee.messaging.repository.repository.ConversationRepositoryImpl
-import studio.lunabee.messaging.repository.repository.HandShakeDataRepositoryImpl
-import studio.lunabee.messaging.repository.repository.MessageChannelRepositoryImpl
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
-import studio.lunabee.onesafe.domain.repository.ForceUpgradeRepository
-import studio.lunabee.onesafe.domain.repository.IndexWordEntryRepository
-import studio.lunabee.onesafe.domain.repository.PasswordGeneratorConfigRepository
-import studio.lunabee.onesafe.domain.repository.RecentSearchRepository
 import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
-import studio.lunabee.onesafe.messaging.domain.repository.ConversationRepository
-import studio.lunabee.onesafe.messaging.domain.repository.HandShakeDataRepository
-import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
-import studio.lunabee.onesafe.repository.repository.ForceUpgradeRepositoryImpl
-import studio.lunabee.onesafe.repository.repository.IndexWordEntryRepositoryImpl
-import studio.lunabee.onesafe.repository.repository.PasswordGeneratorConfigRepositoryImpl
-import studio.lunabee.onesafe.repository.repository.RecentSearchRepositoryImpl
 import javax.inject.Singleton
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -51,36 +35,9 @@ import kotlin.time.Duration.Companion.seconds
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
-    replaces = [RepositoryModule::class, SecurityOptionModule::class, RepositoryServiceModule::class],
+    replaces = [SecurityOptionModule::class],
 )
-interface RepositoryTestModule {
-    @Binds
-    fun bindIndexWordEntryRepository(indexWordEntryRepository: IndexWordEntryRepositoryImpl): IndexWordEntryRepository
-
-    @Binds
-    fun bindForceUpgradeRepository(forceUpgradeRepositoryImpl: ForceUpgradeRepositoryImpl): ForceUpgradeRepository
-
-    @Binds
-    fun bindsRecentSearchRepository(recentSearchRepositoryImpl: RecentSearchRepositoryImpl): RecentSearchRepository
-
-    @Binds
-    fun bindsPasswordGeneratorConfigRepository(
-        passwordGeneratorConfigRepositoryImpl: PasswordGeneratorConfigRepositoryImpl,
-    ): PasswordGeneratorConfigRepository
-
-    @Binds
-    fun bindsMessageChannelRepository(messageChannelRepositoryImpl: MessageChannelRepositoryImpl): MessageChannelRepository
-
-    @Binds
-    fun bindsHandShakeDataRepository(handShakeDataRepositoryImpl: HandShakeDataRepositoryImpl): HandShakeDataRepository
-
-    @Binds
-    fun bindsConversationRepository(conversationRepositoryImpl: ConversationRepositoryImpl): ConversationRepository
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-internal object TestSecurityOptionModule {
+internal object RepositoryTestModule {
 
     /**
      * [SecurityOptionRepository] implementation with fixed value

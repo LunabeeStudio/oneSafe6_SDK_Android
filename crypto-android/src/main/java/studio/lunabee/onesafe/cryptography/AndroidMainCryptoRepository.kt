@@ -50,12 +50,14 @@ import java.security.GeneralSecurityException
 import java.util.UUID
 import javax.crypto.Cipher
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.reflect.KClass
 
 private val log = LBLogger.get<AndroidMainCryptoRepository>()
 
 @Suppress("ObsoleteSdkInt")
 @RequiresApi(Build.VERSION_CODES.M)
+@Singleton
 class AndroidMainCryptoRepository @Inject constructor(
     private val crypto: CryptoEngine,
     private val hashEngine: PasswordHashEngine,
