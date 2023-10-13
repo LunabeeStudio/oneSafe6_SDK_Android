@@ -26,11 +26,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityRetainedComponent
-import dagger.hilt.android.components.ServiceComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ActivityRetainedScoped
-import dagger.hilt.android.scopes.ServiceScoped
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -70,40 +66,57 @@ import studio.lunabee.onesafe.messaging.domain.repository.MessagingCryptoReposit
 import javax.inject.Singleton
 
 @Module
-@InstallIn(ActivityRetainedComponent::class)
+@InstallIn(SingletonComponent::class)
 abstract class CryptoModule {
 
     @Binds
-    @ActivityRetainedScoped
     internal abstract fun bindMainCryptoRepository(androidMainCryptoRepository: AndroidMainCryptoRepository): MainCryptoRepository
 
     @Binds
-    @ActivityRetainedScoped
     internal abstract fun bindEditCryptoRepository(
         androidEditCryptoRepository: AndroidEditCryptoRepository,
     ): EditCryptoRepository
 
     @Binds
-    @ActivityRetainedScoped
     internal abstract fun bindBubblesCryptoRepository(
         androidBubblesCryptoRepository: AndroidBubblesCryptoRepository,
     ): BubblesCryptoRepository
 
     @Binds
-    @ActivityRetainedScoped
     internal abstract fun bindMessagingCryptoRepository(
         androidMessagingCryptoRepository: AndroidMessagingCryptoRepository,
     ): MessagingCryptoRepository
-}
-
-@Module
-@InstallIn(ActivityRetainedComponent::class)
-abstract class CryptoMigrationModule {
 
     @Binds
-    @ActivityRetainedScoped
-    internal abstract fun bindMigrationCryptoRepository(androidMigrationCryptoRepository: AndroidMigrationCryptoRepository):
-        MigrationCryptoRepository
+    @DatastoreEngineProvider(DataStoreType.Plain)
+    internal abstract fun bindClearDatastoreEngine(datastore: ClearDatastoreEngine): DatastoreEngine
+
+    @Binds
+    @DatastoreEngineProvider(DataStoreType.Encrypted)
+    internal abstract fun bindEncryptedDatastoreEngine(datastore: EncryptedDataStoreEngine): DatastoreEngine
+
+    @Binds
+    @Singleton
+    internal abstract fun bindImportExportCryptoRepository(
+        androidImportExportCryptoRepository: AndroidImportExportCryptoRepository,
+    ): ImportExportCryptoRepository
+
+    @Binds
+    internal abstract fun bindIVProvider(ivProvider: SecureIVProvider): IVProvider
+
+    @Binds
+    internal abstract fun rsaCryptoEngine(rsaCryptoEngine: JceRsaCryptoEngine): RsaCryptoEngine
+
+    @Binds
+    internal abstract fun bindDataHashEngine(hkdfHashEngine: HKDFHashEngine): DataHashEngine
+
+    @Binds
+    internal abstract fun bindKeyExchangeEngine(diffieHellmanKeyExchangeEngine: DiffieHellmanKeyExchangeEngine): KeyExchangeEngine
+
+    @Binds
+    internal abstract fun bindDoubleRatchetKeyRepository(
+        doubleRatchetCryptoRepository: AndroidDoubleRatchetKeyRepository,
+    ): DoubleRatchetKeyRepository
 }
 
 @Module
@@ -132,18 +145,6 @@ object CryptoDatastoreModule {
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class DatastoreEngineModule {
-    @Binds
-    @DatastoreEngineProvider(DataStoreType.Plain)
-    internal abstract fun bindClearDatastoreEngine(datastore: ClearDatastoreEngine): DatastoreEngine
-
-    @Binds
-    @DatastoreEngineProvider(DataStoreType.Encrypted)
-    internal abstract fun bindEncryptedDatastoreEngine(datastore: EncryptedDataStoreEngine): DatastoreEngine
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
 object CryptoConstantsModule {
 
     @Provides
@@ -157,60 +158,7 @@ object CryptoConstantsModule {
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class GlobalCryptoModule {
-    @Binds
-    @Singleton
-    internal abstract fun bindImportExportCryptoRepository(androidImportExportCryptoRepository: AndroidImportExportCryptoRepository):
-        ImportExportCryptoRepository
-
-    @Binds
-    internal abstract fun bindIVProvider(ivProvider: SecureIVProvider): IVProvider
-
-    @Binds
-    internal abstract fun rsaCryptoEngine(rsaCryptoEngine: JceRsaCryptoEngine): RsaCryptoEngine
-
-    @Binds
-    internal abstract fun bindDataHashEngine(hkdfHashEngine: HKDFHashEngine): DataHashEngine
-
-    @Binds
-    internal abstract fun bindKeyExchangeEngine(diffieHellmanKeyExchangeEngine: DiffieHellmanKeyExchangeEngine): KeyExchangeEngine
-
-    @Binds
-    internal abstract fun bindDoubleRatchetKeyRepository(
-        doubleRatchetCryptoRepository: AndroidDoubleRatchetKeyRepository,
-    ): DoubleRatchetKeyRepository
-}
-
-@Module
-@InstallIn(ServiceComponent::class)
-abstract class CryptoServiceModule {
-
-    @Binds
-    @ServiceScoped
-    internal abstract fun bindMainCryptoRepository(androidMainCryptoRepository: AndroidMainCryptoRepository): MainCryptoRepository
-
-    @Binds
-    internal abstract fun bindEditCryptoRepository(
-        androidEditCryptoRepository: AndroidEditCryptoRepository,
-    ): EditCryptoRepository
-
-    @Binds
-    @ServiceScoped
-    internal abstract fun bindBubblesCryptoRepository(
-        androidBubblesCryptoRepository: AndroidBubblesCryptoRepository,
-    ): BubblesCryptoRepository
-
-    @Binds
-    @ServiceScoped
-    internal abstract fun bindMessagingCryptoRepository(
-        androidMessagingCryptoRepository: AndroidMessagingCryptoRepository,
-    ): MessagingCryptoRepository
-}
-
-@Module
-@InstallIn(ServiceComponent::class)
-abstract class CryptoMigrationServiceModule {
-
+abstract class MigrationCryptoModule {
     @Binds
     internal abstract fun bindMigrationCryptoRepository(androidMigrationCryptoRepository: AndroidMigrationCryptoRepository):
         MigrationCryptoRepository

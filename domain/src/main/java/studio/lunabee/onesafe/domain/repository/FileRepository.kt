@@ -24,6 +24,7 @@ import java.io.InputStream
 import java.util.UUID
 
 interface FileRepository {
+    fun getPlainFile(itemId: UUID, fieldId: UUID, filename: String): File
     fun getFile(fileId: String): File
     fun createTempFile(fileId: String): File
     fun getFiles(filesId: List<String>): List<File>

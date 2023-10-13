@@ -23,8 +23,6 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityRetainedComponent
-import dagger.hilt.android.components.ServiceComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
@@ -48,8 +46,8 @@ import java.io.File
 import java.time.Clock
 
 @Module
-@InstallIn(ActivityRetainedComponent::class)
-object DomainActivityModule {
+@InstallIn(SingletonComponent::class)
+object DomainModule {
     @Provides
     fun provideSafeItemBuilder(cryptoRepository: MainCryptoRepository, setIconUseCase: SetIconUseCase): SafeItemBuilder =
         SafeItemBuilderImpl(cryptoRepository = cryptoRepository, setIconUseCase = setIconUseCase)
@@ -62,24 +60,6 @@ object DomainActivityModule {
         doubleRatchetKeyRepository = doubleRatchetKeyRepository,
         doubleRatchetLocalDatasource = localDatasource,
     )
-}
-
-@Module
-@InstallIn(ServiceComponent::class)
-object DomainServiceModule {
-    @Provides
-    fun provideDoubleRatchetEngine(
-        localDatasource: DoubleRatchetLocalDatasource,
-        doubleRatchetKeyRepository: DoubleRatchetKeyRepository,
-    ): DoubleRatchetEngine = DoubleRatchetEngine(
-        doubleRatchetKeyRepository = doubleRatchetKeyRepository,
-        doubleRatchetLocalDatasource = localDatasource,
-    )
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-object GlobalDomainModule {
 
     @Provides
     fun provideItemIdProvider(): ItemIdProvider = UuidProvider()

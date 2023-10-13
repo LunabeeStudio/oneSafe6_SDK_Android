@@ -35,7 +35,9 @@ import studio.lunabee.onesafe.use
 import java.io.OutputStream
 import java.security.GeneralSecurityException
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AndroidMessagingCryptoRepository @Inject constructor(
     private val crypto: CryptoEngine,
     private val randomKeyProvider: RandomKeyProvider,

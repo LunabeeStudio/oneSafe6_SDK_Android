@@ -22,10 +22,6 @@ package studio.lunabee.di
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityRetainedComponent
-import dagger.hilt.android.components.ServiceComponent
-import dagger.hilt.android.scopes.ActivityRetainedScoped
-import dagger.hilt.android.scopes.ServiceScoped
 import dagger.hilt.components.SingletonComponent
 import studio.lunabee.bubbles.repository.repository.ContactKeyRepositoryImpl
 import studio.lunabee.bubbles.repository.repository.ContactRepositoryImpl
@@ -80,29 +76,24 @@ import studio.lunabee.onesafe.repository.repository.SupportOSRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.UrlMetadataRepositoryImpl
 
 @Module
-@InstallIn(ActivityRetainedComponent::class)
+@InstallIn(SingletonComponent::class)
 interface RepositoryModule {
 
     @Binds
-    @ActivityRetainedScoped
     fun bindIndexWordEntryRepository(indexWordEntryRepository: IndexWordEntryRepositoryImpl): IndexWordEntryRepository
 
     @Binds
-    @ActivityRetainedScoped
     fun bindForceUpgradeRepository(forceUpgradeRepositoryImpl: ForceUpgradeRepositoryImpl): ForceUpgradeRepository
 
     @Binds
-    @ActivityRetainedScoped
     fun bindsRecentSearchRepository(recentSearchRepositoryImpl: RecentSearchRepositoryImpl): RecentSearchRepository
 
     @Binds
-    @ActivityRetainedScoped
     fun bindsPasswordGeneratorConfigRepository(
         passwordGeneratorConfigRepositoryImpl: PasswordGeneratorConfigRepositoryImpl,
     ): PasswordGeneratorConfigRepository
 
     @Binds
-    @ActivityRetainedScoped
     fun bindsMessageChannelRepository(
         messageChannelRepositoryImpl: MessageChannelRepositoryImpl,
     ): MessageChannelRepository
@@ -112,27 +103,7 @@ interface RepositoryModule {
 
     @Binds
     fun bindsConversationRepository(conversationRepositoryImpl: ConversationRepositoryImpl): ConversationRepository
-}
 
-@Module
-@InstallIn(ServiceComponent::class)
-interface RepositoryServiceModule {
-    @Binds
-    @ServiceScoped
-    fun bindsMessageChannelRepository(
-        messageChannelRepositoryImpl: MessageChannelRepositoryImpl,
-    ): MessageChannelRepository
-
-    @Binds
-    fun bindsHandShakeDataRepository(handShakeDataRepositoryImpl: HandShakeDataRepositoryImpl): HandShakeDataRepository
-
-    @Binds
-    fun bindsConversationRepository(conversationRepositoryImpl: ConversationRepositoryImpl): ConversationRepository
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-interface RepositoryGlobalModule {
     @Binds
     fun bindUrlMetadataRepository(urlMetadataRepository: UrlMetadataRepositoryImpl): UrlMetadataRepository
 

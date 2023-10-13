@@ -28,7 +28,9 @@ import studio.lunabee.onesafe.proto.OSExportProto
 import java.io.File
 import java.util.UUID
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class ImportCacheDataSourceImpl @Inject constructor() : ImportCacheDataSource {
     override var importMetadata: ImportMetadata? = null
     override var archiveMasterKey: ByteArray? = null

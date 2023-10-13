@@ -19,23 +19,27 @@
 
 package studio.lunabee.onesafe.ime
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import studio.lunabee.onesafe.commonui.utils.CloseableCoroutineScope
-import studio.lunabee.onesafe.commonui.utils.CloseableMainCoroutineScope
 import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import studio.lunabee.onesafe.domain.usecase.autolock.AutoLockBackgroundUseCase
 import studio.lunabee.onesafe.ime.model.OSKImeState
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.time.Duration
 
+@Singleton
 class OSKAutoLockVisibilityManager @Inject constructor(
     private val autoLockBackgroundUseCase: AutoLockBackgroundUseCase,
     private val securityOptionRepository: SecurityOptionRepository,
     private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
-) : CloseableCoroutineScope by CloseableMainCoroutineScope(), OSKImeStateObserver {
+) : OSKImeStateObserver {
+    val coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     private var oskVisibilityChangeJob: Job? = null
 

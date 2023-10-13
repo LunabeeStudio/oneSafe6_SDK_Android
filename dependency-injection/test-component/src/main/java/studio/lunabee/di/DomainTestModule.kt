@@ -49,7 +49,7 @@ import javax.inject.Singleton
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
-    replaces = [GlobalDomainModule::class, DomainServiceModule::class, DomainActivityModule::class],
+    replaces = [DomainModule::class],
 )
 object DomainTestModule {
     @Provides

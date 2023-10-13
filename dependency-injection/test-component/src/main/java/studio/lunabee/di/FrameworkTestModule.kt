@@ -25,10 +25,13 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import studio.lunabee.onesafe.domain.LoadFileCancelAllUseCase
 import studio.lunabee.onesafe.domain.qualifier.ArchiveCacheDir
 import studio.lunabee.onesafe.domain.qualifier.BuildNumber
 import studio.lunabee.onesafe.domain.qualifier.VersionName
+import studio.lunabee.onesafe.domain.repository.FileRepository
 import java.io.File
+import java.util.UUID
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -51,5 +54,20 @@ object FrameworkTestModule {
     @ArchiveCacheDir(type = ArchiveCacheDir.Type.Export)
     fun provideArchiveExportedDirectory(@ApplicationContext context: Context): File {
         return File(context.cacheDir, "test_archiveExported")
+    }
+
+    @Provides
+    fun provideLoadFileCancelAllUseCase(
+        fileRepository: FileRepository,
+    ): LoadFileCancelAllUseCase {
+        return object : LoadFileCancelAllUseCase {
+            override operator fun invoke(itemId: UUID) {
+                fileRepository.deleteItemDir(itemId)
+            }
+
+            override operator fun invoke() {
+                fileRepository.deleteCacheDir()
+            }
+        }
     }
 }

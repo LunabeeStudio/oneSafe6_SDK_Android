@@ -26,7 +26,9 @@ import studio.lunabee.onesafe.toCharArray
 import studio.lunabee.onesafe.use
 import java.security.KeyPair
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AndroidMigrationCryptoRepository @Inject constructor(
     private val cryptoEngine: RsaCryptoEngine,
 ) : MigrationCryptoRepository {

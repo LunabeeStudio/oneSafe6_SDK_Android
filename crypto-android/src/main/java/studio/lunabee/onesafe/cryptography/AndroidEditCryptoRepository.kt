@@ -27,7 +27,9 @@ import studio.lunabee.onesafe.randomize
 import studio.lunabee.onesafe.use
 import javax.crypto.Cipher
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AndroidEditCryptoRepository @Inject constructor(
     private val saltProvider: SaltProvider,
     private val hashEngine: PasswordHashEngine,

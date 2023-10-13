@@ -23,9 +23,6 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityRetainedComponent
-import dagger.hilt.android.components.ServiceComponent
-import dagger.hilt.android.scopes.ActivityRetainedScoped
 import dagger.hilt.components.SingletonComponent
 import studio.lunabee.onesafe.domain.qualifier.BackupType
 import studio.lunabee.onesafe.domain.qualifier.DateFormatterType
@@ -40,14 +37,12 @@ import studio.lunabee.onesafe.importexport.engine.ShareExportEngine
 import java.time.format.DateTimeFormatter
 
 @Module
-@InstallIn(ActivityRetainedComponent::class)
+@InstallIn(SingletonComponent::class)
 interface ImportModule {
     @Binds
-    @ActivityRetainedScoped
     fun bindImportEngine(importEngineImpl: ImportEngineImpl): ImportEngine
 
     @Binds
-    @ActivityRetainedScoped
     fun bindImportCacheDataSource(importCacheDataSourceImpl: ImportCacheDataSourceImpl): ImportCacheDataSource
 }
 
@@ -72,14 +67,4 @@ class ImportDateFormatterModule {
     @Provides
     @DateFormatterType(type = DateFormatterType.Type.IsoInstant)
     fun provideArchiveDateFormatter(): DateTimeFormatter = DateTimeFormatter.ISO_INSTANT
-}
-
-@Module
-@InstallIn(ServiceComponent::class)
-interface ImportServiceModule {
-    @Binds
-    fun bindImportEngine(importEngineImpl: ImportEngineImpl): ImportEngine
-
-    @Binds
-    fun bindImportCacheDataSource(importCacheDataSourceImpl: ImportCacheDataSourceImpl): ImportCacheDataSource
 }

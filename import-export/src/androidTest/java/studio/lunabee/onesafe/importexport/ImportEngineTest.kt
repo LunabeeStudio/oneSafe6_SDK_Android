@@ -35,7 +35,7 @@ import org.junit.Test
 import org.junit.jupiter.api.assertThrows
 import studio.lunabee.compose.androidtest.helper.LbcFolderResource
 import studio.lunabee.compose.androidtest.helper.LbcResourcesHelper
-import studio.lunabee.di.CryptoConstantsSessionTestModule
+import studio.lunabee.di.CryptoConstantsTestModule
 import studio.lunabee.onesafe.cryptography.CryptoConstants
 import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
 import studio.lunabee.onesafe.cryptography.PasswordHashEngine
@@ -72,7 +72,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @HiltAndroidTest
-@UninstallModules(CryptoConstantsSessionTestModule::class)
+@UninstallModules(CryptoConstantsTestModule::class)
 class ImportEngineTest : OSHiltTest() {
     @get:Rule
     override val hiltRule: HiltAndroidRule = HiltAndroidRule(this)

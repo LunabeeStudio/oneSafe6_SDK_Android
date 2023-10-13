@@ -31,7 +31,7 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
-import studio.lunabee.di.CryptoConstantsSessionTestModule
+import studio.lunabee.di.CryptoConstantsTestModule
 import studio.lunabee.onesafe.cryptography.CryptoConstants
 import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
 import studio.lunabee.onesafe.cryptography.PasswordHashEngine
@@ -50,7 +50,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
 @HiltAndroidTest
-@UninstallModules(CryptoConstantsSessionTestModule::class)
+@UninstallModules(CryptoConstantsTestModule::class)
 class BackupExportEngineTest : OSHiltTest() {
 
     @BindValue

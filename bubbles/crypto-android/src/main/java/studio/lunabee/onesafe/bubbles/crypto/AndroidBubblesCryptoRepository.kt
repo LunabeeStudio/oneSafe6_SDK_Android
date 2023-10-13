@@ -35,7 +35,9 @@ import java.io.OutputStream
 import java.security.GeneralSecurityException
 import java.util.UUID
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AndroidBubblesCryptoRepository @Inject constructor(
     private val mainCryptoRepository: MainCryptoRepository,
     private val crypto: CryptoEngine,

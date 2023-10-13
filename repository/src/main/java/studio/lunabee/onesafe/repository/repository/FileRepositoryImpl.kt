@@ -31,6 +31,9 @@ class FileRepositoryImpl @Inject constructor(
 ) : FileRepository {
     override fun getFile(fileId: String): File = fileLocalDatasource.getFile(fileId)
     override fun createTempFile(fileId: String): File = fileLocalDatasource.createTempFile(fileId)
+    override fun getPlainFile(itemId: UUID, fieldId: UUID, filename: String): File {
+        return fileLocalDatasource.getPlainFile(itemId = itemId, fieldId = fieldId, filename = filename)
+    }
 
     override fun getFiles(filesId: List<String>): List<File> = fileLocalDatasource.getFiles(filesId)
 

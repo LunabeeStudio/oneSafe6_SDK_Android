@@ -24,3 +24,6 @@
 
 # Protobuf https://github.com/protocolbuffers/protobuf/issues/6463#issuecomment-632884075
 -keep class * extends com.google.protobuf.GeneratedMessageLite { *; }
+
+# Unused by Bouquet lib (pdf)
+-dontwarn com.gemalto.jp2.JP2Decoder

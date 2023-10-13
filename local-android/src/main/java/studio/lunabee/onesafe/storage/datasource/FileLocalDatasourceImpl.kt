@@ -40,6 +40,10 @@ class FileLocalDatasourceImpl @Inject constructor(
         private const val FILE_DIR: String = "files"
     }
 
+    override fun getPlainFile(itemId: UUID, fieldId: UUID, filename: String): File {
+        return File(cacheDir, "$itemId/$fieldId/$filename")
+    }
+
     override fun getFile(filename: String): File {
         return File(fileDir, filename)
     }

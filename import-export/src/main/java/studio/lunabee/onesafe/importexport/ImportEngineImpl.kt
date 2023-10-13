@@ -71,7 +71,9 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.UUID
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class ImportEngineImpl @Inject constructor(
     @FileDispatcher private val fileDispatcher: CoroutineDispatcher,
     private val importCryptoRepository: ImportExportCryptoRepository,
