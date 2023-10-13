@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.work.testing)
     api(libs.hilt.work)
     implementation(libs.mockk.android)
+    implementation(libs.room.ktx)
 
     implementation(libs.lunabee.bom)
     implementation(libs.lbcore)
@@ -61,6 +62,7 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":app:settings"))
     implementation(project(":app:migration"))
+    implementation(project(":local-android"))
     api(project(":common-test"))
     api(libs.lbcandroidtest)
 }

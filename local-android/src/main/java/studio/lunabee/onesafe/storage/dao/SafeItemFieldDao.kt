@@ -56,4 +56,7 @@ interface SafeItemFieldDao {
 
     @Query("SELECT * FROM SafeItemField WHERE item_id IN (:items)")
     suspend fun getAllSafeItemFieldsOfItems(items: List<UUID>): List<RoomSafeItemField>
+
+    @Query("DELETE FROM SafeItemField")
+    suspend fun clearTable()
 }

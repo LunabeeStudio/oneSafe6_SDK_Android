@@ -39,6 +39,7 @@ import studio.lunabee.onesafe.domain.usecase.autolock.LockAppUseCase
 import studio.lunabee.onesafe.domain.usecase.onboarding.CreateMasterKeyUseCase
 import studio.lunabee.onesafe.domain.usecase.onboarding.FinishOnboardingUseCase
 import studio.lunabee.onesafe.migration.MigrationConstant
+import studio.lunabee.onesafe.storage.MainDatabase
 import javax.inject.Inject
 
 /**
@@ -82,6 +83,8 @@ abstract class OSHiltTest : OSTest() {
     @Inject lateinit var workerFactory: HiltWorkerFactory
 
     @Inject lateinit var osAppSettings: OSAppSettings
+
+    @Inject lateinit var mainDatabase: MainDatabase
 
     /**
      * See [InitialTestState] for more details.
@@ -132,7 +135,8 @@ abstract class OSHiltTest : OSTest() {
 
     protected suspend fun signOut() {
         cryptoRepository.resetCryptography()
-        persistenceManager.clearAll()
+        persistenceManager.clearItems()
+        mainDatabase.clearAllTables()
     }
 
     /**

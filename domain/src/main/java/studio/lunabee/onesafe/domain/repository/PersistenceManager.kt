@@ -20,6 +20,6 @@
 package studio.lunabee.onesafe.domain.repository
 
 interface PersistenceManager {
-    suspend fun clearAll()
+    suspend fun clearItems()
     suspend fun withTransaction(block: suspend () -> Unit)
 }

@@ -97,5 +97,6 @@ dependencies {
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(project(":app:settings"))
     androidTestImplementation(project(":crypto-android"))
+    androidTestImplementation(project(":local-android"))
     androidTestImplementation(libs.lblogger.timber)
 }

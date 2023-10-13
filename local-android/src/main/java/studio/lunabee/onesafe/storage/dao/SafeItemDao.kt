@@ -408,4 +408,7 @@ interface SafeItemDao {
         """,
     )
     fun getAllDeletedItemsCount(): Flow<Int>
+
+    @Query("DELETE FROM SafeItem")
+    suspend fun clearTable()
 }
