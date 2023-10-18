@@ -47,4 +47,7 @@ interface SafeItemKeyDao {
 
     @Update
     suspend fun update(safeItemKey: List<RoomSafeItemKey>)
+
+    @Query("DELETE FROM SafeItemKey")
+    suspend fun clearTable()
 }

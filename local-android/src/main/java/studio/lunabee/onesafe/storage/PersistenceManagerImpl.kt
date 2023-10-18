@@ -26,6 +26,10 @@ import studio.lunabee.onesafe.domain.repository.PersistenceManager
 import studio.lunabee.onesafe.repository.datasource.FileLocalDatasource
 import studio.lunabee.onesafe.repository.datasource.IconLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.RecentSearchLocalDatasource
+import studio.lunabee.onesafe.storage.dao.IndexWordEntryDao
+import studio.lunabee.onesafe.storage.dao.SafeItemDao
+import studio.lunabee.onesafe.storage.dao.SafeItemFieldDao
+import studio.lunabee.onesafe.storage.dao.SafeItemKeyDao
 import javax.inject.Inject
 
 class PersistenceManagerImpl @Inject constructor(
@@ -33,13 +37,20 @@ class PersistenceManagerImpl @Inject constructor(
     private val iconLocalDataSource: IconLocalDataSource,
     private val fileLocalDatasource: FileLocalDatasource,
     private val recentSearchDatasource: RecentSearchLocalDatasource,
+    private val safeItemDao: SafeItemDao,
+    private val safeItemFieldDao: SafeItemFieldDao,
+    private val safeItemKeyDao: SafeItemKeyDao,
+    private val indexWordEntryDao: IndexWordEntryDao,
 ) : PersistenceManager {
-    override suspend fun clearAll() {
+    override suspend fun clearItems() {
         withContext(Dispatchers.IO) {
-            mainDatabase.clearAllTables()
             iconLocalDataSource.removeAllIcons()
             fileLocalDatasource.removeAllFiles()
             recentSearchDatasource.clear()
+            safeItemDao.clearTable()
+            safeItemFieldDao.clearTable()
+            safeItemKeyDao.clearTable()
+            indexWordEntryDao.clearTable()
         }
     }
 

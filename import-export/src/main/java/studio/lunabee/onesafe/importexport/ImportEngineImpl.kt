@@ -226,7 +226,7 @@ class ImportEngineImpl @Inject constructor(
                         importCacheDataSource.reEncryptedSafeItemKeys += importParentItemKey.id to importParentItemKey
                     }
                     ImportMode.Replace -> {
-                        persistenceManager.clearAll()
+                        persistenceManager.clearItems()
                     }
 
                     ImportMode.Append -> {

@@ -258,12 +258,20 @@ object PersistenceManagerModule {
         iconLocalDataSource: IconLocalDataSource,
         recentSearchLocalDatasource: RecentSearchLocalDatasource,
         fileLocalDatasource: FileLocalDatasource,
+        safeItemDao: SafeItemDao,
+        safeItemFieldDao: SafeItemFieldDao,
+        safeItemKeyDao: SafeItemKeyDao,
+        indexWordEntryDao: IndexWordEntryDao,
     ): PersistenceManager {
         return PersistenceManagerImpl(
             mainDatabase,
             iconLocalDataSource,
             fileLocalDatasource,
             recentSearchLocalDatasource,
+            safeItemDao,
+            safeItemFieldDao,
+            safeItemKeyDao,
+            indexWordEntryDao,
         )
     }
 }
