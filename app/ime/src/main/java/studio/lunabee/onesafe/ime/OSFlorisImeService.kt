@@ -287,7 +287,7 @@ class OSFlorisImeService : FlorisImeService() {
             // Disable oneSafe K when using oneSafe
             super.ThemeImeView()
         } else {
-            val isCryptoDataReady by isCryptoDataReadyInMemoryUseCase().collectAsStateWithLifecycle(
+            val isCryptoDataReady by isCryptoDataReadyInMemoryUseCase.flow().collectAsStateWithLifecycle(
                 false,
             )
             val isOneSafeUiVisible by isOneSafeUiVisibleFlow.collectAsStateWithLifecycle()
@@ -350,7 +350,7 @@ class OSFlorisImeService : FlorisImeService() {
     override fun AboveImeView(ImeUi: @Composable () -> Unit) {
         val imeClient by imeClientFlow.collectAsStateWithLifecycle()
         navController = rememberNavController()
-        val isCryptoDataReady by isCryptoDataReadyInMemoryUseCase().collectAsStateWithLifecycle(
+        val isCryptoDataReady by isCryptoDataReadyInMemoryUseCase.flow().collectAsStateWithLifecycle(
             initialValue = false,
         )
         val isOneSafeUiVisible by isOneSafeUiVisibleFlow.collectAsStateWithLifecycle()

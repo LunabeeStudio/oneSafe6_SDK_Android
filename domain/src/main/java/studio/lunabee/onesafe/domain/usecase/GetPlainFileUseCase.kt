@@ -27,6 +27,7 @@ import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
+import studio.lunabee.onesafe.domain.utils.FileHelper.getValidFileName
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
@@ -53,15 +54,18 @@ class GetPlainFileUseCase @Inject constructor(
     suspend operator fun invoke(field: SafeItemField): LBResult<File> {
         return OSError.runCatching(log) {
             val key = safeItemKeyRepository.getSafeItemKey(field.itemId)
-            val name = field.encName?.let { decryptUseCase(it, field.itemId, String::class).data }
+            val encValue = field.encValue ?: throw OSDomainError(OSDomainError.Code.MISSING_FILE_ID_IN_FIELD)
+            val plainFileResult = decryptUseCase(encValue, key, String::class)
+
+            // Add extension to file name if needed
+            val extension = plainFileResult.data?.substringAfter(Constant.FileTypeExtSeparator).orEmpty()
+            val rawName = field.encName?.let { decryptUseCase(it, field.itemId, String::class).data }
                 ?: field.id.toString() // fallback to field id if the name is null
+            val name = rawName.getValidFileName(extension)
             val existingFile = fileRepository.getPlainFile(itemId = field.itemId, fieldId = field.id, filename = name)
             if (existingFile.exists()) {
                 existingFile
             } else {
-                val encFileId = field.encValue
-                    ?: throw OSDomainError(OSDomainError.Code.MISSING_FILE_ID_IN_FIELD)
-                val plainFileResult = decryptUseCase(encFileId, key, String::class)
                 when (plainFileResult) {
                     is LBResult.Failure -> return LBResult.Failure(plainFileResult.throwable)
                     is LBResult.Success -> {

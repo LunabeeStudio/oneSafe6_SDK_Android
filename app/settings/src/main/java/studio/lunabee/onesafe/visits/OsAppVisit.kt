@@ -34,9 +34,12 @@ class OsAppVisit @Inject constructor(
 ) {
 
     private val hasVisitedLoginKey = booleanPreferencesKey(AppVisitConstants.hasVisitedLoginKey)
-    val hasVisitedLogin: Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[hasVisitedLoginKey] ?: AppVisitConstants.hasVisitedLoginDefault
-    }
+    val hasVisitedLogin: Boolean
+        get() = runBlocking {
+            dataStore.data.map { preferences ->
+                preferences[hasVisitedLoginKey]
+            }.firstOrNull() ?: AppVisitConstants.hasVisitedLoginDefault
+        }
 
     suspend fun storeHasVisitedLogin() {
         dataStore.edit { preferences ->

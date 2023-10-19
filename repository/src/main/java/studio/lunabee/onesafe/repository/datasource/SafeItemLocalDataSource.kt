@@ -60,7 +60,7 @@ interface SafeItemLocalDataSource {
     fun getSafeItemFlow(id: UUID): Flow<SafeItem?>
     suspend fun removeItem(id: UUID)
     suspend fun removeItems(ids: List<UUID>)
-    suspend fun setDeletedAndRemoveFromFavorite(id: UUID)
+    suspend fun setDeletedAndRemoveFromFavorite(id: UUID?)
     suspend fun updateParentIds(oldParentId: UUID, newParentId: UUID?, newDeletedParentId: UUID?)
     suspend fun updateSafeItem(safeItem: SafeItem, indexWordEntries: List<IndexWordEntry>?)
     fun findLastFavorite(limit: Int): Flow<List<SafeItem>>

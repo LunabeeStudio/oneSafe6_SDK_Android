@@ -55,6 +55,10 @@ class FileRepositoryImpl @Inject constructor(
         return fileLocalDatasource.savePlainFile(inputStream, filename, itemId, fieldId)
     }
 
+    override fun deleteAll() {
+        fileLocalDatasource.removeAllFiles()
+    }
+
     override fun deleteCacheDir() {
         fileLocalDatasource.deleteCacheDir()
     }

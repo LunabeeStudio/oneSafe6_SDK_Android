@@ -49,9 +49,9 @@ import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.repository.IconRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
-import studio.lunabee.onesafe.domain.repository.PersistenceManager
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.domain.usecase.item.MoveToBinItemUseCase
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemFieldUseCase
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemUseCase
 import studio.lunabee.onesafe.error.OSCryptoError
@@ -86,9 +86,9 @@ class ImportEngineImpl @Inject constructor(
     private val iconIdProvider: IconIdProvider,
     private val fileIdProvider: FileIdProvider,
     private val importCacheDataSource: ImportCacheDataSource,
-    private val persistenceManager: PersistenceManager,
     private val createIndexWordEntriesFromItemUseCase: CreateIndexWordEntriesFromItemUseCase,
     private val createIndexWordEntriesFromItemFieldUseCase: CreateIndexWordEntriesFromItemFieldUseCase,
+    private val moveToBinItemUseCase: MoveToBinItemUseCase,
 ) : ImportEngine {
     override suspend fun getMetadata(archiveExtractedDirectory: File): ImportMetadata {
         // TODO Until we found a better solution, clear all cache if an new import is started.
@@ -226,7 +226,7 @@ class ImportEngineImpl @Inject constructor(
                         importCacheDataSource.reEncryptedSafeItemKeys += importParentItemKey.id to importParentItemKey
                     }
                     ImportMode.Replace -> {
-                        persistenceManager.clearItems()
+                        moveToBinItemUseCase.all()
                     }
 
                     ImportMode.Append -> {
@@ -466,9 +466,7 @@ class ImportEngineImpl @Inject constructor(
                 position = archiveSafeItem.position,
                 iconId = archiveSafeItem.iconId.nullIfEmpty()?.let(UUID::fromString),
                 encColor = archiveSafeItem.encColor.toByteArrayOrNull(),
-                deletedAt = archiveSafeItem.deletedAt.nullIfEmpty()?.let { Instant.parse(it) }?.takeIf {
-                    archiveSafeItem.deletedParentId.nullIfEmpty() != null
-                },
+                deletedAt = archiveSafeItem.deletedAt.nullIfEmpty()?.let { Instant.parse(it) },
                 deletedParentId = archiveSafeItem.deletedParentId.nullIfEmpty()?.let(UUID::fromString)?.takeIf {
                     archiveSafeItem.deletedAt.nullIfEmpty() != null
                 },

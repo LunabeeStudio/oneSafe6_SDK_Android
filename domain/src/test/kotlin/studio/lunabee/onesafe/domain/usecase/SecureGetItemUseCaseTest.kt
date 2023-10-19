@@ -60,7 +60,7 @@ class SecureGetItemUseCaseTest {
 
     private val isLoadedFlow: MutableStateFlow<Boolean> = MutableStateFlow(true)
     private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase = mockk {
-        every { this@mockk.invoke() } returns isLoadedFlow
+        every { this@mockk.flow() } returns isLoadedFlow
     }
 
     // Add a timeout around SecureGetItemUseCase flow so we can test the empty flow case

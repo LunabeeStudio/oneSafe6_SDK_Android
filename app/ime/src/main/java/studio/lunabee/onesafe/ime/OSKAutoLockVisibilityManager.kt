@@ -58,7 +58,9 @@ class OSKAutoLockVisibilityManager @Inject constructor(
 
     private fun launchLock() {
         coroutineScope.launch {
-            if (isCryptoDataReadyInMemoryUseCase().first() && oskVisibilityChangeJob == null || oskVisibilityChangeJob?.isActive == false) {
+            if (isCryptoDataReadyInMemoryUseCase.flow().first() &&
+                oskVisibilityChangeJob == null || oskVisibilityChangeJob?.isActive == false
+            ) {
                 oskVisibilityChangeJob = coroutineScope.launch {
                     autoLockBackgroundUseCase.osk()
                 }

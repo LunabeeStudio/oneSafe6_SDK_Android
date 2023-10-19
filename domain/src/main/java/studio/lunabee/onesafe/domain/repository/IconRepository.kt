@@ -30,4 +30,5 @@ interface IconRepository {
     fun deleteIcon(iconId: UUID): Boolean
     fun getIcons(): List<File>
     fun copyAndDeleteIconFile(iconFile: File, iconId: UUID)
+    fun deleteAll()
 }

@@ -71,7 +71,7 @@ interface SafeItemDao {
             VALUES(:itemId)
             UNION
                 SELECT SafeItem.id
-                FROM SafeItem JOIN ItemWithChildren ON SafeItem.parent_id=ItemWithChildren.id
+                FROM SafeItem JOIN ItemWithChildren ON SafeItem.parent_id IS ItemWithChildren.id
                 WHERE SafeItem.deleted_at IS NULL
         )
     UPDATE SafeItem 
@@ -79,13 +79,13 @@ interface SafeItemDao {
         deleted_at = :deletedAt,
         is_favorite = 0,
         deleted_parent_id = CASE
-            WHEN id = :itemId THEN NULL
+            WHEN id IS :itemId THEN NULL
             ELSE parent_id
         END
     WHERE SafeItem.id IN ItemWithChildren
     """,
     )
-    suspend fun setDeletedAndRemoveFromFavorite(itemId: UUID, deletedAt: Instant = Instant.now())
+    suspend fun setDeletedAndRemoveFromFavorite(itemId: UUID?, deletedAt: Instant = Instant.now())
 
     @Query("SELECT * FROM SafeItem WHERE id = :id")
     suspend fun findById(id: UUID): RoomSafeItem?

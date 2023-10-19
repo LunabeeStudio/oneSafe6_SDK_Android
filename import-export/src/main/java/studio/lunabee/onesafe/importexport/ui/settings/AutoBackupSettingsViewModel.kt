@@ -29,9 +29,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.commonui.CommonUiConstants
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
-import studio.lunabee.onesafe.importexport.usecase.GetBackupsUseCase
+import studio.lunabee.onesafe.importexport.usecase.GetLocalBackupsUseCase
 import studio.lunabee.onesafe.importexport.usecase.IsLatestBackupOutdatedUseCase
 import studio.lunabee.onesafe.importexport.worker.AutoBackupWorker
 import javax.inject.Inject
@@ -39,7 +40,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AutoBackupSettingsViewModel @Inject constructor(
     private val settings: AutoBackupSettingsRepository,
-    private val getBackupsUseCase: GetBackupsUseCase,
+    private val getBackupsUseCase: GetLocalBackupsUseCase,
     private val isLatestBackupOutdatedUseCase: IsLatestBackupOutdatedUseCase,
 ) : ViewModel() {
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -70,8 +71,10 @@ class AutoBackupSettingsViewModel @Inject constructor(
                 context = context,
                 frequency = AutoBackupFrequency.valueForDuration(autoBackupFrequency),
             )
-            if (isLatestBackupOutdatedUseCase()) {
-                AutoBackupWorker.start(context)
+            viewModelScope.launch {
+                if (isLatestBackupOutdatedUseCase()) {
+                    AutoBackupWorker.start(context)
+                }
             }
         } else {
             AutoBackupWorker.cancel(context)
@@ -85,8 +88,10 @@ class AutoBackupSettingsViewModel @Inject constructor(
             context = context,
             frequency = frequency,
         )
-        if (isLatestBackupOutdatedUseCase()) {
-            AutoBackupWorker.start(context)
+        viewModelScope.launch {
+            if (isLatestBackupOutdatedUseCase()) {
+                AutoBackupWorker.start(context)
+            }
         }
     }
 }

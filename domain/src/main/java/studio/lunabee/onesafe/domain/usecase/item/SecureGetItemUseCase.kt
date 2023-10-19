@@ -42,7 +42,7 @@ class SecureGetItemUseCase @Inject constructor(
      * @return a flow of nullable [SafeItem] (null if item with [id] does not exist) or an empty flow if the master key is not loaded
      */
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(id: UUID): Flow<SafeItem?> = isCryptoDataReadyInMemoryUseCase().flatMapLatest { isCryptoLoaded ->
+    operator fun invoke(id: UUID): Flow<SafeItem?> = isCryptoDataReadyInMemoryUseCase.flow().flatMapLatest { isCryptoLoaded ->
         if (isCryptoLoaded) {
             safeItemRepository.getSafeItemFlow(id)
         } else {

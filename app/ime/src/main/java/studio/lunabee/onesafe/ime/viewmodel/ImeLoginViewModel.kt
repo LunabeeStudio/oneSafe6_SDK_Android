@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.commonui.error.description
@@ -39,11 +38,9 @@ import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.IsBiometricEnabledUseCase
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.ime.ui.biometric.ImeBiometricResultRepository
-import studio.lunabee.onesafe.visits.OsAppVisit
 
 class ImeLoginViewModel(
     isBiometricEnabledUseCase: IsBiometricEnabledUseCase,
-    private val osAppVisit: OsAppVisit,
     private val loginUiStateHolder: LoginUiStateHolder,
     private val loginFromPasswordDelegate: LoginFromPasswordDelegateImpl,
     private val imeBiometricResultRepository: ImeBiometricResultRepository,
@@ -59,13 +56,6 @@ class ImeLoginViewModel(
 
     init {
         viewModelScope.launch {
-            loginUiStateHolder.setUiState(
-                loginUiStateHolder.uiState.value.copy(isFirstLogin = !osAppVisit.hasVisitedLogin.first()),
-            )
-            osAppVisit.storeHasVisitedLogin()
-        }
-
-        viewModelScope.launch {
             imeBiometricResultRepository.result.transformWhile {
                 emit(it)
                 it is LBResult.Failure
@@ -78,9 +68,11 @@ class ImeLoginViewModel(
                     }
                     is LBResult.Success -> {
                         mainCryptoRepository.loadMasterKeyExternal(result.successData)
-                        loginUiStateHolder.setUiState(
-                            loginUiStateHolder.uiState.value.copy(loginResult = LoginUiState.LoginResult.Success),
-                        )
+                        loginUiStateHolder.dataState?.copy(
+                            loginResult = LoginUiState.LoginResult.Success,
+                        )?.let { dataState ->
+                            loginUiStateHolder.setUiState(dataState)
+                        }
                     }
                 }
             }

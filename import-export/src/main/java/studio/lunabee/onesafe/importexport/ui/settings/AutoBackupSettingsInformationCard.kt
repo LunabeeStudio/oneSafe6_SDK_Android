@@ -31,12 +31,12 @@ import studio.lunabee.onesafe.organism.card.OSCustomCard
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.OSTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.Locale
 
 @Composable
 fun AutoBackupSettingsInformationCard(
-    date: LocalDateTime?,
+    date: Instant?,
     modifier: Modifier = Modifier,
 ) {
     val dateText = if (date == null) {
@@ -65,7 +65,7 @@ fun AutoBackupSettingsInformationCard(
 fun AutoBackupSettingsInformationCardPreview() {
     OSTheme {
         AutoBackupSettingsInformationCard(
-            LocalDateTime.now(),
+            Instant.now(),
         )
     }
 }

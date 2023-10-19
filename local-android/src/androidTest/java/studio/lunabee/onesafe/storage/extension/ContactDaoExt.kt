@@ -30,7 +30,7 @@ suspend fun ContactDao.insert(
     id: UUID = testUUIDs[0],
     encName: ByteArray = byteArrayOf(),
     encSharedKey: ContactSharedKey = ContactSharedKey(byteArrayOf()),
-    updatedAt: Instant = Instant.ofEpochSecond(0),
+    updatedAt: Instant = Instant.EPOCH,
     consultedAt: Instant? = null,
 ) {
     insert(

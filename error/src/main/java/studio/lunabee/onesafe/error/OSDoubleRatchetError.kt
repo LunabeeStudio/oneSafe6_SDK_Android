@@ -27,7 +27,7 @@ data class OSDoubleRatchetError(
     override val cause: Throwable? = null,
 ) : OSError(message, cause, code) {
 
-    enum class Code(val message: String) : ErrorCode {
+    enum class Code(override val message: String) : ErrorCode<OSDoubleRatchetError> {
         ConversationNotSetup("This contact did not respond to your invitation yet"),
         ConversationNotFound("the conversation doesn't exist"),
         MessageKeyNotFound("This message has already been decrypted"),

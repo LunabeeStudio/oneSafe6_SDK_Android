@@ -45,7 +45,7 @@ class HandleIncomingMessageUseCase @Inject constructor(
             return LBResult.Success(IncomingMessageState.NotBase64)
         }
 
-        return if (isCryptoDataReadyInMemoryUseCase().first()) {
+        return if (isCryptoDataReadyInMemoryUseCase.flow().first()) {
             val decryptResult = decryptIncomingMessageUseCase(cipherData)
             when (decryptResult) {
                 is LBResult.Success -> {

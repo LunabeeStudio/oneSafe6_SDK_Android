@@ -27,4 +27,8 @@ object Constant {
     const val MinimumCharForSearch: Int = 2
     val DelayBeforeSearch: Duration = 500.milliseconds
     const val FileTypeExtSeparator: Char = '|'
+    val ForbiddenCharacterFileName: Regex
+        get() = "[:\\\\/*?|<>']".toRegex()
+    const val FileMaxSizeMegaBytes: Int = 50
+    const val FileMaxSizeBytes: Int = FileMaxSizeMegaBytes * 1024 * 1024
 }

@@ -25,7 +25,7 @@ data class OSStorageError(
     override val cause: Throwable? = null,
 ) : OSError(message, cause, code) {
 
-    enum class Code(val message: String) : ErrorCode {
+    enum class Code(override val message: String) : ErrorCode<OSStorageError> {
         ITEM_KEY_NOT_FOUND("The item key does not exist"),
         ITEM_NOT_FOUND("The item does not exist"),
         CONTACT_NOT_FOUND("The contact does not exist"),
@@ -35,5 +35,6 @@ data class OSStorageError(
         ENQUEUED_MESSAGE_ALREADY_EXIST_ERROR("The message has already been enqueued"),
         ENQUEUED_MESSAGE_NOT_FOUND_FOR_DELETE("No message with the id provided found for delete"),
         UNKNOWN_FILE_ERROR("Unknown file error"),
+        MISSING_BACKUP_FILE("The file associated to the local backup does not exist on file system"),
     }
 }

@@ -30,6 +30,7 @@ android {
     defaultConfig {
         minSdk = AndroidConfig.MIN_LIB_SDK
         manifestPlaceholders["testTargetSdk"] = AndroidConfig.TARGET_SDK
+        missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
     }
 
     sourceSets["main"].resources {
@@ -39,6 +40,7 @@ android {
     packaging {
         resources.pickFirsts.add("META-INF/LICENSE.md")
         resources.pickFirsts.add("META-INF/LICENSE-notice.md")
+        resources.pickFirsts.add("META-INF/DEPENDENCIES")
     }
 }
 
@@ -55,6 +57,8 @@ dependencies {
     api(libs.hilt.work)
     implementation(libs.mockk.android)
     implementation(libs.room.ktx)
+    implementation(libs.datastore)
+    implementation(libs.protobuf.kotlinlite)
 
     implementation(libs.lunabee.bom)
     implementation(libs.lbcore)
@@ -62,7 +66,7 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":app:settings"))
     implementation(project(":app:migration"))
-    implementation(project(":local-android"))
     api(project(":common-test"))
+    api(project(":local-android"))
     api(libs.lbcandroidtest)
 }

@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.domain.usecase.item
 import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.domain.model.common.UpdateState
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
+import studio.lunabee.onesafe.domain.model.safeitem.FileSavingData
 import studio.lunabee.onesafe.domain.model.safeitem.ItemFieldData
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.repository.IndexWordEntryRepository
@@ -43,6 +44,7 @@ class UpdateItemUseCase @Inject constructor(
     private val safeItemKeyRepository: SafeItemKeyRepository,
     private val indexWordEntryRepository: IndexWordEntryRepository,
     private val deleteIconUseCase: DeleteIconUseCase,
+    private val addAndRemoveFileUseCase: AddAndRemoveFileUseCase,
     private val createIndexWordEntriesFromItemUseCase: CreateIndexWordEntriesFromItemUseCase,
     private val updateFieldsUseCase: UpdateFieldsUseCase,
 ) {
@@ -50,6 +52,7 @@ class UpdateItemUseCase @Inject constructor(
         itemId: UUID,
         updateData: UpdateData,
         fields: List<ItemFieldData> = listOf(),
+        fileSavingData: List<FileSavingData>,
     ): LBResult<SafeItem> {
         return OSError.runCatching {
             // Get current safe item.
@@ -122,6 +125,11 @@ class UpdateItemUseCase @Inject constructor(
 
             // UpdateFields
             updateFieldsUseCase(safeItem, fields)
+
+            // Add files from new fields
+            // remove files from removed fields
+            addAndRemoveFileUseCase(itemId = safeItem.id, fileSavingData = fileSavingData)
+
             itemWithUpdatedValue
         }
     }

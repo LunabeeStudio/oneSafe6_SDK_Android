@@ -27,7 +27,9 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import studio.lunabee.onesafe.domain.common.MessageIdProvider
+import studio.lunabee.onesafe.storage.converter.FileConverter
 import studio.lunabee.onesafe.storage.converter.InstantConverter
+import studio.lunabee.onesafe.storage.dao.BackupDao
 import studio.lunabee.onesafe.storage.dao.ContactDao
 import studio.lunabee.onesafe.storage.dao.ContactKeyDao
 import studio.lunabee.onesafe.storage.dao.DoubleRatchetConversationDao
@@ -40,6 +42,7 @@ import studio.lunabee.onesafe.storage.dao.SafeItemDao
 import studio.lunabee.onesafe.storage.dao.SafeItemFieldDao
 import studio.lunabee.onesafe.storage.dao.SafeItemKeyDao
 import studio.lunabee.onesafe.storage.dao.SentMessageDao
+import studio.lunabee.onesafe.storage.model.RoomBackup
 import studio.lunabee.onesafe.storage.model.RoomContact
 import studio.lunabee.onesafe.storage.model.RoomContactKey
 import studio.lunabee.onesafe.storage.model.RoomDoubleRatchetConversation
@@ -55,9 +58,9 @@ import studio.lunabee.onesafe.storage.model.RoomSentMessage
 import studio.lunabee.onesafe.toByteArray
 import javax.inject.Inject
 
-@TypeConverters(InstantConverter::class)
+@TypeConverters(InstantConverter::class, FileConverter::class)
 @Database(
-    version = 6,
+    version = 7,
     entities = [
         RoomSafeItem::class,
         RoomSafeItemField::class,
@@ -71,12 +74,14 @@ import javax.inject.Inject
         RoomDoubleRatchetConversation::class,
         RoomHandShakeData::class,
         RoomSentMessage::class,
+        RoomBackup::class,
     ],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 4, to = 5),
         AutoMigration(from = 5, to = 6),
+        AutoMigration(from = 6, to = 7),
     ],
 )
 abstract class MainDatabase : RoomDatabase() {
@@ -92,6 +97,7 @@ abstract class MainDatabase : RoomDatabase() {
     abstract fun doubleRatchetConversationDao(): DoubleRatchetConversationDao
     abstract fun handShakeDataDao(): HandShakeDataDao
     abstract fun sentMessageDao(): SentMessageDao
+    abstract fun backupDao(): BackupDao
 }
 
 class Migration3to4 @Inject constructor(private val idProvider: MessageIdProvider) : Migration(3, 4) {

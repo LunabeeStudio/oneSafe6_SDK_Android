@@ -25,7 +25,7 @@ data class OSRemoteError(
     override val cause: Throwable? = null,
 ) : OSError(message, cause, code) {
 
-    enum class Code(val message: String) : ErrorCode {
+    enum class Code(override val message: String) : ErrorCode<OSRemoteError> {
         UNKNOWN_HTTP_ERROR("Exception occurred during execution of HTTP request"),
     }
 }

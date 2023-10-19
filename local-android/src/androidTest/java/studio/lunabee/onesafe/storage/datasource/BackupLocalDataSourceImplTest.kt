@@ -19,99 +19,128 @@
 
 package studio.lunabee.onesafe.storage.datasource
 
+import androidx.test.platform.app.InstrumentationRegistry
+import com.lunabee.lbcore.model.LBResult
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.timeout
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import studio.lunabee.onesafe.domain.qualifier.InternalDir
+import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.error.OSStorageError
+import studio.lunabee.onesafe.importexport.model.LocalBackup
+import studio.lunabee.onesafe.storage.dao.BackupDao
+import studio.lunabee.onesafe.test.testClock
+import studio.lunabee.onesafe.test.testUUIDs
 import java.io.File
+import java.time.Instant
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.seconds
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
-@OptIn(FlowPreview::class)
 @HiltAndroidTest
 class BackupLocalDataSourceImplTest {
     @get:Rule val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
 
-    @Inject internal lateinit var backupLocalDataSource: BackupLocalDataSourceImpl
+    @Inject internal lateinit var backupLocalDataSource: LocalBackupLocalDataSourceImpl
+
+    @Inject internal lateinit var backupDao: BackupDao
 
     @Inject
     @InternalDir(InternalDir.Type.Backups)
     lateinit var backupDir: File
 
+    private val tempDir = File(InstrumentationRegistry.getInstrumentation().targetContext.cacheDir, "temp")
+
     @Before
     fun setUp() {
         hiltRule.inject()
         backupDir.deleteRecursively()
+        tempDir.deleteRecursively()
+        tempDir.mkdirs()
     }
 
     @After
     fun tearsDown() {
         backupDir.deleteRecursively()
+        tempDir.deleteRecursively()
     }
 
     /**
-     * Create file and check flow update
+     * Main path (add backup -> get backup -> ok)
      */
     @Test
-    fun getBackupsFlow_create_test(): TestResult = runTest {
-        val abcFile = File(backupLocalDataSource.backupsDir, "abc")
-        val actual = backupLocalDataSource.getBackupsFlow().stateIn(backgroundScope, SharingStarted.Eagerly, null)
-        assertDoesNotThrow({
-            "actual value = ${actual.value?.joinToString()}"
-        }) {
-            actual.filter { it?.isEmpty() == true }
-                .timeout(2.seconds)
-                .flowOn(Dispatchers.Default)
-                .first()
-        }
-        abcFile.createNewFile()
-        assertDoesNotThrow({
-            "actual value = ${actual.value?.joinToString()}"
-        }) {
-            actual.filter { it?.size == 1 && it.first() == abcFile }
-                .timeout(2.seconds)
-                .flowOn(Dispatchers.Default)
-                .first()
-        }
+    fun addBackup_getBackups_test(): TestResult = runTest {
+        val backupFile = File(tempDir, testUUIDs[0].toString())
+        backupFile.createNewFile()
+        val localBackup = LocalBackup(Instant.now(testClock), backupFile)
+        val expected = listOf(
+            LBResult.Success(
+                localBackup.copy(file = File(backupDir, backupFile.name)),
+            ),
+        )
+
+        backupLocalDataSource.addBackup(localBackup)
+        val actual = backupLocalDataSource.getBackups()
+        assertContentEquals(expected, actual)
     }
 
     /**
-     * Delete file and check flow update
+     * Add backup with non existent file -> Expect error + no entry in db
      */
     @Test
-    fun getBackupsFlow_delete_test(): TestResult = runTest {
-        val abcFile = File(backupLocalDataSource.backupsDir, "abc").also { it.createNewFile() }
-        val actual = backupLocalDataSource.getBackupsFlow().stateIn(backgroundScope, SharingStarted.Eagerly, null)
-        assertDoesNotThrow({
-            "actual value = ${actual.value?.joinToString()}"
-        }) {
-            actual.filter { it?.size == 1 && it.first() == abcFile }
-                .timeout(2.seconds)
-                .flowOn(Dispatchers.Default)
-                .first()
+    fun addBackup_error_test(): TestResult = runTest {
+        val error = assertThrows<OSStorageError> {
+            val backupFile = File(tempDir, testUUIDs[0].toString())
+            val localBackup = LocalBackup(Instant.now(testClock), backupFile)
+            backupLocalDataSource.addBackup(localBackup)
         }
-        abcFile.delete()
-        assertDoesNotThrow({
-            "actual value = ${actual.value?.joinToString()}"
-        }) {
-            actual.filter { it?.isEmpty() == true }
-                .timeout(2.seconds)
-                .flowOn(Dispatchers.Default)
-                .first()
-        }
+        assertEquals(OSStorageError.Code.UNKNOWN_FILE_ERROR, error.code)
+        assertEquals(emptyList(), backupDao.getAll())
+    }
+
+    /**
+     * Add backup -> delete file manually -> get backups -> Expect failure result
+     */
+    @Test
+    fun getBackups_error_test(): TestResult = runTest {
+        val id = testUUIDs[0].toString()
+        val backupFile = File(tempDir, id)
+        backupFile.createNewFile()
+        val localBackup = LocalBackup(Instant.now(testClock), backupFile)
+        val expected = listOf(
+            LBResult.Failure(
+                throwable = OSStorageError.Code.MISSING_BACKUP_FILE.get(),
+                failureData = localBackup.copy(file = File(backupDir, backupFile.name)),
+            ),
+        )
+
+        backupLocalDataSource.addBackup(localBackup)
+        backupDao.getLocalById(id)!!.localFile.delete()
+        val actual = backupLocalDataSource.getBackups()
+        assertContentEquals(expected, actual)
+    }
+
+    /**
+     * Main path (add -> delete -> get -> db empty & file deleted)
+     */
+    @Test
+    fun delete_test(): TestResult = runTest {
+        val backupFile = File(tempDir, testUUIDs[0].toString())
+        backupFile.createNewFile()
+        val localBackup = backupLocalDataSource.addBackup(LocalBackup(Instant.now(testClock), backupFile))
+
+        assertTrue(backupLocalDataSource.getBackups().isNotEmpty())
+        assertTrue(localBackup.file.exists())
+        backupLocalDataSource.delete(listOf(localBackup))
+        assertTrue(backupLocalDataSource.getBackups().isEmpty())
+        assertFalse(localBackup.file.exists())
     }
 }

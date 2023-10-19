@@ -56,7 +56,7 @@ import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.notification.NotificationPermissionRationaleDialogState
-import studio.lunabee.onesafe.importexport.model.Backup
+import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.molecule.ElevatedTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.extensions.topAppBarElevation
@@ -64,8 +64,7 @@ import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.OSPreviewOnSurfaceTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
 import java.io.File
-import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.Instant
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -214,8 +213,8 @@ private fun AutoBackupSettingsScreenOnPreview() {
             uiState = AutoBackupSettingsUiState.Enabled(
                 AutoBackupFrequency.WEEKLY,
                 listOf(
-                    Backup(LocalDateTime.now(), File("")),
-                    Backup(LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC), File("")),
+                    LocalBackup(Instant.now(), File("")),
+                    LocalBackup(Instant.EPOCH, File("")),
                 ),
             ),
             navigateBack = {},

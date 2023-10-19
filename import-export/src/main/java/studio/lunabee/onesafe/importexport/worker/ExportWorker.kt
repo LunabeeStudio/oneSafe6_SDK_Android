@@ -78,7 +78,7 @@ class ExportWorker @AssistedInject constructor(
                     is LBFlowResult.Loading -> updateProgress(result.progress ?: -1f)
                     is LBFlowResult.Success -> {
                         val data = Data.Builder()
-                            .putString(FILE_OUTPUT_KEY, result.successData.path)
+                            .putString(FILE_OUTPUT_KEY, result.successData.file.path)
                             .build()
                         workerResult = Result.success(data)
                     }

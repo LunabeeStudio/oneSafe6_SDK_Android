@@ -41,7 +41,4 @@ interface IndexWordEntryDao {
 
     @Update
     suspend fun update(entries: List<RoomIndexWordEntry>)
-
-    @Query("DELETE FROM IndexWordEntry")
-    suspend fun clearTable()
 }

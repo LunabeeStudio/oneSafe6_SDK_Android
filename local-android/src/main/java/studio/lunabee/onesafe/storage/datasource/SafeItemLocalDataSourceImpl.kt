@@ -190,7 +190,7 @@ class SafeItemLocalDataSourceImpl @Inject constructor(
         safeItemDao.removeByIds(ids)
     }
 
-    override suspend fun setDeletedAndRemoveFromFavorite(id: UUID) {
+    override suspend fun setDeletedAndRemoveFromFavorite(id: UUID?) {
         safeItemDao.setDeletedAndRemoveFromFavorite(id)
     }
 

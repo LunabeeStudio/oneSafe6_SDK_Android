@@ -33,7 +33,7 @@ class GetAllContactsUseCase @Inject constructor(
     private val bubblesContactRepository: ContactRepository,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(): Flow<List<Contact>> = isCryptoDataReadyInMemoryUseCase().flatMapLatest { isCryptoReady ->
+    operator fun invoke(): Flow<List<Contact>> = isCryptoDataReadyInMemoryUseCase.flow().flatMapLatest { isCryptoReady ->
         if (isCryptoReady) {
             bubblesContactRepository.getAllContactsFlow()
         } else {

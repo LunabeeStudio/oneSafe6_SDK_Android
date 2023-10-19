@@ -19,6 +19,8 @@
 
 plugins {
     `android-library`
+    kotlin("kapt")
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -26,10 +28,24 @@ android {
 
     defaultConfig {
         missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
+        testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
+    }
+
+    packaging {
+        resources {
+            pickFirsts += "META-INF/DEPENDENCIES"
+            pickFirsts += "META-INF/LICENSE.md"
+            pickFirsts += "META-INF/LICENSE-notice.md"
+        }
+    }
+
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
     }
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.datastore.preferences)
     implementation(libs.hilt.android)
 
@@ -44,4 +60,10 @@ dependencies {
     implementation(project(":error"))
     implementation(project(":local-android"))
     implementation(project(":app:settings"))
+    implementation(project(":import-export-domain"))
+
+    kaptAndroidTest(libs.dagger.hilt.compiler)
+    androidTestImplementation(project(":dependency-injection:test-component"))
+    androidTestImplementation(project(":common-test-android"))
+    androidTestImplementation(libs.junit4)
 }

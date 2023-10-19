@@ -21,7 +21,5 @@ package studio.lunabee.onesafe
 
 import com.lunabee.lbcore.model.LBResult
 
-fun LBResult<Any>.asUnit(): LBResult<Unit> = when (this) {
-    is LBResult.Failure -> LBResult.Failure(throwable = this.throwable)
-    is LBResult.Success -> LBResult.Success(Unit)
-}
+val <T> Iterable<LBResult<T>>.data: List<T?>
+    get() = map { it.data }

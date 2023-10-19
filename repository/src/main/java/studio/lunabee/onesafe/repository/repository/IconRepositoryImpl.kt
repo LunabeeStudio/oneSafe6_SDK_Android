@@ -40,5 +40,9 @@ class IconRepositoryImpl @Inject constructor(
         iconLocalDataSource.copyAndDeleteIconFile(newIconFile = iconFile, iconId = iconId)
     }
 
+    override fun deleteAll() {
+        iconLocalDataSource.removeAllIcons()
+    }
+
     override fun getIcons(iconsId: List<String>): List<File> = iconLocalDataSource.getIcons(iconsId)
 }

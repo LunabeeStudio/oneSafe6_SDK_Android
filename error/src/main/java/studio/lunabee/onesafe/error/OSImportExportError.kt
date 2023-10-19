@@ -25,7 +25,7 @@ data class OSImportExportError(
     override val cause: Throwable? = null,
 ) : OSError(message, cause, code) {
 
-    enum class Code(val message: String) : ErrorCode {
+    enum class Code(override val message: String) : ErrorCode<OSImportExportError> {
         METADATA_FILE_NOT_FOUND("Metadata file was not found"),
         ARCHIVE_MALFORMED("Unexpected archive content"),
         DATA_FILE_NOT_FOUND("Data file was not found"),

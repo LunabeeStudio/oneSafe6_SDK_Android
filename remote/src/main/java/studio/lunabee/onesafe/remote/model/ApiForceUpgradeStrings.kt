@@ -24,15 +24,11 @@ import studio.lunabee.onesafe.domain.model.forceupgrade.ForceUpgradeStrings
 
 @Serializable
 data class ApiForceUpgradeStrings(
-    val title: String,
-    val forceDescription: String,
-    val softDescription: String,
-    val buttonLabel: String,
+    val forceUpgrade: ApiForceUpgradeTypeStrings,
+    val softUpgrade: ApiForceUpgradeTypeStrings,
 ) {
     fun toForceUpgradeStrings(): ForceUpgradeStrings = ForceUpgradeStrings(
-        title = title,
-        forceDescription = forceDescription,
-        softDescription = softDescription,
-        buttonLabel = buttonLabel,
+        forceUpgrade = forceUpgrade.toForceUpgradeTypeStrings(),
+        softUpgrade = softUpgrade.toForceUpgradeTypeStrings(),
     )
 }

@@ -81,6 +81,21 @@ class SafeItemDaoTest {
     }
 
     @Test
+    fun setDeleted_all_test(): TestResult = runTest {
+        val siblingRoot = OSStorageTestUtils.createRoomSafeItem()
+        val parent = OSStorageTestUtils.createRoomSafeItem()
+        val child = OSStorageTestUtils.createRoomSafeItem(parentId = parent.id)
+
+        safeItemDao.insert(listOf(siblingRoot, parent, child))
+
+        val now = Instant.now()
+        safeItemDao.setDeletedAndRemoveFromFavorite(null, now)
+
+        val actual = safeItemDao.getAllSafeItems().filter { it.deletedAt == null }
+        assertContentEquals(emptyList(), actual)
+    }
+
+    @Test
     fun findByIdWithChildren_test(): TestResult = runTest {
         val parent = OSStorageTestUtils.createRoomSafeItem(id = testUUIDs[0])
         val child = OSStorageTestUtils.createRoomSafeItem(id = testUUIDs[1], parentId = parent.id)

@@ -300,7 +300,7 @@ class AndroidMainCryptoRepositoryTest {
     fun collect_crypto_data_missing_test_test(): TestResult = runTest {
         val values = mutableListOf<Boolean>()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-            this@AndroidMainCryptoRepositoryTest.repository.isCryptoDataInMemory().toList(values)
+            this@AndroidMainCryptoRepositoryTest.repository.isCryptoDataInMemoryFlow().toList(values)
         }
         assertFalse(values[0])
         loadMasterKey()

@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.test
 
 import android.util.Log
+import androidx.datastore.core.DataStore
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.Configuration
@@ -32,14 +33,16 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import studio.lunabee.onesafe.OSAppSettings
+import studio.lunabee.onesafe.domain.repository.FileRepository
+import studio.lunabee.onesafe.domain.repository.IconRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
-import studio.lunabee.onesafe.domain.repository.PersistenceManager
 import studio.lunabee.onesafe.domain.usecase.authentication.LocalSignInUseCase
 import studio.lunabee.onesafe.domain.usecase.autolock.LockAppUseCase
 import studio.lunabee.onesafe.domain.usecase.onboarding.CreateMasterKeyUseCase
 import studio.lunabee.onesafe.domain.usecase.onboarding.FinishOnboardingUseCase
 import studio.lunabee.onesafe.migration.MigrationConstant
 import studio.lunabee.onesafe.storage.MainDatabase
+import studio.lunabee.onesafe.storage.OSRecentSearchProto
 import javax.inject.Inject
 
 /**
@@ -68,8 +71,6 @@ import javax.inject.Inject
 abstract class OSHiltTest : OSTest() {
     abstract val hiltRule: HiltAndroidRule
 
-    @Inject lateinit var persistenceManager: PersistenceManager
-
     @Inject lateinit var createMasterKeyUseCase: CreateMasterKeyUseCase
 
     @Inject lateinit var finishOnboardingUseCase: FinishOnboardingUseCase
@@ -84,7 +85,13 @@ abstract class OSHiltTest : OSTest() {
 
     @Inject lateinit var osAppSettings: OSAppSettings
 
+    @Inject lateinit var iconRepository: IconRepository
+
+    @Inject lateinit var fileRepository: FileRepository
+
     @Inject lateinit var mainDatabase: MainDatabase
+
+    @Inject lateinit var recentSearchDataStore: DataStore<OSRecentSearchProto.RecentSearchProto>
 
     /**
      * See [InitialTestState] for more details.
@@ -135,7 +142,9 @@ abstract class OSHiltTest : OSTest() {
 
     protected suspend fun signOut() {
         cryptoRepository.resetCryptography()
-        persistenceManager.clearItems()
+        recentSearchDataStore.updateData { it.defaultInstanceForType }
+        iconRepository.deleteAll()
+        fileRepository.deleteAll()
         mainDatabase.clearAllTables()
     }
 

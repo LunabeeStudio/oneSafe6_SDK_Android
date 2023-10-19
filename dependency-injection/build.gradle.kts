@@ -68,6 +68,8 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":import-export"))
     implementation(project(":import-export-domain"))
+    implementation(project(":import-export-repository"))
+    implementation(project(":import-export-drive"))
     implementation(project(":repository"))
     implementation(project(":local-android"))
     implementation(project(":remote"))
