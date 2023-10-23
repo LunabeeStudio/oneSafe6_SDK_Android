@@ -41,7 +41,7 @@ class ArchiveZipUseCase @Inject constructor(
     @FileDispatcher private val fileDispatcher: CoroutineDispatcher,
 ) {
     /**
-     * Unzip a file to a specific directory.
+     * Zip a file to a specific directory.
      *
      * @param folderToZip folder to zip
      * @param outputZipFile destination to keep the final archive

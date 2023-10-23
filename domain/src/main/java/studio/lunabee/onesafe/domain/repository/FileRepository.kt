@@ -35,4 +35,5 @@ interface FileRepository {
     fun deleteItemDir(itemId: UUID)
     fun deleteCacheDir()
     suspend fun savePlainFile(inputStream: InputStream, filename: String, itemId: UUID, fieldId: UUID): File
+    fun deleteAll()
 }

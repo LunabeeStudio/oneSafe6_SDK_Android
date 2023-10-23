@@ -42,7 +42,7 @@ import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
 import studio.lunabee.onesafe.commonui.utils.setForegroundSafe
 import studio.lunabee.onesafe.importexport.ui.settings.AutoBackupFrequency
 import studio.lunabee.onesafe.importexport.usecase.AutoBackupUseCase
-import studio.lunabee.onesafe.importexport.usecase.DeleteOldBackupsUseCase
+import studio.lunabee.onesafe.importexport.usecase.DeleteOldLocalBackupsUseCase
 import studio.lunabee.onesafe.importexport.utils.ForegroundInfoCompat
 import timber.log.Timber
 import kotlin.time.toJavaDuration
@@ -55,7 +55,7 @@ class AutoBackupWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted params: WorkerParameters,
     private val autoBackupUseCase: AutoBackupUseCase,
-    private val deleteOldBackupsUseCase: DeleteOldBackupsUseCase,
+    private val deleteOldBackupsUseCase: DeleteOldLocalBackupsUseCase,
     private val osNotificationManager: OSNotificationManager,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {

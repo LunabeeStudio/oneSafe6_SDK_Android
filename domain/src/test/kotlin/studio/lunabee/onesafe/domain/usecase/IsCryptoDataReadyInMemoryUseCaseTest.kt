@@ -35,7 +35,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class IsCryptoDataReadyInMemoryUseCaseTest {
     private val mainCryptoRepository: MainCryptoRepository = mockk {
-        every { this@mockk.isCryptoDataInMemory() } returns MutableStateFlow(true)
+        every { this@mockk.isCryptoDataInMemoryFlow() } returns MutableStateFlow(true)
     }
     private val useCase: IsCryptoDataReadyInMemoryUseCase = IsCryptoDataReadyInMemoryUseCase(mainCryptoRepository)
 
@@ -48,7 +48,7 @@ class IsCryptoDataReadyInMemoryUseCaseTest {
 
     @Test
     fun wait_crypto_timeout_test(): TestResult = runTest {
-        every { mainCryptoRepository.isCryptoDataInMemory() } returns MutableStateFlow(false)
+        every { mainCryptoRepository.isCryptoDataInMemoryFlow() } returns MutableStateFlow(false)
         val err = assertThrows<OSDomainError> {
             useCase.wait(10.milliseconds)
         }

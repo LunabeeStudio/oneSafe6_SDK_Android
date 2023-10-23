@@ -7,8 +7,10 @@ message ForceUpgradeProtoData {
   int32 buildNumber = 1;
   int32 forceBuildNumber = 2;
   int32 softBuildNumber = 3;
-  string title = 4;
-  string forceDescription = 5;
-  string softDescription = 6;
-  string buttonLabel = 7;
+  string forceTitle = 4;
+  string softTitle = 5;
+  string forceDescription = 6;
+  string softDescription = 7;
+  string forceButtonLabel = 8;
+  string softButtonLabel = 9;
 };

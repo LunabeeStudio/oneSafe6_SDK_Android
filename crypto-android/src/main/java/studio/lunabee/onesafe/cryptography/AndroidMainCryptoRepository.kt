@@ -86,11 +86,19 @@ class AndroidMainCryptoRepository @Inject constructor(
     )
     private var bubblesMasterKey: ByteArray? by safeCryptoArrayDelete(bubblesMasterKeyFlow)
 
-    override fun isCryptoDataInMemory(): Flow<Boolean> {
+    override fun isCryptoDataInMemoryFlow(): Flow<Boolean> {
         val flows = mutableListOf(masterKeyFlow, searchIndexKeyFlow)
         return combine(flows) { keys ->
             keys.all { it != null }
         }.distinctUntilChanged()
+    }
+
+    override fun isCryptoDataInMemory(): Boolean {
+        return try {
+            masterKey != null && searchIndexKey != null
+        } catch (e: OSCryptoError) {
+            false
+        }
     }
 
     private var saltDataStore: ByteArray? by dataStoreValueDelegate(

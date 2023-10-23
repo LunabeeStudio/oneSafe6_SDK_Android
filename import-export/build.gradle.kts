@@ -35,6 +35,7 @@ android {
     packaging {
         resources.pickFirsts.add("META-INF/LICENSE.md")
         resources.pickFirsts.add("META-INF/LICENSE-notice.md")
+        resources.pickFirsts.add("META-INF/DEPENDENCIES")
     }
 
     compileOptions {
@@ -97,6 +98,5 @@ dependencies {
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(project(":app:settings"))
     androidTestImplementation(project(":crypto-android"))
-    androidTestImplementation(project(":local-android"))
     androidTestImplementation(libs.lblogger.timber)
 }

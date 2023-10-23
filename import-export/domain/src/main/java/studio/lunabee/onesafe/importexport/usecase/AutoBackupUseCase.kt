@@ -24,9 +24,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import studio.lunabee.onesafe.domain.qualifier.ArchiveCacheDir
 import studio.lunabee.onesafe.domain.qualifier.BackupType
-import studio.lunabee.onesafe.domain.repository.BackupRepository
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.importexport.engine.BackupExportEngine
+import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
 import java.io.File
 import javax.inject.Inject
 
@@ -35,7 +35,7 @@ import javax.inject.Inject
  */
 class AutoBackupUseCase @Inject constructor(
     private val exportBackupUseCase: ExportBackupUseCase,
-    private val backupRepository: BackupRepository,
+    private val backupRepository: LocalBackupRepository,
     @BackupType(BackupType.Type.Auto) private val exportEngine: BackupExportEngine,
     @ArchiveCacheDir(type = ArchiveCacheDir.Type.AutoBackup) private val archiveDir: File,
 ) {
@@ -45,11 +45,11 @@ class AutoBackupUseCase @Inject constructor(
                 is LBFlowResult.Failure -> LBFlowResult.Failure(throwable = result.throwable)
                 is LBFlowResult.Loading -> LBFlowResult.Loading(progress = result.progress)
                 is LBFlowResult.Success -> {
-                    val backupFile = result.successData
+                    val backup = result.successData
                     val moveResult = OSError.runCatching {
-                        backupRepository.addBackup(backupFile)
+                        backupRepository.addBackup(backup)
                     }.asFlowResult()
-                    backupFile.delete()
+                    backup.file.delete()
                     moveResult
                 }
             }

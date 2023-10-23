@@ -50,7 +50,7 @@ class ProcessMessageQueueUseCase @Inject constructor(
      * Wait until crypto is ready and dequeue all messages to process them. Skip the flush the observer is running.
      */
     suspend fun flush() {
-        isCryptoDataReadyInMemoryUseCase().collectLatest { cryptoReady ->
+        isCryptoDataReadyInMemoryUseCase.flow().collectLatest { cryptoReady ->
             if (cryptoReady) {
                 if (mutex.tryLock()) {
                     try {
@@ -70,7 +70,7 @@ class ProcessMessageQueueUseCase @Inject constructor(
      * Wait until crypto is ready, observe and dequeue all messages to process them
      */
     suspend fun observe() {
-        isCryptoDataReadyInMemoryUseCase()
+        isCryptoDataReadyInMemoryUseCase.flow()
             .collectLatest { cryptoLoaded ->
                 if (cryptoLoaded) {
                     mutex.withLock {

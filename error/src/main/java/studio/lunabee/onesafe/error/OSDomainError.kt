@@ -24,7 +24,7 @@ data class OSDomainError(
     override val message: String = code.message,
     override val cause: Throwable? = null,
 ) : OSError(message, cause, code) {
-    enum class Code(val message: String) : ErrorCode {
+    enum class Code(override val message: String) : ErrorCode<OSDomainError> {
         SAFE_ITEM_DELETE_FAILURE("The SafeItem couldn't be move to bin"),
         SAFE_ITEM_REMOVE_FAILURE("The SafeItem couldn't be move to permanently removed"),
         SAFE_ITEM_NO_ICON("The SafeItem does not have an icon set"),
@@ -42,5 +42,6 @@ data class OSDomainError(
         NOT_AN_INVITATION_MESSAGE("this message is not an invitation message"),
         CRYPTO_NOT_READY_TIMEOUT("Time out on waiting for cryptographic keys to be loaded in memory"),
         MISSING_FILE_ID_IN_FIELD("The field does not contain the file id"),
+        MISSING_URI_OUTPUT_STREAM("The selected file don't exist"),
     }
 }

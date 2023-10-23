@@ -24,6 +24,5 @@ import kotlinx.coroutines.flow.Flow
 interface RecentSearchLocalDatasource {
 
     fun getRecentSearch(): Flow<LinkedHashSet<ByteArray>>
-    suspend fun clear()
     suspend fun saveRecentSearch(recentSearch: List<ByteArray>)
 }

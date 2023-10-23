@@ -88,10 +88,7 @@ class SafeItemRepositoryImpl @Inject constructor(
     )
 
     override suspend fun getNextSiblingPosition(id: UUID): Double? = localDataSource.getNextSiblingPosition(id)
-
-    override suspend fun setDeletedAndRemoveFromFavorite(id: UUID) = localDataSource.setDeletedAndRemoveFromFavorite(
-        id,
-    )
+    override suspend fun setDeletedAndRemoveFromFavorite(id: UUID?): Unit = localDataSource.setDeletedAndRemoveFromFavorite(id)
 
     override suspend fun updateParentIds(
         oldParentId: UUID,

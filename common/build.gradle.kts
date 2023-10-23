@@ -24,6 +24,7 @@ plugins {
 
 dependencies {
     implementation(libs.paging.common.ktx)
+    implementation(libs.kotlinx.coroutines.core)
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)

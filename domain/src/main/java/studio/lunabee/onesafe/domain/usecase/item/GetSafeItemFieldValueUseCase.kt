@@ -46,7 +46,7 @@ class GetSafeItemFieldValueUseCase @Inject constructor(
     suspend operator fun invoke(
         itemId: UUID,
         fieldId: UUID,
-    ): Flow<LBResult<SafeItemFieldValue>> = isCryptoDataReadyInMemoryUseCase().flatMapLatest { isCryptoLoaded ->
+    ): Flow<LBResult<SafeItemFieldValue>> = isCryptoDataReadyInMemoryUseCase.flow().flatMapLatest { isCryptoLoaded ->
         if (isCryptoLoaded) {
             flowOf(
                 OSError.runCatching {

@@ -47,8 +47,11 @@ android {
     }
 
     packaging {
-        resources.pickFirsts.add("META-INF/LICENSE.md")
-        resources.pickFirsts.add("META-INF/LICENSE-notice.md")
+        resources {
+            pickFirsts += "META-INF/LICENSE.md"
+            pickFirsts += "META-INF/LICENSE-notice.md"
+            pickFirsts += "META-INF/DEPENDENCIES"
+        }
     }
 
     sourceSets {
@@ -108,6 +111,7 @@ dependencies {
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbextensions)
+    implementation(libs.lbcore)
 
     implementation(project(":domain"))
     implementation(project(":repository"))
@@ -119,6 +123,9 @@ dependencies {
 
     implementation(project(":messaging-domain"))
     implementation(project(":messaging-repository"))
+
+    implementation(project(":import-export-domain"))
+    implementation(project(":import-export-repository"))
 
     implementation(libs.doubleratchet)
 

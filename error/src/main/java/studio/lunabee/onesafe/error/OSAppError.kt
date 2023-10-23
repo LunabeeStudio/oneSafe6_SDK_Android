@@ -24,7 +24,7 @@ data class OSAppError(
     override val message: String = code.message,
     override val cause: Throwable? = null,
 ) : OSError(message, cause, code) {
-    enum class Code(val message: String) : ErrorCode {
+    enum class Code(override val message: String) : ErrorCode<OSAppError> {
         UNIMPLEMENTED_FEATURE("The feature is not implemented yet"),
         NO_ITEM_FOUND_FOR_ID("No item found for the provided id"),
         SAFE_ITEM_CREATION_FAILURE("The SafeItem couldn't be created"),

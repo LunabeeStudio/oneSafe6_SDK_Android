@@ -47,6 +47,7 @@ android {
     packaging {
         resources.pickFirsts.add("META-INF/LICENSE.md")
         resources.pickFirsts.add("META-INF/LICENSE-notice.md")
+        resources.pickFirsts.add("META-INF/DEPENDENCIES")
     }
 
     composeOptions {

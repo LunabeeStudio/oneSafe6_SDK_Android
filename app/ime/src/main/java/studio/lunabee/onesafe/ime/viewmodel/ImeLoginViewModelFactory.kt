@@ -27,6 +27,7 @@ import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.domain.qualifier.VersionName
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.IsBiometricEnabledUseCase
+import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.LocalSignInUseCase
 import studio.lunabee.onesafe.ime.ui.biometric.ImeBiometricResultRepository
 import studio.lunabee.onesafe.migration.MigrateAndSignInUseCase
@@ -42,23 +43,23 @@ class ImeLoginViewModelFactory @Inject constructor(
     private val featureFlags: FeatureFlags,
     private val imeBiometricResultRepository: ImeBiometricResultRepository,
     private val mainCryptoRepository: MainCryptoRepository,
+    private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        val loginUiStateHolder = LoginUiStateHolder()
+        val loginUiStateHolder = LoginUiStateHolder(isCryptoDataReadyInMemoryUseCase, osAppVisit)
         @Suppress("UNCHECKED_CAST")
         return ImeLoginViewModel(
             isBiometricEnabledUseCase = isBiometricEnabledUseCase,
-            osAppVisit = osAppVisit,
-            versionName = versionName,
             loginUiStateHolder = loginUiStateHolder,
-            imeBiometricResultRepository = imeBiometricResultRepository,
-            mainCryptoRepository = mainCryptoRepository,
             loginFromPasswordDelegate = LoginFromPasswordDelegateImpl(
                 localSignInUseCase = localSignInUseCase,
                 migrateAndSignInUseCase = migrateAndSignInUseCase,
                 featureFlags = featureFlags,
                 loginUiStateHolder = loginUiStateHolder,
             ),
+            imeBiometricResultRepository = imeBiometricResultRepository,
+            mainCryptoRepository = mainCryptoRepository,
+            versionName = versionName,
         ) as T
     }
 }

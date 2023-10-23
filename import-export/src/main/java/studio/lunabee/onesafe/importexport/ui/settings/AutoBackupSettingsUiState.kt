@@ -19,12 +19,12 @@
 
 package studio.lunabee.onesafe.importexport.ui.settings
 
-import studio.lunabee.onesafe.importexport.model.Backup
+import studio.lunabee.onesafe.importexport.model.LocalBackup
 
 sealed interface AutoBackupSettingsUiState {
     data class Enabled(
         val autoBackupFrequency: AutoBackupFrequency,
-        val backups: List<Backup>,
+        val backups: List<LocalBackup>,
     ) : AutoBackupSettingsUiState
 
     data object Disabled : AutoBackupSettingsUiState

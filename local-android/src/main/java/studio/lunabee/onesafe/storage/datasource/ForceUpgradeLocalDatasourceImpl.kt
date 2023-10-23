@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import studio.lunabee.onesafe.domain.model.forceupgrade.ForceUpgradeData
 import studio.lunabee.onesafe.domain.model.forceupgrade.ForceUpgradeStrings
+import studio.lunabee.onesafe.domain.model.forceupgrade.ForceUpgradeTypeStrings
 import studio.lunabee.onesafe.domain.qualifier.BuildNumber
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.repository.datasource.ForceUpgradeLocalDatasource
@@ -44,10 +45,16 @@ class ForceUpgradeLocalDatasourceImpl @Inject constructor(
         if (data.buildNumber == buildNumber) {
             ForceUpgradeData(
                 strings = ForceUpgradeStrings(
-                    title = data.title.orEmpty(),
-                    forceDescription = data.forceDescription.orEmpty(),
-                    softDescription = data.softDescription.orEmpty(),
-                    buttonLabel = data.buttonLabel.orEmpty(),
+                    forceUpgrade = ForceUpgradeTypeStrings(
+                        title = data.forceTitle,
+                        description = data.forceDescription,
+                        buttonLabel = data.softButtonLabel,
+                    ),
+                    softUpgrade = ForceUpgradeTypeStrings(
+                        title = data.softTitle,
+                        description = data.softDescription,
+                        buttonLabel = data.softButtonLabel,
+                    ),
                 ),
                 softBuildNumber = data.softBuildNumber,
                 forceBuildNumber = data.forceBuildNumber,
@@ -72,10 +79,12 @@ class ForceUpgradeLocalDatasourceImpl @Inject constructor(
                     buildNumber = this@ForceUpgradeLocalDatasourceImpl.buildNumber
                     forceBuildNumber = data.forceBuildNumber
                     softBuildNumber = data.softBuildNumber
-                    title = data.strings.title
-                    softDescription = data.strings.softDescription
-                    forceDescription = data.strings.forceDescription
-                    buttonLabel = data.strings.buttonLabel
+                    forceTitle = data.strings.forceUpgrade.title
+                    softTitle = data.strings.softUpgrade.title
+                    softDescription = data.strings.softUpgrade.description
+                    forceDescription = data.strings.forceUpgrade.description
+                    forceButtonLabel = data.strings.forceUpgrade.buttonLabel
+                    softButtonLabel = data.strings.softUpgrade.buttonLabel
                 }
             }
         }

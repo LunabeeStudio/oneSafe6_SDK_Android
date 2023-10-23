@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import studio.lunabee.onesafe.domain.model.importexport.OSArchiveKind
 import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.repository.IconRepository
@@ -35,10 +36,12 @@ import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.importexport.engine.BackupExportEngine
 import studio.lunabee.onesafe.importexport.model.ExportData
 import studio.lunabee.onesafe.importexport.model.ImportExportConstant
+import studio.lunabee.onesafe.importexport.model.LocalBackup
 import java.io.File
 import java.time.Clock
-import java.time.LocalDate
-import java.time.LocalTime
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
@@ -55,7 +58,7 @@ class ExportBackupUseCase @Inject constructor(
     operator fun invoke(
         exportEngine: BackupExportEngine,
         archiveExtractedDirectory: File,
-    ): Flow<LBFlowResult<File>> {
+    ): Flow<LBFlowResult<LocalBackup>> {
         return flow {
             val safeItemsWithKeys = safeItemRepository.getAllSafeItems().associateWith { safeItem ->
                 safeItemKeyRepository.getSafeItemKey(safeItem.id)
@@ -67,6 +70,7 @@ class ExportBackupUseCase @Inject constructor(
                 files = fileRepository.getFiles(),
             )
 
+            val now = Instant.now(clock)
             emitAll(
                 exportEngine.createExportArchiveContent(
                     dataHolderFolder = archiveExtractedDirectory,
@@ -79,8 +83,17 @@ class ExportBackupUseCase @Inject constructor(
                         // Zip if creation is success. Will return the progress of zip.
                         is LBFlowResult.Success -> archiveZipUseCase(
                             folderToZip = archiveExtractedDirectory,
-                            outputZipFile = File(archiveExtractedDirectory, buildArchiveName(clock)),
-                        )
+                            outputZipFile = File(archiveExtractedDirectory, buildArchiveName(now)),
+                        ).map { zipResult ->
+                            when (zipResult) {
+                                is LBFlowResult.Failure -> LBFlowResult.Failure(throwable = zipResult.throwable)
+                                is LBFlowResult.Loading -> LBFlowResult.Loading(progress = zipResult.progress)
+                                is LBFlowResult.Success -> {
+                                    val localBackup = LocalBackup(now, zipResult.successData)
+                                    LBFlowResult.Success(localBackup)
+                                }
+                            }
+                        }
                     }
                 },
             )
@@ -91,11 +104,12 @@ class ExportBackupUseCase @Inject constructor(
         /**
          * Return final archive name (i.e oneSafe-20221217-134622.os6lsb)
          */
-        private fun buildArchiveName(clock: Clock): String {
+        private fun buildArchiveName(now: Instant): String {
+            val localDateTime = LocalDateTime.ofInstant(now, ZoneOffset.UTC)
             return listOf(
                 ImportExportConstant.ArchiveFilePrefix,
-                DateTimeFormatter.BASIC_ISO_DATE.format(LocalDate.now(clock)), // i.e 20230113
-                ImportExportConstant.ArchiveTimeFormatter.format(LocalTime.now(clock)), // i.e 134602
+                DateTimeFormatter.BASIC_ISO_DATE.format(localDateTime), // i.e 20230113
+                ImportExportConstant.ArchiveTimeFormatter.format(localDateTime), // i.e 134602
             ).joinToString(ImportExportConstant.ArchiveFileSeparator) + ".${ImportExportConstant.ExtensionOs6Backup}"
         }
     }

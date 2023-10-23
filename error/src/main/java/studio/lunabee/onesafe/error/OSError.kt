@@ -26,10 +26,12 @@ import org.slf4j.Logger
 sealed class OSError(
     message: String,
     cause: Throwable?,
-    open val code: ErrorCode,
+    open val code: ErrorCode<OSError>,
 ) : Exception(message, cause) {
 
-    interface ErrorCode
+    interface ErrorCode<out T : OSError> {
+        val message: String
+    }
 
     companion object {
         inline fun <R> runCatching(
@@ -45,5 +47,11 @@ sealed class OSError(
                 LBResult.Failure(error)
             }
         }
+
+        /**
+         * Unsafe getter for default error constructor
+         */
+        inline fun <reified T : OSError> ErrorCode<T>.get(message: String = this.message, cause: Throwable? = null): T =
+            T::class.java.constructors.first().newInstance(this, message, cause) as T
     }
 }

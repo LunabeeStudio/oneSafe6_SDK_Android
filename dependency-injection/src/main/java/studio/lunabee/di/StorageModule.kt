@@ -32,12 +32,13 @@ import dagger.hilt.components.SingletonComponent
 import studio.lunabee.bubbles.repository.datasource.ContactKeyLocalDataSource
 import studio.lunabee.bubbles.repository.datasource.ContactLocalDataSource
 import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
+import studio.lunabee.importexport.repository.datasource.LocalBackupLocalDataSource
+import studio.lunabee.importexport.repository.datasource.CloudBackupLocalDataSource
 import studio.lunabee.messaging.repository.datasource.EnqueuedMessageLocalDataSource
 import studio.lunabee.messaging.repository.datasource.HandShakeDataLocalDatasource
 import studio.lunabee.messaging.repository.datasource.MessageLocalDataSource
 import studio.lunabee.messaging.repository.datasource.SentMessageLocalDatasource
-import studio.lunabee.onesafe.domain.repository.PersistenceManager
-import studio.lunabee.onesafe.repository.datasource.BackupLocalDataSource
+import studio.lunabee.onesafe.domain.repository.TransactionManager
 import studio.lunabee.onesafe.repository.datasource.FileLocalDatasource
 import studio.lunabee.onesafe.repository.datasource.ForceUpgradeLocalDatasource
 import studio.lunabee.onesafe.repository.datasource.IconLocalDataSource
@@ -48,11 +49,12 @@ import studio.lunabee.onesafe.repository.datasource.SafeItemFieldLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.SafeItemKeyLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.SafeItemLocalDataSource
 import studio.lunabee.onesafe.storage.MainDatabase
+import studio.lunabee.onesafe.storage.MainDatabaseTransactionManager
 import studio.lunabee.onesafe.storage.Migration3to4
 import studio.lunabee.onesafe.storage.OSForceUpgradeProto.ForceUpgradeProtoData
 import studio.lunabee.onesafe.storage.OSPasswordGeneratorConfigProto.PasswordGeneratorConfigProto
 import studio.lunabee.onesafe.storage.OSRecentSearchProto.RecentSearchProto
-import studio.lunabee.onesafe.storage.PersistenceManagerImpl
+import studio.lunabee.onesafe.storage.dao.BackupDao
 import studio.lunabee.onesafe.storage.dao.ContactDao
 import studio.lunabee.onesafe.storage.dao.ContactKeyDao
 import studio.lunabee.onesafe.storage.dao.DoubleRatchetConversationDao
@@ -65,7 +67,8 @@ import studio.lunabee.onesafe.storage.dao.SafeItemDao
 import studio.lunabee.onesafe.storage.dao.SafeItemFieldDao
 import studio.lunabee.onesafe.storage.dao.SafeItemKeyDao
 import studio.lunabee.onesafe.storage.dao.SentMessageDao
-import studio.lunabee.onesafe.storage.datasource.BackupLocalDataSourceImpl
+import studio.lunabee.onesafe.storage.datasource.LocalBackupLocalDataSourceImpl
+import studio.lunabee.onesafe.storage.datasource.CloudBackupLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.ContactKeyLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.ContactLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.DoubleRatchetDatasourceImpl
@@ -154,8 +157,13 @@ interface StorageModule {
 
     @Binds
     fun bindBackupLocalDataSource(
-        backupMessageLocalDataSourceImpl: BackupLocalDataSourceImpl,
-    ): BackupLocalDataSource
+        backupMessageLocalDataSourceImpl: LocalBackupLocalDataSourceImpl,
+    ): LocalBackupLocalDataSource
+
+    @Binds
+    fun bindCloudBackupLocalDataSource(
+        cloudBackupLocalDataSourceImpl: CloudBackupLocalDataSourceImpl,
+    ): CloudBackupLocalDataSource
 
     @Binds
     fun bindDoubleRatchetDatasource(
@@ -187,7 +195,16 @@ object DatabaseModule {
 
 @Module
 @InstallIn(SingletonComponent::class)
-object MainDatabaseDaoModule {
+object MainDatabaseModule {
+    @Provides
+    fun provideTransactionManager(
+        mainDatabase: MainDatabase,
+    ): TransactionManager {
+        return MainDatabaseTransactionManager(
+            mainDatabase,
+        )
+    }
+
     @Provides
     fun provideSafeItemDao(mainDatabase: MainDatabase): SafeItemDao {
         return mainDatabase.safeItemDao()
@@ -247,32 +264,10 @@ object MainDatabaseDaoModule {
     fun provideSentMessageDao(mainDatabase: MainDatabase): SentMessageDao {
         return mainDatabase.sentMessageDao()
     }
-}
 
-@Module
-@InstallIn(SingletonComponent::class)
-object PersistenceManagerModule {
     @Provides
-    fun providePersistenceManager(
-        mainDatabase: MainDatabase,
-        iconLocalDataSource: IconLocalDataSource,
-        recentSearchLocalDatasource: RecentSearchLocalDatasource,
-        fileLocalDatasource: FileLocalDatasource,
-        safeItemDao: SafeItemDao,
-        safeItemFieldDao: SafeItemFieldDao,
-        safeItemKeyDao: SafeItemKeyDao,
-        indexWordEntryDao: IndexWordEntryDao,
-    ): PersistenceManager {
-        return PersistenceManagerImpl(
-            mainDatabase,
-            iconLocalDataSource,
-            fileLocalDatasource,
-            recentSearchLocalDatasource,
-            safeItemDao,
-            safeItemFieldDao,
-            safeItemKeyDao,
-            indexWordEntryDao,
-        )
+    fun provideBackupDao(mainDatabase: MainDatabase): BackupDao {
+        return mainDatabase.backupDao()
     }
 }
 

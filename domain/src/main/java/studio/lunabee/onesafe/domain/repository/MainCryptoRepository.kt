@@ -76,7 +76,7 @@ interface MainCryptoRepository {
     fun disableBiometric()
     fun enableBiometric(biometricCipher: Cipher)
     suspend fun reEncryptItemKey(itemKey: SafeItemKey, key: ByteArray)
-    fun isCryptoDataInMemory(): Flow<Boolean>
+    fun isCryptoDataInMemoryFlow(): Flow<Boolean>
     suspend fun loadMasterKeyExternal(masterKey: ByteArray)
     suspend fun decryptRecentSearch(encRecentSearch: List<ByteArray>): List<String>
     suspend fun encryptRecentSearch(plainRecentSearch: List<String>): List<ByteArray>
@@ -92,4 +92,5 @@ interface MainCryptoRepository {
      * Decrypt [data] with the bubbles master key
      */
     suspend fun decryptBubbles(data: ByteArray): ByteArray
+    fun isCryptoDataInMemory(): Boolean
 }

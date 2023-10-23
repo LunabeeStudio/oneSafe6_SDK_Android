@@ -33,11 +33,13 @@ import kotlin.time.Duration
 class IsCryptoDataReadyInMemoryUseCase @Inject constructor(
     private val mainCryptoRepository: MainCryptoRepository,
 ) {
-    operator fun invoke(): Flow<Boolean> = mainCryptoRepository.isCryptoDataInMemory()
+    operator fun invoke(): Boolean = mainCryptoRepository.isCryptoDataInMemory()
+
+    fun flow(): Flow<Boolean> = mainCryptoRepository.isCryptoDataInMemoryFlow()
 
     @OptIn(FlowPreview::class)
     suspend fun wait(timeout: Duration? = null) {
-        val flow = invoke().filter { it }
+        val flow = flow().filter { it }
         if (timeout == null) {
             flow.first()
         } else {

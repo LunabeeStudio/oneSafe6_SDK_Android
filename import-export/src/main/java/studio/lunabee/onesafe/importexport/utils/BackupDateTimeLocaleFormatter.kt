@@ -21,8 +21,11 @@ package studio.lunabee.onesafe.importexport.utils
 
 import android.icu.text.RelativeDateTimeFormatter
 import java.time.Clock
+import java.time.Instant
 import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.time.temporal.ChronoUnit
@@ -31,11 +34,14 @@ import java.util.Locale
 class BackupDateTimeLocaleFormatter(
     private val locale: Locale,
     private val clock: Clock = Clock.systemDefaultZone(),
+    private val zone: ZoneId = ZoneOffset.systemDefault(),
 ) {
-    fun format(date: LocalDateTime): String {
+    fun format(date: Instant): String {
         val fmt: RelativeDateTimeFormatter = RelativeDateTimeFormatter.getInstance(locale)
 
-        val daysUntilNow = date.toLocalDate().until(LocalDate.now(clock), ChronoUnit.DAYS)
+        val localDate = LocalDate.ofInstant(date, zone)
+        val daysUntilNow = localDate
+            .until(LocalDate.ofInstant(Instant.now(clock), zone), ChronoUnit.DAYS)
         val dateStr = when (daysUntilNow) {
             0L -> fmt.format(RelativeDateTimeFormatter.Direction.THIS, RelativeDateTimeFormatter.AbsoluteUnit.DAY)
                 .replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
@@ -43,10 +49,11 @@ class BackupDateTimeLocaleFormatter(
                 fmt
                     .format(RelativeDateTimeFormatter.Direction.LAST, RelativeDateTimeFormatter.AbsoluteUnit.DAY)
                     .replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
-            else -> DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale).format(date)
+            else -> DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale).format(localDate)
         }
 
-        val timeStr = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale).format(date)
+        val timeStr = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale)
+            .format(LocalTime.ofInstant(date, zone))
 
         return fmt.combineDateAndTime(dateStr, timeStr)
     }

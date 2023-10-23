@@ -29,6 +29,7 @@ dependencies {
 
     implementation(project(":error"))
     implementation(project(":domain"))
+    implementation(project(":common"))
 
     testImplementation(project(":common-test"))
     testImplementation(libs.mockk)

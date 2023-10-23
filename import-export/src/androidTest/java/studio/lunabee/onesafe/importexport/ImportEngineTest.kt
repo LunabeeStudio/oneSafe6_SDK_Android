@@ -46,8 +46,6 @@ import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind.Companion.isKindFile
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.ItemFieldDataToIndex
-import studio.lunabee.onesafe.domain.repository.FileRepository
-import studio.lunabee.onesafe.domain.repository.IconRepository
 import studio.lunabee.onesafe.domain.repository.IndexWordEntryRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
@@ -86,10 +84,6 @@ class ImportEngineTest : OSHiltTest() {
     @Inject lateinit var importEngine: ImportEngine
 
     @Inject lateinit var safeItemRepository: SafeItemRepository
-
-    @Inject lateinit var iconRepository: IconRepository
-
-    @Inject lateinit var fileRepository: FileRepository
 
     @Inject lateinit var decryptUseCase: ItemDecryptUseCase
 

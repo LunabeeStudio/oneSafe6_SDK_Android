@@ -51,6 +51,7 @@ object RemoteModule {
                     Json {
                         prettyPrint = true
                         isLenient = true
+                        ignoreUnknownKeys = true
                     },
                 )
             }

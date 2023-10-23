@@ -56,10 +56,4 @@ class RecentSearchLocalDataSourceImpl @Inject constructor(
             }
         }
     }
-
-    override suspend fun clear() {
-        withContext(fileDispatcher) {
-            dataStore.updateData { it.defaultInstanceForType }
-        }
-    }
 }

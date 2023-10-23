@@ -24,9 +24,12 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import studio.lunabee.importexport.repository.datasource.CloudBackupEngine
+import studio.lunabee.importexport.repository.repository.GoogleDriveBackupRepository
 import studio.lunabee.onesafe.domain.qualifier.BackupType
 import studio.lunabee.onesafe.domain.qualifier.DateFormatterType
 import studio.lunabee.onesafe.importexport.BackupExportEngineImpl
+import studio.lunabee.onesafe.importexport.GoogleDriveEngine
 import studio.lunabee.onesafe.importexport.ImportCacheDataSource
 import studio.lunabee.onesafe.importexport.ImportCacheDataSourceImpl
 import studio.lunabee.onesafe.importexport.ImportEngineImpl
@@ -34,6 +37,7 @@ import studio.lunabee.onesafe.importexport.ShareExportEngineImpl
 import studio.lunabee.onesafe.importexport.engine.BackupExportEngine
 import studio.lunabee.onesafe.importexport.engine.ImportEngine
 import studio.lunabee.onesafe.importexport.engine.ShareExportEngine
+import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
 import java.time.format.DateTimeFormatter
 
 @Module
@@ -59,6 +63,12 @@ interface ExportModule {
     @Binds
     @BackupType(BackupType.Type.Foreground)
     fun bindForegroundBackupExportEngine(backupExportEngineImpl: BackupExportEngineImpl): BackupExportEngine
+
+    @Binds
+    fun bindCloudBackupEngine(googleDriveEngine: GoogleDriveEngine): CloudBackupEngine
+
+    @Binds
+    fun bindGoogleDriveBackupRepository(googleDriveBackupRepository: GoogleDriveBackupRepository): CloudBackupRepository
 }
 
 @Module

@@ -42,7 +42,7 @@ class SecureGetItemFieldUseCase @Inject constructor(
      * @return a flow of [SafeItemField] list or an empty flow master key is not loaded
      */
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(id: UUID): Flow<List<SafeItemField>> = isCryptoDataReadyInMemoryUseCase().transformLatest { isCryptoLoaded ->
+    operator fun invoke(id: UUID): Flow<List<SafeItemField>> = isCryptoDataReadyInMemoryUseCase.flow().transformLatest { isCryptoLoaded ->
         if (isCryptoLoaded) {
             emitAll(safeItemFieldRepository.getSafeItemFieldsFlow(id))
         }

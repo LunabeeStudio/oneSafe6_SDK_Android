@@ -55,7 +55,7 @@ class AutoLockInactivityUseCase @Inject constructor(
     ) {
         combine(
             inactivityDelayFlow,
-            isCryptoDataReadyInMemoryUseCase(),
+            isCryptoDataReadyInMemoryUseCase.flow(),
         ) { inactivityDelay, isCryptoDataReady ->
             inactivityDelay to isCryptoDataReady
         }.collectLatest { (inactivityDelay, isCryptoDataReady) ->

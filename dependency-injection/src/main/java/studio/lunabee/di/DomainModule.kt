@@ -38,6 +38,7 @@ import studio.lunabee.onesafe.domain.common.UuidProvider
 import studio.lunabee.onesafe.domain.qualifier.DefaultDispatcher
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.domain.qualifier.InternalDir
+import studio.lunabee.onesafe.domain.qualifier.RemoteDispatcher
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.usecase.SetIconUseCase
 import studio.lunabee.onesafe.domain.utils.SafeItemBuilder
@@ -76,6 +77,10 @@ object DomainModule {
     @Provides
     @FileDispatcher
     fun providesFileDispatcher(): CoroutineDispatcher = Dispatchers.IO
+
+    @Provides
+    @RemoteDispatcher
+    fun providesRemoteDispatcher(): CoroutineDispatcher = Dispatchers.IO
 
     @Provides
     @DefaultDispatcher

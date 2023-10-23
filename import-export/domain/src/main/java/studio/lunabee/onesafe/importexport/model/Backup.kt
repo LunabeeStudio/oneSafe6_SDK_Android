@@ -19,12 +19,10 @@
 
 package studio.lunabee.onesafe.importexport.model
 
-import java.io.File
-import java.time.LocalDateTime
+import java.time.Instant
 
-data class Backup(
-    val date: LocalDateTime,
-    val file: File,
-) : Comparable<Backup> {
+abstract class Backup : Comparable<Backup> {
+    abstract val date: Instant
+    abstract val id: String
     override fun compareTo(other: Backup): Int = date.compareTo(other.date)
 }

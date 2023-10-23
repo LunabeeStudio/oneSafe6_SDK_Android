@@ -41,40 +41,51 @@ fun ImeLoginRoute(
     onClose: () -> Unit,
     viewModel: ImeLoginViewModel,
 ) {
-    val isBiometricEnabled: Boolean by viewModel.isBiometricEnabled.collectAsStateWithLifecycle(initialValue = false)
-    val exitIcon: LoginExitIcon = LoginExitIcon.Close(onClose)
-    val context = LocalContext.current
-    val onBiometricClick: () -> Unit = {
-        val intent = Intent(context, BiometricActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-            Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS or
-            Intent.FLAG_ACTIVITY_NO_ANIMATION or
-            Intent.FLAG_ACTIVITY_NO_HISTORY
-        context.startActivity(intent)
-    }
-    val snackBarHostState: SnackbarHostState = remember { SnackbarHostState() }
-    val uiState: LoginUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val loginUiState: LoginUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    when (val uiState = loginUiState) {
+        LoginUiState.Bypass -> onSuccess()
+        is LoginUiState.Data -> {
+            val isSuccess = uiState.loginResult == LoginUiState.LoginResult.Success
+            if (isSuccess) {
+                LaunchedEffect(isSuccess) {
+                    onSuccess()
+                }
+            }
 
-    val showLocalSnackBar: suspend (visuals: SnackbarVisuals) -> Unit = { snackBarVisuals ->
-        snackBarHostState.showSnackbar(snackBarVisuals)
-    }
-    val errorSnackbarState: ErrorSnackbarState? by viewModel.biometricError.collectAsStateWithLifecycle()
-    errorSnackbarState?.snackbarVisuals?.let {
-        LaunchedEffect(it) {
-            showLocalSnackBar(it)
+            val isBiometricEnabled: Boolean by viewModel.isBiometricEnabled.collectAsStateWithLifecycle(initialValue = false)
+            val exitIcon: LoginExitIcon = LoginExitIcon.Close(onClose)
+            val context = LocalContext.current
+            val onBiometricClick: () -> Unit = {
+                val intent = Intent(context, BiometricActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS or
+                    Intent.FLAG_ACTIVITY_NO_ANIMATION or
+                    Intent.FLAG_ACTIVITY_NO_HISTORY
+                context.startActivity(intent)
+            }
+            val snackBarHostState: SnackbarHostState = remember { SnackbarHostState() }
+
+            val showLocalSnackBar: suspend (visuals: SnackbarVisuals) -> Unit = { snackBarVisuals ->
+                snackBarHostState.showSnackbar(snackBarVisuals)
+            }
+            val errorSnackbarState: ErrorSnackbarState? by viewModel.biometricError.collectAsStateWithLifecycle()
+            errorSnackbarState?.snackbarVisuals?.let {
+                LaunchedEffect(it) {
+                    showLocalSnackBar(it)
+                }
+            }
+
+            LoginScreenWrapper(
+                exitIcon = exitIcon,
+                uiState = uiState,
+                setPasswordValue = viewModel::setPasswordValue,
+                versionName = viewModel.versionName,
+                loginFromPassword = viewModel::loginFromPassword,
+                isBiometricEnabled = isBiometricEnabled,
+                onBiometricClick = onBiometricClick,
+                snackBarHostState = snackBarHostState,
+                isIllustrationDisplayed = false,
+            )
         }
     }
-
-    LoginScreenWrapper(
-        onSuccess = onSuccess,
-        exitIcon = exitIcon,
-        isBiometricEnabled = isBiometricEnabled,
-        uiState = uiState,
-        onBiometricClick = onBiometricClick,
-        loginFromPassword = viewModel::loginFromPassword,
-        setPasswordValue = viewModel::setPasswordValue,
-        versionName = viewModel.versionName,
-        snackBarHostState = snackBarHostState,
-        isIllustrationDisplayed = false,
-    )
 }

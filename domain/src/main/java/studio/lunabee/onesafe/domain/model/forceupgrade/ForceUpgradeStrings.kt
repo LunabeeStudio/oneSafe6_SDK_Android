@@ -20,8 +20,6 @@
 package studio.lunabee.onesafe.domain.model.forceupgrade
 
 data class ForceUpgradeStrings(
-    val title: String,
-    val forceDescription: String,
-    val softDescription: String,
-    val buttonLabel: String,
+    val forceUpgrade: ForceUpgradeTypeStrings,
+    val softUpgrade: ForceUpgradeTypeStrings,
 )

@@ -21,7 +21,7 @@ package studio.lunabee.onesafe.importexport.usecase
 
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import java.time.Clock
-import java.time.LocalDateTime
+import java.time.Instant
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
@@ -30,13 +30,13 @@ import kotlin.time.Duration.Companion.seconds
  * Check if the latest backup is outdated against frequency param
  */
 class IsLatestBackupOutdatedUseCase @Inject constructor(
-    private val getBackupsUseCase: GetBackupsUseCase,
+    private val getBackupsUseCase: GetLocalBackupsUseCase,
     private val settingsRepository: AutoBackupSettingsRepository,
     private val clock: Clock,
 ) {
-    operator fun invoke(): Boolean {
+    suspend operator fun invoke(): Boolean {
         val latestBackup = getBackupsUseCase().firstOrNull() ?: return true
-        val durationSinceLatest = latestBackup.date.until(LocalDateTime.now(clock), ChronoUnit.SECONDS).seconds
+        val durationSinceLatest = latestBackup.date.until(Instant.now(clock), ChronoUnit.SECONDS).seconds
         return durationSinceLatest >= settingsRepository.autoBackupFrequency
     }
 }
