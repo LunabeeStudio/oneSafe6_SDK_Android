@@ -22,14 +22,15 @@ package studio.lunabee.onesafe.cryptography
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
 
-interface DatastoreEngine {
+abstract class DatastoreEngine(
+    protected val dataStore: DataStore<ProtoData>,
+) {
 
-    val dataStore: DataStore<ProtoData>
-    suspend fun editValue(value: ByteArray?, key: String)
+    abstract suspend fun editValue(value: ByteArray?, key: String)
 
-    fun retrieveValue(key: String): Flow<ByteArray?>
+    abstract fun retrieveValue(key: String): Flow<ByteArray?>
 
-    suspend fun clearDataStore() {
+    open suspend fun clearDataStore() {
         dataStore.updateData { it.toBuilder().clearData().build() }
     }
 }

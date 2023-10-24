@@ -38,6 +38,7 @@ android {
     namespace = "studio.lunabee.onesafe.storage"
 
     defaultConfig {
+        minSdk = AndroidConfig.MIN_LIB_SDK
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
         missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
     }

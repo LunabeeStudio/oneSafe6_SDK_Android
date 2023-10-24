@@ -30,9 +30,9 @@ import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import javax.inject.Inject
 
 class ClearDatastoreEngine @Inject constructor(
-    override val dataStore: DataStore<ProtoData>,
+    dataStore: DataStore<ProtoData>,
     @FileDispatcher private val fileDispatcher: CoroutineDispatcher,
-) : DatastoreEngine {
+) : DatastoreEngine(dataStore) {
     override suspend fun editValue(value: ByteArray?, key: String) {
         withContext(fileDispatcher) {
             dataStore.updateData { data ->

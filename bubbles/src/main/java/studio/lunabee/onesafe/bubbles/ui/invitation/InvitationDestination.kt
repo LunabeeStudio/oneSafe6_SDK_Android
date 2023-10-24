@@ -23,7 +23,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import studio.lunabee.onesafe.commonui.navigation.OSDestination
+import studio.lunabee.onesafe.commonui.OSDestination
 import java.util.UUID
 
 object InvitationDestination : OSDestination {

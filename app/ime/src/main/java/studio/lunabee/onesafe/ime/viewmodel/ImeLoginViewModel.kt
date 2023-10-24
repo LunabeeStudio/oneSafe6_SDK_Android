@@ -29,10 +29,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.commonui.error.description
-import studio.lunabee.onesafe.commonui.login.state.LoginUiState
-import studio.lunabee.onesafe.commonui.login.viewmodel.LoginFromPasswordDelegate
-import studio.lunabee.onesafe.commonui.login.viewmodel.LoginFromPasswordDelegateImpl
-import studio.lunabee.onesafe.commonui.login.viewmodel.LoginUiStateHolder
+import studio.lunabee.onesafe.login.state.LoginUiState
+import studio.lunabee.onesafe.login.viewmodel.LoginFromPasswordDelegate
+import studio.lunabee.onesafe.login.viewmodel.LoginFromPasswordDelegateImpl
+import studio.lunabee.onesafe.login.viewmodel.LoginUiStateHolder
 import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.IsBiometricEnabledUseCase

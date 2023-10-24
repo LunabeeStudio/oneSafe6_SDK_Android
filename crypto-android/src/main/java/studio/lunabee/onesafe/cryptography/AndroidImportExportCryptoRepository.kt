@@ -21,7 +21,7 @@ package studio.lunabee.onesafe.cryptography
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
 import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
@@ -91,7 +91,7 @@ class AndroidImportExportCryptoRepository @Inject constructor(
     @Suppress("ObsoleteSdkInt")
     @RequiresApi(Build.VERSION_CODES.M)
     override fun getMasterSalt(): ByteArray {
-        return runBlocking { dataStoreEngine.retrieveValue(AndroidMainCryptoRepository.DATASTORE_MASTER_SALT).first() }
+        return runBlocking { dataStoreEngine.retrieveValue(AndroidMainCryptoRepository.DATASTORE_MASTER_SALT).firstOrNull() }
             ?: throw OSCryptoError(OSCryptoError.Code.MASTER_SALT_NOT_GENERATED)
     }
 }

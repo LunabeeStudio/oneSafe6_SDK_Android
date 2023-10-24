@@ -50,7 +50,7 @@ import studio.lunabee.onesafe.bubbles.ui.invitationresponse.InvitationResponseNa
 import studio.lunabee.onesafe.bubbles.ui.invitationresponse.invitationResponseScreen
 import studio.lunabee.onesafe.bubbles.ui.welcome.OnBoardingBubblesNavScope
 import studio.lunabee.onesafe.bubbles.ui.welcome.onBoardingBubblesScreen
-import studio.lunabee.onesafe.commonui.navigation.OSDestination
+import studio.lunabee.onesafe.commonui.OSDestination
 import studio.lunabee.onesafe.messaging.writemessage.destination.writeMessageScreen
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageNavScope
 import studio.lunabee.onesafe.messaging.writemessage.viewmodel.MessagingViewModel

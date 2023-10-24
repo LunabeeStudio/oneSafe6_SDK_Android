@@ -21,8 +21,8 @@ package studio.lunabee.onesafe.ime.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import studio.lunabee.onesafe.commonui.login.viewmodel.LoginFromPasswordDelegateImpl
-import studio.lunabee.onesafe.commonui.login.viewmodel.LoginUiStateHolder
+import studio.lunabee.onesafe.login.viewmodel.LoginFromPasswordDelegateImpl
+import studio.lunabee.onesafe.login.viewmodel.LoginUiStateHolder
 import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.domain.qualifier.VersionName
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository

@@ -46,8 +46,8 @@ class EncryptedDataStoreEngine @Inject constructor(
     @ApplicationContext private val context: Context,
     private val androidKeyStoreEngine: AndroidKeyStoreEngine,
     private val ivProvider: IVProvider,
-    override val dataStore: DataStore<ProtoData>,
-) : DatastoreEngine {
+    dataStore: DataStore<ProtoData>,
+) : DatastoreEngine(dataStore) {
 
     private fun getCipher() = Cipher.getInstance(TRANSFORMATION)
 

@@ -19,6 +19,7 @@
 
 plugins {
     `kotlin-library`
+    `onesafe-publish`
     alias(libs.plugins.kotlin.serialization)
 }
 

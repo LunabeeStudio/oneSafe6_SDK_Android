@@ -26,6 +26,10 @@ plugins {
 android {
     namespace = "studio.lunabee.onesafe.dependencyinjection.test"
 
+    defaultConfig {
+        minSdk = AndroidConfig.MIN_LIB_SDK
+    }
+
     flavorDimensions += AndroidConfig.CRYPTO_BACKEND_FLAVOR_DIMENSION
     productFlavors {
         create(AndroidConfig.CRYPTO_BACKEND_FLAVOR_JCE) {
@@ -70,7 +74,7 @@ dependencies {
 
     implementation(project(":crypto-android"))
     implementation(project(":domain"))
-    implementation(project(":import-export"))
+    implementation(project(":import-export-core"))
     implementation(project(":import-export-domain"))
     implementation(project(":repository"))
     implementation(project(":local-android"))

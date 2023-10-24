@@ -24,6 +24,10 @@ plugins {
 android {
     namespace = "studio.lunabee.onesafe.settings"
 
+    defaultConfig {
+        minSdk = AndroidConfig.MIN_LIB_SDK
+    }
+
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
     }
