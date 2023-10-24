@@ -22,7 +22,7 @@ package studio.lunabee.onesafe.bubbles.ui.contact.form.frominvitation
 import android.net.Uri
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import studio.lunabee.onesafe.commonui.navigation.OSDestination
+import studio.lunabee.onesafe.commonui.OSDestination
 
 object CreateContactFromInvitationDestination : OSDestination {
 

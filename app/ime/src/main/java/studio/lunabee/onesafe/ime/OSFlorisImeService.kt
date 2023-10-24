@@ -77,7 +77,6 @@ import studio.lunabee.onesafe.OSAppSettings
 import studio.lunabee.onesafe.atom.textfield.LocalTextFieldInteraction
 import studio.lunabee.onesafe.commonui.localprovider.LocalIsKeyBoardVisible
 import studio.lunabee.onesafe.commonui.localprovider.LocalIsOneSafeK
-import studio.lunabee.onesafe.commonui.navigation.LoginDestination
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSignUpUseCase
 import studio.lunabee.onesafe.domain.usecase.autolock.LockAppUseCase
@@ -92,6 +91,7 @@ import studio.lunabee.onesafe.ime.ui.extension.keyboardTextfield
 import studio.lunabee.onesafe.ime.viewmodel.ImeLoginViewModelFactory
 import studio.lunabee.onesafe.ime.viewmodel.SelectContactViewModelFactory
 import studio.lunabee.onesafe.ime.viewmodel.WriteMessageViewModelFactory
+import studio.lunabee.onesafe.login.screen.LoginDestination
 import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
 import studio.lunabee.onesafe.messaging.domain.usecase.ProcessMessageQueueUseCase
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination

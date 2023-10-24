@@ -25,6 +25,7 @@ android {
     namespace = "studio.lunabee.onesafe.messaging.cryptography"
 
     defaultConfig {
+        minSdk = AndroidConfig.MIN_LIB_SDK
         missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
     }
 }

@@ -93,6 +93,7 @@ dependencies {
 
     implementation(project(":app:core-ui"))
     implementation(project(":app:common-ui"))
+    implementation(project(":app:login"))
     implementation(project(":bubbles"))
     implementation(project(":common"))
     implementation(project(":domain"))

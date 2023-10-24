@@ -34,6 +34,7 @@ android {
     namespace = "studio.lunabee.onesafe.cryptography"
 
     defaultConfig {
+        minSdk = AndroidConfig.MIN_LIB_SDK
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
     }
 

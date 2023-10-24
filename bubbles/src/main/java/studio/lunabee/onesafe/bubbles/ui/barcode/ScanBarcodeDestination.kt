@@ -21,7 +21,7 @@ package studio.lunabee.onesafe.bubbles.ui.barcode
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import studio.lunabee.onesafe.commonui.navigation.OSDestination
+import studio.lunabee.onesafe.commonui.OSDestination
 
 object ScanBarcodeDestination : OSDestination {
     override val route: String = "scan_barcode"

@@ -26,6 +26,10 @@ plugins {
 android {
     namespace = "studio.lunabee.onesafe.dependencyinjection"
 
+    defaultConfig {
+        minSdk = AndroidConfig.MIN_LIB_SDK
+    }
+
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
     }
@@ -66,7 +70,7 @@ dependencies {
 
     implementation(project(":crypto-android"))
     implementation(project(":domain"))
-    implementation(project(":import-export"))
+    implementation(project(":import-export-core"))
     implementation(project(":import-export-domain"))
     implementation(project(":import-export-repository"))
     implementation(project(":import-export-drive"))

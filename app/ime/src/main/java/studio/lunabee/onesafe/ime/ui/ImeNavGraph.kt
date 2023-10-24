@@ -35,7 +35,6 @@ import studio.lunabee.onesafe.commonui.animation.slideHorizontalEnterTransition
 import studio.lunabee.onesafe.commonui.animation.slideHorizontalExitTransition
 import studio.lunabee.onesafe.commonui.animation.slideHorizontalPopEnterTransition
 import studio.lunabee.onesafe.commonui.animation.slideHorizontalPopExitTransition
-import studio.lunabee.onesafe.commonui.navigation.LoginDestination
 import studio.lunabee.onesafe.ime.ImeDeeplinkHelper
 import studio.lunabee.onesafe.ime.ui.contact.ChangeContactDestination
 import studio.lunabee.onesafe.ime.ui.contact.ImeContactRoute
@@ -43,6 +42,7 @@ import studio.lunabee.onesafe.ime.ui.contact.SelectContactDestination
 import studio.lunabee.onesafe.ime.viewmodel.ImeLoginViewModelFactory
 import studio.lunabee.onesafe.ime.viewmodel.SelectContactViewModelFactory
 import studio.lunabee.onesafe.ime.viewmodel.WriteMessageViewModelFactory
+import studio.lunabee.onesafe.login.screen.LoginDestination
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageRoute
 

@@ -22,10 +22,9 @@ package studio.lunabee.onesafe.cryptography.utils
 import studio.lunabee.onesafe.cryptography.extension.safeDestroy
 import java.io.InputStream
 import javax.crypto.Cipher
-import javax.crypto.CipherInputStream
 import javax.crypto.SecretKey
 
-class SelfDestroyCipherInputStream(inputStream: InputStream, cipher: Cipher, private val key: SecretKey) : CipherInputStream(
+class SelfDestroyCipherInputStream(inputStream: InputStream, cipher: Cipher, private val key: SecretKey) : OSCipherInputStream(
     inputStream,
     cipher,
 ) {

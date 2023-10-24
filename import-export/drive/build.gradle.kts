@@ -24,6 +24,10 @@ plugins {
 android {
     namespace = "studio.lunabee.onesafe.importexport.drive"
 
+    defaultConfig {
+        minSdk = AndroidConfig.MIN_LIB_SDK
+    }
+
     packaging {
         resources {
             pickFirsts += "META-INF/DEPENDENCIES"

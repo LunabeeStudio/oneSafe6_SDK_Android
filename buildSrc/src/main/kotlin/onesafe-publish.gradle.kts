@@ -62,7 +62,12 @@ fun PublishingExtension.setupMavenRepository() {
                 credentials.password = System.getenv(EnvConfig.ENV_ARTIFACTORY_API_KEY)
                     ?: project.properties["artifactory_deployer_release_api_key"] as? String
             }
-            url = URI.create("https://artifactory.lunabee.studio/artifactory/sdk-onesafe-local/")
+            val repository = if (version.toString().endsWith("SNAPSHOT")) {
+                "sdk-onesafe-snapshot-local"
+            } else {
+                "sdk-onesafe-local"
+            }
+            url = URI.create("https://artifactory.lunabee.studio/artifactory/$repository/")
         }
     }
 }
