@@ -42,12 +42,12 @@ class HkdfHashEngineBenchmark {
 
     private val hashEngine: HKDFTinkHashEngine = HKDFTinkHashEngine(StandardTestDispatcher())
 
-    private val password = "LTDf#@sGEdczDe?X@53TK&P4A^heLttP"
+    private val password = "LTDf#@sGEdczDe?X@53TK&P4A^heLttP".toCharArray()
     private val salt = Base64.decode("rTygUEZCVBg4RNbJP1U16QFgIeIKwg/T0gEVA0cfIDU=", Base64.NO_WRAP)
 
     private val doHash: Method = HKDFTinkHashEngine::class.java.getDeclaredMethod(
         "doHash",
-        String::class.java,
+        CharArray::class.java,
         ByteArray::class.java,
     ).apply {
         isAccessible = true

@@ -16,31 +16,9 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "google-dagger" }
 
 [versions]
 
-benchmark = "1.2.0-rc02"
+benchmark = "1.2.0"
 
-android-gradle-plugin = "8.1.2"
-##                 ⬆ = "8.2.0-alpha01"
-##                 ⬆ = "8.2.0-alpha02"
-##                 ⬆ = "8.2.0-alpha03"
-##                 ⬆ = "8.2.0-alpha04"
-##                 ⬆ = "8.2.0-alpha05"
-##                 ⬆ = "8.2.0-alpha06"
-##                 ⬆ = "8.2.0-alpha07"
-##                 ⬆ = "8.2.0-alpha08"
-##                 ⬆ = "8.2.0-alpha09"
-##                 ⬆ = "8.2.0-alpha10"
-##                 ⬆ = "8.2.0-alpha11"
-##                 ⬆ = "8.2.0-alpha12"
-##                 ⬆ = "8.2.0-alpha13"
-##                 ⬆ = "8.2.0-alpha14"
-##                 ⬆ = "8.2.0-alpha15"
-##                 ⬆ = "8.2.0-alpha16"
-##                 ⬆ = "8.2.0-beta01"
-##                 ⬆ = "8.2.0-beta02"
-##                 ⬆ = "8.2.0-beta03"
-##                 ⬆ = "8.2.0-beta04"
-##                 ⬆ = "8.2.0-beta05"
-##                 ⬆ = "8.2.0-beta06"
+android-gradle-plugin = "8.2.0-rc01"
 ##                 ⬆ = "8.3.0-alpha01"
 ##                 ⬆ = "8.3.0-alpha02"
 ##                 ⬆ = "8.3.0-alpha03"
@@ -48,16 +26,22 @@ android-gradle-plugin = "8.1.2"
 ##                 ⬆ = "8.3.0-alpha05"
 ##                 ⬆ = "8.3.0-alpha06"
 ##                 ⬆ = "8.3.0-alpha07"
+##                 ⬆ = "8.3.0-alpha08"
+##                 ⬆ = "8.3.0-alpha09"
+##                 ⬆ = "8.3.0-alpha10"
+##                 ⬆ = "8.3.0-alpha11"
 
 kotlin = "1.9.10"
 ##  ⬆ = "1.9.20-Beta"
 ##  ⬆ = "1.9.20-Beta2"
 ##  ⬆ = "1.9.20-RC"
+##  ⬆ = "1.9.20-RC2"
 
 ksp = "1.9.10-1.0.13"
 ##⬆= "1.9.20-Beta-1.0.13"
 ##⬆= "1.9.20-Beta2-1.0.13"
 ##⬆= "1.9.20-RC-1.0.13"
+##⬆= "1.9.20-RC2-1.0.13"
 
 google-dagger = "2.48.1"
 
@@ -401,9 +385,7 @@ threeten-extra = "1.7.2"
 
 zxing-android-embedded = "4.3.0"
 
-androidx-hilt = "1.0.0"
-##         ⬆ = "1.1.0-alpha01"
-##         ⬆ = "1.1.0-beta01"
+androidx-hilt = "1.1.0-rc01"
 
 junit4 = "4.13.2"
 
@@ -416,7 +398,7 @@ androidx-test-runner = "1.6.0-alpha04"
 androidx-test-rules = "1.5.0"
 ##               ⬆ = "1.6.0-alpha01"
 
-androidx-room = "2.6.0-rc01"
+androidx-room = "2.6.0"
 
 mockk = "1.13.8"
 
@@ -433,17 +415,22 @@ kotlinx-serialization = "1.6.0"
 androidx-appcompat = "1.7.0-alpha03"
 
 androidx-core = "1.12.0"
+##         ⬆ = "1.13.0-alpha01"
 
 androidx-lifecycle = "2.6.2"
 ##              ⬆ = "2.7.0-alpha01"
 ##              ⬆ = "2.7.0-alpha02"
+##              ⬆ = "2.7.0-alpha03"
 
+# FIXME 2023.11.00-alpha02 crash https://issuetracker.google.com/issues/306301019
 compose-bom-alpha = "2023.11.00-alpha01"
+##             ⬆ = "2023.11.00-alpha02"
 
 google-android-material = "1.10.0"
 ##                   ⬆ = "1.11.0-alpha01"
 ##                   ⬆ = "1.11.0-alpha02"
 ##                   ⬆ = "1.11.0-alpha03"
+##                   ⬆ = "1.11.0-beta01"
 
 androidx-biometric = "1.1.0"
 ##              ⬆ = "1.2.0-alpha01"
@@ -460,7 +447,7 @@ androidx-core-splashscreen = "1.0.1"
 ##                      ⬆ = "1.1.0-alpha01"
 ##                      ⬆ = "1.1.0-alpha02"
 
-androidx-work = "2.9.0-beta01"
+androidx-work = "2.9.0-rc01"
 
 androidx-autofill = "1.1.0"
 ##             ⬆ = "1.2.0-alpha01"
@@ -478,7 +465,7 @@ androidx-paging-compose = "3.2.1"
 
 androidx-activity = "1.8.0"
 
-androidx-hilt-navigation-compose = "1.1.0-beta01"
+androidx-hilt-navigation-compose = "1.1.0-rc01"
 
 kotlinx-collections-immutable = "0.3.6"
 
@@ -486,7 +473,7 @@ google-accompanist = "0.33.2-alpha"
 
 androidx-palette = "1.0.0"
 
-firebase-bom = "32.3.1"
+firebase-bom = "32.4.1"
 
 firebase-crashlytics-gradle = "2.9.9"
 
@@ -495,7 +482,7 @@ compose-compiler = "1.5.3"
 
 androidx-test-ext-junit = "1.2.0-alpha01"
 
-androidx-benchmark = "1.2.0-rc02"
+androidx-benchmark = "1.2.0"
 
 jakewharton-timber = "5.0.1"
 
@@ -530,22 +517,24 @@ navigation-compose = "2.7.4"
 detekt = "1.23.1"
 
 protobuf = "3.24.4"
+##    ⬆ = "3.25.0-RC1"
+##    ⬆ = "3.25.0-RC2"
 
 protobuf-plugin = "0.9.4"
 
-lunabee-library = "3.25.0-79-develop-snapshot"
+lunabee-library = "3.25.0-80-develop-SNAPSHOT"
 
 compose-color-picker = "0.7.0"
 
-compose-shimmer = "1.1.1"
+compose-shimmer = "1.2.0"
 
-lbcaccessibility = "1.5.0-169-SNAPSHOT"
+lbcaccessibility = "1.5.0-171-SNAPSHOT"
 
-lbcandroidtest = "1.2.0-169-SNAPSHOT"
+lbcandroidtest = "1.2.0-171-SNAPSHOT"
 
-lbctheme = "1.1.0-169-SNAPSHOT"
+lbctheme = "1.1.0-171-SNAPSHOT"
 
-lbccore = "1.1.0-169-SNAPSHOT"
+lbccore = "1.1.0-171-SNAPSHOT"
 
 kotlin-logging-jvm = "3.0.5"
 
@@ -557,29 +546,7 @@ bouncycastle = "1.76"
 
 nbvcxz = "1.5.1"
 
-lint = "31.1.2"
-##⬆ = "31.2.0-alpha01"
-##⬆ = "31.2.0-alpha02"
-##⬆ = "31.2.0-alpha03"
-##⬆ = "31.2.0-alpha04"
-##⬆ = "31.2.0-alpha05"
-##⬆ = "31.2.0-alpha06"
-##⬆ = "31.2.0-alpha07"
-##⬆ = "31.2.0-alpha08"
-##⬆ = "31.2.0-alpha09"
-##⬆ = "31.2.0-alpha10"
-##⬆ = "31.2.0-alpha11"
-##⬆ = "31.2.0-alpha12"
-##⬆ = "31.2.0-alpha13"
-##⬆ = "31.2.0-alpha14"
-##⬆ = "31.2.0-alpha15"
-##⬆ = "31.2.0-alpha16"
-##⬆ = "31.2.0-beta01"
-##⬆ = "31.2.0-beta02"
-##⬆ = "31.2.0-beta03"
-##⬆ = "31.2.0-beta04"
-##⬆ = "31.2.0-beta05"
-##⬆ = "31.2.0-beta06"
+lint = "31.2.0-rc01"
 ##⬆ = "31.3.0-alpha01"
 ##⬆ = "31.3.0-alpha02"
 ##⬆ = "31.3.0-alpha03"
@@ -587,6 +554,10 @@ lint = "31.1.2"
 ##⬆ = "31.3.0-alpha05"
 ##⬆ = "31.3.0-alpha06"
 ##⬆ = "31.3.0-alpha07"
+##⬆ = "31.3.0-alpha08"
+##⬆ = "31.3.0-alpha09"
+##⬆ = "31.3.0-alpha10"
+##⬆ = "31.3.0-alpha11"
 
 javapoet = "1.13.0"
 
@@ -597,6 +568,9 @@ zoomable = "1.5.1"
 exifinterface = "1.3.6"
 
 androidx-media3 = "1.1.1"
+##           ⬆ = "1.2.0-alpha01"
+##           ⬆ = "1.2.0-alpha02"
+##           ⬆ = "1.2.0-beta01"
 
 [libraries]
 

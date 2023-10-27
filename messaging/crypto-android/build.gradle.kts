@@ -25,12 +25,17 @@ android {
     namespace = "studio.lunabee.onesafe.messaging.cryptography"
 
     defaultConfig {
-        minSdk = AndroidConfig.MIN_LIB_SDK
         missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
+    }
+
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
     }
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)
     implementation(libs.lblogger.timber)

@@ -22,7 +22,6 @@ import java.util.Properties
 
 plugins {
     `android-library`
-    kotlin("kapt")
     alias(libs.plugins.ksp)
     alias(libs.plugins.protobuf)
     alias(libs.plugins.hilt)
@@ -38,7 +37,6 @@ android {
     namespace = "studio.lunabee.onesafe.storage"
 
     defaultConfig {
-        minSdk = AndroidConfig.MIN_LIB_SDK
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
         missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
     }
@@ -89,10 +87,6 @@ android {
     }
 }
 
-kapt {
-    correctErrorTypes = true
-}
-
 dependencies {
     implementation(libs.kotlin.stdlib)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
@@ -130,7 +124,7 @@ dependencies {
 
     implementation(libs.doubleratchet)
 
-    kaptAndroidTest(libs.dagger.hilt.compiler)
+    kspAndroidTest(libs.dagger.hilt.compiler)
 
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(project(":dependency-injection:test-component"))

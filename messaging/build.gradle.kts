@@ -19,7 +19,7 @@
 
 plugins {
     `android-library`
-    kotlin("kapt")
+    alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
 
@@ -50,18 +50,14 @@ android {
     }
 }
 
-kapt {
-    correctErrorTypes = true
-}
-
 dependencies {
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)
     implementation(libs.lbccore)
 
     implementation(libs.hilt.android)
-    kapt(libs.dagger.hilt.compiler)
-    kaptAndroidTest(libs.dagger.hilt.compiler)
+    ksp(libs.dagger.hilt.compiler)
+    kspAndroidTest(libs.dagger.hilt.compiler)
 
     implementation(platform(libs.compose.beta.bom))
     implementation(libs.compose.ui)

@@ -20,7 +20,7 @@
 plugins {
     `android-library`
     alias(libs.plugins.kotlin.serialization)
-    kotlin("kapt")
+    alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
 
@@ -51,14 +51,10 @@ android {
     }
 }
 
-kapt {
-    correctErrorTypes = true
-}
-
 dependencies {
     implementation(libs.hilt.android)
-    kapt(libs.dagger.hilt.compiler)
-    kaptAndroidTest(libs.dagger.hilt.compiler)
+    ksp(libs.dagger.hilt.compiler)
+    kspAndroidTest(libs.dagger.hilt.compiler)
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbextensions)

@@ -24,7 +24,7 @@ import studio.lunabee.doubleratchet.DoubleRatchetEngine
 import studio.lunabee.doubleratchet.model.DoubleRatchetError
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.doubleratchet.model.SendMessageData
-import studio.lunabee.onesafe.error.OSDoubleRatchetError
+import studio.lunabee.onesafe.messaging.domain.extension.asOSError
 import java.util.UUID
 import javax.inject.Inject
 
@@ -35,7 +35,7 @@ class GetSendMessageDataUseCase @Inject constructor(
         return try {
             LBResult.Success(doubleRatchetEngine.getSendData(DoubleRatchetUUID(contactId)))
         } catch (e: DoubleRatchetError) {
-            LBResult.Failure(OSDoubleRatchetError.fromDoubleRatchetError(e))
+            LBResult.Failure(e.asOSError())
         }
     }
 }

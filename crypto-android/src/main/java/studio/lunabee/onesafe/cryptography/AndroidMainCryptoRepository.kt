@@ -86,8 +86,14 @@ class AndroidMainCryptoRepository @Inject constructor(
     )
     private var bubblesMasterKey: ByteArray? by safeCryptoArrayDelete(bubblesMasterKeyFlow)
 
+    private val itemEditionKeyFlow: SafeDataMutableStateFlow = SafeDataMutableStateFlow(
+        overrideCode = OSCryptoError.Code.ITEM_EDITION_KEY_ALREADY_LOADED,
+        nullableCode = OSCryptoError.Code.ITEM_EDITION_KEY_NOT_LOADED,
+    )
+    private var itemEditionKey: ByteArray? by safeCryptoArrayDelete(itemEditionKeyFlow)
+
     override fun isCryptoDataInMemoryFlow(): Flow<Boolean> {
-        val flows = mutableListOf(masterKeyFlow, searchIndexKeyFlow)
+        val flows = mutableListOf(masterKeyFlow, searchIndexKeyFlow, itemEditionKeyFlow)
         return combine(flows) { keys ->
             keys.all { it != null }
         }.distinctUntilChanged()
@@ -119,6 +125,12 @@ class AndroidMainCryptoRepository @Inject constructor(
         errorCodeIfOverrideExistingValue = OSCryptoError.Code.SEARCH_INDEX_KEY_ALREADY_GENERATED,
     )
 
+    private var itemEditionKeyDataStore: ByteArray? by dataStoreValueDelegate(
+        key = DATASTORE_ITEM_EDITION_KEY,
+        datastoreEngine = dataStoreEngine,
+        errorCodeIfOverrideExistingValue = OSCryptoError.Code.ITEM_EDITION_KEY_ALREADY_GENERATED,
+    )
+
     private var bubblesMasterKeyDataStore: ByteArray? by dataStoreValueDelegate(
         key = DATASTORE_BUBBLES_CONTACT_KEY,
         datastoreEngine = dataStoreEngine,
@@ -138,6 +150,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         masterKey = null
         searchIndexKey = null
         bubblesMasterKey = null
+        itemEditionKey = null
         log.v("cryptographic keys unloaded")
     }
 
@@ -155,6 +168,7 @@ class AndroidMainCryptoRepository @Inject constructor(
             associatedData = null,
         )
         generateIndexKey()
+        generateItemEditionKey()
         if (featureFlags.bubbles().first()) {
             generateBubblesKey()
         }
@@ -171,6 +185,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         )
         dataStoreEngine.editValue(value = masterKeyTestValue, key = DATASTORE_MASTER_KEY_TEST)
         reEncryptIndexKey()
+        reEncryptItemEditionKey()
         if (featureFlags.bubbles().first()) {
             reEncryptBubblesContactKey()
         }
@@ -179,6 +194,7 @@ class AndroidMainCryptoRepository @Inject constructor(
     override suspend fun loadMasterKeyFromBiometric(cipher: Cipher) {
         masterKey = biometricEngine.retrieveKey(cipher)
         retrieveKeyForIndex()
+        retrieveKeyForEdition()
         if (featureFlags.bubbles().first()) {
             retrieveKeyForBubblesContact()
         }
@@ -192,6 +208,7 @@ class AndroidMainCryptoRepository @Inject constructor(
     override suspend fun loadMasterKeyExternal(masterKey: ByteArray) {
         this.masterKey = masterKey.copyOf()
         retrieveKeyForIndex()
+        retrieveKeyForEdition()
         if (featureFlags.bubbles().first()) {
             retrieveKeyForBubblesContact()
         }
@@ -201,6 +218,13 @@ class AndroidMainCryptoRepository @Inject constructor(
     private suspend fun generateIndexKey() {
         searchIndexKeyDataStore = randomKeyProvider().use { keyData ->
             searchIndexKey = keyData.copyOf()
+            crypto.encrypt(keyData, masterKey!!, null)
+        }
+    }
+
+    private suspend fun generateItemEditionKey() {
+        itemEditionKeyDataStore = randomKeyProvider().use { keyData ->
+            itemEditionKey = keyData.copyOf()
             crypto.encrypt(keyData, masterKey!!, null)
         }
     }
@@ -217,8 +241,21 @@ class AndroidMainCryptoRepository @Inject constructor(
         dataStoreEngine.editValue(value = key, key = DATASTORE_SEARCH_INDEX_KEY)
     }
 
+    private suspend fun reEncryptItemEditionKey() {
+        val key = crypto.encrypt(itemEditionKey!!, masterKey!!, null)
+        dataStoreEngine.editValue(value = key, key = DATASTORE_ITEM_EDITION_KEY)
+    }
+
     private suspend fun retrieveKeyForIndex() {
         searchIndexKey = crypto.decrypt(searchIndexKeyDataStore!!, masterKey!!, null)
+    }
+
+    private suspend fun retrieveKeyForEdition() {
+        if (itemEditionKeyDataStore != null) {
+            itemEditionKey = crypto.decrypt(itemEditionKeyDataStore!!, masterKey!!, null)
+        } else {
+            generateItemEditionKey()
+        }
     }
 
     private suspend fun retrieveKeyForBubblesContact() {
@@ -260,6 +297,7 @@ class AndroidMainCryptoRepository @Inject constructor(
             retrieveMasterKeyFromPassword(password)?.let {
                 masterKey = it
                 retrieveKeyForIndex()
+                retrieveKeyForEdition()
                 if (featureFlags.bubbles().first()) {
                     retrieveKeyForBubblesContact()
                 }
@@ -378,6 +416,14 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
+    override fun getFileEditionEncryptStream(plainFile: File): OutputStream {
+        return crypto.getEncryptStream(plainFile, itemEditionKey!!, null)
+    }
+
+    override fun getFileEditionDecryptStream(encFile: File): InputStream {
+        return crypto.getDecryptStream(AtomicFile(encFile), itemEditionKey!!, null)
+    }
+
     private suspend fun <Data : Any> doDecrypt(
         key: SafeItemKey,
         decrypt: suspend (rawKey: ByteArray) -> ByteArray,
@@ -484,6 +530,7 @@ class AndroidMainCryptoRepository @Inject constructor(
 
     companion object {
         private const val DATASTORE_SEARCH_INDEX_KEY = "f0ab7671-5314-41dc-9f57-3c689180ab33"
+        private const val DATASTORE_ITEM_EDITION_KEY = "6f596059-24b8-429e-bfe4-daea05310de8"
         const val DATASTORE_MASTER_SALT: String = "b282a019-4337-45a3-8bf6-da657ad39a6c"
         private const val DATASTORE_MASTER_KEY_TEST = "f9e3fa44-2f54-4246-8ba6-2784a18b63ea"
         private const val DATASTORE_BUBBLES_CONTACT_KEY: String = "2b96478c-cbd4-4150-b591-6fe5a4dffc5f"

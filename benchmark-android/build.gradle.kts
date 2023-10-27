@@ -20,6 +20,7 @@
 plugins {
     `android-library`
     alias(libs.plugins.androidx.benchmark)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -59,9 +60,17 @@ android {
             dimension = AndroidConfig.CRYPTO_BACKEND_FLAVOR_DIMENSION
         }
     }
+
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+    }
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    kspAndroidTest(libs.dagger.hilt.compiler)
+
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.junit4)

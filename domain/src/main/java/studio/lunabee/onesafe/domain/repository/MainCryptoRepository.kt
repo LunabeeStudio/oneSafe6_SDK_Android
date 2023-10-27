@@ -46,6 +46,8 @@ interface MainCryptoRepository {
     suspend fun <Data : Any> encrypt(key: SafeItemKey, encryptEntries: List<EncryptEntry<Data>?>): List<ByteArray?>
     suspend fun getDecryptStream(cipherFile: File, key: SafeItemKey): InputStream
     suspend fun getEncryptStream(cipherFile: File, key: SafeItemKey): OutputStream
+    fun getFileEditionEncryptStream(plainFile: File): OutputStream
+    fun getFileEditionDecryptStream(encFile: File): InputStream
     suspend fun encrypt(outputStream: OutputStream, key: ByteArray): OutputStream
     suspend fun encryptIndexWord(indexWordEntry: List<PlainIndexWordEntry>): List<IndexWordEntry>
     suspend fun decryptIndexWord(encIndexWordEntry: List<IndexWordEntry>): List<PlainIndexWordEntry>

@@ -28,8 +28,6 @@ android {
     buildToolsVersion = AndroidConfig.BUILD_TOOLS_VERSION
 
     defaultConfig {
-        minSdk = AndroidConfig.MIN_LIB_SDK
-        manifestPlaceholders["testTargetSdk"] = AndroidConfig.TARGET_SDK
         missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
     }
 
@@ -60,7 +58,7 @@ dependencies {
     implementation(libs.datastore)
     implementation(libs.protobuf.kotlinlite)
 
-    implementation(libs.lunabee.bom)
+    implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)
 
     implementation(project(":domain"))

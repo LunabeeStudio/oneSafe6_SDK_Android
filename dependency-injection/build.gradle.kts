@@ -19,16 +19,12 @@
 
 plugins {
     `android-library`
-    kotlin("kapt")
+    alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
 
 android {
     namespace = "studio.lunabee.onesafe.dependencyinjection"
-
-    defaultConfig {
-        minSdk = AndroidConfig.MIN_LIB_SDK
-    }
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
@@ -46,15 +42,11 @@ android {
     }
 }
 
-kapt {
-    correctErrorTypes = true
-}
-
 dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     implementation(libs.hilt.android)
-    kapt(libs.dagger.hilt.compiler)
+    ksp(libs.dagger.hilt.compiler)
 
     implementation(libs.room.ktx)
     implementation(libs.datastore.preferences)

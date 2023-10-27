@@ -25,7 +25,7 @@ object FileHelper {
     fun String.getValidFileName(
         extension: String,
     ): String {
-        return if (this.endsWith(extension)) {
+        return if (this.endsWith(".$extension")) {
             this
         } else {
             "$this.$extension"

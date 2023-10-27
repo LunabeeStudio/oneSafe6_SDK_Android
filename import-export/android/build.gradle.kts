@@ -20,7 +20,7 @@
 plugins {
     `android-library`
     `onesafe-publish`
-    kotlin("kapt")
+    alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
 
@@ -51,16 +51,12 @@ android {
     }
 }
 
-kapt {
-    correctErrorTypes = true
-}
-
 dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     implementation(libs.hilt.android)
-    kapt(libs.androidx.hilt.compiler)
-    kapt(libs.dagger.hilt.compiler)
+    ksp(libs.androidx.hilt.compiler)
+    ksp(libs.dagger.hilt.compiler)
 
     implementation(libs.hilt.work)
     implementation(libs.work.runtime)
@@ -93,7 +89,7 @@ dependencies {
     implementation(project(":app:core-ui"))
     implementation(project(":app:settings"))
 
-    kaptAndroidTest(libs.dagger.hilt.compiler)
+    kspAndroidTest(libs.dagger.hilt.compiler)
     androidTestImplementation(project(":dependency-injection"))
     androidTestImplementation(project(":dependency-injection:test-component"))
     androidTestImplementation(project(":common-test-android"))

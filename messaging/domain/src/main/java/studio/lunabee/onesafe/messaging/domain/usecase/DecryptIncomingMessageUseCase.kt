@@ -46,6 +46,7 @@ import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSDoubleRatchetError
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.messagecompanion.OSMessage
+import studio.lunabee.onesafe.messaging.domain.extension.asOSError
 import studio.lunabee.onesafe.messaging.domain.extension.toInstant
 import studio.lunabee.onesafe.messaging.domain.model.OSEncryptedMessage
 import studio.lunabee.onesafe.messaging.domain.model.OSPlainMessage
@@ -153,13 +154,13 @@ class DecryptIncomingMessageUseCase @Inject constructor(
         val messageKey = try {
             doubleRatchetEngine.getReceiveKey(messageHeader = plainMessage.messageHeader, DoubleRatchetUUID(contact.id))
         } catch (e: DoubleRatchetError) {
-            throw OSDoubleRatchetError.fromDoubleRatchetError(e)
+            throw e.asOSError()
         }
 
         val plainBody = messagingCryptoRepository.decryptMessage(plainMessage.body, messageKey)
         val plainMessageDataProto = OSMessage.MessageData.parseFrom(plainBody)
 
-        // Don't return the message if it's an inviatation message and you already received the handShake
+        // Don't return the message if it's an invitation message and you already received the handShake
         val osPlainMessage = if (plainMessageDataProto.content == BubblesConstant.FirstMessageData && contact.encSharedKey != null) {
             null
         } else {
@@ -198,7 +199,7 @@ class DecryptIncomingMessageUseCase @Inject constructor(
         val messageKey = try {
             doubleRatchetEngine.getReceiveKey(messageHeader = plainMessage.messageHeader, DoubleRatchetUUID(contact.id))
         } catch (e: DoubleRatchetError) {
-            throw OSDoubleRatchetError.fromDoubleRatchetError(e)
+            throw e.asOSError()
         }
         val plainBody = messagingCryptoRepository.decryptMessage(plainMessage.body, messageKey)
         val plainMessageDataProto = OSMessage.MessageData.parseFrom(plainBody)

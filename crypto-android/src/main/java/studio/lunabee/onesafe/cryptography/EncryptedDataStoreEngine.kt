@@ -41,6 +41,7 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import javax.inject.Inject
 
+@Suppress("ObsoleteSdkInt")
 @RequiresApi(Build.VERSION_CODES.M)
 class EncryptedDataStoreEngine @Inject constructor(
     @ApplicationContext private val context: Context,

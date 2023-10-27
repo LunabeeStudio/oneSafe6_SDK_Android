@@ -19,16 +19,12 @@
 
 plugins {
     `android-library`
-    kotlin("kapt")
+    alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
 
 android {
     namespace = "studio.lunabee.onesafe.dependencyinjection.test"
-
-    defaultConfig {
-        minSdk = AndroidConfig.MIN_LIB_SDK
-    }
 
     flavorDimensions += AndroidConfig.CRYPTO_BACKEND_FLAVOR_DIMENSION
     productFlavors {
@@ -42,14 +38,10 @@ android {
     }
 }
 
-kapt {
-    correctErrorTypes = true
-}
-
 dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.android.testing)
-    kapt(libs.dagger.hilt.compiler)
+    ksp(libs.dagger.hilt.compiler)
 
     implementation(libs.room.ktx)
     implementation(libs.androidx.test.core.ktx)
