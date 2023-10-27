@@ -43,12 +43,12 @@ class PBKDF2JceHashEngineBenchmark {
 
     private val hashEngine: PBKDF2JceHashEngine = PBKDF2JceHashEngine(StandardTestDispatcher(), CryptoConstants.PBKDF2Iterations)
 
-    private val password = "LTDf#@sGEdczDe?X@53TK&P4A^heLttP"
+    private val password: CharArray = "LTDf#@sGEdczDe?X@53TK&P4A^heLttP".toCharArray()
     private val salt = Base64.decode("rTygUEZCVBg4RNbJP1U16QFgIeIKwg/T0gEVA0cfIDU=", Base64.NO_WRAP)
 
     private val doHash: Method = PBKDF2JceHashEngine::class.java.getDeclaredMethod(
         "doHash",
-        String::class.java,
+        CharArray::class.java,
         ByteArray::class.java,
     ).apply {
         isAccessible = true

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2023 Lunabee Studio
+ * Copyright (c) 2023 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:45 AM
+ * Created by Lunabee Studio / Date - 10/24/2023 - for the oneSafe6 SDK.
+ * Last modified 10/24/23, 2:22 PM
  */
 
-plugins {
-    `android-library`
-}
+package studio.lunabee.onesafe.messaging.domain.extension
 
-android {
-    namespace = "studio.lunabee.onesafe.settings"
+import studio.lunabee.doubleratchet.model.DoubleRatchetError
+import studio.lunabee.onesafe.error.OSDoubleRatchetError
 
-    compileOptions {
-        isCoreLibraryDesugaringEnabled = true
-    }
-}
-
-dependencies {
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
-
-    implementation(libs.datastore.preferences)
-
-    implementation(project(":domain"))
-    implementation(project(":repository"))
+fun DoubleRatchetError.asOSError(): OSDoubleRatchetError {
+    val code: OSDoubleRatchetError.Code = OSDoubleRatchetError.Code.valueOf(type.name)
+    return OSDoubleRatchetError(code)
 }

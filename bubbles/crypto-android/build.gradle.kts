@@ -25,7 +25,6 @@ android {
     namespace = "studio.lunabee.onesafe.bubbles.crypto"
 
     defaultConfig {
-        minSdk = AndroidConfig.MIN_LIB_SDK
         missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
     }
 
@@ -34,9 +33,15 @@ android {
         resources.pickFirsts.add("META-INF/LICENSE-notice.md")
         resources.pickFirsts.add("META-INF/DEPENDENCIES")
     }
+
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+    }
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)
     implementation(libs.lblogger.timber)

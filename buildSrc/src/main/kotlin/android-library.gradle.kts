@@ -33,18 +33,14 @@ android {
 
     defaultConfig {
         minSdk = AndroidConfig.MIN_LIB_SDK
+        @Suppress("DEPRECATION") // https://stackoverflow.com/questions/76084080/apply-targetsdk-in-android-instrumentation-test
+        targetSdk = AndroidConfig.TARGET_SDK
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
         sourceCompatibility = ProjectConfig.JDK_VERSION
         targetCompatibility = ProjectConfig.JDK_VERSION
-    }
-
-    buildTypes {
-        debug {
-            defaultConfig.minSdk = AndroidConfig.MIN_APP_SDK
-        }
     }
 
     kotlinOptions.freeCompilerArgs += "-Xcontext-receivers"

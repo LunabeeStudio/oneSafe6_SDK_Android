@@ -29,11 +29,14 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import studio.lunabee.onesafe.cryptography.ChachaPolyJCECryptoEngine
 import studio.lunabee.compose.androidtest.helper.LbcResourcesHelper
+import studio.lunabee.onesafe.cryptography.ChachaPolyJCECryptoEngine
 import timber.log.Timber
 import java.io.File
 import java.lang.reflect.Method
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.time.measureTime
 
 @LargeTest
 @HiltAndroidTest
@@ -88,14 +91,14 @@ class ChachaPolyJCECryptoEngineBenchmark {
     @Test
     fun chachaPoly1305_encrypt_benchmark() {
         benchmarkRule.measureRepeated {
-            doEncrypt(cryptoEngine, CryptoBenchUtils.plainData, CryptoBenchUtils.key256)
+            doEncrypt(cryptoEngine, CryptoBenchUtils.plainData, CryptoBenchUtils.key256, null)
         }
     }
 
     @Test
     fun chachaPoly1305_decrypt_data_benchmark() {
         benchmarkRule.measureRepeated {
-            doDecryptData(cryptoEngine, CryptoBenchUtils.chacha20poly1305_data, CryptoBenchUtils.key256)
+            doDecryptData(cryptoEngine, CryptoBenchUtils.chacha20poly1305_data, CryptoBenchUtils.key256, null)
         }
     }
 
@@ -106,7 +109,70 @@ class ChachaPolyJCECryptoEngineBenchmark {
         val atomicFile = AtomicFile(cipherFile)
 
         benchmarkRule.measureRepeated {
-            doDecryptFile(cryptoEngine, atomicFile, CryptoBenchUtils.key256)
+            doDecryptFile(cryptoEngine, atomicFile, CryptoBenchUtils.key256, null)
+        }
+    }
+
+    @Test
+    fun chachaPoly1305_decrypt_file_stream_benchmark() {
+        val cacheDir = InstrumentationRegistry.getInstrumentation().targetContext.cacheDir
+        val fileSizeMB = 50
+
+        val plainFile = File(cacheDir, "plain_file")
+        val plainFile2 = File(cacheDir, "plain_file2")
+        plainFile.delete()
+        plainFile.outputStream().use { fos ->
+            repeat(1024 * fileSizeMB) {
+                fos.write(ByteArray(1024) { it.toByte() })
+            }
+        }
+        println("File size = ${plainFile.length() / 1024f / 1024f}mo")
+
+        val cipherFile = File(cacheDir, "cipher_file")
+        cipherFile.delete()
+
+        measureTime {
+            cryptoEngine.getEncryptStream(cipherFile, CryptoBenchUtils.key256, null).use { fos ->
+                plainFile.inputStream().use { fis ->
+                    fis.copyTo(fos)
+                }
+            }
+        }.let {
+            println("Encrypt duration = $it")
+        }
+
+        val atomicFile = AtomicFile(cipherFile)
+
+        benchmarkRule.measureRepeated {
+            plainFile2.outputStream().use {
+                cryptoEngine.getDecryptStream(atomicFile, CryptoBenchUtils.key256, null).use { fis ->
+                    plainFile2.outputStream().use { fos ->
+                        fis.copyTo(fos)
+                    }
+                }
+            }
+
+            runWithTimingDisabled {
+                assertEquals(plainFile.length(), plainFile2.length())
+                plainFile2.delete()
+            }
+        }
+    }
+
+    @Suppress("unused") // Could be useful (but heavier to run in loop)
+    private fun assertFileContent(plainFile: File, plainFile2: File) {
+        assertEquals(plainFile.length(), plainFile2.length())
+        plainFile.inputStream().use { fis ->
+            plainFile2.inputStream().use { fis2 ->
+                var readSize = -1
+                val read = ByteArray(512)
+                val read2 = ByteArray(512)
+                while (readSize == -1 || readSize == 512) {
+                    readSize = fis.read(read)
+                    fis2.read(read2)
+                    assertContentEquals(read, read2)
+                }
+            }
         }
     }
 }

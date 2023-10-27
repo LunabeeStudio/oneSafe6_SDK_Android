@@ -21,6 +21,7 @@ package studio.lunabee.onesafe.storage.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
@@ -29,6 +30,7 @@ import studio.lunabee.onesafe.storage.model.RoomBackup
 import studio.lunabee.onesafe.storage.model.RoomCloudBackup
 import studio.lunabee.onesafe.storage.model.RoomLocalBackup
 
+@RewriteQueriesToDropUnusedColumns
 @Dao
 interface BackupDao {
     @Query("SELECT * FROM Backup ORDER BY `date` DESC")

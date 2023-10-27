@@ -19,7 +19,7 @@
 
 plugins {
     `android-library`
-    kotlin("kapt")
+    alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
 
@@ -27,7 +27,6 @@ android {
     namespace = "studio.lunabee.onesafe.migration"
 
     defaultConfig {
-        minSdk = AndroidConfig.MIN_LIB_SDK
         missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
     }
@@ -63,7 +62,7 @@ dependencies {
     implementation(project(":app:settings"))
     implementation(project(":import-export-domain"))
 
-    kaptAndroidTest(libs.dagger.hilt.compiler)
+    kspAndroidTest(libs.dagger.hilt.compiler)
     androidTestImplementation(project(":dependency-injection:test-component"))
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(libs.junit4)

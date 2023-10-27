@@ -23,7 +23,7 @@ import java.util.Properties
 plugins {
     `android-library`
     `onesafe-publish`
-    kotlin("kapt")
+    alias(libs.plugins.ksp)
     alias(libs.plugins.protobuf)
     alias(libs.plugins.hilt)
 }
@@ -34,7 +34,6 @@ android {
     namespace = "studio.lunabee.onesafe.cryptography"
 
     defaultConfig {
-        minSdk = AndroidConfig.MIN_LIB_SDK
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
     }
 
@@ -95,10 +94,6 @@ android {
     }
 }
 
-kapt {
-    correctErrorTypes = true
-}
-
 val tinkImplementation: Configuration by configurations
 val jceImplementation: Configuration by configurations
 
@@ -132,7 +127,7 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":import-export-domain"))
 
-    kaptAndroidTest(libs.dagger.hilt.compiler)
+    kspAndroidTest(libs.dagger.hilt.compiler)
 
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(project(":dependency-injection:test-component"))

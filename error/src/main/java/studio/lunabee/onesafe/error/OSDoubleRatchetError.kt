@@ -19,8 +19,6 @@
 
 package studio.lunabee.onesafe.error
 
-import studio.lunabee.doubleratchet.model.DoubleRatchetError
-
 data class OSDoubleRatchetError(
     override val code: Code,
     override val message: String = code.message,
@@ -33,12 +31,5 @@ data class OSDoubleRatchetError(
         MessageKeyNotFound("This message has already been decrypted"),
         RequiredChainKeyMissing("can't setup conversation because initial chainKey is missing from message header"),
         CantDecryptSentMessage("you can't decrypt your own message"),
-    }
-
-    companion object {
-        fun fromDoubleRatchetError(error: DoubleRatchetError): OSDoubleRatchetError {
-            val code = Code.valueOf(error.type.name)
-            return OSDoubleRatchetError(code)
-        }
     }
 }

@@ -24,6 +24,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onStart
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.domain.utils.mkdirs
 import studio.lunabee.onesafe.error.OSDomainError
@@ -77,6 +78,8 @@ class ArchiveUnzipUseCase @Inject constructor(
             } finally {
                 sourceFile.delete()
             }
-        }.flowOn(fileDispatcher)
+        }
+            .onStart { emit(LBFlowResult.Loading()) }
+            .flowOn(fileDispatcher)
     }
 }
