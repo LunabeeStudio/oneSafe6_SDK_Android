@@ -62,7 +62,7 @@ class EncryptFieldsUseCase @Inject constructor(
         return fieldsData.mapIndexed { idx, data ->
             val offsetIdx = idx * fieldEncryptedPropertiesCount
             SafeItemField(
-                id = UUID.randomUUID(),
+                id = data.id,
                 encName = encryptedEntries[offsetIdx],
                 position = data.position,
                 itemId = itemId,

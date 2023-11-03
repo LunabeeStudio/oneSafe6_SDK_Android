@@ -24,6 +24,7 @@ import com.lunabee.lblogger.LBLogger
 import com.lunabee.lblogger.e
 import studio.lunabee.onesafe.domain.Constant
 import studio.lunabee.onesafe.domain.common.DuplicatedNameTransform
+import studio.lunabee.onesafe.domain.common.FieldIdProvider
 import studio.lunabee.onesafe.domain.common.FileIdProvider
 import studio.lunabee.onesafe.domain.common.ItemIdProvider
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
@@ -68,6 +69,7 @@ class DuplicateItemUseCase @Inject constructor(
     private val deleteIconUseCase: DeleteIconUseCase,
     private val encryptFieldsUseCase: EncryptFieldsUseCase,
     private val fileRepository: FileRepository,
+    private val fieldIdProvider: FieldIdProvider,
 ) {
     suspend operator fun invoke(
         itemId: UUID,
@@ -186,6 +188,7 @@ class DuplicateItemUseCase @Inject constructor(
         originalFields.forEachIndexed { idx, originalField ->
             val offsetIdx = idx * fieldEncryptedPropertiesCount
             itemFieldsData += ItemFieldData(
+                id = fieldIdProvider(),
                 name = fieldEntries[offsetIdx] as String?,
                 position = originalField.position,
                 placeholder = fieldEntries[offsetIdx + 2] as String?,

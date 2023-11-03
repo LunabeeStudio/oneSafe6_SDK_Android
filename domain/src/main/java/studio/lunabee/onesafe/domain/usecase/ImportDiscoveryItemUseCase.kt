@@ -21,6 +21,7 @@ package studio.lunabee.onesafe.domain.usecase
 
 import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.withTimeoutOrNull
+import studio.lunabee.onesafe.domain.common.FieldIdProvider
 import studio.lunabee.onesafe.domain.model.safeitem.DiscoveryData
 import studio.lunabee.onesafe.domain.model.safeitem.DiscoveryItem
 import studio.lunabee.onesafe.domain.model.safeitem.ItemFieldData
@@ -35,6 +36,7 @@ class ImportDiscoveryItemUseCase @Inject constructor(
     private val createItemUseCase: CreateItemUseCase,
     private val addFieldUseCase: AddFieldUseCase,
     private val getIconAndColorFromUrlUseCase: GetIconAndColorFromUrlUseCase,
+    private val fieldIdProvider: FieldIdProvider,
 ) {
 
     suspend operator fun invoke(
@@ -79,11 +81,12 @@ class ImportDiscoveryItemUseCase @Inject constructor(
                 itemId = itemId,
                 itemFieldsData = discoveryItem.fields.map { discoveryField ->
                     ItemFieldData(
+                        id = fieldIdProvider(),
                         name = labels?.get(discoveryField.name),
-                        kind = SafeItemFieldKind.fromString(discoveryField.kind),
                         position = discoveryField.position.toDouble(),
                         placeholder = labels?.get(discoveryField.placeholder),
                         value = labels?.get(discoveryField.value),
+                        kind = SafeItemFieldKind.fromString(discoveryField.kind),
                         showPrediction = discoveryField.showPrediction,
                         isItemIdentifier = discoveryField.isItemIdentifier,
                         formattingMask = discoveryField.formattingMask,

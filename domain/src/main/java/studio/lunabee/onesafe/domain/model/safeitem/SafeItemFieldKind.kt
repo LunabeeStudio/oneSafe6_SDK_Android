@@ -155,7 +155,7 @@ sealed class SafeItemFieldKind(
         override val id: String = "number"
     }
 
-    object CreditCardNumber : SafeItemFieldKind(
+    data object CreditCardNumber : SafeItemFieldKind(
         font = SafeItemFieldFont.Default,
         inputType = SafeItemInputType.Number,
         maskList = FieldMask.CreditCardMasks,
@@ -164,7 +164,7 @@ sealed class SafeItemFieldKind(
         override val id: String = "creditCardNumber"
     }
 
-    object YearMonth : SafeItemFieldKind(
+    data object YearMonth : SafeItemFieldKind(
         font = SafeItemFieldFont.Default,
         inputType = SafeItemInputType.Number,
         maskList = FieldMask.MonthYearDateMasks,

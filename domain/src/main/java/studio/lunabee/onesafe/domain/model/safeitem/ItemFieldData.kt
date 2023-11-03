@@ -19,10 +19,13 @@
 
 package studio.lunabee.onesafe.domain.model.safeitem
 
+import java.util.UUID
+
 /**
  * Describe how a field should be built.
  */
 data class ItemFieldData(
+    val id: UUID,
     val name: String?, // Name that will be used as placeholder.
     val position: Double,
     val placeholder: String?, // currently we use only name

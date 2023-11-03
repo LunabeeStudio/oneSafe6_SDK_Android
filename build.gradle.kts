@@ -138,12 +138,12 @@ subprojects {
         }
 
         val androidTestTaskNames: List<String>? = when {
+            isApp -> listOf("$parentName$name:connectedProdDebugAndroidTest")
             isCryptoModule -> listOf(
                 "$parentName$name:connectedJceDebugAndroidTest",
                 "$parentName$name:connectedTinkDebugAndroidTest",
             )
             isAndroidLibrary -> listOf("$parentName$name:connectedDebugAndroidTest")
-            isApp -> listOf("$parentName$name:connectedProdDebugAndroidTest")
             else -> null
         }
 

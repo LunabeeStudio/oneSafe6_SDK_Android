@@ -27,9 +27,14 @@ plugins {
 android {
     namespace = "studio.lunabee.onesafe.importexport.android"
 
+    val backupProviderAuthoritySuffix = ".importexport.backupprovider"
+
     defaultConfig {
-        testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
+        minSdk = AndroidConfig.MIN_APP_SDK
         missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
+
+        testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
+        buildConfigField("String", "BACKUPS_PROVIDER_AUTHORITY_SUFFIX", "\"$backupProviderAuthoritySuffix\"")
     }
 
     packaging {
@@ -44,6 +49,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     composeOptions {
@@ -95,5 +101,6 @@ dependencies {
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(project(":app:settings"))
     androidTestImplementation(project(":crypto-android"))
+    androidTestImplementation(libs.room.testing)
     androidTestImplementation(libs.lblogger.timber)
 }

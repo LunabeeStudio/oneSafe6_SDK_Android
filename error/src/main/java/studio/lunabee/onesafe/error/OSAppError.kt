@@ -41,5 +41,7 @@ data class OSAppError(
         MIGRATION_MISSING_PASSWORD("No encrypted password set in migration manager"),
         EXPORT_WORKER_FAILURE("Something wrong happened during background export"),
         EXPORT_WORKER_CANCELED("Background export canceled"),
+        FILE_SAVING_ERROR("An error occured during file saving"),
+        IMAGE_CAPTURE_FAILED("Image capture using cameraX has failed"),
     }
 }

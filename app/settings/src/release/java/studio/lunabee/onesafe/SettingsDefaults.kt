@@ -21,6 +21,7 @@ package studio.lunabee.onesafe
 
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import kotlin.time.Duration.Companion.days
+import studio.lunabee.onesafe.domain.model.camera.CameraSystem
 
 internal object SettingsDefaults {
     const val AutoLockInactivityDelayMsDefault: Long = 30_000
@@ -35,4 +36,5 @@ internal object SettingsDefaults {
     const val BubblesPreviewDefault: Boolean = false
     const val autoBackupEnabledDefault: Boolean = false
     val autoBackupFrequencyMsDefault: Long = 1.days.inWholeMilliseconds
+    val CameraSystemDefault: CameraSystem = CameraSystem.InApp
 }

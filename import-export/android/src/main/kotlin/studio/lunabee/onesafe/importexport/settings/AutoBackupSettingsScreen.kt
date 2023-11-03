@@ -33,7 +33,9 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,7 +58,9 @@ import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.notification.NotificationPermissionRationaleDialogState
+import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
 import studio.lunabee.onesafe.importexport.model.LocalBackup
+import studio.lunabee.onesafe.importexport.utils.BackupFileManagerHelper
 import studio.lunabee.onesafe.molecule.ElevatedTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.extensions.topAppBarElevation
@@ -85,6 +89,24 @@ fun AutoBackupSettingsRoute(
         null // always granted
     }
 
+    var errorSnackbarState: ErrorSnackbarState? by remember { mutableStateOf(null) }
+    val snackBarHostState = remember { SnackbarHostState() }
+    val errorSnackBarVisual = errorSnackbarState?.snackbarVisuals
+    LaunchedEffect(errorSnackbarState) {
+        errorSnackBarVisual?.let {
+            snackBarHostState.showSnackbar(it)
+        }
+    }
+
+    val openFileManager = {
+        if (!BackupFileManagerHelper.openFileManager(context)) {
+            errorSnackbarState = ErrorSnackbarState(
+                message = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_saveAccess_error_noFileManager),
+                onClick = { errorSnackbarState = null },
+            )
+        }
+    }
+
     when (val state = uiState) {
         null -> OSScreen(UiConstants.TestTag.Screen.AutoBackupSettingsScreen) {}
         AutoBackupSettingsUiState.Disabled,
@@ -101,6 +123,7 @@ fun AutoBackupSettingsRoute(
                 },
                 setAutoBackupFrequency = { viewModel.setAutoBackupFrequency(context, it) },
                 navigateToRestoreBackup = navigateToRestoreBackup,
+                openFileManager = openFileManager,
             )
         }
     }
@@ -113,6 +136,7 @@ fun AutoBackupSettingsScreen(
     toggleAutoBackup: () -> Unit,
     setAutoBackupFrequency: (AutoBackupFrequency) -> Unit,
     navigateToRestoreBackup: (Uri) -> Unit,
+    openFileManager: (() -> Unit)?,
 ) {
     val mainCardUiState = when (uiState) {
         AutoBackupSettingsUiState.Disabled -> AutoBackupSettingsMainCardUiState.Disabled
@@ -158,6 +182,10 @@ fun AutoBackupSettingsScreen(
 
             if (uiState is AutoBackupSettingsUiState.Enabled) {
                 if (uiState.backups.isNotEmpty()) {
+                    AutoBackupSettingsAccessBackupCard(
+                        onAccessLocalClick = openFileManager,
+                        onAccessRemoteClick = null, // TODO jump to drive
+                    )
                     AutoBackupSettingsRestoreCard(
                         onRestoreBackupClick = { navigateToRestoreBackup(uiState.backups.first().file.toUri()) },
                     )
@@ -221,6 +249,7 @@ private fun AutoBackupSettingsScreenOnPreview() {
             toggleAutoBackup = {},
             setAutoBackupFrequency = {},
             navigateToRestoreBackup = {},
+            openFileManager = {},
         )
     }
 }
@@ -235,6 +264,7 @@ private fun AutoBackupSettingsScreenOffPreview() {
             toggleAutoBackup = {},
             setAutoBackupFrequency = {},
             navigateToRestoreBackup = {},
+            openFileManager = {},
         )
     }
 }
