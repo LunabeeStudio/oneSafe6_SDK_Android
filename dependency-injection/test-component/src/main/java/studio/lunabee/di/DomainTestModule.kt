@@ -30,6 +30,7 @@ import kotlinx.coroutines.Dispatchers
 import studio.lunabee.doubleratchet.DoubleRatchetEngine
 import studio.lunabee.doubleratchet.crypto.DoubleRatchetKeyRepository
 import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
+import studio.lunabee.onesafe.domain.common.FieldIdProvider
 import studio.lunabee.onesafe.domain.common.FileIdProvider
 import studio.lunabee.onesafe.domain.common.IconIdProvider
 import studio.lunabee.onesafe.domain.common.ItemIdProvider
@@ -56,6 +57,10 @@ object DomainTestModule {
     @Provides
     @Singleton
     fun provideItemIdProvider(): ItemIdProvider = IncrementalIdProvider()
+
+    @Provides
+    @Singleton
+    fun provideFieldIdProvider(): FieldIdProvider = IncrementalIdProvider()
 
     @Provides
     @Singleton

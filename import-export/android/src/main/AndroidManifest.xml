@@ -12,6 +12,17 @@
             android:foregroundServiceType="dataSync"
             tools:node="merge" />
 
+        <provider
+            android:name="studio.lunabee.onesafe.importexport.provider.BackupsProvider"
+            android:authorities="${applicationId}.importexport.backupprovider"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
+
     </application>
 
 </manifest>

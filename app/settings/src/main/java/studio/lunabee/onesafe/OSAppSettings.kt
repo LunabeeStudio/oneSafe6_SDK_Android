@@ -24,10 +24,12 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import studio.lunabee.onesafe.domain.model.camera.CameraSystem
 import javax.inject.Inject
 
 class OSAppSettings @Inject constructor(
@@ -58,6 +60,10 @@ class OSAppSettings @Inject constructor(
 
     val bubblesPreview: Flow<Boolean> = dataStore.data
         .map { preferences -> preferences[bubblesPreviewKey] ?: SettingsDefaults.BubblesPreviewDefault }
+
+    private val cameraSystemKey = stringPreferencesKey(SettingsConstants.CameraSystem)
+    val cameraSystemFlow: Flow<CameraSystem> = dataStore.data
+        .map { preferences -> CameraSystem.valueOf(preferences[cameraSystemKey] ?: SettingsDefaults.CameraSystemDefault.name) }
 
     suspend fun allowScreenshot(): Boolean = dataStore.data
         .map { preferences -> preferences[allowScreenshotKey] ?: SettingsDefaults.AllowScreenshotSettingDefault }.first()
@@ -104,6 +110,12 @@ class OSAppSettings @Inject constructor(
     suspend fun setBubblesPreviewSettings(value: Boolean) {
         dataStore.edit { preferences ->
             preferences[bubblesPreviewKey] = value
+        }
+    }
+
+    suspend fun setCameraSystem(value: CameraSystem) {
+        dataStore.edit { preferences ->
+            preferences[cameraSystemKey] = value.name
         }
     }
 }

@@ -25,6 +25,10 @@ fun interface ItemIdProvider {
     operator fun invoke(): UUID
 }
 
+fun interface FieldIdProvider {
+    operator fun invoke(): UUID
+}
+
 fun interface IconIdProvider {
     operator fun invoke(): UUID
 }
@@ -37,6 +41,6 @@ fun interface MessageIdProvider {
     operator fun invoke(): UUID
 }
 
-class UuidProvider : ItemIdProvider, IconIdProvider, MessageIdProvider, FileIdProvider {
+class UuidProvider : ItemIdProvider, FieldIdProvider, IconIdProvider, MessageIdProvider, FileIdProvider {
     override fun invoke(): UUID = UUID.randomUUID()
 }

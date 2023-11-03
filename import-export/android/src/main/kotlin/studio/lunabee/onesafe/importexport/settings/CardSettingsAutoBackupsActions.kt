@@ -34,3 +34,13 @@ internal class CardSettingsSelectFrequency(frequency: AutoBackupFrequency, overr
     onClickLabel = LbcTextSpec.StringResource(R.string.common_modify),
     secondaryText = frequency.text,
 )
+
+internal class CardSettingsAccessLocalBackup(override val onClick: () -> Unit) : CardSettingsAction(
+    icon = R.drawable.ic_phone,
+    text = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_saveAccess_localSaves),
+)
+
+internal class CardSettingsAccessRemoteBackup(override val onClick: () -> Unit) : CardSettingsAction(
+    icon = R.drawable.ic_cloud,
+    text = LbcTextSpec.Raw("TODO Drive"), // TODO drive loco
+)

@@ -25,6 +25,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import studio.lunabee.onesafe.commonui.qualifier.InternalBackupMimetype
 import studio.lunabee.onesafe.domain.LoadFileCancelAllUseCase
 import studio.lunabee.onesafe.domain.qualifier.ArchiveCacheDir
 import studio.lunabee.onesafe.domain.qualifier.BuildNumber
@@ -69,5 +70,11 @@ object FrameworkTestModule {
                 fileRepository.deleteCacheDir()
             }
         }
+    }
+
+    @Provides
+    @InternalBackupMimetype
+    fun provideInternalBackupMimetype(): String {
+        return "application/onesafe6_debug"
     }
 }
