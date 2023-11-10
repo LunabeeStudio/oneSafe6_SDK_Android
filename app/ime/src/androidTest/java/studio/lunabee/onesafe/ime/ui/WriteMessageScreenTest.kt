@@ -67,6 +67,7 @@ class WriteMessageScreenTest : LbcComposeTest() {
         every { isPreviewEnabled } returns MutableStateFlow(true)
         every { dialogState } returns MutableStateFlow(null)
         every { isMaterialYouSettingsEnabled } returns flowOf(false)
+        every { snackbarState } returns MutableStateFlow(null)
     }
     private val onClickOnChangeContact: () -> Unit = spyk({})
 
@@ -95,15 +96,16 @@ class WriteMessageScreenTest : LbcComposeTest() {
                     override val navigationToInvitation: (UUID) -> Unit = {}
                     override val navigateToContactDetail: (UUID) -> Unit = {}
                     override val navigateBack: () -> Unit = {}
-                    override val deeplinkBubblesWriteMessage: ((contactId: UUID) -> Unit)? = { _ -> }
+                    override val deeplinkBubblesWriteMessage: ((contactId: UUID) -> Unit) = { _ -> }
                 }) {
                     WriteMessageRoute(
                         onChangeRecipient = onClickOnChangeContact,
-                        sendMessage = {},
+                        sendMessage = { _, _ -> },
                         contactIdFlow = MutableStateFlow(null),
                         sendIcon = OSImageSpec.Drawable(R.drawable.ic_share),
                         viewModel = mockkVm,
                         hideKeyboard = null,
+                        resendMessage = {},
                     )
                 }
             }

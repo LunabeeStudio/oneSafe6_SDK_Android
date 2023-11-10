@@ -51,13 +51,13 @@ import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.commonui.error.description
 import studio.lunabee.onesafe.error.OSError
+import studio.lunabee.onesafe.messaging.domain.model.DecryptResult
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.LocalColorPalette
 import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
-import java.util.UUID
 
 context(DecryptMessageNavScope)
 @Composable
@@ -68,7 +68,7 @@ fun DecryptMessageRoute(
     val uiState by viewModel.uiResultState.collectAsStateWithLifecycle()
     when (val safeUiState = uiState) {
         is DecryptMessageUiState.NavigateToConversation -> {
-            LaunchedEffect(Unit) { navigateDecryptMessageToConversation(safeUiState.contactId) }
+            LaunchedEffect(Unit) { navigateDecryptMessageToConversation(safeUiState.decryptResult) }
         }
         is DecryptMessageUiState.NavigateToCreateContact -> {
             LaunchedEffect(Unit) { navigateToCreateContactPopToHome(safeUiState.messageString) }
@@ -164,6 +164,6 @@ fun DecryptMessageScreen(
 
 interface DecryptMessageNavScope {
     val navigateBack: () -> Unit
-    val navigateDecryptMessageToConversation: (UUID) -> Unit
+    val navigateDecryptMessageToConversation: (DecryptResult) -> Unit
     val navigateToCreateContactPopToHome: (String) -> Unit
 }

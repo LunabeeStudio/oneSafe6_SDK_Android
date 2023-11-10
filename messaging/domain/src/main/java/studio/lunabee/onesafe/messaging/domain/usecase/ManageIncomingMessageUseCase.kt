@@ -21,10 +21,9 @@ package studio.lunabee.onesafe.messaging.domain.usecase
 
 import com.google.protobuf.InvalidProtocolBufferException
 import com.lunabee.lbcore.model.LBResult
-import studio.lunabee.onesafe.bubbles.domain.model.Contact
 import studio.lunabee.onesafe.domain.common.MessageIdProvider
 import studio.lunabee.onesafe.messagecompanion.OSMessage
-import studio.lunabee.onesafe.messaging.domain.model.OSPlainMessage
+import studio.lunabee.onesafe.messaging.domain.model.DecryptResult
 import javax.inject.Inject
 
 /**
@@ -42,17 +41,21 @@ class ManageIncomingMessageUseCase @Inject constructor(
             val result = decryptIncomingMessageUseCase(messageData = data)
             when (result) {
                 is LBResult.Success -> {
-                    val message = result.successData.second
-                    val contact = result.successData.first
+                    val message = result.successData.osPlainMessage
+                    val contactId = result.successData.contactId
                     message?.let {
                         saveMessageUseCase(
                             plainMessage = message,
-                            contactId = contact.id,
+                            contactId = contactId,
                             channel = channel,
                             id = messageIdProvider(),
                         )
                     }
-                    LBResult.Success(ManagingIncomingMessageResultData.Message(result.successData))
+                    LBResult.Success(
+                        ManagingIncomingMessageResultData.Message(
+                            DecryptResult.fromDecryptIncomingMessageData(result.successData),
+                        ),
+                    )
                 }
                 is LBResult.Failure -> LBResult.Failure(result.throwable)
             }
@@ -70,9 +73,9 @@ class ManageIncomingMessageUseCase @Inject constructor(
 }
 
 sealed interface ManagingIncomingMessageResultData {
-    object Invitation : ManagingIncomingMessageResultData
+    data object Invitation : ManagingIncomingMessageResultData
 
     data class Message(
-        val data: Pair<Contact, OSPlainMessage?>,
+        val decryptResult: DecryptResult,
     ) : ManagingIncomingMessageResultData
 }

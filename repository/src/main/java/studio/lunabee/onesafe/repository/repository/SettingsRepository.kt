@@ -36,8 +36,9 @@ class SettingsRepository @Inject constructor(
     override val autoLockInactivityDelayFlow: Flow<Duration>
         get() = settingsDataSource.autoLockInactivityDelayFlow
 
-    override fun setAutoLockInactivityDelay(delay: Duration): Unit =
-        settingsDataSource.setAutoLockInactivityDelay(delay)
+    override fun setAutoLockInactivityDelay(delay: Duration) {
+        settingsDataSource.autoLockInactivityDelay = delay
+    }
 
     override val autoLockAppChangeDelay: Duration
         get() = settingsDataSource.autoLockAppChangeDelay
@@ -45,8 +46,9 @@ class SettingsRepository @Inject constructor(
     override val autoLockAppChangeDelayFlow: Flow<Duration>
         get() = settingsDataSource.autoLockAppChangeDelayFlow
 
-    override fun setAutoLockAppChangeDelay(delay: Duration): Unit =
-        settingsDataSource.setAutoLockAppChangeDelay(delay)
+    override fun setAutoLockAppChangeDelay(delay: Duration) {
+        settingsDataSource.autoLockAppChangeDelay = delay
+    }
 
     override val clipboardDelay: Duration
         get() = settingsDataSource.clipboardDelay
@@ -54,8 +56,9 @@ class SettingsRepository @Inject constructor(
     override val clipboardDelayFlow: Flow<Duration>
         get() = settingsDataSource.clipboardDelayFlow
 
-    override fun setClipboardClearDelay(delay: Duration): Unit =
-        settingsDataSource.setClipboardClearDelay(delay)
+    override fun setClipboardClearDelay(delay: Duration) {
+        settingsDataSource.clipboardDelay = delay
+    }
 
     override val verifyPasswordInterval: VerifyPasswordInterval
         get() = settingsDataSource.passwordVerificationInterval
@@ -64,7 +67,7 @@ class SettingsRepository @Inject constructor(
         get() = settingsDataSource.passwordVerificationIntervalFlow
 
     override fun setPasswordInterval(passwordInterval: VerifyPasswordInterval) {
-        settingsDataSource.setPasswordVerificationInterval(passwordInterval)
+        settingsDataSource.passwordVerificationInterval = passwordInterval
     }
 
     override val lastPasswordVerificationTimeStamp: Long?
@@ -87,8 +90,9 @@ class SettingsRepository @Inject constructor(
     override val autoLockOSKInactivityDelayFlow: Flow<Duration>
         get() = settingsDataSource.autoLockOSKInactivityDelayFlow
 
-    override fun setAutoLockOSKInactivityDelay(delay: Duration): Unit =
-        settingsDataSource.setAutoLockOSKInactivityDelay(delay)
+    override fun setAutoLockOSKInactivityDelay(delay: Duration) {
+        settingsDataSource.autoLockOSKInactivityDelay = delay
+    }
 
     override val autoLockOSKHiddenDelay: Duration
         get() = settingsDataSource.autoLockOSKHiddenDelay
@@ -96,8 +100,9 @@ class SettingsRepository @Inject constructor(
     override val autoLockOSKHiddenDelayFlow: Flow<Duration>
         get() = settingsDataSource.autoLockOSKHiddenFlow
 
-    override fun setAutoLockOSKHiddenDelay(delay: Duration): Unit =
-        settingsDataSource.setAutoLockOSKHiddenDelay(delay)
+    override fun setAutoLockOSKHiddenDelay(delay: Duration) {
+        settingsDataSource.autoLockOSKHiddenDelay = delay
+    }
 
     override val autoBackupEnabled: Flow<Boolean>
         get() = settingsDataSource.autoBackupEnabled
@@ -110,6 +115,7 @@ class SettingsRepository @Inject constructor(
     override fun toggleAutoBackupSettings(): Boolean =
         settingsDataSource.toggleAutoBackupSettings()
 
-    override fun setAutoBackupFrequency(delay: Duration): Unit =
-        settingsDataSource.setAutoBackupFrequency(delay)
+    override fun setAutoBackupFrequency(delay: Duration) {
+        settingsDataSource.autoBackupFrequency = delay
+    }
 }

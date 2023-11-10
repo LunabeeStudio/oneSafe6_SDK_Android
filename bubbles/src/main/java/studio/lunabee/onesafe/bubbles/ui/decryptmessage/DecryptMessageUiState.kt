@@ -20,13 +20,13 @@
 package studio.lunabee.onesafe.bubbles.ui.decryptmessage
 
 import studio.lunabee.onesafe.error.OSError
-import java.util.UUID
+import studio.lunabee.onesafe.messaging.domain.model.DecryptResult
 
 sealed interface DecryptMessageUiState {
-    object Idle : DecryptMessageUiState
+    data object Idle : DecryptMessageUiState
 
     data class NavigateToConversation(
-        val contactId: UUID,
+        val decryptResult: DecryptResult,
     ) : DecryptMessageUiState
 
     data class NavigateToCreateContact(

@@ -42,7 +42,7 @@ object ImeDeeplinkHelper {
     fun deeplinkBubblesWriteMessage(context: Context, contactId: UUID) {
         val packageManager = context.packageManager
         val contactIntent = packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
-            val stringUri = CommonUiConstants.Deeplink.MAIN_NAV_SCHEME + "://" + WriteMessageDestination.getRoute(contactId)
+            val stringUri = CommonUiConstants.Deeplink.MAIN_NAV_SCHEME + "://" + WriteMessageDestination.getRouteFromContactId(contactId)
             data = stringUri.toUri()
         }
         context.startActivity(contactIntent)

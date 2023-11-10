@@ -61,12 +61,12 @@ import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
+import studio.lunabee.onesafe.messaging.domain.model.DecryptResult
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.model.TopAppBarOptionNav
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
-import java.util.UUID
 
 context(ScanBarcodeNavScope)
 @Composable
@@ -82,7 +82,7 @@ fun ScanBarcodeRoute(
     when (val safeUiState = uiState) {
         is ScanBarcodeUiState.Idle -> {}
         is ScanBarcodeUiState.NavigateToConversation -> {
-            LaunchedEffect(Unit) { navigateToConversationPopToHome(safeUiState.contactId) }
+            LaunchedEffect(Unit) { navigateToConversationPopToHome(safeUiState.decryptResult) }
         }
         is ScanBarcodeUiState.NavigateToCreateContact -> {
             LaunchedEffect(Unit) { navigateToCreateContactPopToHome(safeUiState.messageString) }
@@ -236,6 +236,6 @@ fun BarcodeView(
 interface ScanBarcodeNavScope {
     val navigateBack: () -> Unit
     val navigateToCreateContactPopToHome: (String) -> Unit
-    val navigateToConversationPopToHome: (UUID) -> Unit
+    val navigateToConversationPopToHome: (DecryptResult) -> Unit
     val showSnackbar: (visuals: SnackbarVisuals) -> Unit
 }

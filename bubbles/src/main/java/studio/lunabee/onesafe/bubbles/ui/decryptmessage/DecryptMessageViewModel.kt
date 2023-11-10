@@ -56,7 +56,7 @@ class DecryptMessageViewModel @Inject constructor(
                         _uiResultState.value = when (val resultData = result.successData) {
                             is ManagingIncomingMessageResultData.Invitation -> DecryptMessageUiState.NavigateToCreateContact(messageString)
                             is ManagingIncomingMessageResultData.Message -> {
-                                DecryptMessageUiState.NavigateToConversation(resultData.data.first.id)
+                                DecryptMessageUiState.NavigateToConversation(resultData.decryptResult)
                             }
                         }
                     }

@@ -101,7 +101,7 @@ class ImeFeedbackManager @Inject constructor(
         val packageManager = context.packageManager
         val launchIntent = packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
             val route = if (contactId != null) {
-                WriteMessageDestination.getRoute(contactId)
+                WriteMessageDestination.getRouteFromContactId(contactId)
             } else {
                 BubblesHomeDestination.route
             }

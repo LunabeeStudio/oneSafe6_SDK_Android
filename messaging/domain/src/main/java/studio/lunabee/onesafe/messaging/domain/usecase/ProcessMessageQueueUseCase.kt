@@ -96,12 +96,12 @@ class ProcessMessageQueueUseCase @Inject constructor(
                 }
             }
             is LBResult.Success -> {
-                val plainMessage = result.successData.second
+                val plainMessage = result.successData.osPlainMessage
                 val channel = getChannel(enqueuedMessage)
                 plainMessage?.let {
                     val saveResult = saveMessageUseCase(
                         plainMessage = plainMessage,
-                        contactId = result.successData.first.id,
+                        contactId = result.successData.contactId,
                         channel = channel,
                         id = messageIdProvider(),
                     )

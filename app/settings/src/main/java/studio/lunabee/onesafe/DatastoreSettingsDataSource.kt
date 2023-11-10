@@ -27,7 +27,6 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
@@ -50,29 +49,29 @@ class DatastoreSettingsDataSource @Inject constructor(
     private val autoBackupEnabledKey = booleanPreferencesKey(SettingsConstants.autoBackupEnabledKeyVal)
     private val autoBackupFrequencyKey = longPreferencesKey(SettingsConstants.autoBackupFrequencyKeyVal)
 
-    override val autoLockInactivityDelay: Duration
-        get() = runBlocking {
-            dataStore.data.map { preferences -> preferences[autoLockInactivityDelayKey]?.milliseconds }.firstOrNull()
-                ?: SettingsDefaults.AutoLockInactivityDelayMsDefault.milliseconds
-        }
+    override var autoLockInactivityDelay: Duration by blockingDurationDatastore(
+        dataStore = dataStore,
+        key = autoLockInactivityDelayKey,
+        defaultValue = SettingsDefaults.AutoLockInactivityDelayMsDefault.milliseconds,
+    )
 
-    override val autoLockAppChangeDelay: Duration
-        get() = runBlocking {
-            dataStore.data.map { preferences -> preferences[autoLockAppChangeDelayKey]?.milliseconds }.firstOrNull()
-                ?: SettingsDefaults.AutoLockAppChangeDelayMsDefault.milliseconds
-        }
+    override var autoLockAppChangeDelay: Duration by blockingDurationDatastore(
+        dataStore = dataStore,
+        key = autoLockAppChangeDelayKey,
+        defaultValue = SettingsDefaults.AutoLockAppChangeDelayMsDefault.milliseconds,
+    )
 
-    override val autoLockOSKHiddenDelay: Duration
-        get() = runBlocking {
-            dataStore.data.map { preferences -> preferences[autoLockOSKHiddenDelayKey]?.milliseconds }.firstOrNull()
-                ?: autoLockAppChangeDelay
-        }
+    override var autoLockOSKHiddenDelay: Duration by blockingDurationDatastore(
+        dataStore = dataStore,
+        key = autoLockOSKHiddenDelayKey,
+        defaultValue = autoLockAppChangeDelay,
+    )
 
-    override val autoLockOSKInactivityDelay: Duration
-        get() = runBlocking {
-            dataStore.data.map { preferences -> preferences[autoLockOSKInactivityDelayKey]?.milliseconds }.firstOrNull()
-                ?: autoLockInactivityDelay
-        }
+    override var autoLockOSKInactivityDelay: Duration by blockingDurationDatastore(
+        dataStore = dataStore,
+        key = autoLockOSKInactivityDelayKey,
+        defaultValue = autoLockInactivityDelay,
+    )
 
     override val autoLockInactivityDelayFlow: Flow<Duration>
         get() = dataStore.data.map { preferences ->
@@ -84,11 +83,11 @@ class DatastoreSettingsDataSource @Inject constructor(
             preferences[autoLockAppChangeDelayKey]?.milliseconds ?: SettingsDefaults.AutoLockAppChangeDelayMsDefault.milliseconds
         }
 
-    override val clipboardDelay: Duration
-        get() = runBlocking {
-            dataStore.data.map { preferences -> preferences[clipboardClearDelaySecondsSettingKey]?.milliseconds }.firstOrNull()
-                ?: SettingsDefaults.ClipboardClearDelayMsDefault.milliseconds
-        }
+    override var clipboardDelay: Duration by blockingDurationDatastore(
+        dataStore = dataStore,
+        key = clipboardClearDelaySecondsSettingKey,
+        defaultValue = SettingsDefaults.ClipboardClearDelayMsDefault.milliseconds,
+    )
 
     override val clipboardDelayFlow: Flow<Duration>
         get() = dataStore.data
@@ -113,80 +112,22 @@ class DatastoreSettingsDataSource @Inject constructor(
             preferences[autoLockOSKHiddenDelayKey]?.milliseconds ?: autoLockInactivityDelay
         }
 
-    override val passwordVerificationInterval: VerifyPasswordInterval
-        get() = runBlocking {
-            dataStore.data.map { preferences ->
-                preferences[verifyPasswordIntervalKey]?.let(VerifyPasswordInterval::valueOf)
-            }.firstOrNull() ?: SettingsDefaults.VerifyPasswordIntervalDefault
-        }
+    override var passwordVerificationInterval: VerifyPasswordInterval by blockingEnumDatastore(
+        dataStore,
+        verifyPasswordIntervalKey,
+        SettingsDefaults.VerifyPasswordIntervalDefault,
+    )
 
     override val passwordVerificationIntervalFlow: Flow<VerifyPasswordInterval>
         get() = dataStore.data.map { preferences ->
             preferences[verifyPasswordIntervalKey]?.let(VerifyPasswordInterval::valueOf) ?: SettingsDefaults.VerifyPasswordIntervalDefault
         }
 
-    override val lastPasswordVerificationTimeStamp: Long?
-        get() = runBlocking {
-            dataStore.data.map { preferences ->
-                preferences[lastPasswordVerificationKey]
-            }.firstOrNull()
-        }
-
-    override fun setBubblesResendMessageDelay(delay: Duration) {
-        runBlocking {
-            dataStore.edit { settings ->
-                settings[bubblesResendMessageDelayKey] = delay.inWholeMilliseconds
-            }
-        }
-    }
-
-    override fun setAutoLockOSKInactivityDelay(delay: Duration) {
-        runBlocking {
-            dataStore.edit { settings ->
-                settings[autoLockOSKInactivityDelayKey] = delay.inWholeMilliseconds
-            }
-        }
-    }
-
-    override fun setAutoLockOSKHiddenDelay(delay: Duration) {
-        runBlocking {
-            dataStore.edit { settings ->
-                settings[autoLockOSKHiddenDelayKey] = delay.inWholeMilliseconds
-            }
-        }
-    }
-
-    override fun setAutoLockInactivityDelay(delay: Duration) {
-        runBlocking {
-            dataStore.edit { settings ->
-                settings[autoLockInactivityDelayKey] = delay.inWholeMilliseconds
-            }
-        }
-    }
-
-    override fun setAutoLockAppChangeDelay(delay: Duration) {
-        runBlocking {
-            dataStore.edit { settings ->
-                settings[autoLockAppChangeDelayKey] = delay.inWholeMilliseconds
-            }
-        }
-    }
-
-    override fun setClipboardClearDelay(delay: Duration) {
-        runBlocking {
-            dataStore.edit { settings ->
-                settings[clipboardClearDelaySecondsSettingKey] = delay.inWholeMilliseconds
-            }
-        }
-    }
-
-    override fun setPasswordVerificationInterval(interval: VerifyPasswordInterval) {
-        runBlocking {
-            dataStore.edit { settings ->
-                settings[verifyPasswordIntervalKey] = interval.toString()
-            }
-        }
-    }
+    override val lastPasswordVerificationTimeStamp: Long? by blockingReadDatastore(
+        dataStore = dataStore,
+        key = lastPasswordVerificationKey,
+        readMapper = { it },
+    )
 
     override fun setLastPasswordVerificationTimeStamp(timeStamp: Long) {
         runBlocking {
@@ -196,36 +137,33 @@ class DatastoreSettingsDataSource @Inject constructor(
         }
     }
 
-    override val autoBackupEnabled: Flow<Boolean> = dataStore.data
-        .map { preferences -> preferences[autoBackupEnabledKey] ?: SettingsDefaults.autoBackupEnabledDefault }
-
-    override fun toggleAutoBackupSettings(): Boolean {
-        return runBlocking {
-            dataStore.edit { preferences ->
-                val autoBackupEnabled = preferences[autoBackupEnabledKey] ?: SettingsDefaults.autoBackupEnabledDefault
-                preferences[autoBackupEnabledKey] = !autoBackupEnabled
+    override fun setBubblesResendMessageDelay(delay: Duration) {
+        runBlocking {
+            dataStore.edit { settings ->
+                settings[bubblesResendMessageDelayKey] = delay.inWholeMilliseconds
             }
-            autoBackupEnabled.first()
         }
     }
 
-    override val autoBackupFrequency: Duration
-        get() = runBlocking {
-            dataStore.data.map { preferences ->
-                preferences[autoBackupFrequencyKey]?.milliseconds ?: SettingsDefaults.autoBackupFrequencyMsDefault.milliseconds
-            }.firstOrNull() ?: SettingsDefaults.autoBackupFrequencyMsDefault.milliseconds
+    override val autoBackupEnabled: Flow<Boolean> = dataStore.data
+        .map { preferences -> preferences[autoBackupEnabledKey] ?: SettingsDefaults.autoBackupEnabledDefault }
+
+    override fun toggleAutoBackupSettings(): Boolean = runBlocking {
+        dataStore.edit { preferences ->
+            val autoBackupEnabled = preferences[autoBackupEnabledKey] ?: SettingsDefaults.autoBackupEnabledDefault
+            preferences[autoBackupEnabledKey] = !autoBackupEnabled
         }
+        autoBackupEnabled.first()
+    }
+
+    override var autoBackupFrequency: Duration by blockingDurationDatastore(
+        dataStore = dataStore,
+        key = autoBackupFrequencyKey,
+        defaultValue = SettingsDefaults.autoBackupFrequencyMsDefault.milliseconds,
+    )
 
     override val autoBackupFrequencyFlow: Flow<Duration>
         get() = dataStore.data.map { preferences ->
             preferences[autoBackupFrequencyKey]?.milliseconds ?: SettingsDefaults.autoBackupFrequencyMsDefault.milliseconds
         }
-
-    override fun setAutoBackupFrequency(delay: Duration) {
-        runBlocking {
-            dataStore.edit { settings ->
-                settings[autoBackupFrequencyKey] = delay.inWholeMilliseconds
-            }
-        }
-    }
 }

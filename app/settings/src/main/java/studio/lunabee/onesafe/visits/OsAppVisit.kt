@@ -24,9 +24,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
+import studio.lunabee.onesafe.blockingReadDatastore
 import javax.inject.Inject
 
 class OsAppVisit @Inject constructor(
@@ -34,12 +33,11 @@ class OsAppVisit @Inject constructor(
 ) {
 
     private val hasVisitedLoginKey = booleanPreferencesKey(AppVisitConstants.hasVisitedLoginKey)
-    val hasVisitedLogin: Boolean
-        get() = runBlocking {
-            dataStore.data.map { preferences ->
-                preferences[hasVisitedLoginKey]
-            }.firstOrNull() ?: AppVisitConstants.hasVisitedLoginDefault
-        }
+    val hasVisitedLogin: Boolean by blockingReadDatastore(
+        dataStore,
+        hasVisitedLoginKey,
+        AppVisitConstants.hasVisitedLoginDefault,
+    )
 
     suspend fun storeHasVisitedLogin() {
         dataStore.edit { preferences ->
@@ -65,12 +63,11 @@ class OsAppVisit @Inject constructor(
         preferences[hasDoneOnBoardingBubblesKey] ?: AppVisitConstants.hasDoneOnBoardingBubblesDefault
     }
 
-    val hasDoneOnBoardingBubbles: Boolean
-        get() = runBlocking {
-            dataStore.data.map { preferences ->
-                preferences[hasDoneOnBoardingBubblesKey]
-            }.firstOrNull() ?: AppVisitConstants.hasDoneOnBoardingBubblesDefault
-        }
+    val hasDoneOnBoardingBubbles: Boolean by blockingReadDatastore(
+        dataStore = dataStore,
+        key = hasDoneOnBoardingBubblesKey,
+        defaultValue = AppVisitConstants.hasDoneOnBoardingBubblesDefault,
+    )
 
     suspend fun storeHasDoneOnBoardingBubbles() {
         dataStore.edit { preferences ->

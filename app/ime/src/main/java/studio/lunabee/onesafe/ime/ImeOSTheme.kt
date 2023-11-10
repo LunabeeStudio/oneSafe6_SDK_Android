@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.ime
 
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import studio.lunabee.onesafe.ui.theme.OSKColorPalette
 import studio.lunabee.onesafe.ui.theme.OSTheme
@@ -28,9 +29,10 @@ import studio.lunabee.onesafe.ui.theme.OSTheme
 fun ImeOSTheme(
     content: @Composable () -> Unit,
 ) {
+    val colorPalette = OSKColorPalette
     OSTheme(
         isMaterialYouSettingsEnabled = false,
-        colorPalette = OSKColorPalette,
+        colorPalette = colorPalette,
         darkColorScheme = darkColorScheme(
             primary = OSKColorPalette.Primary01,
             onPrimary = OSKColorPalette.Primary30,
@@ -48,6 +50,24 @@ fun ImeOSTheme(
             onError = OSKColorPalette.Neutral00,
             errorContainer = OSKColorPalette.Alert05,
             onErrorContainer = OSKColorPalette.Alert35,
+        ),
+        lightColorScheme = lightColorScheme(
+            primary = colorPalette.Primary30,
+            onPrimary = colorPalette.Primary01,
+            secondary = colorPalette.Primary30,
+            primaryContainer = colorPalette.Primary03,
+            onPrimaryContainer = colorPalette.Primary30,
+            secondaryContainer = colorPalette.Primary05,
+            onSecondaryContainer = colorPalette.Primary40,
+            surface = colorPalette.Primary01,
+            onSurface = colorPalette.Neutral80,
+            background = colorPalette.Primary01,
+            onBackground = colorPalette.Neutral80,
+            surfaceVariant = colorPalette.Primary01,
+            error = colorPalette.Alert35,
+            onError = colorPalette.Neutral00,
+            errorContainer = colorPalette.Alert05,
+            onErrorContainer = colorPalette.Alert35,
         ),
         content = content,
     )
