@@ -57,10 +57,13 @@ import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.dialog.DialogAction
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.dialog.ErrorDialogState
+import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
+import studio.lunabee.onesafe.commonui.snackbar.SnackbarState
 import studio.lunabee.onesafe.domain.common.MessageIdProvider
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.messaging.domain.model.OSPlainMessage
+import studio.lunabee.onesafe.messaging.domain.model.DecryptResult
 import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
 import studio.lunabee.onesafe.messaging.domain.repository.SentMessageRepository
@@ -71,6 +74,7 @@ import studio.lunabee.onesafe.messaging.domain.usecase.SaveMessageUseCase
 import studio.lunabee.onesafe.messaging.domain.usecase.SaveSentMessageUseCase
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
+import studio.lunabee.onesafe.messaging.writemessage.model.SentMessageData
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageUiState
 import java.time.Instant
 import java.util.Random
@@ -111,15 +115,22 @@ class WriteMessageViewModel @Inject constructor(
         true,
     )
 
+    private val _snackbarState: MutableStateFlow<SnackbarState?> = MutableStateFlow(null)
+    val snackbarState: StateFlow<SnackbarState?> = _snackbarState.asStateFlow()
+
+    fun resetSnackbarState() {
+        _snackbarState.value = null
+    }
+
     val contactId: StateFlow<UUID?> = savedStateHandle.getStateFlow(
-        WriteMessageDestination.ContactIdArgs,
-        savedStateHandle.get<String>(WriteMessageDestination.ContactIdArgs),
+        WriteMessageDestination.ContactIdArg,
+        savedStateHandle.get<String>(WriteMessageDestination.ContactIdArg),
     ).map {
         it.let(UUID::fromString)
     }.stateIn(
         viewModelScope,
         CommonUiConstants.Flow.DefaultSharingStarted,
-        savedStateHandle.get<String>(WriteMessageDestination.ContactIdArgs)?.let(UUID::fromString),
+        savedStateHandle.get<String>(WriteMessageDestination.ContactIdArg)?.let(UUID::fromString),
     )
 
     private var lastMessageChange = Instant.now()
@@ -127,7 +138,7 @@ class WriteMessageViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val conversation: Flow<PagingData<ConversationUiData>> =
         savedStateHandle
-            .getStateFlow<String?>(WriteMessageDestination.ContactIdArgs, null)
+            .getStateFlow<String?>(WriteMessageDestination.ContactIdArg, null)
             .map { it?.let { UUID.fromString(it) } }
             .filterNotNull()
             .flatMapLatest { contactId ->
@@ -173,6 +184,12 @@ class WriteMessageViewModel @Inject constructor(
             }
 
     init {
+        savedStateHandle.get<String>(WriteMessageDestination.ErrorArg)?.let {
+            val error = DecryptResult.Error.valueOf(it).osError
+            _snackbarState.value = ErrorSnackbarState(error) {}
+            savedStateHandle[WriteMessageDestination.ErrorArg] = null
+        }
+
         viewModelScope.launch {
             contactId.filterNotNull().flatMapLatest { contactId ->
                 getContactUseCase(contactId).filterNotNull().distinctUntilChanged().map { encContact ->
@@ -226,39 +243,49 @@ class WriteMessageViewModel @Inject constructor(
         }
     }
 
-    suspend fun encryptAndSaveMessage(content: String): String? {
-        onPlainMessageChange("")
+    suspend fun encryptMessage(content: String): SentMessageData? {
         return generateSendMessageData()?.let { sendMessageData ->
             lastMessageChange = Instant.now()
             val contactId = contactId.value!!
+            val encMessage = encryptMessageUseCase(
+                content,
+                uiState.value.currentContact!!.id,
+                lastMessageChange,
+                sendMessageData,
+            ).data
+            encMessage?.let {
+                SentMessageData(
+                    encMessage = encMessage,
+                    contactId = contactId,
+                    createdAt = lastMessageChange,
+                    plainMessage = content,
+                )
+            }
+        }
+    }
+
+    fun saveEncryptedMessage(sendMessageData: SentMessageData) {
+        viewModelScope.launch {
+            onPlainMessageChange("")
             val messageId = messageIdProvider()
             val messageOrder = saveMessageUseCase(
                 plainMessage = OSPlainMessage(
-                    content = content,
-                    recipientId = contactId,
+                    content = sendMessageData.plainMessage,
+                    recipientId = sendMessageData.contactId,
                     sentAt = lastMessageChange,
                 ),
-                contactId = contactId,
+                contactId = sendMessageData.contactId,
                 channel = channelRepository.channel,
                 id = messageId,
             ).data
             messageOrder?.let {
-                val messageToSend = encryptMessageUseCase(
-                    content,
-                    uiState.value.currentContact!!.id,
-                    lastMessageChange,
-                    sendMessageData,
-                ).data
-                messageToSend?.let {
-                    saveSentMessageUseCase(
-                        id = messageId,
-                        messageString = messageToSend,
-                        contactId = contactId,
-                        createdAt = lastMessageChange,
-                        order = messageOrder,
-                    )
-                }
-                messageToSend
+                saveSentMessageUseCase(
+                    id = messageId,
+                    messageString = sendMessageData.encMessage,
+                    contactId = sendMessageData.contactId,
+                    createdAt = sendMessageData.createdAt,
+                    order = messageOrder,
+                )
             }
         }
     }

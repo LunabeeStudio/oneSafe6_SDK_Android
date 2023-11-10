@@ -66,7 +66,7 @@ class ScanBarcodeViewModel @Inject constructor(
                                         messageString,
                                     )
                                     is ManagingIncomingMessageResultData.Message -> {
-                                        ScanBarcodeUiState.NavigateToConversation(resultData.data.first.id)
+                                        ScanBarcodeUiState.NavigateToConversation(resultData.decryptResult)
                                     }
                                 }
                             }

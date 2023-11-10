@@ -19,13 +19,13 @@
 
 package studio.lunabee.onesafe.bubbles.ui.barcode
 
-import java.util.UUID
+import studio.lunabee.onesafe.messaging.domain.model.DecryptResult
 
 sealed interface ScanBarcodeUiState {
-    object Idle : ScanBarcodeUiState
+    data object Idle : ScanBarcodeUiState
 
     data class NavigateToConversation(
-        val contactId: UUID,
+        val decryptResult: DecryptResult,
     ) : ScanBarcodeUiState
 
     data class NavigateToCreateContact(

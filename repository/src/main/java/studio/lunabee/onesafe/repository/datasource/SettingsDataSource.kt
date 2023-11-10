@@ -24,37 +24,30 @@ import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import kotlin.time.Duration
 
 interface SettingsDataSource {
-    val autoLockInactivityDelay: Duration
+    var autoLockInactivityDelay: Duration
     val autoLockInactivityDelayFlow: Flow<Duration>
-    fun setAutoLockInactivityDelay(delay: Duration)
 
-    val autoLockAppChangeDelay: Duration
+    var autoLockAppChangeDelay: Duration
     val autoLockAppChangeDelayFlow: Flow<Duration>
-    fun setAutoLockAppChangeDelay(delay: Duration)
 
-    val clipboardDelay: Duration
+    var clipboardDelay: Duration
     val clipboardDelayFlow: Flow<Duration>
-    fun setClipboardClearDelay(delay: Duration)
 
-    val passwordVerificationInterval: VerifyPasswordInterval
+    var passwordVerificationInterval: VerifyPasswordInterval
     val passwordVerificationIntervalFlow: Flow<VerifyPasswordInterval>
-    val lastPasswordVerificationTimeStamp: Long?
 
-    fun setPasswordVerificationInterval(interval: VerifyPasswordInterval)
+    val lastPasswordVerificationTimeStamp: Long?
     fun setLastPasswordVerificationTimeStamp(timeStamp: Long)
 
     val bubblesResendMessageDelayFlow: Flow<Duration>
     fun setBubblesResendMessageDelay(delay: Duration)
-    fun setAutoLockOSKInactivityDelay(delay: Duration)
-    fun setAutoLockOSKHiddenDelay(delay: Duration)
-    val autoLockOSKInactivityDelay: Duration
+    var autoLockOSKInactivityDelay: Duration
     val autoLockOSKInactivityDelayFlow: Flow<Duration>
-    val autoLockOSKHiddenDelay: Duration
+    var autoLockOSKHiddenDelay: Duration
     val autoLockOSKHiddenFlow: Flow<Duration>
 
     fun toggleAutoBackupSettings(): Boolean
-    fun setAutoBackupFrequency(delay: Duration)
     val autoBackupEnabled: Flow<Boolean>
     val autoBackupFrequencyFlow: Flow<Duration>
-    val autoBackupFrequency: Duration
+    var autoBackupFrequency: Duration
 }

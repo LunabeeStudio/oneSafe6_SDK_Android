@@ -49,8 +49,8 @@ class HandleIncomingMessageUseCase @Inject constructor(
             val decryptResult = decryptIncomingMessageUseCase(cipherData)
             when (decryptResult) {
                 is LBResult.Success -> {
-                    val plainMessage = decryptResult.successData.second
-                    val contactId = decryptResult.successData.first.id
+                    val plainMessage = decryptResult.successData.osPlainMessage
+                    val contactId = decryptResult.successData.contactId
                     plainMessage?.let {
                         val saveResult = saveMessageUseCase(
                             plainMessage = plainMessage,

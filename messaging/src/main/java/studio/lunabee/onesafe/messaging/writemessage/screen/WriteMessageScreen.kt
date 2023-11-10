@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -67,6 +68,7 @@ import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
 import studio.lunabee.onesafe.commonui.dialog.ImeDialog
 import studio.lunabee.onesafe.commonui.localprovider.LocalIsOneSafeK
+import studio.lunabee.onesafe.commonui.snackbar.SnackbarState
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
 import studio.lunabee.onesafe.extension.loremIpsum
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
@@ -83,6 +85,7 @@ import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDes
 import studio.lunabee.onesafe.messaging.writemessage.factory.WriteMessageFactory
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationMoreOptionsSnackbarState
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
+import studio.lunabee.onesafe.messaging.writemessage.model.SentMessageData
 import studio.lunabee.onesafe.messaging.writemessage.viewmodel.WriteMessageViewModel
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.ui.UiConstants
@@ -99,7 +102,8 @@ context(WriteMessageNavScope)
 @Composable
 fun WriteMessageRoute(
     onChangeRecipient: (() -> Unit)?,
-    sendMessage: (String) -> Unit,
+    sendMessage: (data: SentMessageData, messageToSend: String) -> Unit,
+    resendMessage: (String) -> Unit,
     contactIdFlow: StateFlow<String?>,
     sendIcon: OSImageSpec,
     viewModel: WriteMessageViewModel = hiltViewModel(),
@@ -107,7 +111,7 @@ fun WriteMessageRoute(
 ) {
     val updateContactId by contactIdFlow.collectAsStateWithLifecycle()
     updateContactId?.let {
-        viewModel.savedStateHandle[WriteMessageDestination.ContactIdArgs] = updateContactId
+        viewModel.savedStateHandle[WriteMessageDestination.ContactIdArg] = updateContactId
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val dialogState by viewModel.dialogState.collectAsStateWithLifecycle()
@@ -116,8 +120,18 @@ fun WriteMessageRoute(
     val isMaterialYouEnabled by viewModel.isMaterialYouSettingsEnabled.collectAsStateWithLifecycle(initialValue = false)
     val isPreviewEnabled by viewModel.isPreviewEnabled.collectAsStateWithLifecycle(initialValue = false)
     val isOneSafeK = LocalIsOneSafeK.current
-    val snackBarHostState = remember { SnackbarHostState() }
+    val oneSafeKsnackBarHostState = remember { SnackbarHostState() }
+    val viewModelSnackBarHostState = remember { SnackbarHostState() }
     var snackbarState: ConversationMoreOptionsSnackbarState? by remember { mutableStateOf(null) }
+    val viewModelSnackbarState: SnackbarState? by viewModel.snackbarState.collectAsStateWithLifecycle(initialValue = null)
+
+    val viewModelSnackbarStateVisual = viewModelSnackbarState?.snackbarVisuals
+    LaunchedEffect(viewModelSnackbarStateVisual) {
+        viewModelSnackbarStateVisual?.let {
+            viewModelSnackBarHostState.showSnackbar(it)
+            viewModel.resetSnackbarState()
+        }
+    }
 
     val messageLongPress: MessageLongPress
     if (isOneSafeK) {
@@ -127,7 +141,7 @@ fun WriteMessageRoute(
                 hideKeyboard?.invoke()
             }
         }
-        snackbarState?.SnackBar(snackBarHostState)
+        snackbarState?.SnackBar(oneSafeKsnackBarHostState)
         messageLongPress = object : MessageLongPress() {
             override fun onLongClick(id: UUID) {
                 deeplinkBubblesWriteMessage?.let { deeplink ->
@@ -143,7 +157,7 @@ fun WriteMessageRoute(
             onResendClick = { sentMessageId ->
                 coroutineScope.launch {
                     viewModel.getSentMessage(sentMessageId)?.let {
-                        sendMessage(it.getDeepLinkFromMessage(uiState.isUsingDeepLink))
+                        resendMessage(it.getDeepLinkFromMessage(uiState.isUsingDeepLink))
                     }
                 }
             },
@@ -156,12 +170,20 @@ fun WriteMessageRoute(
     ) {
         if (isOneSafeK) {
             SnackbarHost(
-                hostState = snackBarHostState,
+                hostState = oneSafeKsnackBarHostState,
                 modifier = Modifier
                     .zIndex(UiConstants.SnackBar.ZIndex)
                     .align(Alignment.BottomCenter),
             )
         }
+
+        SnackbarHost(
+            hostState = viewModelSnackBarHostState,
+            modifier = Modifier
+                .zIndex(UiConstants.SnackBar.ZIndex)
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding(),
+        )
 
         uiState.currentContact?.let { contact ->
             WriteMessageScreen(
@@ -175,11 +197,12 @@ fun WriteMessageRoute(
                 onPlainMessageChange = viewModel::onPlainMessageChange,
                 sendMessage = {
                     coroutineScope.launch {
-                        val messageToSend = viewModel.encryptAndSaveMessage(
-                            content = uiState.plainMessage,
-                        )
-                        messageToSend?.let {
-                            sendMessage(it.getDeepLinkFromMessage(uiState.isUsingDeepLink))
+                        val sentMessageData = viewModel.encryptMessage(content = uiState.plainMessage)
+                        sentMessageData?.let { sentMessageData ->
+                            sendMessage(
+                                sentMessageData,
+                                sentMessageData.encMessage.getDeepLinkFromMessage(uiState.isUsingDeepLink),
+                            )
                         }
                     }
                 },

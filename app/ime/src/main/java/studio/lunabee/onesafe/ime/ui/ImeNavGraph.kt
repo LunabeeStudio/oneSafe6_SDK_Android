@@ -45,6 +45,7 @@ import studio.lunabee.onesafe.ime.viewmodel.WriteMessageViewModelFactory
 import studio.lunabee.onesafe.login.screen.LoginDestination
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageRoute
+import studio.lunabee.onesafe.messaging.writemessage.viewmodel.WriteMessageViewModel
 
 internal const val ImeNavGraphRoute: String = "ime_nav_host"
 
@@ -104,7 +105,7 @@ fun ImeNavGraph(
             ImeContactRoute(
                 navigateBack = dismissUi,
                 navigateToWriteMessage = {
-                    navController.navigate(WriteMessageDestination.getRoute(it))
+                    navController.navigate(WriteMessageDestination.getRouteFromContactId(it))
                 },
                 viewModel = viewModel(
                     viewModelStoreOwner = backStackEntry,
@@ -130,14 +131,20 @@ fun ImeNavGraph(
             route = WriteMessageDestination.route,
         ) { backStackEntry ->
             with(ImeWriteMessageNav(dismissUi, context)) {
+                val viewModel: WriteMessageViewModel = viewModel(
+                    viewModelStoreOwner = backStackEntry,
+                    factory = writeMessageViewModelFactory.get(),
+                )
+
                 WriteMessageRoute(
                     onChangeRecipient = { navController.navigate(ChangeContactDestination.route) },
-                    sendMessage = sendMessage,
-                    viewModel = viewModel(
-                        viewModelStoreOwner = backStackEntry,
-                        factory = writeMessageViewModelFactory.get(),
-                    ),
-                    contactIdFlow = backStackEntry.savedStateHandle.getStateFlow(WriteMessageDestination.ContactIdArgs, null),
+                    sendMessage = { sentMessageData, messageToSend ->
+                        viewModel.saveEncryptedMessage(sentMessageData)
+                        sendMessage(messageToSend)
+                    },
+                    resendMessage = sendMessage,
+                    viewModel = viewModel,
+                    contactIdFlow = backStackEntry.savedStateHandle.getStateFlow(WriteMessageDestination.ContactIdArg, null),
                     sendIcon = OSImageSpec.Drawable(R.drawable.ic_send),
                     hideKeyboard = hideKeyboard,
                 )
@@ -154,7 +161,7 @@ fun ImeNavGraph(
                 navigateBack = { navController.popBackStack() },
                 navigateToWriteMessage = { contactId ->
                     navController.getBackStackEntry(WriteMessageDestination.route)
-                        .savedStateHandle[WriteMessageDestination.ContactIdArgs] = contactId.toString()
+                        .savedStateHandle[WriteMessageDestination.ContactIdArg] = contactId.toString()
                     navController.popBackStack()
                 },
                 viewModel = viewModel(

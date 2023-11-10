@@ -19,8 +19,17 @@
 
 package studio.lunabee.onesafe.messaging.writemessage.destination
 
+import android.net.Uri
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -29,18 +38,40 @@ import androidx.navigation.navArgument
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.extension.getTextSharingIntent
+import studio.lunabee.onesafe.messaging.domain.model.DecryptResult
+import studio.lunabee.onesafe.messaging.writemessage.model.SentMessageData
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageNavScope
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageRoute
+import studio.lunabee.onesafe.messaging.writemessage.viewmodel.WriteMessageViewModel
 import java.util.UUID
 
 object WriteMessageDestination {
 
-    const val ContactIdArgs: String = "contactId"
-    const val route: String = "write_message/{$ContactIdArgs}"
+    const val ContactIdArg: String = "ContactIdArg"
+    const val ErrorArg: String = "ErrorArg"
+    const val path: String = "write_message"
+    const val route: String = "$path?" +
+        "$ContactIdArg={$ContactIdArg}" +
+        "&$ErrorArg={$ErrorArg}"
 
-    fun getRoute(
+    fun getRouteFromDecryptResult(
+        decryptResult: DecryptResult,
+    ): String {
+        return Uri.Builder().apply {
+            path(path)
+            appendQueryParameter(ContactIdArg, decryptResult.contactId.toString())
+            decryptResult.error?.let { appendQueryParameter(ErrorArg, it.name) }
+        }.build().toString()
+    }
+
+    fun getRouteFromContactId(
         contactId: UUID,
-    ): String = route.replace("{$ContactIdArgs}", contactId.toString())
+    ): String {
+        return Uri.Builder().apply {
+            path(path)
+            appendQueryParameter(ContactIdArg, contactId.toString())
+        }.build().toString()
+    }
 }
 
 context(WriteMessageNavScope)
@@ -50,22 +81,44 @@ fun NavGraphBuilder.writeMessageScreen(
     composable(
         route = WriteMessageDestination.route,
         arguments = listOf(
-            navArgument(WriteMessageDestination.ContactIdArgs) {
+            navArgument(WriteMessageDestination.ContactIdArg) {
                 type = NavType.StringType
+            },
+            navArgument(WriteMessageDestination.ErrorArg) {
+                type = NavType.StringType
+                nullable = true
             },
         ),
     ) { backStackEntry ->
         val context = LocalContext.current
+        val viewModel: WriteMessageViewModel = hiltViewModel()
+        var currentSentMessageData: SentMessageData? by remember { mutableStateOf(null) }
+        val launcher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult(),
+            onResult = { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    currentSentMessageData?.let(viewModel::saveEncryptedMessage)
+                }
+                currentSentMessageData = null
+            },
+        )
+
         createMessagingViewModel(backStackEntry)
         WriteMessageRoute(
             onChangeRecipient = null,
-            sendMessage = { encMessage ->
-                val intent = context.getTextSharingIntent(encMessage)
-                context.startActivity(intent)
+            sendMessage = { sentMessageData, messageToSend ->
+                currentSentMessageData = sentMessageData
+                val intent = context.getTextSharingIntent(messageToSend)
+                launcher.launch(intent)
             },
-            contactIdFlow = backStackEntry.savedStateHandle.getStateFlow(WriteMessageDestination.ContactIdArgs, null),
+            contactIdFlow = backStackEntry.savedStateHandle.getStateFlow(WriteMessageDestination.ContactIdArg, null),
             sendIcon = OSImageSpec.Drawable(R.drawable.ic_share),
             hideKeyboard = null,
+            resendMessage = { messageToSend ->
+                val intent = context.getTextSharingIntent(messageToSend)
+                context.startActivity(intent)
+            },
+            viewModel = viewModel,
         )
     }
 }
