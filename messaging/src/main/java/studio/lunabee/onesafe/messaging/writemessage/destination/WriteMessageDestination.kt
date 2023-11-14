@@ -19,17 +19,23 @@
 
 package studio.lunabee.onesafe.messaging.writemessage.destination
 
-import android.net.Uri
 import android.app.Activity
+import android.app.ActivityManager
+import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -43,6 +49,7 @@ import studio.lunabee.onesafe.messaging.writemessage.model.SentMessageData
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageNavScope
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageRoute
 import studio.lunabee.onesafe.messaging.writemessage.viewmodel.WriteMessageViewModel
+import java.time.Instant
 import java.util.UUID
 
 object WriteMessageDestination {
@@ -91,12 +98,32 @@ fun NavGraphBuilder.writeMessageScreen(
         ),
     ) { backStackEntry ->
         val context = LocalContext.current
+        val lifecycleOwner = LocalLifecycleOwner.current
         val viewModel: WriteMessageViewModel = hiltViewModel()
         var currentSentMessageData: SentMessageData? by remember { mutableStateOf(null) }
+        var sendClickTimeStamp: Instant? by remember { mutableStateOf(null) }
+        var visibleExternalActivityTimeStamp: Instant? by remember { mutableStateOf(null) }
+
+        DisposableEffect(lifecycleOwner.lifecycle) {
+            val eventObserver = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_STOP) {
+                    if (hasExternalActivityVisible(context.getSystemService(ActivityManager::class.java))) {
+                        visibleExternalActivityTimeStamp = Instant.now()
+                    }
+                }
+            }
+            lifecycleOwner.lifecycle.addObserver(eventObserver)
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(eventObserver)
+            }
+        }
+
         val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult(),
             onResult = { result ->
-                if (result.resultCode == Activity.RESULT_OK) {
+                val shouldSaveMessage = (result.resultCode == Activity.RESULT_OK) ||
+                    visibleExternalActivityTimeStamp?.isAfter(sendClickTimeStamp) == true
+                if (shouldSaveMessage) {
                     currentSentMessageData?.let(viewModel::saveEncryptedMessage)
                 }
                 currentSentMessageData = null
@@ -108,6 +135,7 @@ fun NavGraphBuilder.writeMessageScreen(
             onChangeRecipient = null,
             sendMessage = { sentMessageData, messageToSend ->
                 currentSentMessageData = sentMessageData
+                sendClickTimeStamp = Instant.now()
                 val intent = context.getTextSharingIntent(messageToSend)
                 launcher.launch(intent)
             },
@@ -120,5 +148,15 @@ fun NavGraphBuilder.writeMessageScreen(
             },
             viewModel = viewModel,
         )
+    }
+}
+
+private fun hasExternalActivityVisible(activityManager: ActivityManager): Boolean {
+    val taskInfo = activityManager.appTasks.firstOrNull()?.taskInfo ?: return false
+    return when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2 -> taskInfo.isVisible
+        // isVisible seems to exist but cannot be access (tested on API 31)
+        taskInfo.toString().contains("isVisible=") -> taskInfo.toString().contains("isVisible=true")
+        else -> false
     }
 }
