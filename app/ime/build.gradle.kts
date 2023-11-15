@@ -44,6 +44,12 @@ android {
         manifestPlaceholders["imeProcessName"] = imeProcessName
     }
 
+    flavorDimensions += "environment"
+    productFlavors {
+        create("dev")
+        create("prod")
+    }
+
     packaging {
         resources.pickFirsts.add("META-INF/LICENSE.md")
         resources.pickFirsts.add("META-INF/LICENSE-notice.md")

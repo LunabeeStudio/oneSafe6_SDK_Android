@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
+import java.time.Instant
 import javax.inject.Singleton
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -51,7 +52,7 @@ internal object RepositoryTestModule {
             private var internalAutoLockAppChangeDelay = 10.seconds
             private var internalAutoLockOSKInactivityDelay = 30.seconds
             private var internalAutoLockOSKHiddenDelay = 10.seconds
-            private var lastPasswordVerif: Long? = null
+            private var lastPasswordVerif: Instant? = null
             private var verifInterval = VerifyPasswordInterval.EVERY_MONTH
 
             override val autoLockInactivityDelay: Duration
@@ -86,15 +87,15 @@ internal object RepositoryTestModule {
             override val verifyPasswordInterval: VerifyPasswordInterval
                 get() = verifInterval
 
-            override val lastPasswordVerificationTimeStamp: Long?
+            override val lastPasswordVerificationInstant: Instant?
                 get() = lastPasswordVerif
+
+            override fun setLastPasswordVerification(instant: Instant) {
+                lastPasswordVerif = instant
+            }
 
             override val verifyPasswordIntervalFlow: Flow<VerifyPasswordInterval>
                 get() = flowOf(verifInterval)
-
-            override fun setLastPasswordVerification(timeStamp: Long) {
-                lastPasswordVerif = timeStamp
-            }
 
             override val bubblesResendMessageDelayFlow: Flow<Duration>
                 get() = flowOf(1.days)

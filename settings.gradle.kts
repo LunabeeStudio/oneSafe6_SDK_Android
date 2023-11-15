@@ -31,6 +31,14 @@ plugins {
 }
 
 refreshVersions {
+    @Suppress("UnstableApiUsage")
+    this.rejectVersionIf {
+        val excludeOldDriveVersioning = this.moduleId.group == "com.google.apis" &&
+            this.moduleId.name == "google-api-services-drive" &&
+            this.candidate.value.contains("^v3-rev\\d\\d?-".toRegex())
+
+        excludeOldDriveVersioning
+    }
     featureFlags {
         enable(de.fayard.refreshVersions.core.FeatureFlag.LIBS)
     }

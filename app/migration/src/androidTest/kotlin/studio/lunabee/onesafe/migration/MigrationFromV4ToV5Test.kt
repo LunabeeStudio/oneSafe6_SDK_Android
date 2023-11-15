@@ -29,7 +29,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import studio.lunabee.onesafe.importexport.model.LocalBackup
-import studio.lunabee.onesafe.importexport.usecase.AutoBackupUseCase
+import studio.lunabee.onesafe.importexport.usecase.LocalAutoBackupUseCase
 import studio.lunabee.onesafe.importexport.usecase.GetLocalBackupsUseCase
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltTest
@@ -51,7 +51,7 @@ class MigrationFromV4ToV5Test : OSHiltTest() {
 
     @Inject lateinit var getLocalBackupsUseCase: GetLocalBackupsUseCase
 
-    @Inject lateinit var autoBackupUseCase: AutoBackupUseCase
+    @Inject lateinit var autoBackupUseCase: LocalAutoBackupUseCase
 
     @Before
     fun setUp() {

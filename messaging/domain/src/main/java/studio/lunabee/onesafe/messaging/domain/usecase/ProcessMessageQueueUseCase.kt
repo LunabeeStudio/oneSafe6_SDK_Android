@@ -91,7 +91,7 @@ class ProcessMessageQueueUseCase @Inject constructor(
             is LBResult.Failure -> {
                 // Unexpected case as we observe the crypto state. Do not delete the enqueued message.
                 if ((result.throwable as? OSCryptoError)?.code == OSCryptoError.Code.BUBBLES_MASTER_KEY_NOT_LOADED) {
-                    log.e(result.throwable)
+                    result.throwable?.let(log::e)
                     return
                 }
             }
@@ -106,7 +106,7 @@ class ProcessMessageQueueUseCase @Inject constructor(
                         id = messageIdProvider(),
                     )
                     when (saveResult) {
-                        is LBResult.Failure -> log.e(saveResult.throwable)
+                        is LBResult.Failure -> saveResult.throwable?.let(log::e)
                         is LBResult.Success -> {
                             /* no-op */
                         }

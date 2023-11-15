@@ -21,7 +21,7 @@ package studio.lunabee.onesafe.importexport.model
 
 import java.time.Instant
 
-abstract class Backup : Comparable<Backup> {
+sealed class Backup : Comparable<Backup> {
     abstract val date: Instant
     abstract val id: String
     override fun compareTo(other: Backup): Int = date.compareTo(other.date)

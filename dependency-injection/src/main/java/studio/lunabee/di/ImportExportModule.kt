@@ -42,17 +42,13 @@ import java.time.format.DateTimeFormatter
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface ImportModule {
+interface ImportExportModule {
     @Binds
     fun bindImportEngine(importEngineImpl: ImportEngineImpl): ImportEngine
 
     @Binds
     fun bindImportCacheDataSource(importCacheDataSourceImpl: ImportCacheDataSourceImpl): ImportCacheDataSource
-}
 
-@Module
-@InstallIn(SingletonComponent::class)
-interface ExportModule {
     @Binds
     fun bindShareExportEngine(shareExportEngineImpl: ShareExportEngineImpl): ShareExportEngine
 

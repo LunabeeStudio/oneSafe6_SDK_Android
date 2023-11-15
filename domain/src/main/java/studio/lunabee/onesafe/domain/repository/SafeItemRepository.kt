@@ -65,7 +65,8 @@ interface SafeItemRepository {
     suspend fun getAllSafeItems(): List<SafeItem>
     fun getAllSafeItemsWithIdentifier(config: PagingConfig, idsToExclude: List<UUID>): Flow<PagingData<SafeItemWithIdentifier>>
     suspend fun getAllSafeItemIds(): List<UUID>
-    fun getSafeItemsCount(): Flow<Int>
+    fun getSafeItemsCountFlow(): Flow<Int>
+    suspend fun getSafeItemsCount(): Int
     fun getSafeItemsWithIdentifierCount(): Flow<Int>
     suspend fun updateSafeItemParentId(itemId: UUID, parentId: UUID?)
     suspend fun updateConsultedAt(itemId: UUID, consultedAt: Instant)

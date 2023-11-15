@@ -19,13 +19,36 @@
 
 package studio.lunabee.onesafe.importexport.settings
 
+import android.content.Context
+import android.content.Intent
 import studio.lunabee.onesafe.importexport.model.LocalBackup
+import java.net.URI
 
-sealed interface AutoBackupSettingsUiState {
-    data class Enabled(
-        val autoBackupFrequency: AutoBackupFrequency,
-        val backups: List<LocalBackup>,
-    ) : AutoBackupSettingsUiState
-
-    data object Disabled : AutoBackupSettingsUiState
+data class AutoBackupSettingsUiState(
+    val isBackupEnabled: Boolean,
+    val autoBackupFrequency: AutoBackupFrequency,
+    val backups: List<LocalBackup>,
+    val isCloudBackupEnabled: Boolean,
+    val isKeepLocalBackupEnabled: Boolean,
+    val toggleKeepLocalBackup: (context: Context) -> Unit,
+    val driveUri: URI?,
+    val driveAccount: String?,
+) {
+    companion object {
+        fun disabled(): AutoBackupSettingsUiState = AutoBackupSettingsUiState(
+            isBackupEnabled = false,
+            autoBackupFrequency = AutoBackupFrequency.DAILY,
+            backups = emptyList(),
+            isCloudBackupEnabled = false,
+            isKeepLocalBackupEnabled = false,
+            toggleKeepLocalBackup = {},
+            driveUri = null,
+            driveAccount = null,
+        )
+    }
 }
+
+data class AutoBackupSettingsDriveAuth(
+    val authorizeIntent: Intent,
+    val onAuthorize: (Boolean) -> Unit,
+)

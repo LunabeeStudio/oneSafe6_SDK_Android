@@ -38,7 +38,7 @@ import javax.inject.Singleton
 )
 object SettingsTestModule {
 
-    var datastoreIncSuffix: Int = 0
+    private var datastoreIncSuffix: Int = 0
 
     /**
      * Provide a different datastore for each test to avoid

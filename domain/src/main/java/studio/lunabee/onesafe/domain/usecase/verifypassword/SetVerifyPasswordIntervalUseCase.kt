@@ -29,6 +29,6 @@ class SetVerifyPasswordIntervalUseCase @Inject constructor(
 ) {
     operator fun invoke(interval: VerifyPasswordInterval) {
         securityOptionRepository.setPasswordInterval(interval)
-        setLastPasswordVerificationUseCase(System.currentTimeMillis())
+        setLastPasswordVerificationUseCase()
     }
 }

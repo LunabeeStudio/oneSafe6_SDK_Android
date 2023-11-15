@@ -43,6 +43,7 @@ class MigrateAndSignInUseCase @Inject constructor(
     private val migrationFromV2ToV3: MigrationFromV2ToV3,
     private val migrationFromV3ToV4: MigrationFromV3ToV4,
     private val migrationFromV4ToV5: MigrationFromV4ToV5,
+    private val migrationFromV5ToV6: MigrationFromV5ToV6,
     private val isSignUpUseCase: IsSignUpUseCase,
     private val mainCryptoRepository: MainCryptoRepository,
     biometricEngine: BiometricEngine,
@@ -55,7 +56,7 @@ class MigrateAndSignInUseCase @Inject constructor(
         dataStoreEngine,
     )
 
-    suspend fun needToMigrate(): Boolean = getCurrentVersion() != MigrationConstant.LastVersion
+    suspend fun needToMigrate(): Boolean = getCurrentVersion() < MigrationConstant.LastVersion
 
     suspend operator fun invoke(password: CharArray): LBResult<Unit> {
         val masterKey = migrationGetMasterKeyV0UseCase(password).data
@@ -100,6 +101,11 @@ class MigrateAndSignInUseCase @Inject constructor(
 
         if (version == 4) {
             results += migrationFromV4ToV5()
+            version++
+        }
+
+        if (version == 5) {
+            results += migrationFromV5ToV6()
             version++
         }
 

@@ -21,6 +21,7 @@ package studio.lunabee.onesafe.repository.datasource
 
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
+import java.time.Instant
 import kotlin.time.Duration
 
 interface SettingsDataSource {
@@ -36,8 +37,8 @@ interface SettingsDataSource {
     var passwordVerificationInterval: VerifyPasswordInterval
     val passwordVerificationIntervalFlow: Flow<VerifyPasswordInterval>
 
-    val lastPasswordVerificationTimeStamp: Long?
-    fun setLastPasswordVerificationTimeStamp(timeStamp: Long)
+    val lastPasswordVerificationInstant: Instant?
+    fun setLastPasswordVerificationInstant(instant: Instant)
 
     val bubblesResendMessageDelayFlow: Flow<Duration>
     fun setBubblesResendMessageDelay(delay: Duration)
@@ -50,4 +51,10 @@ interface SettingsDataSource {
     val autoBackupEnabled: Flow<Boolean>
     val autoBackupFrequencyFlow: Flow<Duration>
     var autoBackupFrequency: Duration
+
+    val cloudBackupEnabled: Flow<Boolean>
+    suspend fun setCloudBackupSettings(enabled: Boolean)
+
+    val keepLocalBackupEnabled: Flow<Boolean>
+    suspend fun toggleKeepLocalBackupSettings(): Boolean
 }

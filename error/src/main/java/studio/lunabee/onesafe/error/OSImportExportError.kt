@@ -39,5 +39,6 @@ data class OSImportExportError(
         METADATA_NOT_IN_CACHE("Metadata not in cache"),
         SALT_INVALID("Salt is empty or invalid"),
         ENGINE_NOT_PREPARED("Export engine is not initialized with required values"),
+        BACKUP_FILE_DELETE_FAILED("Fail to delete backup file"),
     }
 }

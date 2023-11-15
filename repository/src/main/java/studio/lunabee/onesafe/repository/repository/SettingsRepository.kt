@@ -24,6 +24,7 @@ import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.repository.datasource.SettingsDataSource
+import java.time.Instant
 import javax.inject.Inject
 import kotlin.time.Duration
 
@@ -70,11 +71,11 @@ class SettingsRepository @Inject constructor(
         settingsDataSource.passwordVerificationInterval = passwordInterval
     }
 
-    override val lastPasswordVerificationTimeStamp: Long?
-        get() = settingsDataSource.lastPasswordVerificationTimeStamp
+    override val lastPasswordVerificationInstant: Instant?
+        get() = settingsDataSource.lastPasswordVerificationInstant
 
-    override fun setLastPasswordVerification(timeStamp: Long) {
-        settingsDataSource.setLastPasswordVerificationTimeStamp(timeStamp)
+    override fun setLastPasswordVerification(instant: Instant) {
+        settingsDataSource.setLastPasswordVerificationInstant(instant)
     }
 
     override val bubblesResendMessageDelayFlow: Flow<Duration>
@@ -118,4 +119,16 @@ class SettingsRepository @Inject constructor(
     override fun setAutoBackupFrequency(delay: Duration) {
         settingsDataSource.autoBackupFrequency = delay
     }
+
+    override val cloudBackupEnabled: Flow<Boolean>
+        get() = settingsDataSource.cloudBackupEnabled
+
+    override suspend fun setCloudBackupSettings(enabled: Boolean): Unit =
+        settingsDataSource.setCloudBackupSettings(enabled)
+
+    override val keepLocalBackupEnabled: Flow<Boolean>
+        get() = settingsDataSource.keepLocalBackupEnabled
+
+    override suspend fun toggleKeepLocalBackupSettings(): Boolean =
+        settingsDataSource.toggleKeepLocalBackupSettings()
 }

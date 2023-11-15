@@ -38,7 +38,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import studio.lunabee.onesafe.commonui.R
-import studio.lunabee.onesafe.commonui.qualifier.InternalBackupMimetype
+import studio.lunabee.onesafe.domain.qualifier.InternalBackupMimetype
 import studio.lunabee.onesafe.domain.qualifier.InternalDir
 import studio.lunabee.onesafe.importexport.android.BuildConfig
 import studio.lunabee.onesafe.importexport.model.ImportExportConstant

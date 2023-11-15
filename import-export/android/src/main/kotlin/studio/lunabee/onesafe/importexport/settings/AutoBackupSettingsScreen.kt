@@ -20,10 +20,18 @@
 package studio.lunabee.onesafe.importexport.settings
 
 import android.Manifest
+import android.accounts.AccountManager
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,8 +39,9 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,6 +52,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
+import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -51,15 +62,18 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
+import com.google.android.gms.auth.GoogleAuthUtil
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSScreen
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
 import studio.lunabee.onesafe.commonui.dialog.DialogState
+import studio.lunabee.onesafe.commonui.extension.findFragmentActivity
 import studio.lunabee.onesafe.commonui.notification.NotificationPermissionRationaleDialogState
 import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
 import studio.lunabee.onesafe.importexport.model.LocalBackup
+import studio.lunabee.onesafe.importexport.utils.AccountPermissionRationaleDialogState
 import studio.lunabee.onesafe.importexport.utils.BackupFileManagerHelper
 import studio.lunabee.onesafe.molecule.ElevatedTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
@@ -67,7 +81,9 @@ import studio.lunabee.onesafe.ui.extensions.topAppBarElevation
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.OSPreviewOnSurfaceTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
+import timber.log.Timber
 import java.io.File
+import java.net.URI
 import java.time.Instant
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -89,6 +105,18 @@ fun AutoBackupSettingsRoute(
         null // always granted
     }
 
+    val accountLauncher = rememberAccountLauncher(
+        setupCloudBackup = viewModel::setupCloudBackupAndSync,
+    )
+
+    val accountsPermissionState = accountPermissionState(
+        accountLauncher = accountLauncher,
+        setPermissionDialogState = { permissionDialogState = it },
+    )
+
+    val authorizeDrive: AutoBackupSettingsDriveAuth? by viewModel.authorizeDrive.collectAsStateWithLifecycle()
+    authorizeDrive?.let { DriveAuthorize(it) }
+
     var errorSnackbarState: ErrorSnackbarState? by remember { mutableStateOf(null) }
     val snackBarHostState = remember { SnackbarHostState() }
     val errorSnackBarVisual = errorSnackbarState?.snackbarVisuals
@@ -109,9 +137,7 @@ fun AutoBackupSettingsRoute(
 
     when (val state = uiState) {
         null -> OSScreen(UiConstants.TestTag.Screen.AutoBackupSettingsScreen) {}
-        AutoBackupSettingsUiState.Disabled,
-        is AutoBackupSettingsUiState.Enabled,
-        -> {
+        else -> {
             AutoBackupSettingsScreen(
                 uiState = state,
                 navigateBack = navigateBack,
@@ -121,11 +147,97 @@ fun AutoBackupSettingsRoute(
                         requestNotificationPermission(notificationPermissionState) { permissionDialogState = it }
                     }
                 },
+                toggleCloudBackup = if (state.isCloudBackupEnabled) {
+                    { viewModel.disableCloudBackupSettings() }
+                } else {
+                    {
+                        enableCloudBackup(
+                            accountsPermissionState = accountsPermissionState,
+                            context = context,
+                            accountLauncher = accountLauncher,
+                            setPermissionDialogState = { permissionDialogState = it },
+                            state = state,
+                        )
+                    }
+                },
                 setAutoBackupFrequency = { viewModel.setAutoBackupFrequency(context, it) },
                 navigateToRestoreBackup = navigateToRestoreBackup,
                 openFileManager = openFileManager,
+                featureFlagCloudBackup = viewModel.featureFlagCloudBackup,
             )
         }
+    }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+private fun enableCloudBackup(
+    accountsPermissionState: PermissionState?,
+    context: Context,
+    accountLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>,
+    setPermissionDialogState: (DialogState?) -> Unit,
+    state: AutoBackupSettingsUiState,
+) {
+    when (accountsPermissionState?.status) {
+        PermissionStatus.Granted -> enableCloudBackupSettings(state, context, accountLauncher)
+        is PermissionStatus.Denied -> {
+            if (accountsPermissionState.status.shouldShowRationale) {
+                setPermissionDialogState(
+                    AccountPermissionRationaleDialogState(
+                        launchPermissionRequest = {
+                            accountsPermissionState.launchPermissionRequest()
+                            setPermissionDialogState(null)
+                        },
+                        dismiss = { setPermissionDialogState(null) },
+                    ),
+                )
+            } else {
+                accountsPermissionState.launchPermissionRequest()
+            }
+        }
+        null -> enableCloudBackupSettings(state, context, accountLauncher)
+    }
+}
+
+private fun enableCloudBackupSettings(
+    uiState: AutoBackupSettingsUiState,
+    context: Context,
+    accountLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>,
+) {
+    launchAccountChooser(context, accountLauncher, uiState.driveAccount)
+}
+
+@Composable
+private fun rememberAccountLauncher(
+    setupCloudBackup: (String, Context) -> Unit,
+): ManagedActivityResultLauncher<Intent, ActivityResult> {
+    val context = LocalContext.current
+    return rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val accountName = result.data?.extras?.getString(AccountManager.KEY_ACCOUNT_NAME)
+                if (accountName != null) {
+                    setupCloudBackup(accountName, context)
+                } else {
+                    // TODO <AutoBackup> show (unexpected) error
+                    Timber.e("Unexpected null accountName on success result")
+                }
+            }
+        },
+    )
+}
+
+@Composable
+private fun DriveAuthorize(authorizeDrive: AutoBackupSettingsDriveAuth) {
+    val driveAuthLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            authorizeDrive.onAuthorize(result.resultCode == Activity.RESULT_OK)
+        },
+    )
+
+    LaunchedEffect(authorizeDrive) {
+        driveAuthLauncher.launch(authorizeDrive.authorizeIntent)
     }
 }
 
@@ -134,27 +246,36 @@ fun AutoBackupSettingsScreen(
     uiState: AutoBackupSettingsUiState,
     navigateBack: () -> Unit,
     toggleAutoBackup: () -> Unit,
+    toggleCloudBackup: (() -> Unit)?,
     setAutoBackupFrequency: (AutoBackupFrequency) -> Unit,
     navigateToRestoreBackup: (Uri) -> Unit,
     openFileManager: (() -> Unit)?,
+    featureFlagCloudBackup: Boolean,
 ) {
-    val mainCardUiState = when (uiState) {
-        AutoBackupSettingsUiState.Disabled -> AutoBackupSettingsMainCardUiState.Disabled
-        is AutoBackupSettingsUiState.Enabled -> {
-            var isAutoBackupFrequencyBottomSheetVisible by rememberSaveable { mutableStateOf(value = false) }
+    val context = LocalContext.current
+    val mainCardUiState = if (uiState.isBackupEnabled) {
+        var isAutoBackupFrequencyBottomSheetVisible by rememberSaveable { mutableStateOf(value = false) }
 
-            AutoBackupFrequencyBottomSheet(
-                isVisible = isAutoBackupFrequencyBottomSheetVisible,
-                onSelect = setAutoBackupFrequency,
-                onBottomSheetClosed = { isAutoBackupFrequencyBottomSheetVisible = false },
-                selectedAutoBackupFrequency = uiState.autoBackupFrequency,
-            )
+        AutoBackupFrequencyBottomSheet(
+            isVisible = isAutoBackupFrequencyBottomSheetVisible,
+            onSelect = setAutoBackupFrequency,
+            onBottomSheetClosed = { isAutoBackupFrequencyBottomSheetVisible = false },
+            selectedAutoBackupFrequency = uiState.autoBackupFrequency,
+        )
 
-            AutoBackupSettingsMainCardUiState.Enabled(
-                selectAutoBackupFrequency = { isAutoBackupFrequencyBottomSheetVisible = true },
-                autoBackupFrequency = uiState.autoBackupFrequency,
-            )
-        }
+        AutoBackupSettingsMainCardUiState.Enabled(
+            toggleAutoBackup = toggleAutoBackup,
+            selectAutoBackupFrequency = { isAutoBackupFrequencyBottomSheetVisible = true },
+            autoBackupFrequency = uiState.autoBackupFrequency,
+            isCloudBackupEnabled = uiState.isCloudBackupEnabled,
+            isKeepLocalBackupEnabled = uiState.isKeepLocalBackupEnabled,
+            toggleKeepLocalBackup = { uiState.toggleKeepLocalBackup(context) },
+            toggleCloudBackup = toggleCloudBackup,
+        )
+    } else {
+        AutoBackupSettingsMainCardUiState.Disabled(
+            toggleAutoBackup = toggleAutoBackup,
+        )
     }
 
     OSScreen(
@@ -163,43 +284,58 @@ fun AutoBackupSettingsScreen(
             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Bottom))
             .fillMaxSize(),
     ) {
-        val scrollState = rememberScrollState()
-        Column(
+        val lazyListState: LazyListState = rememberLazyListState()
+        LazyColumn(
             modifier = Modifier
-                .verticalScroll(scrollState)
                 .padding(top = OSDimens.ItemTopBar.Height)
                 .fillMaxSize()
-                .padding(
-                    horizontal = OSDimens.SystemSpacing.Regular,
-                    vertical = OSDimens.SystemSpacing.ExtraLarge,
-                ),
+                .testTag(UiConstants.TestTag.ScrollableContent.SettingsLazyColumn),
+            contentPadding = PaddingValues(
+                horizontal = OSDimens.SystemSpacing.Regular,
+                vertical = OSDimens.SystemSpacing.ExtraLarge,
+            ),
+            state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.Regular),
         ) {
-            AutoBackupSettingsMainCard(
-                toggleAutoBackup = toggleAutoBackup,
-                uiState = mainCardUiState,
-            )
+            item {
+                AutoBackupSettingsMainCard(
+                    uiState = mainCardUiState,
+                    featureFlagCloudBackup = featureFlagCloudBackup,
+                )
+            }
 
-            if (uiState is AutoBackupSettingsUiState.Enabled) {
-                if (uiState.backups.isNotEmpty()) {
+            if (uiState.isBackupEnabled) {
+                item {
+                    // if (uiState.backups.isNotEmpty()) { // TODO <AutoBackup> also get cloud backups depending on backup mode
                     AutoBackupSettingsAccessBackupCard(
                         onAccessLocalClick = openFileManager,
-                        onAccessRemoteClick = null, // TODO jump to drive
-                    )
-                    AutoBackupSettingsRestoreCard(
-                        onRestoreBackupClick = { navigateToRestoreBackup(uiState.backups.first().file.toUri()) },
+                        onAccessRemoteClick = if (uiState.isCloudBackupEnabled && featureFlagCloudBackup) {
+                            uiState.driveUri?.let { { context.startActivity(Intent.parseUri(it.toString(), 0)) } }
+                        } else {
+                            null
+                        },
                     )
                 }
+                if (uiState.backups.isNotEmpty()) { // TODO <AutoBackup> remove this if with above todo
+                    item {
+                        AutoBackupSettingsRestoreCard(
+                            onRestoreBackupClick = { navigateToRestoreBackup(uiState.backups.first().file.toUri()) },
+                        )
+                    }
+                }
+            }
+            item {
                 AutoBackupSettingsInformationCard(
                     date = uiState.backups.firstOrNull()?.date,
                 )
             }
+            //            }
         }
 
         ElevatedTopAppBar(
             title = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_title),
             options = listOf(topAppBarOptionNavBack(navigateBack)),
-            elevation = scrollState.topAppBarElevation,
+            elevation = lazyListState.topAppBarElevation,
         )
     }
 }
@@ -233,23 +369,81 @@ private fun requestNotificationPermission(
     }
 }
 
+private fun launchAccountChooser(
+    context: Context,
+    accountLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>,
+    currentDriveAccount: String?,
+) {
+    val intent = AccountManager.newChooseAccountIntent(
+        AccountManager.get(context).accounts.firstOrNull { it.name == currentDriveAccount },
+        null,
+        arrayOf(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE),
+        context.getString(R.string.android_chooseGoogleAccount_description),
+        null,
+        null,
+        null,
+    )
+
+    accountLauncher.launch(intent)
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+private fun accountPermissionState(
+    accountLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>,
+    setPermissionDialogState: (DialogState?) -> Unit,
+): PermissionState? {
+    val context = LocalContext.current
+    return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        rememberPermissionState(Manifest.permission.GET_ACCOUNTS) { isGranted ->
+            if (isGranted) {
+                launchAccountChooser(context, accountLauncher, null)
+            } else {
+                // Manually get shouldShowRationale https://github.com/google/accompanist/issues/1690
+                val shouldShowRationale = ActivityCompat.shouldShowRequestPermissionRationale(
+                    context.findFragmentActivity(),
+                    Manifest.permission.GET_ACCOUNTS,
+                )
+                if (!shouldShowRationale) {
+                    setPermissionDialogState(
+                        AccountPermissionRationaleDialogState(
+                            launchPermissionRequest = { launchAccountChooser(context, accountLauncher, null) },
+                            dismiss = { setPermissionDialogState(null) },
+                        ),
+                    )
+                }
+            }
+        }
+    } else {
+        null
+    }
+}
+
 @Composable
 @OsDefaultPreview
 private fun AutoBackupSettingsScreenOnPreview() {
     OSPreviewOnSurfaceTheme {
         AutoBackupSettingsScreen(
-            uiState = AutoBackupSettingsUiState.Enabled(
-                AutoBackupFrequency.WEEKLY,
-                listOf(
+            uiState = AutoBackupSettingsUiState(
+                isBackupEnabled = true,
+                autoBackupFrequency = AutoBackupFrequency.WEEKLY,
+                backups = listOf(
                     LocalBackup(Instant.now(), File("")),
                     LocalBackup(Instant.EPOCH, File("")),
                 ),
+                isCloudBackupEnabled = true,
+                isKeepLocalBackupEnabled = true,
+                toggleKeepLocalBackup = {},
+                driveUri = URI.create(""),
+                driveAccount = "",
             ),
             navigateBack = {},
             toggleAutoBackup = {},
+            toggleCloudBackup = {},
             setAutoBackupFrequency = {},
             navigateToRestoreBackup = {},
             openFileManager = {},
+            featureFlagCloudBackup = true,
         )
     }
 }
@@ -259,12 +453,14 @@ private fun AutoBackupSettingsScreenOnPreview() {
 private fun AutoBackupSettingsScreenOffPreview() {
     OSPreviewOnSurfaceTheme {
         AutoBackupSettingsScreen(
-            uiState = AutoBackupSettingsUiState.Disabled,
+            uiState = AutoBackupSettingsUiState.disabled(),
             navigateBack = {},
             toggleAutoBackup = {},
+            toggleCloudBackup = {},
             setAutoBackupFrequency = {},
             navigateToRestoreBackup = {},
             openFileManager = {},
+            featureFlagCloudBackup = true,
         )
     }
 }

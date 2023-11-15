@@ -124,7 +124,8 @@ class SafeItemRepositoryImpl @Inject constructor(
         return localDataSource.getAllSafeItemsWithIdentifier(config, idsToExclude)
     }
 
-    override fun getSafeItemsCount(): Flow<Int> = localDataSource.getSafeItemsCount()
+    override fun getSafeItemsCountFlow(): Flow<Int> = localDataSource.getSafeItemsCountFlow()
+    override suspend fun getSafeItemsCount(): Int = localDataSource.getSafeItemsCount()
 
     override fun getSafeItemsWithIdentifierCount(): Flow<Int> = localDataSource.getSafeItemsWithIdentifierCount()
 

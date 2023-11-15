@@ -23,6 +23,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,15 +39,15 @@ enum class OSKeyboardStatus {
     LoggedIn {
         override val contentDescription: LbcTextSpec = LbcTextSpec.StringResource(R.string.oneSafeK_ime_status_login_description)
         override val logo: Int = imeR.drawable.onesafek_logo_login
-        override val lightTint: @Composable () -> Color = { LocalColorPalette.current.Primary40 }
-        override val darkTint: @Composable () -> Color = { LocalColorPalette.current.Primary20 }
+        override val lightTint: @Composable () -> Color = { MaterialTheme.colorScheme.primary }
+        override val darkTint: @Composable () -> Color = { MaterialTheme.colorScheme.primary }
     },
 
     LoggedOut {
         override val contentDescription: LbcTextSpec = LbcTextSpec.StringResource(R.string.oneSafeK_ime_status_logout_description)
         override val logo: Int = imeR.drawable.onesafek_logo_logout
-        override val lightTint: @Composable () -> Color = { LocalColorPalette.current.Neutral60 }
-        override val darkTint: @Composable () -> Color = { LocalColorPalette.current.Neutral10 }
+        override val lightTint: @Composable () -> Color = { LocalColorPalette.current.Primary60 }
+        override val darkTint: @Composable () -> Color = { LocalColorPalette.current.Primary60 }
     },
 
     Love {

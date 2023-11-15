@@ -49,7 +49,7 @@ fun <T, Output, StoreType> blockingDatastore(
 }
 
 /**
- * Specific implementation of [blockingDatastore] for primitive types
+ * Specific implementation of [blockingDatastore] for primitive (non-null) types
  *
  * @see [blockingDatastore]
  */

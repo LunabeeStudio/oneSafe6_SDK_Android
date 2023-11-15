@@ -20,13 +20,15 @@
 package studio.lunabee.onesafe.domain.usecase.verifypassword
 
 import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
+import java.time.Clock
+import java.time.Instant
 import javax.inject.Inject
 
 class SetLastPasswordVerificationUseCase @Inject constructor(
     private val securityOptionRepository: SecurityOptionRepository,
+    private val clock: Clock,
 ) {
-
-    operator fun invoke(timeStamp: Long) {
-        securityOptionRepository.setLastPasswordVerification(timeStamp)
+    operator fun invoke() {
+        securityOptionRepository.setLastPasswordVerification(Instant.now(clock))
     }
 }

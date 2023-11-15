@@ -33,7 +33,7 @@ import javax.inject.Inject
 /**
  * Creates a backup and moves it to the auto backups internal storage
  */
-class AutoBackupUseCase @Inject constructor(
+class LocalAutoBackupUseCase @Inject constructor(
     private val exportBackupUseCase: ExportBackupUseCase,
     private val backupRepository: LocalBackupRepository,
     @BackupType(BackupType.Type.Auto) private val exportEngine: BackupExportEngine,

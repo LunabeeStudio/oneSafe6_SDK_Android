@@ -37,5 +37,6 @@ object FeatureFlagsTestModule {
         override fun oneSafeK(): Boolean = false
         override fun bubbles(): Flow<Boolean> = flowOf(true)
         override fun quickSignIn(): Boolean = false
+        override fun cloudBackup(): Boolean = true
     }
 }

@@ -21,6 +21,8 @@ package studio.lunabee.onesafe.test
 
 import android.util.Log
 import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.Configuration
@@ -40,7 +42,6 @@ import studio.lunabee.onesafe.domain.usecase.authentication.LocalSignInUseCase
 import studio.lunabee.onesafe.domain.usecase.autolock.LockAppUseCase
 import studio.lunabee.onesafe.domain.usecase.onboarding.CreateMasterKeyUseCase
 import studio.lunabee.onesafe.domain.usecase.onboarding.FinishOnboardingUseCase
-import studio.lunabee.onesafe.migration.MigrationConstant
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.OSRecentSearchProto
 import javax.inject.Inject
@@ -92,6 +93,8 @@ abstract class OSHiltTest : OSTest() {
     @Inject lateinit var mainDatabase: MainDatabase
 
     @Inject lateinit var recentSearchDataStore: DataStore<OSRecentSearchProto.RecentSearchProto>
+
+    @Inject lateinit var preferencesDataStore: DataStore<Preferences>
 
     /**
      * See [InitialTestState] for more details.
@@ -146,13 +149,16 @@ abstract class OSHiltTest : OSTest() {
         iconRepository.deleteAll()
         fileRepository.deleteAll()
         mainDatabase.clearAllTables()
+        preferencesDataStore.edit {
+            it.clear()
+        }
     }
 
     /**
      * Signup user with [password] and save credential. A master key will be generated at this point.
      */
     suspend fun signup(password: CharArray = testPassword.toCharArray()) {
-        osAppSettings.setMigrationVersionSetting(MigrationConstant.LastVersion)
+        osAppSettings.setMigrationVersionSetting(Int.MAX_VALUE)
         createMasterKeyUseCase(password)
         finishOnboardingUseCase()
     }

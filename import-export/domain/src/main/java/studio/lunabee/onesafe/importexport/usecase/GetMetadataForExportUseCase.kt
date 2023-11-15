@@ -29,7 +29,7 @@ class GetMetadataForExportUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
 ) {
     suspend operator fun invoke(): LBResult<ExportMetadata> {
-        val itemCount = safeItemRepository.getSafeItemsCount().first()
+        val itemCount = safeItemRepository.getSafeItemsCountFlow().first()
         val metadata = ExportMetadata(
             itemCount = itemCount,
         )

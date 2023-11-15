@@ -51,6 +51,9 @@ interface BackupDao {
     @Query("SELECT * FROM Backup WHERE local_file IS NOT NULL ORDER BY `date` DESC")
     suspend fun getAllLocal(): List<RoomLocalBackup>
 
+    @Query("SELECT * FROM Backup WHERE local_file IS NOT NULL AND remote_id IS NULL ORDER BY `date` DESC")
+    suspend fun getAllLocalWithoutRemote(): List<RoomLocalBackup>
+
     @Query("SELECT * FROM Backup WHERE remote_id IS NOT NULL ORDER BY `date` DESC")
     suspend fun getAllCloud(): List<RoomCloudBackup>
 
@@ -68,6 +71,9 @@ interface BackupDao {
 
     @Query("UPDATE Backup SET local_file = NULL WHERE id = :id")
     suspend fun nullifyLocalIdById(id: String)
+
+    @Query("UPDATE Backup SET local_file = NULL")
+    suspend fun nullifyAllLocalId()
 
     @Query("UPDATE Backup SET remote_id = NULL WHERE id = :id")
     suspend fun nullifyRemoteIdById(id: String)

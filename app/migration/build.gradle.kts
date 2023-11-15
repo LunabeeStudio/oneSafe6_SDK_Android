@@ -31,6 +31,12 @@ android {
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
     }
 
+    flavorDimensions += "environment"
+    productFlavors {
+        create("dev")
+        create("prod")
+    }
+
     packaging {
         resources {
             pickFirsts += "META-INF/DEPENDENCIES"
@@ -61,6 +67,7 @@ dependencies {
     implementation(project(":local-android"))
     implementation(project(":app:settings"))
     implementation(project(":import-export-domain"))
+    implementation(project(":import-export-android"))
 
     kspAndroidTest(libs.dagger.hilt.compiler)
     androidTestImplementation(project(":dependency-injection:test-component"))

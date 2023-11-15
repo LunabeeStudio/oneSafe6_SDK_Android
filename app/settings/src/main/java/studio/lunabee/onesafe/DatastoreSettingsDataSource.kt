@@ -27,10 +27,12 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import studio.lunabee.onesafe.repository.datasource.SettingsDataSource
+import java.time.Instant
 import javax.inject.Inject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -48,6 +50,8 @@ class DatastoreSettingsDataSource @Inject constructor(
     private val autoLockOSKHiddenDelayKey = longPreferencesKey(SettingsConstants.AutoLockOSKHiddenDelay)
     private val autoBackupEnabledKey = booleanPreferencesKey(SettingsConstants.autoBackupEnabledKeyVal)
     private val autoBackupFrequencyKey = longPreferencesKey(SettingsConstants.autoBackupFrequencyKeyVal)
+    private val cloudBackupEnabledKey = booleanPreferencesKey(SettingsConstants.cloudBackupEnabledKeyVal)
+    private val keepLocalBackupEnabledKey = booleanPreferencesKey(SettingsConstants.keepLocalBackupEnabledKeyVal)
 
     override var autoLockInactivityDelay: Duration by blockingDurationDatastore(
         dataStore = dataStore,
@@ -123,24 +127,25 @@ class DatastoreSettingsDataSource @Inject constructor(
             preferences[verifyPasswordIntervalKey]?.let(VerifyPasswordInterval::valueOf) ?: SettingsDefaults.VerifyPasswordIntervalDefault
         }
 
-    override val lastPasswordVerificationTimeStamp: Long? by blockingReadDatastore(
-        dataStore = dataStore,
-        key = lastPasswordVerificationKey,
-        readMapper = { it },
-    )
-
-    override fun setLastPasswordVerificationTimeStamp(timeStamp: Long) {
-        runBlocking {
-            dataStore.edit { settings ->
-                settings[lastPasswordVerificationKey] = timeStamp
-            }
+    override val lastPasswordVerificationInstant: Instant?
+        get() = runBlocking {
+            dataStore.data.map { preferences ->
+                preferences[lastPasswordVerificationKey]?.let { Instant.ofEpochMilli(it) }
+            }.firstOrNull()
         }
-    }
 
     override fun setBubblesResendMessageDelay(delay: Duration) {
         runBlocking {
             dataStore.edit { settings ->
                 settings[bubblesResendMessageDelayKey] = delay.inWholeMilliseconds
+            }
+        }
+    }
+
+    override fun setLastPasswordVerificationInstant(instant: Instant) {
+        runBlocking {
+            dataStore.edit { settings ->
+                settings[lastPasswordVerificationKey] = instant.toEpochMilli()
             }
         }
     }
@@ -166,4 +171,24 @@ class DatastoreSettingsDataSource @Inject constructor(
         get() = dataStore.data.map { preferences ->
             preferences[autoBackupFrequencyKey]?.milliseconds ?: SettingsDefaults.autoBackupFrequencyMsDefault.milliseconds
         }
+
+    override val cloudBackupEnabled: Flow<Boolean> = dataStore.data
+        .map { preferences -> preferences[cloudBackupEnabledKey] ?: SettingsDefaults.cloudBackupEnabledDefault }
+
+    override suspend fun setCloudBackupSettings(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[cloudBackupEnabledKey] = enabled
+        }
+    }
+
+    override val keepLocalBackupEnabled: Flow<Boolean> = dataStore.data
+        .map { preferences -> preferences[keepLocalBackupEnabledKey] ?: SettingsDefaults.keepLocalBackupEnabledDefault }
+
+    override suspend fun toggleKeepLocalBackupSettings(): Boolean {
+        dataStore.edit { preferences ->
+            val keepLocalBackupEnabled = preferences[keepLocalBackupEnabledKey] ?: SettingsDefaults.keepLocalBackupEnabledDefault
+            preferences[keepLocalBackupEnabledKey] = !keepLocalBackupEnabled
+        }
+        return keepLocalBackupEnabled.first()
+    }
 }

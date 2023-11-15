@@ -18,7 +18,8 @@
  */
 
 plugins {
-    `android-library`
+    id("com.android.library")
+    id("kotlin-android")
 }
 
 android {
@@ -56,6 +57,7 @@ dependencies {
     implementation(libs.mockk.android)
     implementation(libs.room.ktx)
     implementation(libs.datastore)
+    implementation(libs.datastore.preferences)
     implementation(libs.protobuf.kotlinlite)
 
     implementation(platform(libs.lunabee.bom))
@@ -63,8 +65,19 @@ dependencies {
 
     implementation(project(":domain"))
     implementation(project(":app:settings"))
-    implementation(project(":app:migration"))
     api(project(":common-test"))
     api(project(":local-android"))
     api(libs.lbcandroidtest)
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
+    kotlinOptions {
+        jvmTarget = ProjectConfig.JDK_VERSION.toString()
+    }
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(ProjectConfig.JDK_VERSION.toString()))
+    }
 }
