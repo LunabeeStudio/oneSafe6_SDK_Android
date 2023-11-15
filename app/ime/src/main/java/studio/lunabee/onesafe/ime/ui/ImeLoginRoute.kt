@@ -28,12 +28,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
+import studio.lunabee.onesafe.ime.R
+import studio.lunabee.onesafe.ime.ui.biometric.BiometricActivity
+import studio.lunabee.onesafe.ime.viewmodel.ImeLoginViewModel
 import studio.lunabee.onesafe.login.screen.LoginExitIcon
 import studio.lunabee.onesafe.login.screen.LoginScreenWrapper
 import studio.lunabee.onesafe.login.state.LoginUiState
-import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
-import studio.lunabee.onesafe.ime.ui.biometric.BiometricActivity
-import studio.lunabee.onesafe.ime.viewmodel.ImeLoginViewModel
 
 @Composable
 fun ImeLoginRoute(
@@ -85,6 +86,7 @@ fun ImeLoginRoute(
                 onBiometricClick = onBiometricClick,
                 snackBarHostState = snackBarHostState,
                 isIllustrationDisplayed = false,
+                logoRes = R.drawable.onesafek_logo,
             )
         }
     }

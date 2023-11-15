@@ -35,6 +35,11 @@ interface LocalBackupLocalDataSource {
     suspend fun getBackups(): List<LBResult<LocalBackup>>
 
     /**
+     * Retrieve all local backups which does not have remote id
+     */
+    suspend fun getBackupsToUpload(): List<LBResult<LocalBackup>>
+
+    /**
      * Same as [getBackups] with flow
      *
      * @see getBackups
@@ -45,4 +50,9 @@ interface LocalBackupLocalDataSource {
      * Remove backup entry in database and remove the file from the internal backup dir
      */
     suspend fun delete(oldBackups: List<LocalBackup>)
+
+    /**
+     * Delete all local backup entries and remove files from the internal backup dir
+     */
+    suspend fun deleteAll()
 }

@@ -42,7 +42,7 @@ import studio.lunabee.onesafe.cryptography.AndroidEditCryptoRepository
 import studio.lunabee.onesafe.cryptography.AndroidImportExportCryptoRepository
 import studio.lunabee.onesafe.cryptography.AndroidMainCryptoRepository
 import studio.lunabee.onesafe.cryptography.AndroidMigrationCryptoRepository
-import studio.lunabee.onesafe.cryptography.ClearDatastoreEngine
+import studio.lunabee.onesafe.cryptography.PlainDatastoreEngine
 import studio.lunabee.onesafe.cryptography.CryptoConstants
 import studio.lunabee.onesafe.cryptography.DatastoreEngine
 import studio.lunabee.onesafe.cryptography.EncryptedDataStoreEngine
@@ -89,7 +89,7 @@ abstract class CryptoModule {
 
     @Binds
     @DatastoreEngineProvider(DataStoreType.Plain)
-    internal abstract fun bindClearDatastoreEngine(datastore: ClearDatastoreEngine): DatastoreEngine
+    internal abstract fun bindPlainDatastoreEngine(datastore: PlainDatastoreEngine): DatastoreEngine
 
     @Binds
     @DatastoreEngineProvider(DataStoreType.Encrypted)

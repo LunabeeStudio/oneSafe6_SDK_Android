@@ -21,14 +21,18 @@ package studio.lunabee.importexport.repository.repository
 
 import com.lunabee.lbcore.model.LBFlowResult
 import com.lunabee.lbcore.model.LBFlowResult.Companion.mapResult
+import com.lunabee.lbcore.model.LBFlowResult.Companion.unit
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.importexport.repository.datasource.CloudBackupEngine
 import studio.lunabee.importexport.repository.datasource.CloudBackupLocalDataSource
+import studio.lunabee.onesafe.combine
 import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
 import java.io.File
 import javax.inject.Inject
+
+// TODO <AutoBackup> cache refreshBackupList to avoid multiple call too close
 
 class GoogleDriveBackupRepository @Inject constructor(
     private val driveEngine: CloudBackupEngine,
@@ -42,11 +46,15 @@ class GoogleDriveBackupRepository @Inject constructor(
 
     override fun uploadBackup(
         backup: LocalBackup,
-        description: String,
     ): Flow<LBFlowResult<CloudBackup>> =
-        driveEngine.uploadBackup(backup, description).mapResult { cloudBackup ->
+        driveEngine.uploadBackup(backup).mapResult { cloudBackup ->
             localCloudBackupDatasource.saveCloudBackup(cloudBackup)
         }
+
+    override fun uploadBackup(backups: List<LocalBackup>): Flow<LBFlowResult<List<CloudBackup?>>> =
+        backups.map { backup ->
+            uploadBackup(backup)
+        }.combine()
 
     override fun downloadBackup(backup: CloudBackup, file: File): Flow<LBFlowResult<LocalBackup>> =
         driveEngine.downloadBackup(backup, file)
@@ -56,4 +64,9 @@ class GoogleDriveBackupRepository @Inject constructor(
             localCloudBackupDatasource.deleteCloudBackup(backup.id)
         }
     }
+
+    override fun deleteBackup(backups: List<CloudBackup>): Flow<LBFlowResult<Unit>> =
+        backups.map(::deleteBackup).combine().unit()
+
+    override suspend fun getBackups(): List<CloudBackup> = localCloudBackupDatasource.getCloudBackups()
 }

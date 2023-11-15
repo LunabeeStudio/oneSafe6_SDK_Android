@@ -27,4 +27,5 @@ interface FeatureFlags {
     fun oneSafeK(): Boolean
     fun bubbles(): Flow<Boolean>
     fun quickSignIn(): Boolean
+    fun cloudBackup(): Boolean
 }

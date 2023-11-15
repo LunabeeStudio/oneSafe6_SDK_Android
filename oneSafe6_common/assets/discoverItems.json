@@ -368,6 +368,7 @@
     "data":[
         {
             "title":"item0.discovery.title",
+            "isFavorite": true,
             "items":[
                 {
                     "title":"item01.instagram.title",

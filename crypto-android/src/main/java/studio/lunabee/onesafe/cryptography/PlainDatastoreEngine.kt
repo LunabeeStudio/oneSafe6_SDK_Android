@@ -29,7 +29,7 @@ import kotlinx.coroutines.withContext
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import javax.inject.Inject
 
-class ClearDatastoreEngine @Inject constructor(
+class PlainDatastoreEngine @Inject constructor(
     dataStore: DataStore<ProtoData>,
     @FileDispatcher private val fileDispatcher: CoroutineDispatcher,
 ) : DatastoreEngine(dataStore) {

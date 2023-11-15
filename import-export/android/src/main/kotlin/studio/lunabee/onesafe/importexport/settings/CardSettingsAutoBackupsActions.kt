@@ -42,5 +42,5 @@ internal class CardSettingsAccessLocalBackup(override val onClick: () -> Unit) :
 
 internal class CardSettingsAccessRemoteBackup(override val onClick: () -> Unit) : CardSettingsAction(
     icon = R.drawable.ic_cloud,
-    text = LbcTextSpec.Raw("TODO Drive"), // TODO drive loco
+    text = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_saveAccess_GoogleDriveSaves),
 )

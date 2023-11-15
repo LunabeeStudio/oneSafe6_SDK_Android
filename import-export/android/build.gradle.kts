@@ -37,6 +37,12 @@ android {
         buildConfigField("String", "BACKUPS_PROVIDER_AUTHORITY_SUFFIX", "\"$backupProviderAuthoritySuffix\"")
     }
 
+    flavorDimensions += "environment"
+    productFlavors {
+        create("dev")
+        create("prod")
+    }
+
     packaging {
         resources.pickFirsts.add("META-INF/LICENSE.md")
         resources.pickFirsts.add("META-INF/LICENSE-notice.md")
@@ -72,6 +78,7 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.accompanist.permissions)
+    implementation(libs.play.services.auth.base) // required to get GoogleAuthUtil class
 
     implementation(platform(libs.compose.beta.bom))
     implementation(libs.compose.material3)
@@ -88,6 +95,8 @@ dependencies {
     implementation(project(":import-export-core"))
     implementation(project(":import-export-proto"))
     implementation(project(":import-export-domain"))
+    implementation(project(":import-export-repository"))
+    implementation(project(":import-export-drive"))
     implementation(project(":domain"))
     implementation(project(":error"))
     implementation(project(":common"))

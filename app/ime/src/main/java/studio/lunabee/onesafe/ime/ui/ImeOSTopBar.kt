@@ -20,6 +20,9 @@
 package studio.lunabee.onesafe.ime.ui
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,6 +44,8 @@ import studio.lunabee.onesafe.extension.loremIpsum
 import studio.lunabee.onesafe.ime.model.ImeClient
 import studio.lunabee.onesafe.ime.ui.res.ImeDimens
 import studio.lunabee.onesafe.ime.ui.res.ImeShape
+import studio.lunabee.onesafe.ime.ui.tutorial.LockOskTutorialLayout
+import studio.lunabee.onesafe.ime.ui.tutorial.OpenOskTutorialLayout
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.OSPreviewOnSurfaceTheme
 
@@ -51,42 +56,62 @@ fun ImeOSTopBar(
     onLogoClick: () -> Unit,
     isDark: Boolean,
     onLockClick: () -> Unit,
+    displayOpenTutorial: Boolean,
+    displayLockTutorial: Boolean,
+    closeLockTutorial: () -> Unit,
+    closeOpenTutorial: () -> Unit,
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        val osStatus = if (isCryptoDataReady) {
-            OSKeyboardStatus.LoggedIn
-        } else {
-            OSKeyboardStatus.LoggedOut
+    Column {
+        AnimatedVisibility(
+            visible = displayLockTutorial,
+            enter = expandVertically(expandFrom = Alignment.Top),
+            exit = shrinkVertically(shrinkTowards = Alignment.Top),
+        ) {
+            LockOskTutorialLayout(closeLockTutorial)
         }
-        osStatus.Logo(
-            modifier = Modifier
-                .clip(ImeShape.Key)
-                .clickable { onLogoClick() }
-                .padding(vertical = ImeDimens.LogoVerticalPadding, horizontal = ImeDimens.LogoHorizontalPadding),
-            isDark = isDark,
-        )
-        imeClient?.let {
-            it.Logo(
-                Modifier.padding(end = OSDimens.SystemSpacing.Small),
-            )
-            it.Name()
+        AnimatedVisibility(
+            visible = displayOpenTutorial,
+            enter = expandVertically(expandFrom = Alignment.Top),
+            exit = shrinkVertically(shrinkTowards = Alignment.Top),
+        ) {
+            OpenOskTutorialLayout(closeOpenTutorial)
         }
-        Spacer(Modifier.weight(1f))
-        if (isCryptoDataReady) {
-            IconButton(onClick = onLockClick) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_unlock),
-                    contentDescription = stringResource(id = R.string.oneSafeK_imeTopBar_lock_contentDescription),
-                )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            val osStatus = if (isCryptoDataReady) {
+                OSKeyboardStatus.LoggedIn
+            } else {
+                OSKeyboardStatus.LoggedOut
             }
-        } else {
-            IconButton(onClick = onLockClick) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_lock),
-                    contentDescription = stringResource(id = R.string.oneSafeK_imeTopBar_unlock_contentDescription),
+            osStatus.Logo(
+                modifier = Modifier
+                    .clip(ImeShape.Key)
+                    .clickable { onLogoClick() }
+                    .padding(vertical = ImeDimens.LogoVerticalPadding, horizontal = ImeDimens.LogoHorizontalPadding),
+                isDark = isDark,
+            )
+            imeClient?.let {
+                it.Logo(
+                    Modifier.padding(end = OSDimens.SystemSpacing.Small),
                 )
+                it.Name()
+            }
+            Spacer(Modifier.weight(1f))
+            if (isCryptoDataReady) {
+                IconButton(onClick = onLockClick) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_unlock),
+                        contentDescription = stringResource(id = R.string.oneSafeK_imeTopBar_lock_contentDescription),
+                    )
+                }
+            } else {
+                IconButton(onClick = onLockClick) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_lock),
+                        contentDescription = stringResource(id = R.string.oneSafeK_imeTopBar_unlock_contentDescription),
+                    )
+                }
             }
         }
     }
@@ -115,6 +140,10 @@ private fun ImeOSTopBarPreview(isDark: Boolean) {
                     onLogoClick = {},
                     isDark = isDark,
                     onLockClick = {},
+                    displayOpenTutorial = false,
+                    displayLockTutorial = true,
+                    closeLockTutorial = {},
+                    closeOpenTutorial = {},
                 )
             }
         }

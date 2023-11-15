@@ -40,7 +40,7 @@ class FinishOnboardingUseCase @Inject constructor(
             editCryptoRepository.reset()
         } else {
             editCryptoRepository.setMainCryptographicData()
-            setLastPasswordVerificationUseCase(System.currentTimeMillis())
+            setLastPasswordVerificationUseCase()
         }
     }
 }

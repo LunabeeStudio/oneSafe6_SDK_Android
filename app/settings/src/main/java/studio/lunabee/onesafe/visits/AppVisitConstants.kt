@@ -28,4 +28,10 @@ object AppVisitConstants {
 
     const val hasDoneOnBoardingBubbles: String = "93d456b2-c8b5-4e35-a244-1b5a0752ed36"
     const val hasDoneOnBoardingBubblesDefault: Boolean = false
+
+    const val hasDoneTutorialOpenOsk: String = "db2675cd-522f-494a-a459-af355a8bc330"
+    const val hasDoneTutorialOpenOskDefault: Boolean = false
+
+    const val hasDoneTutorialLockOsk: String = "ef1d7a93-b1fd-45f3-aa55-e39e32ddf201"
+    const val hasDoneTutorialLockOskDefault: Boolean = false
 }

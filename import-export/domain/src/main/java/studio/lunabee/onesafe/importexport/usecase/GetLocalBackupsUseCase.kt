@@ -31,6 +31,8 @@ import javax.inject.Inject
 
 private val log = LBLogger.get<GetLocalBackupsUseCase>()
 
+// TODO <AutoBackup> test the usecase
+
 /**
  * Retrieve all internal backups ordered by date (latest first).
  */
@@ -39,8 +41,14 @@ class GetLocalBackupsUseCase @Inject constructor(
 ) {
     /**
      * Get all valid local backups and remove (+log) potential broken backups (backup file missing)
+     *
+     * @param excludeRemote Exclude backups that also exist on remote storage
      */
-    suspend operator fun invoke(): List<LocalBackup> = handleResult(backupRepository.getBackups())
+    suspend operator fun invoke(excludeRemote: Boolean = false): List<LocalBackup> = if (excludeRemote) {
+        handleResult(backupRepository.getBackupsExcludeRemote())
+    } else {
+        handleResult(backupRepository.getBackups())
+    }
 
     /**
      * Get a flow of all valid local backups and remove (+log) potential broken backups (backup file missing)
@@ -50,9 +58,7 @@ class GetLocalBackupsUseCase @Inject constructor(
     private suspend fun handleResult(backupResults: List<LBResult<LocalBackup>>): List<LocalBackup> {
         val failures = backupResults
             .filterIsInstance<LBResult.Failure<LocalBackup>>()
-            .onEach {
-                log.e(it.throwable)
-            }
+            .onEach { it.throwable?.let(log::e) }
         if (failures.isNotEmpty()) {
             val brokenBackups = failures.mapNotNull {
                 if (((it as? LBResult.Failure)?.throwable as? OSStorageError)?.code == OSStorageError.Code.MISSING_BACKUP_FILE) {

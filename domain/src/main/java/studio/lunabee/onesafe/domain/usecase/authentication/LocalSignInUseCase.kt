@@ -37,12 +37,12 @@ class LocalSignInUseCase @Inject constructor(
     private val setLastPasswordVerificationUseCase: SetLastPasswordVerificationUseCase,
 ) {
     suspend operator fun invoke(password: CharArray): LBResult<Unit> = OSError.runCatching(
-        log,
-        {
+        logger = log,
+        mapErr = {
             OSDomainError(OSDomainError.Code.SIGNIN_NOT_SIGNED_UP, cause = it)
         },
     ) {
         cryptoRepository.loadMasterKeyFromPassword(password)
-        setLastPasswordVerificationUseCase(System.currentTimeMillis())
+        setLastPasswordVerificationUseCase()
     }
 }

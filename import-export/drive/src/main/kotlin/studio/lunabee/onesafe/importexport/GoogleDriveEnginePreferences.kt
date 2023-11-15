@@ -21,46 +21,30 @@ package studio.lunabee.onesafe.importexport
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
+import studio.lunabee.onesafe.setOrRemove
 import javax.inject.Inject
 
 class GoogleDriveEnginePreferences @Inject constructor(
     private val dataStore: DataStore<Preferences>,
 ) {
-    private val selectedAccountKey = stringPreferencesKey(ImportExportDriveConstant.SelectedAccountKey)
+    private val selectedAccountKey = stringPreferencesKey(SelectedAccountKey)
+    val selectedAccount: Flow<String?> = dataStore.data.map { it[selectedAccountKey] }
+    suspend fun setSelectedAccount(account: String?): Unit = dataStore.setOrRemove(selectedAccountKey, account)
 
-    var selectedAccount: String?
-        get() = runBlocking {
-            dataStore.data.map { preferences -> preferences[selectedAccountKey] }.firstOrNull()
-        }
-        set(value) {
-            runBlocking {
-                dataStore.edit { settings ->
-                    if (value != null) {
-                        settings[selectedAccountKey] = value
-                    } else {
-                        settings.remove(selectedAccountKey)
-                    }
-                }
-            }
-        }
+    private val folderIdKey = stringPreferencesKey(FolderIdKey)
+    val folderId: Flow<String?> = dataStore.data.map { it[folderIdKey] }
+    suspend fun setFolderId(id: String?): Unit = dataStore.setOrRemove(folderIdKey, id)
 
-    private val isDriveApiAuthorizedKey = booleanPreferencesKey(ImportExportDriveConstant.IsDriveApiAuthorizedKey)
+    private val folderUrlKey = stringPreferencesKey(FolderUrlKey)
+    val folderUrl: Flow<String?> = dataStore.data.map { it[folderUrlKey] }
+    suspend fun setFolderUrl(url: String?): Unit = dataStore.setOrRemove(folderUrlKey, url)
 
-    var isDriveApiAuthorized: Boolean
-        get() = runBlocking {
-            dataStore.data.map { preferences -> preferences[isDriveApiAuthorizedKey] }.firstOrNull() ?: false
-        }
-        set(value) {
-            runBlocking {
-                dataStore.edit { settings ->
-                    settings[isDriveApiAuthorizedKey] = value
-                }
-            }
-        }
+    companion object {
+        private const val SelectedAccountKey: String = "c76834a4-44ed-4985-ab5e-262cd1993a88"
+        private const val FolderIdKey: String = "fe7c959a-7f84-409e-a92e-d7d2406698d7"
+        private const val FolderUrlKey: String = "a793df5d-56fc-438c-bf00-275499b30bf9"
+    }
 }

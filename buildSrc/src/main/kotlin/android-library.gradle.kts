@@ -54,6 +54,8 @@ dependencies {
 
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.kotlin.test)
+    testImplementation(libs.logback.classic)
+    testImplementation(project(":common-test"))
 
     androidTestImplementation(libs.kotlin.test)
     androidTestImplementation(libs.junit4)

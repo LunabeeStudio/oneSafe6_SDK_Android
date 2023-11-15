@@ -52,6 +52,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -282,7 +283,11 @@ class OSFlorisImeService : FlorisImeService() {
 
     @Composable
     override fun ThemeImeView() {
+        val coroutineScope = rememberCoroutineScope()
         val imeClient by imeClientFlow.collectAsStateWithLifecycle()
+        val hasDoneOpenTutorial by osAppVisit.hasDoneTutorialOpenOskFlow.collectAsStateWithLifecycle(initialValue = false)
+        val hasDoneLockTutorial by osAppVisit.hasDoneTutorialLockOskFlow.collectAsStateWithLifecycle(initialValue = false)
+
         if (imeClient?.packageName == packageName) {
             // Disable oneSafe K when using oneSafe
             super.ThemeImeView()
@@ -318,14 +323,26 @@ class OSFlorisImeService : FlorisImeService() {
                 ImeOSTopBar(
                     imeClient = imeClient,
                     isCryptoDataReady = isCryptoDataReady,
-                    onLogoClick = ::showOneSafeUi,
+                    onLogoClick = {
+                        coroutineScope.launch { osAppVisit.storeHasDoneTutorialOpenOsk(true) }
+                        showOneSafeUi()
+                    },
                     isDark = themeManager.activeThemeInfo.value?.config?.isNightTheme ?: false,
                     onLockClick = {
                         if (isCryptoDataReady) {
+                            coroutineScope.launch { osAppVisit.storeHasDoneTutorialLockOsk(true) }
                             lockUseCase()
                         } else {
                             showOneSafeUi()
                         }
+                    },
+                    displayOpenTutorial = !hasDoneOpenTutorial && !isOneSafeUiVisible,
+                    displayLockTutorial = !hasDoneLockTutorial && isCryptoDataReady,
+                    closeLockTutorial = {
+                        coroutineScope.launch { osAppVisit.storeHasDoneTutorialLockOsk(true) }
+                    },
+                    closeOpenTutorial = {
+                        coroutineScope.launch { osAppVisit.storeHasDoneTutorialOpenOsk(true) }
                     },
                 )
             }
@@ -378,14 +395,16 @@ class OSFlorisImeService : FlorisImeService() {
             // Disable oneSafe K when using oneSafe
             super.AboveImeView(ImeUi)
         } else {
-            Column {
-                OneSafeKView(isOneSafeUiVisible, isKeyboardVisible)
-                AnimatedVisibility(
-                    visible = isKeyboardVisible,
-                    enter = expandVertically(expandFrom = Alignment.Top),
-                    exit = shrinkVertically(shrinkTowards = Alignment.Top),
-                ) {
-                    ImeUi()
+            ImeOSTheme {
+                Column {
+                    OneSafeKView(isOneSafeUiVisible, isKeyboardVisible)
+                    AnimatedVisibility(
+                        visible = isKeyboardVisible,
+                        enter = expandVertically(expandFrom = Alignment.Top),
+                        exit = shrinkVertically(shrinkTowards = Alignment.Top),
+                    ) {
+                        ImeUi()
+                    }
                 }
             }
         }
@@ -480,36 +499,34 @@ class OSFlorisImeService : FlorisImeService() {
     fun OneSafeKUi(
         modifier: Modifier,
     ) {
-        ImeOSTheme {
-            Surface(
-                modifier = modifier,
-                color = MaterialTheme.colorScheme.background,
-            ) {
-                ImeNavGraph(
-                    navController = navController,
-                    imeLoginViewModelFactory = imeLoginViewModelFactory,
-                    selectContactViewModelFactory = selectContactViewModelFactory,
-                    writeMessageViewModelFactory = writeMessageViewModelFactory,
-                    onLoginSuccess = {
-                        // TODO = Fix navigation glitch on keyboard close
-                        //  isKeyboardVisibleFlow.value = false
-                    },
-                    dismissUi = {
+        Surface(
+            modifier = modifier,
+            color = MaterialTheme.colorScheme.background,
+        ) {
+            ImeNavGraph(
+                navController = navController,
+                imeLoginViewModelFactory = imeLoginViewModelFactory,
+                selectContactViewModelFactory = selectContactViewModelFactory,
+                writeMessageViewModelFactory = writeMessageViewModelFactory,
+                onLoginSuccess = {
+                    // TODO = Fix navigation glitch on keyboard close
+                    //  isKeyboardVisibleFlow.value = false
+                },
+                dismissUi = {
+                    isOneSafeUiVisibleFlow.value = false
+                    isKeyboardVisibleFlow.value = true
+                },
+                sendMessage = { encryptedMessage ->
+                    currentInputConnection.also {
                         isOneSafeUiVisibleFlow.value = false
                         isKeyboardVisibleFlow.value = true
-                    },
-                    sendMessage = { encryptedMessage ->
-                        currentInputConnection.also {
-                            isOneSafeUiVisibleFlow.value = false
-                            isKeyboardVisibleFlow.value = true
-                            it.commitText(encryptedMessage, 0)
-                            navController.navigate(SelectContactDestination.route) // Go back to the contact selection
-                        }
-                    },
-                    hasDoneOnBoardingBubbles = osAppVisit.hasDoneOnBoardingBubbles,
-                    hideKeyboard = { isKeyboardVisibleFlow.value = false },
-                )
-            }
+                        it.commitText(encryptedMessage, 0)
+                        navController.navigate(SelectContactDestination.route) // Go back to the contact selection
+                    }
+                },
+                hasDoneOnBoardingBubbles = osAppVisit.hasDoneOnBoardingBubbles,
+                hideKeyboard = { isKeyboardVisibleFlow.value = false },
+            )
         }
     }
 

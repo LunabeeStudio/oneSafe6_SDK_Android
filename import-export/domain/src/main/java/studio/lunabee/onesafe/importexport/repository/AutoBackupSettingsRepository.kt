@@ -26,7 +26,11 @@ interface AutoBackupSettingsRepository {
     val autoBackupEnabled: Flow<Boolean>
     val autoBackupFrequency: Duration
     val autoBackupFrequencyFlow: Flow<Duration>
+    val cloudBackupEnabled: Flow<Boolean>
+    val keepLocalBackupEnabled: Flow<Boolean>
 
     fun toggleAutoBackupSettings(): Boolean
     fun setAutoBackupFrequency(delay: Duration)
+    suspend fun setCloudBackupSettings(enabled: Boolean)
+    suspend fun toggleKeepLocalBackupSettings(): Boolean
 }

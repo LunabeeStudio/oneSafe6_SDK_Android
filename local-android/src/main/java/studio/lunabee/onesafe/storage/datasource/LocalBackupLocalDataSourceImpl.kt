@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.Flow
 import studio.lunabee.importexport.repository.datasource.LocalBackupLocalDataSource
 import studio.lunabee.onesafe.domain.qualifier.InternalDir
 import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.error.OSImportExportError
 import studio.lunabee.onesafe.error.OSStorageError
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.storage.MainDatabase
@@ -63,6 +64,9 @@ class LocalBackupLocalDataSourceImpl @Inject constructor(
     override suspend fun getBackups(): List<LBResult<LocalBackup>> =
         backupDao.getAllLocal().map(::transformBackup)
 
+    override suspend fun getBackupsToUpload(): List<LBResult<LocalBackup>> =
+        backupDao.getAllLocalWithoutRemote().map(::transformBackup)
+
     override fun getBackupsFlow(): Flow<List<LBResult<LocalBackup>>> =
         backupDao.getAllLocalAsFlow().mapValues(::transformBackup)
 
@@ -78,8 +82,24 @@ class LocalBackupLocalDataSourceImpl @Inject constructor(
     override suspend fun delete(oldBackups: List<LocalBackup>) {
         transactionProvider.runAsTransaction {
             oldBackups.forEach { localBackup ->
-                localBackup.file.delete()
-                backupDao.deleteLocalBackup(localBackup.id)
+                if (localBackup.file.delete()) {
+                    backupDao.deleteLocalBackup(localBackup.id)
+                } else if (localBackup.file.exists()) {
+                    throw OSImportExportError(OSImportExportError.Code.BACKUP_FILE_DELETE_FAILED)
+                }
+            }
+        }
+    }
+
+    override suspend fun deleteAll() {
+        transactionProvider.runAsTransaction {
+            val backups = backupDao.getAllLocal()
+            backups.forEach { localBackup ->
+                if (localBackup.localFile.delete()) {
+                    backupDao.deleteLocalBackup(localBackup.id)
+                } else if (localBackup.localFile.exists()) {
+                    throw OSImportExportError(OSImportExportError.Code.BACKUP_FILE_DELETE_FAILED)
+                }
             }
         }
     }

@@ -260,8 +260,10 @@ class SafeItemLocalDataSourceImpl @Inject constructor(
         }.flow
     }
 
-    override fun getSafeItemsCount(): Flow<Int> = safeItemDao.getSafeItemsCount()
+    override fun getSafeItemsCountFlow(): Flow<Int> = safeItemDao.getSafeItemsCountFlow()
         .distinctUntilChanged()
+
+    override suspend fun getSafeItemsCount(): Int = safeItemDao.getSafeItemsCount()
 
     override fun getSafeItemsWithIdentifierCount(): Flow<Int> = safeItemDao.getSafeItemsWithIdentifierCount()
         .distinctUntilChanged()

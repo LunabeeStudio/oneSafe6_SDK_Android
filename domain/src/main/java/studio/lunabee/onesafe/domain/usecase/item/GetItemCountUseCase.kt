@@ -27,5 +27,5 @@ class GetItemCountUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
 ) {
 
-    operator fun invoke(): Flow<Int> = safeItemRepository.getSafeItemsCount()
+    operator fun invoke(): Flow<Int> = safeItemRepository.getSafeItemsCountFlow()
 }

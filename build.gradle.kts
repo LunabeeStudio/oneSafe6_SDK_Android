@@ -118,6 +118,11 @@ subprojects {
 
         val isAndroidLibrary = extensions.findByType<com.android.build.gradle.LibraryExtension>() != null
         val isApp = extensions.findByType<com.android.build.gradle.AppExtension>() != null
+        val hasEnvironmentFlavor = isApp ||
+            project.name == "import-export-android" ||
+            project.name == "ime" ||
+            project.name == "migration" ||
+            project.name == "login"
         val isCryptoModule = project.name == "crypto-android"
 
         var ancestor = parent
@@ -128,7 +133,7 @@ subprojects {
         }
 
         val testTaskNames: List<String> = when {
-            isApp -> listOf("$parentName$name:testProdReleaseUnitTest")
+            hasEnvironmentFlavor -> listOf("$parentName$name:testProdReleaseUnitTest")
             isCryptoModule -> listOf(
                 "$parentName$name:testJceReleaseUnitTest",
                 "$parentName$name:testTinkReleaseUnitTest",
@@ -138,7 +143,7 @@ subprojects {
         }
 
         val androidTestTaskNames: List<String>? = when {
-            isApp -> listOf("$parentName$name:connectedProdDebugAndroidTest")
+            hasEnvironmentFlavor -> listOf("$parentName$name:connectedProdDebugAndroidTest")
             isCryptoModule -> listOf(
                 "$parentName$name:connectedJceDebugAndroidTest",
                 "$parentName$name:connectedTinkDebugAndroidTest",

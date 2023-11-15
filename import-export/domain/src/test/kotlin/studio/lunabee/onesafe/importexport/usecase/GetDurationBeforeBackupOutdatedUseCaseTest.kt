@@ -25,26 +25,35 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
+import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
+import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.assertEquals
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 
-class IsLatestBackupOutdatedUseCaseTest {
+class GetDurationBeforeBackupOutdatedUseCaseTest {
     private val settingsRepository: AutoBackupSettingsRepository = mockk {
         every { autoBackupFrequency } returns 1.days
     }
     private val getLocalBackupsUseCase: GetLocalBackupsUseCase = mockk()
+    private val getAutoBackupModeUseCase: GetAutoBackupModeUseCase = mockk {
+        coEvery { this@mockk.invoke() } returns AutoBackupMode.LOCAL_ONLY // TODO <AutoBackup> update test with other cases
+    }
+    private val cloudBackupRepository: CloudBackupRepository = mockk()
     private val nowClock = Clock.fixed(Instant.EPOCH, ZoneOffset.UTC)
-    private val isLatestBackupOutdatedUseCase: IsLatestBackupOutdatedUseCase = IsLatestBackupOutdatedUseCase(
-        getBackupsUseCase = getLocalBackupsUseCase,
+    private val getDurationBeforeBackupOutdatedUseCase: GetDurationBeforeBackupOutdatedUseCase = GetDurationBeforeBackupOutdatedUseCase(
+        getLocalBackupsUseCase = getLocalBackupsUseCase,
         settingsRepository = settingsRepository,
         clock = nowClock,
+        getAutoBackupModeUseCase = getAutoBackupModeUseCase,
+        cloudBackupRepository = cloudBackupRepository,
     )
 
     @Test
@@ -55,8 +64,8 @@ class IsLatestBackupOutdatedUseCaseTest {
                 file = mockk(),
             ),
         )
-        val actual = isLatestBackupOutdatedUseCase()
-        assertTrue(actual)
+        val actual = getDurationBeforeBackupOutdatedUseCase()
+        assertEquals((1 - 6).days, actual)
     }
 
     @Test
@@ -67,14 +76,14 @@ class IsLatestBackupOutdatedUseCaseTest {
                 file = mockk(),
             ),
         )
-        val actual = isLatestBackupOutdatedUseCase()
-        assertFalse(actual)
+        val actual = getDurationBeforeBackupOutdatedUseCase()
+        assertEquals((24 - 6).hours, actual)
     }
 
     @Test
     fun no_backup_test(): TestResult = runTest {
         coEvery { getLocalBackupsUseCase.invoke() } returns emptyList()
-        val actual = isLatestBackupOutdatedUseCase()
-        assertTrue(actual)
+        val actual = getDurationBeforeBackupOutdatedUseCase()
+        assertEquals(Duration.ZERO, actual)
     }
 }

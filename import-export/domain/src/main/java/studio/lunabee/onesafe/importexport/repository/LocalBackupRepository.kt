@@ -26,6 +26,8 @@ import studio.lunabee.onesafe.importexport.model.LocalBackup
 interface LocalBackupRepository {
     suspend fun addBackup(localBackup: LocalBackup)
     suspend fun getBackups(): List<LBResult<LocalBackup>>
+    suspend fun getBackupsExcludeRemote(): List<LBResult<LocalBackup>>
     fun getBackupsFlow(): Flow<List<LBResult<LocalBackup>>>
     suspend fun delete(backups: List<LocalBackup>)
+    suspend fun deleteAll()
 }

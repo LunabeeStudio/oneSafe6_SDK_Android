@@ -21,26 +21,27 @@ package studio.lunabee.onesafe.domain.usecase.verifypassword
 
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
-import java.time.Instant
+import java.time.Clock
 import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
 
 class ShouldVerifyPasswordUseCase @Inject constructor(
     private val securityOptionRepository: SecurityOptionRepository,
+    private val clock: Clock,
 ) {
     @Suppress("ReturnCount")
     operator fun invoke(): Boolean {
-        securityOptionRepository.lastPasswordVerificationTimeStamp?.let { lastPasswordVerification ->
+        securityOptionRepository.lastPasswordVerificationInstant?.let { lastPasswordVerification ->
             val verificationInterval = securityOptionRepository.verifyPasswordInterval
-            var shouldVerifyDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastPasswordVerification), ZoneId.systemDefault())
+            var shouldVerifyDateTime = LocalDateTime.ofInstant(lastPasswordVerification, ZoneId.systemDefault())
             shouldVerifyDateTime = when (verificationInterval) {
                 VerifyPasswordInterval.EVERY_MONTH -> shouldVerifyDateTime.plusMonths(1)
                 VerifyPasswordInterval.EVERY_TWO_MONTHS -> shouldVerifyDateTime.plusMonths(2)
                 VerifyPasswordInterval.EVERY_SIX_MONTHS -> shouldVerifyDateTime.plusMonths(6)
                 VerifyPasswordInterval.NEVER -> return false
             }
-            return shouldVerifyDateTime.isBefore(LocalDateTime.now())
+            return shouldVerifyDateTime.isBefore(LocalDateTime.now(clock))
         }
         return false
     }

@@ -74,4 +74,26 @@ class OsAppVisit @Inject constructor(
             preferences[hasDoneOnBoardingBubblesKey] = true
         }
     }
+
+    private val hasDoneTutorialOpenOskKey = booleanPreferencesKey(AppVisitConstants.hasDoneTutorialOpenOsk)
+    val hasDoneTutorialOpenOskFlow: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[hasDoneTutorialOpenOskKey] ?: AppVisitConstants.hasDoneTutorialOpenOskDefault
+    }
+
+    suspend fun storeHasDoneTutorialOpenOsk(value: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[hasDoneTutorialOpenOskKey] = value
+        }
+    }
+
+    private val hasDoneTutorialLockOskKey = booleanPreferencesKey(AppVisitConstants.hasDoneTutorialLockOsk)
+    val hasDoneTutorialLockOskFlow: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[hasDoneTutorialLockOskKey] ?: AppVisitConstants.hasDoneTutorialLockOskDefault
+    }
+
+    suspend fun storeHasDoneTutorialLockOsk(value: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[hasDoneTutorialLockOskKey] = value
+        }
+    }
 }

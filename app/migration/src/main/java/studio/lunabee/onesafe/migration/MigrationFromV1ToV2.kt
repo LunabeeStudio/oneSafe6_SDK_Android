@@ -39,7 +39,7 @@ class MigrationFromV1ToV2 @Inject constructor(
             OSMigrationError(OSMigrationError.Code.SET_PASSWORD_VERIFICATION_FAIL, cause = it)
         },
     ) {
-        setLastPasswordVerificationUseCase(System.currentTimeMillis())
+        setLastPasswordVerificationUseCase()
         setVerifyPasswordIntervalUseCase(VerifyPasswordInterval.EVERY_TWO_MONTHS) // Default value.
     }
 }

@@ -43,7 +43,7 @@ class ChangePasswordUseCase @Inject constructor(
             editCryptoRepository.reEncryptItemKeys(keys)
             safeItemKeyRepository.update(keys)
             editCryptoRepository.overrideMainCryptographicData()
-            setLastPasswordVerificationUseCase(System.currentTimeMillis())
+            setLastPasswordVerificationUseCase()
         }
     }
 }

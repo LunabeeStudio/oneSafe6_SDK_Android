@@ -348,7 +348,10 @@ interface SafeItemDao {
     fun getAllSafeItems(limit: Int): Flow<List<RoomSafeItem>>
 
     @Query("SELECT COUNT(*) FROM SafeItem")
-    fun getSafeItemsCount(): Flow<Int>
+    fun getSafeItemsCountFlow(): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM SafeItem")
+    suspend fun getSafeItemsCount(): Int
 
     @Query(
         """

@@ -37,11 +37,19 @@ class LocalBackupRepositoryImpl @Inject constructor(
         return dataSource.getBackups()
     }
 
+    override suspend fun getBackupsExcludeRemote(): List<LBResult<LocalBackup>> {
+        return dataSource.getBackupsToUpload()
+    }
+
     override fun getBackupsFlow(): Flow<List<LBResult<LocalBackup>>> {
         return dataSource.getBackupsFlow()
     }
 
     override suspend fun delete(backups: List<LocalBackup>) {
         dataSource.delete(backups)
+    }
+
+    override suspend fun deleteAll() {
+        dataSource.deleteAll()
     }
 }

@@ -25,7 +25,7 @@ import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
 import javax.inject.Inject
 
 /**
- * Delete oldest backups to keep only the [ImportExportConstant.KeepBackupsNumber] backups
+ * Delete oldest local backups to keep only the [ImportExportConstant.KeepBackupsNumber] backups
  */
 class DeleteOldLocalBackupsUseCase @Inject constructor(
     private val backupRepository: LocalBackupRepository,

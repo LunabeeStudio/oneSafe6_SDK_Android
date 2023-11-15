@@ -26,8 +26,11 @@ import studio.lunabee.onesafe.importexport.model.LocalBackup
 import java.io.File
 
 interface CloudBackupRepository {
-    fun uploadBackup(backup: LocalBackup, description: String): Flow<LBFlowResult<CloudBackup>>
+    fun uploadBackup(backup: LocalBackup): Flow<LBFlowResult<CloudBackup>>
+    fun uploadBackup(backups: List<LocalBackup>): Flow<LBFlowResult<List<CloudBackup?>>>
     fun refreshBackupList(): Flow<LBFlowResult<List<CloudBackup>>>
     fun downloadBackup(backup: CloudBackup, file: File): Flow<LBFlowResult<LocalBackup>>
     fun deleteBackup(backup: CloudBackup): Flow<LBFlowResult<Unit>>
+    fun deleteBackup(backups: List<CloudBackup>): Flow<LBFlowResult<Unit>>
+    suspend fun getBackups(): List<CloudBackup>
 }

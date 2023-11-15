@@ -36,27 +36,44 @@ import studio.lunabee.onesafe.utils.OsDefaultPreview
 
 @Composable
 internal fun AutoBackupSettingsMainCard(
-    toggleAutoBackup: () -> Unit,
     uiState: AutoBackupSettingsMainCardUiState,
+    featureFlagCloudBackup: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Column {
         SettingsCard(
             title = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_settings_title),
             modifier = modifier,
-            actions = listOfNotNull(
-                SwitchSettingAction(
+            actions = buildList {
+                this += SwitchSettingAction(
                     label = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_allowAutoBackup_title),
-                    onValueChange = { toggleAutoBackup() },
+                    onValueChange = { uiState.toggleAutoBackup() },
                     isChecked = uiState is AutoBackupSettingsMainCardUiState.Enabled,
-                ),
+                )
                 (uiState as? AutoBackupSettingsMainCardUiState.Enabled)?.let { uiState ->
-                    CardSettingsSelectFrequency(
+                    if (featureFlagCloudBackup) {
+                        uiState.toggleCloudBackup?.let { toggleCloudBackup ->
+                            this += SwitchSettingAction(
+                                label = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_allowAutoBackupOnGoogleDrive_title),
+                                onValueChange = { toggleCloudBackup() },
+                                isChecked = uiState.isCloudBackupEnabled,
+                            )
+                        }
+                        if (uiState.isCloudBackupEnabled) {
+                            this += SwitchSettingAction(
+                                label = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_keepAutoBackupOnLocal_title),
+                                description = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_keepAutoBackupOnLocal_subtitle),
+                                onValueChange = { uiState.toggleKeepLocalBackup() },
+                                isChecked = uiState.isKeepLocalBackupEnabled,
+                            )
+                        }
+                    }
+                    this += CardSettingsSelectFrequency(
                         frequency = uiState.autoBackupFrequency,
                         onClick = uiState.selectAutoBackupFrequency,
                     )
-                },
-            ),
+                }
+            },
         )
         OSSmallSpacer()
         OSText(
@@ -72,11 +89,29 @@ internal fun AutoBackupSettingsMainCard(
 fun AutoBackupSettingsMainCardPreview() {
     OSTheme {
         AutoBackupSettingsMainCard(
-            toggleAutoBackup = {},
             uiState = AutoBackupSettingsMainCardUiState.Enabled(
                 selectAutoBackupFrequency = { },
                 autoBackupFrequency = AutoBackupFrequency.WEEKLY,
+                isCloudBackupEnabled = true,
+                isKeepLocalBackupEnabled = false,
+                toggleAutoBackup = {},
+                toggleCloudBackup = {},
+                toggleKeepLocalBackup = {},
             ),
+            featureFlagCloudBackup = true,
+        )
+    }
+}
+
+@OsDefaultPreview
+@Composable
+fun AutoBackupSettingsMainCardDisabledPreview() {
+    OSTheme {
+        AutoBackupSettingsMainCard(
+            uiState = AutoBackupSettingsMainCardUiState.Disabled(
+                toggleAutoBackup = {},
+            ),
+            featureFlagCloudBackup = true,
         )
     }
 }
