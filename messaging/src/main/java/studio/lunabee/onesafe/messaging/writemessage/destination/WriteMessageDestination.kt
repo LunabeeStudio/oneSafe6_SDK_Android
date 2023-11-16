@@ -157,6 +157,8 @@ private fun hasExternalActivityVisible(activityManager: ActivityManager): Boolea
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2 -> taskInfo.isVisible
         // isVisible seems to exist but cannot be access (tested on API 31)
         taskInfo.toString().contains("isVisible=") -> taskInfo.toString().contains("isVisible=true")
+        // Only check if we have an external activity opened (= not the MainActivity)
+        taskInfo.topActivity?.className != "studio.lunabee.onesafe.MainActivity" -> true
         else -> false
     }
 }
