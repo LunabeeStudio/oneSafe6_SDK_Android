@@ -36,7 +36,6 @@ import com.lunabee.lbcore.model.LBFlowResult.Companion.unit
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
@@ -55,7 +54,7 @@ import studio.lunabee.onesafe.importexport.model.CloudInfo
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.utils.CloudBackupDescriptionProvider
 import timber.log.Timber
-import java.io.File
+import java.io.InputStream
 import java.net.URI
 import java.time.Instant
 import javax.inject.Inject
@@ -186,16 +185,12 @@ class GoogleDriveEngine @Inject constructor(
             )
         }.flowOn(dispatcher)
 
-    override fun downloadBackup(cloudBackup: CloudBackup, target: File): Flow<LBFlowResult<LocalBackup>> = flow<LBFlowResult<LocalBackup>> {
-        target.outputStream().use { output ->
-            driveClient.files().get(cloudBackup.remoteId).executeMediaAndDownloadTo(output)
-        }
-        emit(LBFlowResult.Success(LocalBackup(cloudBackup.date, target)))
-    }.onStart {
-        emit(LBFlowResult.Loading())
-    }.catch {
-        emit(LBFlowResult.Failure(throwable = it))
-    }.flowOn(dispatcher)
+    // TODO <AutoBackup> check and catch exception thrown when remoteId does not exist
+    override fun getInputStream(remoteId: String): Flow<LBFlowResult<InputStream>> = flow<LBFlowResult<InputStream>> {
+        emit(LBFlowResult.Success(driveClient.files().get(remoteId).executeMediaAsInputStream()))
+    }
+        .onStart { emit(LBFlowResult.Loading()) }
+        .flowOn(dispatcher)
 
     override fun deleteBackup(cloudBackup: CloudBackup): Flow<LBFlowResult<Unit>> =
         driveClient.files().delete(cloudBackup.remoteId).executeAsFlow().unit().flowOn(dispatcher)

@@ -19,7 +19,6 @@
 
 package studio.lunabee.onesafe.importexport.settings
 
-import android.net.Uri
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import studio.lunabee.onesafe.commonui.OSDestination
@@ -30,7 +29,7 @@ internal object AutoBackupSettingsScreenDestination : OSDestination {
 
 internal fun NavGraphBuilder.autoBackupSettingsScreen(
     navigateBack: () -> Unit,
-    navigateToRestoreBackup: (Uri) -> Unit,
+    navigateToRestoreBackup: (String) -> Unit,
 ) {
     composable(
         route = AutoBackupSettingsScreenDestination.route,

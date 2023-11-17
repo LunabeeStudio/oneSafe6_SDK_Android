@@ -21,13 +21,13 @@ package studio.lunabee.onesafe.importexport.settings
 
 import android.content.Context
 import android.content.Intent
-import studio.lunabee.onesafe.importexport.model.LocalBackup
+import studio.lunabee.onesafe.importexport.model.Backup
 import java.net.URI
 
 data class AutoBackupSettingsUiState(
     val isBackupEnabled: Boolean,
     val autoBackupFrequency: AutoBackupFrequency,
-    val backups: List<LocalBackup>,
+    val latestBackup: Backup?,
     val isCloudBackupEnabled: Boolean,
     val isKeepLocalBackupEnabled: Boolean,
     val toggleKeepLocalBackup: (context: Context) -> Unit,
@@ -38,7 +38,7 @@ data class AutoBackupSettingsUiState(
         fun disabled(): AutoBackupSettingsUiState = AutoBackupSettingsUiState(
             isBackupEnabled = false,
             autoBackupFrequency = AutoBackupFrequency.DAILY,
-            backups = emptyList(),
+            latestBackup = null,
             isCloudBackupEnabled = false,
             isKeepLocalBackupEnabled = false,
             toggleKeepLocalBackup = {},

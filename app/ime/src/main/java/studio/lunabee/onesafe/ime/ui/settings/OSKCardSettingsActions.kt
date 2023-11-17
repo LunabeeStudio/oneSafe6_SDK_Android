@@ -23,16 +23,19 @@ import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.settings.AutoLockBackgroundDelay
 import studio.lunabee.onesafe.commonui.settings.AutoLockInactivityDelay
-import studio.lunabee.onesafe.commonui.settings.CardSettingsAction
+import studio.lunabee.onesafe.commonui.settings.CardSettingsNavAction
 
-class CardSettingsActionAutoLockOSKInactivityAction(delay: AutoLockInactivityDelay, override val onClick: () -> Unit) : CardSettingsAction(
+class CardSettingsActionAutoLockOSKInactivityAction(
+    delay: AutoLockInactivityDelay,
+    override val onClick: () -> Unit,
+) : CardSettingsNavAction(
     icon = null,
     text = LbcTextSpec.StringResource(R.string.oneSafeK_extension_configuration_autolock_inactivity),
     onClickLabel = LbcTextSpec.StringResource(R.string.common_modify),
     secondaryText = delay.text,
 )
 
-class CardSettingsActionAutoLockOSKHiddenAction(delay: AutoLockBackgroundDelay, override val onClick: () -> Unit) : CardSettingsAction(
+class CardSettingsActionAutoLockOSKHiddenAction(delay: AutoLockBackgroundDelay, override val onClick: () -> Unit) : CardSettingsNavAction(
     icon = null,
     text = LbcTextSpec.StringResource(R.string.oneSafeK_extension_configuration_autolock_hidden),
     onClickLabel = LbcTextSpec.StringResource(R.string.common_modify),

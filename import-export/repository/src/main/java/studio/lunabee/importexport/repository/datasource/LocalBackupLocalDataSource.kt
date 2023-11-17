@@ -22,6 +22,7 @@ package studio.lunabee.importexport.repository.datasource
 import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.importexport.model.LocalBackup
+import java.io.File
 
 interface LocalBackupLocalDataSource {
     /**
@@ -55,4 +56,11 @@ interface LocalBackupLocalDataSource {
      * Delete all local backup entries and remove files from the internal backup dir
      */
     suspend fun deleteAll()
+
+    /**
+     * Retrieve local backup file by backup id and check existence
+     *
+     * @return The backup file or null if the backup or the file does not exist
+     */
+    suspend fun getFile(backupId: String): File?
 }

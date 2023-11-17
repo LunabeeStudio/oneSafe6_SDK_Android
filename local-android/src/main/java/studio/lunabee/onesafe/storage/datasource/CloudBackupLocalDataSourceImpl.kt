@@ -19,6 +19,9 @@
 
 package studio.lunabee.onesafe.storage.datasource
 
+import com.lunabee.lbextensions.mapValues
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import studio.lunabee.importexport.repository.datasource.CloudBackupLocalDataSource
 import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.storage.dao.BackupDao
@@ -39,7 +42,19 @@ class CloudBackupLocalDataSourceImpl @Inject constructor(
     override suspend fun getCloudBackups(): List<CloudBackup> =
         dao.getAllCloud().map(RoomCloudBackup::toBackup)
 
+    override fun getCloudBackupsFlow(): Flow<List<CloudBackup>> =
+        dao.getCloudBackupsFlow().mapValues(RoomCloudBackup::toBackup)
+
     override suspend fun deleteCloudBackup(id: String) {
         dao.deleteCloudBackup(id)
     }
+
+    override suspend fun getRemoteId(backupId: String): String? =
+        dao.getRemoteId(backupId)
+
+    override suspend fun getLatestBackup(): CloudBackup? =
+        dao.getLatestCloudBackup()?.let(RoomCloudBackup::toBackup)
+
+    override fun getLatestBackupFlow(): Flow<CloudBackup?> =
+        dao.getLatestCloudBackupFlow().map { it?.toBackup() }
 }

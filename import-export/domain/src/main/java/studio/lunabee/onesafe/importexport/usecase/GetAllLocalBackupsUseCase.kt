@@ -29,14 +29,14 @@ import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
 import javax.inject.Inject
 
-private val log = LBLogger.get<GetLocalBackupsUseCase>()
+private val log = LBLogger.get<GetAllLocalBackupsUseCase>()
 
 // TODO <AutoBackup> test the usecase
 
 /**
  * Retrieve all internal backups ordered by date (latest first).
  */
-class GetLocalBackupsUseCase @Inject constructor(
+class GetAllLocalBackupsUseCase @Inject constructor(
     private val backupRepository: LocalBackupRepository,
 ) {
     /**

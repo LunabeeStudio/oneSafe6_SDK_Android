@@ -24,5 +24,11 @@ import java.time.Instant
 sealed class Backup : Comparable<Backup> {
     abstract val date: Instant
     abstract val id: String
-    override fun compareTo(other: Backup): Int = date.compareTo(other.date)
+    override fun compareTo(other: Backup): Int {
+        val result = date.compareTo(other.date)
+        return when {
+            result == 0 && other is LocalBackup && this !is LocalBackup -> -1
+            else -> result
+        }
+    }
 }

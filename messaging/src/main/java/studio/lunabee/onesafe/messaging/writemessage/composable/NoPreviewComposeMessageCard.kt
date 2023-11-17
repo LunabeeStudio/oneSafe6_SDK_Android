@@ -30,8 +30,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.text.input.ImeAction
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSCard
@@ -54,6 +58,7 @@ fun NoPreviewComposeMessageCard(
     sendIcon: OSImageSpec,
 ) {
     val isKeyboardVisible: Boolean = LocalIsKeyBoardVisible.current
+    val focusRequester = remember { FocusRequester() }
     Box(
         modifier = Modifier
             .background(LocalColorPalette.current.Neutral70)
@@ -86,7 +91,11 @@ fun NoPreviewComposeMessageCard(
                     value = plainMessage,
                     onValueChange = onPlainMessageChange,
                     modifier = Modifier
-                        .weight(1.0f),
+                        .weight(1.0f)
+                        .focusRequester(focusRequester)
+                        .onPlaced {
+                            focusRequester.requestFocus()
+                        },
                     label = null,
                     placeholder = LbcTextSpec.StringResource(R.string.oneSafeK_composeMessageCard_label),
                     colors = TextFieldDefaults.colors(

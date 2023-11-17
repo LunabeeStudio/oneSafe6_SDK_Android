@@ -35,8 +35,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
@@ -69,6 +73,7 @@ fun ComposeMessageCard(
     sendIcon: OSImageSpec,
 ) {
     val isKeyboardVisible: Boolean = LocalIsKeyBoardVisible.current
+    val focusRequester = remember { FocusRequester() }
     Box(
         modifier = Modifier
             .background(LocalColorPalette.current.Neutral70)
@@ -95,7 +100,11 @@ fun ComposeMessageCard(
                 value = plainMessage,
                 onValueChange = onPlainMessageChange,
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester)
+                    .onPlaced {
+                        focusRequester.requestFocus()
+                    },
                 label = null,
                 placeholder = LbcTextSpec.StringResource(R.string.oneSafeK_composeMessageCard_label),
                 colors = TextFieldDefaults.colors(

@@ -42,14 +42,14 @@ class GetDurationBeforeBackupOutdatedUseCaseTest {
     private val settingsRepository: AutoBackupSettingsRepository = mockk {
         every { autoBackupFrequency } returns 1.days
     }
-    private val getLocalBackupsUseCase: GetLocalBackupsUseCase = mockk()
+    private val getAllLocalBackupsUseCase: GetAllLocalBackupsUseCase = mockk()
     private val getAutoBackupModeUseCase: GetAutoBackupModeUseCase = mockk {
         coEvery { this@mockk.invoke() } returns AutoBackupMode.LOCAL_ONLY // TODO <AutoBackup> update test with other cases
     }
     private val cloudBackupRepository: CloudBackupRepository = mockk()
     private val nowClock = Clock.fixed(Instant.EPOCH, ZoneOffset.UTC)
     private val getDurationBeforeBackupOutdatedUseCase: GetDurationBeforeBackupOutdatedUseCase = GetDurationBeforeBackupOutdatedUseCase(
-        getLocalBackupsUseCase = getLocalBackupsUseCase,
+        getAllLocalBackupsUseCase = getAllLocalBackupsUseCase,
         settingsRepository = settingsRepository,
         clock = nowClock,
         getAutoBackupModeUseCase = getAutoBackupModeUseCase,
@@ -58,7 +58,7 @@ class GetDurationBeforeBackupOutdatedUseCaseTest {
 
     @Test
     fun outdated_backup_test(): TestResult = runTest {
-        coEvery { getLocalBackupsUseCase.invoke() } returns listOf(
+        coEvery { getAllLocalBackupsUseCase.invoke() } returns listOf(
             LocalBackup(
                 date = LocalDateTime.now(nowClock).minusDays(6).toInstant(ZoneOffset.UTC),
                 file = mockk(),
@@ -70,7 +70,7 @@ class GetDurationBeforeBackupOutdatedUseCaseTest {
 
     @Test
     fun not_outdated_backup_test(): TestResult = runTest {
-        coEvery { getLocalBackupsUseCase.invoke() } returns listOf(
+        coEvery { getAllLocalBackupsUseCase.invoke() } returns listOf(
             LocalBackup(
                 date = LocalDateTime.now(nowClock).minusHours(6).toInstant(ZoneOffset.UTC),
                 file = mockk(),
@@ -82,7 +82,7 @@ class GetDurationBeforeBackupOutdatedUseCaseTest {
 
     @Test
     fun no_backup_test(): TestResult = runTest {
-        coEvery { getLocalBackupsUseCase.invoke() } returns emptyList()
+        coEvery { getAllLocalBackupsUseCase.invoke() } returns emptyList()
         val actual = getDurationBeforeBackupOutdatedUseCase()
         assertEquals(Duration.ZERO, actual)
     }

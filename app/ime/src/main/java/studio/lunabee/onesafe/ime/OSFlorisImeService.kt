@@ -87,7 +87,6 @@ import studio.lunabee.onesafe.ime.ui.ImeFeedbackManager
 import studio.lunabee.onesafe.ime.ui.ImeNavGraph
 import studio.lunabee.onesafe.ime.ui.ImeNavGraphRoute
 import studio.lunabee.onesafe.ime.ui.ImeOSTopBar
-import studio.lunabee.onesafe.ime.ui.contact.SelectContactDestination
 import studio.lunabee.onesafe.ime.ui.extension.keyboardTextfield
 import studio.lunabee.onesafe.ime.viewmodel.ImeLoginViewModelFactory
 import studio.lunabee.onesafe.ime.viewmodel.SelectContactViewModelFactory
@@ -521,7 +520,6 @@ class OSFlorisImeService : FlorisImeService() {
                         isOneSafeUiVisibleFlow.value = false
                         isKeyboardVisibleFlow.value = true
                         it.commitText(encryptedMessage, 0)
-                        navController.navigate(SelectContactDestination.route) // Go back to the contact selection
                     }
                 },
                 hasDoneOnBoardingBubbles = osAppVisit.hasDoneOnBoardingBubbles,

@@ -19,11 +19,16 @@
 
 package studio.lunabee.importexport.repository.datasource
 
+import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.importexport.model.CloudBackup
 
 interface CloudBackupLocalDataSource {
     suspend fun saveCloudBackup(backup: CloudBackup): CloudBackup
     suspend fun refreshCloudBackups(backups: List<CloudBackup>)
     suspend fun getCloudBackups(): List<CloudBackup>
+    fun getCloudBackupsFlow(): Flow<List<CloudBackup>>
     suspend fun deleteCloudBackup(id: String)
+    suspend fun getRemoteId(backupId: String): String?
+    suspend fun getLatestBackup(): CloudBackup?
+    fun getLatestBackupFlow(): Flow<CloudBackup?>
 }

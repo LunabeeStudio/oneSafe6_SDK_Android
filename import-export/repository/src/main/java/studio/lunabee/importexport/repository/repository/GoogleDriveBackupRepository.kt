@@ -23,13 +23,16 @@ import com.lunabee.lbcore.model.LBFlowResult
 import com.lunabee.lbcore.model.LBFlowResult.Companion.mapResult
 import com.lunabee.lbcore.model.LBFlowResult.Companion.unit
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import studio.lunabee.importexport.repository.datasource.CloudBackupEngine
 import studio.lunabee.importexport.repository.datasource.CloudBackupLocalDataSource
 import studio.lunabee.onesafe.combine
+import studio.lunabee.onesafe.error.OSImportExportError
 import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
-import java.io.File
+import java.io.InputStream
 import javax.inject.Inject
 
 // TODO <AutoBackup> cache refreshBackupList to avoid multiple call too close
@@ -56,9 +59,6 @@ class GoogleDriveBackupRepository @Inject constructor(
             uploadBackup(backup)
         }.combine()
 
-    override fun downloadBackup(backup: CloudBackup, file: File): Flow<LBFlowResult<LocalBackup>> =
-        driveEngine.downloadBackup(backup, file)
-
     override fun deleteBackup(backup: CloudBackup): Flow<LBFlowResult<Unit>> {
         return driveEngine.deleteBackup(backup).mapResult {
             localCloudBackupDatasource.deleteCloudBackup(backup.id)
@@ -69,4 +69,20 @@ class GoogleDriveBackupRepository @Inject constructor(
         backups.map(::deleteBackup).combine().unit()
 
     override suspend fun getBackups(): List<CloudBackup> = localCloudBackupDatasource.getCloudBackups()
+
+    override fun getBackupsFlow(): Flow<List<CloudBackup>> {
+        return localCloudBackupDatasource.getCloudBackupsFlow()
+    }
+
+    override fun getInputStream(backupId: String): Flow<LBFlowResult<InputStream>> = flow {
+        localCloudBackupDatasource.getRemoteId(backupId)?.let { remoteId ->
+            emitAll(driveEngine.getInputStream(remoteId))
+        } ?: emit(LBFlowResult.Failure(OSImportExportError(OSImportExportError.Code.BACKUP_ID_NOT_FOUND)))
+    }
+
+    override suspend fun getLatestBackup(): CloudBackup? =
+        localCloudBackupDatasource.getLatestBackup()
+
+    override fun getLatestBackupFlow(): Flow<CloudBackup?> =
+        localCloudBackupDatasource.getLatestBackupFlow()
 }

@@ -23,6 +23,7 @@ import android.net.Uri
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
 import studio.lunabee.onesafe.commonui.OSDestination
+import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
 
 fun NavGraphBuilder.autoBackupSettingsNavGraph(
     navigateBack: () -> Unit,
@@ -34,7 +35,13 @@ fun NavGraphBuilder.autoBackupSettingsNavGraph(
     ) {
         autoBackupSettingsScreen(
             navigateBack = navigateBack,
-            navigateToRestoreBackup = navigateToRestoreBackup,
+            navigateToRestoreBackup = { backupId ->
+                val uri = Uri.Builder()
+                    .scheme(ImportExportAndroidConstants.AUTO_BACKUP_SCHEME)
+                    .path(backupId)
+                    .build()
+                navigateToRestoreBackup(uri)
+            },
         )
     }
 }

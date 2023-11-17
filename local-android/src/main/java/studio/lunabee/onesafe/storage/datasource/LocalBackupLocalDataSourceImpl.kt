@@ -103,4 +103,7 @@ class LocalBackupLocalDataSourceImpl @Inject constructor(
             }
         }
     }
+
+    override suspend fun getFile(backupId: String): File? =
+        backupDao.getFile(backupId)?.takeIf { it.exists() }
 }

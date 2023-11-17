@@ -23,14 +23,17 @@ import com.lunabee.lbcore.model.LBFlowResult
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.importexport.model.LocalBackup
-import java.io.File
+import java.io.InputStream
 
 interface CloudBackupRepository {
     fun uploadBackup(backup: LocalBackup): Flow<LBFlowResult<CloudBackup>>
     fun uploadBackup(backups: List<LocalBackup>): Flow<LBFlowResult<List<CloudBackup?>>>
     fun refreshBackupList(): Flow<LBFlowResult<List<CloudBackup>>>
-    fun downloadBackup(backup: CloudBackup, file: File): Flow<LBFlowResult<LocalBackup>>
     fun deleteBackup(backup: CloudBackup): Flow<LBFlowResult<Unit>>
     fun deleteBackup(backups: List<CloudBackup>): Flow<LBFlowResult<Unit>>
     suspend fun getBackups(): List<CloudBackup>
+    fun getBackupsFlow(): Flow<List<CloudBackup>>
+    fun getInputStream(backupId: String): Flow<LBFlowResult<InputStream>>
+    suspend fun getLatestBackup(): CloudBackup?
+    fun getLatestBackupFlow(): Flow<CloudBackup?>
 }

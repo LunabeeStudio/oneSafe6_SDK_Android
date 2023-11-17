@@ -40,7 +40,7 @@ import studio.lunabee.onesafe.error.OSDriveError
 import studio.lunabee.onesafe.importexport.GoogleDriveHelper
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
-import studio.lunabee.onesafe.importexport.usecase.GetLocalBackupsUseCase
+import studio.lunabee.onesafe.importexport.usecase.GetLatestBackupUseCase
 import studio.lunabee.onesafe.importexport.worker.AutoBackupSchedulerWorker
 import timber.log.Timber
 import javax.inject.Inject
@@ -48,7 +48,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AutoBackupSettingsViewModel @Inject constructor(
     private val settings: AutoBackupSettingsRepository,
-    private val getBackupsUseCase: GetLocalBackupsUseCase, // TODO <AutoBackup> also get cloud backups depending on backup mode
+    private val getLatestBackupUseCase: GetLatestBackupUseCase,
     private val cloudBackupEngine: CloudBackupEngine,
     private val cloudBackupRepository: CloudBackupRepository,
     featureFlags: FeatureFlags,
@@ -60,15 +60,15 @@ class AutoBackupSettingsViewModel @Inject constructor(
         if (enabled) {
             combine(
                 settings.autoBackupFrequencyFlow,
-                getBackupsUseCase.flow(),
+                getLatestBackupUseCase.flow(),
                 settings.cloudBackupEnabled,
                 settings.keepLocalBackupEnabled,
                 cloudBackupEngine.getCloudInfo(),
-            ) { frequency, backups, cloudBackupEnabled, keepLocalBackupEnabled, cloudInfo ->
+            ) { frequency, backup, cloudBackupEnabled, keepLocalBackupEnabled, cloudInfo ->
                 AutoBackupSettingsUiState(
                     isBackupEnabled = true,
                     autoBackupFrequency = AutoBackupFrequency.valueForDuration(frequency),
-                    backups = backups,
+                    latestBackup = backup,
                     isCloudBackupEnabled = cloudBackupEnabled,
                     isKeepLocalBackupEnabled = keepLocalBackupEnabled,
                     toggleKeepLocalBackup = { context ->
