@@ -96,8 +96,6 @@ import studio.lunabee.onesafe.utils.OsDefaultPreview
 import java.time.Instant
 import java.util.UUID
 
-// TODO oSK separate WriteMessage IME and OS
-
 context(WriteMessageNavScope)
 @Composable
 fun WriteMessageRoute(

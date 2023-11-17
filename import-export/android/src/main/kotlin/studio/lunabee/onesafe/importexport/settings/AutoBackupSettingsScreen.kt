@@ -24,7 +24,6 @@ import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -54,7 +53,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.core.app.ActivityCompat
-import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -91,7 +89,7 @@ import java.time.Instant
 fun AutoBackupSettingsRoute(
     navigateBack: () -> Unit,
     viewModel: AutoBackupSettingsViewModel = hiltViewModel(),
-    navigateToRestoreBackup: (Uri) -> Unit,
+    navigateToRestoreBackup: (String) -> Unit,
 ) {
     val context = LocalContext.current
     val uiState: AutoBackupSettingsUiState? by viewModel.uiState.collectAsStateWithLifecycle()
@@ -151,6 +149,7 @@ fun AutoBackupSettingsRoute(
                     { viewModel.disableCloudBackupSettings() }
                 } else {
                     {
+                        // TODO <AutoBackup> show loading (+ hide loading at the end of flow / on errors)
                         enableCloudBackup(
                             accountsPermissionState = accountsPermissionState,
                             context = context,
@@ -242,13 +241,13 @@ private fun DriveAuthorize(authorizeDrive: AutoBackupSettingsDriveAuth) {
 }
 
 @Composable
-fun AutoBackupSettingsScreen(
+private fun AutoBackupSettingsScreen(
     uiState: AutoBackupSettingsUiState,
     navigateBack: () -> Unit,
     toggleAutoBackup: () -> Unit,
     toggleCloudBackup: (() -> Unit)?,
     setAutoBackupFrequency: (AutoBackupFrequency) -> Unit,
-    navigateToRestoreBackup: (Uri) -> Unit,
+    navigateToRestoreBackup: (String) -> Unit,
     openFileManager: (() -> Unit)?,
     featureFlagCloudBackup: Boolean,
 ) {
@@ -305,31 +304,31 @@ fun AutoBackupSettingsScreen(
             }
 
             if (uiState.isBackupEnabled) {
-                item {
-                    // if (uiState.backups.isNotEmpty()) { // TODO <AutoBackup> also get cloud backups depending on backup mode
-                    AutoBackupSettingsAccessBackupCard(
-                        onAccessLocalClick = openFileManager,
-                        onAccessRemoteClick = if (uiState.isCloudBackupEnabled && featureFlagCloudBackup) {
-                            uiState.driveUri?.let { { context.startActivity(Intent.parseUri(it.toString(), 0)) } }
-                        } else {
-                            null
-                        },
-                    )
-                }
-                if (uiState.backups.isNotEmpty()) { // TODO <AutoBackup> remove this if with above todo
+                uiState.latestBackup?.let { latestBackup ->
+                    item {
+                        AutoBackupSettingsAccessBackupCard(
+                            onAccessLocalClick = openFileManager,
+                            onAccessRemoteClick = if (uiState.isCloudBackupEnabled && featureFlagCloudBackup) {
+                                uiState.driveUri?.let { { context.startActivity(Intent.parseUri(it.toString(), 0)) } }
+                            } else {
+                                null
+                            },
+                        )
+                    }
                     item {
                         AutoBackupSettingsRestoreCard(
-                            onRestoreBackupClick = { navigateToRestoreBackup(uiState.backups.first().file.toUri()) },
+                            onRestoreBackupClick = {
+                                navigateToRestoreBackup(latestBackup.id)
+                            },
                         )
                     }
                 }
+                item {
+                    AutoBackupSettingsInformationCard(
+                        date = uiState.latestBackup?.date,
+                    )
+                }
             }
-            item {
-                AutoBackupSettingsInformationCard(
-                    date = uiState.backups.firstOrNull()?.date,
-                )
-            }
-            //            }
         }
 
         ElevatedTopAppBar(
@@ -427,10 +426,7 @@ private fun AutoBackupSettingsScreenOnPreview() {
             uiState = AutoBackupSettingsUiState(
                 isBackupEnabled = true,
                 autoBackupFrequency = AutoBackupFrequency.WEEKLY,
-                backups = listOf(
-                    LocalBackup(Instant.now(), File("")),
-                    LocalBackup(Instant.EPOCH, File("")),
-                ),
+                latestBackup = LocalBackup(Instant.now(), File("")),
                 isCloudBackupEnabled = true,
                 isKeepLocalBackupEnabled = true,
                 toggleKeepLocalBackup = {},

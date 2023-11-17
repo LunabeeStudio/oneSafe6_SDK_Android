@@ -21,26 +21,30 @@ package studio.lunabee.onesafe.importexport.settings
 
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.commonui.R
-import studio.lunabee.onesafe.commonui.settings.CardSettingsAction
+import studio.lunabee.onesafe.commonui.settings.CardSettingsButtonAction
+import studio.lunabee.onesafe.commonui.settings.CardSettingsNavAction
 
-internal class CardSettingsRestoreAutoBackup(override val onClick: () -> Unit) : CardSettingsAction(
-    icon = R.drawable.ic_save,
-    text = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_restore_button),
-)
-
-internal class CardSettingsSelectFrequency(frequency: AutoBackupFrequency, override val onClick: () -> Unit) : CardSettingsAction(
+internal class CardSettingsSelectFrequency(frequency: AutoBackupFrequency, override val onClick: () -> Unit) : CardSettingsNavAction(
     icon = null,
     text = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_autoBackupFrequency_title),
     onClickLabel = LbcTextSpec.StringResource(R.string.common_modify),
     secondaryText = frequency.text,
 )
 
-internal class CardSettingsAccessLocalBackup(override val onClick: () -> Unit) : CardSettingsAction(
+internal class CardSettingsRestoreAutoBackup(onClick: () -> Unit) : CardSettingsButtonAction(
+    onClick = onClick,
+    icon = R.drawable.ic_save,
+    text = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_restore_button),
+)
+
+internal class CardSettingsAccessLocalBackup(onClick: () -> Unit) : CardSettingsButtonAction(
+    onClick = onClick,
     icon = R.drawable.ic_phone,
     text = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_saveAccess_localSaves),
 )
 
-internal class CardSettingsAccessRemoteBackup(override val onClick: () -> Unit) : CardSettingsAction(
+internal class CardSettingsAccessRemoteBackup(onClick: () -> Unit) : CardSettingsButtonAction(
+    onClick = onClick,
     icon = R.drawable.ic_cloud,
     text = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_saveAccess_GoogleDriveSaves),
 )

@@ -29,6 +29,7 @@ import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.storage.model.RoomBackup
 import studio.lunabee.onesafe.storage.model.RoomCloudBackup
 import studio.lunabee.onesafe.storage.model.RoomLocalBackup
+import java.io.File
 
 @RewriteQueriesToDropUnusedColumns
 @Dao
@@ -56,6 +57,9 @@ interface BackupDao {
 
     @Query("SELECT * FROM Backup WHERE remote_id IS NOT NULL ORDER BY `date` DESC")
     suspend fun getAllCloud(): List<RoomCloudBackup>
+
+    @Query("SELECT * FROM Backup WHERE remote_id IS NOT NULL ORDER BY `date` DESC")
+    fun getCloudBackupsFlow(): Flow<List<RoomCloudBackup>>
 
     @Query("SELECT * FROM Backup WHERE local_file IS NOT NULL ORDER BY `date` DESC")
     fun getAllLocalAsFlow(): Flow<List<RoomLocalBackup>>
@@ -102,4 +106,16 @@ interface BackupDao {
         nullifyLocalIdById(id)
         deleteOrphans()
     }
+
+    @Query("SELECT remote_id FROM Backup WHERE id = :backupId")
+    suspend fun getRemoteId(backupId: String): String?
+
+    @Query("SELECT local_file FROM Backup WHERE id = :backupId")
+    suspend fun getFile(backupId: String): File?
+
+    @Query("SELECT * FROM Backup WHERE remote_id IS NOT NULL ORDER BY `date` DESC LIMIT 1")
+    suspend fun getLatestCloudBackup(): RoomCloudBackup?
+
+    @Query("SELECT * FROM Backup WHERE remote_id IS NOT NULL ORDER BY `date` DESC LIMIT 1")
+    fun getLatestCloudBackupFlow(): Flow<RoomCloudBackup?>
 }

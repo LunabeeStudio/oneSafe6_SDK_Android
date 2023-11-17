@@ -30,7 +30,7 @@ import org.junit.Rule
 import org.junit.Test
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.usecase.LocalAutoBackupUseCase
-import studio.lunabee.onesafe.importexport.usecase.GetLocalBackupsUseCase
+import studio.lunabee.onesafe.importexport.usecase.GetAllLocalBackupsUseCase
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltTest
 import studio.lunabee.onesafe.test.testClock
@@ -49,7 +49,7 @@ class MigrationFromV4ToV5Test : OSHiltTest() {
 
     @Inject lateinit var migrationFromV4ToV5: MigrationFromV4ToV5
 
-    @Inject lateinit var getLocalBackupsUseCase: GetLocalBackupsUseCase
+    @Inject lateinit var getAllLocalBackupsUseCase: GetAllLocalBackupsUseCase
 
     @Inject lateinit var autoBackupUseCase: LocalAutoBackupUseCase
 
@@ -66,9 +66,9 @@ class MigrationFromV4ToV5Test : OSHiltTest() {
             LocalBackup(Instant.EPOCH, File(backupsDir, "oneSafe-19700101-000000.os6lsb")),
         ).onEach { it.file.createNewFile() }
 
-        assertContentEquals(emptyList(), getLocalBackupsUseCase())
+        assertContentEquals(emptyList(), getAllLocalBackupsUseCase())
         migrationFromV4ToV5()
-        val actual = getLocalBackupsUseCase()
+        val actual = getAllLocalBackupsUseCase()
         assertContentEquals(expected, actual)
     }
 
@@ -87,9 +87,9 @@ class MigrationFromV4ToV5Test : OSHiltTest() {
             LocalBackup(Instant.EPOCH, File(backupsDir, "oneSafe-19700101-000000.os6lsb")),
         ).onEach { it.file.createNewFile() }
 
-        val expected = (getLocalBackupsUseCase() + oldBackups).sortedDescending().take(5)
+        val expected = (getAllLocalBackupsUseCase() + oldBackups).sortedDescending().take(5)
         migrationFromV4ToV5()
-        val actual = getLocalBackupsUseCase()
+        val actual = getAllLocalBackupsUseCase()
         assertContentEquals(expected, actual)
     }
 }

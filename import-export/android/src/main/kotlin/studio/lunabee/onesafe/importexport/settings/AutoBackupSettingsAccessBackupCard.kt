@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.settings.SettingsCard
+import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import studio.lunabee.onesafe.ui.theme.OSTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
 
@@ -33,13 +34,17 @@ fun AutoBackupSettingsAccessBackupCard(
     onAccessRemoteClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
+    val osDesignSystem = LocalDesignSystem.current
+    val actions = listOfNotNull(
+        onAccessLocalClick?.let { CardSettingsAccessLocalBackup(it) },
+        onAccessRemoteClick?.let { CardSettingsAccessRemoteBackup(it) },
+    )
     SettingsCard(
         title = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_saveAccess_title),
         modifier = modifier,
-        actions = listOfNotNull(
-            onAccessLocalClick?.let { CardSettingsAccessLocalBackup(it) },
-            onAccessRemoteClick?.let { CardSettingsAccessRemoteBackup(it) },
-        ),
+        actions = actions.mapIndexed { idx, action ->
+            action.settingsAction(osDesignSystem.getRowClickablePaddingValuesDependingOnIndex(idx, actions.size))
+        },
     )
 }
 

@@ -19,6 +19,8 @@
 
 package studio.lunabee.onesafe.importexport.usecase
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
@@ -37,6 +39,24 @@ class GetAutoBackupModeUseCase @Inject constructor(
             }
         } else {
             AutoBackupMode.DISABLED
+        }
+    }
+
+    fun flow(): Flow<AutoBackupMode> {
+        return combine(
+            settingsRepository.autoBackupEnabled,
+            settingsRepository.cloudBackupEnabled,
+            settingsRepository.keepLocalBackupEnabled,
+        ) { autoBackupEnabled, cloudBackupEnabled, keepLocalBackupEnabled ->
+            if (autoBackupEnabled) {
+                when {
+                    cloudBackupEnabled && keepLocalBackupEnabled -> AutoBackupMode.SYNCHRONIZED
+                    cloudBackupEnabled -> AutoBackupMode.CLOUD_ONLY
+                    else -> AutoBackupMode.LOCAL_ONLY
+                }
+            } else {
+                AutoBackupMode.DISABLED
+            }
         }
     }
 }

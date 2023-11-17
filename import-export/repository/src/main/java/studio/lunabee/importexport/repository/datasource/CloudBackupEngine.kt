@@ -24,12 +24,12 @@ import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.importexport.model.CloudInfo
 import studio.lunabee.onesafe.importexport.model.LocalBackup
-import java.io.File
+import java.io.InputStream
 
 interface CloudBackupEngine {
     fun fetchBackupList(): Flow<LBFlowResult<List<CloudBackup>>>
     fun uploadBackup(localBackup: LocalBackup): Flow<LBFlowResult<CloudBackup>>
-    fun downloadBackup(cloudBackup: CloudBackup, target: File): Flow<LBFlowResult<LocalBackup>>
+    fun getInputStream(remoteId: String): Flow<LBFlowResult<InputStream>>
     fun deleteBackup(cloudBackup: CloudBackup): Flow<LBFlowResult<Unit>>
     suspend fun setupAccount(accountName: String?)
     fun getCloudInfo(): Flow<CloudInfo>

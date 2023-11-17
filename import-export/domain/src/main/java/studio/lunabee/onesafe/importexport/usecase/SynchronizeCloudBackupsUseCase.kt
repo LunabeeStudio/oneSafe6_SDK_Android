@@ -41,13 +41,13 @@ private val log = LBLogger.get<SynchronizeCloudBackupsUseCase>()
  */
 class SynchronizeCloudBackupsUseCase @Inject constructor(
     private val cloudBackupRepository: CloudBackupRepository,
-    private val getLocalBackupsUseCase: GetLocalBackupsUseCase,
+    private val getAllLocalBackupsUseCase: GetAllLocalBackupsUseCase,
     private val deleteOldCloudBackupsUseCase: DeleteOldCloudBackupsUseCase,
 ) {
     operator fun invoke(): Flow<LBFlowResult<Unit>> {
         // 1. Refresh cloud backup list
         return cloudBackupRepository.refreshBackupList().transformResult { backupsResult ->
-            val backupsToUpload = (backupsResult.successData + getLocalBackupsUseCase(true))
+            val backupsToUpload = (backupsResult.successData + getAllLocalBackupsUseCase(true))
                 .sortedDescending()
                 .take(ImportExportConstant.KeepBackupsNumber)
                 .filterIsInstance<LocalBackup>()

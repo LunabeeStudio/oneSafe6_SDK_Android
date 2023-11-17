@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.Flow
 import studio.lunabee.importexport.repository.datasource.LocalBackupLocalDataSource
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
+import java.io.File
 import javax.inject.Inject
 
 class LocalBackupRepositoryImpl @Inject constructor(
@@ -52,4 +53,7 @@ class LocalBackupRepositoryImpl @Inject constructor(
     override suspend fun deleteAll() {
         dataSource.deleteAll()
     }
+
+    override suspend fun getFile(backupId: String): File? =
+        dataSource.getFile(backupId)
 }

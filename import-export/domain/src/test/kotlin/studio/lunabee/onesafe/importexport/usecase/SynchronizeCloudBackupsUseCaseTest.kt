@@ -75,7 +75,7 @@ class SynchronizeCloudBackupsUseCaseTest {
             }
         }
     }
-    private val getLocalBackupsUseCase: GetLocalBackupsUseCase = mockk {
+    private val getAllLocalBackupsUseCase: GetAllLocalBackupsUseCase = mockk {
         coEvery { this@mockk.invoke(excludeRemote = true) } answers { localMap.values.filter { !it.second }.map { it.first } }
         coEvery { this@mockk.invoke(excludeRemote = false) } answers { localMap.values.toList().map { it.first } }
     }
@@ -86,7 +86,7 @@ class SynchronizeCloudBackupsUseCaseTest {
 
     private val deleteOldCloudBackupsUseCase = DeleteOldCloudBackupsUseCase(cloudBackupRepository)
 
-    private val useCase = SynchronizeCloudBackupsUseCase(cloudBackupRepository, getLocalBackupsUseCase, deleteOldCloudBackupsUseCase)
+    private val useCase = SynchronizeCloudBackupsUseCase(cloudBackupRepository, getAllLocalBackupsUseCase, deleteOldCloudBackupsUseCase)
 
     @Test
     fun no_op_test(): TestResult = runTest {

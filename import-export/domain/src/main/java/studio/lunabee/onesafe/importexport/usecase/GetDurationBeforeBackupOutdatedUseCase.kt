@@ -36,7 +36,7 @@ import kotlin.time.Duration.Companion.seconds
  * check get the older backups between the latest local and latest cloud.
  */
 class GetDurationBeforeBackupOutdatedUseCase @Inject constructor(
-    private val getLocalBackupsUseCase: GetLocalBackupsUseCase,
+    private val getAllLocalBackupsUseCase: GetAllLocalBackupsUseCase,
     private val settingsRepository: AutoBackupSettingsRepository,
     private val clock: Clock,
     private val getAutoBackupModeUseCase: GetAutoBackupModeUseCase,
@@ -47,7 +47,7 @@ class GetDurationBeforeBackupOutdatedUseCase @Inject constructor(
         return when (backupMode) {
             AutoBackupMode.DISABLED -> Duration.INFINITE
             AutoBackupMode.LOCAL_ONLY -> {
-                getLocalBackupsUseCase().firstOrNull()?.let { latestBackup ->
+                getAllLocalBackupsUseCase().firstOrNull()?.let { latestBackup ->
                     val durationSinceLatest = latestBackup.date.until(Instant.now(clock), ChronoUnit.SECONDS).seconds
                     settingsRepository.autoBackupFrequency - durationSinceLatest
                 }
@@ -60,7 +60,7 @@ class GetDurationBeforeBackupOutdatedUseCase @Inject constructor(
             }
             AutoBackupMode.SYNCHRONIZED -> {
                 cloudBackupRepository.getBackups().firstOrNull()?.date?.let { latestCloud ->
-                    getLocalBackupsUseCase().maxOrNull()?.date?.let { latestLocal ->
+                    getAllLocalBackupsUseCase().maxOrNull()?.date?.let { latestLocal ->
                         val durationSinceLatest = minOf(latestCloud, latestLocal)
                             .until(Instant.now(clock), ChronoUnit.SECONDS).seconds
                         settingsRepository.autoBackupFrequency - durationSinceLatest

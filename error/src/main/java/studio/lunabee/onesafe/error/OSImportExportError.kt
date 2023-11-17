@@ -40,5 +40,6 @@ data class OSImportExportError(
         SALT_INVALID("Salt is empty or invalid"),
         ENGINE_NOT_PREPARED("Export engine is not initialized with required values"),
         BACKUP_FILE_DELETE_FAILED("Fail to delete backup file"),
+        BACKUP_ID_NOT_FOUND("No backup found for the provided id"),
     }
 }

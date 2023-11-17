@@ -31,4 +31,5 @@ dependencies {
 
     implementation(project(":import-export-domain"))
     implementation(project(":common"))
+    implementation(project(":error"))
 }
