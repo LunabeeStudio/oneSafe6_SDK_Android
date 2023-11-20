@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.importexport.usecase
 import com.lunabee.lbcore.model.LBFlowResult
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
@@ -59,12 +60,13 @@ class ArchiveUnzipUseCase @Inject constructor(
                     zipFile.entries().asSequence().forEach { entry ->
                         if (entry.name == ImportExportConstant.ArchiveToImportCopyFileName) return@forEach
                         zipFile.getInputStream(entry).use { inputStream ->
-                            val unzipFolderDestinationPath = unzipFolderDestination.absolutePath + File.separator + entry.name
-                            val file = File(unzipFolderDestinationPath)
-                            if (entry.isDirectory) {
-                                file.mkdirs()
-                            } else {
-                                file.outputStream().use { outputStream ->
+                            val file = File(unzipFolderDestination, entry.name)
+                            when {
+                                !file.canonicalPath.startsWith(unzipFolderDestination.canonicalPath) -> {
+                                    throw OSDomainError(OSDomainError.Code.UNZIP_SECURITY_TRAVERSAL_VULNERABILITY)
+                                }
+                                entry.isDirectory -> file.mkdirs()
+                                else -> file.outputStream().use { outputStream ->
                                     inputStream.copyTo(outputStream) // TODO copy "copyTo" method to emit a much better progress.
                                 }
                             }
@@ -73,12 +75,17 @@ class ArchiveUnzipUseCase @Inject constructor(
                     }
                 }
                 emit(LBFlowResult.Success(Unit))
-            } catch (e: Exception) {
-                emit(LBFlowResult.Failure(OSDomainError(code = OSDomainError.Code.UNZIP_FAILURE, cause = e)))
             } finally {
                 sourceFile.delete()
             }
         }
+            .catch { error ->
+                if (error is OSDomainError) {
+                    emit(LBFlowResult.Failure(error))
+                } else {
+                    emit(LBFlowResult.Failure(OSDomainError(code = OSDomainError.Code.UNZIP_FAILURE, cause = error)))
+                }
+            }
             .onStart { emit(LBFlowResult.Loading()) }
             .flowOn(fileDispatcher)
     }
