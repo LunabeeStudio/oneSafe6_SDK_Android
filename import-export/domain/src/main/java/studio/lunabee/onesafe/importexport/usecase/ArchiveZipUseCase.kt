@@ -46,7 +46,7 @@ class ArchiveZipUseCase @Inject constructor(
      * @param folderToZip folder to zip
      * @param outputZipFile destination to keep the final archive
      *
-     * @return a flow emitting unzip progress.
+     * @return a flow emitting zip progress.
      */
     operator fun invoke(folderToZip: File, outputZipFile: File): Flow<LBFlowResult<File>> {
         return flow<LBFlowResult<File>> {
@@ -72,7 +72,7 @@ class ArchiveZipUseCase @Inject constructor(
      * @param folderToZip folder to zip
      * @param outputZipFileStream destination to keep the final archive
      *
-     * @return a flow emitting unzip progress.
+     * @return a flow emitting zip progress.
      */
     operator fun invoke(folderToZip: File, outputZipFileStream: OutputStream): Flow<LBFlowResult<Unit>> {
         return flow<LBFlowResult<Unit>> {

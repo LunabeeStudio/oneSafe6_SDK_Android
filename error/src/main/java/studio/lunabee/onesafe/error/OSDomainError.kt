@@ -43,5 +43,6 @@ data class OSDomainError(
         CRYPTO_NOT_READY_TIMEOUT("Time out on waiting for cryptographic keys to be loaded in memory"),
         MISSING_FILE_ID_IN_FIELD("The field does not contain the file id"),
         MISSING_URI_OUTPUT_STREAM("The selected file don't exist"),
+        UNZIP_SECURITY_TRAVERSAL_VULNERABILITY("Archive contains unauthorized transversal path"),
     }
 }
