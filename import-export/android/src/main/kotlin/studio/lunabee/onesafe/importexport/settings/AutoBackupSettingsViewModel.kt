@@ -19,10 +19,10 @@
 
 package studio.lunabee.onesafe.importexport.settings
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lunabee.lbcore.model.LBFlowResult
+import com.lunabee.lbcore.model.LBResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,16 +33,18 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.importexport.repository.datasource.CloudBackupEngine
 import studio.lunabee.onesafe.commonui.CommonUiConstants
+import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
+import studio.lunabee.onesafe.commonui.snackbar.SnackbarState
 import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.error.OSDriveError
 import studio.lunabee.onesafe.importexport.GoogleDriveHelper
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
 import studio.lunabee.onesafe.importexport.usecase.GetLatestBackupUseCase
-import studio.lunabee.onesafe.importexport.worker.AutoBackupSchedulerWorker
-import timber.log.Timber
+import studio.lunabee.onesafe.importexport.worker.AutoBackupWorkersHelper
 import javax.inject.Inject
 
 @HiltViewModel
@@ -51,6 +53,7 @@ class AutoBackupSettingsViewModel @Inject constructor(
     private val getLatestBackupUseCase: GetLatestBackupUseCase,
     private val cloudBackupEngine: CloudBackupEngine,
     private val cloudBackupRepository: CloudBackupRepository,
+    private val autoBackupWorkersHelper: AutoBackupWorkersHelper,
     featureFlags: FeatureFlags,
 ) : ViewModel() {
     val featureFlagCloudBackup: Boolean = featureFlags.cloudBackup()
@@ -71,11 +74,11 @@ class AutoBackupSettingsViewModel @Inject constructor(
                     latestBackup = backup,
                     isCloudBackupEnabled = cloudBackupEnabled,
                     isKeepLocalBackupEnabled = keepLocalBackupEnabled,
-                    toggleKeepLocalBackup = { context ->
+                    toggleKeepLocalBackup = {
                         viewModelScope.launch {
                             val keepLocalBackup = settings.toggleKeepLocalBackupSettings()
                             if (keepLocalBackup) {
-                                AutoBackupSchedulerWorker.start(context = context, synchronizeCloudFirst = false)
+                                autoBackupWorkersHelper.start(synchronizeCloudFirst = false)
                             }
                         }
                     },
@@ -92,70 +95,82 @@ class AutoBackupSettingsViewModel @Inject constructor(
         null,
     )
 
+    private val _snackbarState: MutableStateFlow<SnackbarState?> = MutableStateFlow(null)
+    val snackbarState: StateFlow<SnackbarState?> = _snackbarState.asStateFlow()
+
     private val _authorizeDrive: MutableStateFlow<AutoBackupSettingsDriveAuth?> = MutableStateFlow(null)
     val authorizeDrive: StateFlow<AutoBackupSettingsDriveAuth?> = _authorizeDrive.asStateFlow()
 
-    fun toggleAutoBackupSetting(context: Context): Boolean {
+    fun toggleAutoBackupSetting(): Boolean {
         val isAutoBackupEnabled = settings.toggleAutoBackupSettings()
         if (isAutoBackupEnabled) {
-            AutoBackupSchedulerWorker.start(context = context, synchronizeCloudFirst = false)
+            autoBackupWorkersHelper.start(synchronizeCloudFirst = false)
         } else {
-            AutoBackupSchedulerWorker.cancel(context)
+            autoBackupWorkersHelper.cancel()
         }
         return isAutoBackupEnabled
     }
 
-    fun setAutoBackupFrequency(context: Context, frequency: AutoBackupFrequency) {
+    fun setAutoBackupFrequency(frequency: AutoBackupFrequency) {
         settings.setAutoBackupFrequency(frequency.repeat)
-        AutoBackupSchedulerWorker.start(context = context, synchronizeCloudFirst = false)
+        autoBackupWorkersHelper.start(synchronizeCloudFirst = false)
     }
 
-    fun setupCloudBackupAndSync(accountName: String, context: Context) {
+    fun setupCloudBackupAndSync(accountName: String) {
         viewModelScope.launch {
             cloudBackupEngine.setupAccount(accountName)
             cloudBackupRepository.refreshBackupList().collect { result ->
-                Timber.d(result.toString())
                 when (result) {
                     is LBFlowResult.Loading -> {
+                        // TODO loading
                     }
                     is LBFlowResult.Failure -> {
                         val error = result.throwable as? OSDriveError
                         if (error?.code == OSDriveError.Code.AUTHENTICATION_REQUIRED) {
-                            val authIntent = GoogleDriveHelper.getAuthorizationIntent(error)
-                            if (authIntent == null) {
-                                // TODO <AutoBackup> show error
-                            } else {
-                                _authorizeDrive.value = AutoBackupSettingsDriveAuth(
-                                    authorizeIntent = authIntent,
-                                    onAuthorize = { isAuthorized ->
-                                        if (isAuthorized) {
-                                            viewModelScope.launch {
-                                                finalizeCloudBackupEnable(context)
+                            val authIntentRes = GoogleDriveHelper.getAuthorizationIntent(error)
+                            when (authIntentRes) {
+                                is LBResult.Failure -> _snackbarState.value = ErrorSnackbarState(result.throwable, ::dismissSnackbar)
+                                is LBResult.Success -> {
+                                    _authorizeDrive.value = AutoBackupSettingsDriveAuth(
+                                        authorizeIntent = authIntentRes.successData,
+                                        onAuthorize = { isAuthorized ->
+                                            if (isAuthorized) {
+                                                viewModelScope.launch {
+                                                    finalizeCloudBackupEnable()
+                                                }
                                             }
-                                        }
-                                    },
-                                )
+                                        },
+                                    )
+                                }
                             }
                         } else {
-                            // TODO <AutoBackup> show error
+                            _snackbarState.value = ErrorSnackbarState(result.throwable, ::dismissSnackbar)
                         }
                     }
                     is LBFlowResult.Success -> {
-                        finalizeCloudBackupEnable(context)
+                        finalizeCloudBackupEnable()
                     }
                 }
             }
         }
     }
 
-    private suspend fun finalizeCloudBackupEnable(context: Context) {
+    private suspend fun finalizeCloudBackupEnable() {
         settings.setCloudBackupSettings(true)
-        AutoBackupSchedulerWorker.start(context = context, synchronizeCloudFirst = true)
+        autoBackupWorkersHelper.start(synchronizeCloudFirst = true)
     }
 
     fun disableCloudBackupSettings() {
         viewModelScope.launch {
             settings.setCloudBackupSettings(false)
         }
+    }
+
+    private fun dismissSnackbar() {
+        _snackbarState.value = null
+    }
+
+    fun showError(errorMessage: LbcTextSpec) {
+        _snackbarState.value = ErrorSnackbarState(errorMessage, ::dismissSnackbar)
     }
 }

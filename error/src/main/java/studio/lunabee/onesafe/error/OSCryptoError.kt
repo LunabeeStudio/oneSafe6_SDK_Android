@@ -25,7 +25,7 @@ data class OSCryptoError(
     override val cause: Throwable? = null,
 ) : OSError(message, cause, code) {
 
-    enum class Code(override val message: String) : ErrorCode<OSCryptoError> {
+    enum class Code(override val message: String) : ErrorCode<Code, OSCryptoError> {
         MASTER_KEY_ALREADY_GENERATED("A master key have already been generated"),
         MASTER_KEY_NOT_LOADED("Master key not loaded in memory"),
         MASTER_KEY_ALREADY_LOADED("Master key already loaded in memory"),

@@ -80,7 +80,7 @@ class WriteMessageScreenTest : LbcComposeTest() {
 
             // Test change contact interaction
             hasTestTag(UiConstants.TestTag.Item.WriteMessageTopBar)
-                .waitUntilExactlyOneExists(this)
+                .waitUntilExactlyOneExists()
                 .performClick()
             verify(exactly = 1) { onClickOnChangeContact.invoke() }
         }

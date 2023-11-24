@@ -112,4 +112,5 @@ dependencies {
     androidTestImplementation(project(":crypto-android"))
     androidTestImplementation(libs.room.testing)
     androidTestImplementation(libs.lblogger.timber)
+    androidTestImplementation(libs.work.testing)
 }

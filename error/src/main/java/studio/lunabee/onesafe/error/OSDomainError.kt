@@ -24,7 +24,7 @@ data class OSDomainError(
     override val message: String = code.message,
     override val cause: Throwable? = null,
 ) : OSError(message, cause, code) {
-    enum class Code(override val message: String) : ErrorCode<OSDomainError> {
+    enum class Code(override val message: String) : ErrorCode<Code, OSDomainError> {
         SAFE_ITEM_DELETE_FAILURE("The SafeItem couldn't be move to bin"),
         SAFE_ITEM_REMOVE_FAILURE("The SafeItem couldn't be move to permanently removed"),
         SAFE_ITEM_NO_ICON("The SafeItem does not have an icon set"),

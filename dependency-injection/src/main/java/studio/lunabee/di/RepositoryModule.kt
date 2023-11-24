@@ -25,6 +25,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import studio.lunabee.bubbles.repository.repository.ContactKeyRepositoryImpl
 import studio.lunabee.bubbles.repository.repository.ContactRepositoryImpl
+import studio.lunabee.importexport.repository.repository.AutoBackupErrorRepositoryImpl
+import studio.lunabee.importexport.repository.repository.LocalBackupRepositoryImpl
 import studio.lunabee.messaging.repository.repository.ConversationRepositoryImpl
 import studio.lunabee.messaging.repository.repository.EnqueuedMessageRepositoryImpl
 import studio.lunabee.messaging.repository.repository.HandShakeDataRepositoryImpl
@@ -35,7 +37,6 @@ import studio.lunabee.messaging.repository.repository.SentMessageRepositoryImpl
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactKeyRepository
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.domain.repository.AutoLockRepository
-import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
 import studio.lunabee.onesafe.domain.repository.ClipboardRepository
 import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.repository.ForceUpgradeRepository
@@ -50,7 +51,9 @@ import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
 import studio.lunabee.onesafe.domain.repository.SupportOSRepository
 import studio.lunabee.onesafe.domain.repository.UrlMetadataRepository
+import studio.lunabee.onesafe.importexport.repository.AutoBackupErrorRepository
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
+import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
 import studio.lunabee.onesafe.messaging.domain.repository.ConversationRepository
 import studio.lunabee.onesafe.messaging.domain.repository.EnqueuedMessageRepository
 import studio.lunabee.onesafe.messaging.domain.repository.HandShakeDataRepository
@@ -59,7 +62,6 @@ import studio.lunabee.onesafe.messaging.domain.repository.MessageOrderRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
 import studio.lunabee.onesafe.messaging.domain.repository.SentMessageRepository
 import studio.lunabee.onesafe.repository.repository.AutoLockRepositoryImpl
-import studio.lunabee.importexport.repository.repository.LocalBackupRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.ClipboardRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.FileRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.ForceUpgradeRepositoryImpl
@@ -157,6 +159,9 @@ interface RepositoryModule {
 
     @Binds
     fun bindsAutoBackupSettingsRepository(settingsRepository: SettingsRepository): AutoBackupSettingsRepository
+
+    @Binds
+    fun bindsAutoBackupErrorRepository(autoBackupErrorRepository: AutoBackupErrorRepositoryImpl): AutoBackupErrorRepository
 }
 
 @Module

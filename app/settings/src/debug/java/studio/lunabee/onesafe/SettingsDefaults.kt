@@ -44,5 +44,5 @@ internal object SettingsDefaults {
     val autoBackupFrequencyMsDefault: Long = 1.days.inWholeMilliseconds
     val CameraSystemDefault: CameraSystem = CameraSystem.InApp
     const val cloudBackupEnabledDefault: Boolean = false
-    const val keepLocalBackupEnabledDefault: Boolean = false
+    const val keepLocalBackupEnabledDefault: Boolean = true
 }

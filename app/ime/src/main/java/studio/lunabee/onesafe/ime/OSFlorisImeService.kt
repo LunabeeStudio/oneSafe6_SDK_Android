@@ -284,8 +284,8 @@ class OSFlorisImeService : FlorisImeService() {
     override fun ThemeImeView() {
         val coroutineScope = rememberCoroutineScope()
         val imeClient by imeClientFlow.collectAsStateWithLifecycle()
-        val hasDoneOpenTutorial by osAppVisit.hasDoneTutorialOpenOskFlow.collectAsStateWithLifecycle(initialValue = false)
-        val hasDoneLockTutorial by osAppVisit.hasDoneTutorialLockOskFlow.collectAsStateWithLifecycle(initialValue = false)
+        val hasDoneOpenTutorial by osAppVisit.hasDoneTutorialOpenOskFlow.collectAsStateWithLifecycle(initialValue = true)
+        val hasDoneLockTutorial by osAppVisit.hasDoneTutorialLockOskFlow.collectAsStateWithLifecycle(initialValue = true)
 
         if (imeClient?.packageName == packageName) {
             // Disable oneSafe K when using oneSafe

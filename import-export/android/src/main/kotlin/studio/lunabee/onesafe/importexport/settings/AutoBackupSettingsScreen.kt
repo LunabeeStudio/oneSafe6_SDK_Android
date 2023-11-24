@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
@@ -41,6 +42,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,9 +51,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.zIndex
 import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -69,7 +73,7 @@ import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.extension.findFragmentActivity
 import studio.lunabee.onesafe.commonui.notification.NotificationPermissionRationaleDialogState
-import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
+import studio.lunabee.onesafe.commonui.snackbar.SnackbarState
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.utils.AccountPermissionRationaleDialogState
 import studio.lunabee.onesafe.importexport.utils.BackupFileManagerHelper
@@ -83,6 +87,8 @@ import timber.log.Timber
 import java.io.File
 import java.net.URI
 import java.time.Instant
+
+// TODO <AutoBackup> screen test (snackbar, loading, etc)
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -115,8 +121,8 @@ fun AutoBackupSettingsRoute(
     val authorizeDrive: AutoBackupSettingsDriveAuth? by viewModel.authorizeDrive.collectAsStateWithLifecycle()
     authorizeDrive?.let { DriveAuthorize(it) }
 
-    var errorSnackbarState: ErrorSnackbarState? by remember { mutableStateOf(null) }
     val snackBarHostState = remember { SnackbarHostState() }
+    val errorSnackbarState: SnackbarState? by viewModel.snackbarState.collectAsStateWithLifecycle()
     val errorSnackBarVisual = errorSnackbarState?.snackbarVisuals
     LaunchedEffect(errorSnackbarState) {
         errorSnackBarVisual?.let {
@@ -126,10 +132,7 @@ fun AutoBackupSettingsRoute(
 
     val openFileManager = {
         if (!BackupFileManagerHelper.openFileManager(context)) {
-            errorSnackbarState = ErrorSnackbarState(
-                message = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_saveAccess_error_noFileManager),
-                onClick = { errorSnackbarState = null },
-            )
+            viewModel.showError(LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_saveAccess_error_noFileManager))
         }
     }
 
@@ -140,7 +143,7 @@ fun AutoBackupSettingsRoute(
                 uiState = state,
                 navigateBack = navigateBack,
                 toggleAutoBackup = {
-                    val isAutoBackupEnabled = viewModel.toggleAutoBackupSetting(context)
+                    val isAutoBackupEnabled = viewModel.toggleAutoBackupSetting()
                     if (isAutoBackupEnabled) {
                         requestNotificationPermission(notificationPermissionState) { permissionDialogState = it }
                     }
@@ -159,10 +162,11 @@ fun AutoBackupSettingsRoute(
                         )
                     }
                 },
-                setAutoBackupFrequency = { viewModel.setAutoBackupFrequency(context, it) },
+                setAutoBackupFrequency = { viewModel.setAutoBackupFrequency(it) },
                 navigateToRestoreBackup = navigateToRestoreBackup,
                 openFileManager = openFileManager,
                 featureFlagCloudBackup = viewModel.featureFlagCloudBackup,
+                snackbarHostState = snackBarHostState,
             )
         }
     }
@@ -207,16 +211,15 @@ private fun enableCloudBackupSettings(
 
 @Composable
 private fun rememberAccountLauncher(
-    setupCloudBackup: (String, Context) -> Unit,
+    setupCloudBackup: (String) -> Unit,
 ): ManagedActivityResultLauncher<Intent, ActivityResult> {
-    val context = LocalContext.current
     return rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val accountName = result.data?.extras?.getString(AccountManager.KEY_ACCOUNT_NAME)
                 if (accountName != null) {
-                    setupCloudBackup(accountName, context)
+                    setupCloudBackup(accountName)
                 } else {
                     // TODO <AutoBackup> show (unexpected) error
                     Timber.e("Unexpected null accountName on success result")
@@ -250,6 +253,7 @@ private fun AutoBackupSettingsScreen(
     navigateToRestoreBackup: (String) -> Unit,
     openFileManager: (() -> Unit)?,
     featureFlagCloudBackup: Boolean,
+    snackbarHostState: SnackbarHostState,
 ) {
     val context = LocalContext.current
     val mainCardUiState = if (uiState.isBackupEnabled) {
@@ -268,7 +272,7 @@ private fun AutoBackupSettingsScreen(
             autoBackupFrequency = uiState.autoBackupFrequency,
             isCloudBackupEnabled = uiState.isCloudBackupEnabled,
             isKeepLocalBackupEnabled = uiState.isKeepLocalBackupEnabled,
-            toggleKeepLocalBackup = { uiState.toggleKeepLocalBackup(context) },
+            toggleKeepLocalBackup = { uiState.toggleKeepLocalBackup() },
             toggleCloudBackup = toggleCloudBackup,
         )
     } else {
@@ -283,6 +287,14 @@ private fun AutoBackupSettingsScreen(
             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Bottom))
             .fillMaxSize(),
     ) {
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding()
+                .zIndex(UiConstants.SnackBar.ZIndex),
+        )
+
         val lazyListState: LazyListState = rememberLazyListState()
         LazyColumn(
             modifier = Modifier
@@ -440,6 +452,7 @@ private fun AutoBackupSettingsScreenOnPreview() {
             navigateToRestoreBackup = {},
             openFileManager = {},
             featureFlagCloudBackup = true,
+            snackbarHostState = remember { SnackbarHostState() },
         )
     }
 }
@@ -457,6 +470,7 @@ private fun AutoBackupSettingsScreenOffPreview() {
             navigateToRestoreBackup = {},
             openFileManager = {},
             featureFlagCloudBackup = true,
+            snackbarHostState = remember { SnackbarHostState() },
         )
     }
 }

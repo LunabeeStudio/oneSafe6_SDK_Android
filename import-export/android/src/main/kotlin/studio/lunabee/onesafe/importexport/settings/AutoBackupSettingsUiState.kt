@@ -19,7 +19,6 @@
 
 package studio.lunabee.onesafe.importexport.settings
 
-import android.content.Context
 import android.content.Intent
 import studio.lunabee.onesafe.importexport.model.Backup
 import java.net.URI
@@ -30,7 +29,7 @@ data class AutoBackupSettingsUiState(
     val latestBackup: Backup?,
     val isCloudBackupEnabled: Boolean,
     val isKeepLocalBackupEnabled: Boolean,
-    val toggleKeepLocalBackup: (context: Context) -> Unit,
+    val toggleKeepLocalBackup: () -> Unit,
     val driveUri: URI?,
     val driveAccount: String?,
 ) {

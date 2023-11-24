@@ -43,6 +43,7 @@ class AutoBackupChainWorker @AssistedInject constructor(
     @Assisted params: WorkerParameters,
     private val getAutoBackupModeUseCase: GetAutoBackupModeUseCase,
     private val itemRepository: SafeItemRepository,
+    private val autoBackupWorkersHelper: AutoBackupWorkersHelper,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         if (itemRepository.getSafeItemsCount() != 0) {
@@ -50,7 +51,7 @@ class AutoBackupChainWorker @AssistedInject constructor(
                 AutoBackupMode.DISABLED -> {
                     // Unexpected, log and cancel workers
                     Timber.e("${AutoBackupChainWorker::class.simpleName} run but ${AutoBackupMode::class.simpleName} is $backupMode")
-                    AutoBackupSchedulerWorker.cancel(applicationContext)
+                    autoBackupWorkersHelper.cancel()
                 }
                 AutoBackupMode.LOCAL_ONLY -> LocalBackupWorker.start(applicationContext)
                 AutoBackupMode.CLOUD_ONLY -> CloudBackupWorker.start(applicationContext)

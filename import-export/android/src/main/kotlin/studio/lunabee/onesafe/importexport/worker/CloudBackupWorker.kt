@@ -25,7 +25,6 @@ import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
-import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ForegroundInfo
 import androidx.work.NetworkType
@@ -36,9 +35,13 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.lunabee.lbcore.model.LBFlowResult
 import com.lunabee.lbcore.model.LBFlowResult.Companion.transformResult
+import com.lunabee.lbcore.model.LBResult
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEach
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
 import studio.lunabee.onesafe.commonui.utils.setForegroundSafe
@@ -60,29 +63,27 @@ class CloudBackupWorker @AssistedInject constructor(
     private val cloudAutoBackupUseCase: CloudAutoBackupUseCase,
     private val deleteOldBackupsUseCase: DeleteOldCloudBackupsUseCase,
     private val osNotificationManager: OSNotificationManager,
+    private val autoBackupWorkersHelper: AutoBackupWorkersHelper,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         setForegroundSafe(getForegroundInfo())
 
-        var workerResult = Result.success()
-
-        cloudAutoBackupUseCase().transformResult {
+        val flowResult = cloudAutoBackupUseCase().transformResult {
             emitAll(deleteOldBackupsUseCase())
-        }.collect { result ->
-            when (result) {
-                is LBFlowResult.Failure -> {
-                    val data = Data.Builder()
-                        .putString(ImportExportAndroidConstants.ERROR_OUTPUT_KEY, result.throwable.toString())
-                        .build()
-                    Timber.e(result.throwable)
-                    workerResult = Result.failure(data)
-                }
-                is LBFlowResult.Loading -> Timber.v("Progress ${result.progress}")
-                is LBFlowResult.Success -> workerResult = Result.success()
+        }.catch { error ->
+            emit(LBFlowResult.Failure(error))
+        }.onEach { result ->
+            if (result is LBFlowResult.Loading) {
+                Timber.v("Progress ${result.progress}")
             }
+        }.first {
+            it !is LBFlowResult.Loading
         }
 
-        return workerResult
+        return when (val result = flowResult.asResult()) {
+            is LBResult.Failure -> autoBackupWorkersHelper.onBackupWorkerFails(result.throwable, runAttemptCount)
+            is LBResult.Success -> autoBackupWorkersHelper.onBackupWorkerSucceed()
+        }
     }
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
@@ -113,7 +114,7 @@ class CloudBackupWorker @AssistedInject constructor(
                 .build()
         }
 
-        fun start(context: Context) {
+        internal fun start(context: Context) {
             WorkManager.getInstance(context)
                 .enqueueUniqueWork(
                     ImportExportAndroidConstants.AUTO_BACKUP_WORKER_NAME,

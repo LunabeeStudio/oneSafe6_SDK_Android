@@ -75,10 +75,10 @@ class ImeContactScreenTest : LbcComposeTest() {
         every { mockkVM.uiState } returns MutableStateFlow(ImeContactUiState.Data(listOf(contact1, contact2)))
         setScreen(mockkVM) {
             onNodeWithTag(UiConstants.TestTag.Item.BubblesNoContactCard).assertDoesNotExist()
-            hasText(contact1Name).waitUntilExactlyOneExists(this).performClick()
+            hasText(contact1Name).waitUntilExactlyOneExists().performClick()
             verify(exactly = 1) { onClickOnContact.invoke(contact1.id) }
 
-            hasText(contact2Name).waitUntilExactlyOneExists(this).performClick()
+            hasText(contact2Name).waitUntilExactlyOneExists().performClick()
             verify(exactly = 1) { onClickOnContact.invoke(contact2.id) }
         }
     }

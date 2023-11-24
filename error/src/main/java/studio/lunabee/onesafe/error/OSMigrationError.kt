@@ -24,7 +24,7 @@ data class OSMigrationError(
     override val message: String = code.message,
     override val cause: Throwable? = null,
 ) : OSError(message, cause, code) {
-    enum class Code(override val message: String) : ErrorCode<OSMigrationError> {
+    enum class Code(override val message: String) : ErrorCode<Code, OSMigrationError> {
         USERNAME_REMOVAL_FAIL("Migration to remove the username failed"),
         SET_PASSWORD_VERIFICATION_FAIL("Migration to save password verification data failed"),
     }

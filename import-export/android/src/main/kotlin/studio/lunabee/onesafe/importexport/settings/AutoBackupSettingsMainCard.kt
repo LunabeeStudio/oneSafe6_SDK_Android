@@ -34,6 +34,9 @@ import studio.lunabee.onesafe.ui.theme.LocalColorPalette
 import studio.lunabee.onesafe.ui.theme.OSTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
 
+// TODO <AutoBackup> check play services
+//  GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
+
 @Composable
 internal fun AutoBackupSettingsMainCard(
     uiState: AutoBackupSettingsMainCardUiState,
