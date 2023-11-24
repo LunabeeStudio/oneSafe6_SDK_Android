@@ -13,19 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:24 AM
+ * Created by Lunabee Studio / Date - 11/7/2023 - for the oneSafe6 SDK.
+ * Last modified 11/7/23, 6:06 PM
  */
 
-package studio.lunabee.onesafe.error
+package studio.lunabee.onesafe.importexport.model
 
-data class OSRemoteError(
-    override val code: Code,
-    override val message: String = code.message,
-    override val cause: Throwable? = null,
-) : OSError(message, cause, code) {
+import java.time.ZonedDateTime
 
-    enum class Code(override val message: String) : ErrorCode<Code, OSRemoteError> {
-        UNKNOWN_HTTP_ERROR("Exception occurred during execution of HTTP request"),
-    }
-}
+data class AutoBackupError(
+    val date: ZonedDateTime,
+    val code: String,
+    val message: String?,
+)

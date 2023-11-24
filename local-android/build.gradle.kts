@@ -25,6 +25,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.protobuf)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 ksp {
@@ -97,6 +98,7 @@ dependencies {
     implementation(libs.paging.runtime)
     implementation(libs.androidx.core.ktx)
 
+    implementation(libs.kotlinx.serialization.protobuf)
     implementation(libs.datastore)
     implementation(libs.protobuf.kotlinlite)
 

@@ -32,8 +32,9 @@ import dagger.hilt.components.SingletonComponent
 import studio.lunabee.bubbles.repository.datasource.ContactKeyLocalDataSource
 import studio.lunabee.bubbles.repository.datasource.ContactLocalDataSource
 import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
-import studio.lunabee.importexport.repository.datasource.LocalBackupLocalDataSource
+import studio.lunabee.importexport.repository.datasource.AutoBackupErrorLocalDataSource
 import studio.lunabee.importexport.repository.datasource.CloudBackupLocalDataSource
+import studio.lunabee.importexport.repository.datasource.LocalBackupLocalDataSource
 import studio.lunabee.messaging.repository.datasource.EnqueuedMessageLocalDataSource
 import studio.lunabee.messaging.repository.datasource.HandShakeDataLocalDatasource
 import studio.lunabee.messaging.repository.datasource.MessageLocalDataSource
@@ -67,7 +68,7 @@ import studio.lunabee.onesafe.storage.dao.SafeItemDao
 import studio.lunabee.onesafe.storage.dao.SafeItemFieldDao
 import studio.lunabee.onesafe.storage.dao.SafeItemKeyDao
 import studio.lunabee.onesafe.storage.dao.SentMessageDao
-import studio.lunabee.onesafe.storage.datasource.LocalBackupLocalDataSourceImpl
+import studio.lunabee.onesafe.storage.datasource.AutoBackupErrorLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.CloudBackupLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.ContactKeyLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.ContactLocalDataSourceImpl
@@ -78,6 +79,7 @@ import studio.lunabee.onesafe.storage.datasource.ForceUpgradeLocalDatasourceImpl
 import studio.lunabee.onesafe.storage.datasource.HandShakeDataLocalDatasourceImpl
 import studio.lunabee.onesafe.storage.datasource.IconLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.IndexWordEntryLocalDataSourceImpl
+import studio.lunabee.onesafe.storage.datasource.LocalBackupLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.MessageLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.PasswordGeneratorConfigLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.RecentSearchLocalDataSourceImpl
@@ -87,7 +89,9 @@ import studio.lunabee.onesafe.storage.datasource.SafeItemLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.SentMessageLocalDatasourceImpl
 import studio.lunabee.onesafe.storage.datastore.ForceUpgradeDataSerializer
 import studio.lunabee.onesafe.storage.datastore.PasswordGeneratorConfigSerializer
+import studio.lunabee.onesafe.storage.datastore.ProtoSerializer
 import studio.lunabee.onesafe.storage.datastore.RecentSearchSerializer
+import studio.lunabee.onesafe.storage.model.LocalAutoBackupError
 import javax.inject.Singleton
 
 @Module
@@ -172,6 +176,11 @@ interface StorageModule {
 
     @Binds
     fun bindsHandShakeDataLocalDatasource(handShakeDataLocalDatasourceImpl: HandShakeDataLocalDatasourceImpl): HandShakeDataLocalDatasource
+
+    @Binds
+    fun bindAutoBackupErrorDataSource(
+        autoBackupErrorDataSource: AutoBackupErrorLocalDataSourceImpl,
+    ): AutoBackupErrorLocalDataSource
 }
 
 @Module
@@ -317,4 +326,16 @@ object PasswordGeneratorConfigDatastoreModule {
         fileName = datastoreFile,
         serializer = PasswordGeneratorConfigSerializer,
     )
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object AutoBackupErrorDatastoreModule {
+
+    private const val datastoreFile: String = "14e3ca9b-b9e9-4c2e-a836-cad49db25952"
+
+    @Provides
+    @Singleton
+    fun provideDatastore(@ApplicationContext context: Context): DataStore<LocalAutoBackupError> =
+        ProtoSerializer.dataStore(context, LocalAutoBackupError.default, datastoreFile)
 }

@@ -13,19 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:24 AM
+ * Created by Lunabee Studio / Date - 11/21/2023 - for the oneSafe6 SDK.
+ * Last modified 11/21/23, 4:20 PM
  */
 
-package studio.lunabee.onesafe.error
+package studio.lunabee.importexport.repository.datasource
 
-data class OSRemoteError(
-    override val code: Code,
-    override val message: String = code.message,
-    override val cause: Throwable? = null,
-) : OSError(message, cause, code) {
+import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.importexport.model.AutoBackupError
 
-    enum class Code(override val message: String) : ErrorCode<Code, OSRemoteError> {
-        UNKNOWN_HTTP_ERROR("Exception occurred during execution of HTTP request"),
-    }
+interface AutoBackupErrorLocalDataSource {
+    fun getError(): Flow<AutoBackupError?>
+    suspend fun setError(error: AutoBackupError?): AutoBackupError?
 }

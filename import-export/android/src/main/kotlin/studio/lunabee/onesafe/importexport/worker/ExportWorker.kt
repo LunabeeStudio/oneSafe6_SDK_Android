@@ -41,7 +41,6 @@ import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
 import studio.lunabee.onesafe.domain.qualifier.ArchiveCacheDir
 import studio.lunabee.onesafe.domain.qualifier.BackupType
 import studio.lunabee.onesafe.error.OSAppError
-import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
 import studio.lunabee.onesafe.importexport.engine.BackupExportEngine
 import studio.lunabee.onesafe.importexport.usecase.ExportBackupUseCase
 import studio.lunabee.onesafe.importexport.utils.ForegroundInfoCompat
@@ -71,7 +70,7 @@ class ExportWorker @AssistedInject constructor(
                 when (result) {
                     is LBFlowResult.Failure -> {
                         val data = Data.Builder()
-                            .putString(ImportExportAndroidConstants.ERROR_OUTPUT_KEY, result.throwable.toString())
+                            .putString(ERROR_OUTPUT_KEY, result.throwable.toString())
                             .build()
                         Timber.e(result.throwable)
                         workerResult = Result.failure(data)
@@ -125,6 +124,7 @@ class ExportWorker @AssistedInject constructor(
 
         private const val FILE_OUTPUT_KEY = "a35542e6-6003-4dd9-9267-0556e0c6bbf5"
         private const val PROGRESS_DATA_KEY = "375f2850-9884-4ef7-a50b-6e58be73a483"
+        private const val ERROR_OUTPUT_KEY: String = "ab2c1e17-2b69-4839-b954-bf2b8a3fab73"
 
         fun start(context: Context): Flow<LBFlowResult<File>> {
             val workRequest = OneTimeWorkRequestBuilder<ExportWorker>()
@@ -147,7 +147,7 @@ class ExportWorker @AssistedInject constructor(
                         LBFlowResult.Success(File(finalPath))
                     }
                     WorkInfo.State.FAILED -> {
-                        val message = workInfo.outputData.getString(ImportExportAndroidConstants.ERROR_OUTPUT_KEY)
+                        val message = workInfo.outputData.getString(ERROR_OUTPUT_KEY)
                             ?: OSAppError.Code.EXPORT_WORKER_FAILURE.message
                         LBFlowResult.Failure(OSAppError(OSAppError.Code.EXPORT_WORKER_FAILURE, message))
                     }

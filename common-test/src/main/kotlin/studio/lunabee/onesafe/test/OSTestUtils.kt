@@ -32,7 +32,7 @@ object OSTestUtils {
     private val seed = Random.nextInt().also {
         println("Random seed = $it")
     }
-    val random = Random(seed)
+    val random: Random = Random(seed)
 
     fun createSafeItem(
         id: UUID = UUID.randomUUID(),

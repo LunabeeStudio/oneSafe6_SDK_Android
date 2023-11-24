@@ -32,6 +32,9 @@ import dagger.hilt.testing.TestInstallIn
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.OSForceUpgradeProto.ForceUpgradeProtoData
 import studio.lunabee.onesafe.storage.datastore.ForceUpgradeDataSerializer
+import studio.lunabee.onesafe.storage.datastore.ProtoSerializer
+import studio.lunabee.onesafe.storage.model.LocalAutoBackupError
+import java.util.UUID
 import javax.inject.Singleton
 
 // Use empty TestInstallIn + InstallIn to allow local override of the module (in SearchItemUseCaseTest for example)
@@ -71,4 +74,16 @@ object AppMaintenanceDatastoreTestModule {
         fileName = datastoreFile,
         serializer = ForceUpgradeDataSerializer,
     )
+}
+
+@Module
+@TestInstallIn(
+    components = [SingletonComponent::class],
+    replaces = [AutoBackupErrorDatastoreModule::class],
+)
+object AutoBackupErrorDatastoreTestModule {
+    @Provides
+    @Singleton
+    fun provideDatastore(@ApplicationContext context: Context): DataStore<LocalAutoBackupError> =
+        ProtoSerializer.dataStore(context, LocalAutoBackupError.default, UUID.randomUUID().toString())
 }

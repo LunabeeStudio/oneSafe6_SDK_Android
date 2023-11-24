@@ -22,7 +22,6 @@ package studio.lunabee.onesafe.importexport.worker
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
-import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
@@ -109,31 +108,8 @@ class AutoBackupSchedulerWorker @AssistedInject constructor(
     }
 
     companion object {
-        private const val AUTO_BACKUP_SCHEDULER_WORK_NAME = "1d35209a-c713-439b-80a1-f83791018682"
-        private const val AUTO_BACKUP_CHAIN_WORK_NAME: String = "32183d09-7402-407f-b492-7be45f3a148c"
+        internal const val AUTO_BACKUP_CHAIN_WORK_NAME: String = "32183d09-7402-407f-b492-7be45f3a148c"
         private const val AUTO_BACKUP_INITIAL_CHAIN_WORK_NAME: String = "3163c4a1-5157-43dd-ada9-611114e0ca41"
-        private const val SYNCHRONIZE_CLOUD_FIRST_DATA: String = "373ad937-98c8-4b42-9dea-43df44985d00"
-
-        fun start(
-            context: Context,
-            synchronizeCloudFirst: Boolean,
-        ) {
-            val data = Data.Builder()
-                .putBoolean(SYNCHRONIZE_CLOUD_FIRST_DATA, synchronizeCloudFirst)
-                .build()
-
-            val workRequest = OneTimeWorkRequestBuilder<AutoBackupSchedulerWorker>()
-                .addTag(ImportExportAndroidConstants.AUTO_BACKUP_WORKER_TAG)
-                .setInputData(data)
-                .build()
-
-            WorkManager.getInstance(context)
-                .enqueueUniqueWork(AUTO_BACKUP_SCHEDULER_WORK_NAME, ExistingWorkPolicy.APPEND_OR_REPLACE, workRequest)
-        }
-
-        fun cancel(context: Context) {
-            val workManager = WorkManager.getInstance(context)
-            workManager.cancelAllWorkByTag(ImportExportAndroidConstants.AUTO_BACKUP_WORKER_TAG)
-        }
+        internal const val SYNCHRONIZE_CLOUD_FIRST_DATA: String = "373ad937-98c8-4b42-9dea-43df44985d00"
     }
 }

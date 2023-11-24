@@ -33,8 +33,11 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.lunabee.lbcore.model.LBFlowResult
+import com.lunabee.lbcore.model.LBResult
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
@@ -55,32 +58,27 @@ class LocalBackupWorker @AssistedInject constructor(
     private val localAutoBackupUseCase: LocalAutoBackupUseCase,
     private val deleteOldBackupsUseCase: DeleteOldLocalBackupsUseCase,
     private val osNotificationManager: OSNotificationManager,
+    private val autoBackupWorkersHelper: AutoBackupWorkersHelper,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
-        var workerResult = Result.success()
-
-        localAutoBackupUseCase()
+        val flowResult = localAutoBackupUseCase()
             .onStart {
                 updateProgress(0f)
-            }
-            .collect { result ->
-                when (result) {
-                    is LBFlowResult.Failure -> {
-                        val data = Data.Builder()
-                            .putString(ImportExportAndroidConstants.ERROR_OUTPUT_KEY, result.throwable.toString())
-                            .build()
-                        Timber.e(result.throwable)
-                        workerResult = Result.failure(data)
-                    }
-                    is LBFlowResult.Loading -> updateProgress(result.progress ?: -1f)
-                    is LBFlowResult.Success -> {
-                        deleteOldBackupsUseCase()
-                        workerResult = Result.success()
-                    }
+            }.onEach { result ->
+                if (result is LBFlowResult.Loading) {
+                    updateProgress(result.progress ?: -1f)
                 }
+            }.first {
+                it !is LBFlowResult.Loading
             }
 
-        return workerResult
+        return when (val result = flowResult.asResult()) {
+            is LBResult.Failure -> autoBackupWorkersHelper.onBackupWorkerFails(result.throwable, runAttemptCount)
+            is LBResult.Success -> {
+                deleteOldBackupsUseCase()
+                autoBackupWorkersHelper.onBackupWorkerSucceed()
+            }
+        }
     }
 
     private suspend fun updateProgress(progress: Float) {
@@ -117,14 +115,14 @@ class LocalBackupWorker @AssistedInject constructor(
     companion object {
         private const val PROGRESS_DATA_KEY: String = "375f2850-9884-4ef7-a50b-6e58be73a483"
 
-        fun getWorkRequest(): OneTimeWorkRequest {
+        internal fun getWorkRequest(): OneTimeWorkRequest {
             return OneTimeWorkRequestBuilder<LocalBackupWorker>()
                 .addTag(ImportExportAndroidConstants.AUTO_BACKUP_WORKER_TAG)
                 .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .build()
         }
 
-        fun start(context: Context) {
+        internal fun start(context: Context) {
             WorkManager.getInstance(context)
                 .enqueueUniqueWork(
                     ImportExportAndroidConstants.AUTO_BACKUP_WORKER_NAME,

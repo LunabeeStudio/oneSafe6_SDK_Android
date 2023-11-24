@@ -23,17 +23,17 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
-import androidx.work.Data
-import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import androidx.work.await
 import com.lunabee.lbcore.model.LBFlowResult
+import com.lunabee.lbcore.model.LBResult
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEach
 import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
 import studio.lunabee.onesafe.importexport.usecase.SynchronizeCloudBackupsUseCase
 import timber.log.Timber
@@ -46,29 +46,27 @@ class CloudSynchronizeBackupWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted params: WorkerParameters,
     private val synchronizeCloudBackupsUseCase: SynchronizeCloudBackupsUseCase,
+    private val autoBackupWorkersHelper: AutoBackupWorkersHelper,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
-        var workerResult = Result.success()
-        synchronizeCloudBackupsUseCase()
-            .collect { result ->
-                when (result) {
-                    is LBFlowResult.Failure -> {
-                        val data = Data.Builder()
-                            .putString(ImportExportAndroidConstants.ERROR_OUTPUT_KEY, result.throwable.toString())
-                            .build()
-                        Timber.e(result.throwable)
-                        workerResult = Result.failure(data)
-                    }
-                    is LBFlowResult.Loading -> Timber.v(result.toString())
-                    is LBFlowResult.Success -> workerResult = Result.success()
+        val flowResult = synchronizeCloudBackupsUseCase()
+            .catch { error ->
+                emit(LBFlowResult.Failure(error))
+            }.onEach { result ->
+                if (result is LBFlowResult.Loading) {
+                    Timber.v("Progress ${result.progress}")
                 }
+            }.first {
+                it !is LBFlowResult.Loading
             }
-        return workerResult
+
+        return when (val result = flowResult.asResult()) {
+            is LBResult.Failure -> autoBackupWorkersHelper.onBackupWorkerFails(result.throwable, runAttemptCount)
+            is LBResult.Success -> autoBackupWorkersHelper.onBackupWorkerSucceed()
+        }
     }
 
     companion object {
-        private const val AUTO_BACKUP_SYNC_CLOUD_WORK_NAME: String = "88271196-fb06-494c-84b2-efffb4b230b3"
-
         fun getWorkRequest(): OneTimeWorkRequest {
             return OneTimeWorkRequestBuilder<CloudSynchronizeBackupWorker>()
                 .addTag(ImportExportAndroidConstants.AUTO_BACKUP_WORKER_TAG)
@@ -76,18 +74,6 @@ class CloudSynchronizeBackupWorker @AssistedInject constructor(
                     Constraints.Builder().setRequiredNetworkType(NetworkType.UNMETERED).build(),
                 )
                 .build()
-        }
-
-        suspend fun start(
-            context: Context,
-        ) {
-            val workRequest = getWorkRequest()
-            WorkManager.getInstance(context)
-                .enqueueUniqueWork(
-                    AUTO_BACKUP_SYNC_CLOUD_WORK_NAME,
-                    ExistingWorkPolicy.KEEP,
-                    workRequest,
-                ).await()
         }
     }
 }

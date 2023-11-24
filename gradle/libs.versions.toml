@@ -32,6 +32,7 @@ android-gradle-plugin = "8.2.0-rc03"
 ##                 ⬆ = "8.3.0-alpha11"
 ##                 ⬆ = "8.3.0-alpha12"
 ##                 ⬆ = "8.3.0-alpha13"
+##                 ⬆ = "8.3.0-alpha14"
 
 kotlin = "1.9.20"
 ##  ⬆ = "2.0.0-Beta1"
@@ -80,8 +81,7 @@ androidx-tracing = "1.2.0-rc01"
 
 androidx-security-crypto = "1.1.0-alpha06"
 
-kotlinx-serialization = "1.6.0"
-##                 ⬆ = "1.6.1"
+kotlinx-serialization = "1.6.1"
 
 androidx-appcompat = "1.7.0-alpha03"
 
@@ -95,16 +95,14 @@ androidx-lifecycle = "2.6.2"
 ##              ⬆ = "2.7.0-beta01"
 ##              ⬆ = "2.7.0-rc01"
 
-# FIXME 2023.11.00-alpha02 crash https://issuetracker.google.com/issues/306301019
-compose-bom-alpha = "2023.11.00-alpha01"
-##             ⬆ = "2023.11.00-alpha02"
-##             ⬆ = "2023.12.00-alpha01"
+compose-bom-alpha = "2023.12.00-alpha01"
 
 google-android-material = "1.10.0"
 ##                   ⬆ = "1.11.0-alpha01"
 ##                   ⬆ = "1.11.0-alpha02"
 ##                   ⬆ = "1.11.0-alpha03"
 ##                   ⬆ = "1.11.0-beta01"
+##                   ⬆ = "1.11.0-rc01"
 ##                   ⬆ = "1.12.0-alpha01"
 
 androidx-biometric = "1.1.0"
@@ -148,7 +146,7 @@ google-accompanist = "0.33.2-alpha"
 
 androidx-palette = "1.0.0"
 
-firebase-bom = "32.5.0"
+firebase-bom = "32.6.0"
 
 firebase-crashlytics-gradle = "2.9.9"
 
@@ -188,7 +186,7 @@ androidx-startup = "1.1.1"
 ##            ⬆ = "1.2.0-alpha01"
 ##            ⬆ = "1.2.0-alpha02"
 
-# FIXME 2.7.5 crash -> https://issuetracker.google.com/issues/308979853
+# FIXME 2.7.5 crash -> https://issuetracker.google.com/issues/308979853 https://github.com/LunabeeStudio/oneSafe6_Android/pull/803 (wip)
 navigation-compose = "2.7.4"
 ##              ⬆ = "2.7.5"
 
@@ -204,13 +202,13 @@ compose-color-picker = "0.7.0"
 
 compose-shimmer = "1.2.0"
 
-lbcaccessibility = "1.5.0-175-SNAPSHOT"
+lbcaccessibility = "1.5.0-179-SNAPSHOT"
 
-lbcandroidtest = "1.2.0-175-SNAPSHOT"
+lbcandroidtest = "1.2.0-179-SNAPSHOT"
 
-lbctheme = "1.1.0-175-SNAPSHOT"
+lbctheme = "1.1.0-179-SNAPSHOT"
 
-lbccore = "1.1.0-175-SNAPSHOT"
+lbccore = "1.1.0-179-SNAPSHOT"
 
 kotlin-logging-jvm = "3.0.5"
 
@@ -218,8 +216,7 @@ tink-android = "1.11.0"
 
 conscrypt-android = "2.5.2"
 
-bouncycastle = "1.76"
-##        ⬆ = "1.77"
+bouncycastle = "1.77"
 
 nbvcxz = "1.5.1"
 
@@ -237,6 +234,7 @@ lint = "31.2.0-rc03"
 ##⬆ = "31.3.0-alpha11"
 ##⬆ = "31.3.0-alpha12"
 ##⬆ = "31.3.0-alpha13"
+##⬆ = "31.3.0-alpha14"
 
 javapoet = "1.13.0"
 
@@ -247,11 +245,7 @@ zoomable = "1.5.2"
 
 exifinterface = "1.3.6"
 
-androidx-media3 = "1.1.1"
-##           ⬆ = "1.2.0-alpha01"
-##           ⬆ = "1.2.0-alpha02"
-##           ⬆ = "1.2.0-beta01"
-##           ⬆ = "1.2.0-rc01"
+androidx-media3 = "1.2.0"
 
 camerax = "1.3.0"
 ##   ⬆ = "1.4.0-alpha01"
@@ -273,6 +267,7 @@ kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.re
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-protobuf = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-protobuf", version.ref = "kotlinx-serialization" }
 kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 

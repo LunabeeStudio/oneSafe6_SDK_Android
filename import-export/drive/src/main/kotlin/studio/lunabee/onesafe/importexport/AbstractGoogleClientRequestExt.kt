@@ -26,6 +26,8 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import studio.lunabee.onesafe.error.OSDriveError
+import studio.lunabee.onesafe.error.OSError.Companion.get
+import java.io.IOException
 
 internal fun <T> AbstractGoogleClientRequest<T>.executeAsFlow() = flow<LBFlowResult<T>> {
     emit(LBFlowResult.Success(execute()))
@@ -34,6 +36,7 @@ internal fun <T> AbstractGoogleClientRequest<T>.executeAsFlow() = flow<LBFlowRes
 }.catch { error ->
     val osError = when (error) {
         is UserRecoverableAuthIOException -> OSDriveError(code = OSDriveError.Code.AUTHENTICATION_REQUIRED, cause = error)
+        is IOException -> OSDriveError.Code.NETWORK_FAILURE.get(cause = error)
         else -> OSDriveError(code = OSDriveError.Code.REQUEST_EXECUTION_FAILED, cause = error)
     }
 

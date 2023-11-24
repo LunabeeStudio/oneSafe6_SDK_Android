@@ -19,9 +19,12 @@
 
 package studio.lunabee.onesafe.importexport
 
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+
 object ImportExportAndroidConstants {
     const val AUTO_BACKUP_WORKER_NAME: String = "bdacea8b-714e-4053-b3a7-add07dbe1c50"
     const val AUTO_BACKUP_WORKER_TAG: String = "fac62754-ddfe-4777-aeb6-e59591bbfc5c"
-    const val ERROR_OUTPUT_KEY: String = "ab2c1e17-2b69-4839-b954-bf2b8a3fab73"
     const val AUTO_BACKUP_SCHEME: String = "autobackup"
+    val BackoffCriteriaDuration: Duration = 30.seconds
 }

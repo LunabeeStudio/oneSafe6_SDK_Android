@@ -25,7 +25,7 @@ data class OSStorageError(
     override val cause: Throwable? = null,
 ) : OSError(message, cause, code) {
 
-    enum class Code(override val message: String) : ErrorCode<OSStorageError> {
+    enum class Code(override val message: String) : ErrorCode<Code, OSStorageError> {
         ITEM_KEY_NOT_FOUND("The item key does not exist"),
         ITEM_NOT_FOUND("The item does not exist"),
         CONTACT_NOT_FOUND("The contact does not exist"),

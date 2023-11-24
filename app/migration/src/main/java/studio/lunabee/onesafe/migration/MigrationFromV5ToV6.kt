@@ -19,17 +19,15 @@
 
 package studio.lunabee.onesafe.migration
 
-import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import com.lunabee.lbcore.model.LBResult
-import dagger.hilt.android.qualifiers.ApplicationContext
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.usecase.GetAutoBackupModeUseCase
-import studio.lunabee.onesafe.importexport.worker.AutoBackupSchedulerWorker
+import studio.lunabee.onesafe.importexport.worker.AutoBackupWorkersHelper
 import javax.inject.Inject
 
 /**
@@ -38,15 +36,15 @@ import javax.inject.Inject
  */
 class MigrationFromV5ToV6 @Inject constructor(
     private val dataStore: DataStore<Preferences>,
-    @ApplicationContext private val context: Context,
     private val getAutoBackupModeUseCase: GetAutoBackupModeUseCase,
+    private val autoBackupWorkersHelper: AutoBackupWorkersHelper,
 ) {
     suspend operator fun invoke(): LBResult<Unit> = OSError.runCatching {
         dataStore.edit {
             it.remove(booleanPreferencesKey("1d361eb7-a13f-49d1-9f9b-a37520c12361"))
         }
         if (getAutoBackupModeUseCase() != AutoBackupMode.DISABLED) {
-            AutoBackupSchedulerWorker.start(context, false)
+            autoBackupWorkersHelper.start(false)
         }
     }
 }

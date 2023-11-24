@@ -26,11 +26,12 @@ import org.slf4j.Logger
 sealed class OSError(
     message: String,
     cause: Throwable?,
-    open val code: ErrorCode<OSError>,
+    open val code: ErrorCode<*, OSError>,
 ) : Exception(message, cause) {
 
-    interface ErrorCode<out T : OSError> {
+    interface ErrorCode<Code : Enum<Code>, out Err : OSError> {
         val message: String
+        val name: String
     }
 
     companion object {
@@ -51,7 +52,9 @@ sealed class OSError(
         /**
          * Unsafe getter for default error constructor
          */
-        inline fun <reified T : OSError> ErrorCode<T>.get(message: String = this.message, cause: Throwable? = null): T =
-            T::class.java.constructors.first().newInstance(this, message, cause) as T
+        inline fun <Code : Enum<Code>, reified Err : OSError> ErrorCode<Code, Err>.get(
+            message: String = this.message,
+            cause: Throwable? = null,
+        ): Err = Err::class.java.constructors.first().newInstance(this, message, cause) as Err
     }
 }

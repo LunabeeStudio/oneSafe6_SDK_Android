@@ -54,7 +54,7 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.work.testing)
     api(libs.hilt.work)
-    implementation(libs.mockk.android)
+    api(libs.mockk.android)
     implementation(libs.room.ktx)
     implementation(libs.datastore)
     implementation(libs.datastore.preferences)
