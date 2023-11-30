@@ -27,3 +27,6 @@
 
 # Unused by Bouquet lib (pdf)
 -dontwarn com.gemalto.jp2.JP2Decoder
+
+# Keep OSError's constructor to allow instanciation of OSError with reflection from ErrorCode::get
+-keepclassmembers class * extends studio.lunabee.onesafe.error.OSError { <init>(...); }
