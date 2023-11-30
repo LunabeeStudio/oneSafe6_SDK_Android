@@ -20,8 +20,12 @@
 package studio.lunabee.onesafe.error
 
 import com.lunabee.lbcore.model.LBResult
+import com.lunabee.lblogger.LBLogger
 import com.lunabee.lblogger.e
 import org.slf4j.Logger
+
+@PublishedApi
+internal val log: Logger = LBLogger.get<OSError>()
 
 sealed class OSError(
     message: String,
@@ -52,9 +56,25 @@ sealed class OSError(
         /**
          * Unsafe getter for default error constructor
          */
+        // TODO Lint rule to enforce param of OSError subclass's ctor
         inline fun <Code : Enum<Code>, reified Err : OSError> ErrorCode<Code, Err>.get(
             message: String = this.message,
             cause: Throwable? = null,
-        ): Err = Err::class.java.constructors.first().newInstance(this, message, cause) as Err
+        ): Err {
+            val constructor = Err::class.java.constructors.first { !it.isSynthetic }
+            val paramsType = constructor.parameterTypes
+            val params = Array(paramsType.size) {
+                when (paramsType[it]) {
+                    this::class.java -> this
+                    String::class.java -> message
+                    Throwable::class.java -> cause
+                    else -> {
+                        log.e("Unexpected param in ${this::class.simpleName} constructor")
+                        null
+                    }
+                }
+            }
+            return constructor.newInstance(*params) as Err
+        }
     }
 }

@@ -19,11 +19,19 @@
 
 package studio.lunabee.onesafe.importexport.ui
 
+import android.content.Context
+import android.widget.Toast
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.AnnotatedString
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.button.OSTextButton
@@ -41,31 +49,45 @@ import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
 
 class AutoBackupErrorHomeInfoData(
-    private val code: LbcTextSpec,
+    private val errorLabel: LbcTextSpec,
+    private val errorFull: LbcTextSpec,
     private val onDismiss: () -> Unit,
 ) : HomeInfoData(
     type = HomeInfoType.Error,
     key = KeyAutoBackupErrorCard,
     contentType = ContentTypeAutoBackupErrorCard,
 ) {
+    @OptIn(ExperimentalLayoutApi::class)
     @Composable
     override fun Composable(modifier: Modifier) {
         val uriHandler = LocalUriHandler.current
+        val clipboardManager: ClipboardManager = LocalClipboardManager.current
+        val context: Context = LocalContext.current
 
         OSMessageCard(
             title = LbcTextSpec.StringResource(R.string.autoBackup_errorCard_title),
-            description = LbcTextSpec.StringResource(R.string.autoBackup_errorCard_message, code),
+            description = LbcTextSpec.StringResource(R.string.autoBackup_errorCard_message, errorLabel),
             attributes = OSMessageCardAttributes()
                 .dismissible(OSImageSpec.Drawable(R.drawable.ic_baseline_close), onDismiss)
                 .style(OSMessageCardStyle.Alert),
             modifier = modifier
                 .testTag(UiConstants.TestTag.Item.AutoBackupErrorCard),
             action = {
-                OSTextButton(
-                    text = LbcTextSpec.StringResource(R.string.autoBackup_errorCard_action_askForHelp),
-                    onClick = { uriHandler.openUri(CommonUiConstants.ExternalLink.Discord) },
-                    modifier = Modifier.padding(bottom = OSDimens.SystemSpacing.Small),
-                )
+                FlowRow {
+                    OSTextButton(
+                        text = LbcTextSpec.StringResource(R.string.autoBackup_errorCard_action_askForHelp),
+                        onClick = { uriHandler.openUri(CommonUiConstants.ExternalLink.Discord) },
+                        modifier = Modifier.padding(bottom = OSDimens.SystemSpacing.Small),
+                    )
+                    OSTextButton(
+                        text = LbcTextSpec.StringResource(R.string.common_copyErrorMessage_label),
+                        onClick = {
+                            clipboardManager.setText(AnnotatedString(errorFull.string(context)))
+                            Toast.makeText(context, R.string.common_copyErrorMessage_feedback, Toast.LENGTH_SHORT).show()
+                        },
+                        modifier = Modifier.padding(bottom = OSDimens.SystemSpacing.Small),
+                    )
+                }
             },
         )
     }
@@ -76,7 +98,8 @@ class AutoBackupErrorHomeInfoData(
 private fun AutoBackupErrorCardPreview() {
     OSPreviewBackgroundTheme {
         AutoBackupErrorHomeInfoData(
-            code = loremIpsumSpec(1),
+            errorLabel = loremIpsumSpec(1),
+            errorFull = loremIpsumSpec(100),
         ) {}.Composable(Modifier)
     }
 }
