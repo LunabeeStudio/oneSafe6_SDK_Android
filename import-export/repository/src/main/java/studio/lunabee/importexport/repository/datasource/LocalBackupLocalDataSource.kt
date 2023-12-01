@@ -63,4 +63,6 @@ interface LocalBackupLocalDataSource {
      * @return The backup file or null if the backup or the file does not exist
      */
     suspend fun getFile(backupId: String): File?
+
+    fun hasBackup(): Flow<Boolean>
 }

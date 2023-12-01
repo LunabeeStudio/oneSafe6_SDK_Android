@@ -40,7 +40,6 @@ android {
             manifestPlaceholders["customBackupMimetype"] = customBackupMimetype
 
             buildConfigField("Boolean", "IS_DEV", "true")
-            buildConfigField("String", "FIREBASE_APP_ID", "\"1:874555585125:android:7475d5fb91f686aad58c8c\"")
             buildConfigField("String", "CUSTOM_BACKUP_MIMETYPE", "\"$customBackupMimetype\"")
         }
 
@@ -52,7 +51,6 @@ android {
             manifestPlaceholders["customBackupMimetype"] = customBackupMimetypeDev
 
             buildConfigField("Boolean", "IS_DEV", "false")
-            buildConfigField("String", "FIREBASE_APP_ID", "\"1:874555585125:android:3a9f446ab5ba07abd58c8c\"")
             buildConfigField("String", "CUSTOM_BACKUP_MIMETYPE", "\"$customBackupMimetypeDev\"")
         }
     }

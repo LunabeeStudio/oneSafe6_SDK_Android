@@ -31,4 +31,5 @@ interface CloudBackupLocalDataSource {
     suspend fun getRemoteId(backupId: String): String?
     suspend fun getLatestBackup(): CloudBackup?
     fun getLatestBackupFlow(): Flow<CloudBackup?>
+    suspend fun deleteAll()
 }

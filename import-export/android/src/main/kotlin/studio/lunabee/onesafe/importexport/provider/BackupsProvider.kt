@@ -69,7 +69,7 @@ class BackupsProvider : DocumentsProvider() {
             appContext,
             BackupsProviderProviderEntryPoint::class.java,
         )
-        return hiltEntryPoint.backupDir()
+        return hiltEntryPoint.backupDir().also { it.mkdirs() }
     }
 
     private fun getInternalBackupMimetype(appContext: Context): String {

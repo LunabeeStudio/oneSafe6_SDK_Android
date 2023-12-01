@@ -82,7 +82,7 @@ class LocalBackupLocalDataSourceImpl @Inject constructor(
     override suspend fun delete(oldBackups: List<LocalBackup>) {
         transactionProvider.runAsTransaction {
             oldBackups.forEach { localBackup ->
-                if (localBackup.file.delete()) {
+                if (localBackup.file.delete() || !localBackup.file.exists()) {
                     backupDao.deleteLocalBackup(localBackup.id)
                 } else if (localBackup.file.exists()) {
                     throw OSImportExportError(OSImportExportError.Code.BACKUP_FILE_DELETE_FAILED)
@@ -106,4 +106,7 @@ class LocalBackupLocalDataSourceImpl @Inject constructor(
 
     override suspend fun getFile(backupId: String): File? =
         backupDao.getFile(backupId)?.takeIf { it.exists() }
+
+    override fun hasBackup(): Flow<Boolean> =
+        backupDao.hasLocalBackup()
 }

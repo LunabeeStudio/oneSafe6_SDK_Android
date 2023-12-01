@@ -79,6 +79,9 @@ interface BackupDao {
     @Query("UPDATE Backup SET local_file = NULL")
     suspend fun nullifyAllLocalId()
 
+    @Query("UPDATE Backup SET remote_id = NULL")
+    suspend fun nullifyAllRemoteId()
+
     @Query("UPDATE Backup SET remote_id = NULL WHERE id = :id")
     suspend fun nullifyRemoteIdById(id: String)
 
@@ -118,4 +121,13 @@ interface BackupDao {
 
     @Query("SELECT * FROM Backup WHERE remote_id IS NOT NULL ORDER BY `date` DESC LIMIT 1")
     fun getLatestCloudBackupFlow(): Flow<RoomCloudBackup?>
+
+    @Query("SELECT EXISTS(SELECT 1 FROM Backup WHERE local_file IS NOT NULL LIMIT 1)")
+    fun hasLocalBackup(): Flow<Boolean>
+
+    @Transaction
+    suspend fun deleteAllCloudBackup() {
+        nullifyAllRemoteId()
+        deleteOrphans()
+    }
 }

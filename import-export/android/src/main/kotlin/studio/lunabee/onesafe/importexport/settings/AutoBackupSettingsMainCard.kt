@@ -30,12 +30,10 @@ import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.settings.SettingsCard
 import studio.lunabee.onesafe.commonui.settings.SwitchSettingAction
 import studio.lunabee.onesafe.importexport.model.ImportExportConstant
+import studio.lunabee.onesafe.model.OSSwitchState
 import studio.lunabee.onesafe.ui.theme.LocalColorPalette
 import studio.lunabee.onesafe.ui.theme.OSTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
-
-// TODO <AutoBackup> check play services
-//  GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
 
 @Composable
 internal fun AutoBackupSettingsMainCard(
@@ -62,7 +60,7 @@ internal fun AutoBackupSettingsMainCard(
                                 isChecked = uiState.isCloudBackupEnabled,
                             )
                         }
-                        if (uiState.isCloudBackupEnabled) {
+                        if (uiState.isCloudBackupEnabled.checked) {
                             this += SwitchSettingAction(
                                 label = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_keepAutoBackupOnLocal_title),
                                 description = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_keepAutoBackupOnLocal_subtitle),
@@ -95,7 +93,7 @@ fun AutoBackupSettingsMainCardPreview() {
             uiState = AutoBackupSettingsMainCardUiState.Enabled(
                 selectAutoBackupFrequency = { },
                 autoBackupFrequency = AutoBackupFrequency.WEEKLY,
-                isCloudBackupEnabled = true,
+                isCloudBackupEnabled = OSSwitchState.True,
                 isKeepLocalBackupEnabled = false,
                 toggleAutoBackup = {},
                 toggleCloudBackup = {},

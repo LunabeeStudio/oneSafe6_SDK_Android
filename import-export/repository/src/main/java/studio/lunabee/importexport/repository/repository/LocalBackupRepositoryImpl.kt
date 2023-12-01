@@ -56,4 +56,7 @@ class LocalBackupRepositoryImpl @Inject constructor(
 
     override suspend fun getFile(backupId: String): File? =
         dataSource.getFile(backupId)
+
+    override fun hasBackupFlow(): Flow<Boolean> =
+        dataSource.hasBackup()
 }

@@ -64,14 +64,14 @@ class AutoBackupSchedulerWorker @AssistedInject constructor(
         val durationBeforeBackupOutdated = getDurationBeforeBackupOutdatedUseCase()
         val frequency = AutoBackupFrequency.valueForDuration(settings.autoBackupFrequency)
         val synchronizeCloudFirst = inputData.getBoolean(SYNCHRONIZE_CLOUD_FIRST_DATA, false)
-        val islastBackupOutdated = durationBeforeBackupOutdated < Duration.ZERO
+        val islastBackupOutdated = durationBeforeBackupOutdated <= Duration.ZERO
 
         // Trigger a cloud sync if requested before scheduling the backup worker chain, except if we know that the chain worker will run
         // immediately (ie last backup is outdated)
         if (!islastBackupOutdated && synchronizeCloudFirst && settings.cloudBackupEnabled.first()) {
             synchronizeCloudBackupsUseCase()
                 .onCompletion { error ->
-                    // TODO <AutoBackup> handle error but do not make this worker fail
+                    // Ignore error, let the scheduled backup synchronize later
                     error?.let { Timber.e(it) }
                 }
                 .collect()
@@ -93,6 +93,7 @@ class AutoBackupSchedulerWorker @AssistedInject constructor(
         } else {
             // Try to set the next schedule to the exact computed time. Depending of the current state of the work request, it might does
             // nothing
+            // TODO <AutoBackup> does not work as expected, trigger manually if durationBeforeBackupOutdated == 0 or if no backup at all yet
             periodicBuilder.setNextScheduleTimeOverride(clock.millis() + durationBeforeBackupOutdated.inWholeMilliseconds)
         }
 
@@ -103,7 +104,6 @@ class AutoBackupSchedulerWorker @AssistedInject constructor(
                 periodicBuilder.build(),
             ).await()
 
-        // TODO <AutoBackup> check result of worker on app start to make sure the AutoBackupChainWorker has been successfully schedule
         return Result.success()
     }
 

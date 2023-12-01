@@ -33,12 +33,16 @@ android-gradle-plugin = "8.2.0-rc03"
 ##                 ⬆ = "8.3.0-alpha12"
 ##                 ⬆ = "8.3.0-alpha13"
 ##                 ⬆ = "8.3.0-alpha14"
+##                 ⬆ = "8.3.0-alpha15"
 
 kotlin = "1.9.20"
+##  ⬆ = "1.9.21"
 ##  ⬆ = "2.0.0-Beta1"
 
 ksp = "1.9.20-1.0.14"
+##⬆= "1.9.21-1.0.15"
 ##⬆= "2.0.0-Beta1-1.0.14"
+##⬆= "2.0.0-Beta1-1.0.15"
 
 google-dagger = "2.48.1"
 
@@ -46,7 +50,8 @@ florisboard-library = "0.4.0-alpha04-0.1.18"
 
 doubleratchet-jvm = "0.1.4"
 
-logback-classic = "1.4.11"
+logback-classic = "1.4.13"
+
 play-services-base = "18.2.0"
 play-services-auth-base = "18.0.10"
 google-api-client = "2.2.0"
@@ -95,7 +100,7 @@ androidx-lifecycle = "2.6.2"
 ##              ⬆ = "2.7.0-beta01"
 ##              ⬆ = "2.7.0-rc01"
 
-compose-bom-alpha = "2023.12.00-alpha01"
+compose-bom-alpha = "2023.12.00-alpha02"
 
 google-android-material = "1.10.0"
 ##                   ⬆ = "1.11.0-alpha01"
@@ -175,6 +180,7 @@ androidx-datastore = "1.0.0"
 androidx-preference = "1.2.1"
 
 ktor = "2.3.6"
+##⬆ = "3.0.0-beta-1"
 
 androidx-test-espresso = "3.6.0-alpha01"
 
@@ -190,7 +196,7 @@ androidx-startup = "1.1.1"
 navigation-compose = "2.7.4"
 ##              ⬆ = "2.7.5"
 
-detekt = "1.23.3"
+detekt = "1.23.4"
 
 protobuf = "3.25.1"
 
@@ -202,13 +208,13 @@ compose-color-picker = "0.7.0"
 
 compose-shimmer = "1.2.0"
 
-lbcaccessibility = "1.5.0-179-SNAPSHOT"
+lbcaccessibility = "1.5.0-181-SNAPSHOT"
 
-lbcandroidtest = "1.2.0-179-SNAPSHOT"
+lbcandroidtest = "1.2.0-181-SNAPSHOT"
 
-lbctheme = "1.1.0-179-SNAPSHOT"
+lbctheme = "1.1.0-181-SNAPSHOT"
 
-lbccore = "1.1.0-179-SNAPSHOT"
+lbccore = "1.1.0-181-SNAPSHOT"
 
 kotlin-logging-jvm = "3.0.5"
 
@@ -235,6 +241,7 @@ lint = "31.2.0-rc03"
 ##⬆ = "31.3.0-alpha12"
 ##⬆ = "31.3.0-alpha13"
 ##⬆ = "31.3.0-alpha14"
+##⬆ = "31.3.0-alpha15"
 
 javapoet = "1.13.0"
 

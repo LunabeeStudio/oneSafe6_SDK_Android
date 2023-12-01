@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 
 fun <T : Any, R : Any> Flow<PagingData<T>>.mapPagingValues(transform: suspend (T) -> R): Flow<PagingData<R>> {
     return map { it.map(transform) }
@@ -77,3 +78,10 @@ fun <T> List<Flow<LBFlowResult<T>>>.combine(): Flow<LBFlowResult<List<T?>>> {
         }
     }
 }
+
+fun <T> Flow<LBFlowResult<T>>.onFailure(block: suspend (LBFlowResult.Failure<T>) -> Unit): Flow<LBFlowResult<T>> =
+    onEach {
+        if (it is LBFlowResult.Failure) {
+            block(it)
+        }
+    }

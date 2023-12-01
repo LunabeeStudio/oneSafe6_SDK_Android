@@ -19,6 +19,8 @@
 
 package studio.lunabee.onesafe.importexport.settings
 
+import studio.lunabee.onesafe.model.OSSwitchState
+
 internal sealed interface AutoBackupSettingsMainCardUiState {
     val toggleAutoBackup: () -> Unit
 
@@ -27,7 +29,7 @@ internal sealed interface AutoBackupSettingsMainCardUiState {
         override val toggleAutoBackup: () -> Unit,
         val selectAutoBackupFrequency: () -> Unit,
         val autoBackupFrequency: AutoBackupFrequency,
-        val isCloudBackupEnabled: Boolean,
+        val isCloudBackupEnabled: OSSwitchState,
         val isKeepLocalBackupEnabled: Boolean,
         val toggleKeepLocalBackup: () -> Unit,
         val toggleCloudBackup: (() -> Unit)?,

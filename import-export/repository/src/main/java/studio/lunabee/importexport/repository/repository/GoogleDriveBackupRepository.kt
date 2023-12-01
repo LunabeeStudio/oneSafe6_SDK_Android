@@ -77,7 +77,7 @@ class GoogleDriveBackupRepository @Inject constructor(
     override fun getInputStream(backupId: String): Flow<LBFlowResult<InputStream>> = flow {
         localCloudBackupDatasource.getRemoteId(backupId)?.let { remoteId ->
             emitAll(driveEngine.getInputStream(remoteId))
-        } ?: emit(LBFlowResult.Failure(OSImportExportError(OSImportExportError.Code.BACKUP_ID_NOT_FOUND)))
+        } ?: emit(LBFlowResult.Failure(OSImportExportError(OSImportExportError.Code.BACKUP_ID_NOT_FOUND_IN_DB)))
     }
 
     override suspend fun getLatestBackup(): CloudBackup? =
@@ -85,4 +85,8 @@ class GoogleDriveBackupRepository @Inject constructor(
 
     override fun getLatestBackupFlow(): Flow<CloudBackup?> =
         localCloudBackupDatasource.getLatestBackupFlow()
+
+    override suspend fun clearBackupsLocally() {
+        localCloudBackupDatasource.deleteAll()
+    }
 }
