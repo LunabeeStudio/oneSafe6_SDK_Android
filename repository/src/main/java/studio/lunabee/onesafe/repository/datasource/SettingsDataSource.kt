@@ -56,5 +56,5 @@ interface SettingsDataSource {
     suspend fun setCloudBackupSettings(enabled: Boolean)
 
     val keepLocalBackupEnabled: Flow<Boolean>
-    suspend fun toggleKeepLocalBackupSettings(): Boolean
+    suspend fun setKeepLocalBackupSettings(enabled: Boolean)
 }

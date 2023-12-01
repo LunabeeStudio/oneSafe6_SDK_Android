@@ -57,4 +57,8 @@ class CloudBackupLocalDataSourceImpl @Inject constructor(
 
     override fun getLatestBackupFlow(): Flow<CloudBackup?> =
         dao.getLatestCloudBackupFlow().map { it?.toBackup() }
+
+    override suspend fun deleteAll() {
+        dao.deleteAllCloudBackup()
+    }
 }

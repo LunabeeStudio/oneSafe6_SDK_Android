@@ -25,13 +25,15 @@ data class OSDriveError(
     override val cause: Throwable? = null,
 ) : OSError(message, cause, code) {
 
-    enum class Code(override val message: String, val canRetry: Boolean) : ErrorCode<Code, OSDriveError> {
-        WRONG_ACCOUNT_TYPE(message = "The provided account must have \"com.google\" type", canRetry = false),
-        REQUEST_EXECUTION_FAILED(message = "The request failed to execute", canRetry = true),
-        AUTHENTICATION_REQUIRED(message = "User must authenticate by using the intent wrapped in error's cause", canRetry = false),
-        UNEXPECTED_NULL_ACCOUNT(message = "Unable to retrieve the Google account from account manager", canRetry = false),
-        DRIVE_ENGINE_NOT_INITIALIZED(message = "GoogleDriveEngine must be initialized by calling initialize fun", canRetry = false),
-        UNEXPECTED_NULL_AUTH_INTENT(message = "Authentication required but no intent provided", canRetry = false),
-        NETWORK_FAILURE(message = "The request failed due to network", canRetry = true),
+    enum class Code(override val message: String) : ErrorCode<Code, OSDriveError> {
+        WRONG_ACCOUNT_TYPE(message = "The provided account must have \"com.google\" type"),
+        REQUEST_EXECUTION_FAILED(message = "The request failed to execute"),
+        AUTHENTICATION_REQUIRED(message = "User must authenticate by using the intent wrapped in error's cause"),
+        UNEXPECTED_NULL_ACCOUNT(message = "Unable to retrieve the Google account from account manager"),
+        DRIVE_ENGINE_NOT_INITIALIZED(message = "GoogleDriveEngine must be initialized by calling initialize fun"),
+        UNEXPECTED_NULL_AUTH_INTENT(message = "Authentication required but no intent provided"),
+        NETWORK_FAILURE(message = "The request failed due to network"),
+        BACKUP_REMOTE_ID_NOT_FOUND(message = "No remote backup found for provided remote id"),
+        UNKNOWN_ERROR(message = "Unknown error happened"),
     }
 }

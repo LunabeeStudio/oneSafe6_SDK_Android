@@ -36,4 +36,5 @@ interface CloudBackupRepository {
     fun getInputStream(backupId: String): Flow<LBFlowResult<InputStream>>
     suspend fun getLatestBackup(): CloudBackup?
     fun getLatestBackupFlow(): Flow<CloudBackup?>
+    suspend fun clearBackupsLocally()
 }

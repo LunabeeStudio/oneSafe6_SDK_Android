@@ -32,4 +32,5 @@ interface LocalBackupRepository {
     suspend fun delete(backups: List<LocalBackup>)
     suspend fun deleteAll()
     suspend fun getFile(backupId: String): File?
+    fun hasBackupFlow(): Flow<Boolean>
 }

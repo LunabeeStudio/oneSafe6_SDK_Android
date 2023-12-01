@@ -20,13 +20,15 @@
 package studio.lunabee.onesafe.importexport.usecase
 
 import com.lunabee.lbcore.model.LBFlowResult
-import com.lunabee.lbcore.model.LBFlowResult.Companion.mapResult
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import studio.lunabee.onesafe.error.OSImportExportError
+import studio.lunabee.onesafe.error.OSDriveError
+import studio.lunabee.onesafe.error.osCode
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
 import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
+import studio.lunabee.onesafe.onFailure
 import java.io.InputStream
 import javax.inject.Inject
 
@@ -47,16 +49,11 @@ class GetAutoBackupStreamUseCase @Inject constructor(
             emit(LBFlowResult.Success(localBackupFile.inputStream()))
         } else {
             val flow = cloudBackupRepository.getInputStream(backupId)
-                .mapResult<InputStream, InputStream>(
-                    mapError = {
-                        if ((it as? OSImportExportError)?.code == OSImportExportError.Code.BACKUP_ID_NOT_FOUND) {
-                            // TODO <AutoBackup> map error
-                            it
-                        } else {
-                            it
-                        }
-                    },
-                )
+                .onFailure {
+                    if (it.throwable.osCode() == OSDriveError.Code.BACKUP_REMOTE_ID_NOT_FOUND) {
+                        cloudBackupRepository.refreshBackupList().collect()
+                    }
+                }
             emitAll(flow)
         }
     }

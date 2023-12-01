@@ -25,6 +25,7 @@ import com.lunabee.lblogger.e
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import studio.lunabee.onesafe.error.OSStorageError
+import studio.lunabee.onesafe.error.osCode
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
 import javax.inject.Inject
@@ -60,9 +61,11 @@ class GetAllLocalBackupsUseCase @Inject constructor(
             .filterIsInstance<LBResult.Failure<LocalBackup>>()
             .onEach { it.throwable?.let(log::e) }
         if (failures.isNotEmpty()) {
-            val brokenBackups = failures.mapNotNull {
-                if (((it as? LBResult.Failure)?.throwable as? OSStorageError)?.code == OSStorageError.Code.MISSING_BACKUP_FILE) {
-                    it.failureData
+            val brokenBackups = failures.mapNotNull { failure ->
+                if (failure.throwable.osCode() == OSStorageError.Code.MISSING_BACKUP_FILE) {
+                    failure.failureData?.also { backup ->
+                        backupRepository.delete(listOf(backup))
+                    }
                 } else {
                     null
                 }

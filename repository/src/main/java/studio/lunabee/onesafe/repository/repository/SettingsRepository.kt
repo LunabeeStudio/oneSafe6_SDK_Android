@@ -129,6 +129,6 @@ class SettingsRepository @Inject constructor(
     override val keepLocalBackupEnabled: Flow<Boolean>
         get() = settingsDataSource.keepLocalBackupEnabled
 
-    override suspend fun toggleKeepLocalBackupSettings(): Boolean =
-        settingsDataSource.toggleKeepLocalBackupSettings()
+    override suspend fun setKeepLocalBackupSettings(enabled: Boolean): Unit =
+        settingsDataSource.setKeepLocalBackupSettings(enabled)
 }

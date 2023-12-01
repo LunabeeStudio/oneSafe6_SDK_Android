@@ -58,7 +58,7 @@ sealed class OSError(
          */
         // TODO Lint rule to enforce param of OSError subclass's ctor
         inline fun <Code : Enum<Code>, reified Err : OSError> ErrorCode<Code, Err>.get(
-            message: String = this.message,
+            message: String? = this.message,
             cause: Throwable? = null,
         ): Err {
             val constructor = Err::class.java.constructors.first { !it.isSynthetic }
@@ -66,7 +66,7 @@ sealed class OSError(
             val params = Array(paramsType.size) {
                 when (paramsType[it]) {
                     this::class.java -> this
-                    String::class.java -> message
+                    String::class.java -> message ?: this.message
                     Throwable::class.java -> cause
                     else -> {
                         log.e("Unexpected param in ${this::class.simpleName} constructor")

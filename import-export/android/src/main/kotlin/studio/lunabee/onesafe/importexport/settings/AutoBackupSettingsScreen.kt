@@ -49,6 +49,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -65,6 +66,7 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.google.android.gms.auth.GoogleAuthUtil
+import kotlinx.coroutines.launch
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSScreen
 import studio.lunabee.onesafe.commonui.R
@@ -77,18 +79,16 @@ import studio.lunabee.onesafe.commonui.snackbar.SnackbarState
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.utils.AccountPermissionRationaleDialogState
 import studio.lunabee.onesafe.importexport.utils.BackupFileManagerHelper
+import studio.lunabee.onesafe.model.OSSwitchState
 import studio.lunabee.onesafe.molecule.ElevatedTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.extensions.topAppBarElevation
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.OSPreviewOnSurfaceTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
-import timber.log.Timber
 import java.io.File
 import java.net.URI
 import java.time.Instant
-
-// TODO <AutoBackup> screen test (snackbar, loading, etc)
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -111,6 +111,7 @@ fun AutoBackupSettingsRoute(
 
     val accountLauncher = rememberAccountLauncher(
         setupCloudBackup = viewModel::setupCloudBackupAndSync,
+        showError = viewModel::showError,
     )
 
     val accountsPermissionState = accountPermissionState(
@@ -130,6 +131,9 @@ fun AutoBackupSettingsRoute(
         }
     }
 
+    val dialogState by viewModel.dialogState.collectAsStateWithLifecycle()
+    dialogState?.DefaultAlertDialog()
+
     val openFileManager = {
         if (!BackupFileManagerHelper.openFileManager(context)) {
             viewModel.showError(LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_saveAccess_error_noFileManager))
@@ -148,18 +152,23 @@ fun AutoBackupSettingsRoute(
                         requestNotificationPermission(notificationPermissionState) { permissionDialogState = it }
                     }
                 },
-                toggleCloudBackup = if (state.isCloudBackupEnabled) {
-                    { viewModel.disableCloudBackupSettings() }
-                } else {
-                    {
-                        // TODO <AutoBackup> show loading (+ hide loading at the end of flow / on errors)
-                        enableCloudBackup(
-                            accountsPermissionState = accountsPermissionState,
-                            context = context,
-                            accountLauncher = accountLauncher,
-                            setPermissionDialogState = { permissionDialogState = it },
-                            state = state,
-                        )
+                toggleCloudBackup = when (state.cloudBackupEnabledState) {
+                    OSSwitchState.True -> {
+                        { viewModel.disableCloudBackupSettings() }
+                    }
+                    OSSwitchState.False -> {
+                        {
+                            enableCloudBackup(
+                                accountsPermissionState = accountsPermissionState,
+                                context = context,
+                                accountLauncher = accountLauncher,
+                                setPermissionDialogState = { permissionDialogState = it },
+                                state = state,
+                            )
+                        }
+                    }
+                    OSSwitchState.Loading -> {
+                        { /* no-op */ }
                     }
                 },
                 setAutoBackupFrequency = { viewModel.setAutoBackupFrequency(it) },
@@ -212,6 +221,7 @@ private fun enableCloudBackupSettings(
 @Composable
 private fun rememberAccountLauncher(
     setupCloudBackup: (String) -> Unit,
+    showError: (errorMessage: LbcTextSpec) -> Unit,
 ): ManagedActivityResultLauncher<Intent, ActivityResult> {
     return rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
@@ -221,8 +231,7 @@ private fun rememberAccountLauncher(
                 if (accountName != null) {
                     setupCloudBackup(accountName)
                 } else {
-                    // TODO <AutoBackup> show (unexpected) error
-                    Timber.e("Unexpected null accountName on success result")
+                    showError(LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_error_unexpectedNullAccount))
                 }
             }
         },
@@ -256,6 +265,7 @@ private fun AutoBackupSettingsScreen(
     snackbarHostState: SnackbarHostState,
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     val mainCardUiState = if (uiState.isBackupEnabled) {
         var isAutoBackupFrequencyBottomSheetVisible by rememberSaveable { mutableStateOf(value = false) }
 
@@ -270,7 +280,7 @@ private fun AutoBackupSettingsScreen(
             toggleAutoBackup = toggleAutoBackup,
             selectAutoBackupFrequency = { isAutoBackupFrequencyBottomSheetVisible = true },
             autoBackupFrequency = uiState.autoBackupFrequency,
-            isCloudBackupEnabled = uiState.isCloudBackupEnabled,
+            isCloudBackupEnabled = uiState.cloudBackupEnabledState,
             isKeepLocalBackupEnabled = uiState.isKeepLocalBackupEnabled,
             toggleKeepLocalBackup = { uiState.toggleKeepLocalBackup() },
             toggleCloudBackup = toggleCloudBackup,
@@ -316,24 +326,31 @@ private fun AutoBackupSettingsScreen(
             }
 
             if (uiState.isBackupEnabled) {
-                uiState.latestBackup?.let { latestBackup ->
-                    item {
-                        AutoBackupSettingsAccessBackupCard(
-                            onAccessLocalClick = openFileManager,
-                            onAccessRemoteClick = if (uiState.isCloudBackupEnabled && featureFlagCloudBackup) {
-                                uiState.driveUri?.let { { context.startActivity(Intent.parseUri(it.toString(), 0)) } }
+                item {
+                    AutoBackupSettingsAccessBackupCard(
+                        onAccessLocalClick = openFileManager,
+                        onAccessRemoteClick = if (uiState.cloudBackupEnabledState.checked && featureFlagCloudBackup) {
+                            uiState.driveUri?.let { { context.startActivity(Intent.parseUri(it.toString(), 0)) } }
+                        } else {
+                            null
+                        },
+                    )
+                }
+                item {
+                    AutoBackupSettingsRestoreCard(
+                        onRestoreBackupClick = {
+                            val backupId = uiState.latestBackup?.id
+                            if (backupId != null) {
+                                navigateToRestoreBackup(backupId)
                             } else {
-                                null
-                            },
-                        )
-                    }
-                    item {
-                        AutoBackupSettingsRestoreCard(
-                            onRestoreBackupClick = {
-                                navigateToRestoreBackup(latestBackup.id)
-                            },
-                        )
-                    }
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        context.getString(R.string.settings_autoBackupScreen_restore_noBackupMessage),
+                                    )
+                                }
+                            }
+                        },
+                    )
                 }
                 item {
                     AutoBackupSettingsInformationCard(
@@ -439,7 +456,7 @@ private fun AutoBackupSettingsScreenOnPreview() {
                 isBackupEnabled = true,
                 autoBackupFrequency = AutoBackupFrequency.WEEKLY,
                 latestBackup = LocalBackup(Instant.now(), File("")),
-                isCloudBackupEnabled = true,
+                cloudBackupEnabledState = OSSwitchState.True,
                 isKeepLocalBackupEnabled = true,
                 toggleKeepLocalBackup = {},
                 driveUri = URI.create(""),

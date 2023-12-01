@@ -32,7 +32,7 @@ import androidx.work.WorkManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import studio.lunabee.onesafe.commonui.R
-import studio.lunabee.onesafe.commonui.error.code
+import studio.lunabee.onesafe.commonui.error.codeText
 import studio.lunabee.onesafe.commonui.notification.OSNotificationChannelId
 import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
 import studio.lunabee.onesafe.error.OSDriveError
@@ -89,22 +89,32 @@ class AutoBackupWorkersHelper @Inject constructor(
         }
     }
 
+    /**
+     * Handle backup worker error
+     *  • set backup error and send notification if [runAttemptCount] reaches [RETRIES_BEFORE_SHOW_ERROR]
+     *  • compute worker result depending on the [error] and [runAttemptCount]
+     *
+     * @param error Error caught in backup worker
+     * @param runAttemptCount see ListenableWorker.getRunAttemptCount
+     * @return The worker [Result]
+     */
     @SuppressLint("MissingPermission")
     suspend fun onBackupWorkerFails(error: Throwable?, runAttemptCount: Int): Result {
-        val canRetry = (error as? OSDriveError)?.code?.canRetry ?: false
+        Timber.e(error, "fail #$runAttemptCount")
+        val canRetry = canRetry(error)
 
-        if (runAttemptCount == 3 || !canRetry) {
+        if (runAttemptCount == RETRIES_BEFORE_SHOW_ERROR || !canRetry) {
             // Store error
             val autoBackupError = AutoBackupError(
                 date = ZonedDateTime.now(clock),
-                code = error.code().string(context),
+                code = error.codeText().string(context),
                 message = error?.stackTraceToString(),
             )
             autoBackupErrorRepository.setError(autoBackupError)
             // Notify
             if (osNotificationManager.areNotificationsEnabled(OSNotificationChannelId.BACKUP_CHANNEL_ID)) {
                 val title = context.getString(R.string.notification_autobackup_error_title)
-                val message = context.getString(R.string.notification_autobackup_error_message, error.code().string(context))
+                val message = context.getString(R.string.notification_autobackup_error_message, error.codeText().string(context))
                 val notificationBuilder = osNotificationManager.backupNotificationBuilder
                     .setContentTitle(title)
                     .setStyle(
@@ -139,6 +149,25 @@ class AutoBackupWorkersHelper @Inject constructor(
         }
     }
 
+    private fun canRetry(error: Throwable?): Boolean {
+        val driveError = error as? OSDriveError
+        val canRetry = when (driveError?.code) {
+            OSDriveError.Code.REQUEST_EXECUTION_FAILED,
+            OSDriveError.Code.NETWORK_FAILURE,
+            OSDriveError.Code.BACKUP_REMOTE_ID_NOT_FOUND,
+            OSDriveError.Code.DRIVE_ENGINE_NOT_INITIALIZED,
+            OSDriveError.Code.UNEXPECTED_NULL_AUTH_INTENT,
+            OSDriveError.Code.UNKNOWN_ERROR,
+            null, // Retry by default
+            -> true
+            OSDriveError.Code.WRONG_ACCOUNT_TYPE,
+            OSDriveError.Code.AUTHENTICATION_REQUIRED,
+            OSDriveError.Code.UNEXPECTED_NULL_ACCOUNT,
+            -> false
+        }
+        return canRetry
+    }
+
     suspend fun onBackupWorkerSucceed(): Result {
         osNotificationManager.manager.cancel(OSNotificationManager.AUTO_BACKUP_ERROR_WORKER_NOTIFICATION_ID)
         autoBackupErrorRepository.setError(null)
@@ -147,5 +176,6 @@ class AutoBackupWorkersHelper @Inject constructor(
 
     companion object {
         private const val AUTO_BACKUP_SCHEDULER_WORK_NAME = "1d35209a-c713-439b-80a1-f83791018682"
+        private const val RETRIES_BEFORE_SHOW_ERROR = 3
     }
 }

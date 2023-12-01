@@ -184,11 +184,9 @@ class DatastoreSettingsDataSource @Inject constructor(
     override val keepLocalBackupEnabled: Flow<Boolean> = dataStore.data
         .map { preferences -> preferences[keepLocalBackupEnabledKey] ?: SettingsDefaults.keepLocalBackupEnabledDefault }
 
-    override suspend fun toggleKeepLocalBackupSettings(): Boolean {
+    override suspend fun setKeepLocalBackupSettings(enabled: Boolean) {
         dataStore.edit { preferences ->
-            val keepLocalBackupEnabled = preferences[keepLocalBackupEnabledKey] ?: SettingsDefaults.keepLocalBackupEnabledDefault
-            preferences[keepLocalBackupEnabledKey] = !keepLocalBackupEnabled
+            preferences[keepLocalBackupEnabledKey] = enabled
         }
-        return keepLocalBackupEnabled.first()
     }
 }

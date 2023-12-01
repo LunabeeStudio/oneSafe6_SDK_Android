@@ -31,6 +31,6 @@ interface CloudBackupEngine {
     fun uploadBackup(localBackup: LocalBackup): Flow<LBFlowResult<CloudBackup>>
     fun getInputStream(remoteId: String): Flow<LBFlowResult<InputStream>>
     fun deleteBackup(cloudBackup: CloudBackup): Flow<LBFlowResult<Unit>>
-    suspend fun setupAccount(accountName: String?)
+    fun setupAccount(accountName: String): Flow<LBFlowResult<Unit>>
     fun getCloudInfo(): Flow<CloudInfo>
 }

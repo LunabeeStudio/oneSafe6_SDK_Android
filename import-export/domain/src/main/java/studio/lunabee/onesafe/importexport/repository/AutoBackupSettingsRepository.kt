@@ -32,5 +32,5 @@ interface AutoBackupSettingsRepository {
     fun toggleAutoBackupSettings(): Boolean
     fun setAutoBackupFrequency(delay: Duration)
     suspend fun setCloudBackupSettings(enabled: Boolean)
-    suspend fun toggleKeepLocalBackupSettings(): Boolean
+    suspend fun setKeepLocalBackupSettings(enabled: Boolean)
 }
