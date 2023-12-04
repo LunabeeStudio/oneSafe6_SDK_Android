@@ -74,6 +74,7 @@ sealed class OSError(
                     }
                 }
             }
+            @Suppress("SpreadOperator")
             return constructor.newInstance(*params) as Err
         }
     }

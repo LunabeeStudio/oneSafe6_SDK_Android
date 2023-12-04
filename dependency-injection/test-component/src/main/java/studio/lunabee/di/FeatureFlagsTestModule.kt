@@ -23,20 +23,12 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import studio.lunabee.onesafe.domain.common.FeatureFlags
+import studio.lunabee.onesafe.test.OSTestUtils
 
 @Module
 @InstallIn(SingletonComponent::class)
 object FeatureFlagsTestModule {
     @Provides
-    fun provideFeatureFlags(): FeatureFlags = object : FeatureFlags {
-        override fun florisBoard(): Boolean = false
-        override fun accessibilityService(): Boolean = false
-        override fun oneSafeK(): Boolean = false
-        override fun bubbles(): Flow<Boolean> = flowOf(true)
-        override fun quickSignIn(): Boolean = false
-        override fun cloudBackup(): Boolean = true
-    }
+    fun provideFeatureFlags(): FeatureFlags = OSTestUtils.featureFlags()
 }

@@ -45,6 +45,7 @@ import kotlinx.coroutines.flow.onEach
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
 import studio.lunabee.onesafe.commonui.utils.setForegroundSafe
+import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
 import studio.lunabee.onesafe.importexport.usecase.CloudAutoBackupUseCase
 import studio.lunabee.onesafe.importexport.usecase.DeleteOldCloudBackupsUseCase
@@ -64,9 +65,12 @@ class CloudBackupWorker @AssistedInject constructor(
     private val deleteOldBackupsUseCase: DeleteOldCloudBackupsUseCase,
     private val osNotificationManager: OSNotificationManager,
     private val autoBackupWorkersHelper: AutoBackupWorkersHelper,
+    private val featureFlags: FeatureFlags,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
-        setForegroundSafe(getForegroundInfo())
+        if (featureFlags.backupWorkerExpedited()) {
+            setForegroundSafe(getForegroundInfo())
+        }
 
         val flowResult = cloudAutoBackupUseCase().transformResult {
             emitAll(deleteOldBackupsUseCase())
@@ -104,22 +108,24 @@ class CloudBackupWorker @AssistedInject constructor(
     }
 
     companion object {
-        private fun getWorkRequest(): OneTimeWorkRequest {
-            return OneTimeWorkRequestBuilder<CloudBackupWorker>()
+        private fun getWorkRequest(setExpedited: Boolean): OneTimeWorkRequest {
+            val workRequestBuilder = OneTimeWorkRequestBuilder<CloudBackupWorker>()
                 .addTag(ImportExportAndroidConstants.AUTO_BACKUP_WORKER_TAG)
-                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .setConstraints(
                     Constraints.Builder().setRequiredNetworkType(NetworkType.UNMETERED).build(),
                 )
-                .build()
+            if (setExpedited) {
+                workRequestBuilder.setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            }
+            return workRequestBuilder.build()
         }
 
-        internal fun start(context: Context) {
+        internal fun start(context: Context, setExpedited: Boolean) {
             WorkManager.getInstance(context)
                 .enqueueUniqueWork(
                     ImportExportAndroidConstants.AUTO_BACKUP_WORKER_NAME,
                     ExistingWorkPolicy.APPEND_OR_REPLACE,
-                    getWorkRequest(),
+                    getWorkRequest(setExpedited),
                 )
         }
     }

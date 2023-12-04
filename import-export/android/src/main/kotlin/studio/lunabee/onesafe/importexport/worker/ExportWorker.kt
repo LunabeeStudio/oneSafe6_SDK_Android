@@ -126,10 +126,12 @@ class ExportWorker @AssistedInject constructor(
         private const val PROGRESS_DATA_KEY = "375f2850-9884-4ef7-a50b-6e58be73a483"
         private const val ERROR_OUTPUT_KEY: String = "ab2c1e17-2b69-4839-b954-bf2b8a3fab73"
 
-        fun start(context: Context): Flow<LBFlowResult<File>> {
-            val workRequest = OneTimeWorkRequestBuilder<ExportWorker>()
-                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                .build()
+        fun start(context: Context, setExpedited: Boolean): Flow<LBFlowResult<File>> {
+            val workRequestBuilder = OneTimeWorkRequestBuilder<ExportWorker>()
+            if (setExpedited) {
+                workRequestBuilder.setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            }
+            val workRequest = workRequestBuilder.build()
             val workManager = WorkManager.getInstance(context)
             workManager.enqueueUniqueWork(EXPORT_WORKER_NAME, ExistingWorkPolicy.APPEND_OR_REPLACE, workRequest)
 
