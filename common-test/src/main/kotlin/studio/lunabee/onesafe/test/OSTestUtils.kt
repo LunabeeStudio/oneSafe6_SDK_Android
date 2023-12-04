@@ -19,6 +19,9 @@
 
 package studio.lunabee.onesafe.test
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
@@ -132,6 +135,26 @@ object OSTestUtils {
             secureDisplayMask,
             isSecured,
         )
+    }
+
+    fun featureFlags(
+        florisBoard: Boolean = false,
+        accessibilityService: Boolean = false,
+        oneSafeK: Boolean = false,
+        bubbles: Flow<Boolean> = flowOf(true),
+        quickSignIn: Boolean = false,
+        cloudBackup: Boolean = false,
+        backupForegroundService: Boolean = false,
+    ): FeatureFlags {
+        return object : FeatureFlags {
+            override fun florisBoard(): Boolean = florisBoard
+            override fun accessibilityService(): Boolean = accessibilityService
+            override fun oneSafeK(): Boolean = oneSafeK
+            override fun bubbles(): Flow<Boolean> = bubbles
+            override fun quickSignIn(): Boolean = quickSignIn
+            override fun cloudBackup(): Boolean = cloudBackup
+            override fun backupWorkerExpedited(): Boolean = backupForegroundService
+        }
     }
 }
 

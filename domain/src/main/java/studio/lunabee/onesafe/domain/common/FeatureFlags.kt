@@ -28,4 +28,5 @@ interface FeatureFlags {
     fun bubbles(): Flow<Boolean>
     fun quickSignIn(): Boolean
     fun cloudBackup(): Boolean
+    fun backupWorkerExpedited(): Boolean
 }

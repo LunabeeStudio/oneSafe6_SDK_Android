@@ -42,6 +42,7 @@ import kotlinx.coroutines.flow.onStart
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
 import studio.lunabee.onesafe.commonui.utils.setForegroundSafe
+import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
 import studio.lunabee.onesafe.importexport.usecase.DeleteOldLocalBackupsUseCase
 import studio.lunabee.onesafe.importexport.usecase.LocalAutoBackupUseCase
@@ -59,6 +60,7 @@ class LocalBackupWorker @AssistedInject constructor(
     private val deleteOldBackupsUseCase: DeleteOldLocalBackupsUseCase,
     private val osNotificationManager: OSNotificationManager,
     private val autoBackupWorkersHelper: AutoBackupWorkersHelper,
+    private val featureFlags: FeatureFlags,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         val flowResult = localAutoBackupUseCase()
@@ -82,16 +84,17 @@ class LocalBackupWorker @AssistedInject constructor(
     }
 
     private suspend fun updateProgress(progress: Float) {
-        getForegroundInfo()
         val data = Data.Builder()
             .putFloat(PROGRESS_DATA_KEY, progress)
             .build()
         setProgress(data)
-        val foregroundInfo = createForegroundInfo(progress)
-        setForegroundSafe(foregroundInfo)
+
+        if (featureFlags.backupWorkerExpedited()) {
+            setForegroundSafe(getForegroundInfo())
+        }
     }
 
-    override suspend fun getForegroundInfo(): ForegroundInfo = createForegroundInfo(0f)
+    override suspend fun getForegroundInfo(): ForegroundInfo = createForegroundInfo(inputData.getFloat(PROGRESS_DATA_KEY, 0f))
 
     private fun createForegroundInfo(progress: Float): ForegroundInfo {
         Timber.d("Progress $progress") // TODO show progress
@@ -115,19 +118,22 @@ class LocalBackupWorker @AssistedInject constructor(
     companion object {
         private const val PROGRESS_DATA_KEY: String = "375f2850-9884-4ef7-a50b-6e58be73a483"
 
-        internal fun getWorkRequest(): OneTimeWorkRequest {
-            return OneTimeWorkRequestBuilder<LocalBackupWorker>()
+        internal fun getWorkRequest(setExpedited: Boolean): OneTimeWorkRequest {
+            val workRequestBuilder = OneTimeWorkRequestBuilder<LocalBackupWorker>()
+            workRequestBuilder
                 .addTag(ImportExportAndroidConstants.AUTO_BACKUP_WORKER_TAG)
-                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                .build()
+            if (setExpedited) {
+                workRequestBuilder.setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            }
+            return workRequestBuilder.build()
         }
 
-        internal fun start(context: Context) {
+        internal fun start(context: Context, setExpedited: Boolean) {
             WorkManager.getInstance(context)
                 .enqueueUniqueWork(
                     ImportExportAndroidConstants.AUTO_BACKUP_WORKER_NAME,
                     ExistingWorkPolicy.APPEND_OR_REPLACE,
-                    getWorkRequest(),
+                    getWorkRequest(setExpedited),
                 )
         }
     }

@@ -104,7 +104,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
         val workManager = WorkManager.getInstance(context)
         val testDriver = WorkManagerTestInitHelper.getTestDriver(context)!!
 
-        CloudBackupWorker.start(context)
+        CloudBackupWorker.start(context, false)
         val workId = getWorkId(workManager)
         val actual = mutableListOf<WorkInfo.State>()
         val collectJob = launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -140,7 +140,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
             WorkInfo.State.ENQUEUED, // retry
         )
 
-        CloudBackupWorker.start(context)
+        CloudBackupWorker.start(context, false)
         val workId = getWorkId(workManager)
         launch(UnconfinedTestDispatcher(testScheduler)) {
             val actual = workManager.getWorkInfoByIdFlow(workId).take(3).map { it.state }.toList()
@@ -159,7 +159,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
         val workManager = WorkManager.getInstance(context)
         val testDriver = WorkManagerTestInitHelper.getTestDriver(context)!!
 
-        CloudBackupWorker.start(context)
+        CloudBackupWorker.start(context, false)
         val workId = getWorkId(workManager)
         val actual = mutableListOf<WorkInfo.State>()
         val collectJob = launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -213,7 +213,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
         workManager: WorkManager,
         testDriver: TestDriver,
     ) {
-        CloudBackupWorker.start(context)
+        CloudBackupWorker.start(context, false)
         val workId = getWorkId(workManager)
         testDriver.setAllConstraintsMet(workId)
         workManager.getWorkInfoByIdFlow(workId).first { it.state.isFinished }

@@ -27,6 +27,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.usecase.GetAutoBackupModeUseCase
@@ -44,6 +45,7 @@ class AutoBackupChainWorker @AssistedInject constructor(
     private val getAutoBackupModeUseCase: GetAutoBackupModeUseCase,
     private val itemRepository: SafeItemRepository,
     private val autoBackupWorkersHelper: AutoBackupWorkersHelper,
+    private val featureFlags: FeatureFlags,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         if (itemRepository.getSafeItemsCount() != 0) {
@@ -53,10 +55,10 @@ class AutoBackupChainWorker @AssistedInject constructor(
                     Timber.e("${AutoBackupChainWorker::class.simpleName} run but ${AutoBackupMode::class.simpleName} is $backupMode")
                     autoBackupWorkersHelper.cancel()
                 }
-                AutoBackupMode.LOCAL_ONLY -> LocalBackupWorker.start(applicationContext)
-                AutoBackupMode.CLOUD_ONLY -> CloudBackupWorker.start(applicationContext)
+                AutoBackupMode.LOCAL_ONLY -> LocalBackupWorker.start(applicationContext, featureFlags.backupWorkerExpedited())
+                AutoBackupMode.CLOUD_ONLY -> CloudBackupWorker.start(applicationContext, featureFlags.backupWorkerExpedited())
                 AutoBackupMode.SYNCHRONIZED -> {
-                    val localWorkRequest = LocalBackupWorker.getWorkRequest()
+                    val localWorkRequest = LocalBackupWorker.getWorkRequest(featureFlags.backupWorkerExpedited())
                     val cloudSyncWorkRequest = CloudSynchronizeBackupWorker.getWorkRequest()
 
                     WorkManager.getInstance(applicationContext)
