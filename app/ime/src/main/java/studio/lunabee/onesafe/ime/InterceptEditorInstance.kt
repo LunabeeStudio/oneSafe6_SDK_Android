@@ -64,10 +64,10 @@ class InterceptEditorInstance(context: Context) : EditorInstance(context) {
     }
 
     override fun performEnterAction(action: ImeOptions.Action): Boolean {
-        return if (interceptAction(action)) {
-            true
-        } else {
-            super.performEnterAction(action)
+        return when {
+            interceptAction(action) -> true // intercept action and forward to oSK
+            blockInput -> true // block action even if not intercepted because oSK is shown
+            else -> super.performEnterAction(action)
         }
     }
 }

@@ -33,10 +33,10 @@ sealed interface InitialTestState {
     /**
      * No data related to login on startup
      */
-    object SignedOut : InitialTestState
+    data object SignedOut : InitialTestState
 
     /**
      * Account is created and the master key is loaded
      */
-    object LoggedIn : InitialTestState
+    data object LoggedIn : InitialTestState
 }

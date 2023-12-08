@@ -59,6 +59,8 @@ dependencies {
     implementation(libs.datastore)
     implementation(libs.datastore.preferences)
     implementation(libs.protobuf.kotlinlite)
+    implementation(libs.emoji2)
+    implementation(libs.emoji2.bundled)
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)

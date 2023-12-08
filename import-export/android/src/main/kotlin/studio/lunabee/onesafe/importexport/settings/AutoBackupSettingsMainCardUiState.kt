@@ -19,12 +19,20 @@
 
 package studio.lunabee.onesafe.importexport.settings
 
+import studio.lunabee.compose.core.LbcTextSpec
+import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.importexport.model.ImportExportConstant
 import studio.lunabee.onesafe.model.OSSwitchState
 
-internal sealed interface AutoBackupSettingsMainCardUiState {
-    val toggleAutoBackup: () -> Unit
+internal sealed class AutoBackupSettingsMainCardUiState {
+    abstract val toggleAutoBackup: () -> Unit
+    open val footer: LbcTextSpec = LbcTextSpec.StringResource(
+        R.string.settings_autoBackupScreen_autoBackup_footer,
+        ImportExportConstant.KeepBackupsNumber,
+    )
 
-    data class Disabled(override val toggleAutoBackup: () -> Unit) : AutoBackupSettingsMainCardUiState
+    data class Disabled(override val toggleAutoBackup: () -> Unit) : AutoBackupSettingsMainCardUiState()
+
     data class Enabled(
         override val toggleAutoBackup: () -> Unit,
         val selectAutoBackupFrequency: () -> Unit,
@@ -33,5 +41,15 @@ internal sealed interface AutoBackupSettingsMainCardUiState {
         val isKeepLocalBackupEnabled: Boolean,
         val toggleKeepLocalBackup: () -> Unit,
         val toggleCloudBackup: (() -> Unit)?,
-    ) : AutoBackupSettingsMainCardUiState
+    ) : AutoBackupSettingsMainCardUiState() {
+        override val footer: LbcTextSpec
+            get() = if (isCloudBackupEnabled.checked && !isKeepLocalBackupEnabled) {
+                LbcTextSpec.StringResource(
+                    R.string.settings_autoBackupScreen_autoBackup_footerCloud,
+                    ImportExportConstant.KeepBackupsNumber,
+                )
+            } else {
+                super.footer
+            }
+    }
 }

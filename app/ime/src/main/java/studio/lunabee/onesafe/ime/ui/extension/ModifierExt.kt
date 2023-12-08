@@ -63,12 +63,11 @@ fun Modifier.keyboardTextfield(
                     if (!isKeyboardVisible()) {
                         toggleKeyboardVisibility()
                     }
+                    val editorInfo = EditorInfo().apply {
+                        update(keyboardOptions.toImeOptions(), textFieldValue())
+                    }
                     editorInstance.handleStartInputView(
-                        editorInfo = FlorisEditorInfo.wrap(
-                            EditorInfo().apply {
-                                update(keyboardOptions.toImeOptions(), textFieldValue())
-                            },
-                        ),
+                        editorInfo = FlorisEditorInfo.wrap(editorInfo),
                         isRestart = true,
                     )
                     editorInstance.interceptAction = { _ ->
@@ -101,8 +100,10 @@ fun Modifier.keyboardTextfield(
                         true
                     }
                 } else {
+                    // reset to default values
                     editorInstance.intercept = null
                     editorInstance.deleteBackwards = null
+                    editorInstance.interceptAction = { false }
                 }
             }
         }

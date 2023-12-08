@@ -29,7 +29,6 @@ import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.settings.SettingsCard
 import studio.lunabee.onesafe.commonui.settings.SwitchSettingAction
-import studio.lunabee.onesafe.importexport.model.ImportExportConstant
 import studio.lunabee.onesafe.model.OSSwitchState
 import studio.lunabee.onesafe.ui.theme.LocalColorPalette
 import studio.lunabee.onesafe.ui.theme.OSTheme
@@ -78,7 +77,7 @@ internal fun AutoBackupSettingsMainCard(
         )
         OSSmallSpacer()
         OSText(
-            text = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_autoBackup_footer, ImportExportConstant.KeepBackupsNumber),
+            text = uiState.footer,
             style = MaterialTheme.typography.bodySmall,
             color = LocalColorPalette.current.Neutral60,
         )

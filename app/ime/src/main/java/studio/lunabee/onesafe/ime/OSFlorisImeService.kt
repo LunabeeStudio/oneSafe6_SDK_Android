@@ -138,6 +138,8 @@ class OSFlorisImeService : FlorisImeService() {
 
     @Inject lateinit var autoLockInactivityManager: OSKAutoLockInactivityManager
 
+    @Inject lateinit var editorInfoManager: OSKEditorInfoManager
+
     @Inject lateinit var lockAppUseCase: LockAppUseCase
 
     private val themeManager by themeManager()
@@ -227,6 +229,7 @@ class OSFlorisImeService : FlorisImeService() {
         lifecycleScope.launch {
             oskImeStateFlow.collect { state ->
                 // Call state listeners
+                editorInfoManager.onStateChange(state)
                 autolockVisibilityManager.onStateChange(state)
                 autoLockInactivityManager.onStateChange(state)
                 refreshBlockInput()
