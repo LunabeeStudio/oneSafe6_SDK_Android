@@ -21,13 +21,24 @@ package studio.lunabee.onesafe.test
 
 import android.app.Application
 import android.content.Context
+import android.os.Bundle
+import androidx.emoji2.bundled.BundledEmojiCompatConfig
+import androidx.emoji2.text.EmojiCompat
 import androidx.test.runner.AndroidJUnitRunner
 import dagger.hilt.android.testing.HiltTestApplication
 
 // A custom runner to set up the instrumented application class for tests.
 class HiltTestRunner : AndroidJUnitRunner() {
 
+    lateinit var app: Application
+
     override fun newApplication(cl: ClassLoader?, name: String?, context: Context?): Application {
-        return super.newApplication(cl, HiltTestApplication::class.java.name, context)
+        app = super.newApplication(cl, HiltTestApplication::class.java.name, context)
+        return app
+    }
+
+    override fun onCreate(arguments: Bundle?) {
+        super.onCreate(arguments)
+        EmojiCompat.init(BundledEmojiCompatConfig(app))
     }
 }
