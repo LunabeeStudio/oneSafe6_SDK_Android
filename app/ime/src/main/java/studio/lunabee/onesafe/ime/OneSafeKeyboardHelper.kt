@@ -34,6 +34,6 @@ object OneSafeKeyboardHelper {
         val component = ComponentName.unflattenFromString(selectedImeId)
         return component?.packageName == context.packageName && component?.className == OSFlorisImeService::class.qualifiedName
     }
-}
 
-private const val Delimiter = ':'
+    const val Delimiter: Char = ':'
+}
