@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.domain.usecase.item
 
 import com.lunabee.lbcore.model.LBResult
+import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.repository.SafeItemDeletedRepository
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
@@ -34,7 +35,7 @@ class RemoveAllDeletedItemUseCase @Inject constructor(
         return OSError.runCatching(
             mapErr = { e -> OSDomainError(OSDomainError.Code.SAFE_ITEM_REMOVE_FAILURE, cause = e) },
         ) {
-            safeItemDeletedRepository.getDeletedItemsByDeletedParent(null).forEach { item ->
+            safeItemDeletedRepository.getDeletedItemsByDeletedParent(null, ItemOrder.Position).forEach { item ->
                 removeDeletedItemUseCase(item)
             }
         }

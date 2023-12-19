@@ -57,7 +57,6 @@ fun AppFilledConversationScreen(
         ContactScreenFactory.addConversations(
             conversations = contacts,
             onClick = onConversationClick,
-            lazyListScope = this,
         )
         lazyVerticalOSRegularSpacer()
         item {

@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe
 
 import studio.lunabee.onesafe.domain.model.camera.CameraSystem
+import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -45,4 +46,5 @@ internal object SettingsDefaults {
     val CameraSystemDefault: CameraSystem = CameraSystem.InApp
     const val cloudBackupEnabledDefault: Boolean = false
     const val keepLocalBackupEnabledDefault: Boolean = true
+    val itemOrderingDefault: ItemOrder = ItemOrder.Alphabetic
 }

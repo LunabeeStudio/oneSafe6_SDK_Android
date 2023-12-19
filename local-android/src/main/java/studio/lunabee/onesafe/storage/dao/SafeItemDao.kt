@@ -19,21 +19,22 @@
 
 package studio.lunabee.onesafe.storage.dao
 
-import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
-import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
+import studio.lunabee.onesafe.domain.model.safeitem.ItemNameWithIndex
+import studio.lunabee.onesafe.domain.model.safeitem.SafeItemIdName
 import studio.lunabee.onesafe.storage.DaoUtils.IS_DELETED
 import studio.lunabee.onesafe.storage.DaoUtils.IS_FAVORITE
 import studio.lunabee.onesafe.storage.DaoUtils.IS_NOT_DELETED
-import studio.lunabee.onesafe.storage.DaoUtils.ORDER_BY_DELETED_AT
-import studio.lunabee.onesafe.storage.DaoUtils.ORDER_BY_POSITION
-import studio.lunabee.onesafe.storage.DaoUtils.ORDER_BY_SAFE_ITEM_POSITION
-import studio.lunabee.onesafe.storage.DaoUtils.ORDER_BY_UPDATED_AT
+import studio.lunabee.onesafe.storage.DaoUtils.ITEM_ORDER_BY_INDEX_ALPHA
+import studio.lunabee.onesafe.storage.model.ItemIdWithAlphaIndex
+import studio.lunabee.onesafe.storage.model.RoomDoubleRange
 import studio.lunabee.onesafe.storage.model.RoomSafeItem
+import studio.lunabee.onesafe.storage.model.RoomUpdateSafeItem
 import java.time.Instant
 import java.util.UUID
 
@@ -46,8 +47,8 @@ interface SafeItemDao {
     @Insert
     suspend fun insert(safeItems: List<RoomSafeItem>)
 
-    @Update
-    suspend fun update(vararg safeItem: RoomSafeItem)
+    @Update(RoomSafeItem::class)
+    suspend fun update(safeItem: RoomUpdateSafeItem)
 
     @Query("UPDATE SafeItem SET is_favorite = NOT is_favorite WHERE id = :id")
     suspend fun toggleFavorite(id: UUID)
@@ -90,44 +91,8 @@ interface SafeItemDao {
     @Query("SELECT * FROM SafeItem WHERE id = :id")
     suspend fun findById(id: UUID): RoomSafeItem?
 
-    @Query(
-        """
-        SELECT DISTINCT
-            SafeItem.id as id,
-            SafeItem.enc_name as encName,
-            SafeItem.icon_id as iconId,
-            SafeItem.enc_color as encColor,
-            SafeItem.deleted_at as deletedAt,
-            identifier.enc_value as encIdentifier,
-            identifier.enc_secure_display_mask as encSecuredDisplayMask,
-            identifier.enc_kind as encIdentifierKind,
-            SafeItem.position as position,
-            SafeItem.updated_at as updatedAt
-        FROM SafeItem
-        LEFT JOIN (
-            SELECT 
-                item_id, 
-                enc_value ,
-                enc_kind,
-                enc_secure_display_mask
-            FROM SafeItemField  
-            WHERE is_item_identifier = 1 AND enc_value IS NOT NULL GROUP BY item_id
-        ) identifier on identifier.item_id  = SafeItem.id
-        WHERE SafeItem.id IN (:ids)
-       """,
-    )
-    fun findByIdWithIdentifier(ids: List<UUID>): Flow<List<SafeItemWithIdentifier>>
-
     @Query("SELECT * FROM SafeItem WHERE id = :id")
     fun findByIdAsFlow(id: UUID): Flow<RoomSafeItem?>
-
-    @Query("SELECT * FROM SafeItem WHERE parent_id = :parentId AND $IS_NOT_DELETED $ORDER_BY_POSITION")
-    suspend fun findByParentId(parentId: UUID): List<RoomSafeItem>
-
-    @Query(
-        "SELECT * FROM SafeItem WHERE parent_id = :parentId AND deleted_parent_id IS NOT :parentId AND $IS_DELETED $ORDER_BY_POSITION",
-    )
-    suspend fun findDeletedByParentIdNotEqualDeletedParentId(parentId: UUID): List<RoomSafeItem>
 
     @Query(
         """
@@ -140,24 +105,6 @@ interface SafeItemDao {
     """,
     )
     suspend fun updateParentIdOfDeletedByParentIdNotEqualDeletedParentId(parentId: UUID, newParentId: UUID?)
-
-    @Query("SELECT * FROM SafeItem WHERE deleted_parent_id IS :deletedParentId AND $IS_DELETED $ORDER_BY_DELETED_AT")
-    suspend fun findByDeletedParentId(deletedParentId: UUID?): List<RoomSafeItem>
-
-    @Query("SELECT * FROM SafeItem WHERE parent_id IS :parentId AND $IS_NOT_DELETED $ORDER_BY_POSITION")
-    fun findByParentIdAsPagingSource(parentId: UUID?): PagingSource<Int, RoomSafeItem>
-
-    @Query("SELECT * FROM SafeItem WHERE deleted_parent_id IS :deletedParentId AND $IS_DELETED $ORDER_BY_DELETED_AT")
-    fun findByDeletedParentIdAsPagingSource(deletedParentId: UUID?): PagingSource<Int, RoomSafeItem>
-
-    @Query(
-        """
-        SELECT * 
-        FROM SafeItem 
-        WHERE $IS_FAVORITE $ORDER_BY_UPDATED_AT
-    """,
-    )
-    fun findFavoriteAsPagingSource(): PagingSource<Int, RoomSafeItem>
 
     @Query("SELECT MAX(position) FROM SafeItem WHERE parent_id IS :parentId")
     suspend fun getHighestPosition(parentId: UUID?): Double?
@@ -187,23 +134,6 @@ interface SafeItemDao {
         "UPDATE SafeItem SET parent_id = :newParentId, deleted_parent_id = :newDeletedParentId WHERE parent_id = :oldParentId",
     )
     suspend fun updateParentIdAndDeletedParentId(oldParentId: UUID, newParentId: UUID?, newDeletedParentId: UUID?)
-
-    @Query("SELECT * FROM SafeItem WHERE $IS_FAVORITE $ORDER_BY_UPDATED_AT LIMIT :limit")
-    fun findLastFavorite(limit: Int): Flow<List<RoomSafeItem>>
-
-    /**
-     * Return last [limit] items without parent or with a non-deleted parent
-     */
-    @Query(
-        """
-            SELECT *
-            FROM SafeItem
-            WHERE $IS_DELETED AND deleted_parent_id IS NULL
-            $ORDER_BY_DELETED_AT
-            LIMIT :limit
-        """,
-    )
-    fun findLastDeletedWithNonDeletedParent(limit: Int): Flow<List<RoomSafeItem>>
 
     @Query(
         """
@@ -344,9 +274,6 @@ interface SafeItemDao {
     @Query("DELETE FROM SafeItem WHERE SafeItem.deleted_at < :threshold")
     suspend fun removeOldItems(threshold: Instant)
 
-    @Query("SELECT * FROM SafeItem LIMIT :limit")
-    fun getAllSafeItems(limit: Int): Flow<List<RoomSafeItem>>
-
     @Query("SELECT COUNT(*) FROM SafeItem")
     fun getSafeItemsCountFlow(): Flow<Int>
 
@@ -366,29 +293,12 @@ interface SafeItemDao {
     @Query("SELECT SafeItem.id FROM SafeItem")
     suspend fun getAllSafeItemIds(): List<UUID>
 
+    @Transaction
     @Query("SELECT * FROM SafeItem")
     suspend fun getAllSafeItems(): List<RoomSafeItem>
 
-    @Query(
-        """
-        SELECT
-            SafeItem.id as id,
-            SafeItem.enc_name as encName,
-            SafeItem.icon_id as iconId,
-            SafeItem.enc_color as encColor,
-            SafeItem.deleted_at as deletedAt,
-            SafeItemField.enc_value as encIdentifier,
-            SafeItemField.enc_kind as encIdentifierKind,
-            SafeItemField.enc_secure_display_mask as encSecuredDisplayMask,
-            SafeItem.position as position,
-            SafeItem.updated_at as updatedAt
-        FROM SafeItem
-        LEFT JOIN SafeItemField ON SafeItemField.item_id = SafeItem.id AND SafeItemField.is_item_identifier = 1 
-        WHERE SafeItem.id NOT IN (:idsToExclude) AND encIdentifier IS NOT NULL
-        $ORDER_BY_SAFE_ITEM_POSITION
-       """,
-    )
-    fun getAllSafeItemsWithIdentifierAsPagingSource(idsToExclude: List<UUID>): PagingSource<Int, SafeItemWithIdentifier>
+    @Query("SELECT id, enc_name as encName FROM SafeItem")
+    suspend fun getAllSafeItemsIdName(): List<SafeItemIdName>
 
     @Query(
         "UPDATE SafeItem SET parent_id = :parentId WHERE id = :itemId",
@@ -414,4 +324,26 @@ interface SafeItemDao {
 
     @Query("DELETE FROM SafeItem")
     suspend fun clearTable()
+
+    @Update(RoomSafeItem::class)
+    suspend fun updateAlphaIndices(idWithIndex: List<ItemIdWithAlphaIndex>)
+
+    @Query(
+        "UPDATE SafeItem SET index_alpha = :index WHERE id = :itemId",
+    )
+    suspend fun setAlphaIndex(itemId: UUID, index: Double)
+
+    @Query(
+        """
+            SELECT id, enc_name as encName, index_alpha as indexAlpha
+            FROM SafeItem $ITEM_ORDER_BY_INDEX_ALPHA
+            LIMIT 1 OFFSET :index
+        """,
+    )
+    suspend fun getItemNameWithIndexAt(index: Int): ItemNameWithIndex?
+
+    @Query(
+        "SELECT MIN(index_alpha) AS first, MAX(index_alpha) AS last FROM SafeItem",
+    )
+    suspend fun getAlphaIndexRange(): RoomDoubleRange
 }

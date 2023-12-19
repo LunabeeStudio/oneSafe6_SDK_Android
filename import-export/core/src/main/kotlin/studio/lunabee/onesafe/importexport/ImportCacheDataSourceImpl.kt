@@ -47,6 +47,8 @@ class ImportCacheDataSourceImpl @Inject constructor() : ImportCacheDataSource {
     override var migratedSafeItemsToImport: MutableList<SafeItem> = mutableListOf()
     override var migratedSafeItemFieldsToImport: List<SafeItemField> = emptyList()
     override var migratedSearchIndexToImport: MutableList<IndexWordEntry> = mutableListOf()
+    override var allItemAlphaIndices: MutableMap<UUID, Double> = mutableMapOf()
+    override var rootItemData: Pair<String, Double>? = null
     override var migratedIconsToImport: List<File> = emptyList()
     override var migratedFilesToImport: List<File> = emptyList()
 }

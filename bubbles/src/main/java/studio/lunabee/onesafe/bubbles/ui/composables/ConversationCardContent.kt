@@ -55,7 +55,7 @@ class ConversationCardContent(
     override val contentType: Any = "ContactItem"
 
     @Composable
-    override fun Content(padding: PaddingValues) {
+    override fun Content(padding: PaddingValues, modifier: Modifier) {
         val nameProvider = conversationInfo.nameProvider
         ConversationRow(
             osItemIllustration = if (nameProvider is EmojiNameProvider) {

@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.storage
 
 import studio.lunabee.onesafe.storage.model.RoomSafeItem
+import studio.lunabee.onesafe.storage.model.RoomUpdateSafeItem
 import java.time.Instant
 import java.util.UUID
 import kotlin.random.Random
@@ -37,19 +38,36 @@ internal object OSStorageTestUtils {
         deletedAt: Instant? = null,
         deletedParentId: UUID? = null,
         consultedAt: Instant? = null,
+        indexAlpha: Double = 0.0,
     ): RoomSafeItem {
         return RoomSafeItem(
-            id,
-            encName,
-            parentId,
-            isFavorite,
-            updatedAt,
-            position,
-            iconId,
-            encColor,
-            deletedAt,
-            deletedParentId,
-            consultedAt,
+            id = id,
+            encName = encName,
+            parentId = parentId,
+            isFavorite = isFavorite,
+            updatedAt = updatedAt,
+            position = position,
+            iconId = iconId,
+            encColor = encColor,
+            deletedAt = deletedAt,
+            deletedParentId = deletedParentId,
+            consultedAt = consultedAt,
+            indexAlpha = indexAlpha,
         )
     }
 }
+
+fun RoomSafeItem.toRoomUpdateSafeItem(): RoomUpdateSafeItem =
+    RoomUpdateSafeItem(
+        id = id,
+        encName = encName,
+        parentId = parentId,
+        isFavorite = isFavorite,
+        updatedAt = updatedAt,
+        position = position,
+        iconId = iconId,
+        encColor = encColor,
+        deletedAt = deletedAt,
+        deletedParentId = deletedParentId,
+        indexAlpha = indexAlpha,
+    )

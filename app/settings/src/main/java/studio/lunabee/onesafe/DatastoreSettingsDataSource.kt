@@ -25,11 +25,13 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.lunabee.lbextensions.enumValueOfOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
+import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import studio.lunabee.onesafe.repository.datasource.SettingsDataSource
 import java.time.Instant
@@ -52,6 +54,7 @@ class DatastoreSettingsDataSource @Inject constructor(
     private val autoBackupFrequencyKey = longPreferencesKey(SettingsConstants.autoBackupFrequencyKeyVal)
     private val cloudBackupEnabledKey = booleanPreferencesKey(SettingsConstants.cloudBackupEnabledKeyVal)
     private val keepLocalBackupEnabledKey = booleanPreferencesKey(SettingsConstants.keepLocalBackupEnabledKeyVal)
+    private val itemOrderingKey = stringPreferencesKey(SettingsConstants.itemOrderingKeyVal)
 
     override var autoLockInactivityDelay: Duration by blockingDurationDatastore(
         dataStore = dataStore,
@@ -187,6 +190,15 @@ class DatastoreSettingsDataSource @Inject constructor(
     override suspend fun setKeepLocalBackupSettings(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[keepLocalBackupEnabledKey] = enabled
+        }
+    }
+
+    override val itemOrdering: Flow<ItemOrder> = dataStore.data
+        .map { preferences -> enumValueOfOrNull<ItemOrder>(preferences[itemOrderingKey]) ?: SettingsDefaults.itemOrderingDefault }
+
+    override suspend fun setItemOrdering(order: ItemOrder) {
+        dataStore.edit { preferences ->
+            preferences[itemOrderingKey] = order.name
         }
     }
 }

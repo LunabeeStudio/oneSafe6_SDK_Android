@@ -26,6 +26,7 @@ import dagger.hilt.components.SingletonComponent
 import studio.lunabee.bubbles.repository.repository.ContactKeyRepositoryImpl
 import studio.lunabee.bubbles.repository.repository.ContactRepositoryImpl
 import studio.lunabee.importexport.repository.repository.AutoBackupErrorRepositoryImpl
+import studio.lunabee.importexport.repository.repository.ImportExportItemRepositoryImpl
 import studio.lunabee.importexport.repository.repository.LocalBackupRepositoryImpl
 import studio.lunabee.messaging.repository.repository.ConversationRepositoryImpl
 import studio.lunabee.messaging.repository.repository.EnqueuedMessageRepositoryImpl
@@ -42,6 +43,7 @@ import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.repository.ForceUpgradeRepository
 import studio.lunabee.onesafe.domain.repository.IconRepository
 import studio.lunabee.onesafe.domain.repository.IndexWordEntryRepository
+import studio.lunabee.onesafe.domain.repository.ItemSettingsRepository
 import studio.lunabee.onesafe.domain.repository.PasswordGeneratorConfigRepository
 import studio.lunabee.onesafe.domain.repository.RecentSearchRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemDeletedRepository
@@ -53,6 +55,7 @@ import studio.lunabee.onesafe.domain.repository.SupportOSRepository
 import studio.lunabee.onesafe.domain.repository.UrlMetadataRepository
 import studio.lunabee.onesafe.importexport.repository.AutoBackupErrorRepository
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
+import studio.lunabee.onesafe.importexport.repository.ImportExportItemRepository
 import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
 import studio.lunabee.onesafe.messaging.domain.repository.ConversationRepository
 import studio.lunabee.onesafe.messaging.domain.repository.EnqueuedMessageRepository
@@ -162,6 +165,12 @@ interface RepositoryModule {
 
     @Binds
     fun bindsAutoBackupErrorRepository(autoBackupErrorRepository: AutoBackupErrorRepositoryImpl): AutoBackupErrorRepository
+
+    @Binds
+    fun bindsImportExportItemRepository(importExportItemRepository: ImportExportItemRepositoryImpl): ImportExportItemRepository
+
+    @Binds
+    fun bindsItemSettingsRepository(settingsRepository: SettingsRepository): ItemSettingsRepository
 }
 
 @Module

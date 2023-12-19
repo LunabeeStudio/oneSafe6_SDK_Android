@@ -58,6 +58,7 @@ data class RoomSafeItem(
     @ColumnInfo(name = "deleted_at") val deletedAt: Instant?,
     @ColumnInfo(name = "deleted_parent_id", index = true) val deletedParentId: UUID?,
     @ColumnInfo(name = "consulted_at", index = true) val consultedAt: Instant?,
+    @ColumnInfo(name = "index_alpha", index = true, defaultValue = "0") val indexAlpha: Double,
 ) {
     fun toSafeItem(): SafeItem =
         SafeItem(
@@ -71,6 +72,7 @@ data class RoomSafeItem(
             encColor = encColor,
             deletedAt = deletedAt,
             deletedParentId = deletedParentId,
+            indexAlpha = indexAlpha,
         )
 
     override fun equals(other: Any?): Boolean {
@@ -95,8 +97,8 @@ data class RoomSafeItem(
         } else if (other.encColor != null) return false
         if (deletedAt != other.deletedAt) return false
         if (deletedParentId != other.deletedParentId) return false
-
-        return true
+        if (consultedAt != other.consultedAt) return false
+        return indexAlpha == other.indexAlpha
     }
 
     override fun hashCode(): Int {
@@ -110,6 +112,8 @@ data class RoomSafeItem(
         result = 31 * result + (encColor?.contentHashCode() ?: 0)
         result = 31 * result + (deletedAt?.hashCode() ?: 0)
         result = 31 * result + (deletedParentId?.hashCode() ?: 0)
+        result = 31 * result + (consultedAt?.hashCode() ?: 0)
+        result = 31 * result + indexAlpha.hashCode()
         return result
     }
 
@@ -127,6 +131,7 @@ data class RoomSafeItem(
                 deletedAt = safeItem.deletedAt,
                 deletedParentId = safeItem.deletedParentId,
                 consultedAt = null,
+                indexAlpha = safeItem.indexAlpha,
             )
         }
     }

@@ -46,7 +46,7 @@ class MigrateOldArchiveUseCase @Inject constructor(
             result = importEngine.authenticateAndExtractData(archiveDir, password).last()
 
             if (result is LBFlowResult.Success) {
-                result = importEngine.prepareDataForImport(archiveDir).last()
+                result = importEngine.prepareDataForImport(archiveDir, importMode).last()
                 if (result is LBFlowResult.Success) {
                     result = importEngine.saveImportData(mode = importMode).last()
                 }

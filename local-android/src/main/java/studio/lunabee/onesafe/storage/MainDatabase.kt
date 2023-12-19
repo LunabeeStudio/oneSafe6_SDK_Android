@@ -41,6 +41,7 @@ import studio.lunabee.onesafe.storage.dao.MessageDao
 import studio.lunabee.onesafe.storage.dao.SafeItemDao
 import studio.lunabee.onesafe.storage.dao.SafeItemFieldDao
 import studio.lunabee.onesafe.storage.dao.SafeItemKeyDao
+import studio.lunabee.onesafe.storage.dao.SafeItemRawDao
 import studio.lunabee.onesafe.storage.dao.SentMessageDao
 import studio.lunabee.onesafe.storage.model.RoomBackup
 import studio.lunabee.onesafe.storage.model.RoomContact
@@ -60,7 +61,7 @@ import javax.inject.Inject
 
 @TypeConverters(InstantConverter::class, FileConverter::class)
 @Database(
-    version = 7,
+    version = 8,
     entities = [
         RoomSafeItem::class,
         RoomSafeItemField::class,
@@ -82,10 +83,12 @@ import javax.inject.Inject
         AutoMigration(from = 4, to = 5),
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
+        AutoMigration(from = 7, to = 8),
     ],
 )
 abstract class MainDatabase : RoomDatabase() {
     abstract fun safeItemDao(): SafeItemDao
+    abstract fun safeItemRawDao(): SafeItemRawDao
     abstract fun safeItemFieldDao(): SafeItemFieldDao
     abstract fun searchIndexDao(): IndexWordEntryDao
     abstract fun safeItemKeyDao(): SafeItemKeyDao

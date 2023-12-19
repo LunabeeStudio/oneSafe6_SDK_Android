@@ -85,7 +85,6 @@ fun FilledContactsScreen(
         }
         lazyVerticalOSRegularSpacer()
         ContactScreenFactory.addContacts(
-            lazyListScope = this,
             contacts = contacts,
             onClick = onContactClick,
         )

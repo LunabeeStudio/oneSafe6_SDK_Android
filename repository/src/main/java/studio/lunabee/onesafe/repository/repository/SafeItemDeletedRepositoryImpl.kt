@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.repository.repository
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.repository.SafeItemDeletedRepository
 import studio.lunabee.onesafe.repository.datasource.SafeItemLocalDataSource
@@ -32,11 +33,11 @@ import javax.inject.Inject
 class SafeItemDeletedRepositoryImpl @Inject constructor(
     private val localDataSource: SafeItemLocalDataSource,
 ) : SafeItemDeletedRepository {
-    override suspend fun getDeletedItemsByDeletedParent(deletedParentId: UUID?): List<SafeItem> =
-        localDataSource.findByDeletedParentId(deletedParentId)
+    override suspend fun getDeletedItemsByDeletedParent(deletedParentId: UUID?, order: ItemOrder): List<SafeItem> =
+        localDataSource.findByDeletedParentId(deletedParentId, order)
 
-    override suspend fun getSiblingOriginalChildren(parentId: UUID): List<SafeItem> =
-        localDataSource.getSiblingOriginalChildren(parentId)
+    override suspend fun getSiblingOriginalChildren(parentId: UUID, order: ItemOrder): List<SafeItem> =
+        localDataSource.getSiblingOriginalChildren(parentId, order)
 
     override suspend fun updateSiblingOriginalChildrenParentId(parentId: UUID, newParentId: UUID?): Unit =
         localDataSource.updateSiblingOriginalChildrenParentId(parentId, newParentId)
@@ -51,11 +52,8 @@ class SafeItemDeletedRepositoryImpl @Inject constructor(
     override fun getPagerItemByParentIdDeleted(
         config: PagingConfig,
         parentId: UUID?,
-    ): Flow<PagingData<SafeItem>> = localDataSource.getPagerItemByParentIdDeleted(config, parentId)
-
-    override fun findLastDeleted(limit: Int): Flow<List<SafeItem>> {
-        return localDataSource.findLastDeleted(limit)
-    }
+        order: ItemOrder,
+    ): Flow<PagingData<SafeItem>> = localDataSource.getPagerItemByParentIdDeleted(config, parentId, order)
 
     override fun countAllDeletedWithNonDeletedParent(): Flow<Int> {
         return localDataSource.countAllDeletedWithNonDeletedParent()

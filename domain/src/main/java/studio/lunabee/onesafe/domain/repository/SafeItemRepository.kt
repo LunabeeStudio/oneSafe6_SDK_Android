@@ -22,8 +22,11 @@ package studio.lunabee.onesafe.domain.repository
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safeitem.ItemNameWithIndex
+import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
+import studio.lunabee.onesafe.domain.model.safeitem.SafeItemIdName
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
@@ -32,9 +35,9 @@ import java.util.UUID
 
 interface SafeItemRepository {
     suspend fun getSafeItem(id: UUID): SafeItem
-    fun getSafeItemWithIdentifier(ids: List<UUID>): Flow<List<SafeItemWithIdentifier>>
+    fun getSafeItemWithIdentifier(ids: Collection<UUID>, order: ItemOrder): Flow<List<SafeItemWithIdentifier>>
     fun getSafeItemFlow(id: UUID): Flow<SafeItem?>
-    suspend fun getChildren(parentId: UUID): List<SafeItem>
+    suspend fun getChildren(parentId: UUID, order: ItemOrder): List<SafeItem>
     fun countSafeItemByParentIdFlow(parentId: UUID?): Flow<Int>
     suspend fun countSafeItemByParentId(parentId: UUID?): Int
     suspend fun save(item: SafeItem, safeItemKey: SafeItemKey, indexWordEntries: List<IndexWordEntry>?)
@@ -45,9 +48,9 @@ interface SafeItemRepository {
         indexWordEntries: List<IndexWordEntry>?,
     )
 
-    fun getPagerItemByParents(config: PagingConfig, parentId: UUID?): Flow<PagingData<SafeItem>>
-    fun getPagerItemFavorite(config: PagingConfig): Flow<PagingData<SafeItem>>
-    fun findLastFavorite(limit: Int): Flow<List<SafeItem>>
+    fun getPagerItemByParents(config: PagingConfig, parentId: UUID?, order: ItemOrder): Flow<PagingData<SafeItem>>
+    fun getPagerItemFavorite(config: PagingConfig, order: ItemOrder): Flow<PagingData<SafeItem>>
+    fun findLastFavorite(limit: Int, order: ItemOrder): Flow<List<SafeItem>>
     fun countAllFavoriteFlow(): Flow<Int>
     suspend fun countAllFavorite(): Int
     suspend fun updateIcon(id: UUID, iconId: UUID?)
@@ -61,9 +64,13 @@ interface SafeItemRepository {
     suspend fun findByIdWithAncestors(id: UUID): List<SafeItem>
     suspend fun getSafeItemName(id: UUID): ByteArray?
 
-    fun getAllSafeItems(limit: Int = Int.MAX_VALUE): Flow<List<SafeItem>>
     suspend fun getAllSafeItems(): List<SafeItem>
-    fun getAllSafeItemsWithIdentifier(config: PagingConfig, idsToExclude: List<UUID>): Flow<PagingData<SafeItemWithIdentifier>>
+    fun getAllSafeItemsWithIdentifier(
+        config: PagingConfig,
+        idsToExclude: List<UUID>,
+        order: ItemOrder,
+    ): Flow<PagingData<SafeItemWithIdentifier>>
+
     suspend fun getAllSafeItemIds(): List<UUID>
     fun getSafeItemsCountFlow(): Flow<Int>
     suspend fun getSafeItemsCount(): Int
@@ -72,4 +79,9 @@ interface SafeItemRepository {
     suspend fun updateConsultedAt(itemId: UUID, consultedAt: Instant)
     fun getLastConsultedNotDeletedSafeItem(limit: Int): Flow<List<SafeItem>>
     suspend fun getSafeItemsAndChildren(itemId: UUID, includeChildren: Boolean): List<SafeItem>
+
+    suspend fun setAlphaIndices(indices: List<Pair<UUID, Double>>)
+    suspend fun getItemNameWithIndexAt(index: Int): ItemNameWithIndex?
+    suspend fun getAlphaIndexRange(): Pair<Double, Double>
+    suspend fun getAllSafeItemIdName(): List<SafeItemIdName>
 }

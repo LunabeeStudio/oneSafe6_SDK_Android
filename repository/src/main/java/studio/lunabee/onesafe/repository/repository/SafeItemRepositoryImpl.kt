@@ -22,8 +22,11 @@ package studio.lunabee.onesafe.repository.repository
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safeitem.ItemNameWithIndex
+import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
+import studio.lunabee.onesafe.domain.model.safeitem.SafeItemIdName
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
@@ -37,11 +40,11 @@ class SafeItemRepositoryImpl @Inject constructor(
     private val localDataSource: SafeItemLocalDataSource,
 ) : SafeItemRepository {
     override suspend fun getSafeItem(id: UUID): SafeItem = localDataSource.getSafeItem(id)
-    override fun getSafeItemWithIdentifier(ids: List<UUID>): Flow<List<SafeItemWithIdentifier>> =
-        localDataSource.getSafeItemWithIdentifier(ids)
+    override fun getSafeItemWithIdentifier(ids: Collection<UUID>, order: ItemOrder): Flow<List<SafeItemWithIdentifier>> =
+        localDataSource.getSafeItemWithIdentifier(ids, order)
 
     override fun getSafeItemFlow(id: UUID): Flow<SafeItem?> = localDataSource.getSafeItemFlow(id)
-    override suspend fun getChildren(parentId: UUID): List<SafeItem> = localDataSource.findByParentId(parentId)
+    override suspend fun getChildren(parentId: UUID, order: ItemOrder): List<SafeItem> = localDataSource.findByParentId(parentId, order)
 
     override fun countSafeItemByParentIdFlow(
         parentId: UUID?,
@@ -63,14 +66,16 @@ class SafeItemRepositoryImpl @Inject constructor(
     override fun getPagerItemByParents(
         config: PagingConfig,
         parentId: UUID?,
-    ): Flow<PagingData<SafeItem>> = localDataSource.getPagerItemByParentId(config, parentId)
+        order: ItemOrder,
+    ): Flow<PagingData<SafeItem>> = localDataSource.getPagerItemByParentId(config, parentId, order)
 
     override fun getPagerItemFavorite(
         config: PagingConfig,
-    ): Flow<PagingData<SafeItem>> = localDataSource.getPagerItemFavorite(config)
+        order: ItemOrder,
+    ): Flow<PagingData<SafeItem>> = localDataSource.getPagerItemFavorite(config, order)
 
-    override fun findLastFavorite(limit: Int): Flow<List<SafeItem>> {
-        return localDataSource.findLastFavorite(limit)
+    override fun findLastFavorite(limit: Int, order: ItemOrder): Flow<List<SafeItem>> {
+        return localDataSource.findLastFavorite(limit, order)
     }
 
     override fun countAllFavoriteFlow(): Flow<Int> {
@@ -100,7 +105,7 @@ class SafeItemRepositoryImpl @Inject constructor(
         newDeletedParentId,
     )
 
-    override suspend fun updateSafeItem(safeItem: SafeItem, indexWordEntries: List<IndexWordEntry>?) =
+    override suspend fun updateSafeItem(safeItem: SafeItem, indexWordEntries: List<IndexWordEntry>?): Unit =
         localDataSource.updateSafeItem(
             safeItem,
             indexWordEntries,
@@ -115,13 +120,16 @@ class SafeItemRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getSafeItemName(id: UUID): ByteArray? = localDataSource.getSafeItemName(id)
-    override fun getAllSafeItems(limit: Int): Flow<List<SafeItem>> = localDataSource.getAllSafeItems(limit)
     override suspend fun getAllSafeItems(): List<SafeItem> {
         return localDataSource.getAllSafeItems()
     }
 
-    override fun getAllSafeItemsWithIdentifier(config: PagingConfig, idsToExclude: List<UUID>): Flow<PagingData<SafeItemWithIdentifier>> {
-        return localDataSource.getAllSafeItemsWithIdentifier(config, idsToExclude)
+    override fun getAllSafeItemsWithIdentifier(
+        config: PagingConfig,
+        idsToExclude: List<UUID>,
+        order: ItemOrder,
+    ): Flow<PagingData<SafeItemWithIdentifier>> {
+        return localDataSource.getAllSafeItemsWithIdentifier(config, idsToExclude, order)
     }
 
     override fun getSafeItemsCountFlow(): Flow<Int> = localDataSource.getSafeItemsCountFlow()
@@ -153,5 +161,21 @@ class SafeItemRepositoryImpl @Inject constructor(
             items.add(localDataSource.getSafeItem(itemId))
         }
         return items
+    }
+
+    override suspend fun setAlphaIndices(indices: List<Pair<UUID, Double>>) {
+        localDataSource.setAlphaIndices(indices)
+    }
+
+    override suspend fun getItemNameWithIndexAt(index: Int): ItemNameWithIndex? {
+        return localDataSource.getItemNameWithIndexAt(index)
+    }
+
+    override suspend fun getAlphaIndexRange(): Pair<Double, Double> {
+        return localDataSource.getAlphaIndexRange()
+    }
+
+    override suspend fun getAllSafeItemIdName(): List<SafeItemIdName> {
+        return localDataSource.getAllSafeItemIdName()
     }
 }

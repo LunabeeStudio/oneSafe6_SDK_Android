@@ -39,6 +39,7 @@ interface SafeItemBuilder {
         val id: UUID,
         val position: Double,
         val updatedAt: Instant,
+        val indexAlpha: Double,
     ) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -56,8 +57,8 @@ interface SafeItemBuilder {
             if (color != other.color) return false
             if (id != other.id) return false
             if (position != other.position) return false
-
-            return true
+            if (updatedAt != other.updatedAt) return false
+            return indexAlpha == other.indexAlpha
         }
 
         override fun hashCode(): Int {
@@ -68,6 +69,8 @@ interface SafeItemBuilder {
             result = 31 * result + (color?.hashCode() ?: 0)
             result = 31 * result + id.hashCode()
             result = 31 * result + position.hashCode()
+            result = 31 * result + updatedAt.hashCode()
+            result = 31 * result + indexAlpha.hashCode()
             return result
         }
     }
@@ -98,6 +101,7 @@ class SafeItemBuilderImpl @Inject constructor(
             encColor = data.color?.let { cryptoRepository.encrypt(itemKey, EncryptEntry(it)) },
             deletedAt = null,
             deletedParentId = null,
+            indexAlpha = data.indexAlpha,
         )
 
         return itemKey to item

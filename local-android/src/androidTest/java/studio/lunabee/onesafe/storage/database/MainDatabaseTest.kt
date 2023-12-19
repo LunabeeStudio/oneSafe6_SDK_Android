@@ -32,6 +32,7 @@ import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.OSStorageTestUtils
 import studio.lunabee.onesafe.storage.dao.SafeItemDao
 import studio.lunabee.onesafe.storage.model.RoomSafeItem
+import studio.lunabee.onesafe.storage.toRoomUpdateSafeItem
 import javax.inject.Inject
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -80,7 +81,7 @@ class MainDatabaseTest {
                     }
                     1 -> {
                         assertEquals(1.0, value?.position)
-                        safeItemDao.update(safeItem.copy(position = 2.0))
+                        safeItemDao.update(safeItem.copy(position = 2.0).toRoomUpdateSafeItem())
                     }
                     2 -> assertEquals(2.0, value?.position)
                 }

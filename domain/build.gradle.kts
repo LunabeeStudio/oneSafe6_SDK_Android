@@ -38,6 +38,7 @@ dependencies {
     implementation(libs.nbvcxz)
 
     implementation(project(":error"))
+    implementation(project(":common"))
 
     testImplementation(project(":common-test"))
     testImplementation(libs.mockk)

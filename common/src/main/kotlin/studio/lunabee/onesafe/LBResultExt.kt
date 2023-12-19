@@ -23,3 +23,8 @@ import com.lunabee.lbcore.model.LBResult
 
 val <T> Iterable<LBResult<T>>.data: List<T?>
     get() = map { it.data }
+
+fun <T> LBResult<T>.getOrThrow(defaultMessage: String? = null): T = when (this) {
+    is LBResult.Failure -> throw this.throwable ?: Exception(defaultMessage ?: "Failed without exception")
+    is LBResult.Success -> this.successData
+}

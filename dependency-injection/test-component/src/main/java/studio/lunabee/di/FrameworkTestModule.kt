@@ -25,6 +25,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import studio.lunabee.onesafe.commonui.usecase.AndroidResizeIconUseCase
 import studio.lunabee.onesafe.domain.LoadFileCancelAllUseCase
 import studio.lunabee.onesafe.domain.qualifier.ArchiveCacheDir
 import studio.lunabee.onesafe.domain.qualifier.BuildNumber
@@ -32,12 +33,30 @@ import studio.lunabee.onesafe.domain.qualifier.InternalBackupMimetype
 import studio.lunabee.onesafe.domain.qualifier.RemoteDir
 import studio.lunabee.onesafe.domain.qualifier.VersionName
 import studio.lunabee.onesafe.domain.repository.FileRepository
+import studio.lunabee.onesafe.domain.usecase.ResizeIconUseCase
 import java.io.File
 import java.util.UUID
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object FrameworkTestModule {
+
+    const val RESIZE_ICON_SIZE: Int = 50
+    const val ICON_DIR: String = "testDir"
+
+    @Provides
+    @Singleton
+    internal fun provideResizeIconUseCase(@ApplicationContext context: Context): ResizeIconUseCase {
+        val tmpDir = File(context.cacheDir, ICON_DIR)
+        tmpDir.mkdirs()
+        return AndroidResizeIconUseCase(
+            width = RESIZE_ICON_SIZE,
+            height = RESIZE_ICON_SIZE,
+            tmpDir = tmpDir,
+        )
+    }
+
     @Provides
     @BuildNumber
     fun provideBuildNumber(): Int = 0

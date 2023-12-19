@@ -33,6 +33,7 @@ import studio.lunabee.onesafe.domain.usecase.DeleteIconUseCase
 import studio.lunabee.onesafe.domain.usecase.SetIconUseCase
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemUseCase
 import studio.lunabee.onesafe.error.OSError
+import studio.lunabee.onesafe.getOrThrow
 import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
@@ -47,6 +48,7 @@ class UpdateItemUseCase @Inject constructor(
     private val addAndRemoveFileUseCase: AddAndRemoveFileUseCase,
     private val createIndexWordEntriesFromItemUseCase: CreateIndexWordEntriesFromItemUseCase,
     private val updateFieldsUseCase: UpdateFieldsUseCase,
+    private val computeItemAlphaIndexUseCase: ComputeItemAlphaIndexUseCase,
 ) {
     suspend operator fun invoke(
         itemId: UUID,
@@ -74,15 +76,18 @@ class UpdateItemUseCase @Inject constructor(
                 is UpdateState.Unchanged -> safeItem.iconId
             }
 
-            val encName: ByteArray? = when (updateData.name) {
-                is UpdateState.ModifiedTo -> updateData.name.newValue?.let {
-                    cryptoRepository.encrypt(
-                        itemKey,
-                        EncryptEntry(it),
-                    )
+            val (encName: ByteArray?, indexAlpha: Double) = when (updateData.name) {
+                is UpdateState.ModifiedTo -> {
+                    val newName = updateData.name.newValue
+                    newName?.let {
+                        cryptoRepository.encrypt(
+                            itemKey,
+                            EncryptEntry(newName),
+                        )
+                    } to computeItemAlphaIndexUseCase(newName, safeItem.indexAlpha).getOrThrow()
                 }
-                is UpdateState.Removed -> null
-                is UpdateState.Unchanged -> safeItem.encName
+                is UpdateState.Removed -> null to computeItemAlphaIndexUseCase(null, safeItem.indexAlpha).getOrThrow()
+                is UpdateState.Unchanged -> safeItem.encName to safeItem.indexAlpha
             }
 
             val encColor: ByteArray? = when (updateData.color) {
@@ -100,6 +105,7 @@ class UpdateItemUseCase @Inject constructor(
                 encName = encName,
                 iconId = iconId,
                 encColor = encColor,
+                indexAlpha = indexAlpha,
             )
 
             val indexWordEntries = if (itemWithUpdatedValue != safeItem) {

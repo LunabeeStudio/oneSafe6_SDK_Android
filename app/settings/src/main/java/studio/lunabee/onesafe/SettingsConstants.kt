@@ -39,4 +39,5 @@ internal object SettingsConstants {
     const val CameraSystem: String = "73467738-e9c8-44b1-a4b5-c41c1b84e199"
     const val cloudBackupEnabledKeyVal: String = "9ea24a6d-7e61-453f-9bdb-c431ced470cf"
     const val keepLocalBackupEnabledKeyVal: String = "20b36aa9-3e7b-4982-8706-737016f10e87"
+    const val itemOrderingKeyVal: String = "f3bd5c99-f828-4a57-b1e5-c563c3021935"
 }

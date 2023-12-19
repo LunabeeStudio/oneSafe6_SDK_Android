@@ -20,11 +20,14 @@
 package studio.lunabee.onesafe.storage
 
 internal object DaoUtils {
-    const val ORDER_BY_POSITION = "ORDER BY position ASC"
-    const val ORDER_BY_SAFE_ITEM_POSITION = "ORDER BY SafeItem.position ASC"
-    const val ORDER_BY_UPDATED_AT = "ORDER BY updated_at DESC"
-    const val ORDER_BY_DELETED_AT = "ORDER BY deleted_at ASC"
+    const val FIELD_ORDER_BY_POSITION = "ORDER BY position ASC"
     const val IS_NOT_DELETED = "deleted_at IS NULL"
     const val IS_DELETED = "deleted_at IS NOT NULL"
     const val IS_FAVORITE = "is_favorite = 1"
+
+    const val ITEM_ORDER_BY_POSITION = "ORDER BY SafeItem.position ASC, SafeItem.index_alpha ASC"
+    const val ITEM_ORDER_BY_INDEX_ALPHA = "ORDER BY SafeItem.index_alpha ASC, SafeItem.position ASC"
+    const val ITEM_ORDER_BY_UPDATED_AT = "ORDER BY SafeItem.updated_at DESC, SafeItem.index_alpha ASC, SafeItem.position ASC"
+    const val ITEM_ORDER_BY_DELETED_AT = "ORDER BY SafeItem.deleted_at ASC, SafeItem.index_alpha ASC, SafeItem.position ASC"
+    const val ITEM_ORDER_BY_CONSULTED_AT = "ORDER BY SafeItem.consulted_at DESC, SafeItem.index_alpha ASC, SafeItem.position ASC"
 }

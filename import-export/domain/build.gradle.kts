@@ -28,7 +28,7 @@ dependencies {
     implementation(libs.lblogger)
 
     implementation(project(":error"))
-    implementation(project(":domain"))
+    api(project(":domain"))
     implementation(project(":common"))
     implementation(project(":error"))
 

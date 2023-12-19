@@ -28,7 +28,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import studio.lunabee.onesafe.storage.OSStorageTestUtils
-import studio.lunabee.onesafe.storage.extension.data
 import studio.lunabee.onesafe.test.testUUIDs
 import java.time.Instant
 import javax.inject.Inject
@@ -111,86 +110,6 @@ class SafeItemDaoTest {
         val expectedItems2 = listOf(parent, child, secondChild, grandChild) // child and secondChild order is not mandatory
         val actualItems2 = safeItemDao.findByIdWithDescendants(parent.id)
         assertContentEquals(expectedItems2, actualItems2)
-    }
-
-    @Test
-    fun findDeletedByParentIdAsPagingSource_delete_child_only_test(): TestResult = runTest {
-        val parent1 = OSStorageTestUtils.createRoomSafeItem(id = testUUIDs[0])
-        val child1 = OSStorageTestUtils.createRoomSafeItem(
-            id = testUUIDs[1],
-            parentId = parent1.id,
-            deletedParentId = null,
-            deletedAt = Instant.ofEpochMilli(2),
-        )
-
-        val parent2 = OSStorageTestUtils.createRoomSafeItem(id = testUUIDs[4])
-        val child2 = OSStorageTestUtils.createRoomSafeItem(
-            id = testUUIDs[5],
-            parentId = parent2.id,
-            deletedParentId = null,
-            deletedAt = Instant.ofEpochMilli(3),
-        )
-
-        val parent3 = OSStorageTestUtils.createRoomSafeItem(id = testUUIDs[7], deletedAt = Instant.ofEpochMilli(0))
-        val child3 = OSStorageTestUtils.createRoomSafeItem(
-            id = testUUIDs[8],
-            parentId = parent3.id,
-            deletedParentId = parent3.id,
-            deletedAt = Instant.ofEpochMilli(1),
-        )
-
-        safeItemDao.insert(listOf(parent1, child1, parent2, child2, parent3, child3))
-
-        val expectedItems1 = listOf(parent3, child1, child2)
-        val actualItems1 = safeItemDao.findByDeletedParentIdAsPagingSource(null).data()
-        assertContentEquals(expectedItems1, actualItems1, actualItems1.joinToString())
-
-        val actualItems2 = safeItemDao.findByDeletedParentIdAsPagingSource(child1.id).data()
-        assertContentEquals(emptyList(), actualItems2)
-    }
-
-    @Test
-    fun findDeletedByParentIdAsPagingSource_delete_parent_with_child_test(): TestResult = runTest {
-        val parent = OSStorageTestUtils.createRoomSafeItem(id = testUUIDs[0], deletedAt = Instant.now())
-        val child = OSStorageTestUtils.createRoomSafeItem(
-            id = testUUIDs[1],
-            parentId = parent.id,
-            deletedParentId = parent.id,
-            deletedAt = Instant.now(),
-        )
-
-        safeItemDao.insert(listOf(parent, child))
-
-        val expectedRootItems = listOf(parent)
-        val actualRootItems = safeItemDao.findByDeletedParentIdAsPagingSource(null).data()
-        assertContentEquals(expectedRootItems, actualRootItems)
-
-        val expectedChildItems = listOf(child)
-        val actualChildItems = safeItemDao.findByDeletedParentIdAsPagingSource(parent.id).data()
-        assertContentEquals(expectedChildItems, actualChildItems)
-    }
-
-    @Test
-    fun findLastDeletedWithNonDeletedParent_test(): TestResult = runTest {
-        val parent = OSStorageTestUtils.createRoomSafeItem(id = testUUIDs[0])
-        val child = OSStorageTestUtils.createRoomSafeItem(
-            id = testUUIDs[1],
-            parentId = parent.id,
-            deletedAt = Instant.ofEpochMilli(3),
-        )
-        val parent2 = OSStorageTestUtils.createRoomSafeItem(id = testUUIDs[4], deletedAt = Instant.ofEpochMilli(2))
-        val child2 = OSStorageTestUtils.createRoomSafeItem(
-            id = testUUIDs[5],
-            parentId = parent2.id,
-            deletedParentId = parent2.id,
-            deletedAt = Instant.ofEpochMilli(1),
-        )
-
-        safeItemDao.insert(listOf(parent, child, parent2, child2))
-
-        val expectedItems = listOf(parent2, child)
-        val actualItems = safeItemDao.findLastDeletedWithNonDeletedParent(10).first()
-        assertContentEquals(expectedItems, actualItems)
     }
 
     @Test

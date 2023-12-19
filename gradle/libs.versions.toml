@@ -35,11 +35,14 @@ android-gradle-plugin = "8.2.0"
 ##                 ⬆ = "8.3.0-alpha14"
 ##                 ⬆ = "8.3.0-alpha15"
 ##                 ⬆ = "8.3.0-alpha16"
+##                 ⬆ = "8.3.0-alpha17"
+##                 ⬆ = "8.3.0-alpha18"
 
 kotlin = "1.9.21"
 ##  ⬆ = "2.0.0-Beta1"
+##  ⬆ = "2.0.0-Beta2"
 
-ksp = "1.9.21-1.0.15"
+ksp = "1.9.21-1.0.16"
 ##⬆= "2.0.0-Beta1-1.0.14"
 ##⬆= "2.0.0-Beta1-1.0.15"
 
@@ -61,6 +64,7 @@ threeten-extra = "1.7.2"
 zxing-android-embedded = "4.3.0"
 
 androidx-hilt = "1.1.0"
+##         ⬆ = "1.2.0-alpha01"
 
 junit4 = "4.13.2"
 
@@ -101,15 +105,11 @@ androidx-lifecycle = "2.6.2"
 ##              ⬆ = "2.7.0-alpha03"
 ##              ⬆ = "2.7.0-beta01"
 ##              ⬆ = "2.7.0-rc01"
+##              ⬆ = "2.7.0-rc02"
 
-compose-bom-alpha = "2023.12.00-alpha03"
+compose-bom-alpha = "2023.12.00-alpha04"
 
-google-android-material = "1.10.0"
-##                   ⬆ = "1.11.0-alpha01"
-##                   ⬆ = "1.11.0-alpha02"
-##                   ⬆ = "1.11.0-alpha03"
-##                   ⬆ = "1.11.0-beta01"
-##                   ⬆ = "1.11.0-rc01"
+google-android-material = "1.11.0"
 ##                   ⬆ = "1.12.0-alpha01"
 ##                   ⬆ = "1.12.0-alpha02"
 
@@ -139,23 +139,25 @@ androidx-autofill = "1.1.0"
 androidx-slice-builders-ktx = "1.0.0-alpha08"
 
 androidx-emoji2 = "1.4.0"
+##           ⬆ = "1.5.0-alpha01"
 
 androidx-paging-compose = "3.2.1"
 ##                   ⬆ = "3.3.0-alpha01"
 ##                   ⬆ = "3.3.0-alpha02"
 
-androidx-activity = "1.8.1"
+androidx-activity = "1.8.2"
 ##             ⬆ = "1.9.0-alpha01"
 
 androidx-hilt-navigation-compose = "1.1.0"
+##                            ⬆ = "1.2.0-alpha01"
 
-kotlinx-collections-immutable = "0.3.6"
+kotlinx-collections-immutable = "0.3.7"
 
 google-accompanist = "0.33.2-alpha"
 
 androidx-palette = "1.0.0"
 
-firebase-bom = "32.6.0"
+firebase-bom = "32.7.0"
 
 firebase-crashlytics-gradle = "2.9.9"
 
@@ -170,7 +172,7 @@ jakewharton-timber = "5.0.1"
 
 junit-jupiter = "5.10.1"
 
-androidx-annotation = "1.7.0"
+androidx-annotation = "1.7.1"
 
 androidx-datastore = "1.0.0"
 ##              ⬆ = "1.1.0-dev01"
@@ -184,12 +186,12 @@ androidx-datastore = "1.0.0"
 
 androidx-preference = "1.2.1"
 
-ktor = "2.3.6"
+ktor = "2.3.7"
 ##⬆ = "3.0.0-beta-1"
 
 androidx-test-espresso = "3.6.0-alpha02"
 
-androidx-test-uiautomator = "2.3.0-alpha05"
+androidx-test-uiautomator = "2.3.0-beta01"
 
 coil-kt = "2.5.0"
 
@@ -197,9 +199,7 @@ androidx-startup = "1.1.1"
 ##            ⬆ = "1.2.0-alpha01"
 ##            ⬆ = "1.2.0-alpha02"
 
-# FIXME 2.7.5 crash -> https://issuetracker.google.com/issues/308979853 https://github.com/LunabeeStudio/oneSafe6_Android/pull/803 (wip)
-navigation-compose = "2.7.4"
-##              ⬆ = "2.7.5"
+navigation-compose = "2.7.6"
 
 detekt = "1.23.4"
 
@@ -248,6 +248,8 @@ lint = "31.2.0"
 ##⬆ = "31.3.0-alpha14"
 ##⬆ = "31.3.0-alpha15"
 ##⬆ = "31.3.0-alpha16"
+##⬆ = "31.3.0-alpha17"
+##⬆ = "31.3.0-alpha18"
 
 javapoet = "1.13.0"
 
@@ -257,13 +259,14 @@ zoomable = "1.5.2"
 ##    ⬆ = "1.6.0-beta1"
 ##    ⬆ = "1.6.0-beta2"
 
-exifinterface = "1.3.6"
+exifinterface = "1.3.7"
 
 androidx-media3 = "1.2.0"
 
-camerax = "1.3.0"
+camerax = "1.3.1"
 ##   ⬆ = "1.4.0-alpha01"
 ##   ⬆ = "1.4.0-alpha02"
+##   ⬆ = "1.4.0-alpha03"
 
 [libraries]
 

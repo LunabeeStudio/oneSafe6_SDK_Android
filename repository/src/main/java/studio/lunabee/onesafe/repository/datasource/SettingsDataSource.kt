@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.repository.datasource
 
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import java.time.Instant
 import kotlin.time.Duration
@@ -57,4 +58,7 @@ interface SettingsDataSource {
 
     val keepLocalBackupEnabled: Flow<Boolean>
     suspend fun setKeepLocalBackupSettings(enabled: Boolean)
+
+    val itemOrdering: Flow<ItemOrder>
+    suspend fun setItemOrdering(order: ItemOrder)
 }

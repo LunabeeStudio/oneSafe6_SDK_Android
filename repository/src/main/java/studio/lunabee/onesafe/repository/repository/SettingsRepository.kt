@@ -20,7 +20,9 @@
 package studio.lunabee.onesafe.repository.repository
 
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
+import studio.lunabee.onesafe.domain.repository.ItemSettingsRepository
 import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.repository.datasource.SettingsDataSource
@@ -30,7 +32,7 @@ import kotlin.time.Duration
 
 class SettingsRepository @Inject constructor(
     private val settingsDataSource: SettingsDataSource,
-) : SecurityOptionRepository, AutoBackupSettingsRepository {
+) : SecurityOptionRepository, AutoBackupSettingsRepository, ItemSettingsRepository {
     override val autoLockInactivityDelay: Duration
         get() = settingsDataSource.autoLockInactivityDelay
 
@@ -131,4 +133,10 @@ class SettingsRepository @Inject constructor(
 
     override suspend fun setKeepLocalBackupSettings(enabled: Boolean): Unit =
         settingsDataSource.setKeepLocalBackupSettings(enabled)
+
+    override val itemOrdering: Flow<ItemOrder>
+        get() = settingsDataSource.itemOrdering
+
+    override suspend fun setItemOrdering(order: ItemOrder): Unit =
+        settingsDataSource.setItemOrdering(order)
 }

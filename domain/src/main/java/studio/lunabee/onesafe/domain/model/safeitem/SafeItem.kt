@@ -39,6 +39,7 @@ data class SafeItem(
     val encColor: ByteArray?,
     val deletedAt: Instant?,
     val deletedParentId: UUID?,
+    val indexAlpha: Double,
 ) {
     init {
         check(!(deletedParentId != null && deletedAt == null))

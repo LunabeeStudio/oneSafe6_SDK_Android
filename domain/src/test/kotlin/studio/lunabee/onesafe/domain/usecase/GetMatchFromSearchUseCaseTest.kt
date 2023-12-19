@@ -19,49 +19,48 @@
 
 package studio.lunabee.onesafe.domain.usecase
 
-import com.lunabee.lbextensions.lazyFast
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
-import io.mockk.impl.annotations.MockK
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
 import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
-import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
+import studio.lunabee.onesafe.domain.repository.ItemSettingsRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.usecase.search.GetMatchFromSearchUseCase
 import studio.lunabee.onesafe.test.OSTestUtils
 import studio.lunabee.onesafe.test.testUUIDs
-import java.time.Instant
 import java.util.UUID
 import kotlin.test.assertContentEquals
 
 class GetMatchFromSearchUseCaseTest {
-    val getMatchFromSearchUseCase: GetMatchFromSearchUseCase by lazyFast { GetMatchFromSearchUseCase(itemRepository) }
+
+    private val itemSettingsRepository: ItemSettingsRepository = mockk {
+        every { itemOrdering } returns flowOf(ItemOrder.Position)
+    }
+    private val itemRepository: SafeItemRepository = mockk {
+        coEvery { getSafeItemWithIdentifier(any(), any()) } answers {
+            flowOf(firstArg<Collection<UUID>>().mapNotNull { itemMap[it] }.sortedBy { it.position })
+        }
+    }
+
+    val getMatchFromSearchUseCase: GetMatchFromSearchUseCase = GetMatchFromSearchUseCase(
+        safeItemRepository = itemRepository,
+        itemSettingsRepository = itemSettingsRepository,
+    )
 
     private val itemMap: Map<UUID, SafeItemWithIdentifier> = List(20) { idx ->
         testUUIDs[idx] to OSTestUtils.createSafeItemWithIdentifier(
             id = testUUIDs[idx],
             position = (idx % 10).toDouble(),
-            updatedAt = Instant.ofEpochMilli((idx % 5).toLong()),
         )
     }.toMap()
     private val items = itemMap.values.toList()
-
-    private val fields = mapOf(
-        testUUIDs[10] to OSTestUtils.createSafeItemField(
-            id = testUUIDs[100],
-            itemId = testUUIDs[0],
-        ),
-    )
-
-    @MockK lateinit var itemRepository: SafeItemRepository
-
-    @MockK lateinit var fieldRepository: SafeItemFieldRepository
 
     private val index: List<PlainIndexWordEntry> = listOf(
         PlainIndexWordEntry("aaaa", testUUIDs[0], null),
@@ -86,9 +85,6 @@ class GetMatchFromSearchUseCaseTest {
         PlainIndexWordEntry("yyyy", testUUIDs[4], null),
         PlainIndexWordEntry("yyyy", testUUIDs[4], null),
 
-        PlainIndexWordEntry("zzzz", testUUIDs[5], null),
-        PlainIndexWordEntry("yyyy", testUUIDs[5], testUUIDs[11]),
-
         PlainIndexWordEntry("zzzz", testUUIDs[8], null),
         PlainIndexWordEntry("yyyy", testUUIDs[8], null),
 
@@ -97,17 +93,6 @@ class GetMatchFromSearchUseCaseTest {
         PlainIndexWordEntry("xxxx", testUUIDs[9], null),
         PlainIndexWordEntry("9999", testUUIDs[9], null),
     ).shuffled(OSTestUtils.random)
-
-    @BeforeEach
-    fun setUp() {
-        MockKAnnotations.init(this)
-
-        coEvery { itemRepository.getSafeItemWithIdentifier(any()) } answers {
-            flowOf(firstArg<List<UUID>>().mapNotNull { itemMap[it] })
-        }
-
-        coEvery { fieldRepository.getSafeItemField(any()) } answers { fields[firstArg()]!! }
-    }
 
     @Test
     fun no_match_test(): TestResult = runTest {
@@ -144,11 +129,36 @@ class GetMatchFromSearchUseCaseTest {
             items[2], // match 3 keywords (3/3 in title)
             items[9], // match 3 keywords (2/4 in title)
             items[4], // match 2 keywords + 6 total matches
-            items[3], // match 2 keywords + 2 total matches + updatedAt 3 + position 3
-            items[8], // match 2 keywords + 2 total matches + updatedAt 3 + position 8
-            items[5], // match 2 keywords + 2 total matches + updatedAt 0
+            items[3], // match 2 keywords + 2 total matches + position 3
+            items[8], // match 2 keywords + 2 total matches + position 8
         ).asIterable()
         val actual = getMatchFromSearchUseCase("yyyy xxxx zzzz", index).first()
+        assertContentEquals(expected, actual)
+    }
+
+    // Add 1 exact match (expected to be the first) and 5 shuffled equals match (expect to preserve th db query order)
+    @Test
+    fun match_keep_item_order(): TestResult = runTest {
+        val equalIndex: List<PlainIndexWordEntry> = buildList {
+            add(PlainIndexWordEntry("aaa", testUUIDs[5], null))
+            add(PlainIndexWordEntry("bbb", testUUIDs[5], null))
+            repeat(5) {
+                PlainIndexWordEntry("aaa", testUUIDs[it], null)
+            }
+        }
+        val expected = buildList {
+            add(OSTestUtils.createSafeItemWithIdentifier(testUUIDs[5]))
+            addAll(
+                List(5) {
+                    OSTestUtils.createSafeItemWithIdentifier(testUUIDs[it])
+                }.shuffled(),
+            )
+        }
+
+        coEvery { itemRepository.getSafeItemWithIdentifier(any(), any()) } returns flowOf(expected)
+
+        val actual = getMatchFromSearchUseCase("aaa bbb", equalIndex).first()
+
         assertContentEquals(expected, actual)
     }
 }

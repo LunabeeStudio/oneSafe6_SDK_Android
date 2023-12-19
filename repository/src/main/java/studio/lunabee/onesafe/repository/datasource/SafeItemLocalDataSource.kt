@@ -22,8 +22,11 @@ package studio.lunabee.onesafe.repository.datasource
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safeitem.ItemNameWithIndex
+import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
+import studio.lunabee.onesafe.domain.model.safeitem.SafeItemIdName
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
@@ -42,18 +45,18 @@ interface SafeItemLocalDataSource {
     suspend fun updateIcon(id: UUID, iconId: UUID?)
     suspend fun toggleFavorite(id: UUID)
     suspend fun getSafeItem(id: UUID): SafeItem
-    fun getSafeItemWithIdentifier(ids: List<UUID>): Flow<List<SafeItemWithIdentifier>>
-    suspend fun findByParentId(parentId: UUID): List<SafeItem>
-    suspend fun findByDeletedParentId(deletedParentId: UUID?): List<SafeItem>
-    suspend fun getSiblingOriginalChildren(parentId: UUID): List<SafeItem>
+    fun getSafeItemWithIdentifier(ids: Collection<UUID>, order: ItemOrder): Flow<List<SafeItemWithIdentifier>>
+    suspend fun findByParentId(parentId: UUID, order: ItemOrder): List<SafeItem>
+    suspend fun findByDeletedParentId(deletedParentId: UUID?, order: ItemOrder): List<SafeItem>
+    suspend fun getSiblingOriginalChildren(parentId: UUID, order: ItemOrder): List<SafeItem>
     suspend fun updateSiblingOriginalChildrenParentId(parentId: UUID, newParentId: UUID?)
     fun countSafeItemByParentIdFlow(parentId: UUID?): Flow<Int>
     suspend fun countSafeItemByParentId(parentId: UUID?): Int
     fun countSafeItemByParentIdDeletedFlow(parentId: UUID?): Flow<Int>
     suspend fun countSafeItemByParentIdDeleted(parentId: UUID?): Int
-    fun getPagerItemByParentId(config: PagingConfig, parentId: UUID?): Flow<PagingData<SafeItem>>
-    fun getPagerItemByParentIdDeleted(config: PagingConfig, parentId: UUID?): Flow<PagingData<SafeItem>>
-    fun getPagerItemFavorite(config: PagingConfig): Flow<PagingData<SafeItem>>
+    fun getPagerItemByParentId(config: PagingConfig, parentId: UUID?, order: ItemOrder): Flow<PagingData<SafeItem>>
+    fun getPagerItemByParentIdDeleted(config: PagingConfig, parentId: UUID?, order: ItemOrder): Flow<PagingData<SafeItem>>
+    fun getPagerItemFavorite(config: PagingConfig, order: ItemOrder): Flow<PagingData<SafeItem>>
     suspend fun getHighestPosition(parentId: UUID?): Double?
     suspend fun getHighestDeletedPosition(deletedParentId: UUID?): Double?
     suspend fun getNextSiblingPosition(id: UUID): Double?
@@ -63,8 +66,7 @@ interface SafeItemLocalDataSource {
     suspend fun setDeletedAndRemoveFromFavorite(id: UUID?)
     suspend fun updateParentIds(oldParentId: UUID, newParentId: UUID?, newDeletedParentId: UUID?)
     suspend fun updateSafeItem(safeItem: SafeItem, indexWordEntries: List<IndexWordEntry>?)
-    fun findLastFavorite(limit: Int): Flow<List<SafeItem>>
-    fun findLastDeleted(limit: Int): Flow<List<SafeItem>>
+    fun findLastFavorite(limit: Int, order: ItemOrder): Flow<List<SafeItem>>
     fun countAllFavoriteFlow(): Flow<Int>
     suspend fun countAllFavorite(): Int
     fun countAllDeletedWithNonDeletedParent(): Flow<Int>
@@ -77,9 +79,13 @@ interface SafeItemLocalDataSource {
     suspend fun updateParentToNonDeletedAncestor(id: UUID)
     suspend fun removeOldItems(threshold: Instant)
     suspend fun getAllSafeItemIds(): List<UUID>
-    fun getAllSafeItems(limit: Int): Flow<List<SafeItem>>
     suspend fun getAllSafeItems(): List<SafeItem>
-    fun getAllSafeItemsWithIdentifier(config: PagingConfig, idsToExclude: List<UUID>): Flow<PagingData<SafeItemWithIdentifier>>
+    fun getAllSafeItemsWithIdentifier(
+        config: PagingConfig,
+        idsToExclude: List<UUID>,
+        order: ItemOrder,
+    ): Flow<PagingData<SafeItemWithIdentifier>>
+
     fun getSafeItemsCountFlow(): Flow<Int>
     suspend fun getSafeItemsCount(): Int
     fun getSafeItemsWithIdentifierCount(): Flow<Int>
@@ -88,4 +94,8 @@ interface SafeItemLocalDataSource {
     suspend fun updateConsultedAt(itemId: UUID, consultedAt: Instant)
     fun getLastConsultedNotDeletedSafeItem(limit: Int): Flow<List<SafeItem>>
     fun getAllDeletedItemsCount(): Flow<Int>
+    suspend fun setAlphaIndices(indices: List<Pair<UUID, Double>>)
+    suspend fun getItemNameWithIndexAt(index: Int): ItemNameWithIndex?
+    suspend fun getAlphaIndexRange(): Pair<Double, Double>
+    suspend fun getAllSafeItemIdName(): List<SafeItemIdName>
 }
