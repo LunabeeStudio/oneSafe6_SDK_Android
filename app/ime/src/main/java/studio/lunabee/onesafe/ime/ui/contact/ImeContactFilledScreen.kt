@@ -74,7 +74,7 @@ fun ImeContactFilledScreen(
         ) {
             ImeContactScreenFactory.addInfoCard(this)
             lazyVerticalOSRegularSpacer()
-            ImeContactScreenFactory.addContacts(this, uiState.contacts, onClickOnContact)
+            ImeContactScreenFactory.addContacts(uiState.contacts, onClickOnContact)
             lazyVerticalOSRegularSpacer()
             ImeContactScreenFactory.addManageContactsCard(
                 lazyListScope = this,

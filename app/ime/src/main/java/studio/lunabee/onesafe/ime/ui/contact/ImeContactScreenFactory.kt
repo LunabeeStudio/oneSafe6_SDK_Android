@@ -64,8 +64,8 @@ object ImeContactScreenFactory {
         }
     }
 
+    context(LazyListScope)
     fun addContacts(
-        lazyListScope: LazyListScope,
         contacts: List<UIBubblesContactInfo>,
         onClick: (contactId: UUID, isConversationReady: Boolean) -> Unit,
     ) {
@@ -84,7 +84,7 @@ object ImeContactScreenFactory {
             )
         }
 
-        osLazyCard(lazyListScope, cardContents)
+        osLazyCard(cardContents)
     }
 
     fun addInfoCard(lazyListScope: LazyListScope) {

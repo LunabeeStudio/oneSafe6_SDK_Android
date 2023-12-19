@@ -34,6 +34,9 @@ dependencies {
 
     implementation(libs.datastore.preferences)
 
+    platform(libs.lunabee.bom)
+    implementation(libs.lbextensions)
+
     implementation(project(":domain"))
     implementation(project(":repository"))
     implementation(project(":common"))

@@ -44,5 +44,7 @@ data class OSDomainError(
         MISSING_FILE_ID_IN_FIELD("The field does not contain the file id"),
         MISSING_URI_OUTPUT_STREAM("The selected file don't exist"),
         UNZIP_SECURITY_TRAVERSAL_VULNERABILITY("Archive contains unauthorized transversal path"),
+        ALPHA_INDEX_COMPUTE_FAILED("Failed to compute the alphabetic index"),
+        UNKNOWN_ERROR("Unknown error happened"),
     }
 }

@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.importexport.settings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -40,6 +41,7 @@ internal fun AutoBackupFrequencyBottomSheetContent(
 ) {
     Column(
         modifier = Modifier
+            .selectableGroup()
             .wrapContentHeight()
             .padding(vertical = OSDimens.SystemSpacing.Small),
     ) {

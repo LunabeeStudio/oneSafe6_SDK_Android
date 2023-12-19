@@ -59,12 +59,14 @@ interface ImportCacheDataSource {
 
     // Following variables contains the final object to save in database.
     // All object are now correctly re-encrypted with current user info and with brand new ids.
-    var migratedSafeItemsToImport: MutableList<SafeItem>
+    val migratedSafeItemsToImport: MutableList<SafeItem>
     var migratedSafeItemFieldsToImport: List<SafeItemField>
-    var migratedSearchIndexToImport: MutableList<IndexWordEntry>
+    val migratedSearchIndexToImport: MutableList<IndexWordEntry>
+    val allItemAlphaIndices: MutableMap<UUID, Double>
+    var rootItemData: Pair<String, Double>?
     var migratedIconsToImport: List<File>
     var migratedFilesToImport: List<File>
-    var newEncryptedValue: MutableMap<UUID, ByteArray>
+    val newEncryptedValue: MutableMap<UUID, ByteArray>
 
     /**
      * Clean cache if an error occurred during authentication phase.
@@ -79,6 +81,7 @@ interface ImportCacheDataSource {
         importMetadata = null
         archiveMasterKey = null
         archiveContent = null
+        rootItemData = null
         newItemIdsByOldOnes.clear()
         newIconIdsByOldOnes.clear()
         newFieldIdsByOldOnes.clear()
@@ -90,5 +93,6 @@ interface ImportCacheDataSource {
         migratedIconsToImport = emptyList()
         migratedFilesToImport = emptyList()
         newEncryptedValue.clear()
+        allItemAlphaIndices.clear()
     }
 }

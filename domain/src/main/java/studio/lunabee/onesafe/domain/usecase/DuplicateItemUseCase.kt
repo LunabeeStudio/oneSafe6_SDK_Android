@@ -40,12 +40,14 @@ import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.domain.usecase.item.ComputeItemAlphaIndexUseCase
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemFieldUseCase
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemUseCase
 import studio.lunabee.onesafe.domain.utils.SafeItemBuilder
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.error.OSStorageError
+import studio.lunabee.onesafe.getOrThrow
 import java.util.UUID
 import javax.inject.Inject
 
@@ -70,11 +72,12 @@ class DuplicateItemUseCase @Inject constructor(
     private val encryptFieldsUseCase: EncryptFieldsUseCase,
     private val fileRepository: FileRepository,
     private val fieldIdProvider: FieldIdProvider,
+    private val computeItemAlphaIndexUseCase: ComputeItemAlphaIndexUseCase,
 ) {
     suspend operator fun invoke(
         itemId: UUID,
     ): LBResult<SafeItem> {
-        return OSError.runCatching(log) {
+        return OSError.runCatching(log, { OSDomainError(OSDomainError.Code.DUPLICATE_ICON_FAILED, cause = it.cause) }) {
             val allItems = safeItemRepository.findByIdWithChildren(itemId)
             val mappedIds = allItems.associate { it.id to itemIdProvider() } // generate new id for every duplicates
 
@@ -160,16 +163,16 @@ class DuplicateItemUseCase @Inject constructor(
 
         val icon = originalItem.iconId?.let { getIconUseCase(it, originalItem.id) }?.let { iconResult ->
             when (iconResult) {
-                is LBResult.Failure,
-                -> {
+                is LBResult.Failure -> {
                     // Log the error but do not set the duplication as failed
-                    log.e(OSDomainError(OSDomainError.Code.DUPLICATE_ICON_FAILED))
+                    log.e(OSDomainError(OSDomainError.Code.DUPLICATE_ICON_FAILED, cause = iconResult.throwable))
                     null
                 }
                 is LBResult.Success -> iconResult.successData
             }
         }
         val transformedName = transformName?.invoke(name) ?: name
+        val indexAlpha = computeItemAlphaIndexUseCase(transformedName).getOrThrow("Failed to compute item alpha index")
         val (duplicatedItemKey, duplicatedItem) = safeItemBuilder.build(
             SafeItemBuilder.Data(
                 name = transformedName,
@@ -180,6 +183,7 @@ class DuplicateItemUseCase @Inject constructor(
                 id = duplicatedId,
                 position = position ?: originalItem.position,
                 updatedAt = originalItem.updatedAt,
+                indexAlpha = indexAlpha,
             ),
         )
 

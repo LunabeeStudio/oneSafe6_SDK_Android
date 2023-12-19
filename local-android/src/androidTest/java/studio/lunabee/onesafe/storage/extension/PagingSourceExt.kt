@@ -23,6 +23,12 @@ import androidx.paging.PagingSource
 
 suspend fun <Value : Any> PagingSource<Int, Value>.data(loadSize: Int = 10): List<Value> {
     val loadResult = load(PagingSource.LoadParams.Append(0, loadSize, false))
-        as PagingSource.LoadResult.Page<Int, Value>
-    return loadResult.data
+    return when (loadResult) {
+        is PagingSource.LoadResult.Error -> {
+            loadResult.throwable.printStackTrace()
+            error(loadResult.throwable)
+        }
+        is PagingSource.LoadResult.Invalid -> error(loadResult)
+        is PagingSource.LoadResult.Page -> loadResult.data
+    }
 }

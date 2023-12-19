@@ -50,6 +50,7 @@ import studio.lunabee.onesafe.domain.repository.IndexWordEntryRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
+import studio.lunabee.onesafe.domain.usecase.item.SortItemNameUseCase
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemFieldUseCase
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemUseCase
 import studio.lunabee.onesafe.error.OSImportExportError
@@ -97,6 +98,8 @@ class ImportEngineTest : OSHiltTest() {
 
     @Inject lateinit var indexWordEntryRepository: IndexWordEntryRepository
 
+    @Inject lateinit var sortItemNameUseCase: SortItemNameUseCase
+
     init {
         Timber.plant(ConsoleTree())
     }
@@ -134,7 +137,10 @@ class ImportEngineTest : OSHiltTest() {
 
             val prepareDataImportResult: LBFlowResult<Unit>
             val prepareDataExecTime = measureTimeMillis {
-                prepareDataImportResult = importEngine.prepareDataForImport(archiveExtractedDirectory = testFolder).last()
+                prepareDataImportResult = importEngine.prepareDataForImport(
+                    archiveExtractedDirectory = testFolder,
+                    mode = ImportMode.Replace,
+                ).last()
             }
             Timber.tag(javaClass.simpleName).d("[prepareDataForImport] $prepareDataExecTime ms")
             assertSuccess(prepareDataImportResult)
@@ -154,7 +160,8 @@ class ImportEngineTest : OSHiltTest() {
 
             val expectedSearchIndex = mutableListOf<IndexWordEntry>()
             // Check that all elements are readable.
-            safeItemRepository.getAllSafeItems().forEach { safeItem ->
+            val allSafeItems = safeItemRepository.getAllSafeItems()
+            allSafeItems.forEach { safeItem ->
                 // Check that name is readable.
                 safeItem.encName?.let {
                     val nameResult = decryptUseCase(it, safeItem.id, String::class)
@@ -201,6 +208,27 @@ class ImportEngineTest : OSHiltTest() {
                     }
                 }
                 expectedSearchIndex.addAll(createIndexWordEntriesFromItemFieldUseCase(itemFieldDataToIndex))
+            }
+
+            println(
+                allSafeItems
+                    .map { item ->
+                        item.encName?.let { decryptUseCase(it, item.id, String::class) }?.data!!
+                    }.joinToString("\n"),
+            )
+
+            // Check alphabetic index respects sortItemNameUseCase
+            val idNameList = allSafeItems
+                .map { item ->
+                    item.id to item.encName?.let { decryptUseCase(it, item.id, String::class) }?.data!!
+                }
+            val expectedIndex = sortItemNameUseCase(idNameList)
+            val actualIndices = allSafeItems
+                .associate { item ->
+                    item.id to item.indexAlpha
+                }
+            expectedIndex.forEach { (id, idx) ->
+                assertEquals(idx, actualIndices[id])
             }
 
             // Check index in database vs what we expect to get

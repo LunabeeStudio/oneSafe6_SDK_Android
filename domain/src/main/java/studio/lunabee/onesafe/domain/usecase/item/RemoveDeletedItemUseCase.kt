@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.domain.usecase.item
 
 import com.lunabee.lbcore.model.LBResult
+import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.repository.SafeItemDeletedRepository
 import studio.lunabee.onesafe.domain.usecase.DeleteFileAssociatedWithItemsUseCase
@@ -42,7 +43,10 @@ class RemoveDeletedItemUseCase @Inject constructor(
             mapErr = { e -> OSDomainError(OSDomainError.Code.SAFE_ITEM_REMOVE_FAILURE, cause = e) },
         ) {
             // Get original children to update them
-            val siblingChildrenItems = safeItemDeletedRepository.getSiblingOriginalChildren(safeItem.id)
+            val siblingChildrenItems = safeItemDeletedRepository.getSiblingOriginalChildren(
+                parentId = safeItem.id,
+                order = ItemOrder.Position,
+            )
             siblingChildrenItems.forEach { siblingChild ->
                 reorderChildrenAtParentLastPositionUseCase(siblingChild)
             }

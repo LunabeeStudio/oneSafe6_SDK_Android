@@ -22,6 +22,7 @@ package studio.lunabee.onesafe
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import kotlin.time.Duration.Companion.days
 import studio.lunabee.onesafe.domain.model.camera.CameraSystem
+import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 
 internal object SettingsDefaults {
     const val AutoLockInactivityDelayMsDefault: Long = 30_000
@@ -39,4 +40,5 @@ internal object SettingsDefaults {
     val CameraSystemDefault: CameraSystem = CameraSystem.InApp
     const val cloudBackupEnabledDefault: Boolean = false
     const val keepLocalBackupEnabledDefault: Boolean = false
+    val itemOrderingDefault: ItemOrder = ItemOrder.Alphabetic
 }

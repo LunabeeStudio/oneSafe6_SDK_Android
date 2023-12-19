@@ -21,6 +21,7 @@ package studio.lunabee.onesafe.bubbles.ui.composables
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.model.OSLazyCardContent
 
@@ -32,7 +33,7 @@ class ContactItemCardContent(
     override val contentType: Any = "ContactItem"
 
     @Composable
-    override fun Content(padding: PaddingValues) {
+    override fun Content(padding: PaddingValues, modifier: Modifier) {
         ContactListCell(
             uiBubblesContactInfo = contactInfo,
             onClick = onClick,

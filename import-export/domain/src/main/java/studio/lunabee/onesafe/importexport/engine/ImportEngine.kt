@@ -49,7 +49,7 @@ interface ImportEngine {
      * Replace all ids and re-encrypt all content with the current user credentials.
      * @param archiveExtractedDirectory directory where extracted content is stored.
      */
-    fun prepareDataForImport(archiveExtractedDirectory: File): Flow<LBFlowResult<Unit>>
+    fun prepareDataForImport(archiveExtractedDirectory: File, mode: ImportMode): Flow<LBFlowResult<Unit>>
 
     /**
      * Save data depending on the [ImportMode] chosen by user.

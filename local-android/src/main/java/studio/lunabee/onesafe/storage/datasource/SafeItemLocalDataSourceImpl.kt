@@ -26,8 +26,12 @@ import com.lunabee.lbextensions.mapValues
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import studio.lunabee.importexport.repository.datasource.ImportExportSafeItemLocalDataSource
+import studio.lunabee.onesafe.domain.model.safeitem.ItemNameWithIndex
+import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
+import studio.lunabee.onesafe.domain.model.safeitem.SafeItemIdName
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
@@ -39,10 +43,13 @@ import studio.lunabee.onesafe.storage.dao.IndexWordEntryDao
 import studio.lunabee.onesafe.storage.dao.SafeItemDao
 import studio.lunabee.onesafe.storage.dao.SafeItemFieldDao
 import studio.lunabee.onesafe.storage.dao.SafeItemKeyDao
+import studio.lunabee.onesafe.storage.dao.SafeItemRawDao
+import studio.lunabee.onesafe.storage.model.ItemIdWithAlphaIndex
 import studio.lunabee.onesafe.storage.model.RoomIndexWordEntry
 import studio.lunabee.onesafe.storage.model.RoomSafeItem
 import studio.lunabee.onesafe.storage.model.RoomSafeItemField
 import studio.lunabee.onesafe.storage.model.RoomSafeItemKey
+import studio.lunabee.onesafe.storage.model.RoomUpdateSafeItem
 import studio.lunabee.onesafe.storage.utils.TransactionProvider
 import studio.lunabee.onesafe.storage.utils.runSQL
 import java.time.Instant
@@ -51,11 +58,12 @@ import javax.inject.Inject
 
 class SafeItemLocalDataSourceImpl @Inject constructor(
     private val safeItemDao: SafeItemDao,
+    private val safeItemRawDao: SafeItemRawDao,
     private val safeItemKeyDao: SafeItemKeyDao,
     private val safeItemFieldDao: SafeItemFieldDao,
     private val indexWordEntryDao: IndexWordEntryDao,
     private val transactionProvider: TransactionProvider<MainDatabase>,
-) : SafeItemLocalDataSource {
+) : SafeItemLocalDataSource, ImportExportSafeItemLocalDataSource {
 
     override suspend fun save(
         item: SafeItem,
@@ -89,6 +97,26 @@ class SafeItemLocalDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun save(
+        items: List<SafeItem>,
+        safeItemKeys: List<SafeItemKey>,
+        fields: List<SafeItemField>?,
+        indexWordEntries: List<IndexWordEntry>?,
+        updateItemsAlphaIndices: Map<UUID, Double>,
+    ) {
+        runSQL {
+            transactionProvider.runAsTransaction {
+                safeItemDao.updateAlphaIndices(
+                    updateItemsAlphaIndices.map { (id, index) -> ItemIdWithAlphaIndex(id, index) },
+                )
+                safeItemDao.insert(items.map(RoomSafeItem::fromSafeItem))
+                safeItemKeyDao.insert(safeItemKeys.map { RoomSafeItemKey.fromSafeItemKey(it) })
+                fields?.let { safeItemFieldDao.insert(it.map(RoomSafeItemField::fromSafeItemField)) }
+                indexWordEntries?.let { indexWordEntryDao.insert(it.map(RoomIndexWordEntry::fromIndexWordEntry)) }
+            }
+        }
+    }
+
     override suspend fun updateIcon(id: UUID, iconId: UUID?) {
         safeItemDao.updateIcon(id, iconId)
     }
@@ -100,19 +128,22 @@ class SafeItemLocalDataSourceImpl @Inject constructor(
     override suspend fun getSafeItem(id: UUID): SafeItem =
         (safeItemDao.findById(id) ?: throw OSStorageError(OSStorageError.Code.ITEM_NOT_FOUND)).toSafeItem()
 
-    override fun getSafeItemWithIdentifier(ids: List<UUID>): Flow<List<SafeItemWithIdentifier>> =
-        safeItemDao.findByIdWithIdentifier(ids)
+    override fun getSafeItemWithIdentifier(ids: Collection<UUID>, order: ItemOrder): Flow<List<SafeItemWithIdentifier>> =
+        safeItemRawDao.getSafeItemsWithIdentifierFlow(SafeItemRawDao.findByIdWithIdentifierQuery(ids, order))
 
-    override suspend fun findByParentId(parentId: UUID): List<SafeItem> =
-        safeItemDao.findByParentId(parentId).map(RoomSafeItem::toSafeItem)
+    override suspend fun findByParentId(parentId: UUID, order: ItemOrder): List<SafeItem> =
+        safeItemRawDao.getItems(SafeItemRawDao.findByParentIdQuery(parentId, order)).map(RoomSafeItem::toSafeItem)
 
-    override suspend fun findByDeletedParentId(deletedParentId: UUID?): List<SafeItem> =
-        safeItemDao.findByDeletedParentId(deletedParentId).map(RoomSafeItem::toSafeItem)
+    override suspend fun findByDeletedParentId(deletedParentId: UUID?, order: ItemOrder): List<SafeItem> =
+        safeItemRawDao.getItems(SafeItemRawDao.findByDeletedParentIdQuery(deletedParentId, order))
+            .map(RoomSafeItem::toSafeItem)
 
-    override suspend fun getSiblingOriginalChildren(parentId: UUID): List<SafeItem> =
-        safeItemDao.findDeletedByParentIdNotEqualDeletedParentId(parentId).map(RoomSafeItem::toSafeItem)
+    override suspend fun getSiblingOriginalChildren(parentId: UUID, order: ItemOrder): List<SafeItem> =
+        safeItemRawDao.getItems(
+            SafeItemRawDao.findDeletedByParentIdNotEqualDeletedParentIdQuery(parentId, order),
+        ).map(RoomSafeItem::toSafeItem)
 
-    override suspend fun updateSiblingOriginalChildrenParentId(parentId: UUID, newParentId: UUID?) =
+    override suspend fun updateSiblingOriginalChildrenParentId(parentId: UUID, newParentId: UUID?): Unit =
         safeItemDao.updateParentIdOfDeletedByParentIdNotEqualDeletedParentId(parentId, newParentId)
 
     override fun countSafeItemByParentIdFlow(parentId: UUID?): Flow<Int> {
@@ -133,32 +164,31 @@ class SafeItemLocalDataSourceImpl @Inject constructor(
         return safeItemDao.countSafeItemByParentIdDeleted(parentId)
     }
 
-    override fun getPagerItemByParentId(config: PagingConfig, parentId: UUID?): Flow<PagingData<SafeItem>> {
+    override fun getPagerItemByParentId(config: PagingConfig, parentId: UUID?, order: ItemOrder): Flow<PagingData<SafeItem>> {
         return Pager(config = config) {
-            safeItemDao.findByParentIdAsPagingSource(parentId)
+            safeItemRawDao.getPagedItems(SafeItemRawDao.findByParentIdQuery(parentId, order))
         }.flow.mapPagingValues(RoomSafeItem::toSafeItem)
     }
 
-    override fun getPagerItemByParentIdDeleted(config: PagingConfig, parentId: UUID?): Flow<PagingData<SafeItem>> {
+    override fun getPagerItemByParentIdDeleted(config: PagingConfig, parentId: UUID?, order: ItemOrder): Flow<PagingData<SafeItem>> {
         return Pager(config = config) {
-            safeItemDao.findByDeletedParentIdAsPagingSource(parentId)
+            safeItemRawDao.getPagedItems(SafeItemRawDao.findByDeletedParentIdQuery(parentId, order))
         }.flow.mapPagingValues(RoomSafeItem::toSafeItem)
     }
 
-    override fun getPagerItemFavorite(config: PagingConfig): Flow<PagingData<SafeItem>> {
+    override fun getPagerItemFavorite(config: PagingConfig, order: ItemOrder): Flow<PagingData<SafeItem>> {
         return Pager(config = config) {
-            safeItemDao.findFavoriteAsPagingSource()
+            safeItemRawDao.getPagedItems(SafeItemRawDao.findFavoriteQuery(order))
         }.flow.mapPagingValues(RoomSafeItem::toSafeItem)
     }
 
-    override fun findLastFavorite(limit: Int): Flow<List<SafeItem>> {
-        return safeItemDao.findLastFavorite(limit = limit)
-            .distinctUntilChanged()
-            .mapValues(RoomSafeItem::toSafeItem)
-    }
-
-    override fun findLastDeleted(limit: Int): Flow<List<SafeItem>> {
-        return safeItemDao.findLastDeletedWithNonDeletedParent(limit = limit)
+    override fun findLastFavorite(limit: Int, order: ItemOrder): Flow<List<SafeItem>> {
+        return safeItemRawDao.getItemsFlow(
+            SafeItemRawDao.findLastFavoriteQuery(
+                limit = limit,
+                order = order,
+            ),
+        )
             .distinctUntilChanged()
             .mapValues(RoomSafeItem::toSafeItem)
     }
@@ -221,7 +251,7 @@ class SafeItemLocalDataSourceImpl @Inject constructor(
     override suspend fun updateSafeItem(safeItem: SafeItem, indexWordEntries: List<IndexWordEntry>?) {
         runSQL {
             transactionProvider.runAsTransaction {
-                safeItemDao.update(RoomSafeItem.fromSafeItem(safeItem))
+                safeItemDao.update(RoomUpdateSafeItem.fromSafeItem(safeItem))
                 indexWordEntries?.let { indexWordEntryDao.insert(it.map(RoomIndexWordEntry::fromIndexWordEntry)) }
             }
         }
@@ -245,18 +275,21 @@ class SafeItemLocalDataSourceImpl @Inject constructor(
 
     override suspend fun getSafeItemName(id: UUID): ByteArray? = safeItemDao.getSafeItemName(id)
 
-    override suspend fun removeOldItems(threshold: Instant) = safeItemDao.removeOldItems(threshold)
-    override fun getAllSafeItems(limit: Int): Flow<List<SafeItem>> = safeItemDao.getAllSafeItems(limit)
-        .distinctUntilChanged()
-        .mapValues(RoomSafeItem::toSafeItem)
+    override suspend fun removeOldItems(threshold: Instant): Unit = safeItemDao.removeOldItems(threshold)
 
     override suspend fun getAllSafeItems(): List<SafeItem> {
         return safeItemDao.getAllSafeItems().map { it.toSafeItem() }
     }
 
-    override fun getAllSafeItemsWithIdentifier(config: PagingConfig, idsToExclude: List<UUID>): Flow<PagingData<SafeItemWithIdentifier>> {
+    override fun getAllSafeItemsWithIdentifier(
+        config: PagingConfig,
+        idsToExclude: List<UUID>,
+        order: ItemOrder,
+    ): Flow<PagingData<SafeItemWithIdentifier>> {
         return Pager(config = config) {
-            safeItemDao.getAllSafeItemsWithIdentifierAsPagingSource(idsToExclude)
+            safeItemRawDao.getPagedSafeItemsWithIdentifier(
+                SafeItemRawDao.getAllSafeItemsWithIdentifierQuery(idsToExclude, order),
+            )
         }.flow
     }
 
@@ -287,4 +320,20 @@ class SafeItemLocalDataSourceImpl @Inject constructor(
     }
 
     override fun getAllDeletedItemsCount(): Flow<Int> = safeItemDao.getAllDeletedItemsCount()
+
+    override suspend fun setAlphaIndices(indices: List<Pair<UUID, Double>>) {
+        safeItemDao.updateAlphaIndices(indices.map { (id, index) -> ItemIdWithAlphaIndex(id, index) })
+    }
+
+    override suspend fun getItemNameWithIndexAt(index: Int): ItemNameWithIndex? {
+        return safeItemDao.getItemNameWithIndexAt(index)
+    }
+
+    override suspend fun getAlphaIndexRange(): Pair<Double, Double> {
+        return safeItemDao.getAlphaIndexRange().asPair()
+    }
+
+    override suspend fun getAllSafeItemIdName(): List<SafeItemIdName> {
+        return safeItemDao.getAllSafeItemsIdName()
+    }
 }

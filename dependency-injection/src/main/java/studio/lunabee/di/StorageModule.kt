@@ -34,6 +34,7 @@ import studio.lunabee.bubbles.repository.datasource.ContactLocalDataSource
 import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
 import studio.lunabee.importexport.repository.datasource.AutoBackupErrorLocalDataSource
 import studio.lunabee.importexport.repository.datasource.CloudBackupLocalDataSource
+import studio.lunabee.importexport.repository.datasource.ImportExportSafeItemLocalDataSource
 import studio.lunabee.importexport.repository.datasource.LocalBackupLocalDataSource
 import studio.lunabee.messaging.repository.datasource.EnqueuedMessageLocalDataSource
 import studio.lunabee.messaging.repository.datasource.HandShakeDataLocalDatasource
@@ -67,6 +68,7 @@ import studio.lunabee.onesafe.storage.dao.MessageDao
 import studio.lunabee.onesafe.storage.dao.SafeItemDao
 import studio.lunabee.onesafe.storage.dao.SafeItemFieldDao
 import studio.lunabee.onesafe.storage.dao.SafeItemKeyDao
+import studio.lunabee.onesafe.storage.dao.SafeItemRawDao
 import studio.lunabee.onesafe.storage.dao.SentMessageDao
 import studio.lunabee.onesafe.storage.datasource.AutoBackupErrorLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.CloudBackupLocalDataSourceImpl
@@ -181,6 +183,11 @@ interface StorageModule {
     fun bindAutoBackupErrorDataSource(
         autoBackupErrorDataSource: AutoBackupErrorLocalDataSourceImpl,
     ): AutoBackupErrorLocalDataSource
+
+    @Binds
+    fun bindImportExportSafeItemLocalDataSource(
+        importExportSafeItemLocalDataSource: SafeItemLocalDataSourceImpl,
+    ): ImportExportSafeItemLocalDataSource
 }
 
 @Module
@@ -217,6 +224,11 @@ object MainDatabaseModule {
     @Provides
     fun provideSafeItemDao(mainDatabase: MainDatabase): SafeItemDao {
         return mainDatabase.safeItemDao()
+    }
+
+    @Provides
+    fun provideSafeItemRawDao(mainDatabase: MainDatabase): SafeItemRawDao {
+        return mainDatabase.safeItemRawDao()
     }
 
     @Provides

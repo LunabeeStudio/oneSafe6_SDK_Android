@@ -19,12 +19,14 @@
 
 package studio.lunabee.onesafe.test
 
+import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
+import studio.lunabee.onesafe.domain.usecase.item.CreateItemUseCase
 import java.nio.ByteBuffer
 import java.time.Instant
 import java.util.UUID
@@ -48,8 +50,9 @@ object OSTestUtils {
         encColor: ByteArray? = byteArrayOf(),
         deletedAt: Instant? = null,
         deletedParentId: UUID? = null,
+        indexAlpha: Double = 0.0,
     ): SafeItem {
-        return SafeItem(id, encName, parentId, isFavorite, updatedAt, position, iconId, encColor, deletedAt, deletedParentId)
+        return SafeItem(id, encName, parentId, isFavorite, updatedAt, position, iconId, encColor, deletedAt, deletedParentId, indexAlpha)
     }
 
     fun createSafeItemWithIdentifier(
@@ -88,6 +91,7 @@ object OSTestUtils {
         encColor: (idx: Int) -> ByteArray? = { byteArrayOf() },
         deletedAt: (idx: Int) -> Instant? = { null },
         deletedParentId: (idx: Int) -> UUID? = { null },
+        indexAlpha: (idx: Int) -> Double = { 0.0 },
     ): List<SafeItem> {
         return (0 until size).map { idx ->
             SafeItem(
@@ -101,6 +105,7 @@ object OSTestUtils {
                 encColor = encColor(idx),
                 deletedAt = deletedAt(idx),
                 deletedParentId = deletedParentId(idx),
+                indexAlpha = indexAlpha(idx),
             )
         }
     }
@@ -176,5 +181,20 @@ val testUUIDs: List<UUID> by lazy {
         val secondLong = buffer.long
         buffer.rewind()
         UUID(firstLong, secondLong)
+    }
+}
+
+suspend fun CreateItemUseCase.test(
+    name: String? = null,
+    parentId: UUID? = null,
+    isFavorite: Boolean = false,
+    icon: ByteArray? = null,
+    color: String? = null,
+    position: Double? = null,
+): SafeItem {
+    val result = this(name, parentId, isFavorite, icon, color, position)
+    return when (result) {
+        is LBResult.Failure -> throw result.throwable!!
+        is LBResult.Success -> result.successData
     }
 }

@@ -22,18 +22,18 @@ package studio.lunabee.onesafe.domain.repository
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import java.time.Instant
 import java.util.UUID
 
 interface SafeItemDeletedRepository {
-    suspend fun getDeletedItemsByDeletedParent(deletedParentId: UUID?): List<SafeItem>
-    suspend fun getSiblingOriginalChildren(parentId: UUID): List<SafeItem>
+    suspend fun getDeletedItemsByDeletedParent(deletedParentId: UUID?, order: ItemOrder): List<SafeItem>
+    suspend fun getSiblingOriginalChildren(parentId: UUID, order: ItemOrder): List<SafeItem>
     suspend fun updateSiblingOriginalChildrenParentId(parentId: UUID, newParentId: UUID?)
     fun countSafeItemByParentIdDeletedFlow(parentId: UUID?): Flow<Int>
     suspend fun countSafeItemByParentIdDeleted(parentId: UUID?): Int
-    fun getPagerItemByParentIdDeleted(config: PagingConfig, parentId: UUID?): Flow<PagingData<SafeItem>>
-    fun findLastDeleted(limit: Int): Flow<List<SafeItem>>
+    fun getPagerItemByParentIdDeleted(config: PagingConfig, parentId: UUID?, order: ItemOrder): Flow<PagingData<SafeItem>>
     fun countAllDeletedWithNonDeletedParent(): Flow<Int>
     suspend fun getHighestDeletedPosition(parentId: UUID?): Double?
     suspend fun removeItem(id: UUID)

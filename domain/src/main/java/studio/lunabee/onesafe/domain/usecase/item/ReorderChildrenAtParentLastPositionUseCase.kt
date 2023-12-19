@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.domain.usecase.item
 
+import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.repository.SafeItemDeletedRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
@@ -33,9 +34,9 @@ class ReorderChildrenAtParentLastPositionUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(safeItem: SafeItem) {
         val items = if (safeItem.isDeleted) {
-            safeItemDeletedRepository.getDeletedItemsByDeletedParent(safeItem.id)
+            safeItemDeletedRepository.getDeletedItemsByDeletedParent(safeItem.id, ItemOrder.Position)
         } else {
-            safeItemRepository.getChildren(safeItem.id)
+            safeItemRepository.getChildren(safeItem.id, ItemOrder.Position)
         }
         val minPos = items.firstOrNull()?.position
         minPos?.let {

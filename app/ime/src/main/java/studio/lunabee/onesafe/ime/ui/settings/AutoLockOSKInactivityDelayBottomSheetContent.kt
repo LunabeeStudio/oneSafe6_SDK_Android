@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.ime.ui.settings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -40,7 +41,9 @@ internal fun AutoLockOSKInactivityDelayBottomSheetContent(
     selectedAutoLockInactivityDelay: AutoLockInactivityDelay,
 ) {
     Column(
-        modifier = Modifier.wrapContentHeight(),
+        modifier = Modifier
+            .selectableGroup()
+            .wrapContentHeight(),
     ) {
         OSText(
             text = LbcTextSpec.StringResource(id = R.string.oneSafeK_inactivityAutolockScreen_header_title),

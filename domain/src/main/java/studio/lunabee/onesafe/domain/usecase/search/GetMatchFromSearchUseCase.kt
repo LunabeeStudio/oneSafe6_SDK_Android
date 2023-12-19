@@ -19,11 +19,14 @@
 
 package studio.lunabee.onesafe.domain.usecase.search
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
 import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
+import studio.lunabee.onesafe.domain.repository.ItemSettingsRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import javax.inject.Inject
 
@@ -32,7 +35,9 @@ import javax.inject.Inject
  */
 class GetMatchFromSearchUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
+    private val itemSettingsRepository: ItemSettingsRepository,
 ) {
+    @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(searchValue: String, indexWordEntries: List<PlainIndexWordEntry>): Flow<List<SafeItemWithIdentifier>> {
         val keywords = SearchStringUtils.getListStringSearch(searchValue)
 
@@ -55,11 +60,10 @@ class GetMatchFromSearchUseCase @Inject constructor(
                 )
             }
 
-        return safeItemRepository.getSafeItemWithIdentifier(scoredMatches.keys.toList()).map { items ->
-            items.forEach { item ->
-                scoredMatches.getValue(item.id).item = item // Join items and index score
+        return itemSettingsRepository.itemOrdering.flatMapLatest { itemOrder ->
+            safeItemRepository.getSafeItemWithIdentifier(scoredMatches.keys, itemOrder).map { items ->
+                items.sortedByDescending { scoredMatches[it.id] }
             }
-            scoredMatches.values.sortedDescending().mapNotNull { it.item }
         }
     }
 
@@ -68,30 +72,19 @@ class GetMatchFromSearchUseCase @Inject constructor(
      * @property keywordsMatchScore The number of distinct matched keyword
      * @property totalMatchScore The total count of matches
      */
-    private class ScoredItemMatch(
+    private data class ScoredItemMatch(
         val titleMatchRate: Float,
         val keywordsMatchScore: Int,
         val totalMatchScore: Int,
     ) : Comparable<ScoredItemMatch> {
-        var item: SafeItemWithIdentifier? = null
+        override fun compareTo(other: ScoredItemMatch): Int = itemMatchComparator.compare(this, other)
 
-        override fun compareTo(other: ScoredItemMatch): Int {
-            return titleMatchRate.compareTo(other.titleMatchRate).takeIf { it != 0 }
-                ?: keywordsMatchScore.compareTo(other.keywordsMatchScore).takeIf { it != 0 }
-                ?: totalMatchScore.compareTo(other.totalMatchScore).takeIf { it != 0 }
-                ?: item?.let { item ->
-                    item.updatedAt.compareTo(other.item?.updatedAt).takeIf { it != 0 }
-                        ?: other.item?.position?.compareTo(item.position)
-                } ?: 0
-        }
-
-        override fun toString(): String {
-            return "ScoredItemMatch(" +
-                "titleMatchRate=$titleMatchRate, " +
-                "keywordsMatchScore=$keywordsMatchScore, " +
-                "totalMatchScore=$totalMatchScore, " +
-                "item=${item?.id}" +
-                ")"
+        companion object {
+            private val itemMatchComparator = compareBy<ScoredItemMatch>(
+                { it.titleMatchRate },
+                { it.keywordsMatchScore },
+                { it.totalMatchScore },
+            )
         }
     }
 }

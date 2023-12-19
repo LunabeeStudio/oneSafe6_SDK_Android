@@ -69,6 +69,7 @@ dependencies {
     implementation(project(":app:settings"))
     api(project(":common-test"))
     api(project(":local-android"))
+    api(project(":crypto-android"))
     api(libs.lbcandroidtest)
 }
 

@@ -21,8 +21,11 @@ package studio.lunabee.onesafe.domain.usecase.item
 
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
+import studio.lunabee.onesafe.domain.repository.ItemSettingsRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemDeletedRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import javax.inject.Inject
@@ -30,18 +33,24 @@ import javax.inject.Inject
 class GetPagerItemByParentUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
     private val safeItemDeletedRepository: SafeItemDeletedRepository,
+    private val itemSettingsRepository: ItemSettingsRepository,
 ) {
+    @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(item: SafeItem, pagingConfig: PagingConfig): Flow<PagingData<SafeItem>> {
-        return if (item.isDeleted) {
-            safeItemDeletedRepository.getPagerItemByParentIdDeleted(
-                pagingConfig,
-                item.id,
-            )
-        } else {
-            safeItemRepository.getPagerItemByParents(
-                pagingConfig,
-                item.id,
-            )
+        return itemSettingsRepository.itemOrdering.flatMapLatest { itemOrder ->
+            if (item.isDeleted) {
+                safeItemDeletedRepository.getPagerItemByParentIdDeleted(
+                    config = pagingConfig,
+                    parentId = item.id,
+                    order = itemOrder,
+                )
+            } else {
+                safeItemRepository.getPagerItemByParents(
+                    config = pagingConfig,
+                    parentId = item.id,
+                    order = itemOrder,
+                )
+            }
         }
     }
 }
