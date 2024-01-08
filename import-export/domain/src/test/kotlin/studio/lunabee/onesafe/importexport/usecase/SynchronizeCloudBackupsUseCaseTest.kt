@@ -31,12 +31,12 @@ import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
+import org.threeten.extra.MutableClock
 import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.importexport.model.ImportExportConstant
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
-import studio.lunabee.onesafe.test.testClock
 import java.io.File
 import java.time.Instant
 
@@ -44,6 +44,7 @@ class SynchronizeCloudBackupsUseCaseTest {
 
     private val remoteMap = mutableMapOf<String, CloudBackup>()
     private val localMap = mutableMapOf<String, Pair<LocalBackup, Boolean>>() // boolean -> true if exist in remote
+    private val testClock = MutableClock.epochUTC()
 
     private val cloudBackupRepository: CloudBackupRepository = mockk {
         coEvery { getBackups() } answers { remoteMap.values.toList() }

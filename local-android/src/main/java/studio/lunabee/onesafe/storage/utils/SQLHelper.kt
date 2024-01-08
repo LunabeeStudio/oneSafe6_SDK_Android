@@ -20,14 +20,17 @@
 package studio.lunabee.onesafe.storage.utils
 
 import android.database.SQLException
+import com.lunabee.lblogger.LBLogger
+import com.lunabee.lblogger.e
 import studio.lunabee.onesafe.error.OSStorageError
-import timber.log.Timber
+
+private val logger = LBLogger.get("runSQL")
 
 internal inline fun <R> runSQL(block: () -> R): R {
     return try {
         block()
     } catch (e: SQLException) {
-        Timber.e(e)
+        logger.e(e)
         throw OSStorageError(OSStorageError.Code.UNKNOWN_DATABASE_ERROR, cause = e)
     }
 }

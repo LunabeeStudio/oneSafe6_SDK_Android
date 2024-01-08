@@ -36,7 +36,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
 import studio.lunabee.onesafe.importexport.usecase.SynchronizeCloudBackupsUseCase
-import timber.log.Timber
+import com.lunabee.lblogger.LBLogger
+
+private val logger = LBLogger.get<CloudSynchronizeBackupWorker>()
 
 /**
  * Worker that synchronize local backups with cloud by calling [SynchronizeCloudBackupsUseCase]
@@ -54,7 +56,7 @@ class CloudSynchronizeBackupWorker @AssistedInject constructor(
                 emit(LBFlowResult.Failure(error))
             }.onEach { result ->
                 if (result is LBFlowResult.Loading) {
-                    Timber.v("Progress ${result.progress}")
+                    logger.v("Progress ${result.progress}")
                 }
             }.first {
                 it !is LBFlowResult.Loading

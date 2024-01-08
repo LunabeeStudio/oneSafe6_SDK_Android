@@ -19,7 +19,6 @@
 
 plugins {
     `android-library`
-    `onesafe-publish`
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
@@ -72,7 +71,7 @@ dependencies {
 
     implementation(libs.hilt.work)
     implementation(libs.work.runtime)
-    implementation(libs.timber)
+    implementation(libs.lblogger)
     implementation(libs.datastore.preferences)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.navigation.compose)
@@ -111,6 +110,6 @@ dependencies {
     androidTestImplementation(project(":app:settings"))
     androidTestImplementation(project(":crypto-android"))
     androidTestImplementation(libs.room.testing)
-    androidTestImplementation(libs.lblogger.timber)
+    androidTestImplementation(libs.lblogger)
     androidTestImplementation(libs.work.testing)
 }

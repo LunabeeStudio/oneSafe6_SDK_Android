@@ -30,9 +30,9 @@ import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.storage.extension.testInsertCloud
 import studio.lunabee.onesafe.storage.extension.testInsertLocal
 import studio.lunabee.onesafe.storage.model.RoomBackup
-import studio.lunabee.onesafe.test.testClock
 import studio.lunabee.onesafe.test.testUUIDs
 import java.io.File
+import java.time.Clock
 import java.time.Instant
 import javax.inject.Inject
 import kotlin.test.assertContentEquals
@@ -43,6 +43,8 @@ class BackupDaoTest {
     @get:Rule val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
 
     @Inject internal lateinit var dao: BackupDao
+
+    @Inject lateinit var clock: Clock
 
     @Before
     fun setUp() {
@@ -60,8 +62,8 @@ class BackupDaoTest {
         )
 
         val remoteBackups = listOf(
-            CloudBackup(testUUIDs[1].toString(), testUUIDs[1].toString(), Instant.now(testClock).plusMillis(1)),
-            CloudBackup(testUUIDs[0].toString(), testUUIDs[0].toString(), Instant.now(testClock)),
+            CloudBackup(testUUIDs[1].toString(), testUUIDs[1].toString(), Instant.now(clock).plusMillis(1)),
+            CloudBackup(testUUIDs[0].toString(), testUUIDs[0].toString(), Instant.now(clock)),
         )
 
         dao.refreshCloudBackups(remoteBackups)

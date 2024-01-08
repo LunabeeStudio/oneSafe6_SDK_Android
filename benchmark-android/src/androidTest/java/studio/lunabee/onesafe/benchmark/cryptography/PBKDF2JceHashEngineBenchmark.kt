@@ -28,7 +28,6 @@ import org.junit.Rule
 import org.junit.Test
 import studio.lunabee.onesafe.cryptography.CryptoConstants
 import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
-import timber.log.Timber
 import java.lang.reflect.Method
 
 @LargeTest
@@ -36,10 +35,6 @@ class PBKDF2JceHashEngineBenchmark {
 
     @get:Rule
     val benchmarkRule: BenchmarkRule = BenchmarkRule()
-
-    init {
-        Timber.plant(Timber.DebugTree())
-    }
 
     private val hashEngine: PBKDF2JceHashEngine = PBKDF2JceHashEngine(StandardTestDispatcher(), CryptoConstants.PBKDF2Iterations)
 

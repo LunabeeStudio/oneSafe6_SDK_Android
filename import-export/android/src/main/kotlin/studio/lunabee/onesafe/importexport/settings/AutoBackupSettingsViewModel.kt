@@ -24,6 +24,8 @@ import androidx.lifecycle.viewModelScope
 import com.lunabee.lbcore.model.LBFlowResult
 import com.lunabee.lbcore.model.LBFlowResult.Companion.transformResult
 import com.lunabee.lbcore.model.LBResult
+import com.lunabee.lblogger.LBLogger
+import com.lunabee.lblogger.e
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,9 +56,10 @@ import studio.lunabee.onesafe.importexport.usecase.GetLatestBackupUseCase
 import studio.lunabee.onesafe.importexport.usecase.SetKeepLocalBackupUseCase
 import studio.lunabee.onesafe.importexport.worker.AutoBackupWorkersHelper
 import studio.lunabee.onesafe.model.OSSwitchState
-import timber.log.Timber
 import javax.inject.Inject
 import kotlin.time.Duration
+
+private val logger = LBLogger.get<AutoBackupSettingsViewModel>()
 
 @HiltViewModel
 class AutoBackupSettingsViewModel @Inject constructor(
@@ -176,7 +179,7 @@ class AutoBackupSettingsViewModel @Inject constructor(
                                 }
                             }
                         } else {
-                            Timber.e(error)
+                            error?.let(logger::e)
                             cloudLoading.value = false
                             _snackbarState.value = ErrorSnackbarState(result.throwable, ::dismissSnackbar)
                         }

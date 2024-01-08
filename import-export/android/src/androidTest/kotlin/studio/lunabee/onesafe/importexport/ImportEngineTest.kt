@@ -21,6 +21,7 @@ package studio.lunabee.onesafe.importexport
 
 import android.content.Context
 import com.lunabee.lbcore.model.LBFlowResult
+import com.lunabee.lblogger.LBLogger
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -55,12 +56,10 @@ import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromIt
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemUseCase
 import studio.lunabee.onesafe.error.OSImportExportError
 import studio.lunabee.onesafe.importexport.engine.ImportEngine
-import studio.lunabee.onesafe.test.ConsoleTree
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltTest
 import studio.lunabee.onesafe.test.assertFailure
 import studio.lunabee.onesafe.test.assertSuccess
-import timber.log.Timber
 import java.io.File
 import java.nio.ByteBuffer
 import java.util.UUID
@@ -69,6 +68,8 @@ import kotlin.random.Random
 import kotlin.system.measureTimeMillis
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+
+private val logger = LBLogger.get<ImportEngineTest>()
 
 @HiltAndroidTest
 @UninstallModules(CryptoConstantsTestModule::class)
@@ -100,10 +101,6 @@ class ImportEngineTest : OSHiltTest() {
 
     @Inject lateinit var sortItemNameUseCase: SortItemNameUseCase
 
-    init {
-        Timber.plant(ConsoleTree())
-    }
-
     @Test
     fun import_data_test() {
         runTest {
@@ -117,13 +114,13 @@ class ImportEngineTest : OSHiltTest() {
                 )
             }
             // TODO use benchmark for additional performance test
-            Timber.tag(javaClass.simpleName).d("[copyLbcFolderResourceToDeviceFile] $copyResourceExecTime ms")
+            logger.d("[copyLbcFolderResourceToDeviceFile] $copyResourceExecTime ms")
 
             val metadata: ImportMetadata
             val metadataExecTime = measureTimeMillis {
                 metadata = importEngine.getMetadata(testFolder)
             }
-            Timber.tag(javaClass.simpleName).d("[getMetadata] $metadataExecTime ms")
+            logger.d("[getMetadata] $metadataExecTime ms")
 
             val authResult: LBFlowResult<Unit>
             val authExecTime = measureTimeMillis {
@@ -132,7 +129,7 @@ class ImportEngineTest : OSHiltTest() {
                     password = "a".toCharArray(),
                 ).last()
             }
-            Timber.tag(javaClass.simpleName).d("[authenticateAndExtractData] $authExecTime ms")
+            logger.d("[authenticateAndExtractData] $authExecTime ms")
             assertSuccess(authResult)
 
             val prepareDataImportResult: LBFlowResult<Unit>
@@ -142,18 +139,18 @@ class ImportEngineTest : OSHiltTest() {
                     mode = ImportMode.Replace,
                 ).last()
             }
-            Timber.tag(javaClass.simpleName).d("[prepareDataForImport] $prepareDataExecTime ms")
+            logger.d("[prepareDataForImport] $prepareDataExecTime ms")
             assertSuccess(prepareDataImportResult)
 
             val saveImportDataResult: LBFlowResult<Unit>
             val saveExecTime = measureTimeMillis {
                 saveImportDataResult = importEngine.saveImportData(mode = ImportMode.Replace).last()
             }
-            Timber.tag(javaClass.simpleName).d("[saveImportData] $saveExecTime ms")
+            logger.d("[saveImportData] $saveExecTime ms")
             assertSuccess(saveImportDataResult)
 
             val totalImportTime = metadataExecTime + authExecTime + prepareDataExecTime + saveExecTime
-            Timber.tag(javaClass.simpleName).d("[Total import time for ${metadata.itemCount}] $totalImportTime ms")
+            logger.d("[Total import time for ${metadata.itemCount}] $totalImportTime ms")
 
             // Check that all elements are saved.
             assertEquals(expected = metadata.itemCount, actual = safeItemRepository.getAllSafeItemIds().size)

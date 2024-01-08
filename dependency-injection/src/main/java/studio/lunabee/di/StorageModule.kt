@@ -53,6 +53,7 @@ import studio.lunabee.onesafe.repository.datasource.SafeItemLocalDataSource
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.MainDatabaseTransactionManager
 import studio.lunabee.onesafe.storage.Migration3to4
+import studio.lunabee.onesafe.storage.Migration8to9
 import studio.lunabee.onesafe.storage.OSForceUpgradeProto.ForceUpgradeProtoData
 import studio.lunabee.onesafe.storage.OSPasswordGeneratorConfigProto.PasswordGeneratorConfigProto
 import studio.lunabee.onesafe.storage.OSRecentSearchProto.RecentSearchProto
@@ -198,6 +199,7 @@ object DatabaseModule {
     fun provideMainDatabase(
         @ApplicationContext appContext: Context,
         migration3to4: Migration3to4,
+        migration8to9: Migration8to9,
     ): MainDatabase {
         return Room.databaseBuilder(
             appContext,
@@ -205,6 +207,7 @@ object DatabaseModule {
             "bc9fe798-a4f0-402e-9f5b-80339d87a041",
         ).addMigrations(
             migration3to4,
+            migration8to9,
         ).build()
     }
 }

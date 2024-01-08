@@ -48,6 +48,8 @@ import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.error.OSStorageError
 import studio.lunabee.onesafe.getOrThrow
+import java.time.Clock
+import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
 
@@ -73,6 +75,7 @@ class DuplicateItemUseCase @Inject constructor(
     private val fileRepository: FileRepository,
     private val fieldIdProvider: FieldIdProvider,
     private val computeItemAlphaIndexUseCase: ComputeItemAlphaIndexUseCase,
+    private val clock: Clock,
 ) {
     suspend operator fun invoke(
         itemId: UUID,
@@ -173,6 +176,7 @@ class DuplicateItemUseCase @Inject constructor(
         }
         val transformedName = transformName?.invoke(name) ?: name
         val indexAlpha = computeItemAlphaIndexUseCase(transformedName).getOrThrow("Failed to compute item alpha index")
+        val now = Instant.now(clock)
         val (duplicatedItemKey, duplicatedItem) = safeItemBuilder.build(
             SafeItemBuilder.Data(
                 name = transformedName,
@@ -182,8 +186,9 @@ class DuplicateItemUseCase @Inject constructor(
                 color = color,
                 id = duplicatedId,
                 position = position ?: originalItem.position,
-                updatedAt = originalItem.updatedAt,
+                updatedAt = now,
                 indexAlpha = indexAlpha,
+                createdAt = now,
             ),
         )
 

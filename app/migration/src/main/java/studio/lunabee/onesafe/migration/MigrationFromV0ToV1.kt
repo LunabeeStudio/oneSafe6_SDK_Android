@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.migration
 
 import com.lunabee.lbcore.model.LBResult
+import com.lunabee.lblogger.LBLogger
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import studio.lunabee.onesafe.cryptography.CryptoEngine
@@ -32,8 +33,9 @@ import studio.lunabee.onesafe.error.OSMigrationError
 import studio.lunabee.onesafe.storage.dao.IndexWordEntryDao
 import studio.lunabee.onesafe.storage.dao.SafeItemKeyDao
 import studio.lunabee.onesafe.use
-import timber.log.Timber
 import javax.inject.Inject
+
+private val logger = LBLogger.get<MigrationFromV0ToV1>()
 
 /**
  * Username removal
@@ -67,7 +69,7 @@ class MigrationFromV0ToV1 @Inject constructor(
             val isPasswordOk = plainMasterKeyTest == MASTER_KEY_TEST_VALUE
 
             if (isPasswordOk) {
-                Timber.i("Run migration from V0 to V1")
+                logger.i("Run migration from V0 to V1")
 
                 val roomSafeItemKeys = safeItemKeyDao.getAllSafeItemKeys()
                 roomSafeItemKeys.forEach { roomSafeItemKey ->

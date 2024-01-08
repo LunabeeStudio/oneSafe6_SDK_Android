@@ -19,8 +19,8 @@
 
 package studio.lunabee.onesafe.cryptography
 
+import com.lunabee.lblogger.LBLogger
 import org.conscrypt.Conscrypt
-import timber.log.Timber
 import java.security.KeyFactory
 import java.security.KeyPair
 import java.security.KeyPairGenerator
@@ -32,6 +32,8 @@ import java.security.spec.X509EncodedKeySpec
 import javax.crypto.Cipher
 import javax.inject.Inject
 
+private val logger = LBLogger.get<JceRsaCryptoEngine>()
+
 class JceRsaCryptoEngine @Inject constructor() : RsaCryptoEngine {
 
     init {
@@ -41,12 +43,12 @@ class JceRsaCryptoEngine @Inject constructor() : RsaCryptoEngine {
             val jceProvider = Conscrypt.newProvider()
             val res = Security.addProvider(jceProvider)
             if (res == -1) {
-                Timber.e("Failed to insert $jceProvider")
+                logger.e("Failed to insert $jceProvider")
             }
             getCipher()
         }
 
-        Timber.i("Initialize ${javaClass.simpleName} using ${cipher.provider}")
+        logger.i("Initialize ${javaClass.simpleName} using ${cipher.provider}")
     }
 
     override fun getKeyPair(): KeyPair {

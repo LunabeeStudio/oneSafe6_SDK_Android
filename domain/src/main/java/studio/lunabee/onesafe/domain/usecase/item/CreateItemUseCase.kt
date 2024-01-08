@@ -28,6 +28,7 @@ import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromIt
 import studio.lunabee.onesafe.domain.utils.SafeItemBuilder
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.getOrThrow
+import java.time.Clock
 import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
@@ -42,6 +43,7 @@ class CreateItemUseCase @Inject constructor(
     private val createIndexWordEntriesFromItemUseCase: CreateIndexWordEntriesFromItemUseCase,
     private val itemIdProvider: ItemIdProvider,
     private val computeItemAlphaIndexUseCase: ComputeItemAlphaIndexUseCase,
+    private val clock: Clock,
 ) {
     suspend operator fun invoke(
         name: String?,
@@ -56,6 +58,7 @@ class CreateItemUseCase @Inject constructor(
                 floor(pos + 1)
             } ?: 0.0
 
+            val now = Instant.now(clock)
             val (itemKey, item) = safeItemBuilder.build(
                 SafeItemBuilder.Data(
                     name = name,
@@ -65,8 +68,9 @@ class CreateItemUseCase @Inject constructor(
                     color = color,
                     id = itemIdProvider(),
                     position = itemPosition,
-                    updatedAt = Instant.now(),
+                    updatedAt = now,
                     indexAlpha = computeItemAlphaIndexUseCase(name).getOrThrow("Failed to compute item alpha index"),
+                    createdAt = now,
                 ),
             )
 

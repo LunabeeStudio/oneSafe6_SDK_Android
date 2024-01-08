@@ -50,9 +50,11 @@ import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
 import studio.lunabee.onesafe.importexport.usecase.CloudAutoBackupUseCase
 import studio.lunabee.onesafe.importexport.usecase.DeleteOldCloudBackupsUseCase
 import studio.lunabee.onesafe.importexport.utils.ForegroundInfoCompat
-import timber.log.Timber
+import com.lunabee.lblogger.LBLogger
 
 // TODO <AutoBackup> split cloudAutoBackupUseCase with zip and upload part so the worker can chain them to have finer control over the flow
+
+private val logger = LBLogger.get<CloudBackupWorker>()
 
 /**
  * Run [CloudAutoBackupUseCase] and [DeleteOldCloudBackupsUseCase] to execute a cloud backup
@@ -78,7 +80,7 @@ class CloudBackupWorker @AssistedInject constructor(
             emit(LBFlowResult.Failure(error))
         }.onEach { result ->
             if (result is LBFlowResult.Loading) {
-                Timber.v("Progress ${result.progress}")
+                logger.v("Progress ${result.progress}")
             }
         }.first {
             it !is LBFlowResult.Loading

@@ -27,6 +27,7 @@ import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import org.threeten.extra.MutableClock
 import studio.lunabee.doubleratchet.DoubleRatchetEngine
 import studio.lunabee.doubleratchet.crypto.DoubleRatchetKeyRepository
 import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
@@ -39,11 +40,6 @@ import studio.lunabee.onesafe.domain.qualifier.DefaultDispatcher
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.domain.qualifier.InternalDir
 import studio.lunabee.onesafe.domain.qualifier.RemoteDispatcher
-import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
-import studio.lunabee.onesafe.domain.usecase.SetIconUseCase
-import studio.lunabee.onesafe.domain.utils.SafeItemBuilder
-import studio.lunabee.onesafe.domain.utils.SafeItemBuilderImpl
-import studio.lunabee.onesafe.test.testClock
 import java.io.File
 import java.time.Clock
 import javax.inject.Singleton
@@ -87,10 +83,6 @@ object DomainTestModule {
     fun providesDefaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
 
     @Provides
-    fun provideSafeItemBuilder(cryptoRepository: MainCryptoRepository, setIconUseCase: SetIconUseCase): SafeItemBuilder =
-        SafeItemBuilderImpl(cryptoRepository = cryptoRepository, setIconUseCase = setIconUseCase)
-
-    @Provides
     fun provideDoubleRatchetEngine(
         localDatasource: DoubleRatchetLocalDatasource,
         doubleRatchetKeyRepository: DoubleRatchetKeyRepository,
@@ -100,7 +92,8 @@ object DomainTestModule {
     )
 
     @Provides
-    fun providesClock(): Clock = testClock
+    @Singleton
+    fun providesClock(): Clock = MutableClock.epochUTC()
 
     @Provides
     @InternalDir(InternalDir.Type.Backups)

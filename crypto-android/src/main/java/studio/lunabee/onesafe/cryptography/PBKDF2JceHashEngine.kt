@@ -19,16 +19,18 @@
 
 package studio.lunabee.onesafe.cryptography
 
+import com.lunabee.lblogger.LBLogger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import studio.lunabee.onesafe.cryptography.extension.use
 import studio.lunabee.onesafe.error.OSCryptoError
-import timber.log.Timber
 import java.security.NoSuchAlgorithmException
 import java.security.Security
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
+
+private val logger = LBLogger.get<PBKDF2JceHashEngine>()
 
 class PBKDF2JceHashEngine(
     private val dispatcher: CoroutineDispatcher,
@@ -45,12 +47,12 @@ class PBKDF2JceHashEngine(
             Security.removeProvider(bcProvider.name)
             val res = Security.addProvider(bcProvider)
             if (res == -1) {
-                Timber.e("Failed to insert $bcProvider")
+                logger.e("Failed to insert $bcProvider")
             }
             getFactory()
         }
 
-        Timber.i("Initialize ${javaClass.simpleName} using ${secretKeyFactory.provider}")
+        logger.i("Initialize ${javaClass.simpleName} using ${secretKeyFactory.provider}")
     }
 
     override suspend fun deriveKey(password: CharArray, salt: ByteArray): ByteArray {

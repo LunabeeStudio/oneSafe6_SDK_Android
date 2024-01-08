@@ -39,12 +39,15 @@ import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsReposito
 import studio.lunabee.onesafe.importexport.settings.AutoBackupFrequency
 import studio.lunabee.onesafe.importexport.usecase.GetDurationBeforeBackupOutdatedUseCase
 import studio.lunabee.onesafe.importexport.usecase.SynchronizeCloudBackupsUseCase
-import timber.log.Timber
+import com.lunabee.lblogger.LBLogger
+import com.lunabee.lblogger.e
 import java.time.Clock
 import kotlin.time.Duration
 import kotlin.time.toJavaDuration
 
 // TODO <AutoBackup> unit test the schedule logic
+
+private val logger = LBLogger.get<AutoBackupSchedulerWorker>()
 
 /**
  * Schedule the [AutoBackupChainWorker] according to user settings. Also run a first cloud synchronization if needed (usually when the user
@@ -72,7 +75,7 @@ class AutoBackupSchedulerWorker @AssistedInject constructor(
             synchronizeCloudBackupsUseCase()
                 .onCompletion { error ->
                     // Ignore error, let the scheduled backup synchronize later
-                    error?.let { Timber.e(it) }
+                    error?.let(logger::e)
                 }
                 .collect()
         }

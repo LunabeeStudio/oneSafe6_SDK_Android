@@ -51,6 +51,7 @@ data class RoomSafeItem(
     @ColumnInfo(name = "enc_name") val encName: ByteArray?,
     @ColumnInfo(name = "parent_id", index = true) val parentId: UUID?,
     @ColumnInfo(name = "is_favorite") val isFavorite: Boolean,
+    @ColumnInfo(name = "created_at", index = true, defaultValue = "0") val createdAt: Instant,
     @ColumnInfo(name = "updated_at") val updatedAt: Instant,
     @ColumnInfo(name = "position") val position: Double,
     @ColumnInfo(name = "icon_id") val iconId: UUID?,
@@ -73,6 +74,7 @@ data class RoomSafeItem(
             deletedAt = deletedAt,
             deletedParentId = deletedParentId,
             indexAlpha = indexAlpha,
+            createdAt = createdAt,
         )
 
     override fun equals(other: Any?): Boolean {
@@ -88,6 +90,7 @@ data class RoomSafeItem(
         } else if (other.encName != null) return false
         if (parentId != other.parentId) return false
         if (isFavorite != other.isFavorite) return false
+        if (createdAt != other.createdAt) return false
         if (updatedAt != other.updatedAt) return false
         if (position != other.position) return false
         if (iconId != other.iconId) return false
@@ -106,6 +109,7 @@ data class RoomSafeItem(
         result = 31 * result + (encName?.contentHashCode() ?: 0)
         result = 31 * result + (parentId?.hashCode() ?: 0)
         result = 31 * result + isFavorite.hashCode()
+        result = 31 * result + createdAt.hashCode()
         result = 31 * result + updatedAt.hashCode()
         result = 31 * result + position.hashCode()
         result = 31 * result + (iconId?.hashCode() ?: 0)
@@ -132,6 +136,7 @@ data class RoomSafeItem(
                 deletedParentId = safeItem.deletedParentId,
                 consultedAt = null,
                 indexAlpha = safeItem.indexAlpha,
+                createdAt = safeItem.createdAt,
             )
         }
     }

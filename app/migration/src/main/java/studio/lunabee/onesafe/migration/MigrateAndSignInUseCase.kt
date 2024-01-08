@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.migration
 
 import com.lunabee.lbcore.model.LBResult
+import com.lunabee.lblogger.LBLogger
 import studio.lunabee.onesafe.OSAppSettings
 import studio.lunabee.onesafe.cryptography.BiometricEngine
 import studio.lunabee.onesafe.cryptography.DatastoreEngine
@@ -29,9 +30,10 @@ import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSignUpUseCase
 import studio.lunabee.onesafe.use
-import timber.log.Timber
 import javax.crypto.Cipher
 import javax.inject.Inject
+
+private val logger = LBLogger.get<MigrateAndSignInUseCase>()
 
 /**
  * Handle migrations required at sign in, and then do the sign in
@@ -129,7 +131,7 @@ class MigrateAndSignInUseCase @Inject constructor(
             mainCryptoRepository.loadMasterKeyExternal(masterKey)
             appSettings.setMigrationVersionSetting(MigrationConstant.LastVersion)
 
-            Timber.i("Migration from v$initialVersion to v$version succeeded")
+            logger.i("Migration from v$initialVersion to v$version succeeded")
         }
 
         return result

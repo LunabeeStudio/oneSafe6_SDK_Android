@@ -36,6 +36,7 @@ dependencies {
 
     platform(libs.lunabee.bom)
     implementation(libs.lbextensions)
+    implementation(libs.lblogger)
 
     implementation(project(":domain"))
     implementation(project(":repository"))

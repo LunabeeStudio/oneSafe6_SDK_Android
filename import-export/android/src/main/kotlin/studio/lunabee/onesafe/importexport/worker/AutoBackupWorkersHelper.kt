@@ -29,6 +29,7 @@ import androidx.work.ListenableWorker.Result
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import com.lunabee.lblogger.LBLogger
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import studio.lunabee.onesafe.commonui.R
@@ -40,10 +41,11 @@ import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
 import studio.lunabee.onesafe.importexport.model.AutoBackupError
 import studio.lunabee.onesafe.importexport.repository.AutoBackupErrorRepository
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
-import timber.log.Timber
 import java.time.Clock
 import java.time.ZonedDateTime
 import javax.inject.Inject
+
+private val logger = LBLogger.get<AutoBackupWorkersHelper>()
 
 class AutoBackupWorkersHelper @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -84,7 +86,7 @@ class AutoBackupWorkersHelper @Inject constructor(
 
     suspend fun ensureAutoBackupScheduled() {
         if (autoBackupSettingsRepository.autoBackupEnabled.first() && !isScheduled()) {
-            Timber.w("Re-scheduled auto backup worker")
+            logger.w("Re-scheduled auto backup worker")
             start(autoBackupSettingsRepository.cloudBackupEnabled.first())
         }
     }
@@ -100,7 +102,7 @@ class AutoBackupWorkersHelper @Inject constructor(
      */
     @SuppressLint("MissingPermission")
     suspend fun onBackupWorkerFails(error: Throwable?, runAttemptCount: Int): Result {
-        Timber.e(error, "fail #$runAttemptCount")
+        logger.e("fail #$runAttemptCount", error)
         val canRetry = canRetry(error)
 
         if (runAttemptCount == RETRIES_BEFORE_SHOW_ERROR || !canRetry) {

@@ -28,62 +28,11 @@ import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
 
-interface SafeItemBuilder {
-
-    data class Data(
-        val name: String?,
-        val parentId: UUID?,
-        val isFavorite: Boolean,
-        val icon: ByteArray?,
-        val color: String?,
-        val id: UUID,
-        val position: Double,
-        val updatedAt: Instant,
-        val indexAlpha: Double,
-    ) {
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-
-            other as Data
-
-            if (name != other.name) return false
-            if (parentId != other.parentId) return false
-            if (isFavorite != other.isFavorite) return false
-            if (icon != null) {
-                if (other.icon == null) return false
-                if (!icon.contentEquals(other.icon)) return false
-            } else if (other.icon != null) return false
-            if (color != other.color) return false
-            if (id != other.id) return false
-            if (position != other.position) return false
-            if (updatedAt != other.updatedAt) return false
-            return indexAlpha == other.indexAlpha
-        }
-
-        override fun hashCode(): Int {
-            var result = name?.hashCode() ?: 0
-            result = 31 * result + (parentId?.hashCode() ?: 0)
-            result = 31 * result + isFavorite.hashCode()
-            result = 31 * result + (icon?.contentHashCode() ?: 0)
-            result = 31 * result + (color?.hashCode() ?: 0)
-            result = 31 * result + id.hashCode()
-            result = 31 * result + position.hashCode()
-            result = 31 * result + updatedAt.hashCode()
-            result = 31 * result + indexAlpha.hashCode()
-            return result
-        }
-    }
-
-    suspend fun build(data: Data): Pair<SafeItemKey, SafeItem>
-}
-
-class SafeItemBuilderImpl @Inject constructor(
+class SafeItemBuilder @Inject constructor(
     private val cryptoRepository: MainCryptoRepository,
     private val setIconUseCase: SetIconUseCase,
-) : SafeItemBuilder {
-
-    override suspend fun build(data: SafeItemBuilder.Data): Pair<SafeItemKey, SafeItem> {
+) {
+    suspend fun build(data: Data): Pair<SafeItemKey, SafeItem> {
         val itemKey = cryptoRepository.generateKeyForItemId(data.id)
 
         val iconId: UUID? = data.icon?.let {
@@ -102,8 +51,57 @@ class SafeItemBuilderImpl @Inject constructor(
             deletedAt = null,
             deletedParentId = null,
             indexAlpha = data.indexAlpha,
+            createdAt = data.createdAt,
         )
 
         return itemKey to item
+    }
+
+    data class Data(
+        val name: String?,
+        val parentId: UUID?,
+        val isFavorite: Boolean,
+        val icon: ByteArray?,
+        val color: String?,
+        val id: UUID,
+        val position: Double,
+        val updatedAt: Instant,
+        val indexAlpha: Double,
+        val createdAt: Instant,
+    ) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Data
+
+            if (name != other.name) return false
+            if (parentId != other.parentId) return false
+            if (isFavorite != other.isFavorite) return false
+            if (icon != null) {
+                if (other.icon == null) return false
+                if (!icon.contentEquals(other.icon)) return false
+            } else if (other.icon != null) return false
+            if (color != other.color) return false
+            if (id != other.id) return false
+            if (position != other.position) return false
+            if (updatedAt != other.updatedAt) return false
+            if (indexAlpha != other.indexAlpha) return false
+            return createdAt == other.createdAt
+        }
+
+        override fun hashCode(): Int {
+            var result = name?.hashCode() ?: 0
+            result = 31 * result + (parentId?.hashCode() ?: 0)
+            result = 31 * result + isFavorite.hashCode()
+            result = 31 * result + (icon?.contentHashCode() ?: 0)
+            result = 31 * result + (color?.hashCode() ?: 0)
+            result = 31 * result + id.hashCode()
+            result = 31 * result + position.hashCode()
+            result = 31 * result + updatedAt.hashCode()
+            result = 31 * result + indexAlpha.hashCode()
+            result = 31 * result + createdAt.hashCode()
+            return result
+        }
     }
 }

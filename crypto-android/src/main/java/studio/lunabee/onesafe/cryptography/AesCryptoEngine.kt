@@ -20,13 +20,13 @@
 package studio.lunabee.onesafe.cryptography
 
 import androidx.core.util.AtomicFile
+import com.lunabee.lblogger.LBLogger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import studio.lunabee.onesafe.cryptography.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.cryptography.utils.SelfDestroyCipherInputStream
 import studio.lunabee.onesafe.error.OSCryptoError
-import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
@@ -48,6 +48,8 @@ import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 import javax.security.cert.CertificateException
 
+private val logger = LBLogger.get<AesCryptoEngine>()
+
 /**
  * CryptoEngine implementation of AES-GCM using Android embedded provider
  * Actual decrypt/encrypt code is extracted to non suspend fun for benchmarking purpose.
@@ -62,7 +64,7 @@ class AesCryptoEngine @Inject constructor(
 
     init {
         val cipher = getCipher()
-        Timber.i("Initialize ${javaClass.simpleName} using ${cipher.provider}")
+        logger.i("Initialize ${javaClass.simpleName} using ${cipher.provider}")
     }
 
     override suspend fun encrypt(plainData: ByteArray, key: ByteArray, associatedData: ByteArray?): ByteArray {

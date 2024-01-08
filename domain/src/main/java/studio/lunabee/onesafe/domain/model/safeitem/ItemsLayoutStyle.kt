@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2023 Lunabee Studio
+ * Copyright (c) 2023 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 9/25/2023 - for the oneSafe6 SDK.
- * Last modified 9/25/23, 1:38 PM
+ * Created by Lunabee Studio / Date - 12/14/2023 - for the oneSafe6 SDK.
+ * Last modified 12/14/23, 10:20 AM
  */
 
-package studio.lunabee.onesafe.test
+package studio.lunabee.onesafe.domain.model.safeitem
 
-import org.threeten.extra.MutableClock
-
-val testClock: MutableClock = MutableClock.epochUTC()
+enum class ItemsLayoutStyle {
+    Grid,
+    LargeGrid,
+}

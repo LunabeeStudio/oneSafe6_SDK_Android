@@ -75,7 +75,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.accompanist.permissions)
-    implementation(libs.timber)
+    implementation(libs.lblogger)
 
     implementation(libs.palette.ktx)
 

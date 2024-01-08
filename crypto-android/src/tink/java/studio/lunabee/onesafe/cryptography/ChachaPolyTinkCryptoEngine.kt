@@ -23,16 +23,18 @@ import androidx.core.util.AtomicFile
 import com.google.crypto.tink.aead.internal.InsecureNonceChaCha20Poly1305
 import com.google.crypto.tink.aead.internal.Poly1305
 import com.google.crypto.tink.subtle.ChaCha20Poly1305
+import com.lunabee.lblogger.LBLogger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import studio.lunabee.onesafe.cryptography.qualifier.CryptoDispatcher
-import timber.log.Timber
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.ByteBuffer
 import javax.inject.Inject
+
+private val logger = LBLogger.get<ChachaPolyTinkCryptoEngine>()
 
 class ChachaPolyTinkCryptoEngine @Inject constructor(
     private val ivProvider: IVProvider,
@@ -40,7 +42,7 @@ class ChachaPolyTinkCryptoEngine @Inject constructor(
 ) : CryptoEngine {
 
     init {
-        Timber.i("Initialize ${javaClass.simpleName} using Google Tink")
+        logger.i("Initialize ${javaClass.simpleName} using Google Tink")
     }
 
     override suspend fun encrypt(plainData: ByteArray, key: ByteArray, associatedData: ByteArray?): ByteArray {

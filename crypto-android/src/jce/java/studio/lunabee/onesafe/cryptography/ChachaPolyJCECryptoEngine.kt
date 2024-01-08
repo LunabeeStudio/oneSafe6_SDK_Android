@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.cryptography
 
 import androidx.core.util.AtomicFile
+import com.lunabee.lblogger.LBLogger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -27,7 +28,6 @@ import org.conscrypt.Conscrypt
 import studio.lunabee.onesafe.cryptography.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.cryptography.utils.SelfDestroyCipherInputStream
 import studio.lunabee.onesafe.error.OSCryptoError
-import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
@@ -50,6 +50,8 @@ import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 import javax.security.cert.CertificateException
 
+private val logger = LBLogger.get<ChachaPolyJCECryptoEngine>()
+
 /**
  * CryptoEngine implementation of ChaCha20-Poly1305 using Android embedded provider if available and Conscrypt provider if not.
  * Actual decrypt/encrypt code is extracted to non suspend fun for benchmarking purpose.
@@ -68,12 +70,12 @@ class ChachaPolyJCECryptoEngine @Inject constructor(
             val jceProvider = Conscrypt.newProvider()
             val res = Security.addProvider(jceProvider)
             if (res == -1) {
-                Timber.e("Failed to insert $jceProvider")
+                logger.e("Failed to insert $jceProvider")
             }
             getCipher()
         }
 
-        Timber.i("Initialize ${javaClass.simpleName} using ${cipher.provider}")
+        logger.i("Initialize ${javaClass.simpleName} using ${cipher.provider}")
     }
 
     override suspend fun encrypt(plainData: ByteArray, key: ByteArray, associatedData: ByteArray?): ByteArray {

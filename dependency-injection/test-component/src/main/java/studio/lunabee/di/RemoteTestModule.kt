@@ -64,7 +64,7 @@ object RemoteTestModule {
                 this.logger = object : Logger {
                     private val delegate = LBLogger.get("HttpClient")
                     override fun log(message: String) {
-                        delegate.trace(message)
+                        delegate.v(message)
                     }
                 }
             }

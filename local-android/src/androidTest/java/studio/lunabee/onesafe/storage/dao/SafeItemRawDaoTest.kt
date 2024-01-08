@@ -291,6 +291,7 @@ private fun List<RoomSafeItem>.sortedBy(itemOrder: ItemOrder): List<RoomSafeItem
                 { it.position },
             ),
         )
+        ItemOrder.CreatedAt -> sortedWith(compareBy({ it.createdAt }, { it.indexAlpha }, { it.position }))
     }
 }
 

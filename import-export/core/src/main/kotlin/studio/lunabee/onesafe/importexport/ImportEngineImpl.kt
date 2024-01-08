@@ -66,9 +66,9 @@ import studio.lunabee.onesafe.proto.OSExportProto.ArchiveSafeItem
 import studio.lunabee.onesafe.proto.OSExportProto.ArchiveSafeItemField
 import studio.lunabee.onesafe.use
 import java.io.File
+import java.time.Clock
 import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalTime
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.UUID
@@ -95,6 +95,7 @@ class ImportEngineImpl @Inject constructor(
     private val moveToBinItemUseCase: MoveToBinItemUseCase,
     private val itemDecryptUseCase: ItemDecryptUseCase,
     private val sortItemNameUseCase: SortItemNameUseCase,
+    private val clock: Clock,
 ) : ImportEngine {
     override suspend fun getMetadata(archiveExtractedDirectory: File): ImportMetadata {
         // TODO Until we found a better solution, clear all cache if an new import is started.
@@ -211,18 +212,20 @@ class ImportEngineImpl @Inject constructor(
                         val itemId: UUID = idProvider()
                         val importParentItemKey = mainCryptoRepository.generateKeyForItemId(itemId)
                         val rootItemData = importCacheDataSource.rootItemData!!
+                        val now = Instant.now(clock)
                         val importParentItem = SafeItem(
                             id = itemId,
                             encName = mainCryptoRepository.encrypt(importParentItemKey, EncryptEntry(rootItemData.first)),
                             parentId = null,
                             isFavorite = false,
-                            updatedAt = Instant.now(),
+                            updatedAt = now,
                             position = 0.0,
                             iconId = null,
                             encColor = null,
                             deletedAt = null,
                             deletedParentId = null,
                             indexAlpha = rootItemData.second,
+                            createdAt = now,
                         )
 
                         importCacheDataSource.migratedSafeItemsToImport.replaceAll { item ->
@@ -514,6 +517,7 @@ class ImportEngineImpl @Inject constructor(
                     null
                 },
                 indexAlpha = importCacheDataSource.allItemAlphaIndices[newItemId]!!,
+                createdAt = Instant.parse(archiveSafeItem.createdAt),
             )
         }
     }
@@ -538,13 +542,14 @@ class ImportEngineImpl @Inject constructor(
         }
     }
 
+    private fun buildAppendItemName(): String {
+        val localDateTime = LocalDateTime.now(clock)
+        return "$DefaultParentItem " +
+            "${DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(localDateTime)} " +
+            localDateTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+    }
+
     companion object {
         private const val DefaultParentItem: String = "Import"
-
-        private fun buildAppendItemName(): String {
-            return "$DefaultParentItem " +
-                "${DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(LocalDate.now())} " +
-                LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))
-        }
     }
 }

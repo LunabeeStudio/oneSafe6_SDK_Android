@@ -30,4 +30,5 @@ internal object DaoUtils {
     const val ITEM_ORDER_BY_UPDATED_AT = "ORDER BY SafeItem.updated_at DESC, SafeItem.index_alpha ASC, SafeItem.position ASC"
     const val ITEM_ORDER_BY_DELETED_AT = "ORDER BY SafeItem.deleted_at ASC, SafeItem.index_alpha ASC, SafeItem.position ASC"
     const val ITEM_ORDER_BY_CONSULTED_AT = "ORDER BY SafeItem.consulted_at DESC, SafeItem.index_alpha ASC, SafeItem.position ASC"
+    const val ITEM_ORDER_BY_CREATED_AT = "ORDER BY SafeItem.created_at ASC, SafeItem.index_alpha ASC, SafeItem.position ASC"
 }

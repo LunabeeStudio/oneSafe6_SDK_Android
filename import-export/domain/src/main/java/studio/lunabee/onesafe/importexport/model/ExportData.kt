@@ -19,13 +19,12 @@
 
 package studio.lunabee.onesafe.importexport.model
 
-import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import java.io.File
 
 class ExportData(
-    val safeItemsWithKeys: Map<SafeItem, SafeItemKey>,
+    val safeItemsWithKeys: Map<ExportItem, SafeItemKey>,
     val safeItemFields: List<SafeItemField>,
     val icons: List<File>,
     val files: List<File>,

@@ -23,7 +23,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.util.AtomicFile
 import com.lunabee.lblogger.LBLogger
-import com.lunabee.lblogger.v
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -53,7 +52,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.reflect.KClass
 
-private val log = LBLogger.get<AndroidMainCryptoRepository>()
+private val logger = LBLogger.get<AndroidMainCryptoRepository>()
 
 @Suppress("ObsoleteSdkInt")
 @RequiresApi(Build.VERSION_CODES.M)
@@ -151,7 +150,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         searchIndexKey = null
         bubblesMasterKey = null
         itemEditionKey = null
-        log.v("cryptographic keys unloaded")
+        logger.v("cryptographic keys unloaded")
     }
 
     override suspend fun storeMasterKeyAndSalt(key: ByteArray, salt: ByteArray) {
@@ -160,7 +159,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
         saltDataStore = salt.copyOf()
         masterKey = key.copyOf()
-        log.v("cryptographic keys stored")
+        logger.v("cryptographic keys stored")
 
         masterKeyTestDataStore = crypto.encrypt(
             plainData = MASTER_KEY_TEST_VALUE.encodeToByteArray(),
@@ -198,7 +197,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         if (featureFlags.bubbles().first()) {
             retrieveKeyForBubblesContact()
         }
-        log.v("cryptographic keys loaded using biometric")
+        logger.v("cryptographic keys loaded using biometric")
     }
 
     override suspend fun retrieveMasterKeyFromBiometric(cipher: Cipher): ByteArray {
@@ -212,7 +211,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         if (featureFlags.bubbles().first()) {
             retrieveKeyForBubblesContact()
         }
-        log.v("cryptographic keys externally loaded")
+        logger.v("cryptographic keys externally loaded")
     }
 
     private suspend fun generateIndexKey() {
@@ -301,7 +300,7 @@ class AndroidMainCryptoRepository @Inject constructor(
                 if (featureFlags.bubbles().first()) {
                     retrieveKeyForBubblesContact()
                 }
-                log.v("cryptographic keys loaded using password")
+                logger.v("cryptographic keys loaded using password")
             }
         }
     }
@@ -489,14 +488,14 @@ class AndroidMainCryptoRepository @Inject constructor(
     }
 
     override suspend fun encryptRecentSearch(plainRecentSearch: List<String>): List<ByteArray> {
-        return plainRecentSearch.map { _element ->
-            crypto.encrypt(plainData = _element.encodeToByteArray(), key = searchIndexKey!!, associatedData = null)
+        return plainRecentSearch.map { element ->
+            crypto.encrypt(plainData = element.encodeToByteArray(), key = searchIndexKey!!, associatedData = null)
         }
     }
 
     override suspend fun decryptRecentSearch(encRecentSearch: List<ByteArray>): List<String> {
-        return encRecentSearch.map { _cypherData ->
-            crypto.decrypt(_cypherData, searchIndexKey!!, null).decodeToString()
+        return encRecentSearch.map { cypherData ->
+            crypto.decrypt(cypherData, searchIndexKey!!, null).decodeToString()
         }
     }
 

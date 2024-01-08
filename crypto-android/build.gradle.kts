@@ -118,7 +118,7 @@ dependencies {
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbextensions.android)
-    implementation(libs.lblogger.timber)
+    implementation(libs.lblogger)
     implementation(libs.kotlin.reflect)
 
     implementation(project(":domain"))

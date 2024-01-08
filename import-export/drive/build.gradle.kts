@@ -59,7 +59,7 @@ dependencies {
     implementation(libs.lbcore)
 
     implementation(libs.lbccore)
-    implementation(libs.lblogger.timber)
+    implementation(libs.lblogger)
 
     implementation(project(":import-export-repository"))
     implementation(project(":import-export-domain"))

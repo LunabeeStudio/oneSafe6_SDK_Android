@@ -21,11 +21,12 @@ package studio.lunabee.onesafe.migration
 
 import android.content.Context
 import com.lunabee.lbcore.model.LBResult
+import com.lunabee.lblogger.LBLogger
+import com.lunabee.lblogger.e
 import dagger.hilt.android.qualifiers.ApplicationContext
 import studio.lunabee.onesafe.importexport.usecase.DeleteOldLocalBackupsUseCase
 import studio.lunabee.onesafe.storage.dao.BackupDao
 import studio.lunabee.onesafe.storage.model.RoomLocalBackup
-import timber.log.Timber
 import java.io.File
 import java.time.Instant
 import java.time.LocalDate
@@ -35,6 +36,8 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import javax.inject.Inject
+
+private val logger = LBLogger.get<MigrationFromV4ToV5>()
 
 /**
  * Get locals backup (auto backups) and insert them in database
@@ -59,15 +62,15 @@ class MigrationFromV4ToV5 @Inject constructor(
                         val time = LocalTime.parse(chunks[2], ArchiveTimeFormatter)
                         LocalDateTime.of(date, time).toInstant(ZoneOffset.UTC)
                     } catch (e: DateTimeParseException) {
-                        Timber.e(e)
+                        logger.e(e)
                         null
                     }
                 } else {
-                    Timber.e("Unexpected backup name (chunks size != 3)")
+                    logger.e("Unexpected backup name (chunks size != 3)")
                     null
                 } ?: Instant.now() // fallback to now to preserve backup
 
-                Timber.i("Migrate backup ${file.name}")
+                logger.i("Migrate backup ${file.name}")
                 RoomLocalBackup(id = file.name, localFile = file, date = date)
             }
             backupDao.insertLocals(roomBackups)

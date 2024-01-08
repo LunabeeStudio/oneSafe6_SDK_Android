@@ -161,3 +161,9 @@ subprojects {
         }
     }
 }
+
+tasks.named("refreshVersions") {
+    doLast {
+        file("versions.properties").delete()
+    }
+}

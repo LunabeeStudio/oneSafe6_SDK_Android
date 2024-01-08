@@ -23,8 +23,10 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.provider.DocumentsContract
+import com.lunabee.lblogger.LBLogger
 import studio.lunabee.onesafe.importexport.provider.BackupsProvider
-import timber.log.Timber
+
+private val logger = LBLogger.get<BackupFileManagerHelper>()
 
 /**
  * Helper to open the device file manager using the [BackupsProvider]
@@ -41,7 +43,7 @@ object BackupFileManagerHelper {
             context.startActivity(getFileManagerIntentOnDocumentProvider(Intent.ACTION_VIEW, context.packageName))
             result = true
         } catch (_: ActivityNotFoundException) {
-            Timber.v("fallback 1")
+            logger.v("fallback 1")
         }
 
         if (!result) {
@@ -49,7 +51,7 @@ object BackupFileManagerHelper {
                 context.startActivity(getFileManagerIntentOnDocumentProvider("android.provider.action.BROWSE", context.packageName))
                 result = true
             } catch (_: ActivityNotFoundException) {
-                Timber.v("fallback 2")
+                logger.v("fallback 2")
             }
         }
 
@@ -59,7 +61,7 @@ object BackupFileManagerHelper {
                 context.startActivity(getFileManagerIntent("com.google.android.documentsui"))
                 result = true
             } catch (_: ActivityNotFoundException) {
-                Timber.v("fallback 3")
+                logger.v("fallback 3")
             }
         }
 
@@ -69,7 +71,7 @@ object BackupFileManagerHelper {
                 context.startActivity(getFileManagerIntent("com.android.documentsui"))
                 result = true
             } catch (_: ActivityNotFoundException) {
-                Timber.v("fallback 4")
+                logger.v("fallback 4")
             }
         }
 
