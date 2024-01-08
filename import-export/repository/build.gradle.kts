@@ -19,7 +19,6 @@
 
 plugins {
     `kotlin-library`
-    `onesafe-publish`
 }
 
 dependencies {

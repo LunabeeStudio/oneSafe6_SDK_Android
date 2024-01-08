@@ -31,8 +31,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import studio.lunabee.onesafe.importexport.model.AutoBackupError
-import studio.lunabee.onesafe.test.testClock
 import java.io.File
+import java.time.Clock
 import java.time.ZonedDateTime
 import javax.inject.Inject
 import kotlin.test.assertContentEquals
@@ -42,6 +42,8 @@ class AutoBackupErrorLocalDataSourceImplTest {
     @get:Rule val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
 
     @Inject internal lateinit var autoBackupErrorDataStore: AutoBackupErrorLocalDataSourceImpl
+
+    @Inject lateinit var clock: Clock
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
@@ -60,8 +62,8 @@ class AutoBackupErrorLocalDataSourceImplTest {
 
         val expected = listOf(
             null,
-            AutoBackupError(ZonedDateTime.now(testClock), "error_code_0", null),
-            AutoBackupError(ZonedDateTime.now(testClock).plusDays(1), "error_code_1", "error_message_1"),
+            AutoBackupError(ZonedDateTime.now(clock), "error_code_0", null),
+            AutoBackupError(ZonedDateTime.now(clock).plusDays(1), "error_code_1", "error_message_1"),
             null,
         )
 

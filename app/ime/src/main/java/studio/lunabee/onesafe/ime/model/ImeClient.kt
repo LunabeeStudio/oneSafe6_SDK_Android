@@ -27,11 +27,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import coil.compose.AsyncImage
+import com.lunabee.lblogger.LBLogger
+import com.lunabee.lblogger.e
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.commonui.extension.getPackageInfoCompat
 import studio.lunabee.onesafe.ime.ui.res.ImeDimens
-import timber.log.Timber
+
+private val logger = LBLogger.get<ImeClient>()
 
 data class ImeClient(
     val packageName: String,
@@ -73,7 +76,7 @@ data class ImeClient(
                 } catch (e: PackageManager.NameNotFoundException) {
                     notFoundFallbackClient
                 } catch (e: Throwable) {
-                    Timber.e(e)
+                    logger.e(e)
                     null
                 }
             }

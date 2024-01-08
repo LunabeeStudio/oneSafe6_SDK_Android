@@ -104,7 +104,7 @@ dependencies {
 
     ksp(libs.room.compiler)
 
-    implementation(libs.timber)
+    implementation(libs.lblogger)
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbextensions)

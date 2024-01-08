@@ -86,7 +86,7 @@ dependencies {
     implementation(libs.compose.material3)
     implementation(libs.navigation.compose)
     implementation(libs.lifecycle.runtime.compose)
-    implementation(libs.timber)
+    implementation(libs.lblogger)
     implementation(libs.coil.compose)
     implementation(libs.paging.compose)
     implementation(libs.activity.ktx)

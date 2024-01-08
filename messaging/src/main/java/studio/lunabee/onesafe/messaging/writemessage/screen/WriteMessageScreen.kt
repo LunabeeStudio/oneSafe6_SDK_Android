@@ -196,7 +196,7 @@ fun WriteMessageRoute(
                 sendMessage = {
                     coroutineScope.launch {
                         val sentMessageData = viewModel.encryptMessage(content = uiState.plainMessage)
-                        sentMessageData?.let { sentMessageData ->
+                        sentMessageData?.let {
                             sendMessage(
                                 sentMessageData,
                                 sentMessageData.encMessage.getDeepLinkFromMessage(uiState.isUsingDeepLink),

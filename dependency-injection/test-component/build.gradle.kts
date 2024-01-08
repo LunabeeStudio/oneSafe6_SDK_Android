@@ -45,7 +45,7 @@ dependencies {
 
     implementation(libs.room.ktx)
     implementation(libs.androidx.test.core.ktx)
-    implementation(libs.timber)
+    implementation(libs.lblogger)
     implementation(libs.ktor.client.android)
     implementation(libs.ktor.client.logging)
     implementation(libs.datastore)

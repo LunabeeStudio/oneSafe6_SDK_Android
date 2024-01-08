@@ -49,7 +49,7 @@ dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     implementation(platform(libs.lunabee.bom))
-    implementation(libs.lblogger.timber)
+    implementation(libs.lblogger)
     implementation(libs.protobuf.kotlinlite)
     implementation(libs.lbcore)
 

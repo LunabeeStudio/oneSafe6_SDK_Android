@@ -22,18 +22,12 @@ package studio.lunabee.onesafe.cryptography
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import studio.lunabee.onesafe.test.ConsoleTree
-import timber.log.Timber
 
 class AesCryptoEngineTest {
 
     private val crypto: AesCryptoEngine = AesCryptoEngine(
         ivProvider = { CryptoAndroidTestUtils.iv12 },
     )
-
-    init {
-        Timber.plant(ConsoleTree())
-    }
 
     @Test
     fun encrypt_data_test(): TestResult = runTest { crypto.encrypt_aes256gcm_data() }

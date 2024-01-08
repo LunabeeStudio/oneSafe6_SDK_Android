@@ -1,170 +1,170 @@
 {
-    "labels":{
-        "en":{
-            "item0.discovery.title":"🪪 Wallet",
-            "item1.discovery.title":"🏠 Family",
-            "item2.discovery.title":"🏦 Bank",
-            "item3.discovery.title":"💼 Work",
-            "item4.discovery.title":"🗂️ Documents",
-            "item5.discovery.title":"🛍️ Shopping",
-            "item6.discovery.title":"🌎 Web accounts",
-            "item7.discovery.title":"🏞️ Photos"
+    "labels": {
+        "en": {
+            "item0.discovery.title": "🪪 Wallet",
+            "item1.discovery.title": "🏠 Family",
+            "item2.discovery.title": "🏦 Bank",
+            "item3.discovery.title": "💼 Work",
+            "item4.discovery.title": "🗂️ Documents",
+            "item5.discovery.title": "🛍️ Shopping",
+            "item6.discovery.title": "🌎 Web accounts",
+            "item7.discovery.title": "🏞️ Photos"
         },
-        "fr":{
-            "item0.discovery.title":"🪪 Portefeuille",
-            "item1.discovery.title":"🏠 Famille",
-            "item2.discovery.title":"🏦 Banque",
-            "item3.discovery.title":"💼 Travail",
-            "item4.discovery.title":"🗂️ Documents",
-            "item5.discovery.title":"🛍️ Shopping",
-            "item6.discovery.title":"🌎 Comptes Web",
-            "item7.discovery.title":"🏞️ Photos"
+        "fr": {
+            "item0.discovery.title": "🪪 Portefeuille",
+            "item1.discovery.title": "🏠 Famille",
+            "item2.discovery.title": "🏦 Banque",
+            "item3.discovery.title": "💼 Travail",
+            "item4.discovery.title": "🗂️ Documents",
+            "item5.discovery.title": "🛍️ Shopping",
+            "item6.discovery.title": "🌎 Comptes Web",
+            "item7.discovery.title": "🏞️ Photos"
         },
-        "it":{
-            "item0.discovery.title":"🪪 Portafoglio",
-            "item1.discovery.title":"🏠 Famiglia",
-            "item2.discovery.title":"🏦 Banca",
-            "item3.discovery.title":"💼 Lavoro",
-            "item4.discovery.title":"🗂️ Documenti",
-            "item5.discovery.title":"🛍️ Shopping",
-            "item6.discovery.title":"🌎 Account web",
-            "item7.discovery.title":"🏞️ Foto"
+        "it": {
+            "item0.discovery.title": "🪪 Portafoglio",
+            "item1.discovery.title": "🏠 Famiglia",
+            "item2.discovery.title": "🏦 Banca",
+            "item3.discovery.title": "💼 Lavoro",
+            "item4.discovery.title": "🗂️ Documenti",
+            "item5.discovery.title": "🛍️ Shopping",
+            "item6.discovery.title": "🌎 Account web",
+            "item7.discovery.title": "🏞️ Foto"
         },
-        "es":{
-            "item0.discovery.title":"🪪 Billetera",
-            "item1.discovery.title":"🏠 Familia",
-            "item2.discovery.title":"🏦 Banco",
-            "item3.discovery.title":"💼 Trabajo",
-            "item4.discovery.title":"🗂️ Documentos",
-            "item5.discovery.title":"🛍️ Compras",
-            "item6.discovery.title":"🌎 Cuentas web",
-            "item7.discovery.title":"🏞️ Fotos"
+        "es": {
+            "item0.discovery.title": "🪪 Billetera",
+            "item1.discovery.title": "🏠 Familia",
+            "item2.discovery.title": "🏦 Banco",
+            "item3.discovery.title": "💼 Trabajo",
+            "item4.discovery.title": "🗂️ Documentos",
+            "item5.discovery.title": "🛍️ Compras",
+            "item6.discovery.title": "🌎 Cuentas web",
+            "item7.discovery.title": "🏞️ Fotos"
         },
-        "pt":{
-            "item0.discovery.title":"🪪 Carteira",
-            "item1.discovery.title":"🏠 Família",
-            "item2.discovery.title":"🏦 Banco",
-            "item3.discovery.title":"💼 Trabalho",
-            "item4.discovery.title":"🗂️ Documentos",
-            "item5.discovery.title":"🛍️ Compras",
-            "item6.discovery.title":"🌎 Contas web",
-            "item7.discovery.title":"🏞️ Fotos"
+        "pt": {
+            "item0.discovery.title": "🪪 Carteira",
+            "item1.discovery.title": "🏠 Família",
+            "item2.discovery.title": "🏦 Banco",
+            "item3.discovery.title": "💼 Trabalho",
+            "item4.discovery.title": "🗂️ Documentos",
+            "item5.discovery.title": "🛍️ Compras",
+            "item6.discovery.title": "🌎 Contas web",
+            "item7.discovery.title": "🏞️ Fotos"
         },
-        "ru":{
-            "item0.discovery.title":"🪪 Кошелек",
-            "item1.discovery.title":"🏠 Семья",
-            "item2.discovery.title":"🏦 Банк",
-            "item3.discovery.title":"💼 Работа",
-            "item4.discovery.title":"🗂️ Документы",
-            "item5.discovery.title":"🛍️ Покупки",
-            "item6.discovery.title":"🌎 Веб-аккаунты",
-            "item7.discovery.title":"🏞️ Фотографии"
+        "ru": {
+            "item0.discovery.title": "🪪 Кошелек",
+            "item1.discovery.title": "🏠 Семья",
+            "item2.discovery.title": "🏦 Банк",
+            "item3.discovery.title": "💼 Работа",
+            "item4.discovery.title": "🗂️ Документы",
+            "item5.discovery.title": "🛍️ Покупки",
+            "item6.discovery.title": "🌎 Веб-аккаунты",
+            "item7.discovery.title": "🏞️ Фотографии"
         },
-        "ja":{
-            "item0.discovery.title":"🪪 ウォレット",
-            "item1.discovery.title":"🏠 家族",
-            "item2.discovery.title":"🏦 銀行",
-            "item3.discovery.title":"💼 仕事",
-            "item4.discovery.title":"🗂️ 書類",
-            "item5.discovery.title":"🛍️ ショッピング",
-            "item6.discovery.title":"🌎 ウェブアカウント",
-            "item7.discovery.title":"🏞️ 写真"
+        "ja": {
+            "item0.discovery.title": "🪪 ウォレット",
+            "item1.discovery.title": "🏠 家族",
+            "item2.discovery.title": "🏦 銀行",
+            "item3.discovery.title": "💼 仕事",
+            "item4.discovery.title": "🗂️ 書類",
+            "item5.discovery.title": "🛍️ ショッピング",
+            "item6.discovery.title": "🌎 ウェブアカウント",
+            "item7.discovery.title": "🏞️ 写真"
         },
-        "uk":{
-            "item0.discovery.title":"🪪 Гаманець",
-            "item1.discovery.title":"🏠 Сім'я",
-            "item2.discovery.title":"🏦 Банк",
-            "item3.discovery.title":"💼 Робота",
-            "item4.discovery.title":"🗂️ Документи",
-            "item5.discovery.title":"🛍️ Покупки",
-            "item6.discovery.title":"🌎 Веб-акаунти",
-            "item7.discovery.title":"🏞️ Фотографії"
+        "uk": {
+            "item0.discovery.title": "🪪 Гаманець",
+            "item1.discovery.title": "🏠 Сім'я",
+            "item2.discovery.title": "🏦 Банк",
+            "item3.discovery.title": "💼 Робота",
+            "item4.discovery.title": "🗂️ Документи",
+            "item5.discovery.title": "🛍️ Покупки",
+            "item6.discovery.title": "🌎 Веб-акаунти",
+            "item7.discovery.title": "🏞️ Фотографії"
         },
-        "ko":{
-            "item0.discovery.title":"🪪 지갑",
-            "item1.discovery.title":"🏠 가족",
-            "item2.discovery.title":"🏦 은행",
-            "item3.discovery.title":"💼 직장",
-            "item4.discovery.title":"🗂️ 문서",
-            "item5.discovery.title":"🛍️ 쇼핑",
-            "item6.discovery.title":"🌎 웹 계정",
-            "item7.discovery.title":"🏞️ 사진"
+        "ko": {
+            "item0.discovery.title": "🪪 지갑",
+            "item1.discovery.title": "🏠 가족",
+            "item2.discovery.title": "🏦 은행",
+            "item3.discovery.title": "💼 직장",
+            "item4.discovery.title": "🗂️ 문서",
+            "item5.discovery.title": "🛍️ 쇼핑",
+            "item6.discovery.title": "🌎 웹 계정",
+            "item7.discovery.title": "🏞️ 사진"
         },
-        "de":{
-            "item0.discovery.title":"🪪 Geldbörse",
-            "item1.discovery.title":"🏠 Familie",
-            "item2.discovery.title":"🏦 Bank",
-            "item3.discovery.title":"💼 Arbeit",
-            "item4.discovery.title":"🗂️ Dokumente",
-            "item5.discovery.title":"🛍️ Einkaufen",
-            "item6.discovery.title":"🌎 Webkonten",
-            "item7.discovery.title":"🏞️ Fotos"
+        "de": {
+            "item0.discovery.title": "🪪 Geldbörse",
+            "item1.discovery.title": "🏠 Familie",
+            "item2.discovery.title": "🏦 Bank",
+            "item3.discovery.title": "💼 Arbeit",
+            "item4.discovery.title": "🗂️ Dokumente",
+            "item5.discovery.title": "🛍️ Einkaufen",
+            "item6.discovery.title": "🌎 Webkonten",
+            "item7.discovery.title": "🏞️ Fotos"
         },
-        "pl":{
-            "item0.discovery.title":"🪪 Portfel",
-            "item1.discovery.title":"🏠 Rodzina",
-            "item2.discovery.title":"🏦 Bank",
-            "item3.discovery.title":"💼 Praca",
-            "item4.discovery.title":"🗂️ Dokumenty",
-            "item5.discovery.title":"🛍️ Zakupy",
-            "item6.discovery.title":"🌎 Konta internetowe",
-            "item7.discovery.title":"🏞️ Zdjęcia"
+        "pl": {
+            "item0.discovery.title": "🪪 Portfel",
+            "item1.discovery.title": "🏠 Rodzina",
+            "item2.discovery.title": "🏦 Bank",
+            "item3.discovery.title": "💼 Praca",
+            "item4.discovery.title": "🗂️ Dokumenty",
+            "item5.discovery.title": "🛍️ Zakupy",
+            "item6.discovery.title": "🌎 Konta internetowe",
+            "item7.discovery.title": "🏞️ Zdjęcia"
         },
-        "ar":{
-            "item0.discovery.title":"🪪 محفظة",
-            "item1.discovery.title":"🏠 عائلة",
-            "item2.discovery.title":"🏦 بنك",
-            "item3.discovery.title":"💼 عمل",
-            "item4.discovery.title":"🗂️ مستندات",
-            "item5.discovery.title":"🛍️ تسوق",
-            "item6.discovery.title":"🌎 حسابات الويب",
-            "item7.discovery.title":"🏞️ صور"
+        "ar": {
+            "item0.discovery.title": "🪪 محفظة",
+            "item1.discovery.title": "🏠 عائلة",
+            "item2.discovery.title": "🏦 بنك",
+            "item3.discovery.title": "💼 عمل",
+            "item4.discovery.title": "🗂️ مستندات",
+            "item5.discovery.title": "🛍️ تسوق",
+            "item6.discovery.title": "🌎 حسابات الويب",
+            "item7.discovery.title": "🏞️ صور"
         },
-        "zh-Hans":{
-            "item0.discovery.title":"🪪 钱包",
-            "item1.discovery.title":"🏠 家庭",
-            "item2.discovery.title":"🏦 银行",
-            "item3.discovery.title":"💼 工作",
-            "item4.discovery.title":"🗂️ 文件",
-            "item5.discovery.title":"🛍️ 购物",
-            "item6.discovery.title":"🌎 网络帐户",
-            "item7.discovery.title":"🏞️ 照片"
+        "zh-Hans": {
+            "item0.discovery.title": "🪪 钱包",
+            "item1.discovery.title": "🏠 家庭",
+            "item2.discovery.title": "🏦 银行",
+            "item3.discovery.title": "💼 工作",
+            "item4.discovery.title": "🗂️ 文件",
+            "item5.discovery.title": "🛍️ 购物",
+            "item6.discovery.title": "🌎 网络帐户",
+            "item7.discovery.title": "🏞️ 照片"
         },
-        "zh-Hant":{
-            "item0.discovery.title":"🪪 錢包",
-            "item1.discovery.title":"🏠 家庭",
-            "item2.discovery.title":"🏦 銀行",
-            "item3.discovery.title":"💼 工作",
-            "item4.discovery.title":"🗂️ 文件",
-            "item5.discovery.title":"🛍️ 購物",
-            "item6.discovery.title":"🌎 網路帳戶",
-            "item7.discovery.title":"🏞️ 照片"
+        "zh-Hant": {
+            "item0.discovery.title": "🪪 錢包",
+            "item1.discovery.title": "🏠 家庭",
+            "item2.discovery.title": "🏦 銀行",
+            "item3.discovery.title": "💼 工作",
+            "item4.discovery.title": "🗂️ 文件",
+            "item5.discovery.title": "🛍️ 購物",
+            "item6.discovery.title": "🌎 網路帳戶",
+            "item7.discovery.title": "🏞️ 照片"
         }
     },
-    "data":[
+    "data": [
         {
-            "title":"item0.discovery.title"
+            "title": "item0.discovery.title"
         },
         {
-            "title":"item1.discovery.title"
+            "title": "item1.discovery.title"
         },
         {
-            "title":"item2.discovery.title"
+            "title": "item2.discovery.title"
         },
         {
-            "title":"item3.discovery.title"
+            "title": "item3.discovery.title"
         },
         {
-            "title":"item4.discovery.title"
+            "title": "item4.discovery.title"
         },
         {
-            "title":"item5.discovery.title"
+            "title": "item5.discovery.title"
         },
         {
-            "title":"item6.discovery.title"
+            "title": "item6.discovery.title"
         },
         {
-            "title":"item7.discovery.title"
+            "title": "item7.discovery.title"
         }
     ]
 }

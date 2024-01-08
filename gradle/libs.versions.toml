@@ -18,7 +18,7 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "google-dagger" }
 
 benchmark = "1.2.2"
 
-android-gradle-plugin = "8.2.0"
+android-gradle-plugin = "8.2.1"
 ##                 ⬆ = "8.3.0-alpha01"
 ##                 ⬆ = "8.3.0-alpha02"
 ##                 ⬆ = "8.3.0-alpha03"
@@ -37,18 +37,24 @@ android-gradle-plugin = "8.2.0"
 ##                 ⬆ = "8.3.0-alpha16"
 ##                 ⬆ = "8.3.0-alpha17"
 ##                 ⬆ = "8.3.0-alpha18"
+##                 ⬆ = "8.3.0-beta01"
+##                 ⬆ = "8.4.0-alpha01"
+##                 ⬆ = "8.4.0-alpha02"
 
 kotlin = "1.9.21"
+##  ⬆ = "1.9.22"
 ##  ⬆ = "2.0.0-Beta1"
 ##  ⬆ = "2.0.0-Beta2"
 
 ksp = "1.9.21-1.0.16"
+##⬆= "1.9.22-1.0.16"
 ##⬆= "2.0.0-Beta1-1.0.14"
 ##⬆= "2.0.0-Beta1-1.0.15"
+##⬆= "2.0.0-Beta2-1.0.16"
 
-google-dagger = "2.49"
+google-dagger = "2.50"
 
-florisboard-library = "0.4.0-alpha04-0.1.18"
+florisboard-library = "0.4.0-alpha06-0.1.18"
 
 doubleratchet-jvm = "0.1.4"
 
@@ -70,6 +76,7 @@ junit4 = "4.13.2"
 
 kotlinx-coroutines = "1.7.3"
 ##              ⬆ = "1.8.0-RC"
+##              ⬆ = "1.8.0-RC2"
 
 androidx-test-core = "1.6.0-alpha04"
 
@@ -162,13 +169,11 @@ firebase-bom = "32.7.0"
 firebase-crashlytics-gradle = "2.9.9"
 
 # Used to set kotlinCompilerExtensionVersion
-compose-compiler = "1.5.6"
+compose-compiler = "1.5.7"
 
 androidx-test-ext-junit = "1.2.0-alpha02"
 
 androidx-benchmark = "1.2.2"
-
-jakewharton-timber = "5.0.1"
 
 junit-jupiter = "5.10.1"
 
@@ -207,7 +212,7 @@ protobuf = "3.25.1"
 
 protobuf-plugin = "0.9.4"
 
-lunabee-library = "3.25.0-83-develop-SNAPSHOT"
+lunabee-library = "4.0.0"
 
 compose-color-picker = "0.7.0"
 
@@ -221,8 +226,6 @@ lbctheme = "1.1.0-181-SNAPSHOT"
 
 lbccore = "1.1.0-181-SNAPSHOT"
 
-kotlin-logging-jvm = "3.0.5"
-
 tink-android = "1.12.0"
 
 conscrypt-android = "2.5.2"
@@ -231,7 +234,7 @@ bouncycastle = "1.77"
 
 nbvcxz = "1.5.1"
 
-lint = "31.2.0"
+lint = "31.2.1"
 ##⬆ = "31.3.0-alpha01"
 ##⬆ = "31.3.0-alpha02"
 ##⬆ = "31.3.0-alpha03"
@@ -250,14 +253,19 @@ lint = "31.2.0"
 ##⬆ = "31.3.0-alpha16"
 ##⬆ = "31.3.0-alpha17"
 ##⬆ = "31.3.0-alpha18"
+##⬆ = "31.3.0-beta01"
+##⬆ = "31.4.0-alpha01"
+##⬆ = "31.4.0-alpha02"
 
 javapoet = "1.13.0"
 
 bouquet = "1.1.2"
 
-zoomable = "1.5.2"
+zoomable = "1.5.3"
 ##    ⬆ = "1.6.0-beta1"
 ##    ⬆ = "1.6.0-beta2"
+##    ⬆ = "1.6.0-beta3"
+##    ⬆ = "1.6.0-beta4"
 
 exifinterface = "1.3.7"
 
@@ -289,13 +297,12 @@ kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotli
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 
 lunabee-bom = { group = "studio.lunabee", name = "lunabee-bom", version.ref = "lunabee-library" }
-lbcore = { group = "studio.lunabee", name = "lbcore" }
+lbcore = { group = "studio.lunabee", name = "lbcore-jvm" }
 lbcore-compose = { group = "studio.lunabee", name = "lbcore-compose" }
 lbextensions = { group = "studio.lunabee", name = "lbextensions" }
 lbextensions-android = { group = "studio.lunabee", name = "lbextensions-android" }
-lblogger-timber = { group = "studio.lunabee", name = "lblogger-timber" }
-lblogger-crashlytics = { group = "studio.lunabee", name = "lblogger-crashlytics" }
-lblogger = { group = "studio.lunabee", name = "lblogger" }
+lblogger-crashlytics = { group = "studio.lunabee", name = "lblogger-kermit-crashlytics-android" }
+lblogger = { group = "studio.lunabee", name = "lblogger-kermit-jvm" }
 
 lbctheme = { group = "studio.lunabee.compose", name = "lbctheme", version.ref = "lbctheme" }
 lbccore = { group = "studio.lunabee.compose", name = "lbccore", version.ref = "lbccore" }
@@ -418,7 +425,6 @@ nbvcxz = { group = "me.gosimple", name = "nbvcxz", version.ref = "nbvcxz" }
 journeyappszxing = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxing-android-embedded" }
 android-material = { group = "com.google.android.material", name = "material", version.ref = "google-android-material" }
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "google-accompanist" }
-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "jakewharton-timber" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil-kt" }
 javapoet = { group = "com.squareup", name = "javapoet", version.ref = "javapoet" }
 bouquet = { group = "io.github.grizzi91", name = "bouquet", version.ref = "bouquet" }
@@ -429,4 +435,4 @@ camerax-camera = { group = "androidx.camera", name = "camera-camera2", version.r
 camerax-view = { group = "androidx.camera", name = "camera-view", version.ref = "camerax" }
 camerax-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camerax" }
 camerax-extensions = { group = "androidx.camera", name = "camera-extensions", version.ref = "camerax" }
-logback-classic = { group = "ch.qos.logback", name="logback-classic", version.ref = "logback-classic" }
+logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback-classic" }

@@ -39,6 +39,7 @@ internal object OSStorageTestUtils {
         deletedParentId: UUID? = null,
         consultedAt: Instant? = null,
         indexAlpha: Double = 0.0,
+        createdAt: Instant = Instant.ofEpochMilli(0),
     ): RoomSafeItem {
         return RoomSafeItem(
             id = id,
@@ -53,6 +54,7 @@ internal object OSStorageTestUtils {
             deletedParentId = deletedParentId,
             consultedAt = consultedAt,
             indexAlpha = indexAlpha,
+            createdAt = createdAt,
         )
     }
 }

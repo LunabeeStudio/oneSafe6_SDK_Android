@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe
 
 import studio.lunabee.onesafe.domain.model.camera.CameraSystem
+import studio.lunabee.onesafe.domain.model.safeitem.ItemsLayoutStyle
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import kotlin.time.Duration
@@ -47,4 +48,5 @@ internal object SettingsDefaults {
     const val cloudBackupEnabledDefault: Boolean = false
     const val keepLocalBackupEnabledDefault: Boolean = true
     val itemOrderingDefault: ItemOrder = ItemOrder.Alphabetic
+    val itemsLayoutStyleDefault: ItemsLayoutStyle = ItemsLayoutStyle.Grid
 }

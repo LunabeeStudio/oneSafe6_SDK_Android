@@ -27,12 +27,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lunabee.lbcore.model.LBResult
+import com.lunabee.lblogger.LBLogger
+import com.lunabee.lblogger.e
 import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.commonui.EmojiNameProvider
 import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.model.OSItemIllustration
-import timber.log.Timber
 import java.util.UUID
+
+private val logger = LBLogger.get("ContactFormRoute")
 
 context(ContactFormNavScope)
 @Composable
@@ -64,7 +67,7 @@ fun ContactFormRoute(
             is LBResult.Success -> navigateToNextScreen(result.successData)
             is LBResult.Failure -> {
                 // TODO What append if error?
-                Timber.e(result.throwable)
+                result.throwable?.let(logger::e)
             }
             null -> {}
         }

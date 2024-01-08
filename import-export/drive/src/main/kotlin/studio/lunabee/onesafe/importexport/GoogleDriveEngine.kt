@@ -33,6 +33,7 @@ import com.lunabee.lbcore.model.LBFlowResult
 import com.lunabee.lbcore.model.LBFlowResult.Companion.mapResult
 import com.lunabee.lbcore.model.LBFlowResult.Companion.transformResult
 import com.lunabee.lbcore.model.LBFlowResult.Companion.unit
+import com.lunabee.lblogger.LBLogger
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -59,7 +60,6 @@ import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.repository.AutoBackupErrorRepository
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.utils.CloudBackupDescriptionProvider
-import timber.log.Timber
 import java.io.InputStream
 import java.net.URI
 import java.time.Clock
@@ -68,6 +68,8 @@ import java.time.ZonedDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
 import com.google.api.services.drive.model.File as DriveFile
+
+private val logger = LBLogger.get<GoogleDriveEngine>()
 
 // TODO thumbnail? https://developers.google.com/drive/api/guides/create-file?hl=fr#upload_thumbnails
 @Singleton
@@ -162,7 +164,7 @@ class GoogleDriveEngine @Inject constructor(
             .setApplicationName(context.applicationInfo.name)
             .build()
 
-        Timber.i("Google drive engine successfully initialized")
+        logger.i("Google drive engine successfully initialized")
     }
 
     private fun googleAccountCredential(account: Account): GoogleAccountCredential {
@@ -202,7 +204,7 @@ class GoogleDriveEngine @Inject constructor(
                         date = Instant.ofEpochMilli(timestamp),
                     )
                 } else {
-                    Timber.e("Missing property $appPropertiesOs6Date on backup, ignore the backup")
+                    logger.e("Missing property $appPropertiesOs6Date on backup, ignore the backup")
                     null
                 }
             }
@@ -252,7 +254,7 @@ class GoogleDriveEngine @Inject constructor(
                     .transformResult(
                         transformError = {
                             if (it.throwable.osCode() == OSDriveError.Code.BACKUP_REMOTE_ID_NOT_FOUND) {
-                                Timber.v("Stored folder $folderId not found, create a new one")
+                                logger.v("Stored folder $folderId not found, create a new one")
                                 preferences.setFolderId(null)
                                 emitAll(retrieveOrCreateOneSafeFolder())
                             } else {
@@ -261,11 +263,11 @@ class GoogleDriveEngine @Inject constructor(
                         },
                         transform = {
                             if (it.successData.trashed) {
-                                Timber.v("Stored folder $folderId is trashed, don't use it anymore")
+                                logger.v("Stored folder $folderId is trashed, don't use it anymore")
                                 preferences.setFolderId(null)
                                 emitAll(retrieveOrCreateOneSafeFolder())
                             } else {
-                                Timber.v("Use stored folder $folderId")
+                                logger.v("Use stored folder $folderId")
                                 emit(LBFlowResult.Success(folderId))
                             }
                         },
@@ -290,14 +292,14 @@ class GoogleDriveEngine @Inject constructor(
         return query.executeAsFlow().transformResult { getFolderResult ->
             val folder: DriveFile? = getFolderResult.successData.files.firstOrNull()
             if (folder != null) {
-                Timber.v("Found drive oneSafe folder ${folder.id}")
+                logger.v("Found drive oneSafe folder ${folder.id}")
                 emit(LBFlowResult.Success(folder))
             } else {
-                Timber.v("No drive oneSafe folder found, create new one")
+                logger.v("No drive oneSafe folder found, create new one")
                 emitAll(createOneSafeFolder())
             }
         }.mapResult { folder ->
-            Timber.v("Save folder in prefs ${folder.webViewLink}")
+            logger.v("Save folder in prefs ${folder.webViewLink}")
             preferences.setFolderId(folder.id)
             preferences.setFolderUrl(folder.webViewLink)
             folder.id

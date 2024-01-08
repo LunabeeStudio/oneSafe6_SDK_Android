@@ -31,9 +31,12 @@ import android.view.WindowManager.LayoutParams
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.FrameLayout
+import com.lunabee.lblogger.LBLogger
+import com.lunabee.lblogger.e
 import studio.lunabee.onesafe.messagecompanion.databinding.AccessibilityLayoutBinding
 import studio.lunabee.onesafe.messagecompanion.databinding.DecryptedMessageLayoutBinding
-import timber.log.Timber
+
+private val logger = LBLogger.get<OSAccessibilityService>()
 
 /**
  * Accessibility Service of the oneSafe 6 app.
@@ -82,7 +85,7 @@ class OSAccessibilityService : AccessibilityService() {
             try {
                 windowManager?.removeView(it.view)
             } catch (e: Exception) {
-                Timber.e(e)
+                logger.e(e)
             }
         }
         plainMessagesView.clear()
@@ -137,7 +140,7 @@ class OSAccessibilityService : AccessibilityService() {
             try {
                 windowManager?.addView(decryptedMessageLayout.root, layoutParams)
             } catch (e: Exception) {
-                Timber.e(e)
+                logger.e(e)
             }
         }
         plainMessagesView.add(PlainMessageView(layoutParams, decryptedMessageLayout.root))
@@ -196,7 +199,7 @@ class OSAccessibilityService : AccessibilityService() {
                     try {
                         windowManager?.removeView(it.view)
                     } catch (e: Exception) {
-                        Timber.e(e)
+                        logger.e(e)
                     }
                 }
             } else {

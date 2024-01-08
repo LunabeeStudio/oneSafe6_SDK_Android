@@ -51,7 +51,7 @@ dependencies {
     implementation(libs.compose.ui.test)
     implementation(libs.compose.ui.test.junit4)
     implementation(libs.androidx.test.core.ktx)
-    implementation(libs.timber)
+    implementation(libs.lblogger)
     implementation(libs.work.testing)
     api(libs.hilt.work)
     api(libs.mockk.android)

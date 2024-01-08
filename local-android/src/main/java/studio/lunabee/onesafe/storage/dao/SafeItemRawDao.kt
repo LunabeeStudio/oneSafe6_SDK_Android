@@ -29,6 +29,7 @@ import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
 import studio.lunabee.onesafe.storage.DaoUtils
 import studio.lunabee.onesafe.storage.DaoUtils.ITEM_ORDER_BY_CONSULTED_AT
+import studio.lunabee.onesafe.storage.DaoUtils.ITEM_ORDER_BY_CREATED_AT
 import studio.lunabee.onesafe.storage.DaoUtils.ITEM_ORDER_BY_DELETED_AT
 import studio.lunabee.onesafe.storage.DaoUtils.ITEM_ORDER_BY_INDEX_ALPHA
 import studio.lunabee.onesafe.storage.DaoUtils.ITEM_ORDER_BY_POSITION
@@ -163,4 +164,5 @@ private val ItemOrder.orderBy: String
         ItemOrder.UpdatedAt -> ITEM_ORDER_BY_UPDATED_AT
         ItemOrder.DeletedAt -> ITEM_ORDER_BY_DELETED_AT
         ItemOrder.ConsultedAt -> ITEM_ORDER_BY_CONSULTED_AT
+        ItemOrder.CreatedAt -> ITEM_ORDER_BY_CREATED_AT
     }

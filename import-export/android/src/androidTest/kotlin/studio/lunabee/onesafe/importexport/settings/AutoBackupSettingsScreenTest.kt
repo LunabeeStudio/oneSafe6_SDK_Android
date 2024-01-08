@@ -39,6 +39,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
+import org.threeten.extra.MutableClock
 import studio.lunabee.compose.androidtest.LbcComposeTest
 import studio.lunabee.compose.androidtest.extension.waitUntilAtLeastOneExists
 import studio.lunabee.compose.androidtest.extension.waitUntilDoesNotExist
@@ -51,13 +52,14 @@ import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
 import studio.lunabee.onesafe.importexport.model.Backup
 import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.model.OSSwitchState
-import studio.lunabee.onesafe.test.testClock
 import studio.lunabee.onesafe.ui.UiConstants
 import java.net.URI
 import java.time.Instant
 
 @OptIn(androidx.compose.ui.test.ExperimentalTestApi::class)
 class AutoBackupSettingsScreenTest : LbcComposeTest() {
+
+    private val testClock = MutableClock.epochUTC()
 
     @Test
     fun cloud_loading_test(): TestResult = runTest {

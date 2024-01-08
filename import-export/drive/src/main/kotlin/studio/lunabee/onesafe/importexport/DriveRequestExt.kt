@@ -24,13 +24,13 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest
 import com.google.api.services.drive.Drive
 import com.lunabee.lbcore.model.LBFlowResult
+import com.lunabee.lblogger.LBLogger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import studio.lunabee.onesafe.error.OSDriveError
 import studio.lunabee.onesafe.error.OSError.Companion.get
-import timber.log.Timber
 import java.io.IOException
 import java.io.InputStream
 import java.net.UnknownHostException
@@ -61,7 +61,7 @@ private fun <T> Flow<LBFlowResult<T>>.setupFlow(): Flow<LBFlowResult<T>> = onSta
 }
 
 private fun GoogleJsonResponseException.toOSDriveError(): OSDriveError {
-    Timber.e(details.toString())
+    LBLogger.get("DriveError").e(details.toPrettyString())
     val message = "${details.code} - ${details.message}"
     return when {
         details.code == 404 &&

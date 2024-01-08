@@ -30,3 +30,7 @@
 
 # Keep OSError's constructor to allow instanciation of OSError with reflection from ErrorCode::get
 -keepclassmembers class * extends studio.lunabee.onesafe.error.OSError { <init>(...); }
+
+# Ignore SLF4J no impl warning
+# https://youtrack.jetbrains.com/issue/KTOR-5528/Missing-class-warning-when-using-R8-with-ktor-client-in-android-application
+-dontwarn org.slf4j.impl.StaticLoggerBinder

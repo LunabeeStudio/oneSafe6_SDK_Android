@@ -61,7 +61,7 @@ import javax.inject.Inject
 
 @TypeConverters(InstantConverter::class, FileConverter::class)
 @Database(
-    version = 8,
+    version = 9,
     entities = [
         RoomSafeItem::class,
         RoomSafeItemField::class,
@@ -134,6 +134,14 @@ class Migration3to4 @Inject constructor(private val idProvider: MessageIdProvide
         db.execSQL("ALTER TABLE TEMP_Message RENAME TO Message")
         db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_Message_order_contact_id` ON Message (`order` DESC, `contact_id` DESC)")
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_Message_contact_id` ON Message (`contact_id`)")
+    }
+}
+
+class Migration8to9 @Inject constructor() : Migration(8, 9) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE SafeItem ADD created_at INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_SafeItem_created_at` ON `SafeItem` (`created_at`)")
+        db.execSQL("UPDATE SafeItem SET created_at = updated_at")
     }
 }
 

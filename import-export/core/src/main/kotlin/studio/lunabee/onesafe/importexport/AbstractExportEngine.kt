@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import studio.lunabee.onesafe.domain.model.importexport.ExportProgress
 import studio.lunabee.onesafe.domain.model.importexport.OSArchiveKind
-import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.utils.mkdirs
@@ -37,6 +36,7 @@ import studio.lunabee.onesafe.error.OSImportExportError
 import studio.lunabee.onesafe.importexport.engine.ExportEngine
 import studio.lunabee.onesafe.importexport.model.ExportData
 import studio.lunabee.onesafe.importexport.model.ExportInfo
+import studio.lunabee.onesafe.importexport.model.ExportItem
 import studio.lunabee.onesafe.proto.OSExportProto
 import studio.lunabee.onesafe.proto.OSExportProto.ArchiveMetadata.ArchiveKind
 import studio.lunabee.onesafe.proto.archive
@@ -110,7 +110,7 @@ abstract class AbstractExportEngine(
      */
     private suspend fun FlowCollector<LBFlowResult<Unit>>.createArchiveData(
         folderDestination: File,
-        safeItemsWithKeys: Map<SafeItem, SafeItemKey>,
+        safeItemsWithKeys: Map<ExportItem, SafeItemKey>,
         safeItemFields: List<SafeItemField>,
         exportInfo: ExportInfo,
     ) {
@@ -213,20 +213,20 @@ abstract class AbstractExportEngine(
         }
     }
 
-    private fun createArchiveSafeItems(safeItems: List<SafeItem>): List<OSExportProto.ArchiveSafeItem> {
-        return safeItems.map { safeItem ->
+    private fun createArchiveSafeItems(items: List<ExportItem>): List<OSExportProto.ArchiveSafeItem> {
+        return items.map { item ->
             archiveSafeItem {
-                id = safeItem.id.toString()
-                createdAt = dateTimeFormatter.format(ZonedDateTime.now()) // TODO should be created
-                deletedAt = safeItem.deletedAt?.let { dateTimeFormatter.format(it) }.orEmpty()
-                deletedParentId = safeItem.deletedParentId?.toString().orEmpty()
-                encColor = safeItem.encColor.byteStringOrEmpty()
-                iconId = safeItem.iconId?.toString().orEmpty()
-                encName = safeItem.encName.byteStringOrEmpty()
-                parentId = safeItem.parentId?.toString().orEmpty()
-                isFavorite = safeItem.isFavorite
-                updatedAt = dateTimeFormatter.format(safeItem.updatedAt.atZone(ZoneId.systemDefault()))
-                position = safeItem.position
+                id = item.id.toString()
+                createdAt = dateTimeFormatter.format(item.createdAt)
+                deletedAt = item.deletedAt?.let { deletedAt -> dateTimeFormatter.format(deletedAt) }.orEmpty()
+                deletedParentId = item.deletedParentId?.toString().orEmpty()
+                encColor = item.encColor.byteStringOrEmpty()
+                iconId = item.iconId?.toString().orEmpty()
+                encName = item.encName.byteStringOrEmpty()
+                parentId = item.parentId?.toString().orEmpty()
+                isFavorite = item.isFavorite
+                updatedAt = dateTimeFormatter.format(item.updatedAt)
+                position = item.position
             }
         }
     }

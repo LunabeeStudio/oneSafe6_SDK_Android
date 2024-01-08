@@ -31,9 +31,11 @@ import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.usecase.GetAutoBackupModeUseCase
-import timber.log.Timber
+import com.lunabee.lblogger.LBLogger
 
 // TODO <AutoBackup> test (manually, maybe unit test?)
+
+private val logger = LBLogger.get<AutoBackupChainWorker>()
 
 /**
  * Launch the auto backup worker depending on user settings [AutoBackupMode]
@@ -52,7 +54,7 @@ class AutoBackupChainWorker @AssistedInject constructor(
             when (val backupMode = getAutoBackupModeUseCase()) {
                 AutoBackupMode.DISABLED -> {
                     // Unexpected, log and cancel workers
-                    Timber.e("${AutoBackupChainWorker::class.simpleName} run but ${AutoBackupMode::class.simpleName} is $backupMode")
+                    logger.e("${AutoBackupChainWorker::class.simpleName} run but ${AutoBackupMode::class.simpleName} is $backupMode")
                     autoBackupWorkersHelper.cancel()
                 }
                 AutoBackupMode.LOCAL_ONLY -> LocalBackupWorker.start(applicationContext, featureFlags.backupWorkerExpedited())

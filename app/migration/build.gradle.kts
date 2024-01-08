@@ -58,7 +58,7 @@ dependencies {
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)
-    implementation(libs.lblogger.timber)
+    implementation(libs.lblogger)
 
     implementation(project(":domain"))
     implementation(project(":repository"))

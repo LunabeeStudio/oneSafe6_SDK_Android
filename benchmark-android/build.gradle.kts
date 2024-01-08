@@ -75,7 +75,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.junit4)
     androidTestImplementation(libs.benchmark.junit4)
-    androidTestImplementation(libs.timber)
+    androidTestImplementation(libs.lblogger)
     androidTestImplementation(libs.kotlinx.coroutines.test)
 
     androidTestImplementation(project(":common-test-android"))

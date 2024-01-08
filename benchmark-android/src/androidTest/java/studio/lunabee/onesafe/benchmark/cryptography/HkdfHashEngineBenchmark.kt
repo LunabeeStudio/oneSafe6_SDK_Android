@@ -27,7 +27,6 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Rule
 import org.junit.Test
 import studio.lunabee.onesafe.cryptography.HKDFTinkHashEngine
-import timber.log.Timber
 import java.lang.reflect.Method
 
 @LargeTest
@@ -35,10 +34,6 @@ class HkdfHashEngineBenchmark {
 
     @get:Rule
     val benchmarkRule: BenchmarkRule = BenchmarkRule()
-
-    init {
-        Timber.plant(Timber.DebugTree())
-    }
 
     private val hashEngine: HKDFTinkHashEngine = HKDFTinkHashEngine(StandardTestDispatcher())
 

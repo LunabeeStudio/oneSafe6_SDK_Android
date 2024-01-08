@@ -13,22 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:24 AM
+ * Created by Lunabee Studio / Date - 12/19/2023 - for the oneSafe6 SDK.
+ * Last modified 12/19/23, 3:50 PM
  */
 
-package studio.lunabee.onesafe.domain.model.safeitem
+package studio.lunabee.onesafe.importexport.model
 
-import com.lunabee.lblogger.LBLogger
-import com.lunabee.lblogger.e
-import studio.lunabee.onesafe.domain.Constant
+import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import java.time.Instant
-import java.time.temporal.ChronoUnit
 import java.util.UUID
 
-private val log = LBLogger.get<SafeItem>()
-
-data class SafeItem(
+data class ExportItem(
     val id: UUID,
     val encName: ByteArray?,
     val parentId: UUID?,
@@ -39,37 +34,27 @@ data class SafeItem(
     val encColor: ByteArray?,
     val deletedAt: Instant?,
     val deletedParentId: UUID?,
-    val indexAlpha: Double,
     val createdAt: Instant,
 ) {
-    init {
-        check(!(deletedParentId != null && deletedAt == null))
-    }
-
-    val isDeleted: Boolean
-        get() = deletedAt != null
-
-    /**
-     * Get the number of day (round toward infinity) before the item will be removed. Coerced at least 1.
-     *
-     * @param now The current date
-     */
-    fun daysBeforeRemove(now: Instant = Instant.now()): Int? {
-        return deletedAt?.let {
-            val removeAt = deletedAt.plus(Constant.DefinitiveItemRemoveAfterDays.toLong() + 1, ChronoUnit.DAYS)
-            now.until(removeAt, ChronoUnit.DAYS).toInt()
-        }?.also {
-            if (it < 1) {
-                log.e("daysBeforeRemove must > 1 (actual $it)")
-            }
-        }?.coerceAtLeast(1)
-    }
+    constructor(safeItem: SafeItem) : this(
+        id = safeItem.id,
+        encName = safeItem.encName,
+        parentId = safeItem.parentId,
+        isFavorite = safeItem.isFavorite,
+        updatedAt = safeItem.updatedAt,
+        position = safeItem.position,
+        iconId = safeItem.iconId,
+        encColor = safeItem.encColor,
+        deletedAt = safeItem.deletedAt,
+        deletedParentId = safeItem.deletedParentId,
+        createdAt = safeItem.createdAt,
+    )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as SafeItem
+        other as ExportItem
 
         if (id != other.id) return false
         if (encName != null) {
@@ -87,7 +72,6 @@ data class SafeItem(
         } else if (other.encColor != null) return false
         if (deletedAt != other.deletedAt) return false
         if (deletedParentId != other.deletedParentId) return false
-        if (indexAlpha != other.indexAlpha) return false
         return createdAt == other.createdAt
     }
 
@@ -102,7 +86,6 @@ data class SafeItem(
         result = 31 * result + (encColor?.contentHashCode() ?: 0)
         result = 31 * result + (deletedAt?.hashCode() ?: 0)
         result = 31 * result + (deletedParentId?.hashCode() ?: 0)
-        result = 31 * result + indexAlpha.hashCode()
         result = 31 * result + createdAt.hashCode()
         return result
     }

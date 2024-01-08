@@ -48,10 +48,8 @@ tasks.named("publish${project.name.capitalized()}PublicationToMavenRepository") 
 }
 
 /**
- * Set repository destination depending on [project] and version name.
+ * Set repository destination depending version suffix
  * Credentials should be stored in your root gradle.properties, in a non source controlled file.
- *
- * @param project current project
  */
 fun PublishingExtension.setupMavenRepository() {
     repositories {
@@ -74,8 +72,6 @@ fun PublishingExtension.setupMavenRepository() {
 
 /**
  * Entry point for setting publication detail.
- *
- * @param project current project
  */
 fun PublishingExtension.setupPublication() {
     publications { setPublication() }
@@ -97,10 +93,8 @@ fun PublicationContainer.setPublication() {
 /**
  * Set project details:
  * - groupId will be [ProjectConfig.GROUP_ID]
- * - artifactId will take the name of the current [project]
+ * - artifactId will take the name of the current project
  * - version will be set in each submodule gradle file
- *
- * @param project project current project
  */
 fun MavenPublication.setProjectDetails() {
     groupId = ProjectConfig.GROUP_ID
@@ -110,8 +104,6 @@ fun MavenPublication.setProjectDetails() {
 
 /**
  * Set POM file details.
- *
- * @param project project current project
  */
 fun MavenPublication.setPom() {
     pom {

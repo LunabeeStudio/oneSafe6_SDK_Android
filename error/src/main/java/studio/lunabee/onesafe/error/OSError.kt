@@ -19,10 +19,10 @@
 
 package studio.lunabee.onesafe.error
 
+import co.touchlab.kermit.Logger
 import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
 import com.lunabee.lblogger.e
-import org.slf4j.Logger
 
 @PublishedApi
 internal val log: Logger = LBLogger.get<OSError>()

@@ -31,6 +31,8 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.lunabee.lbcore.model.LBFlowResult
+import com.lunabee.lblogger.LBLogger
+import com.lunabee.lblogger.e
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.Flow
@@ -44,8 +46,9 @@ import studio.lunabee.onesafe.error.OSAppError
 import studio.lunabee.onesafe.importexport.engine.BackupExportEngine
 import studio.lunabee.onesafe.importexport.usecase.ExportBackupUseCase
 import studio.lunabee.onesafe.importexport.utils.ForegroundInfoCompat
-import timber.log.Timber
 import java.io.File
+
+private val logger = LBLogger.get<ExportWorker>()
 
 /**
  * Worker that use [ExportBackupUseCase] to create a backup archive in private storage. It displays a foreground on going notification
@@ -72,7 +75,7 @@ class ExportWorker @AssistedInject constructor(
                         val data = Data.Builder()
                             .putString(ERROR_OUTPUT_KEY, result.throwable.toString())
                             .build()
-                        Timber.e(result.throwable)
+                        result.throwable?.let(logger::e)
                         workerResult = Result.failure(data)
                     }
                     is LBFlowResult.Loading -> updateProgress(result.progress ?: -1f)
@@ -97,14 +100,14 @@ class ExportWorker @AssistedInject constructor(
         try {
             setForeground(foregroundInfo)
         } catch (e: Exception) {
-            Timber.e(e)
+            logger.e(e)
         }
     }
 
     override suspend fun getForegroundInfo(): ForegroundInfo = createForegroundInfo(0f)
 
     private fun createForegroundInfo(progress: Float): ForegroundInfo {
-        Timber.d("Progress $progress") // TODO show progress
+        logger.d("Progress $progress") // TODO show progress
 
         val title = applicationContext.getString(R.string.export_progressCard_title)
         val notification = osNotificationManager.backupNotificationBuilder

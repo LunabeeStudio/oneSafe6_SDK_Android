@@ -31,7 +31,6 @@ import org.junit.Rule
 import org.junit.Test
 import studio.lunabee.compose.androidtest.helper.LbcResourcesHelper
 import studio.lunabee.onesafe.cryptography.ChachaPolyJCECryptoEngine
-import timber.log.Timber
 import java.io.File
 import java.lang.reflect.Method
 import kotlin.test.assertContentEquals
@@ -77,10 +76,6 @@ class ChachaPolyJCECryptoEngineBenchmark {
         ByteArray::class.java,
     ).apply {
         isAccessible = true
-    }
-
-    init {
-        Timber.plant(Timber.DebugTree())
     }
 
     @Before

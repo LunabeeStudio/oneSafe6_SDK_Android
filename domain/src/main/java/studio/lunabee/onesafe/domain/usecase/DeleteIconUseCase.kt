@@ -62,7 +62,7 @@ class DeleteIconUseCase @Inject constructor(
             val deleted = iconRepository.deleteIcon(safeItem.iconId)
 
             if (!deleted) {
-                log.error("Unable to delete icon ${safeItem.iconId}")
+                log.e("Unable to delete icon ${safeItem.iconId}")
             }
         }
     }

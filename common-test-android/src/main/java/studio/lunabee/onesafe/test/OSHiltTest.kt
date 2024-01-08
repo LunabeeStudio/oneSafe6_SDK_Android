@@ -34,6 +34,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
+import org.threeten.extra.MutableClock
 import studio.lunabee.onesafe.OSAppSettings
 import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.repository.IconRepository
@@ -44,6 +45,7 @@ import studio.lunabee.onesafe.domain.usecase.onboarding.CreateMasterKeyUseCase
 import studio.lunabee.onesafe.domain.usecase.onboarding.FinishOnboardingUseCase
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.OSRecentSearchProto
+import java.time.Clock
 import javax.inject.Inject
 
 /**
@@ -95,6 +97,11 @@ abstract class OSHiltTest : OSTest() {
     @Inject lateinit var recentSearchDataStore: DataStore<OSRecentSearchProto.RecentSearchProto>
 
     @Inject lateinit var preferencesDataStore: DataStore<Preferences>
+
+    @Inject lateinit var clock: Clock
+
+    protected val testClock: MutableClock
+        get() = clock as MutableClock
 
     /**
      * See [InitialTestState] for more details.

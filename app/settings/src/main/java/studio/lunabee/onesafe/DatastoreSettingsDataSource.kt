@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
+import studio.lunabee.onesafe.domain.model.safeitem.ItemsLayoutStyle
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import studio.lunabee.onesafe.repository.datasource.SettingsDataSource
@@ -55,6 +56,7 @@ class DatastoreSettingsDataSource @Inject constructor(
     private val cloudBackupEnabledKey = booleanPreferencesKey(SettingsConstants.cloudBackupEnabledKeyVal)
     private val keepLocalBackupEnabledKey = booleanPreferencesKey(SettingsConstants.keepLocalBackupEnabledKeyVal)
     private val itemOrderingKey = stringPreferencesKey(SettingsConstants.itemOrderingKeyVal)
+    private val itemsLayoutStyleKey = stringPreferencesKey(SettingsConstants.itemsLayoutStyleKeyVal)
 
     override var autoLockInactivityDelay: Duration by blockingDurationDatastore(
         dataStore = dataStore,
@@ -199,6 +201,17 @@ class DatastoreSettingsDataSource @Inject constructor(
     override suspend fun setItemOrdering(order: ItemOrder) {
         dataStore.edit { preferences ->
             preferences[itemOrderingKey] = order.name
+        }
+    }
+
+    override val itemsLayoutStyle: Flow<ItemsLayoutStyle> = dataStore.data
+        .map { preferences ->
+            enumValueOfOrNull<ItemsLayoutStyle>(preferences[itemsLayoutStyleKey]) ?: SettingsDefaults.itemsLayoutStyleDefault
+        }
+
+    override suspend fun setItemsLayoutStyle(style: ItemsLayoutStyle) {
+        dataStore.edit { preferences ->
+            preferences[itemsLayoutStyleKey] = style.name
         }
     }
 }

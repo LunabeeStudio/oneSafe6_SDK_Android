@@ -34,6 +34,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.lunabee.lbcore.model.LBFlowResult
 import com.lunabee.lbcore.model.LBResult
+import com.lunabee.lblogger.LBLogger
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
@@ -47,7 +48,8 @@ import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
 import studio.lunabee.onesafe.importexport.usecase.DeleteOldLocalBackupsUseCase
 import studio.lunabee.onesafe.importexport.usecase.LocalAutoBackupUseCase
 import studio.lunabee.onesafe.importexport.utils.ForegroundInfoCompat
-import timber.log.Timber
+
+private val logger = LBLogger.get<LocalBackupWorker>()
 
 /**
  * Worker used to schedule and run [LocalAutoBackupUseCase] with a foreground notification
@@ -97,7 +99,7 @@ class LocalBackupWorker @AssistedInject constructor(
     override suspend fun getForegroundInfo(): ForegroundInfo = createForegroundInfo(inputData.getFloat(PROGRESS_DATA_KEY, 0f))
 
     private fun createForegroundInfo(progress: Float): ForegroundInfo {
-        Timber.d("Progress $progress") // TODO show progress
+        logger.d("Progress $progress") // TODO show progress
 
         val title = applicationContext.getString(R.string.notification_autobackup_progress_title)
         val notification = osNotificationManager.backupNotificationBuilder

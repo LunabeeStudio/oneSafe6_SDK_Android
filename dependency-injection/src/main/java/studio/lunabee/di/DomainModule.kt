@@ -40,20 +40,12 @@ import studio.lunabee.onesafe.domain.qualifier.DefaultDispatcher
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.domain.qualifier.InternalDir
 import studio.lunabee.onesafe.domain.qualifier.RemoteDispatcher
-import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
-import studio.lunabee.onesafe.domain.usecase.SetIconUseCase
-import studio.lunabee.onesafe.domain.utils.SafeItemBuilder
-import studio.lunabee.onesafe.domain.utils.SafeItemBuilderImpl
 import java.io.File
 import java.time.Clock
 
 @Module
 @InstallIn(SingletonComponent::class)
 object DomainModule {
-    @Provides
-    fun provideSafeItemBuilder(cryptoRepository: MainCryptoRepository, setIconUseCase: SetIconUseCase): SafeItemBuilder =
-        SafeItemBuilderImpl(cryptoRepository = cryptoRepository, setIconUseCase = setIconUseCase)
-
     @Provides
     fun provideDoubleRatchetEngine(
         localDatasource: DoubleRatchetLocalDatasource,

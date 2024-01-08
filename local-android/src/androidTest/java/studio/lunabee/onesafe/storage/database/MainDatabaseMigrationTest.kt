@@ -29,6 +29,7 @@ import org.junit.Rule
 import org.junit.Test
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.Migration3to4
+import studio.lunabee.onesafe.storage.Migration8to9
 import studio.lunabee.onesafe.test.OSTestUtils
 import studio.lunabee.onesafe.test.testUUIDs
 import studio.lunabee.onesafe.toByteArray
@@ -41,6 +42,8 @@ class MainDatabaseMigrationTest {
     private val dbName = "migration-test"
 
     @Inject lateinit var migration3to4: Migration3to4
+
+    @Inject lateinit var migration8to9: Migration8to9
 
     @get:Rule val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
 
@@ -56,7 +59,7 @@ class MainDatabaseMigrationTest {
     }
 
     @Test
-    fun migrate3To4() {
+    fun migrate3To4_test() {
         val blobs = List(8) { OSTestUtils.random.nextBytes(10) }
         val blobsString = blobs.map { "X'${it.joinToString("") { byte -> "%02x".format(byte) }}'" }
 
@@ -97,6 +100,31 @@ class MainDatabaseMigrationTest {
             assertEquals("FOO", getString(4))
             assertEquals(456f, getFloat(5))
             assertEquals(null, getBlobOrNull(6))
+        }
+    }
+
+    @Test
+    fun migration8to9_test() {
+        val ids = testUUIDs.subList(0, 9).map { it.toByteArray() }
+        val idWithUpdatedAt = ids.map {
+            "X'${it.joinToString("") { byte -> "%02x".format(byte) }}'" to OSTestUtils.random.nextLong()
+        }
+
+        val valueRows = idWithUpdatedAt.joinToString(",") { (id, updatedAt) ->
+            "($id, NULL, NULL, false, $updatedAt, 0.0, NULL, NULL, NULL, NULL, NULL, 0)"
+        }
+
+        helper.createDatabase(dbName, 8).apply {
+            execSQL("INSERT INTO SafeItem VALUES $valueRows;")
+            close()
+        }
+
+        val db = helper.runMigrationsAndValidate(dbName, 9, true, migration8to9)
+
+        val cursor = db.query("SELECT * FROM SafeItem")
+        while (cursor.moveToNext()) {
+            val actualCreatedAt = cursor.getLong(4)
+            assertEquals(idWithUpdatedAt[cursor.position].second, actualCreatedAt)
         }
     }
 }

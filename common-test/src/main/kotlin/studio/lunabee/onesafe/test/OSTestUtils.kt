@@ -51,8 +51,22 @@ object OSTestUtils {
         deletedAt: Instant? = null,
         deletedParentId: UUID? = null,
         indexAlpha: Double = 0.0,
+        createdAt: Instant = Instant.now(),
     ): SafeItem {
-        return SafeItem(id, encName, parentId, isFavorite, updatedAt, position, iconId, encColor, deletedAt, deletedParentId, indexAlpha)
+        return SafeItem(
+            id = id,
+            encName = encName,
+            parentId = parentId,
+            isFavorite = isFavorite,
+            updatedAt = updatedAt,
+            position = position,
+            iconId = iconId,
+            encColor = encColor,
+            deletedAt = deletedAt,
+            deletedParentId = deletedParentId,
+            indexAlpha = indexAlpha,
+            createdAt = createdAt,
+        )
     }
 
     fun createSafeItemWithIdentifier(
@@ -92,6 +106,7 @@ object OSTestUtils {
         deletedAt: (idx: Int) -> Instant? = { null },
         deletedParentId: (idx: Int) -> UUID? = { null },
         indexAlpha: (idx: Int) -> Double = { 0.0 },
+        createdAt: (idx: Int) -> Instant = { Instant.now() },
     ): List<SafeItem> {
         return (0 until size).map { idx ->
             SafeItem(
@@ -106,6 +121,7 @@ object OSTestUtils {
                 deletedAt = deletedAt(idx),
                 deletedParentId = deletedParentId(idx),
                 indexAlpha = indexAlpha(idx),
+                createdAt = createdAt(idx),
             )
         }
     }

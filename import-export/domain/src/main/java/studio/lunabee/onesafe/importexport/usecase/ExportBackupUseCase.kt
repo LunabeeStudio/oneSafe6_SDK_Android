@@ -35,6 +35,7 @@ import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.importexport.engine.BackupExportEngine
 import studio.lunabee.onesafe.importexport.model.ExportData
+import studio.lunabee.onesafe.importexport.model.ExportItem
 import studio.lunabee.onesafe.importexport.model.ImportExportConstant
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import java.io.File
@@ -60,8 +61,8 @@ class ExportBackupUseCase @Inject constructor(
         archiveExtractedDirectory: File,
     ): Flow<LBFlowResult<LocalBackup>> {
         return flow {
-            val safeItemsWithKeys = safeItemRepository.getAllSafeItems().associateWith { safeItem ->
-                safeItemKeyRepository.getSafeItemKey(safeItem.id)
+            val safeItemsWithKeys = safeItemRepository.getAllSafeItems().associate { safeItem ->
+                ExportItem(safeItem) to safeItemKeyRepository.getSafeItemKey(safeItem.id)
             }
             val data = ExportData(
                 safeItemsWithKeys = safeItemsWithKeys,

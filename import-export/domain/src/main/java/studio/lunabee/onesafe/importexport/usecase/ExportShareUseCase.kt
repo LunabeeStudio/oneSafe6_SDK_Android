@@ -38,6 +38,7 @@ import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
 import studio.lunabee.onesafe.importexport.engine.ShareExportEngine
 import studio.lunabee.onesafe.importexport.model.ExportData
+import studio.lunabee.onesafe.importexport.model.ExportItem
 import studio.lunabee.onesafe.importexport.model.ImportExportConstant
 import java.io.File
 import java.time.Clock
@@ -66,10 +67,12 @@ class ExportShareUseCase @Inject constructor(
     ): Flow<LBFlowResult<File>> {
         return flow {
             // Get all item and re-encrypt keys with export key
-            val safeItemsWithKeys = safeItemRepository.getSafeItemsAndChildren(itemToShare, includeChildren).associateWith { safeItem ->
-                safeItemKeyRepository.getSafeItemKey(id = safeItem.id).also { itemKey ->
-                    mainCryptoRepository.reEncryptItemKey(itemKey, exportEngine.exportKey)
-                }
+            val items = safeItemRepository.getSafeItemsAndChildren(itemToShare, includeChildren)
+            val safeItemsWithKeys = items.associate { safeItem ->
+                ExportItem(safeItem) to
+                    safeItemKeyRepository.getSafeItemKey(id = safeItem.id).also { itemKey ->
+                        mainCryptoRepository.reEncryptItemKey(itemKey, exportEngine.exportKey)
+                    }
             }
             val itemsId: List<UUID> = safeItemsWithKeys.keys.map { it.id }
             val iconsId: List<String> = safeItemsWithKeys.keys.map { it.iconId.toString() }

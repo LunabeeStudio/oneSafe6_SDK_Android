@@ -22,15 +22,18 @@ package studio.lunabee.onesafe.importexport
 import android.content.Intent
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.lunabee.lbcore.model.LBResult
+import com.lunabee.lblogger.LBLogger
+import com.lunabee.lblogger.e
 import studio.lunabee.onesafe.error.OSDriveError
 import studio.lunabee.onesafe.error.OSError.Companion.get
-import timber.log.Timber
+
+private val logger = LBLogger.get<GoogleDriveHelper>()
 
 object GoogleDriveHelper {
     fun getAuthorizationIntent(error: OSDriveError): LBResult<Intent> {
         val cause: UserRecoverableAuthIOException? = error.cause as? UserRecoverableAuthIOException
         if (cause == null) {
-            Timber.e(error, "Error cause's is not UserRecoverableAuthIOException")
+            logger.e(error, "Error cause's is not UserRecoverableAuthIOException")
         }
         return cause?.let {
             LBResult.Success(it.intent)
