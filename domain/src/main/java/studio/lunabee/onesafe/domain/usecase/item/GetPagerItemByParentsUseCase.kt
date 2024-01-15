@@ -25,26 +25,65 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
+import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
 import studio.lunabee.onesafe.domain.repository.ItemSettingsRepository
+import studio.lunabee.onesafe.domain.repository.SafeItemDeletedRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import java.util.UUID
 import javax.inject.Inject
 
 class GetPagerItemByParentsUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
+    private val safeItemDeletedRepository: SafeItemDeletedRepository,
     private val itemSettingsRepository: ItemSettingsRepository,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(
         pagingConfig: PagingConfig,
         parentId: UUID?,
+        isDeleted: Boolean,
     ): Flow<PagingData<SafeItem>> {
-        return itemSettingsRepository.itemOrdering.flatMapLatest { itemOrder ->
-            safeItemRepository.getPagerItemByParents(
-                config = pagingConfig,
-                parentId = parentId,
-                order = itemOrder,
-            )
+        return if (isDeleted) {
+            itemSettingsRepository.itemOrdering.flatMapLatest { itemOrder ->
+                safeItemDeletedRepository.getPagerItemByParentIdDeleted(
+                    config = pagingConfig,
+                    parentId = parentId,
+                    order = itemOrder,
+                )
+            }
+        } else {
+            itemSettingsRepository.itemOrdering.flatMapLatest { itemOrder ->
+                safeItemRepository.getPagerItemByParents(
+                    config = pagingConfig,
+                    parentId = parentId,
+                    order = itemOrder,
+                )
+            }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun withIdentifier(
+        pagingConfig: PagingConfig,
+        parentId: UUID?,
+        isDeleted: Boolean,
+    ): Flow<PagingData<SafeItemWithIdentifier>> {
+        return if (isDeleted) {
+            itemSettingsRepository.itemOrdering.flatMapLatest { itemOrder ->
+                safeItemDeletedRepository.getPagerItemByParentIdDeletedWithIdentifier(
+                    config = pagingConfig,
+                    parentId = parentId,
+                    order = itemOrder,
+                )
+            }
+        } else {
+            itemSettingsRepository.itemOrdering.flatMapLatest { itemOrder ->
+                safeItemRepository.getPagerItemByParentsWithIdentifier(
+                    config = pagingConfig,
+                    parentId = parentId,
+                    order = itemOrder,
+                )
+            }
         }
     }
 }

@@ -23,6 +23,7 @@ import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import studio.lunabee.onesafe.domain.common.FeatureFlags
+import studio.lunabee.onesafe.domain.model.safeitem.ItemsLayoutSettings
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
@@ -38,6 +39,10 @@ object OSTestUtils {
         println("Random seed = $it")
     }
     val random: Random = Random(seed)
+
+    val itemsLayoutSettings: ItemsLayoutSettings = ItemsLayoutSettings.entries.random(random).also {
+        println("${ItemsLayoutSettings::class.simpleName} = $it")
+    }
 
     fun createSafeItem(
         id: UUID = UUID.randomUUID(),

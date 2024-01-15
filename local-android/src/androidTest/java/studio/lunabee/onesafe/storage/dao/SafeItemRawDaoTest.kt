@@ -273,6 +273,30 @@ class SafeItemRawDaoTest {
             assertContentEqualsIdentifier(expected, actual, itemOrder)
         }
     }
+
+    @Test
+    fun findByParentIdWithIdentifierQuery_test(): TestResult = runTest {
+        ItemOrder.entries.forEach { itemOrder ->
+            val expected = listOf(itemA, itemB).sortedBy(itemOrder)
+            val actual = rawDao.getSafeItemsWithIdentifierFlow(
+                SafeItemRawDao.findByParentIdWithIdentifierQuery(null, itemOrder),
+            ).first()
+            assertContentEqualsIdentifier(expected, actual, itemOrder)
+        }
+    }
+
+    @Test
+    fun findByDeletedParentIdWithIdentifierQuery_test(): TestResult = runTest {
+        safeItemDao.setDeletedAndRemoveFromFavorite(itemB.id)
+        safeItemDao.setDeletedAndRemoveFromFavorite(itemA.id)
+        ItemOrder.entries.forEach { itemOrder ->
+            val expected = listOf(itemA, itemB).sortedBy(itemOrder)
+            val actual = rawDao.getSafeItemsWithIdentifierFlow(
+                SafeItemRawDao.findByDeletedParentIdWithIdentifierQuery(null, itemOrder),
+            ).first()
+            assertContentEqualsIdentifier(expected, actual, itemOrder)
+        }
+    }
 }
 
 /**

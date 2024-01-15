@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
-import studio.lunabee.onesafe.domain.model.safeitem.ItemsLayoutStyle
+import studio.lunabee.onesafe.domain.model.safeitem.ItemsLayoutSettings
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import studio.lunabee.onesafe.repository.datasource.SettingsDataSource
@@ -56,7 +56,7 @@ class DatastoreSettingsDataSource @Inject constructor(
     private val cloudBackupEnabledKey = booleanPreferencesKey(SettingsConstants.cloudBackupEnabledKeyVal)
     private val keepLocalBackupEnabledKey = booleanPreferencesKey(SettingsConstants.keepLocalBackupEnabledKeyVal)
     private val itemOrderingKey = stringPreferencesKey(SettingsConstants.itemOrderingKeyVal)
-    private val itemsLayoutStyleKey = stringPreferencesKey(SettingsConstants.itemsLayoutStyleKeyVal)
+    private val itemsLayoutSettingKey = stringPreferencesKey(SettingsConstants.itemsLayoutSettingKeyVal)
 
     override var autoLockInactivityDelay: Duration by blockingDurationDatastore(
         dataStore = dataStore,
@@ -204,14 +204,14 @@ class DatastoreSettingsDataSource @Inject constructor(
         }
     }
 
-    override val itemsLayoutStyle: Flow<ItemsLayoutStyle> = dataStore.data
+    override val itemsLayoutSetting: Flow<ItemsLayoutSettings> = dataStore.data
         .map { preferences ->
-            enumValueOfOrNull<ItemsLayoutStyle>(preferences[itemsLayoutStyleKey]) ?: SettingsDefaults.itemsLayoutStyleDefault
+            enumValueOfOrNull<ItemsLayoutSettings>(preferences[itemsLayoutSettingKey]) ?: SettingsDefaults.ItemsLayoutSettingDefault
         }
 
-    override suspend fun setItemsLayoutStyle(style: ItemsLayoutStyle) {
+    override suspend fun setItemsLayoutSetting(style: ItemsLayoutSettings) {
         dataStore.edit { preferences ->
-            preferences[itemsLayoutStyleKey] = style.name
+            preferences[itemsLayoutSettingKey] = style.name
         }
     }
 }

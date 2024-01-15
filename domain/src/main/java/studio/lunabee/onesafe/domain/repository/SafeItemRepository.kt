@@ -49,7 +49,14 @@ interface SafeItemRepository {
     )
 
     fun getPagerItemByParents(config: PagingConfig, parentId: UUID?, order: ItemOrder): Flow<PagingData<SafeItem>>
+    fun getPagerItemByParentsWithIdentifier(
+        config: PagingConfig,
+        parentId: UUID?,
+        order: ItemOrder,
+    ): Flow<PagingData<SafeItemWithIdentifier>>
+
     fun getPagerItemFavorite(config: PagingConfig, order: ItemOrder): Flow<PagingData<SafeItem>>
+    fun getPagerItemFavoriteWithIdentifier(pagingConfig: PagingConfig, itemOrder: ItemOrder): Flow<PagingData<SafeItemWithIdentifier>>
     fun findLastFavorite(limit: Int, order: ItemOrder): Flow<List<SafeItem>>
     fun countAllFavoriteFlow(): Flow<Int>
     suspend fun countAllFavorite(): Int

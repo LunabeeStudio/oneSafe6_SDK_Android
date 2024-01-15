@@ -170,16 +170,48 @@ class SafeItemLocalDataSourceImpl @Inject constructor(
         }.flow.mapPagingValues(RoomSafeItem::toSafeItem)
     }
 
+    override fun getPagerItemByParentIdWithIdentifier(
+        config: PagingConfig,
+        parentId: UUID?,
+        order: ItemOrder,
+    ): Flow<PagingData<SafeItemWithIdentifier>> {
+        return Pager(config = config) {
+            safeItemRawDao.getPagedSafeItemsWithIdentifier(
+                SafeItemRawDao.findByParentIdWithIdentifierQuery(parentId, order),
+            )
+        }.flow
+    }
+
     override fun getPagerItemByParentIdDeleted(config: PagingConfig, parentId: UUID?, order: ItemOrder): Flow<PagingData<SafeItem>> {
         return Pager(config = config) {
             safeItemRawDao.getPagedItems(SafeItemRawDao.findByDeletedParentIdQuery(parentId, order))
         }.flow.mapPagingValues(RoomSafeItem::toSafeItem)
     }
 
+    override fun getPagerItemByParentIdDeletedWithIdentifier(
+        config: PagingConfig,
+        deletedParentId: UUID?,
+        order: ItemOrder,
+    ): Flow<PagingData<SafeItemWithIdentifier>> {
+        return Pager(config = config) {
+            safeItemRawDao.getPagedSafeItemsWithIdentifier(
+                SafeItemRawDao.findByDeletedParentIdWithIdentifierQuery(deletedParentId, order),
+            )
+        }.flow
+    }
+
     override fun getPagerItemFavorite(config: PagingConfig, order: ItemOrder): Flow<PagingData<SafeItem>> {
         return Pager(config = config) {
             safeItemRawDao.getPagedItems(SafeItemRawDao.findFavoriteQuery(order))
         }.flow.mapPagingValues(RoomSafeItem::toSafeItem)
+    }
+
+    override fun getPagerItemFavoriteWithIdentifier(config: PagingConfig, order: ItemOrder): Flow<PagingData<SafeItemWithIdentifier>> {
+        return Pager(config = config) {
+            safeItemRawDao.getPagedSafeItemsWithIdentifier(
+                SafeItemRawDao.findFavoriteWithIdentifierQuery(order),
+            )
+        }.flow
     }
 
     override fun findLastFavorite(limit: Int, order: ItemOrder): Flow<List<SafeItem>> {

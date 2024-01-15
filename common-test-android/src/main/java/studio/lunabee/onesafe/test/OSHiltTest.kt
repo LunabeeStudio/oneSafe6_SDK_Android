@@ -38,6 +38,7 @@ import org.threeten.extra.MutableClock
 import studio.lunabee.onesafe.OSAppSettings
 import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.repository.IconRepository
+import studio.lunabee.onesafe.domain.repository.ItemSettingsRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.LocalSignInUseCase
 import studio.lunabee.onesafe.domain.usecase.autolock.LockAppUseCase
@@ -100,6 +101,8 @@ abstract class OSHiltTest : OSTest() {
 
     @Inject lateinit var clock: Clock
 
+    @Inject lateinit var itemSettingsRepository: ItemSettingsRepository
+
     protected val testClock: MutableClock
         get() = clock as MutableClock
 
@@ -148,6 +151,8 @@ abstract class OSHiltTest : OSTest() {
                 signup()
             }
         }
+
+        itemSettingsRepository.setItemsLayoutSetting(style = OSTestUtils.itemsLayoutSettings)
     }
 
     protected suspend fun signOut() {

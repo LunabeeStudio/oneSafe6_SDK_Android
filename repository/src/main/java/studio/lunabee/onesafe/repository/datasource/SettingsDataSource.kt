@@ -20,7 +20,7 @@
 package studio.lunabee.onesafe.repository.datasource
 
 import kotlinx.coroutines.flow.Flow
-import studio.lunabee.onesafe.domain.model.safeitem.ItemsLayoutStyle
+import studio.lunabee.onesafe.domain.model.safeitem.ItemsLayoutSettings
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import java.time.Instant
@@ -63,6 +63,6 @@ interface SettingsDataSource {
     val itemOrdering: Flow<ItemOrder>
     suspend fun setItemOrdering(order: ItemOrder)
 
-    val itemsLayoutStyle: Flow<ItemsLayoutStyle>
-    suspend fun setItemsLayoutStyle(style: ItemsLayoutStyle)
+    val itemsLayoutSetting: Flow<ItemsLayoutSettings>
+    suspend fun setItemsLayoutSetting(style: ItemsLayoutSettings)
 }

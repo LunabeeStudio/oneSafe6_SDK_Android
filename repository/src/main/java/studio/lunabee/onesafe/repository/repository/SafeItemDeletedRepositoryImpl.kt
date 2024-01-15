@@ -24,6 +24,7 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
+import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
 import studio.lunabee.onesafe.domain.repository.SafeItemDeletedRepository
 import studio.lunabee.onesafe.repository.datasource.SafeItemLocalDataSource
 import java.time.Instant
@@ -86,4 +87,12 @@ class SafeItemDeletedRepositoryImpl @Inject constructor(
     override suspend fun removeOldItems(threshold: Instant) = localDataSource.removeOldItems(threshold)
 
     override fun getAllDeletedItemsCount(): Flow<Int> = localDataSource.getAllDeletedItemsCount()
+
+    override fun getPagerItemByParentIdDeletedWithIdentifier(
+        config: PagingConfig,
+        parentId: UUID?,
+        order: ItemOrder,
+    ): Flow<PagingData<SafeItemWithIdentifier>> {
+        return localDataSource.getPagerItemByParentIdDeletedWithIdentifier(config, parentId, order)
+    }
 }

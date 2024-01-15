@@ -55,8 +55,21 @@ interface SafeItemLocalDataSource {
     fun countSafeItemByParentIdDeletedFlow(parentId: UUID?): Flow<Int>
     suspend fun countSafeItemByParentIdDeleted(parentId: UUID?): Int
     fun getPagerItemByParentId(config: PagingConfig, parentId: UUID?, order: ItemOrder): Flow<PagingData<SafeItem>>
+    fun getPagerItemByParentIdWithIdentifier(
+        config: PagingConfig,
+        parentId: UUID?,
+        order: ItemOrder,
+    ): Flow<PagingData<SafeItemWithIdentifier>>
+
     fun getPagerItemByParentIdDeleted(config: PagingConfig, parentId: UUID?, order: ItemOrder): Flow<PagingData<SafeItem>>
+    fun getPagerItemByParentIdDeletedWithIdentifier(
+        config: PagingConfig,
+        deletedParentId: UUID?,
+        order: ItemOrder,
+    ): Flow<PagingData<SafeItemWithIdentifier>>
+
     fun getPagerItemFavorite(config: PagingConfig, order: ItemOrder): Flow<PagingData<SafeItem>>
+    fun getPagerItemFavoriteWithIdentifier(config: PagingConfig, order: ItemOrder): Flow<PagingData<SafeItemWithIdentifier>>
     suspend fun getHighestPosition(parentId: UUID?): Double?
     suspend fun getHighestDeletedPosition(deletedParentId: UUID?): Double?
     suspend fun getNextSiblingPosition(id: UUID): Double?

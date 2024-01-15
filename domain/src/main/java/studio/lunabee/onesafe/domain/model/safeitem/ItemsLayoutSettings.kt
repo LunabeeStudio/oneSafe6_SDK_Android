@@ -19,7 +19,8 @@
 
 package studio.lunabee.onesafe.domain.model.safeitem
 
-enum class ItemsLayoutStyle {
+enum class ItemsLayoutSettings {
     Grid,
     LargeGrid,
+    List,
 }
