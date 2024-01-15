@@ -24,6 +24,7 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
+import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
 import java.time.Instant
 import java.util.UUID
 
@@ -44,4 +45,9 @@ interface SafeItemDeletedRepository {
     suspend fun updateParentToNonDeletedAncestor(id: UUID)
     suspend fun removeOldItems(threshold: Instant)
     fun getAllDeletedItemsCount(): Flow<Int>
+    fun getPagerItemByParentIdDeletedWithIdentifier(
+        config: PagingConfig,
+        parentId: UUID?,
+        order: ItemOrder,
+    ): Flow<PagingData<SafeItemWithIdentifier>>
 }

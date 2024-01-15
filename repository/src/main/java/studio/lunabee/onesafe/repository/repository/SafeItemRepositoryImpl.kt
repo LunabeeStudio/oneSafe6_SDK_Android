@@ -69,10 +69,23 @@ class SafeItemRepositoryImpl @Inject constructor(
         order: ItemOrder,
     ): Flow<PagingData<SafeItem>> = localDataSource.getPagerItemByParentId(config, parentId, order)
 
+    override fun getPagerItemByParentsWithIdentifier(
+        config: PagingConfig,
+        parentId: UUID?,
+        order: ItemOrder,
+    ): Flow<PagingData<SafeItemWithIdentifier>> =
+        localDataSource.getPagerItemByParentIdWithIdentifier(config, parentId, order)
+
     override fun getPagerItemFavorite(
         config: PagingConfig,
         order: ItemOrder,
     ): Flow<PagingData<SafeItem>> = localDataSource.getPagerItemFavorite(config, order)
+
+    override fun getPagerItemFavoriteWithIdentifier(
+        pagingConfig: PagingConfig,
+        itemOrder: ItemOrder,
+    ): Flow<PagingData<SafeItemWithIdentifier>> =
+        localDataSource.getPagerItemFavoriteWithIdentifier(pagingConfig, itemOrder)
 
     override fun findLastFavorite(limit: Int, order: ItemOrder): Flow<List<SafeItem>> {
         return localDataSource.findLastFavorite(limit, order)

@@ -20,8 +20,8 @@
 package studio.lunabee.onesafe
 
 import studio.lunabee.onesafe.domain.model.camera.CameraSystem
-import studio.lunabee.onesafe.domain.model.safeitem.ItemsLayoutStyle
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
+import studio.lunabee.onesafe.domain.model.safeitem.ItemsLayoutSettings
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -31,7 +31,7 @@ import kotlin.time.Duration.Companion.days
  *
  * See release default in release/java/studio/lunabee/onesafe/SettingsDefaults.kt
  */
-internal object SettingsDefaults {
+object SettingsDefaults {
     val AutoLockInactivityDelayMsDefault: Long = Duration.INFINITE.inWholeMilliseconds
     val AutoLockAppChangeDelayMsDefault: Long = Duration.INFINITE.inWholeMilliseconds
     const val MaterialYouSettingDefault: Boolean = true
@@ -48,5 +48,5 @@ internal object SettingsDefaults {
     const val cloudBackupEnabledDefault: Boolean = false
     const val keepLocalBackupEnabledDefault: Boolean = true
     val itemOrderingDefault: ItemOrder = ItemOrder.Alphabetic
-    val itemsLayoutStyleDefault: ItemsLayoutStyle = ItemsLayoutStyle.Grid
+    val ItemsLayoutSettingDefault: ItemsLayoutSettings = ItemsLayoutSettings.Grid
 }

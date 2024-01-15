@@ -25,6 +25,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
+import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
 import studio.lunabee.onesafe.domain.repository.ItemSettingsRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import javax.inject.Inject
@@ -37,6 +38,16 @@ class GetPagerItemFavoriteUseCase @Inject constructor(
     operator fun invoke(pagingConfig: PagingConfig): Flow<PagingData<SafeItem>> {
         return itemSettingsRepository.itemOrdering.flatMapLatest { itemOrder ->
             safeItemRepository.getPagerItemFavorite(
+                pagingConfig,
+                itemOrder,
+            )
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun withIdentifier(pagingConfig: PagingConfig): Flow<PagingData<SafeItemWithIdentifier>> {
+        return itemSettingsRepository.itemOrdering.flatMapLatest { itemOrder ->
+            safeItemRepository.getPagerItemFavoriteWithIdentifier(
                 pagingConfig,
                 itemOrder,
             )
