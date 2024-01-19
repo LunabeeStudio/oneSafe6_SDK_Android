@@ -38,6 +38,7 @@ import studio.lunabee.onesafe.atom.button.OSTextButton
 import studio.lunabee.onesafe.commonui.CommonUiConstants
 import studio.lunabee.onesafe.commonui.R
 import studio.lunabee.onesafe.commonui.home.HomeInfoData
+import studio.lunabee.onesafe.commonui.home.HomeInfoDataNavScope
 import studio.lunabee.onesafe.commonui.home.HomeInfoType
 import studio.lunabee.onesafe.extension.loremIpsumSpec
 import studio.lunabee.onesafe.organism.card.OSMessageCard
@@ -47,16 +48,20 @@ import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
+import java.time.Instant
 
 class AutoBackupErrorHomeInfoData(
     private val errorLabel: LbcTextSpec,
     private val errorFull: LbcTextSpec,
+    visibleSince: Instant,
     private val onDismiss: () -> Unit,
 ) : HomeInfoData(
     type = HomeInfoType.Error,
     key = KeyAutoBackupErrorCard,
     contentType = ContentTypeAutoBackupErrorCard,
+    visibleSince = visibleSince,
 ) {
+    context(HomeInfoDataNavScope)
     @OptIn(ExperimentalLayoutApi::class)
     @Composable
     override fun Composable(modifier: Modifier) {
@@ -97,10 +102,15 @@ class AutoBackupErrorHomeInfoData(
 @Composable
 private fun AutoBackupErrorCardPreview() {
     OSPreviewBackgroundTheme {
-        AutoBackupErrorHomeInfoData(
-            errorLabel = loremIpsumSpec(1),
-            errorFull = loremIpsumSpec(100),
-        ) {}.Composable(Modifier)
+        with(object : HomeInfoDataNavScope {
+            override val navigateFromHomeInfoDataToBackupSettings: () -> Unit = {}
+        }) {
+            AutoBackupErrorHomeInfoData(
+                errorLabel = loremIpsumSpec(1),
+                errorFull = loremIpsumSpec(100),
+                visibleSince = Instant.EPOCH,
+            ) {}.Composable(Modifier)
+        }
     }
 }
 

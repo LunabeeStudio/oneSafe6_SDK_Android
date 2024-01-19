@@ -19,6 +19,7 @@
 
 plugins {
     `android-library`
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -32,6 +33,8 @@ android {
 dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
+    implementation(libs.kotlinx.serialization.protobuf)
+    implementation(libs.datastore)
     implementation(libs.datastore.preferences)
 
     platform(libs.lunabee.bom)

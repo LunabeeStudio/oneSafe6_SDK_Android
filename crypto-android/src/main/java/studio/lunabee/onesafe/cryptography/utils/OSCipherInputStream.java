@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2024 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 10/23/2023 - for the oneSafe6 SDK.
- * Last modified 23/10/2023 13:59
+ * Created by Lunabee Studio / Date - 1/12/2024 - for the oneSafe6 SDK.
+ * Last modified 1/12/24, 11:58 AM
  */
 
-package studio.lunabee.onesafe.cryptography.utils;
-
-import java.io.FilterInputStream;
+package studio.lunabee.onesafe.cryptography.utils;import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 

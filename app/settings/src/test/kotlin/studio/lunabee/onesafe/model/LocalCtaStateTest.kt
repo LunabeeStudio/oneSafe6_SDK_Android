@@ -1,0 +1,56 @@
+/*
+ * Copyright (c) 2024 Lunabee Studio
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Created by Lunabee Studio / Date - 1/15/2024 - for the oneSafe6 SDK.
+ * Last modified 1/15/24, 4:06 PM
+ */
+
+package studio.lunabee.onesafe.model
+
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromHexString
+import kotlinx.serialization.protobuf.ProtoBuf
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
+import kotlin.test.assertEquals
+
+@OptIn(ExperimentalSerializationApi::class)
+class LocalCtaStateTest {
+
+    // Fail if serialization change (ie class renamed)
+    @Test
+    fun deserialize_test() {
+        // Generated with ProtoBuf.encodeToHexString(LocalCtaState.serializer(), xxx)
+        val hiddenEncoded = "0a144c6f63616c43746153746174652e48696464656e1200"
+        val visibleSince123Encoded = "0a1a4c6f63616c43746153746174652e56697369626c6553696e6365107b"
+        val dismissedAt456Encoded = "0a194c6f63616c43746153746174652e4469736d6973736564417410c803"
+
+        // expected
+        val hidden = LocalCtaState.Hidden
+        val visibleSince123 = LocalCtaState.VisibleSince(123)
+        val dismissedAt456 = LocalCtaState.DismissedAt(456)
+
+        assertDoesNotThrow {
+            val hiddenDecoded = ProtoBuf.decodeFromHexString<LocalCtaState>(hiddenEncoded)
+            assertEquals(hidden, hiddenDecoded)
+
+            val visibleSince123Decoded = ProtoBuf.decodeFromHexString<LocalCtaState>(visibleSince123Encoded)
+            assertEquals(visibleSince123, visibleSince123Decoded)
+
+            val dismissedAt456Decoded = ProtoBuf.decodeFromHexString<LocalCtaState>(dismissedAt456Encoded)
+            assertEquals(dismissedAt456, dismissedAt456Decoded)
+        }
+    }
+}
