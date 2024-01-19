@@ -25,7 +25,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOf
-import studio.lunabee.onesafe.domain.common.BackupInfoProvider
+import studio.lunabee.onesafe.importexport.usecase.CreateBackupInfoUseCase
 import studio.lunabee.onesafe.domain.model.importexport.OSArchiveKind
 import studio.lunabee.onesafe.domain.qualifier.DateFormatterType
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
@@ -47,7 +47,7 @@ class BackupExportEngineImpl @Inject constructor(
     @FileDispatcher fileDispatcher: CoroutineDispatcher,
     @DateFormatterType(type = DateFormatterType.Type.IsoInstant) dateTimeFormatter: DateTimeFormatter,
     private val cryptoRepository: ImportExportCryptoRepository,
-    private val backupInfoProvider: BackupInfoProvider,
+    private val backupInfoProvider: CreateBackupInfoUseCase,
 ) : AbstractExportEngine(
     fileDispatcher = fileDispatcher,
     dateTimeFormatter = dateTimeFormatter,

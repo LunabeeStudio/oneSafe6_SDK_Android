@@ -1,0 +1,44 @@
+/*
+ * Copyright (c) 2024 Lunabee Studio
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Created by Lunabee Studio / Date - 1/12/2024 - for the oneSafe6 SDK.
+ * Last modified 1/12/24, 5:25 PM
+ */
+
+package studio.lunabee.onesafe.domain.common
+
+import java.time.Instant
+
+/**
+ * Dismissable call-to-action state
+ */
+sealed interface CtaState {
+    /**
+     * Initial state
+     */
+    data object Hidden : CtaState
+
+    /**
+     * State set after user explicitly dismiss the CTA
+     */
+    @JvmInline
+    value class DismissedAt(val timestamp: Instant) : CtaState
+
+    /**
+     * State set since the CTA have been made visible
+     */
+    @JvmInline
+    value class VisibleSince(val timestamp: Instant) : CtaState
+}

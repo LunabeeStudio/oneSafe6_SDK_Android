@@ -35,12 +35,13 @@ import kotlin.random.Random
 
 object OSTestUtils {
 
+    // ⚠️ Replaced by CI, see ci/set_test_seed.py
     private val seed = Random.nextInt().also {
         println("Random seed = $it")
     }
     val random: Random = Random(seed)
 
-    val itemsLayoutSettings: ItemsLayoutSettings = ItemsLayoutSettings.entries.random(random).also {
+    val itemsLayoutSettings: ItemsLayoutSettings = ItemsLayoutSettings.entries[Math.floorMod(seed, ItemsLayoutSettings.entries.size)].also {
         println("${ItemsLayoutSettings::class.simpleName} = $it")
     }
 
