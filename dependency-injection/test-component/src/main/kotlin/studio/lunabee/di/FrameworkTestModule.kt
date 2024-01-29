@@ -49,7 +49,6 @@ object FrameworkTestModule {
     @Singleton
     internal fun provideResizeIconUseCase(@ApplicationContext context: Context): ResizeIconUseCase {
         val tmpDir = File(context.cacheDir, ICON_DIR)
-        tmpDir.mkdirs()
         return AndroidResizeIconUseCase(
             width = RESIZE_ICON_SIZE,
             height = RESIZE_ICON_SIZE,

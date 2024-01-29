@@ -35,7 +35,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -45,13 +44,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,6 +60,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.map
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -87,6 +87,7 @@ import studio.lunabee.onesafe.ime.ui.ImeFeedbackManager
 import studio.lunabee.onesafe.ime.ui.ImeNavGraph
 import studio.lunabee.onesafe.ime.ui.ImeNavGraphRoute
 import studio.lunabee.onesafe.ime.ui.ImeOSTopBar
+import studio.lunabee.onesafe.ime.ui.LocalKeyboardIsNightMode
 import studio.lunabee.onesafe.ime.ui.extension.keyboardTextfield
 import studio.lunabee.onesafe.ime.viewmodel.ImeLoginViewModelFactory
 import studio.lunabee.onesafe.ime.viewmodel.SelectContactViewModelFactory
@@ -300,50 +301,51 @@ class OSFlorisImeService : FlorisImeService() {
             val isOneSafeUiVisible by isOneSafeUiVisibleFlow.collectAsStateWithLifecycle()
             val entry by navController.currentBackStackEntryAsState()
             val forceDark =
-                entry?.destination?.route == WriteMessageDestination.route && isOneSafeUiVisible
-            val background: Color
-            val contentColor: Color
-            when {
-                forceDark -> {
-                    themeManager.updateActiveTheme(forceNight = true)
-                    background = LocalColorPalette.current.Neutral70
-                    contentColor = LocalColorPalette.current.Neutral00
-                }
-                isSystemInDarkTheme() -> {
-                    themeManager.updateActiveTheme()
-                    background = Color.Transparent
-                    contentColor = LocalColorPalette.current.Neutral00
-                }
-                else -> {
-                    themeManager.updateActiveTheme()
-                    background = Color.Transparent
-                    contentColor = LocalContentColor.current
-                }
+                entry?.destination?.route == WriteMessageDestination.Route && isOneSafeUiVisible
+            LaunchedEffect(key1 = forceDark) {
+                themeManager.updateActiveTheme(forceNight = forceDark)
             }
 
-            Surface(color = background, contentColor = contentColor) {
-                ImeOSTopBar(
-                    imeClient = imeClient,
-                    isCryptoDataReady = isCryptoDataReady,
-                    onLogoClick = {
-                        coroutineScope.launch { osAppVisit.storeHasDoneTutorialOpenOsk(true) }
-                        showOneSafeUi()
-                    },
-                    onLockClick = {
-                        if (isCryptoDataReady) {
-                            coroutineScope.launch { osAppVisit.storeHasDoneTutorialLockOsk(true) }
-                            lockUseCase()
-                        } else {
+            // Observe the keyboard config night mode to set the correct content color and provide the information to compose tree. Do not
+            // rely on system dark mode as the keyboard theme might be forced to light or dark.
+            val isNightTheme by themeManager.activeThemeInfo
+                .map { it.config.isNightTheme }
+                .observeAsState(false)
+
+            val contentColor = if (isNightTheme) {
+                LocalColorPalette.current.Neutral00
+            } else {
+                LocalColorPalette.current.Primary30
+            }
+
+            CompositionLocalProvider(
+                LocalKeyboardIsNightMode provides isNightTheme,
+            ) {
+                Surface(color = Color.Transparent, contentColor = contentColor) {
+                    ImeOSTopBar(
+                        imeClient = imeClient,
+                        isCryptoDataReady = isCryptoDataReady,
+                        onLogoClick = {
+                            coroutineScope.launch { osAppVisit.storeHasDoneTutorialOpenOsk(true) }
                             showOneSafeUi()
-                        }
-                    },
-                    displayOpenTutorial = !hasDoneOpenTutorial && !isOneSafeUiVisible,
-                    displayLockTutorial = !hasDoneLockTutorial && isCryptoDataReady,
-                    closeLockTutorial = {
-                        coroutineScope.launch { osAppVisit.storeHasDoneTutorialLockOsk(true) }
-                    },
-                ) {
-                    coroutineScope.launch { osAppVisit.storeHasDoneTutorialOpenOsk(true) }
+                        },
+                        onLockClick = {
+                            if (isCryptoDataReady) {
+                                coroutineScope.launch { osAppVisit.storeHasDoneTutorialLockOsk(true) }
+                                lockUseCase()
+                            } else {
+                                showOneSafeUi()
+                            }
+                        },
+                        displayOpenTutorial = !hasDoneOpenTutorial && !isOneSafeUiVisible,
+                        displayLockTutorial = !hasDoneLockTutorial && isCryptoDataReady,
+                        closeLockTutorial = {
+                            coroutineScope.launch { osAppVisit.storeHasDoneTutorialLockOsk(true) }
+                        },
+                        closeOpenTutorial = {
+                            coroutineScope.launch { osAppVisit.storeHasDoneTutorialOpenOsk(true) }
+                        },
+                    )
                 }
             }
         }

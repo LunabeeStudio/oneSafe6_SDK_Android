@@ -30,7 +30,8 @@ import studio.lunabee.onesafe.atom.OSIconDecorationButton
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.button.OSFilledButton
 import studio.lunabee.onesafe.atom.button.defaults.OSTextButtonDefaults
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.organism.card.OSMessageCard
 import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
@@ -43,7 +44,7 @@ object InvitationResponseFactory {
         lazyListScope.item {
             OSMessageCard(
                 description = LbcTextSpec.StringResource(
-                    R.string.bubbles_invitationResponseScreen_explanation,
+                    OSString.bubbles_invitationResponseScreen_explanation,
                     contactName,
                 ),
             )
@@ -56,13 +57,13 @@ object InvitationResponseFactory {
     ) {
         lazyListScope.item {
             OSMessageCard(
-                description = LbcTextSpec.StringResource(R.string.bubbles_invitationResponseScreen_shareDescription),
+                description = LbcTextSpec.StringResource(OSString.bubbles_invitationResponseScreen_shareDescription),
                 action = {
                     OSClickableRow(
-                        text = LbcTextSpec.StringResource(R.string.bubbles_invitationResponseScreen_share),
+                        text = LbcTextSpec.StringResource(OSString.bubbles_invitationResponseScreen_share),
                         onClick = onShareClick,
                         buttonColors = OSTextButtonDefaults.secondaryTextButtonColors(state = OSActionState.Enabled),
-                        leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = R.drawable.ic_share)) },
+                        leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = OSDrawable.ic_share)) },
                         contentPadding = LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
                             index = 1,
                             elementsCount = 2,
@@ -80,7 +81,7 @@ object InvitationResponseFactory {
         lazyListScope.item {
             Box(modifier = Modifier.fillMaxWidth()) {
                 OSFilledButton(
-                    text = LbcTextSpec.StringResource(R.string.common_finish),
+                    text = LbcTextSpec.StringResource(OSString.common_finish),
                     onClick = onClick,
                     modifier = Modifier.align(Alignment.CenterEnd),
                 )

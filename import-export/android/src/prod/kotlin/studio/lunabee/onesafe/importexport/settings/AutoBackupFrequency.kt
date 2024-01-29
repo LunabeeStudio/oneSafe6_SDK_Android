@@ -20,15 +20,15 @@
 package studio.lunabee.onesafe.importexport.settings
 
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 
 enum class AutoBackupFrequency(val repeat: Duration, val flex: Duration, val text: LbcTextSpec) {
-    DAILY(1.days, 1.hours, LbcTextSpec.StringResource(R.string.settings_autoBackup_frequency_everyDay_title)),
-    WEEKLY(7.days, 12.hours, LbcTextSpec.StringResource(R.string.settings_autoBackup_frequency_everyWeek_title)),
-    MONTHLY(30.days, 2.days, LbcTextSpec.StringResource(R.string.settings_autoBackup_frequency_everyMonth_title)),
+    DAILY(1.days, 1.hours, LbcTextSpec.StringResource(OSString.settings_autoBackup_frequency_everyDay_title)),
+    WEEKLY(7.days, 12.hours, LbcTextSpec.StringResource(OSString.settings_autoBackup_frequency_everyWeek_title)),
+    MONTHLY(30.days, 2.days, LbcTextSpec.StringResource(OSString.settings_autoBackup_frequency_everyMonth_title)),
     ;
 
     companion object {

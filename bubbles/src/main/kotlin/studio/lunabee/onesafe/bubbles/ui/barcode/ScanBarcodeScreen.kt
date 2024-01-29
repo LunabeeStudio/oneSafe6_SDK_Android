@@ -54,10 +54,12 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.journeyapps.barcodescanner.BarcodeResult
+import com.journeyapps.barcodescanner.BarcodeView
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.text.OSText
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
@@ -101,7 +103,7 @@ private fun CameraPermission(
     permissionDialogState?.DefaultAlertDialog()
     val deniedFeedbackSnackbar =
         ErrorSnackbarState(
-            message = LbcTextSpec.StringResource(R.string.bubbles_scanbarcodeScreen_permission_deniedFeedback),
+            message = LbcTextSpec.StringResource(OSString.bubbles_scanbarcodeScreen_permission_deniedFeedback),
             onClick = {},
         ).snackbarVisuals
 
@@ -156,7 +158,7 @@ fun ScanBarcodeScreen(
             .fillMaxSize()
             .testTag(UiConstants.TestTag.Screen.ScanBarCodeScreen),
     ) {
-        BarcodeView(
+        BarcodeAndroidView(
             onBarcodeScan = onBarcodeScan,
         )
         Column {
@@ -174,15 +176,15 @@ fun ScanBarcodeScreen(
                     modifier = Modifier.statusBarsPadding(),
                     options = listOf(
                         TopAppBarOptionNav(
-                            image = OSImageSpec.Drawable(R.drawable.ic_close),
-                            contentDescription = LbcTextSpec.StringResource(R.string.common_accessibility_back),
+                            image = OSImageSpec.Drawable(OSDrawable.ic_close),
+                            contentDescription = LbcTextSpec.StringResource(OSString.common_accessibility_back),
                             onClick = onCloseClick,
                             state = OSActionState.Enabled,
                         ),
                     ),
                 )
                 OSText(
-                    text = LbcTextSpec.StringResource(R.string.bubbles_scanbarcodeScreen_description),
+                    text = LbcTextSpec.StringResource(OSString.bubbles_scanbarcodeScreen_description),
                     textAlign = TextAlign.Center,
                     color = Color.White,
                     modifier = Modifier
@@ -196,7 +198,7 @@ fun ScanBarcodeScreen(
                 )
             }
             Image(
-                painter = painterResource(id = R.drawable.ic_qr_indicator),
+                painter = painterResource(id = OSDrawable.ic_qr_indicator),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -212,23 +214,35 @@ fun ScanBarcodeScreen(
 }
 
 @Composable
-fun BarcodeView(
+fun BarcodeAndroidView(
     onBarcodeScan: (String) -> Unit,
 ) {
     AndroidView(
         modifier = Modifier.fillMaxSize(),
         factory = { context ->
-            com.journeyapps.barcodescanner.BarcodeView(context)
-        },
-        update = {
-            it.resume()
-            it.decodeContinuous { result: BarcodeResult? ->
-                result?.text?.let { text -> onBarcodeScan(text) }
+            val barcodeView = BarcodeView(context)
+            barcodeView.resume()
+            var buffer: String? = null
+            var bufferCounter = 0
+            barcodeView.decodeContinuous { result: BarcodeResult? ->
+                val text = result?.text
+                // Wait for 5 consecutive equal results before calling onBarcodeScan (only once)
+                when {
+                    text == null -> bufferCounter = 0
+                    buffer == text && bufferCounter == ScanBufferSize -> {
+                        onBarcodeScan(text)
+                        bufferCounter++
+                    }
+                    buffer == text -> bufferCounter++
+                    else -> bufferCounter = 0
+                }
+                buffer = text
             }
+            barcodeView
         },
-        onRelease = {
-            it.pause()
-            it.stopDecoding()
+        onRelease = { barcodeView ->
+            barcodeView.pause()
+            barcodeView.stopDecoding()
         },
     )
 }
@@ -239,3 +253,5 @@ interface ScanBarcodeNavScope {
     val navigateToConversationPopToHome: (DecryptResult) -> Unit
     val showSnackbar: (visuals: SnackbarVisuals) -> Unit
 }
+
+private const val ScanBufferSize = 4

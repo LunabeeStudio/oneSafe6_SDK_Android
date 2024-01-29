@@ -21,7 +21,7 @@ package studio.lunabee.onesafe.bubbles.ui.barcode
 
 import androidx.compose.runtime.Composable
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.dialog.DialogAction
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 
@@ -31,15 +31,15 @@ internal class CameraScanPermissionRationaleDialogState(
     private val retry: () -> Unit,
 ) : DialogState {
     override val actions: List<DialogAction> = listOf(
-        DialogAction(LbcTextSpec.StringResource(R.string.common_cancel)) {
+        DialogAction(LbcTextSpec.StringResource(OSString.common_cancel)) {
             dismiss()
         },
-        DialogAction(LbcTextSpec.StringResource(R.string.common_ok)) {
+        DialogAction(LbcTextSpec.StringResource(OSString.common_ok)) {
             launchPermissionRequest()
             retry()
         },
     )
-    override val title: LbcTextSpec = LbcTextSpec.StringResource(R.string.bubbles_scanbarcodeScreen_permission_rationale_title)
-    override val message: LbcTextSpec = LbcTextSpec.StringResource(R.string.bubbles_scanbarcodeScreen_permission_rationale_message)
+    override val title: LbcTextSpec = LbcTextSpec.StringResource(OSString.bubbles_scanbarcodeScreen_permission_rationale_title)
+    override val message: LbcTextSpec = LbcTextSpec.StringResource(OSString.bubbles_scanbarcodeScreen_permission_rationale_message)
     override val customContent: (@Composable () -> Unit)? = null
 }

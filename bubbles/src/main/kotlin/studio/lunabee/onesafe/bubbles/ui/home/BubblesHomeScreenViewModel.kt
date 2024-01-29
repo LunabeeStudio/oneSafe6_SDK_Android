@@ -38,7 +38,7 @@ import studio.lunabee.onesafe.bubbles.ui.model.BubbleContactInfo
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
 import studio.lunabee.onesafe.bubbles.ui.model.ConversationSubtitle
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
 import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCase
@@ -90,7 +90,7 @@ class BubblesHomeScreenViewModel @Inject constructor(
                             lastMessage?.let { message ->
                                 val content = contactLocalDecryptUseCase(message.encContent, info.id, String::class).data.orEmpty()
                                 val realContent = if (content == BubblesConstant.FirstMessageData) {
-                                    LbcTextSpec.StringResource(R.string.bubbles_acceptedInvitation)
+                                    LbcTextSpec.StringResource(OSString.bubbles_acceptedInvitation)
                                 } else {
                                     LbcTextSpec.Raw(content)
                                 }

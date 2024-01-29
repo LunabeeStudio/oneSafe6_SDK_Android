@@ -29,7 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImage
 import studio.lunabee.onesafe.atom.OSImageSpec
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.ime.ImeOSTheme
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ime.R as ImeR
@@ -46,8 +46,8 @@ fun LockOskTutorialLayout(
             .padding(horizontal = OSDimens.SystemSpacing.Small),
     ) {
         ImeTutorialCard(
-            title = LbcTextSpec.StringResource(R.string.oneSafeK_tutorial_lock_title),
-            description = LbcTextSpec.StringResource(R.string.oneSafeK_tutorial_lock_description),
+            title = LbcTextSpec.StringResource(OSString.oneSafeK_tutorial_lock_title),
+            description = LbcTextSpec.StringResource(OSString.oneSafeK_tutorial_lock_description),
             modifier = Modifier.weight(1f),
             onClose = onCloseClick,
         )

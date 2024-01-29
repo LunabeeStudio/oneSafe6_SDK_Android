@@ -16,9 +16,9 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "google-dagger" }
 
 [versions]
 
-benchmark = "1.2.2"
+benchmark = "1.2.3"
 
-android-gradle-plugin = "8.2.1"
+android-gradle-plugin = "8.2.2"
 ##                 ⬆ = "8.3.0-alpha01"
 ##                 ⬆ = "8.3.0-alpha02"
 ##                 ⬆ = "8.3.0-alpha03"
@@ -43,15 +43,19 @@ android-gradle-plugin = "8.2.1"
 ##                 ⬆ = "8.4.0-alpha02"
 ##                 ⬆ = "8.4.0-alpha03"
 ##                 ⬆ = "8.4.0-alpha04"
+##                 ⬆ = "8.4.0-alpha05"
+##                 ⬆ = "8.4.0-alpha06"
 
 kotlin = "1.9.22"
 ##  ⬆ = "2.0.0-Beta1"
 ##  ⬆ = "2.0.0-Beta2"
+##  ⬆ = "2.0.0-Beta3"
 
-ksp = "1.9.22-1.0.16"
+ksp = "1.9.22-1.0.17"
 ##⬆= "2.0.0-Beta1-1.0.14"
 ##⬆= "2.0.0-Beta1-1.0.15"
 ##⬆= "2.0.0-Beta2-1.0.16"
+##⬆= "2.0.0-Beta3-1.0.17"
 
 google-dagger = "2.50"
 
@@ -64,7 +68,7 @@ logback-classic = "1.4.14"
 play-services-base = "18.3.0"
 play-services-auth-base = "18.0.10"
 google-api-client = "2.2.0"
-google-api-services-drive = "v3-rev20240110-2.0.0"
+google-api-services-drive = "v3-rev20240123-2.0.0"
 
 threeten-extra = "1.7.2"
 
@@ -72,6 +76,7 @@ zxing-android-embedded = "4.3.0"
 
 androidx-hilt = "1.1.0"
 ##         ⬆ = "1.2.0-alpha01"
+##         ⬆ = "1.2.0-beta01"
 
 junit4 = "4.13.2"
 
@@ -107,12 +112,19 @@ androidx-core = "1.12.0"
 ##         ⬆ = "1.13.0-alpha01"
 ##         ⬆ = "1.13.0-alpha02"
 ##         ⬆ = "1.13.0-alpha03"
+##         ⬆ = "1.13.0-alpha04"
 
 androidx-lifecycle = "2.7.0"
+##              ⬆ = "2.8.0-alpha01"
 
-# FIXME (2024.01.00-alpha01 / m3 1.2.0-beta02) m3 cards broken https://issuetracker.google.com/issues/319671246
+# FIXME
+#  2024.01.00-alpha01 -> M3 1.2.0-beta02 cards broken https://issuetracker.google.com/issues/319671246
+#  2024.01.00-alpha02 -> do not use (broken release)
+#  2024.01.00-alpha03 -> M3 1.2.0-rc01 OK, but wait for the release to move to the stable BoM
 compose-bom-alpha = "2023.12.00-alpha04"
 ##             ⬆ = "2024.01.00-alpha01"
+##             ⬆ = "2024.01.00-alpha02"
+##             ⬆ = "2024.01.00-alpha03"
 
 google-android-material = "1.11.0"
 ##                   ⬆ = "1.12.0-alpha01"
@@ -135,6 +147,7 @@ androidx-core-splashscreen = "1.0.1"
 ##                      ⬆ = "1.1.0-alpha02"
 
 androidx-work = "2.9.0"
+##         ⬆ = "2.10.0-alpha01"
 
 androidx-autofill = "1.1.0"
 ##             ⬆ = "1.2.0-alpha01"
@@ -153,17 +166,19 @@ androidx-paging-compose = "3.2.1"
 
 androidx-activity = "1.8.2"
 ##             ⬆ = "1.9.0-alpha01"
+##             ⬆ = "1.9.0-alpha02"
 
 androidx-hilt-navigation-compose = "1.1.0"
 ##                            ⬆ = "1.2.0-alpha01"
+##                            ⬆ = "1.2.0-beta01"
 
 kotlinx-collections-immutable = "0.3.7"
 
-google-accompanist = "0.33.2-alpha"
+google-accompanist = "0.34.0"
 
 androidx-palette = "1.0.0"
 
-firebase-bom = "32.7.0"
+firebase-bom = "32.7.1"
 
 firebase-crashlytics-gradle = "2.9.9"
 
@@ -172,7 +187,7 @@ compose-compiler = "1.5.8"
 
 androidx-test-ext-junit = "1.2.0-alpha02"
 
-androidx-benchmark = "1.2.2"
+androidx-benchmark = "1.2.3"
 
 junit-jupiter = "5.10.1"
 
@@ -205,30 +220,43 @@ androidx-startup = "1.1.1"
 ##            ⬆ = "1.2.0-alpha02"
 
 navigation-compose = "2.7.6"
+##              ⬆ = "2.8.0-alpha01"
 
 detekt = "1.23.4"
 
 protobuf = "3.25.2"
+##    ⬆ = "4.26.0-RC1"
 
 protobuf-plugin = "0.9.4"
 
 lunabee-library = "4.0.0"
 ##           ⬆ = "4.0.0-84-develop-SNAPSHOT"
 ##           ⬆ = "4.0.1-0-SNAPSHOT"
+##           ⬆ = "4.1.0-lbext-kmp-0-SNAPSHOT"
+##           ⬆ = "4.1.0-test_publish-0-SNAPSHOT"
+##           ⬆ = "4.1.0-test_publish-1-SNAPSHOT"
 ##           ⬆ = "4.1.0-85-develop-SNAPSHOT"
 ##           ⬆ = "4.1.0-87-develop-SNAPSHOT"
+##           ⬆ = "4.1.0-88-develop-SNAPSHOT"
+##           ⬆ = "4.1.0-89-develop-SNAPSHOT"
+##           ⬆ = "4.1.0-90-develop-SNAPSHOT"
+##           ⬆ = "4.1.0-91-develop-SNAPSHOT"
 
 compose-color-picker = "0.7.0"
 
 compose-shimmer = "1.2.0"
 
 lbcaccessibility = "1.5.0-181-SNAPSHOT"
+##            ⬆ = "1.5.0-192-SNAPSHOT"
 
 lbcandroidtest = "1.2.0-181-SNAPSHOT"
+##          ⬆ = "1.2.0-192-SNAPSHOT"
 
 lbctheme = "1.1.0-181-SNAPSHOT"
+##    ⬆ = "1.1.0-192-SNAPSHOT"
 
 lbccore = "1.1.0-181-SNAPSHOT"
+##   ⬆ = "1.1.0-192-SNAPSHOT"
 
 tink-android = "1.12.0"
 
@@ -238,7 +266,7 @@ bouncycastle = "1.77"
 
 nbvcxz = "1.5.1"
 
-lint = "31.2.1"
+lint = "31.2.2"
 ##⬆ = "31.3.0-alpha01"
 ##⬆ = "31.3.0-alpha02"
 ##⬆ = "31.3.0-alpha03"
@@ -263,10 +291,12 @@ lint = "31.2.1"
 ##⬆ = "31.4.0-alpha02"
 ##⬆ = "31.4.0-alpha03"
 ##⬆ = "31.4.0-alpha04"
+##⬆ = "31.4.0-alpha05"
+##⬆ = "31.4.0-alpha06"
 
 javapoet = "1.13.0"
 
-bouquet = "1.1.2"
+bouquet = "1.1.3"
 
 zoomable = "1.5.3"
 ##    ⬆ = "1.6.0-beta1"
@@ -277,11 +307,13 @@ zoomable = "1.5.3"
 exifinterface = "1.3.7"
 
 androidx-media3 = "1.2.1"
+##           ⬆ = "1.3.0-alpha01"
 
 camerax = "1.3.1"
 ##   ⬆ = "1.4.0-alpha01"
 ##   ⬆ = "1.4.0-alpha02"
 ##   ⬆ = "1.4.0-alpha03"
+##   ⬆ = "1.4.0-alpha04"
 
 [libraries]
 

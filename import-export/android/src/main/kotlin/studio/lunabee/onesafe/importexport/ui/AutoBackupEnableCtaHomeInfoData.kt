@@ -26,7 +26,8 @@ import androidx.compose.ui.platform.testTag
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.button.OSTextButton
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.home.HomeInfoData
 import studio.lunabee.onesafe.commonui.home.HomeInfoDataNavScope
 import studio.lunabee.onesafe.commonui.home.HomeInfoType
@@ -52,16 +53,16 @@ class AutoBackupEnableCtaHomeInfoData(
     @Composable
     override fun Composable(modifier: Modifier) {
         OSMessageCard(
-            title = LbcTextSpec.StringResource(R.string.home_autoBackupCard_title),
-            description = LbcTextSpec.StringResource(R.string.home_autoBackupCard_message),
+            title = LbcTextSpec.StringResource(OSString.home_autoBackupCard_title),
+            description = LbcTextSpec.StringResource(OSString.home_autoBackupCard_message),
             attributes = OSMessageCardAttributes()
-                .dismissible(OSImageSpec.Drawable(R.drawable.ic_baseline_close), onDismiss)
+                .dismissible(OSImageSpec.Drawable(OSDrawable.ic_baseline_close), onDismiss)
                 .style(OSMessageCardStyle.Default),
             modifier = modifier
                 .testTag(UiConstants.TestTag.Item.AutoBackupEnableCtaCard),
             action = {
                 OSTextButton(
-                    text = LbcTextSpec.StringResource(R.string.home_autoBackupCard_button),
+                    text = LbcTextSpec.StringResource(OSString.home_autoBackupCard_button),
                     onClick = navigateFromHomeInfoDataToBackupSettings,
                     modifier = Modifier.padding(bottom = OSDimens.SystemSpacing.Small),
                 )

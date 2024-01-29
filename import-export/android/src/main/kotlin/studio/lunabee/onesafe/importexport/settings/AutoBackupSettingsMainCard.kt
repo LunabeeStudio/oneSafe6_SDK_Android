@@ -26,7 +26,7 @@ import androidx.compose.ui.Modifier
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSSmallSpacer
 import studio.lunabee.onesafe.atom.text.OSText
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.settings.SettingsCard
 import studio.lunabee.onesafe.commonui.settings.SwitchSettingAction
 import studio.lunabee.onesafe.model.OSSwitchState
@@ -42,11 +42,11 @@ internal fun AutoBackupSettingsMainCard(
 ) {
     Column {
         SettingsCard(
-            title = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_settings_title),
+            title = LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_settings_title),
             modifier = modifier,
             actions = buildList {
                 this += SwitchSettingAction(
-                    label = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_allowAutoBackup_title),
+                    label = LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_allowAutoBackup_title),
                     onValueChange = { uiState.toggleAutoBackup() },
                     isChecked = uiState is AutoBackupSettingsMainCardUiState.Enabled,
                 )
@@ -54,15 +54,15 @@ internal fun AutoBackupSettingsMainCard(
                     if (featureFlagCloudBackup) {
                         uiState.toggleCloudBackup?.let { toggleCloudBackup ->
                             this += SwitchSettingAction(
-                                label = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_allowAutoBackupOnGoogleDrive_title),
+                                label = LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_allowAutoBackupOnGoogleDrive_title),
                                 onValueChange = { toggleCloudBackup() },
                                 isChecked = uiState.isCloudBackupEnabled,
                             )
                         }
                         if (uiState.isCloudBackupEnabled.checked) {
                             this += SwitchSettingAction(
-                                label = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_keepAutoBackupOnLocal_title),
-                                description = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_keepAutoBackupOnLocal_subtitle),
+                                label = LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_keepAutoBackupOnLocal_title),
+                                description = LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_keepAutoBackupOnLocal_subtitle),
                                 onValueChange = { uiState.toggleKeepLocalBackup() },
                                 isChecked = uiState.isKeepLocalBackupEnabled,
                             )

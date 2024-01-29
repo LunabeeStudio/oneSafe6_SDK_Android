@@ -31,7 +31,7 @@ import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSCard
 import studio.lunabee.onesafe.atom.button.OSFilledButton
 import studio.lunabee.onesafe.atom.textfield.OSTextField
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.model.OSItemIllustration
 import studio.lunabee.onesafe.model.OSSafeItemStyle
@@ -65,8 +65,8 @@ object CreateContactScreenFactory {
             OSCard {
                 OSTextField(
                     value = contactName,
-                    label = LbcTextSpec.StringResource(R.string.bubbles_createContactScreen_textFieldLabel),
-                    placeholder = LbcTextSpec.StringResource(R.string.bubbles_createContactScreen_textFieldLabel),
+                    label = LbcTextSpec.StringResource(OSString.bubbles_createContactScreen_textFieldLabel),
+                    placeholder = LbcTextSpec.StringResource(OSString.bubbles_createContactScreen_textFieldLabel),
                     onValueChange = onContactNameChange,
                     modifier = Modifier.padding(
                         start = OSDimens.SystemSpacing.Regular,

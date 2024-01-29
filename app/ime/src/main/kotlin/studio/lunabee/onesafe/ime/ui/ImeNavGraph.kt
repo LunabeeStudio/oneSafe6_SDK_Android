@@ -30,7 +30,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
 import dagger.Lazy
 import studio.lunabee.onesafe.atom.OSImageSpec
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.commonui.animation.slideHorizontalEnterTransition
 import studio.lunabee.onesafe.commonui.animation.slideHorizontalExitTransition
 import studio.lunabee.onesafe.commonui.animation.slideHorizontalPopEnterTransition
@@ -111,7 +111,7 @@ fun ImeNavGraph(
                     viewModelStoreOwner = backStackEntry,
                     factory = selectContactViewModelFactory.get(),
                 ),
-                exitIcon = R.drawable.ic_close,
+                exitIcon = OSDrawable.ic_close,
                 deeplinkBubblesHomeContact = {
                     dismissUi()
                     if (hasDoneOnBoardingBubbles) {
@@ -128,7 +128,7 @@ fun ImeNavGraph(
         }
 
         composable(
-            route = WriteMessageDestination.route,
+            route = WriteMessageDestination.Route,
         ) { backStackEntry ->
             with(ImeWriteMessageNav(dismissUi, context)) {
                 val viewModel: WriteMessageViewModel = viewModel(
@@ -145,7 +145,7 @@ fun ImeNavGraph(
                     resendMessage = sendMessage,
                     viewModel = viewModel,
                     contactIdFlow = backStackEntry.savedStateHandle.getStateFlow(WriteMessageDestination.ContactIdArg, null),
-                    sendIcon = OSImageSpec.Drawable(R.drawable.ic_send),
+                    sendIcon = OSImageSpec.Drawable(OSDrawable.ic_send),
                     hideKeyboard = hideKeyboard,
                 )
             }
@@ -160,7 +160,7 @@ fun ImeNavGraph(
             ImeContactRoute(
                 navigateBack = { navController.popBackStack() },
                 navigateToWriteMessage = { contactId ->
-                    navController.getBackStackEntry(WriteMessageDestination.route)
+                    navController.getBackStackEntry(WriteMessageDestination.Route)
                         .savedStateHandle[WriteMessageDestination.ContactIdArg] = contactId.toString()
                     navController.popBackStack()
                 },
@@ -168,7 +168,7 @@ fun ImeNavGraph(
                     viewModelStoreOwner = viewModelStoreOwner,
                     factory = selectContactViewModelFactory.get(),
                 ),
-                exitIcon = R.drawable.ic_back,
+                exitIcon = OSDrawable.ic_back,
                 deeplinkBubblesHomeContact = {
                     dismissUi()
                     ImeDeeplinkHelper.deeplinkBubblesHomeContact(context)

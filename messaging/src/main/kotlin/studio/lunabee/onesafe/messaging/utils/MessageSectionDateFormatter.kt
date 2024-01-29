@@ -21,7 +21,7 @@ package studio.lunabee.onesafe.messaging.utils
 
 import android.content.Context
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.messaging.extension.isSameDayAs
 import java.time.Instant
 import java.time.ZoneId
@@ -38,11 +38,11 @@ class MessageSectionDateFormatter(
     private val context: Context,
 ) {
     operator fun invoke(date: Instant, now: Instant = Instant.now()): LbcTextSpec {
-        val locale = Locale(context.getString(R.string.locale_lang))
+        val locale = Locale(context.getString(OSString.locale_lang))
         return when {
-            date.isSameDayAs(now) -> LbcTextSpec.StringResource(R.string.oneSafeK_messageDate_today)
+            date.isSameDayAs(now) -> LbcTextSpec.StringResource(OSString.oneSafeK_messageDate_today)
             now.atZone(ZoneId.systemDefault()).year == date.atZone(ZoneId.systemDefault()).year -> {
-                val pattern = context.getString(R.string.oneSafeK_messageDate_pattern)
+                val pattern = context.getString(OSString.oneSafeK_messageDate_pattern)
                 LbcTextSpec.Raw(
                     date
                         .atZone(ZoneId.systemDefault())

@@ -21,7 +21,7 @@ package studio.lunabee.onesafe.importexport.utils
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.domain.qualifier.BuildNumber
 import studio.lunabee.onesafe.domain.qualifier.VersionName
 import java.time.Clock
@@ -36,8 +36,8 @@ class AndroidCloudBackupDescriptionProvider @Inject constructor(
 ) : CloudBackupDescriptionProvider {
     override operator fun invoke(): String {
         return context.getString(
-            R.string.googleDrive_backup_description,
-            "${context.getString(R.string.application_name)} Android - $versionName#$versionCode",
+            OSString.googleDrive_backup_description,
+            "${context.getString(OSString.application_name)} Android - $versionName#$versionCode",
             ZonedDateTime.now(clock).toString(),
         )
     }

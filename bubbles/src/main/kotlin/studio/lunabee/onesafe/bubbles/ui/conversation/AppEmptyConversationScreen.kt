@@ -25,7 +25,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.molecule.OSTopImageBox
 import studio.lunabee.onesafe.organism.card.OSMessageCard
 import studio.lunabee.onesafe.ui.res.OSDimens
@@ -36,13 +37,13 @@ fun AppEmptyConversationScreen(
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         OSTopImageBox(
-            imageRes = R.drawable.character_sabine_oups_center,
+            imageRes = OSDrawable.character_sabine_oups_center,
             modifier = Modifier.padding(OSDimens.SystemSpacing.Regular),
             offset = null,
         ) {
             OSMessageCard(
-                title = LbcTextSpec.StringResource(R.string.bubbles_noContact_title),
-                description = LbcTextSpec.StringResource(R.string.bubbles_noContact_subtitle),
+                title = LbcTextSpec.StringResource(OSString.bubbles_noContact_title),
+                description = LbcTextSpec.StringResource(OSString.bubbles_noContact_subtitle),
             )
         }
     }

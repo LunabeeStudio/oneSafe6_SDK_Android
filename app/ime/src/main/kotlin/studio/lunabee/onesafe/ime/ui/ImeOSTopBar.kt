@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,7 +39,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.extension.loremIpsum
 import studio.lunabee.onesafe.ime.ImeOSTheme
 import studio.lunabee.onesafe.ime.model.ImeClient
@@ -98,15 +100,19 @@ fun ImeOSTopBar(
             if (isCryptoDataReady) {
                 IconButton(onClick = onLockClick) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_unlock),
-                        contentDescription = stringResource(id = R.string.oneSafeK_imeTopBar_lock_contentDescription),
+                        painter = painterResource(OSDrawable.ic_unlock),
+                        contentDescription = stringResource(id = OSString.oneSafeK_imeTopBar_lock_contentDescription),
+                        // FIXME set tint to its default value (fixed in bom 2024.01.00-alpha01, but another issue)
+                        tint = LocalContentColor.current,
                     )
                 }
             } else {
                 IconButton(onClick = onLockClick) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_lock),
-                        contentDescription = stringResource(id = R.string.oneSafeK_imeTopBar_unlock_contentDescription),
+                        painter = painterResource(OSDrawable.ic_lock),
+                        contentDescription = stringResource(id = OSString.oneSafeK_imeTopBar_unlock_contentDescription),
+                        // FIXME set tint to its default value (fixed in bom 2024.01.00-alpha01, but another issue)
+                        tint = LocalContentColor.current,
                     )
                 }
             }

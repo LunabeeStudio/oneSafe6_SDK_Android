@@ -20,10 +20,11 @@
 package studio.lunabee.onesafe.importexport.settings
 
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.settings.CardSettingsNavAction
 
 class CardSettingsActionAutoBackupOption(override val onClick: () -> Unit) : CardSettingsNavAction(
-    icon = R.drawable.ic_save,
-    text = LbcTextSpec.StringResource(R.string.settings_backupCard_autoBackupLabel),
+    icon = OSDrawable.ic_save,
+    text = LbcTextSpec.StringResource(OSString.settings_backupCard_autoBackupLabel),
 )

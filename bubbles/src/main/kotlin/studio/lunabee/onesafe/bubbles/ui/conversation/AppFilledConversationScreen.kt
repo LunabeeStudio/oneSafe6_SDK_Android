@@ -34,7 +34,8 @@ import studio.lunabee.onesafe.atom.OSCard
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
 import studio.lunabee.onesafe.bubbles.ui.contact.ContactScreenFactory
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.molecule.OSRow
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.LocalColorPalette
@@ -62,16 +63,16 @@ fun AppFilledConversationScreen(
         item {
             OSCard(modifier = Modifier.fillMaxWidth()) {
                 OSRow(
-                    text = LbcTextSpec.StringResource(R.string.bubbles_decryptMessage),
+                    text = LbcTextSpec.StringResource(OSString.bubbles_decryptMessage),
                     startContent = {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_message),
+                            painter = painterResource(id = OSDrawable.ic_message),
                             contentDescription = null,
                         )
                     },
                     endContent = {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_navigate_next),
+                            painter = painterResource(id = OSDrawable.ic_navigate_next),
                             tint = LocalColorPalette.current.Neutral30,
                             contentDescription = null,
                         )
@@ -92,15 +93,15 @@ fun AppFilledConversationScreen(
                 )
                 if (isOSKShown) {
                     OSRow(
-                        text = LbcTextSpec.StringResource(R.string.bubbles_configureOneSafeK),
-                        secondaryText = LbcTextSpec.StringResource(R.string.bubbles_configureOneSafeK_subtitle),
+                        text = LbcTextSpec.StringResource(OSString.bubbles_configureOneSafeK),
+                        secondaryText = LbcTextSpec.StringResource(OSString.bubbles_configureOneSafeK_subtitle),
                         textMaxLines = Int.MAX_VALUE,
                         startContent = {
-                            Icon(painter = painterResource(id = R.drawable.ic_settings), contentDescription = null)
+                            Icon(painter = painterResource(id = OSDrawable.ic_settings), contentDescription = null)
                         },
                         endContent = {
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_navigate_next),
+                                painter = painterResource(id = OSDrawable.ic_navigate_next),
                                 tint = LocalColorPalette.current.Neutral30,
                                 contentDescription = null,
                             )

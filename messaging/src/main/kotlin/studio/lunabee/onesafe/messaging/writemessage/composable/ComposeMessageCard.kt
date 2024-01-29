@@ -54,7 +54,8 @@ import studio.lunabee.onesafe.atom.button.OSIconButton
 import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.atom.textfield.OSTextField
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.localprovider.LocalIsKeyBoardVisible
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
 import studio.lunabee.onesafe.model.OSActionState
@@ -106,7 +107,7 @@ fun ComposeMessageCard(
                         focusRequester.requestFocus()
                     },
                 label = null,
-                placeholder = LbcTextSpec.StringResource(R.string.oneSafeK_composeMessageCard_label),
+                placeholder = LbcTextSpec.StringResource(OSString.oneSafeK_composeMessageCard_label),
                 colors = TextFieldDefaults.colors(
                     unfocusedContainerColor = LocalColorPalette.current.Neutral80,
                     focusedContainerColor = LocalColorPalette.current.Neutral80,
@@ -129,7 +130,7 @@ fun ComposeMessageCard(
             ) {
                 Icon(
                     modifier = Modifier.size(LockIconSize),
-                    painter = painterResource(id = R.drawable.ic_lock),
+                    painter = painterResource(id = OSDrawable.ic_lock),
                     contentDescription = null,
                     tint = LocalColorPalette.current.Neutral60,
                 )
@@ -160,7 +161,7 @@ fun ComposeMessageCard(
                     image = sendIcon,
                     onClick = onClickOnSend,
                     buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
-                    contentDescription = LbcTextSpec.StringResource(R.string.accessibility_oneSafeK_sendAction),
+                    contentDescription = LbcTextSpec.StringResource(OSString.accessibility_oneSafeK_sendAction),
                     colors = OSIconButtonDefaults.primaryIconButtonColors(),
                     state = if (plainMessage.isEmpty()) OSActionState.Disabled else OSActionState.Enabled,
                 )
@@ -181,7 +182,7 @@ fun ComposeMessageCardPreview() {
             encryptedMessage = UUID.randomUUID().toString(),
             onPlainMessageChange = {},
             onClickOnSend = {},
-            sendIcon = OSImageSpec.Drawable(R.drawable.ic_send),
+            sendIcon = OSImageSpec.Drawable(OSDrawable.ic_send),
             onPreviewClick = {},
         )
     }

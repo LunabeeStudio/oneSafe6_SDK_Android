@@ -27,7 +27,7 @@ import studio.lunabee.onesafe.atom.OSChipStyle
 import studio.lunabee.onesafe.atom.OSChipType
 import studio.lunabee.onesafe.atom.OSInputChip
 import studio.lunabee.onesafe.atom.text.OSText
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,7 +42,7 @@ fun PendingInputChip(
         style = OSChipStyle.Small,
         label = {
             OSText(
-                text = LbcTextSpec.StringResource(R.string.common_pending),
+                text = LbcTextSpec.StringResource(OSString.common_pending),
             )
         },
     )

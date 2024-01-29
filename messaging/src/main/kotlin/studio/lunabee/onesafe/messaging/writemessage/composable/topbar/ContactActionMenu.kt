@@ -30,7 +30,8 @@ import studio.lunabee.onesafe.atom.OSIconAlertDecorationButton
 import studio.lunabee.onesafe.atom.OSIconDecorationButton
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.button.defaults.OSTextButtonDefaults
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.model.OSActionState
 
 @Composable
@@ -53,25 +54,25 @@ fun ContactActionMenu(
             onClick = onHideConversation,
             text =
             if (isConversationHidden) {
-                LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_showConversation)
+                LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_showConversation)
             } else {
-                LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_hideConversation)
+                LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_hideConversation)
             },
             leadingIcon = {
                 OSIconDecorationButton(
                     image = if (isConversationHidden) {
-                        OSImageSpec.Drawable(R.drawable.ic_visibility_on)
+                        OSImageSpec.Drawable(OSDrawable.ic_visibility_on)
                     } else {
-                        OSImageSpec.Drawable(R.drawable.ic_visibility_off)
+                        OSImageSpec.Drawable(OSDrawable.ic_visibility_off)
                     },
                 )
             },
             buttonColors = OSTextButtonDefaults.secondaryTextButtonColors(state = OSActionState.Enabled),
         )
         OSClickableRow(
-            text = LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_action_deleteAllMessages),
+            text = LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_action_deleteAllMessages),
             onClick = onDeleteMessages,
-            leadingIcon = { OSIconAlertDecorationButton(OSImageSpec.Drawable(drawable = R.drawable.ic_delete)) },
+            leadingIcon = { OSIconAlertDecorationButton(OSImageSpec.Drawable(drawable = OSDrawable.ic_delete)) },
             buttonColors = OSTextButtonDefaults.secondaryAlertTextButtonColors(state = OSActionState.Enabled),
         )
     }

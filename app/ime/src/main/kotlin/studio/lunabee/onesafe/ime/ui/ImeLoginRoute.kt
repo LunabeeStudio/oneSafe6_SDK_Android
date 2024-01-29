@@ -64,10 +64,10 @@ fun ImeLoginRoute(
                     Intent.FLAG_ACTIVITY_NO_HISTORY
                 context.startActivity(intent)
             }
-            val snackBarHostState: SnackbarHostState = remember { SnackbarHostState() }
+            val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 
-            val showLocalSnackBar: suspend (visuals: SnackbarVisuals) -> Unit = { snackBarVisuals ->
-                snackBarHostState.showSnackbar(snackBarVisuals)
+            val showLocalSnackBar: suspend (visuals: SnackbarVisuals) -> Unit = { snackbarVisuals ->
+                snackbarHostState.showSnackbar(snackbarVisuals)
             }
             val errorSnackbarState: ErrorSnackbarState? by viewModel.biometricError.collectAsStateWithLifecycle()
             errorSnackbarState?.snackbarVisuals?.let {
@@ -84,7 +84,7 @@ fun ImeLoginRoute(
                 loginFromPassword = viewModel::loginFromPassword,
                 isBiometricEnabled = isBiometricEnabled,
                 onBiometricClick = onBiometricClick,
-                snackBarHostState = snackBarHostState,
+                snackbarHostState = snackbarHostState,
                 isIllustrationDisplayed = false,
                 logoRes = R.drawable.onesafek_logo,
             )

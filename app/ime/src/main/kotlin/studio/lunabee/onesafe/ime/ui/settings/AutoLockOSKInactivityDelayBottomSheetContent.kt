@@ -28,7 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.text.OSText
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.settings.AutoLockInactivityDelay
 import studio.lunabee.onesafe.molecule.OSOptionRow
 import studio.lunabee.onesafe.ui.res.OSDimens
@@ -46,12 +46,12 @@ internal fun AutoLockOSKInactivityDelayBottomSheetContent(
             .wrapContentHeight(),
     ) {
         OSText(
-            text = LbcTextSpec.StringResource(id = R.string.oneSafeK_inactivityAutolockScreen_header_title),
+            text = LbcTextSpec.StringResource(id = OSString.oneSafeK_inactivityAutolockScreen_header_title),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(all = OSDimens.SystemSpacing.Regular),
         )
         OSText(
-            text = LbcTextSpec.StringResource(id = R.string.oneSafeK_inactivityAutolockScreen_footer_title),
+            text = LbcTextSpec.StringResource(id = OSString.oneSafeK_inactivityAutolockScreen_footer_title),
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(all = OSDimens.SystemSpacing.Regular),
         )

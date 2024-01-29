@@ -34,7 +34,8 @@ import studio.lunabee.onesafe.atom.OSRegularSpacer
 import studio.lunabee.onesafe.atom.button.OSIconButton
 import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.atom.text.OSText
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
@@ -63,10 +64,10 @@ fun ImeTutorialCard(
                     .padding(horizontal = OSDimens.SystemSpacing.Regular),
             )
             OSIconButton(
-                image = OSImageSpec.Drawable(R.drawable.ic_close),
+                image = OSImageSpec.Drawable(OSDrawable.ic_close),
                 onClick = onClose,
                 buttonSize = OSDimens.SystemButtonDimension.FloatingAction,
-                contentDescription = LbcTextSpec.StringResource(R.string.common_close),
+                contentDescription = LbcTextSpec.StringResource(OSString.common_close),
                 colors = OSIconButtonDefaults.iconButtonColors(
                     containerColor = LocalDesignSystem.current.bubblesSecondaryContainer(),
                     contentColor = MaterialTheme.colorScheme.onSurface,

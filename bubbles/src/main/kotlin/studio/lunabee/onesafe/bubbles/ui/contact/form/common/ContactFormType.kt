@@ -20,22 +20,22 @@
 package studio.lunabee.onesafe.bubbles.ui.contact.form.common
 
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 
 enum class ContactFormType(
     val title: LbcTextSpec,
     val buttonString: LbcTextSpec,
 ) {
     FromScratch(
-        title = LbcTextSpec.StringResource(R.string.bubbles_createContactScreen_fromScratch_title),
-        buttonString = LbcTextSpec.StringResource(R.string.bubbles_createContactScreen_fromScratch_invite),
+        title = LbcTextSpec.StringResource(OSString.bubbles_createContactScreen_fromScratch_title),
+        buttonString = LbcTextSpec.StringResource(OSString.bubbles_createContactScreen_fromScratch_invite),
     ),
     FromInvitation(
-        title = LbcTextSpec.StringResource(R.string.bubbles_createContactScreen_fromInvitation_title),
-        buttonString = LbcTextSpec.StringResource(R.string.common_finish),
+        title = LbcTextSpec.StringResource(OSString.bubbles_createContactScreen_fromInvitation_title),
+        buttonString = LbcTextSpec.StringResource(OSString.common_finish),
     ),
     Edit(
-        title = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_editAction),
-        buttonString = LbcTextSpec.StringResource(R.string.common_finish),
+        title = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_editAction),
+        buttonString = LbcTextSpec.StringResource(OSString.common_finish),
     ),
 }

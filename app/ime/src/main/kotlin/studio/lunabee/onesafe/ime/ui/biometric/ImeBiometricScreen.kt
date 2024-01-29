@@ -41,7 +41,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSScreen
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.molecule.OSTopImageBox
 import studio.lunabee.onesafe.organism.card.OSMessageCard
 import studio.lunabee.onesafe.ui.UiConstants
@@ -65,7 +66,7 @@ fun ImeBiometricScreen() {
                     .padding(OSDimens.SystemSpacing.Regular),
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_onesafe_text),
+                    painter = painterResource(id = OSDrawable.ic_onesafe_text),
                     contentDescription = null,
                     modifier = Modifier
                         .width(width = OSDimens.LayoutSize.LoginLogoTextWidth)
@@ -74,7 +75,7 @@ fun ImeBiometricScreen() {
                 )
             }
             OSTopImageBox(
-                imageRes = R.drawable.character_hello,
+                imageRes = OSDrawable.character_hello,
                 modifier = Modifier
                     .padding(horizontal = OSDimens.SystemSpacing.Regular)
                     .padding(
@@ -83,8 +84,8 @@ fun ImeBiometricScreen() {
                     ),
             ) {
                 OSMessageCard(
-                    title = LbcTextSpec.StringResource(R.string.oneSafeK_biometric_title),
-                    description = LbcTextSpec.StringResource(R.string.oneSafeK_biometric_description),
+                    title = LbcTextSpec.StringResource(OSString.oneSafeK_biometric_title),
+                    description = LbcTextSpec.StringResource(OSString.oneSafeK_biometric_description),
                 )
             }
         }

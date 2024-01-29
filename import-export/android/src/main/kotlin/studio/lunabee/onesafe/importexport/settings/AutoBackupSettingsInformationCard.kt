@@ -24,7 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.importexport.utils.BackupDateTimeLocaleFormatter
 import studio.lunabee.onesafe.molecule.OSRow
 import studio.lunabee.onesafe.organism.card.OSCustomCard
@@ -40,20 +40,20 @@ fun AutoBackupSettingsInformationCard(
     modifier: Modifier = Modifier,
 ) {
     val dateText = if (date == null) {
-        LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_informations_noBackups)
+        LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_informations_noBackups)
     } else {
         val context = LocalContext.current
-        val locale = Locale(context.getString(R.string.locale_lang))
+        val locale = Locale(context.getString(OSString.locale_lang))
         LbcTextSpec.Raw(BackupDateTimeLocaleFormatter(locale).format(date))
     }
 
     OSCustomCard(
         modifier = modifier,
-        title = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_informations_title),
+        title = LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_informations_title),
         content = {
             OSRow(
                 modifier = Modifier.padding(horizontal = OSDimens.SystemSpacing.Regular),
-                label = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_lastAutoBackupDate_title),
+                label = LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_lastAutoBackupDate_title),
                 text = dateText,
             )
         },

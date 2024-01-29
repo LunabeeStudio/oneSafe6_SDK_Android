@@ -25,7 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.MutableStateFlow
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.extension.copyToClipBoard
 import studio.lunabee.onesafe.messaging.domain.model.MessageDirection
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
@@ -55,7 +55,7 @@ class DropDownMenuMessageLongPress(
                         MessageAction.Copy {
                             context.copyToClipBoard(
                                 messageText,
-                                LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_copyLabel),
+                                LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_copyLabel),
                             )
                         },
                         MessageAction.Delete { message.id.let(onDeleteMessageClick) },
@@ -64,7 +64,7 @@ class DropDownMenuMessageLongPress(
                         MessageAction.Copy {
                             context.copyToClipBoard(
                                 messageText,
-                                LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_copyLabel),
+                                LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_copyLabel),
                             )
                         },
                         MessageAction.Delete { message.id.let(onDeleteMessageClick) },

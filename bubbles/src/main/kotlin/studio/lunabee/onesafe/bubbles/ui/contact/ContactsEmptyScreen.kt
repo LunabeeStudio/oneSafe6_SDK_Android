@@ -31,7 +31,8 @@ import studio.lunabee.onesafe.atom.OSImage
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.button.OSFilledButton
 import studio.lunabee.onesafe.atom.button.defaults.OSFilledButtonDefaults
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.organism.card.OSMessageCard
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
@@ -51,28 +52,28 @@ fun EmptyContactsScreen(
         verticalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.Regular),
     ) {
         OSMessageCard(
-            description = LbcTextSpec.StringResource(R.string.bubbles_inviteContact_description),
+            description = LbcTextSpec.StringResource(OSString.bubbles_inviteContact_description),
             action = {
                 OSFilledButton(
-                    text = LbcTextSpec.StringResource(R.string.bubbles_inviteContact),
+                    text = LbcTextSpec.StringResource(OSString.bubbles_inviteContact),
                     onClick = onAddContactClick,
                     buttonColors = OSFilledButtonDefaults.primaryButtonColors(),
                     leadingIcon = {
-                        OSImage(image = OSImageSpec.Drawable(R.drawable.ic_add))
+                        OSImage(image = OSImageSpec.Drawable(OSDrawable.ic_add))
                     },
                     modifier = Modifier.padding(OSDimens.SystemSpacing.Regular),
                 )
             },
         )
         OSMessageCard(
-            description = LbcTextSpec.StringResource(R.string.bubbles_scan_description),
+            description = LbcTextSpec.StringResource(OSString.bubbles_scan_description),
             action = {
                 OSFilledButton(
-                    text = LbcTextSpec.StringResource(R.string.bubbles_scan),
+                    text = LbcTextSpec.StringResource(OSString.bubbles_scan),
                     onClick = onScanClick,
                     buttonColors = OSFilledButtonDefaults.secondaryButtonColors(),
                     leadingIcon = {
-                        OSImage(image = OSImageSpec.Drawable(R.drawable.ic_qr_scanner))
+                        OSImage(image = OSImageSpec.Drawable(OSDrawable.ic_qr_scanner))
                     },
                     modifier = Modifier.padding(OSDimens.SystemSpacing.Regular),
                 )

@@ -24,7 +24,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.snackbar.SnackbarAction
 import studio.lunabee.onesafe.commonui.snackbar.SnackbarState
 
@@ -33,17 +33,17 @@ class ConversationMoreOptionsSnackbarState(
 ) : SnackbarState(
     SnackbarAction.Default(
         onClick = deeplinkBubblesWriteMessage,
-        actionLabel = LbcTextSpec.StringResource(R.string.common_open),
+        actionLabel = LbcTextSpec.StringResource(OSString.common_open),
         onDismiss = {},
     ),
 ) {
-    override val message: LbcTextSpec = LbcTextSpec.StringResource(R.string.oneSafeK_conversationScreen_snackbar_moreOptions)
+    override val message: LbcTextSpec = LbcTextSpec.StringResource(OSString.oneSafeK_conversationScreen_snackbar_moreOptions)
 
     @Composable
-    fun SnackBar(snackBarHostState: SnackbarHostState) {
+    fun SnackBar(snackbarHostState: SnackbarHostState) {
         val visuals = snackbarVisuals
         LaunchedEffect(visuals) {
-            when (snackBarHostState.showSnackbar(visuals)) {
+            when (snackbarHostState.showSnackbar(visuals)) {
                 SnackbarResult.Dismissed -> {}
                 SnackbarResult.ActionPerformed -> deeplinkBubblesWriteMessage()
             }

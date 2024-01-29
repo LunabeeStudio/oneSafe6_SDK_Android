@@ -46,7 +46,8 @@ import studio.lunabee.onesafe.bubbles.ui.conversation.AppFilledConversationScree
 import studio.lunabee.onesafe.bubbles.ui.home.model.BubblesTabsData
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.model.TopAppBarOptionTrailing
 import studio.lunabee.onesafe.molecule.OSTopAppBar
@@ -110,13 +111,13 @@ private fun BubblesHomeScreen(
             modifier = Modifier.fillMaxSize(),
         ) {
             OSTopAppBar(
-                title = LbcTextSpec.StringResource(R.string.bubbles_title),
+                title = LbcTextSpec.StringResource(OSString.bubbles_title),
                 options = listOf(
                     topAppBarOptionNavBack(navigateBack),
                     TopAppBarOptionTrailing.secondaryIconAction(
-                        image = OSImageSpec.Drawable(R.drawable.ic_add),
+                        image = OSImageSpec.Drawable(OSDrawable.ic_add),
                         onClick = navigateToCreateContact,
-                        contentDescription = LbcTextSpec.StringResource(R.string.bubbles_inviteContact),
+                        contentDescription = LbcTextSpec.StringResource(OSString.bubbles_inviteContact),
                     ),
                 ),
             )

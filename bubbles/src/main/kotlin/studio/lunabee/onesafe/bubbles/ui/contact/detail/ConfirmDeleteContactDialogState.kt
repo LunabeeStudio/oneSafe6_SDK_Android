@@ -21,7 +21,7 @@ package studio.lunabee.onesafe.bubbles.ui.contact.detail
 
 import androidx.compose.runtime.Composable
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.dialog.DialogAction
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 
@@ -29,11 +29,11 @@ class ConfirmDeleteContactDialogState(
     override val dismiss: () -> Unit,
     deleteAction: () -> Unit,
 ) : DialogState {
-    override val title: LbcTextSpec = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_delete_title)
-    override val message: LbcTextSpec = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_delete_description)
+    override val title: LbcTextSpec = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_delete_title)
+    override val message: LbcTextSpec = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_delete_description)
     override val actions: List<DialogAction> = listOf(
         DialogAction(
-            text = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_delete_confirm),
+            text = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_delete_confirm),
             type = DialogAction.Type.Dangerous,
             onClick = deleteAction,
         ),

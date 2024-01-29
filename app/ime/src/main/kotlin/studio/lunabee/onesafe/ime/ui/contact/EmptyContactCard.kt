@@ -27,7 +27,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.LocalCardContentExtraSpace
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.molecule.OSTopImageBox
 import studio.lunabee.onesafe.organism.card.OSMessageCard
 import studio.lunabee.onesafe.ui.UiConstants
@@ -36,13 +37,13 @@ import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
 @Composable
 fun EmptyContactCard() {
     OSTopImageBox(
-        imageRes = R.drawable.character_jamy_cool,
+        imageRes = OSDrawable.character_jamy_cool,
     ) {
         CompositionLocalProvider(LocalCardContentExtraSpace.provides(null)) {
             OSMessageCard(
                 modifier = Modifier.testTag(UiConstants.TestTag.Item.BubblesNoContactCard),
-                description = LbcTextSpec.StringResource(id = R.string.bubbles_emptyContactCard_description),
-                title = LbcTextSpec.StringResource(id = R.string.bubbles_emptyContactCard_title),
+                description = LbcTextSpec.StringResource(id = OSString.bubbles_emptyContactCard_description),
+                title = LbcTextSpec.StringResource(id = OSString.bubbles_emptyContactCard_title),
                 contentAlignment = Alignment.BottomCenter,
             )
         }

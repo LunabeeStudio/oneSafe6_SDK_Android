@@ -26,38 +26,35 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import studio.lunabee.onesafe.atom.OSImageSpec
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.commonui.extension.getTextSharingIntent
 import studio.lunabee.onesafe.messaging.domain.model.DecryptResult
 import studio.lunabee.onesafe.messaging.writemessage.model.SentMessageData
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageNavScope
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageRoute
 import studio.lunabee.onesafe.messaging.writemessage.viewmodel.WriteMessageViewModel
-import java.time.Instant
 import java.util.UUID
 
 object WriteMessageDestination {
 
     const val ContactIdArg: String = "ContactIdArg"
     const val ErrorArg: String = "ErrorArg"
-    const val path: String = "write_message"
-    const val route: String = "$path?" +
+    const val Path: String = "write_message"
+    const val Route: String = "$Path?" +
         "$ContactIdArg={$ContactIdArg}" +
         "&$ErrorArg={$ErrorArg}"
 
@@ -65,7 +62,7 @@ object WriteMessageDestination {
         decryptResult: DecryptResult,
     ): String {
         return Uri.Builder().apply {
-            path(path)
+            path(Path)
             appendQueryParameter(ContactIdArg, decryptResult.contactId.toString())
             decryptResult.error?.let { appendQueryParameter(ErrorArg, it.name) }
         }.build().toString()
@@ -75,7 +72,7 @@ object WriteMessageDestination {
         contactId: UUID,
     ): String {
         return Uri.Builder().apply {
-            path(path)
+            path(Path)
             appendQueryParameter(ContactIdArg, contactId.toString())
         }.build().toString()
     }
@@ -86,7 +83,7 @@ fun NavGraphBuilder.writeMessageScreen(
     createMessagingViewModel: @Composable (NavBackStackEntry) -> Unit,
 ) {
     composable(
-        route = WriteMessageDestination.route,
+        route = WriteMessageDestination.Route,
         arguments = listOf(
             navArgument(WriteMessageDestination.ContactIdArg) {
                 type = NavType.StringType
@@ -98,35 +95,25 @@ fun NavGraphBuilder.writeMessageScreen(
         ),
     ) { backStackEntry ->
         val context = LocalContext.current
-        val lifecycleOwner = LocalLifecycleOwner.current
         val viewModel: WriteMessageViewModel = hiltViewModel()
-        var currentSentMessageData: SentMessageData? by remember { mutableStateOf(null) }
-        var sendClickTimeStamp: Instant? by remember { mutableStateOf(null) }
-        var visibleExternalActivityTimeStamp: Instant? by remember { mutableStateOf(null) }
+        var sentMessageDataUnderSharing: SentMessageData? by remember { mutableStateOf(null) }
 
-        DisposableEffect(lifecycleOwner.lifecycle) {
-            val eventObserver = LifecycleEventObserver { _, event ->
-                if (event == Lifecycle.Event.ON_STOP) {
-                    if (hasExternalActivityVisible(context.getSystemService(ActivityManager::class.java))) {
-                        visibleExternalActivityTimeStamp = Instant.now()
-                    }
-                }
-            }
-            lifecycleOwner.lifecycle.addObserver(eventObserver)
-            onDispose {
-                lifecycleOwner.lifecycle.removeObserver(eventObserver)
+        // Always save the message when navigating to another activity to share the current message
+        LifecycleEventEffect(event = Lifecycle.Event.ON_STOP) {
+            if (hasExternalActivityVisible(context.getSystemService(ActivityManager::class.java))) {
+                sentMessageDataUnderSharing?.let(viewModel::saveEncryptedMessage)
+                sentMessageDataUnderSharing = null
             }
         }
 
         val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult(),
             onResult = { result ->
-                val shouldSaveMessage = (result.resultCode == Activity.RESULT_OK) ||
-                    visibleExternalActivityTimeStamp?.isAfter(sendClickTimeStamp) == true
-                if (shouldSaveMessage) {
-                    currentSentMessageData?.let(viewModel::saveEncryptedMessage)
+                // Handle the case where the user choose to copy the message
+                if (result.resultCode == Activity.RESULT_OK) {
+                    sentMessageDataUnderSharing?.let(viewModel::saveEncryptedMessage)
                 }
-                currentSentMessageData = null
+                sentMessageDataUnderSharing = null
             },
         )
 
@@ -134,13 +121,12 @@ fun NavGraphBuilder.writeMessageScreen(
         WriteMessageRoute(
             onChangeRecipient = null,
             sendMessage = { sentMessageData, messageToSend ->
-                currentSentMessageData = sentMessageData
-                sendClickTimeStamp = Instant.now()
+                sentMessageDataUnderSharing = sentMessageData
                 val intent = context.getTextSharingIntent(messageToSend)
                 launcher.launch(intent)
             },
             contactIdFlow = backStackEntry.savedStateHandle.getStateFlow(WriteMessageDestination.ContactIdArg, null),
-            sendIcon = OSImageSpec.Drawable(R.drawable.ic_share),
+            sendIcon = OSImageSpec.Drawable(OSDrawable.ic_share),
             hideKeyboard = null,
             resendMessage = { messageToSend ->
                 val intent = context.getTextSharingIntent(messageToSend)

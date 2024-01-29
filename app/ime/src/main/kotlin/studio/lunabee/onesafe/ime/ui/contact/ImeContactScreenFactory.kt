@@ -28,7 +28,8 @@ import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.osLazyCard
 import studio.lunabee.onesafe.bubbles.ui.composables.ContactItemCardContent
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.model.OSLazyCardContent
 import studio.lunabee.onesafe.organism.card.OSMessageCard
@@ -55,8 +56,8 @@ object ImeContactScreenFactory {
         ) {
             OSCard {
                 OSClickableRow(
-                    text = LbcTextSpec.StringResource(R.string.oneSafeK_contact_manageButton),
-                    leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = R.drawable.ic_people)) },
+                    text = LbcTextSpec.StringResource(OSString.oneSafeK_contact_manageButton),
+                    leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = OSDrawable.ic_people)) },
                     onClick = onClick,
                     contentPadding = LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(1, 1),
                 )
@@ -92,7 +93,7 @@ object ImeContactScreenFactory {
             key = InfoCardKey,
         ) {
             OSMessageCard(
-                description = LbcTextSpec.StringResource(id = R.string.oneSafeK_contact_infoCard_description),
+                description = LbcTextSpec.StringResource(id = OSString.oneSafeK_contact_infoCard_description),
             )
         }
     }

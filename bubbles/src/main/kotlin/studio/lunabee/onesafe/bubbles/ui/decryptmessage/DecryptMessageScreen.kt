@@ -47,7 +47,8 @@ import studio.lunabee.onesafe.atom.button.OSFilledButton
 import studio.lunabee.onesafe.atom.button.OSIconButton
 import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.atom.textfield.OSTextField
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.commonui.error.description
 import studio.lunabee.onesafe.error.OSError
@@ -104,7 +105,7 @@ fun DecryptMessageScreen(
                 .verticalScroll(rememberScrollState()),
         ) {
             OSTopAppBar(
-                title = LbcTextSpec.StringResource(R.string.bubbles_decrypMessageScreen_title),
+                title = LbcTextSpec.StringResource(OSString.bubbles_decrypMessageScreen_title),
                 options = listOf(topAppBarOptionNavBack(onBackClick)),
             )
             Column(
@@ -116,7 +117,7 @@ fun DecryptMessageScreen(
                 OSTextField(
                     value = message,
                     label = null,
-                    placeholder = LbcTextSpec.StringResource(R.string.bubbles_decrypMessageScreen_placeholder),
+                    placeholder = LbcTextSpec.StringResource(OSString.bubbles_decrypMessageScreen_placeholder),
                     onValueChange = onMessageChange,
                     errorLabel = error.description(),
                     isError = error != null,
@@ -138,12 +139,12 @@ fun DecryptMessageScreen(
                     trailingAction = {
                         if (message.isNotEmpty()) {
                             OSIconButton(
-                                image = OSImageSpec.Drawable(R.drawable.ic_close),
+                                image = OSImageSpec.Drawable(OSDrawable.ic_close),
                                 onClick = { onMessageChange("") },
                                 state = OSActionState.Enabled,
                                 buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
                                 colors = OSIconButtonDefaults.secondaryIconButtonColors(state = OSActionState.Enabled),
-                                contentDescription = LbcTextSpec.StringResource(R.string.bubbles_decrypMessageScreen_accessibility_erase),
+                                contentDescription = LbcTextSpec.StringResource(OSString.bubbles_decrypMessageScreen_accessibility_erase),
                                 modifier = Modifier.padding(horizontal = OSDimens.SystemSpacing.Small),
                             )
                         }
@@ -151,7 +152,7 @@ fun DecryptMessageScreen(
                 )
                 OSRegularSpacer()
                 OSFilledButton(
-                    text = LbcTextSpec.StringResource(R.string.bubbles_decrypMessageScreen_decryptButton),
+                    text = LbcTextSpec.StringResource(OSString.bubbles_decrypMessageScreen_decryptButton),
                     onClick = onDecryptClick,
                     modifier = Modifier.align(Alignment.End),
                     state = if (message.isNotEmpty()) OSActionState.Enabled else OSActionState.Disabled,
