@@ -47,7 +47,8 @@ import studio.lunabee.onesafe.atom.OSRegularSpacer
 import studio.lunabee.onesafe.atom.OSScreen
 import studio.lunabee.onesafe.atom.button.OSFilledButton
 import studio.lunabee.onesafe.atom.text.OSText
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.commonui.extension.rtl
 import studio.lunabee.onesafe.molecule.OSTopAppBar
@@ -102,7 +103,7 @@ fun OnBoardingBubblesScreen(
                 verticalArrangement = Arrangement.Center,
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.illustration_bubbles_onboarding),
+                    painter = painterResource(id = OSDrawable.illustration_bubbles_onboarding),
                     contentDescription = null,
                     modifier = Modifier
                         .rtl(LocalLayoutDirection.current)
@@ -112,14 +113,14 @@ fun OnBoardingBubblesScreen(
                 )
 
                 OSText(
-                    text = LbcTextSpec.StringResource(R.string.bubbles_welcomeScreen_title),
+                    text = LbcTextSpec.StringResource(OSString.bubbles_welcomeScreen_title),
                     style = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
                 )
                 OSRegularSpacer()
                 OSText(
-                    text = LbcTextSpec.StringResource(R.string.bubbles_welcomeScreen_description),
+                    text = LbcTextSpec.StringResource(OSString.bubbles_welcomeScreen_description),
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
@@ -127,7 +128,7 @@ fun OnBoardingBubblesScreen(
                 )
                 OSExtraLargeSpacer()
                 OSFilledButton(
-                    text = LbcTextSpec.StringResource(R.string.bubbles_welcomeScreen_startButton),
+                    text = LbcTextSpec.StringResource(OSString.bubbles_welcomeScreen_startButton),
                     onClick = onStartClick,
                 )
             }

@@ -36,7 +36,8 @@ import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.button.OSTextButton
 import studio.lunabee.onesafe.commonui.CommonUiConstants
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.home.HomeInfoData
 import studio.lunabee.onesafe.commonui.home.HomeInfoDataNavScope
 import studio.lunabee.onesafe.commonui.home.HomeInfoType
@@ -70,25 +71,25 @@ class AutoBackupErrorHomeInfoData(
         val context: Context = LocalContext.current
 
         OSMessageCard(
-            title = LbcTextSpec.StringResource(R.string.autoBackup_errorCard_title),
-            description = LbcTextSpec.StringResource(R.string.autoBackup_errorCard_message, errorLabel),
+            title = LbcTextSpec.StringResource(OSString.autoBackup_errorCard_title),
+            description = LbcTextSpec.StringResource(OSString.autoBackup_errorCard_message, errorLabel),
             attributes = OSMessageCardAttributes()
-                .dismissible(OSImageSpec.Drawable(R.drawable.ic_baseline_close), onDismiss)
+                .dismissible(OSImageSpec.Drawable(OSDrawable.ic_baseline_close), onDismiss)
                 .style(OSMessageCardStyle.Alert),
             modifier = modifier
                 .testTag(UiConstants.TestTag.Item.AutoBackupErrorCard),
             action = {
                 FlowRow {
                     OSTextButton(
-                        text = LbcTextSpec.StringResource(R.string.autoBackup_errorCard_action_askForHelp),
+                        text = LbcTextSpec.StringResource(OSString.autoBackup_errorCard_action_askForHelp),
                         onClick = { uriHandler.openUri(CommonUiConstants.ExternalLink.Discord) },
                         modifier = Modifier.padding(bottom = OSDimens.SystemSpacing.Small),
                     )
                     OSTextButton(
-                        text = LbcTextSpec.StringResource(R.string.common_copyErrorMessage_label),
+                        text = LbcTextSpec.StringResource(OSString.common_copyErrorMessage_label),
                         onClick = {
                             clipboardManager.setText(AnnotatedString(errorFull.string(context)))
-                            Toast.makeText(context, R.string.common_copyErrorMessage_feedback, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, OSString.common_copyErrorMessage_feedback, Toast.LENGTH_SHORT).show()
                         },
                         modifier = Modifier.padding(bottom = OSDimens.SystemSpacing.Small),
                     )

@@ -40,7 +40,7 @@ import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
 import studio.lunabee.onesafe.bubbles.ui.model.ConversationSubtitle
 import studio.lunabee.onesafe.commonui.EmojiNameProvider
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.model.OSItemIllustration
 import studio.lunabee.onesafe.model.OSLazyCardContent
 import studio.lunabee.onesafe.model.OSSafeItemStyle
@@ -69,7 +69,7 @@ class ConversationCardContent(
             subtitle = when (conversationInfo.subtitle) {
                 is ConversationSubtitle.Message -> conversationInfo.subtitle.content
                 ConversationSubtitle.NotReady -> LbcTextSpec.StringResource(
-                    R.string.bubbles_conversationScreen_waitingForResponse,
+                    OSString.bubbles_conversationScreen_waitingForResponse,
                     conversationInfo.nameProvider.name,
                 )
                 null -> null

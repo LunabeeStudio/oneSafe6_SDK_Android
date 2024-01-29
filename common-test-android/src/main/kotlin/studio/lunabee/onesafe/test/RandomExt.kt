@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2024 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:24 AM
+ * Created by Lunabee Studio / Date - 1/26/2024 - for the oneSafe6 SDK.
+ * Last modified 1/26/24, 4:18 PM
  */
 
-package studio.lunabee.onesafe.migration
+package studio.lunabee.onesafe.test
 
-object MigrationConstant {
-    const val LastVersion: Int = 10
+import android.graphics.Color
+import kotlin.random.Random
+
+fun Random.colorInt(): Int {
+    val red = (OSTestUtils.random.nextDouble(1.0) * 256).toInt()
+    val green = (OSTestUtils.random.nextDouble(1.0) * 256).toInt()
+    val blue = (OSTestUtils.random.nextDouble(1.0) * 256).toInt()
+    return Color.argb(255, red, green, blue)
 }

@@ -43,7 +43,7 @@ import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.button.OSIconButton
 import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.atom.textfield.OSTextField
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.localprovider.LocalIsKeyBoardVisible
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
 import studio.lunabee.onesafe.model.OSActionState
@@ -97,7 +97,7 @@ fun NoPreviewComposeMessageCard(
                             focusRequester.requestFocus()
                         },
                     label = null,
-                    placeholder = LbcTextSpec.StringResource(R.string.oneSafeK_composeMessageCard_label),
+                    placeholder = LbcTextSpec.StringResource(OSString.oneSafeK_composeMessageCard_label),
                     colors = TextFieldDefaults.colors(
                         unfocusedContainerColor = LocalColorPalette.current.Neutral80,
                         focusedContainerColor = LocalColorPalette.current.Neutral80,
@@ -117,7 +117,7 @@ fun NoPreviewComposeMessageCard(
                     image = sendIcon,
                     onClick = onClickOnSend,
                     buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
-                    contentDescription = LbcTextSpec.StringResource(R.string.accessibility_oneSafeK_sendAction),
+                    contentDescription = LbcTextSpec.StringResource(OSString.accessibility_oneSafeK_sendAction),
                     colors = OSIconButtonDefaults.primaryIconButtonColors(),
                     state = if (plainMessage.isEmpty()) OSActionState.Disabled else OSActionState.Enabled,
                 )

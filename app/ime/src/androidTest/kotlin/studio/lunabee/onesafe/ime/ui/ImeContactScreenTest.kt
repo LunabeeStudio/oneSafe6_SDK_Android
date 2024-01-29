@@ -35,7 +35,7 @@ import studio.lunabee.compose.androidtest.LbcComposeTest
 import studio.lunabee.compose.androidtest.extension.waitUntilExactlyOneExists
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.ime.ui.contact.ImeContactRoute
 import studio.lunabee.onesafe.ime.ui.contact.ImeContactUiState
 import studio.lunabee.onesafe.ime.ui.contact.ImeContactViewModel
@@ -93,7 +93,7 @@ class ImeContactScreenTest : LbcComposeTest() {
                     navigateToWriteMessage = onClickOnContact,
                     viewModel = viewModel,
                     navigateBack = {},
-                    exitIcon = R.drawable.ic_close,
+                    exitIcon = OSDrawable.ic_close,
                     deeplinkBubblesHomeContact = {},
                     deeplinkBubblesWriteMessage = {},
                 )

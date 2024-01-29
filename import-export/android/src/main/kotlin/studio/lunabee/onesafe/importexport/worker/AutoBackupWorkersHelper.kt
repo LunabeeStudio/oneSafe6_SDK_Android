@@ -32,7 +32,7 @@ import androidx.work.WorkManager
 import com.lunabee.lblogger.LBLogger
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.error.codeText
 import studio.lunabee.onesafe.commonui.notification.OSNotificationChannelId
 import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
@@ -115,8 +115,8 @@ class AutoBackupWorkersHelper @Inject constructor(
             autoBackupErrorRepository.setError(autoBackupError)
             // Notify
             if (osNotificationManager.areNotificationsEnabled(OSNotificationChannelId.BACKUP_CHANNEL_ID)) {
-                val title = context.getString(R.string.notification_autobackup_error_title)
-                val message = context.getString(R.string.notification_autobackup_error_message, error.codeText().string(context))
+                val title = context.getString(OSString.notification_autobackup_error_title)
+                val message = context.getString(OSString.notification_autobackup_error_message, error.codeText().string(context))
                 val notificationBuilder = osNotificationManager.backupNotificationBuilder
                     .setContentTitle(title)
                     .setStyle(

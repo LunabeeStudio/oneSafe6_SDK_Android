@@ -24,7 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSCard
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.molecule.OSSwitchRow
 import studio.lunabee.onesafe.ui.res.OSDimens
 
@@ -37,9 +37,9 @@ fun DeeplinkSwitchRow(
         OSSwitchRow(
             checked = isChecked,
             onCheckedChange = onValueChange,
-            label = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_useDeeplink),
+            label = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_useDeeplink),
             description = if (!isChecked) {
-                LbcTextSpec.StringResource(R.string.bubbles_contactDetail_useDeeplink_description)
+                LbcTextSpec.StringResource(OSString.bubbles_contactDetail_useDeeplink_description)
             } else {
                 null
             },

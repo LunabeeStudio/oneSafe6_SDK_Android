@@ -31,7 +31,8 @@ import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.ime.ui.OSImeScreen
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.model.TopAppBarOptionNav
@@ -72,11 +73,11 @@ fun ImeContactEmptyScreen(
         }
 
         ElevatedTopAppBar(
-            title = LbcTextSpec.StringResource(R.string.oneSafeK_selectContact_title),
+            title = LbcTextSpec.StringResource(OSString.oneSafeK_selectContact_title),
             options = listOf(
                 TopAppBarOptionNav(
-                    image = OSImageSpec.Drawable(R.drawable.ic_close),
-                    contentDescription = LbcTextSpec.StringResource(R.string.common_accessibility_back),
+                    image = OSImageSpec.Drawable(OSDrawable.ic_close),
+                    contentDescription = LbcTextSpec.StringResource(OSString.common_accessibility_back),
                     onClick = navigateBack,
                     state = OSActionState.Enabled,
                     color = {

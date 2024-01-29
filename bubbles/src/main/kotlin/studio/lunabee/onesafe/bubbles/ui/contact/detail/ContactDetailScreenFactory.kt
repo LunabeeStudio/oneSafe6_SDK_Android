@@ -32,7 +32,8 @@ import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.button.defaults.OSTextButtonDefaults
 import studio.lunabee.onesafe.commonui.EmojiNameProvider
 import studio.lunabee.onesafe.commonui.OSNameProvider
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.extension.markdown
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.model.OSActionState
@@ -55,18 +56,18 @@ object ContactDetailScreenFactory {
                 ConversationState.WaitingForFirstMessage,
                 -> {
                     OSMessageCard(
-                        title = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_congratulation_title),
+                        title = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_congratulation_title),
                         description = LbcTextSpec.StringResource(
-                            R.string.bubbles_contactDetail_congratulation_description,
+                            OSString.bubbles_contactDetail_congratulation_description,
                             contactName.name,
                         ),
                     )
                 }
                 ConversationState.WaitingForReply -> {
                     OSMessageCard(
-                        title = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_waitingForReply_title),
+                        title = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_waitingForReply_title),
                         description = LbcTextSpec.StringResource(
-                            R.string.bubbles_contactDetail_waitingForReply_description,
+                            OSString.bubbles_contactDetail_waitingForReply_description,
                             contactName.name,
                         ).markdown(),
                     )
@@ -86,10 +87,10 @@ object ContactDetailScreenFactory {
                     .fillMaxWidth(),
             ) {
                 OSClickableRow(
-                    text = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_deleteContact),
+                    text = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_deleteContact),
                     onClick = onClick,
                     buttonColors = OSTextButtonDefaults.secondaryAlertTextButtonColors(state = OSActionState.Enabled),
-                    leadingIcon = { OSIconAlertDecorationButton(image = OSImageSpec.Drawable(drawable = R.drawable.ic_delete)) },
+                    leadingIcon = { OSIconAlertDecorationButton(image = OSImageSpec.Drawable(drawable = OSDrawable.ic_delete)) },
                     contentPadding = LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
                         index = 0,
                         elementsCount = 1,
@@ -131,7 +132,7 @@ object ContactDetailScreenFactory {
                     .fillMaxWidth(),
             ) {
                 OSClickableRow(
-                    text = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_sendMessage),
+                    text = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_sendMessage),
                     onClick = onConversationClick,
                     buttonColors = OSTextButtonDefaults.secondaryTextButtonColors(
                         state = if (conversationState != ConversationState.WaitingForReply) {
@@ -145,7 +146,7 @@ object ContactDetailScreenFactory {
                     } else {
                         OSActionState.Disabled
                     },
-                    leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = R.drawable.ic_message)) },
+                    leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = OSDrawable.ic_message)) },
                     contentPadding = LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
                         index = 0,
                         elementsCount = if (
@@ -162,20 +163,20 @@ object ContactDetailScreenFactory {
                     ConversationState.Running, ConversationState.FullySetup, ConversationState.Error -> {}
                     ConversationState.WaitingForReply -> {
                         OSClickableRow(
-                            text = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_resendInvitation),
+                            text = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_resendInvitation),
                             onClick = onResendInvitationClick,
                             buttonColors = OSTextButtonDefaults.secondaryTextButtonColors(state = OSActionState.Enabled),
-                            leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = R.drawable.ic_people)) },
+                            leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = OSDrawable.ic_people)) },
                             contentPadding = LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
                                 index = 1,
                                 elementsCount = 3,
                             ),
                         )
                         OSClickableRow(
-                            text = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_scanAnswer),
+                            text = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_scanAnswer),
                             onClick = onScanResponseClick,
                             buttonColors = OSTextButtonDefaults.secondaryTextButtonColors(state = OSActionState.Enabled),
-                            leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = R.drawable.ic_qr_scanner)) },
+                            leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = OSDrawable.ic_qr_scanner)) },
                             contentPadding = LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
                                 index = 2,
                                 elementsCount = 3,
@@ -184,10 +185,10 @@ object ContactDetailScreenFactory {
                     }
                     ConversationState.WaitingForFirstMessage -> {
                         OSClickableRow(
-                            text = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_resendResponse),
+                            text = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_resendResponse),
                             onClick = onResendResponseClick,
                             buttonColors = OSTextButtonDefaults.secondaryTextButtonColors(state = OSActionState.Enabled),
-                            leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = R.drawable.ic_people)) },
+                            leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = OSDrawable.ic_people)) },
                             contentPadding = LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
                                 index = 1,
                                 elementsCount = 2,

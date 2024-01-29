@@ -53,7 +53,7 @@ import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.CommonUiConstants
 import studio.lunabee.onesafe.commonui.ErrorNameProvider
 import studio.lunabee.onesafe.commonui.OSNameProvider
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.dialog.DialogAction
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.dialog.ErrorDialogState
@@ -161,7 +161,7 @@ class WriteMessageViewModel @Inject constructor(
                     val text: LbcTextSpec
                     val type: ConversationUiData.MessageType
                     if (plainContent == BubblesConstant.FirstMessageData) {
-                        text = LbcTextSpec.StringResource(R.string.bubbles_acceptedInvitation)
+                        text = LbcTextSpec.StringResource(OSString.bubbles_acceptedInvitation)
                         type = ConversationUiData.MessageType.Invitation
                     } else {
                         text = LbcTextSpec.Raw(plainContent)
@@ -304,12 +304,12 @@ class WriteMessageViewModel @Inject constructor(
 
     fun deleteMessage(messageId: UUID) {
         _dialogState.value = object : DialogState {
-            override val message: LbcTextSpec = LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_deleteMessage_message)
-            override val title: LbcTextSpec = LbcTextSpec.StringResource(R.string.common_warning)
+            override val message: LbcTextSpec = LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_deleteMessage_message)
+            override val title: LbcTextSpec = LbcTextSpec.StringResource(OSString.common_warning)
             override val dismiss: () -> Unit = ::dismissDialog
             override val actions: List<DialogAction> = listOf(
                 DialogAction(
-                    text = LbcTextSpec.StringResource(R.string.common_confirm),
+                    text = LbcTextSpec.StringResource(OSString.common_confirm),
                     type = DialogAction.Type.Dangerous,
                     onClick = {
                         dismissDialog()
@@ -326,12 +326,12 @@ class WriteMessageViewModel @Inject constructor(
 
     fun displayRemoveConversationDialog() {
         _dialogState.value = object : DialogState {
-            override val message: LbcTextSpec = LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_deleteDialog_message)
-            override val title: LbcTextSpec = LbcTextSpec.StringResource(R.string.common_warning)
+            override val message: LbcTextSpec = LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_deleteDialog_message)
+            override val title: LbcTextSpec = LbcTextSpec.StringResource(OSString.common_warning)
             override val dismiss: () -> Unit = ::dismissDialog
             override val actions: List<DialogAction> = listOf(
                 DialogAction(
-                    text = LbcTextSpec.StringResource(R.string.common_confirm),
+                    text = LbcTextSpec.StringResource(OSString.common_confirm),
                     type = DialogAction.Type.Dangerous,
                     onClick = {
                         dismissDialog()
@@ -354,10 +354,10 @@ class WriteMessageViewModel @Inject constructor(
 
     fun displayPreviewInfo() {
         _dialogState.value = object : DialogState {
-            override val message: LbcTextSpec = LbcTextSpec.StringResource(R.string.writeMessageScreen_previewInfo_description)
+            override val message: LbcTextSpec = LbcTextSpec.StringResource(OSString.writeMessageScreen_previewInfo_description)
             override val dismiss: () -> Unit = ::dismissDialog
             override val actions: List<DialogAction> = listOf(DialogAction.commonOk(::dismissDialog))
-            override val title: LbcTextSpec = LbcTextSpec.StringResource(R.string.writeMessageScreen_previewInfo_title)
+            override val title: LbcTextSpec = LbcTextSpec.StringResource(OSString.writeMessageScreen_previewInfo_title)
             override val customContent:
                 @Composable()
                 (() -> Unit)? = null
@@ -368,8 +368,8 @@ class WriteMessageViewModel @Inject constructor(
         _dialogState.value = object : DialogState {
             override val dismiss: () -> Unit = ::dismissDialog
             override val actions: List<DialogAction> = listOf(DialogAction.commonOk(::dismissDialog))
-            override val title: LbcTextSpec = LbcTextSpec.StringResource(R.string.common_warning)
-            override val message: LbcTextSpec = LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_tooOldMessage)
+            override val title: LbcTextSpec = LbcTextSpec.StringResource(OSString.common_warning)
+            override val message: LbcTextSpec = LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_tooOldMessage)
             override val customContent:
                 @Composable()
                 (() -> Unit)? = null

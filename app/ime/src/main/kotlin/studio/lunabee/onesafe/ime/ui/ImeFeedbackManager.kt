@@ -29,7 +29,7 @@ import com.lunabee.lbcore.model.LBResult
 import dagger.hilt.android.qualifiers.ApplicationContext
 import studio.lunabee.onesafe.bubbles.ui.home.BubblesHomeDestination
 import studio.lunabee.onesafe.commonui.CommonUiConstants
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.error.title
 import studio.lunabee.onesafe.commonui.notification.OSNotificationChannelId
 import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
@@ -52,7 +52,7 @@ class ImeFeedbackManager @Inject constructor(
         when (result) {
             is LBResult.Failure -> {
                 title = (result.throwable as? OSError)?.title()?.string(context)
-                description = result.throwable?.localizedMessage ?: context.getString(R.string.common_error_unknown)
+                description = result.throwable?.localizedMessage ?: context.getString(OSString.common_error_unknown)
                 if ((result.throwable as? OSStorageError)?.code == OSStorageError.Code.ENQUEUED_MESSAGE_ALREADY_EXIST_ERROR) {
                     pendingIntent = getContactPendingIntent(null)
                 }
@@ -62,12 +62,12 @@ class ImeFeedbackManager @Inject constructor(
                 when (messageState) {
                     IncomingMessageState.NotBase64 -> return // no feedback
                     IncomingMessageState.Enqueued -> {
-                        title = context.getString(R.string.notification_messaging_enqueued_description)
+                        title = context.getString(OSString.notification_messaging_enqueued_description)
                         pendingIntent = getContactPendingIntent(null)
                     }
                     is IncomingMessageState.Processed -> {
                         pendingIntent = getContactPendingIntent(messageState.contactId)
-                        title = context.getString(R.string.notification_messaging_processed_description)
+                        title = context.getString(OSString.notification_messaging_processed_description)
                     }
                 }
             }
@@ -89,7 +89,7 @@ class ImeFeedbackManager @Inject constructor(
         } else {
             Toast.makeText(
                 context,
-                description ?: title ?: context.getString(R.string.common_error_unknown),
+                description ?: title ?: context.getString(OSString.common_error_unknown),
                 Toast.LENGTH_SHORT,
             ).show()
         }

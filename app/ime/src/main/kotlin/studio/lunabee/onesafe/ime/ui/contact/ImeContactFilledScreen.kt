@@ -34,7 +34,8 @@ import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.ime.ui.OSImeScreen
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.model.OSActionState
@@ -83,11 +84,11 @@ fun ImeContactFilledScreen(
         }
 
         ElevatedTopAppBar(
-            title = LbcTextSpec.StringResource(R.string.oneSafeK_conversationScreen_title),
+            title = LbcTextSpec.StringResource(OSString.oneSafeK_conversationScreen_title),
             options = listOf(
                 TopAppBarOptionNav(
                     image = OSImageSpec.Drawable(exitIcon),
-                    contentDescription = LbcTextSpec.StringResource(R.string.common_accessibility_back),
+                    contentDescription = LbcTextSpec.StringResource(OSString.common_accessibility_back),
                     onClick = navigateBack,
                     state = OSActionState.Enabled,
                     color = {
@@ -116,7 +117,7 @@ private fun ImeContactFilledScreenPreview() {
             ),
             navigateBack = { },
             onClickOnContact = { _, _ -> },
-            exitIcon = R.drawable.ic_back,
+            exitIcon = OSDrawable.ic_back,
         ) {}
     }
 }

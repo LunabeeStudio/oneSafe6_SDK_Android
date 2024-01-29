@@ -35,7 +35,8 @@ import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.button.OSTextButton
 import studio.lunabee.onesafe.atom.button.defaults.OSTextButtonDefaults
 import studio.lunabee.onesafe.atom.text.OSText
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.extension.loremIpsum
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.ui.res.OSDimens
@@ -50,7 +51,7 @@ fun ConversationNotReadyCard(
     Column {
         Spacer(modifier = Modifier.weight(1.0f))
         Image(
-            painter = painterResource(id = R.drawable.character_jamy_phone),
+            painter = painterResource(id = OSDrawable.character_jamy_phone),
             contentDescription = null,
             modifier = Modifier.weight(1.0f),
             contentScale = ContentScale.FillHeight,
@@ -63,7 +64,7 @@ fun ConversationNotReadyCard(
         ) {
             OSText(
                 text = LbcTextSpec.StringResource(
-                    R.string.bubbles_conversationScreen_notReadyMessage,
+                    OSString.bubbles_conversationScreen_notReadyMessage,
                     contactName,
                 ),
                 modifier = Modifier
@@ -71,7 +72,7 @@ fun ConversationNotReadyCard(
                     .padding(top = OSDimens.SystemSpacing.ExtraLarge, bottom = OSDimens.SystemSpacing.Regular),
             )
             OSTextButton(
-                text = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_resendInvitation),
+                text = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_resendInvitation),
                 onClick = onResendInvitationClick,
                 buttonColors = OSTextButtonDefaults.primaryTextButtonColors(state = OSActionState.Enabled),
                 modifier = Modifier

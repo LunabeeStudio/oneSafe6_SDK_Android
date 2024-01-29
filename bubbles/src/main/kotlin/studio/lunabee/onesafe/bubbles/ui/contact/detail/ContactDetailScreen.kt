@@ -40,7 +40,7 @@ import studio.lunabee.onesafe.animation.rememberOSTopBarVisibilityNestedScrollCo
 import studio.lunabee.onesafe.atom.OSScreen
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
 import studio.lunabee.onesafe.bubbles.ui.contact.composables.DeeplinkSwitchRow
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.commonui.action.topAppBarOptionEdit
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
@@ -150,7 +150,7 @@ fun ContactDetailScreen(
                     options = listOfNotNull(
                         topAppBarOptionNavBack(onBackClick),
                         topAppBarOptionEdit(
-                            description = LbcTextSpec.StringResource(R.string.bubbles_contactDetail_editAction),
+                            description = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_editAction),
                             onEditItemClick = onEditClick,
                         ),
                     ),

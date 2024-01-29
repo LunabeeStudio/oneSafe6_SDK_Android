@@ -23,19 +23,19 @@ import androidx.compose.runtime.Composable
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.commonui.dialog.DialogAction
 import studio.lunabee.onesafe.commonui.dialog.DialogState
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 
 internal class AccountPermissionRationaleDialogState(
     launchPermissionRequest: () -> Unit,
     override val dismiss: () -> Unit,
 ) : DialogState {
     override val actions: List<DialogAction> = listOf(
-        DialogAction(LbcTextSpec.StringResource(R.string.common_ok)) {
+        DialogAction(LbcTextSpec.StringResource(OSString.common_ok)) {
             launchPermissionRequest()
             dismiss()
         },
     )
-    override val title: LbcTextSpec = LbcTextSpec.StringResource(R.string.accounts_permission_rationale_title)
-    override val message: LbcTextSpec = LbcTextSpec.StringResource(R.string.accounts_permission_rationale_message)
+    override val title: LbcTextSpec = LbcTextSpec.StringResource(OSString.accounts_permission_rationale_title)
+    override val message: LbcTextSpec = LbcTextSpec.StringResource(OSString.accounts_permission_rationale_message)
     override val customContent: @Composable (() -> Unit)? = null
 }

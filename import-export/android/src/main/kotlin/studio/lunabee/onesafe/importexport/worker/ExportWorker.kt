@@ -38,7 +38,7 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
 import studio.lunabee.onesafe.domain.qualifier.ArchiveCacheDir
 import studio.lunabee.onesafe.domain.qualifier.BackupType
@@ -109,7 +109,7 @@ class ExportWorker @AssistedInject constructor(
     private fun createForegroundInfo(progress: Float): ForegroundInfo {
         logger.d("Progress $progress") // TODO show progress
 
-        val title = applicationContext.getString(R.string.export_progressCard_title)
+        val title = applicationContext.getString(OSString.export_progressCard_title)
         val notification = osNotificationManager.backupNotificationBuilder
             .setContentTitle(title)
             .setTicker(title)

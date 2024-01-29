@@ -37,7 +37,7 @@ import studio.lunabee.compose.androidtest.extension.waitUntilExactlyOneExists
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageNavScope
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageRoute
@@ -102,7 +102,7 @@ class WriteMessageScreenTest : LbcComposeTest() {
                         onChangeRecipient = onClickOnChangeContact,
                         sendMessage = { _, _ -> },
                         contactIdFlow = MutableStateFlow(null),
-                        sendIcon = OSImageSpec.Drawable(R.drawable.ic_share),
+                        sendIcon = OSImageSpec.Drawable(OSDrawable.ic_share),
                         viewModel = mockkVm,
                         hideKeyboard = null,
                         resendMessage = {},

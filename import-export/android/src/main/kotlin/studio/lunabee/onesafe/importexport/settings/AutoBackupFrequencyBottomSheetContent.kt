@@ -28,7 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.text.OSText
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.molecule.OSOptionRow
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.OSPreviewOnSurfaceTheme
@@ -46,7 +46,7 @@ internal fun AutoBackupFrequencyBottomSheetContent(
             .padding(vertical = OSDimens.SystemSpacing.Small),
     ) {
         OSText(
-            text = LbcTextSpec.StringResource(id = R.string.settings_autoBackupFrequencyScreen_title),
+            text = LbcTextSpec.StringResource(id = OSString.settings_autoBackupFrequencyScreen_title),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(horizontal = OSDimens.SystemSpacing.Regular, vertical = OSDimens.SystemSpacing.Small),
         )

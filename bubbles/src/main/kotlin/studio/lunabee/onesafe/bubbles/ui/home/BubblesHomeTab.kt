@@ -20,9 +20,9 @@
 package studio.lunabee.onesafe.bubbles.ui.home
 
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 
 enum class BubblesHomeTab(val title: LbcTextSpec) {
-    Conversations(LbcTextSpec.StringResource(R.string.bubbles_conversations)),
-    Contacts(LbcTextSpec.StringResource(R.string.bubbles_contacts)),
+    Conversations(LbcTextSpec.StringResource(OSString.bubbles_conversations)),
+    Contacts(LbcTextSpec.StringResource(OSString.bubbles_contacts)),
 }

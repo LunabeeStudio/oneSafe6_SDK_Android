@@ -42,7 +42,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
 import studio.lunabee.onesafe.commonui.utils.setForegroundSafe
 import studio.lunabee.onesafe.domain.common.FeatureFlags
@@ -93,7 +93,7 @@ class CloudBackupWorker @AssistedInject constructor(
     }
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
-        val title = applicationContext.getString(R.string.notification_autobackup_progress_title)
+        val title = applicationContext.getString(OSString.notification_autobackup_progress_title)
         val notification = osNotificationManager.backupNotificationBuilder
             .setContentTitle(title)
             .setTicker(title)

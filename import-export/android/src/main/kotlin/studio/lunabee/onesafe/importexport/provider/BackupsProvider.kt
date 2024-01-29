@@ -37,7 +37,8 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.domain.qualifier.InternalBackupMimetype
 import studio.lunabee.onesafe.domain.qualifier.InternalDir
 import studio.lunabee.onesafe.importexport.android.BuildConfig
@@ -145,17 +146,17 @@ class BackupsProvider : DocumentsProvider() {
 
         cursor.newRow().apply {
             add(DocumentsContract.Root.COLUMN_ROOT_ID, ROOT_ID)
-            add(DocumentsContract.Root.COLUMN_SUMMARY, context!!.getString(R.string.settings_autoBackupScreen_saveAccess_localSaves))
+            add(DocumentsContract.Root.COLUMN_SUMMARY, context!!.getString(OSString.settings_autoBackupScreen_saveAccess_localSaves))
             add(
                 DocumentsContract.Root.COLUMN_FLAGS,
                 DocumentsContract.Root.FLAG_SUPPORTS_CREATE or
                     DocumentsContract.Root.FLAG_SUPPORTS_IS_CHILD,
             )
-            add(DocumentsContract.Root.COLUMN_TITLE, context!!.getString(R.string.application_name))
+            add(DocumentsContract.Root.COLUMN_TITLE, context!!.getString(OSString.application_name))
             add(DocumentsContract.Root.COLUMN_DOCUMENT_ID, getDocumentId(baseDirectory))
             add(DocumentsContract.Root.COLUMN_MIME_TYPES, "*/*")
             add(DocumentsContract.Root.COLUMN_AVAILABLE_BYTES, baseDirectory.freeSpace)
-            add(DocumentsContract.Root.COLUMN_ICON, R.drawable.ic_onesafe_logo)
+            add(DocumentsContract.Root.COLUMN_ICON, OSDrawable.ic_onesafe_logo)
         }
 
         return cursor
@@ -179,7 +180,7 @@ class BackupsProvider : DocumentsProvider() {
             add(
                 DocumentsContract.Document.COLUMN_DISPLAY_NAME,
                 if (localFile == baseDirectory) {
-                    context!!.getString(R.string.application_name)
+                    context!!.getString(OSString.application_name)
                 } else {
                     localFile.name
                 },
@@ -188,7 +189,7 @@ class BackupsProvider : DocumentsProvider() {
             add(DocumentsContract.Document.COLUMN_MIME_TYPE, getTypeForFile(localFile))
             add(DocumentsContract.Document.COLUMN_LAST_MODIFIED, localFile.lastModified())
             add(DocumentsContract.Document.COLUMN_FLAGS, 0)
-            add(DocumentsContract.Root.COLUMN_ICON, R.drawable.ic_onesafe_logo)
+            add(DocumentsContract.Root.COLUMN_ICON, OSDrawable.ic_onesafe_logo)
         }
 
         return cursor

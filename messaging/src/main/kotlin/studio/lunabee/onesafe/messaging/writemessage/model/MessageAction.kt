@@ -21,7 +21,8 @@ package studio.lunabee.onesafe.messaging.writemessage.model
 
 import androidx.annotation.DrawableRes
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 
 sealed class MessageAction(
     @DrawableRes val icon: Int,
@@ -31,20 +32,20 @@ sealed class MessageAction(
     abstract val onClick: () -> Unit
 
     class Resend(override val onClick: () -> Unit) : MessageAction(
-        icon = R.drawable.ic_send,
-        text = LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_resend),
+        icon = OSDrawable.ic_send,
+        text = LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_resend),
         isCritical = false,
     )
 
     class Copy(override val onClick: () -> Unit) : MessageAction(
-        icon = R.drawable.ic_content_copy,
-        text = LbcTextSpec.StringResource(R.string.common_copy),
+        icon = OSDrawable.ic_content_copy,
+        text = LbcTextSpec.StringResource(OSString.common_copy),
         isCritical = false,
     )
 
     class Delete(override val onClick: () -> Unit) : MessageAction(
-        icon = R.drawable.ic_delete,
-        text = LbcTextSpec.StringResource(R.string.bubbles_writeMessageScreen_deleteMessage),
+        icon = OSDrawable.ic_delete,
+        text = LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_deleteMessage),
         isCritical = true,
     )
 }

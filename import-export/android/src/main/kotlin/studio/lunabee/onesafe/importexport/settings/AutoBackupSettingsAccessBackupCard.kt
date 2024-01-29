@@ -22,7 +22,7 @@ package studio.lunabee.onesafe.importexport.settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.settings.SettingsCard
 import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import studio.lunabee.onesafe.ui.theme.OSTheme
@@ -40,7 +40,7 @@ fun AutoBackupSettingsAccessBackupCard(
         onAccessRemoteClick?.let { CardSettingsAccessRemoteBackup(it) },
     )
     SettingsCard(
-        title = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_saveAccess_title),
+        title = LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_saveAccess_title),
         modifier = modifier,
         actions = actions.mapIndexed { idx, action ->
             action.settingsAction(osDesignSystem.getRowClickablePaddingValuesDependingOnIndex(idx, actions.size))

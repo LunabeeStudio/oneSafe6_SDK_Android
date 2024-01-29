@@ -21,7 +21,7 @@ package studio.lunabee.onesafe.importexport.dialog
 
 import androidx.compose.runtime.Composable
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.dialog.DialogAction
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 
@@ -29,13 +29,13 @@ class ConfirmDeleteLocalBackupsDialogState(
     confirm: () -> Unit,
     override val dismiss: () -> Unit,
 ) : DialogState {
-    override val title: LbcTextSpec = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_dialog_disableLocalBackup_title)
-    override val message: LbcTextSpec = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_dialog_disableLocalBackup_message)
+    override val title: LbcTextSpec = LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_dialog_disableLocalBackup_title)
+    override val message: LbcTextSpec = LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_dialog_disableLocalBackup_message)
     override val customContent: (@Composable () -> Unit)? = null
     override val actions: List<DialogAction> = listOf(
         DialogAction.commonCancel(dismiss),
         DialogAction(
-            text = LbcTextSpec.StringResource(R.string.common_confirm),
+            text = LbcTextSpec.StringResource(OSString.common_confirm),
             onClick = {
                 confirm()
                 dismiss()

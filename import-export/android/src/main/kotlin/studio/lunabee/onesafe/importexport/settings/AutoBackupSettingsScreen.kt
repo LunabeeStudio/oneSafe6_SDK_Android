@@ -69,7 +69,7 @@ import com.google.android.gms.auth.GoogleAuthUtil
 import kotlinx.coroutines.launch
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSScreen
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
 import studio.lunabee.onesafe.commonui.dialog.DialogState
@@ -122,12 +122,12 @@ fun AutoBackupSettingsRoute(
     val authorizeDrive: AutoBackupSettingsDriveAuth? by viewModel.authorizeDrive.collectAsStateWithLifecycle()
     authorizeDrive?.let { DriveAuthorize(it) }
 
-    val snackBarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = remember { SnackbarHostState() }
     val errorSnackbarState: SnackbarState? by viewModel.snackbarState.collectAsStateWithLifecycle()
     val errorSnackBarVisual = errorSnackbarState?.snackbarVisuals
     LaunchedEffect(errorSnackbarState) {
         errorSnackBarVisual?.let {
-            snackBarHostState.showSnackbar(it)
+            snackbarHostState.showSnackbar(it)
         }
     }
 
@@ -136,7 +136,7 @@ fun AutoBackupSettingsRoute(
 
     val openFileManager = {
         if (!BackupFileManagerHelper.openFileManager(context)) {
-            viewModel.showError(LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_saveAccess_error_noFileManager))
+            viewModel.showError(LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_saveAccess_error_noFileManager))
         }
     }
 
@@ -175,7 +175,7 @@ fun AutoBackupSettingsRoute(
                 navigateToRestoreBackup = navigateToRestoreBackup,
                 openFileManager = openFileManager,
                 featureFlagCloudBackup = viewModel.featureFlagCloudBackup,
-                snackbarHostState = snackBarHostState,
+                snackbarHostState = snackbarHostState,
             )
         }
     }
@@ -231,7 +231,7 @@ private fun rememberAccountLauncher(
                 if (accountName != null) {
                     setupCloudBackup(accountName)
                 } else {
-                    showError(LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_error_unexpectedNullAccount))
+                    showError(LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_error_unexpectedNullAccount))
                 }
             }
         },
@@ -345,7 +345,7 @@ private fun AutoBackupSettingsScreen(
                             } else {
                                 coroutineScope.launch {
                                     snackbarHostState.showSnackbar(
-                                        context.getString(R.string.settings_autoBackupScreen_restore_noBackupMessage),
+                                        context.getString(OSString.settings_autoBackupScreen_restore_noBackupMessage),
                                     )
                                 }
                             }
@@ -361,7 +361,7 @@ private fun AutoBackupSettingsScreen(
         }
 
         ElevatedTopAppBar(
-            title = LbcTextSpec.StringResource(R.string.settings_autoBackupScreen_title),
+            title = LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_title),
             options = listOf(topAppBarOptionNavBack(navigateBack)),
             elevation = lazyListState.topAppBarElevation,
         )
@@ -406,7 +406,7 @@ private fun launchAccountChooser(
         AccountManager.get(context).accounts.firstOrNull { it.name == currentDriveAccount },
         null,
         arrayOf(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE),
-        context.getString(R.string.android_chooseGoogleAccount_description),
+        context.getString(OSString.android_chooseGoogleAccount_description),
         null,
         null,
         null,

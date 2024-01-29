@@ -45,7 +45,7 @@ import studio.lunabee.compose.androidtest.extension.waitUntilAtLeastOneExists
 import studio.lunabee.compose.androidtest.extension.waitUntilDoesNotExist
 import studio.lunabee.compose.androidtest.extension.waitUntilExactlyOneExists
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.dialog.ErrorDialogState
 import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
@@ -74,7 +74,7 @@ class AutoBackupSettingsScreenTest : LbcComposeTest() {
     @Test
     fun error_snackbar_test(): TestResult = runTest {
         setScreen(
-            snackBarState = ErrorSnackbarState(LbcTextSpec.Raw("error"), {}),
+            errorSnackbarState = ErrorSnackbarState(LbcTextSpec.Raw("error"), {}),
         ) {
             hasText("error")
                 .waitUntilExactlyOneExists()
@@ -86,7 +86,7 @@ class AutoBackupSettingsScreenTest : LbcComposeTest() {
         setScreen(
             latestBackup = null,
         ) {
-            val restoreBtnMatcher = hasText(getString(R.string.settings_autoBackupScreen_restore_button))
+            val restoreBtnMatcher = hasText(getString(OSString.settings_autoBackupScreen_restore_button))
             hasScrollAction()
                 .waitUntilAtLeastOneExists()
                 .onFirst()
@@ -97,7 +97,7 @@ class AutoBackupSettingsScreenTest : LbcComposeTest() {
             restoreBtnMatcher
                 .waitUntilExactlyOneExists()
                 .performClick()
-            hasText(getString(R.string.settings_autoBackupScreen_restore_noBackupMessage))
+            hasText(getString(OSString.settings_autoBackupScreen_restore_noBackupMessage))
                 .waitUntilExactlyOneExists()
                 .assertIsDisplayed()
         }
@@ -109,10 +109,10 @@ class AutoBackupSettingsScreenTest : LbcComposeTest() {
         setScreen(
             driveUri = driveUri,
         ) {
-            hasText(getString(R.string.settings_autoBackupScreen_saveAccess_GoogleDriveSaves))
+            hasText(getString(OSString.settings_autoBackupScreen_saveAccess_GoogleDriveSaves))
                 .waitUntilDoesNotExist()
             driveUri.value = URI.create("uri")
-            hasText(getString(R.string.settings_autoBackupScreen_saveAccess_GoogleDriveSaves))
+            hasText(getString(OSString.settings_autoBackupScreen_saveAccess_GoogleDriveSaves))
                 .waitUntilExactlyOneExists()
         }
     }
@@ -133,7 +133,7 @@ class AutoBackupSettingsScreenTest : LbcComposeTest() {
 
     private suspend fun setScreen(
         cloudBackupEnabledState: OSSwitchState = OSSwitchState.True,
-        snackBarState: ErrorSnackbarState? = null,
+        errorSnackbarState: ErrorSnackbarState? = null,
         driveUri: StateFlow<URI?> = MutableStateFlow(URI.create("")),
         dialogState: StateFlow<DialogState?> = MutableStateFlow(null),
         latestBackup: Backup? = CloudBackup("", "", Instant.now(testClock)),
@@ -153,7 +153,7 @@ class AutoBackupSettingsScreenTest : LbcComposeTest() {
                 )
             }.stateIn(CoroutineScope(Dispatchers.Main.immediate))
             every { authorizeDrive } returns MutableStateFlow(null)
-            every { snackbarState } returns MutableStateFlow(snackBarState)
+            every { snackbarState } returns MutableStateFlow(errorSnackbarState)
             every { featureFlagCloudBackup } returns true
             every { this@mockk.dialogState } returns dialogState
         }

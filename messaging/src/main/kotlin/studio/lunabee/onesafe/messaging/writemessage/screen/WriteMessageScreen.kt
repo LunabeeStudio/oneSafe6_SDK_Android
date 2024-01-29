@@ -64,7 +64,8 @@ import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.bubbles.ui.extension.getDeepLinkFromMessage
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.OSNameProvider
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
 import studio.lunabee.onesafe.commonui.dialog.ImeDialog
 import studio.lunabee.onesafe.commonui.localprovider.LocalIsOneSafeK
@@ -118,7 +119,7 @@ fun WriteMessageRoute(
     val isMaterialYouEnabled by viewModel.isMaterialYouSettingsEnabled.collectAsStateWithLifecycle(initialValue = false)
     val isPreviewEnabled by viewModel.isPreviewEnabled.collectAsStateWithLifecycle(initialValue = false)
     val isOneSafeK = LocalIsOneSafeK.current
-    val oneSafeKsnackBarHostState = remember { SnackbarHostState() }
+    val oneSafeKSnackbarHostState = remember { SnackbarHostState() }
     val viewModelSnackBarHostState = remember { SnackbarHostState() }
     var snackbarState: ConversationMoreOptionsSnackbarState? by remember { mutableStateOf(null) }
     val viewModelSnackbarState: SnackbarState? by viewModel.snackbarState.collectAsStateWithLifecycle(initialValue = null)
@@ -139,7 +140,7 @@ fun WriteMessageRoute(
                 hideKeyboard?.invoke()
             }
         }
-        snackbarState?.SnackBar(oneSafeKsnackBarHostState)
+        snackbarState?.SnackBar(oneSafeKSnackbarHostState)
         messageLongPress = object : MessageLongPress() {
             override fun onLongClick(id: UUID) {
                 deeplinkBubblesWriteMessage?.let { deeplink ->
@@ -168,7 +169,7 @@ fun WriteMessageRoute(
     ) {
         if (isOneSafeK) {
             SnackbarHost(
-                hostState = oneSafeKsnackBarHostState,
+                hostState = oneSafeKSnackbarHostState,
                 modifier = Modifier
                     .zIndex(UiConstants.SnackBar.ZIndex)
                     .align(Alignment.BottomCenter),
@@ -310,7 +311,7 @@ fun WriteMessageScreen(
                             contentAlignment = Alignment.BottomCenter,
                         ) {
                             ConversationDayHeader(
-                                text = LbcTextSpec.StringResource(R.string.oneSafeK_messageDate_today),
+                                text = LbcTextSpec.StringResource(OSString.oneSafeK_messageDate_today),
                             )
                         }
                     }
@@ -406,10 +407,10 @@ private fun LeadingSlot(
 ) {
     if (isOneSafeK) {
         OSIconButton(
-            image = OSImageSpec.Drawable(R.drawable.ic_close),
+            image = OSImageSpec.Drawable(OSDrawable.ic_close),
             onClick = onBackClick,
             buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
-            contentDescription = LbcTextSpec.StringResource(R.string.common_accessibility_back),
+            contentDescription = LbcTextSpec.StringResource(OSString.common_accessibility_back),
             colors = OSIconButtonDefaults.iconButtonColors(
                 containerColor = LocalDesignSystem.current.bubblesSecondaryContainer(),
                 contentColor = MaterialTheme.colorScheme.onSurface,
@@ -418,10 +419,10 @@ private fun LeadingSlot(
         )
     } else {
         OSIconButton(
-            image = OSImageSpec.Drawable(R.drawable.ic_back),
+            image = OSImageSpec.Drawable(OSDrawable.ic_back),
             onClick = onBackClick,
             buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
-            contentDescription = LbcTextSpec.StringResource(R.string.common_accessibility_back),
+            contentDescription = LbcTextSpec.StringResource(OSString.common_accessibility_back),
             colors = OSIconButtonDefaults.iconButtonColors(
                 containerColor = LocalDesignSystem.current.bubblesSecondaryContainer(),
                 contentColor = MaterialTheme.colorScheme.onSurface,
@@ -440,7 +441,7 @@ private fun TrailingSlot(
     var isActionMenuExpanded: Boolean by rememberSaveable { mutableStateOf(false) }
     Box {
         OSIconButton(
-            image = OSImageSpec.Drawable(R.drawable.ic_more),
+            image = OSImageSpec.Drawable(OSDrawable.ic_more),
             onClick = { isActionMenuExpanded = true },
             buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
             colors = OSIconButtonDefaults.iconButtonColors(
@@ -472,9 +473,9 @@ private fun ImeTrailingSlot(
     isConversationHidden: Boolean,
 ) {
     val image = if (isConversationHidden) {
-        OSImageSpec.Drawable(R.drawable.ic_visibility_on)
+        OSImageSpec.Drawable(OSDrawable.ic_visibility_on)
     } else {
-        OSImageSpec.Drawable(R.drawable.ic_visibility_off)
+        OSImageSpec.Drawable(OSDrawable.ic_visibility_off)
     }
 
     OSIconButton(
@@ -533,7 +534,7 @@ fun WriteMessageScreenPreview() {
             sendMessage = {},
             conversation = pagingItems,
             onBackClick = {},
-            sendIcon = OSImageSpec.Drawable(R.drawable.ic_send),
+            sendIcon = OSImageSpec.Drawable(OSDrawable.ic_send),
             isMaterialYouEnabled = false,
             isConversationReady = true,
             isPreviewEnabled = true,
@@ -584,7 +585,7 @@ fun ImeWriteMessageScreenPreview() {
             sendMessage = {},
             conversation = pagingItems,
             onBackClick = {},
-            sendIcon = OSImageSpec.Drawable(R.drawable.ic_send),
+            sendIcon = OSImageSpec.Drawable(OSDrawable.ic_send),
             isMaterialYouEnabled = false,
             isConversationReady = true,
             isPreviewEnabled = true,

@@ -35,7 +35,8 @@ import studio.lunabee.onesafe.atom.button.defaults.OSTextButtonDefaults
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.OSNameProvider
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.ui.UiConstants
@@ -63,19 +64,19 @@ fun FilledContactsScreen(
                     .fillMaxWidth(),
             ) {
                 OSClickableRow(
-                    text = LbcTextSpec.StringResource(R.string.bubbles_inviteContact),
+                    text = LbcTextSpec.StringResource(OSString.bubbles_inviteContact),
                     onClick = onAddContactClick,
                     buttonColors = OSTextButtonDefaults.secondaryTextButtonColors(state = OSActionState.Enabled),
-                    leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = R.drawable.ic_add)) },
+                    leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = OSDrawable.ic_add)) },
                     contentPadding = LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
                         index = 0,
                         elementsCount = 2,
                     ),
                 )
                 OSClickableRow(
-                    text = LbcTextSpec.StringResource(R.string.bubbles_scanQRCode),
+                    text = LbcTextSpec.StringResource(OSString.bubbles_scanQRCode),
                     onClick = onScanClick,
-                    leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = R.drawable.ic_qr_scanner)) },
+                    leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = OSDrawable.ic_qr_scanner)) },
                     contentPadding = LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
                         index = 1,
                         elementsCount = 2,

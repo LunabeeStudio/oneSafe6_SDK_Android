@@ -40,7 +40,7 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
 import studio.lunabee.onesafe.commonui.utils.setForegroundSafe
 import studio.lunabee.onesafe.domain.common.FeatureFlags
@@ -101,7 +101,7 @@ class LocalBackupWorker @AssistedInject constructor(
     private fun createForegroundInfo(progress: Float): ForegroundInfo {
         logger.d("Progress $progress") // TODO show progress
 
-        val title = applicationContext.getString(R.string.notification_autobackup_progress_title)
+        val title = applicationContext.getString(OSString.notification_autobackup_progress_title)
         val notification = osNotificationManager.backupNotificationBuilder
             .setContentTitle(title)
             .setTicker(title)

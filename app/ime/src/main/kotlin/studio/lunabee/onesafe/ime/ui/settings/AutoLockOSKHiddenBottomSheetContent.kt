@@ -28,7 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.text.OSText
-import studio.lunabee.onesafe.commonui.R
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.settings.AutoLockBackgroundDelay
 import studio.lunabee.onesafe.molecule.OSOptionRow
 import studio.lunabee.onesafe.ui.res.OSDimens
@@ -47,12 +47,12 @@ internal fun AutoLockOSKHiddenBottomSheetContent(
             .padding(vertical = OSDimens.SystemSpacing.Small),
     ) {
         OSText(
-            text = LbcTextSpec.StringResource(id = R.string.oneSafeK_byChangingAppAutolockScreen_header_title),
+            text = LbcTextSpec.StringResource(id = OSString.oneSafeK_byChangingAppAutolockScreen_header_title),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(horizontal = OSDimens.SystemSpacing.Regular, vertical = OSDimens.SystemSpacing.Small),
         )
         OSText(
-            text = LbcTextSpec.StringResource(id = R.string.oneSafeK_byChangingAppAutolockScreen_footer_title),
+            text = LbcTextSpec.StringResource(id = OSString.oneSafeK_byChangingAppAutolockScreen_footer_title),
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(horizontal = OSDimens.SystemSpacing.Regular, vertical = OSDimens.SystemSpacing.Small),
         )
