@@ -22,7 +22,6 @@ package studio.lunabee.di
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
-import androidx.room.Room
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -54,6 +53,7 @@ import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.MainDatabaseTransactionManager
 import studio.lunabee.onesafe.storage.Migration3to4
 import studio.lunabee.onesafe.storage.Migration8to9
+import studio.lunabee.onesafe.storage.Migration9to10
 import studio.lunabee.onesafe.storage.OSForceUpgradeProto.ForceUpgradeProtoData
 import studio.lunabee.onesafe.storage.OSPasswordGeneratorConfigProto.PasswordGeneratorConfigProto
 import studio.lunabee.onesafe.storage.OSRecentSearchProto.RecentSearchProto
@@ -200,16 +200,8 @@ object DatabaseModule {
         @ApplicationContext appContext: Context,
         migration3to4: Migration3to4,
         migration8to9: Migration8to9,
-    ): MainDatabase {
-        return Room.databaseBuilder(
-            appContext,
-            MainDatabase::class.java,
-            "bc9fe798-a4f0-402e-9f5b-80339d87a041",
-        ).addMigrations(
-            migration3to4,
-            migration8to9,
-        ).build()
-    }
+        migration9to10: Migration9to10,
+    ): MainDatabase = MainDatabase.build(appContext, migration3to4, migration8to9, migration9to10)
 }
 
 @Module

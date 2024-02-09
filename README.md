@@ -1,9 +1,9 @@
 This repository contains **oneSafe 6 Android** modules.
 
-**oneSafe 6** is the 6th version of a password manager app created by [Lunabee Studio](https://www.lunabee.studio/), the first version was released in 2013 on the Play Store. 
+**oneSafe 6** is the 6th version of a digital safe app created by [Lunabee Studio](https://www.lunabee.studio/), the first version was released in 2013 on the Play Store. 
 **oneSafe 6** is available on Android since March 2023, and on iOS since October 2023.
 
-It's a complete rewrite of oneSafe, leveraging latest native technologies provided by Google.
+It's a complete rewrite of oneSafe, leveraging the latest native technologies provided by Google.
 
 The objective of this Android repository is to be **transparent** on all technical layers used by oneSafe 6 Android, from a **security and privacy** standpoint in particular.
 

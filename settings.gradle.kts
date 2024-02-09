@@ -17,6 +17,8 @@
  * Last modified 4/7/23, 12:30 AM
  */
 
+import de.fayard.refreshVersions.core.StabilityLevel
+
 pluginManagement {
     repositories {
         google()
@@ -27,7 +29,7 @@ pluginManagement {
 
 plugins {
     // See https://jmfayard.github.io/refreshVersions
-    id("de.fayard.refreshVersions") version "0.60.3"
+    id("de.fayard.refreshVersions") version "0.60.4"
 }
 
 refreshVersions {
@@ -37,7 +39,11 @@ refreshVersions {
             this.moduleId.name == "google-api-services-drive" &&
             this.candidate.value.contains("^v3-rev\\d\\d?-".toRegex())
 
-        excludeOldDriveVersioning
+        // FIXME workaround https://github.com/Splitties/refreshVersions/issues/223
+        val excludeLbPreviousSnapshot =
+            this.candidate.value.startsWith(this.current.value) && this.candidate.stabilityLevel == StabilityLevel.Snapshot
+
+        excludeOldDriveVersioning || excludeLbPreviousSnapshot
     }
     featureFlags {
         enable(de.fayard.refreshVersions.core.FeatureFlag.LIBS)

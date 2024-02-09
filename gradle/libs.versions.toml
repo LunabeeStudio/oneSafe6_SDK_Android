@@ -45,6 +45,7 @@ android-gradle-plugin = "8.2.2"
 ##                 ⬆ = "8.4.0-alpha04"
 ##                 ⬆ = "8.4.0-alpha05"
 ##                 ⬆ = "8.4.0-alpha06"
+##                 ⬆ = "8.4.0-alpha07"
 
 kotlin = "1.9.22"
 ##  ⬆ = "2.0.0-Beta1"
@@ -67,7 +68,7 @@ logback-classic = "1.4.14"
 
 play-services-base = "18.3.0"
 play-services-auth-base = "18.0.10"
-google-api-client = "2.2.0"
+google-api-client = "2.3.0"
 google-api-services-drive = "v3-rev20240123-2.0.0"
 
 threeten-extra = "1.7.2"
@@ -84,13 +85,14 @@ kotlinx-coroutines = "1.7.3"
 ##              ⬆ = "1.8.0-RC"
 ##              ⬆ = "1.8.0-RC2"
 
-androidx-test-core = "1.6.0-alpha04"
+androidx-test-core = "1.6.0-alpha05"
 
-androidx-test-runner = "1.6.0-alpha05"
+androidx-test-runner = "1.6.0-alpha06"
 
 androidx-test-rules = "1.5.0"
 ##               ⬆ = "1.6.0-alpha01"
 ##               ⬆ = "1.6.0-alpha02"
+##               ⬆ = "1.6.0-alpha03"
 
 androidx-room = "2.6.1"
 
@@ -175,6 +177,7 @@ androidx-hilt-navigation-compose = "1.1.0"
 kotlinx-collections-immutable = "0.3.7"
 
 google-accompanist = "0.34.0"
+##              ⬆ = "0.35.0-alpha"
 
 androidx-palette = "1.0.0"
 
@@ -185,11 +188,11 @@ firebase-crashlytics-gradle = "2.9.9"
 # Used to set kotlinCompilerExtensionVersion
 compose-compiler = "1.5.8"
 
-androidx-test-ext-junit = "1.2.0-alpha02"
+androidx-test-ext-junit = "1.2.0-alpha03"
 
 androidx-benchmark = "1.2.3"
 
-junit-jupiter = "5.10.1"
+junit-jupiter = "5.10.2"
 
 androidx-annotation = "1.7.1"
 
@@ -206,10 +209,10 @@ androidx-datastore = "1.0.0"
 
 androidx-preference = "1.2.1"
 
-ktor = "2.3.7"
+ktor = "2.3.8"
 ##⬆ = "3.0.0-beta-1"
 
-androidx-test-espresso = "3.6.0-alpha02"
+androidx-test-espresso = "3.6.0-alpha03"
 
 androidx-test-uiautomator = "2.3.0-beta01"
 
@@ -222,7 +225,7 @@ androidx-startup = "1.1.1"
 navigation-compose = "2.7.6"
 ##              ⬆ = "2.8.0-alpha01"
 
-detekt = "1.23.4"
+detekt = "1.23.5"
 
 protobuf = "3.25.2"
 ##    ⬆ = "4.26.0-RC1"
@@ -230,7 +233,6 @@ protobuf = "3.25.2"
 protobuf-plugin = "0.9.4"
 
 lunabee-library = "4.0.0"
-##           ⬆ = "4.0.0-84-develop-SNAPSHOT"
 ##           ⬆ = "4.0.1-0-SNAPSHOT"
 ##           ⬆ = "4.1.0-lbext-kmp-0-SNAPSHOT"
 ##           ⬆ = "4.1.0-test_publish-0-SNAPSHOT"
@@ -242,21 +244,15 @@ lunabee-library = "4.0.0"
 ##           ⬆ = "4.1.0-90-develop-SNAPSHOT"
 ##           ⬆ = "4.1.0-91-develop-SNAPSHOT"
 
-compose-color-picker = "0.7.0"
-
 compose-shimmer = "1.2.0"
 
-lbcaccessibility = "1.5.0-181-SNAPSHOT"
-##            ⬆ = "1.5.0-192-SNAPSHOT"
+lbcaccessibility = "1.5.0-211-SNAPSHOT"
 
-lbcandroidtest = "1.2.0-181-SNAPSHOT"
-##          ⬆ = "1.2.0-192-SNAPSHOT"
+lbcandroidtest = "1.2.1-211-SNAPSHOT"
 
-lbctheme = "1.1.0-181-SNAPSHOT"
-##    ⬆ = "1.1.0-192-SNAPSHOT"
+lbctheme = "1.1.0-211-SNAPSHOT"
 
-lbccore = "1.1.0-181-SNAPSHOT"
-##   ⬆ = "1.1.0-192-SNAPSHOT"
+lbccore = "1.1.0-211-SNAPSHOT"
 
 tink-android = "1.12.0"
 
@@ -293,16 +289,13 @@ lint = "31.2.2"
 ##⬆ = "31.4.0-alpha04"
 ##⬆ = "31.4.0-alpha05"
 ##⬆ = "31.4.0-alpha06"
+##⬆ = "31.4.0-alpha07"
 
 javapoet = "1.13.0"
 
 bouquet = "1.1.3"
 
-zoomable = "1.5.3"
-##    ⬆ = "1.6.0-beta1"
-##    ⬆ = "1.6.0-beta2"
-##    ⬆ = "1.6.0-beta3"
-##    ⬆ = "1.6.0-beta4"
+zoomable = "1.6.0"
 
 exifinterface = "1.3.7"
 
@@ -314,6 +307,13 @@ camerax = "1.3.1"
 ##   ⬆ = "1.4.0-alpha02"
 ##   ⬆ = "1.4.0-alpha03"
 ##   ⬆ = "1.4.0-alpha04"
+
+espresso-core = "3.5.1"
+##         ⬆ = "3.6.0-alpha01"
+##         ⬆ = "3.6.0-alpha02"
+##         ⬆ = "3.6.0-alpha03"
+
+skydoves-colorpicker = "1.0.7"
 
 [libraries]
 
@@ -378,7 +378,6 @@ compose-ui = { group = "androidx.compose.ui", name = "ui" }
 compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 compose-ui-test = { group = "androidx.compose.ui", name = "ui-test" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }
-compose-material = { group = "androidx.compose.material", name = "material" }
 compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
 compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata" }
@@ -455,7 +454,6 @@ play-services-auth-base = { group = "com.google.android.gms", name = "play-servi
 google-api-client-android = { group = "com.google.api-client", name = "google-api-client-android", version.ref = "google-api-client" }
 google-api-services-drive = { group = "com.google.apis", name = "google-api-services-drive", version.ref = "google-api-services-drive" }
 
-compose-color-picker = { group = "com.godaddy.android.colorpicker", name = "compose-color-picker", version.ref = "compose-color-picker" }
 compose-shimmer = { group = "com.valentinilk.shimmer", name = "compose-shimmer", version.ref = "compose-shimmer" }
 tink-android = { group = "com.google.crypto.tink", name = "tink-android", version.ref = "tink-android" }
 conscrypt-android = { group = "org.conscrypt", name = "conscrypt-android", version.ref = "conscrypt-android" }
@@ -475,3 +473,5 @@ camerax-view = { group = "androidx.camera", name = "camera-view", version.ref = 
 camerax-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camerax" }
 camerax-extensions = { group = "androidx.camera", name = "camera-extensions", version.ref = "camerax" }
 logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback-classic" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
+skydoves-colorpicker = { group = "com.github.skydoves", name = "colorpicker-compose", version.ref = "skydoves-colorpicker" }

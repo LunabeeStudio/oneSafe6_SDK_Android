@@ -62,8 +62,8 @@ import studio.lunabee.onesafe.commonui.snackbar.SnackbarState
 import studio.lunabee.onesafe.domain.common.MessageIdProvider
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
-import studio.lunabee.onesafe.messaging.domain.model.OSPlainMessage
 import studio.lunabee.onesafe.messaging.domain.model.DecryptResult
+import studio.lunabee.onesafe.messaging.domain.model.OSPlainMessage
 import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
 import studio.lunabee.onesafe.messaging.domain.repository.SentMessageRepository
@@ -308,6 +308,7 @@ class WriteMessageViewModel @Inject constructor(
             override val title: LbcTextSpec = LbcTextSpec.StringResource(OSString.common_warning)
             override val dismiss: () -> Unit = ::dismissDialog
             override val actions: List<DialogAction> = listOf(
+                DialogAction.commonCancel(::dismissDialog),
                 DialogAction(
                     text = LbcTextSpec.StringResource(OSString.common_confirm),
                     type = DialogAction.Type.Dangerous,
@@ -316,10 +317,9 @@ class WriteMessageViewModel @Inject constructor(
                         viewModelScope.launch { messageRepository.deleteMessage(messageId) }
                     },
                 ),
-                DialogAction.commonCancel(::dismissDialog),
             )
             override val customContent:
-                @Composable()
+                @Composable
                 (() -> Unit)? = null
         }
     }
@@ -330,6 +330,7 @@ class WriteMessageViewModel @Inject constructor(
             override val title: LbcTextSpec = LbcTextSpec.StringResource(OSString.common_warning)
             override val dismiss: () -> Unit = ::dismissDialog
             override val actions: List<DialogAction> = listOf(
+                DialogAction.commonCancel(::dismissDialog),
                 DialogAction(
                     text = LbcTextSpec.StringResource(OSString.common_confirm),
                     type = DialogAction.Type.Dangerous,
@@ -338,10 +339,9 @@ class WriteMessageViewModel @Inject constructor(
                         viewModelScope.launch { messageRepository.deleteAllMessages(contactId.value!!) }
                     },
                 ),
-                DialogAction.commonCancel(::dismissDialog),
             )
             override val customContent:
-                @Composable()
+                @Composable
                 (() -> Unit)? = null
         }
     }
@@ -359,7 +359,7 @@ class WriteMessageViewModel @Inject constructor(
             override val actions: List<DialogAction> = listOf(DialogAction.commonOk(::dismissDialog))
             override val title: LbcTextSpec = LbcTextSpec.StringResource(OSString.writeMessageScreen_previewInfo_title)
             override val customContent:
-                @Composable()
+                @Composable
                 (() -> Unit)? = null
         }
     }

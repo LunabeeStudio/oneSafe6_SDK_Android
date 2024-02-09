@@ -24,6 +24,9 @@ import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import java.time.Instant
 import java.util.UUID
 
+/**
+ * Use [RoomUpdateSafeItem] to allow item update without touching consulted_at column
+ */
 @Suppress("LongParameterList")
 class RoomUpdateSafeItem(
     @ColumnInfo(name = "id") val id: UUID,

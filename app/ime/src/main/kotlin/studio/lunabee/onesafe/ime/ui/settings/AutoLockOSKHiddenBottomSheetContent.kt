@@ -19,16 +19,18 @@
 
 package studio.lunabee.onesafe.ime.ui.settings
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.commonui.OSString
+import studio.lunabee.onesafe.commonui.bottomsheet.BottomSheetHolderColumnContent
 import studio.lunabee.onesafe.commonui.settings.AutoLockBackgroundDelay
 import studio.lunabee.onesafe.molecule.OSOptionRow
 import studio.lunabee.onesafe.ui.res.OSDimens
@@ -37,10 +39,12 @@ import studio.lunabee.onesafe.utils.OsDefaultPreview
 
 @Composable
 internal fun AutoLockOSKHiddenBottomSheetContent(
+    paddingValues: PaddingValues,
     onSelect: (entry: AutoLockBackgroundDelay) -> Unit,
     selectedAutoLockAppChangeDelay: AutoLockBackgroundDelay,
 ) {
-    Column(
+    BottomSheetHolderColumnContent(
+        paddingValues = paddingValues,
         modifier = Modifier
             .selectableGroup()
             .wrapContentHeight()
@@ -73,6 +77,7 @@ internal fun AutoLockOSKHiddenBottomSheetContent(
 private fun AutoLockOSKHiddenBottomSheetContentPreview() {
     OSPreviewOnSurfaceTheme {
         AutoLockOSKHiddenBottomSheetContent(
+            paddingValues = PaddingValues(0.dp),
             onSelect = {},
             selectedAutoLockAppChangeDelay = AutoLockBackgroundDelay.IMMEDIATELY,
         )
