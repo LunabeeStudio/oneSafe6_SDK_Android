@@ -50,6 +50,7 @@ class MigrateAndSignInUseCase @Inject constructor(
     private val migrationFromV7ToV8: MigrationFromV7ToV8,
     private val migrationFromV8ToV9: MigrationFromV8ToV9,
     private val migrationFromV9ToV10: MigrationFromV9ToV10,
+    private val migrationFromV10ToV11: MigrationFromV10ToV11,
     private val isSignUpUseCase: IsSignUpUseCase,
     private val mainCryptoRepository: MainCryptoRepository,
     biometricEngine: BiometricEngine,
@@ -132,6 +133,11 @@ class MigrateAndSignInUseCase @Inject constructor(
 
         if (version == 9) {
             results += migrationFromV9ToV10(masterKey)
+            version++
+        }
+
+        if (version == 10) {
+            results += migrationFromV10ToV11()
             version++
         }
 

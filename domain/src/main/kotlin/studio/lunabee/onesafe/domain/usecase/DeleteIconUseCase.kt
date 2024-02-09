@@ -26,6 +26,7 @@ import studio.lunabee.onesafe.domain.repository.IconRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
+import java.util.UUID
 import javax.inject.Inject
 
 private val log = LBLogger.get<DeleteIconUseCase>()
@@ -59,10 +60,20 @@ class DeleteIconUseCase @Inject constructor(
         return OSError.runCatching(log) {
             if (safeItem.iconId == null) throw OSDomainError(OSDomainError.Code.SAFE_ITEM_NO_ICON)
             safeItemRepository.updateIcon(safeItem.id, null)
-            val deleted = iconRepository.deleteIcon(safeItem.iconId)
+            invoke(safeItem.iconId)
+        }
+    }
 
+    /**
+     * @param iconId The icon id to delete
+     */
+    internal operator fun invoke(
+        iconId: UUID,
+    ): LBResult<Unit> {
+        return OSError.runCatching(log) {
+            val deleted = iconRepository.deleteIcon(iconId)
             if (!deleted) {
-                log.e("Unable to delete icon ${safeItem.iconId}")
+                log.e("Unable to delete icon $iconId")
             }
         }
     }

@@ -24,8 +24,8 @@ import studio.lunabee.onesafe.domain.common.IconIdProvider
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
-import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.IconRepository
+import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.error.OSError
@@ -66,6 +66,7 @@ class SetIconUseCase @Inject constructor(
 
     /**
      * Internal fun to avoid [SafeItemKey] fetch when chaining use case on same [SafeItem]
+     * ⚠️ It's the caller responsibility to delete the old icon
      */
     internal suspend operator fun invoke(
         itemKey: SafeItemKey,

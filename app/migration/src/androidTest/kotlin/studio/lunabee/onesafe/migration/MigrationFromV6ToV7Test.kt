@@ -30,7 +30,6 @@ import org.junit.Rule
 import org.junit.Test
 import studio.lunabee.onesafe.cryptography.PasswordHashEngine
 import studio.lunabee.onesafe.cryptography.SaltProvider
-import studio.lunabee.onesafe.domain.usecase.item.CleanForAlphaIndexingUseCase
 import studio.lunabee.onesafe.domain.usecase.item.CreateItemUseCase
 import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
 import studio.lunabee.onesafe.storage.dao.SafeItemDao
@@ -62,8 +61,6 @@ class MigrationFromV6ToV7Test : OSHiltTest() {
     @Inject lateinit var safeItemDao: SafeItemDao
 
     @Inject lateinit var createItemUseCase: CreateItemUseCase
-
-    @Inject lateinit var cleanForAlphaIndexingUseCase: CleanForAlphaIndexingUseCase
 
     @Inject lateinit var decryptUseCase: ItemDecryptUseCase
 
