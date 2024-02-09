@@ -30,6 +30,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import studio.lunabee.onesafe.storage.MainDatabase
+import studio.lunabee.onesafe.storage.MainDatabaseCallback
 import studio.lunabee.onesafe.storage.OSForceUpgradeProto.ForceUpgradeProtoData
 import studio.lunabee.onesafe.storage.datastore.ForceUpgradeDataSerializer
 import studio.lunabee.onesafe.storage.datastore.ProtoSerializer
@@ -54,6 +55,7 @@ object InMemoryMainDatabaseModule {
     @Singleton
     internal fun provideMainDatabase(@ApplicationContext appContext: Context): MainDatabase {
         return Room.inMemoryDatabaseBuilder(appContext, MainDatabase::class.java)
+            .addCallback(MainDatabaseCallback())
             .build()
     }
 }

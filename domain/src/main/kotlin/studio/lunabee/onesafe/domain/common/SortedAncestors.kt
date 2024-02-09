@@ -19,11 +19,11 @@
 
 package studio.lunabee.onesafe.domain.common
 
-import java.util.UUID
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
+import java.util.UUID
 
 /**
- * Sort initial list by putting parent before children.
+ * Sort initial list by putting parent before children. Also fix potential recursive relationship by nullifying the (deleted) parent id
  */
 class SortedAncestors(
     safeItemsNotSorted: List<SafeItem>,
@@ -32,6 +32,17 @@ class SortedAncestors(
      * Group elements by parent ID (i.e map of parentId -> all child with the same parentId)
      */
     private val groupedSafeItem: Map<UUID?, List<SafeItem>> = safeItemsNotSorted
+        .asSequence()
+        .map { item ->
+            if (item.id == item.deletedParentId || item.id == item.parentId) {
+                item.copy(
+                    deletedParentId = item.deletedParentId.takeUnless { it == item.id },
+                    parentId = item.parentId.takeUnless { it == item.id },
+                )
+            } else {
+                item
+            }
+        }
         .sortedWith(compareBy({ it.parentId }, { it.id }))
         .groupBy { it.parentId }
 

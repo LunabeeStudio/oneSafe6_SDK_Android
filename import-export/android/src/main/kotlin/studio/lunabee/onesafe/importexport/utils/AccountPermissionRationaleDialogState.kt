@@ -21,16 +21,16 @@ package studio.lunabee.onesafe.importexport.utils
 
 import androidx.compose.runtime.Composable
 import studio.lunabee.compose.core.LbcTextSpec
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.dialog.DialogAction
 import studio.lunabee.onesafe.commonui.dialog.DialogState
-import studio.lunabee.onesafe.commonui.OSString
 
 internal class AccountPermissionRationaleDialogState(
     launchPermissionRequest: () -> Unit,
     override val dismiss: () -> Unit,
 ) : DialogState {
     override val actions: List<DialogAction> = listOf(
-        DialogAction(LbcTextSpec.StringResource(OSString.common_ok)) {
+        DialogAction.commonOk {
             launchPermissionRequest()
             dismiss()
         },

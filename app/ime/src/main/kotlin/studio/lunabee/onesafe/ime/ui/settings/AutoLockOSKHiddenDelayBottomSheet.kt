@@ -19,10 +19,12 @@
 
 package studio.lunabee.onesafe.ime.ui.settings
 
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import studio.lunabee.onesafe.commonui.bottomsheet.BottomSheetHolder
 import studio.lunabee.onesafe.commonui.settings.AutoLockBackgroundDelay
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AutoLockOSKHiddenDelayBottomSheet(
     isVisible: Boolean,
@@ -34,8 +36,9 @@ fun AutoLockOSKHiddenDelayBottomSheet(
         isVisible = isVisible,
         onBottomSheetClosed = onBottomSheetClosed,
         skipPartiallyExpanded = true,
-    ) { closeBottomSheet, _ ->
+    ) { closeBottomSheet, paddingValues ->
         AutoLockOSKHiddenBottomSheetContent(
+            paddingValues = paddingValues,
             onSelect = { clearDelay ->
                 onSelect(clearDelay)
                 closeBottomSheet()

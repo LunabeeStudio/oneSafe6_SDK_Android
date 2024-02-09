@@ -19,9 +19,11 @@
 
 package studio.lunabee.onesafe.importexport.settings
 
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import studio.lunabee.onesafe.commonui.bottomsheet.BottomSheetHolder
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AutoBackupFrequencyBottomSheet(
     isVisible: Boolean,
@@ -33,8 +35,9 @@ fun AutoBackupFrequencyBottomSheet(
         isVisible = isVisible,
         onBottomSheetClosed = onBottomSheetClosed,
         skipPartiallyExpanded = true,
-    ) { closeBottomSheet, _ ->
+    ) { closeBottomSheet, paddingValues ->
         AutoBackupFrequencyBottomSheetContent(
+            paddingValues = paddingValues,
             onSelect = { frequency ->
                 onSelect(frequency)
                 closeBottomSheet()

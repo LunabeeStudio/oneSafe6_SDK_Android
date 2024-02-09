@@ -31,10 +31,7 @@ internal class CameraScanPermissionRationaleDialogState(
     private val retry: () -> Unit,
 ) : DialogState {
     override val actions: List<DialogAction> = listOf(
-        DialogAction(LbcTextSpec.StringResource(OSString.common_cancel)) {
-            dismiss()
-        },
-        DialogAction(LbcTextSpec.StringResource(OSString.common_ok)) {
+        DialogAction.commonOk {
             launchPermissionRequest()
             retry()
         },

@@ -19,9 +19,11 @@
 
 package studio.lunabee.onesafe.storage
 
+import android.content.Context
 import androidx.core.database.getBlobOrNull
 import androidx.room.AutoMigration
 import androidx.room.Database
+import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
@@ -61,7 +63,7 @@ import javax.inject.Inject
 
 @TypeConverters(InstantConverter::class, FileConverter::class)
 @Database(
-    version = 9,
+    version = 10,
     entities = [
         RoomSafeItem::class,
         RoomSafeItemField::class,
@@ -101,6 +103,51 @@ abstract class MainDatabase : RoomDatabase() {
     abstract fun handShakeDataDao(): HandShakeDataDao
     abstract fun sentMessageDao(): SentMessageDao
     abstract fun backupDao(): BackupDao
+
+    companion object {
+        fun build(appContext: Context, vararg migrations: Migration): MainDatabase {
+            return Room.databaseBuilder(
+                appContext,
+                MainDatabase::class.java,
+                "bc9fe798-a4f0-402e-9f5b-80339d87a041",
+            )
+                .addCallback(MainDatabaseCallback())
+                .addMigrations(*migrations)
+                .build()
+        }
+    }
+}
+
+private fun SupportSQLiteDatabase.addRecursiveCheckTriggers() {
+    execSQL(
+        """
+             CREATE TRIGGER recursive_item_insert
+             BEFORE INSERT
+             ON SafeItem
+             WHEN NEW.id = NEW.parent_id OR NEW.id = NEW.deleted_parent_id
+             BEGIN
+                 SELECT RAISE(ABORT, 'Recursive item forbidden');
+             END;
+             """,
+    )
+    execSQL(
+        """
+             CREATE TRIGGER recursive_item_update
+             BEFORE UPDATE OF parent_id, deleted_parent_id
+             ON SafeItem
+             WHEN NEW.id = NEW.parent_id OR NEW.id = NEW.deleted_parent_id
+             BEGIN
+                 SELECT RAISE(ABORT, 'Recursive item forbidden');
+             END;
+             """,
+    )
+}
+
+class MainDatabaseCallback : RoomDatabase.Callback() {
+    override fun onCreate(db: SupportSQLiteDatabase) {
+        super.onCreate(db)
+        db.addRecursiveCheckTriggers()
+    }
 }
 
 class Migration3to4 @Inject constructor(private val idProvider: MessageIdProvider) : Migration(3, 4) {
@@ -142,6 +189,14 @@ class Migration8to9 @Inject constructor() : Migration(8, 9) {
         db.execSQL("ALTER TABLE SafeItem ADD created_at INTEGER NOT NULL DEFAULT 0")
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_SafeItem_created_at` ON `SafeItem` (`created_at`)")
         db.execSQL("UPDATE SafeItem SET created_at = updated_at")
+    }
+}
+
+class Migration9to10 @Inject constructor() : Migration(9, 10) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("UPDATE SafeItem SET parent_id = NULL WHERE id = parent_id")
+        db.execSQL("UPDATE SafeItem SET deleted_parent_id = NULL WHERE id = deleted_parent_id")
+        db.addRecursiveCheckTriggers()
     }
 }
 

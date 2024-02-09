@@ -19,20 +19,24 @@
 
 package studio.lunabee.onesafe.storage.database
 
+import android.database.sqlite.SQLiteConstraintException
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.jupiter.api.assertThrows
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.OSStorageTestUtils
 import studio.lunabee.onesafe.storage.dao.SafeItemDao
 import studio.lunabee.onesafe.storage.model.RoomSafeItem
 import studio.lunabee.onesafe.storage.toRoomUpdateSafeItem
+import studio.lunabee.onesafe.test.testUUIDs
 import javax.inject.Inject
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -101,5 +105,37 @@ class MainDatabaseTest {
             safeItemDao.removeById(parentSafeItem.id)
             assertEquals(0, safeItemDao.findByIdWithDescendants(parentSafeItem.id).size)
         }
+    }
+
+    /**
+     * Test recursive triggers on parent_id and deleted_parent_id
+     */
+    @Test
+    fun recursive_triggers_test(): TestResult = runTest {
+        val id0 = testUUIDs[0]
+        val id1 = testUUIDs[1]
+        val id2 = testUUIDs[2]
+
+        val item0: RoomSafeItem = OSStorageTestUtils.createRoomSafeItem(id = id0, parentId = id0)
+        val item1: RoomSafeItem = OSStorageTestUtils.createRoomSafeItem(id = id1, deletedParentId = id1)
+        val item2: RoomSafeItem = OSStorageTestUtils.createRoomSafeItem(id = id2)
+
+        safeItemDao.insert(item2)
+
+        assertThrows<SQLiteConstraintException> {
+            safeItemDao.insert(item0)
+        }.let { println(it.message) }
+
+        assertThrows<SQLiteConstraintException> {
+            safeItemDao.insert(item1)
+        }.let { println(it.message) }
+
+        assertThrows<SQLiteConstraintException> {
+            safeItemDao.update(item2.copy(parentId = item2.id).toRoomUpdateSafeItem())
+        }.let { println(it.message) }
+
+        assertThrows<SQLiteConstraintException> {
+            safeItemDao.update(item2.copy(deletedParentId = item2.id).toRoomUpdateSafeItem())
+        }.let { println(it.message) }
     }
 }

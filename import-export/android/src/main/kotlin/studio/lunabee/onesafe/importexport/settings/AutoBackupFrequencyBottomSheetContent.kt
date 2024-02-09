@@ -19,16 +19,18 @@
 
 package studio.lunabee.onesafe.importexport.settings
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.commonui.OSString
+import studio.lunabee.onesafe.commonui.bottomsheet.BottomSheetHolderColumnContent
 import studio.lunabee.onesafe.molecule.OSOptionRow
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.OSPreviewOnSurfaceTheme
@@ -36,10 +38,12 @@ import studio.lunabee.onesafe.utils.OsDefaultPreview
 
 @Composable
 internal fun AutoBackupFrequencyBottomSheetContent(
+    paddingValues: PaddingValues,
     onSelect: (entry: AutoBackupFrequency) -> Unit,
     selectedAutoBackupFrequency: AutoBackupFrequency,
 ) {
-    Column(
+    BottomSheetHolderColumnContent(
+        paddingValues = paddingValues,
         modifier = Modifier
             .selectableGroup()
             .wrapContentHeight()
@@ -65,6 +69,7 @@ internal fun AutoBackupFrequencyBottomSheetContent(
 private fun AutoBackupFrequencyBottomSheetContentPreview() {
     OSPreviewOnSurfaceTheme {
         AutoBackupFrequencyBottomSheetContent(
+            paddingValues = PaddingValues(0.dp),
             onSelect = {},
             selectedAutoBackupFrequency = AutoBackupFrequency.WEEKLY,
         )

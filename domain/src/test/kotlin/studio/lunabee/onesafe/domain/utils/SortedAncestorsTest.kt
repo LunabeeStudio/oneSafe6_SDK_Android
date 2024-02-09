@@ -19,12 +19,13 @@
 
 package studio.lunabee.onesafe.domain.utils
 
-import kotlin.random.Random
 import org.junit.jupiter.api.Test
 import studio.lunabee.onesafe.domain.common.SortedAncestors
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.test.OSTestUtils
 import studio.lunabee.onesafe.test.testUUIDs
+import kotlin.random.Random
+import kotlin.test.assertContentEquals
 
 class SortedAncestorsTest {
     private val safeItemsNotSorted: MutableList<SafeItem> = mutableListOf<SafeItem>().apply {
@@ -70,5 +71,15 @@ class SortedAncestorsTest {
                 }
             }
         }
+    }
+
+    @Test
+    fun sort_ancestor_with_recursive_item_test() {
+        val recursiveItem = OSTestUtils.createSafeItem(id = testUUIDs[0], parentId = testUUIDs[0])
+        val sortedAncestors = SortedAncestors(safeItemsNotSorted = listOf(recursiveItem))
+
+        val expected = listOf(recursiveItem.copy(parentId = null))
+        val actual = sortedAncestors.sortByAncestors()
+        assertContentEquals(expected, actual)
     }
 }

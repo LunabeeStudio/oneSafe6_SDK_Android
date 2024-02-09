@@ -108,4 +108,5 @@ dependencies {
 
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.compose.ui.test.junit4)
 }

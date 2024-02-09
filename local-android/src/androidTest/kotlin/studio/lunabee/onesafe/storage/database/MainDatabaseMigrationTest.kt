@@ -30,12 +30,15 @@ import org.junit.Test
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.Migration3to4
 import studio.lunabee.onesafe.storage.Migration8to9
+import studio.lunabee.onesafe.storage.Migration9to10
 import studio.lunabee.onesafe.test.OSTestUtils
 import studio.lunabee.onesafe.test.testUUIDs
 import studio.lunabee.onesafe.toByteArray
 import javax.inject.Inject
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @HiltAndroidTest
 class MainDatabaseMigrationTest {
@@ -44,6 +47,8 @@ class MainDatabaseMigrationTest {
     @Inject lateinit var migration3to4: Migration3to4
 
     @Inject lateinit var migration8to9: Migration8to9
+
+    @Inject lateinit var migration9to10: Migration9to10
 
     @get:Rule val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
 
@@ -63,20 +68,19 @@ class MainDatabaseMigrationTest {
         val blobs = List(8) { OSTestUtils.random.nextBytes(10) }
         val blobsString = blobs.map { "X'${it.joinToString("") { byte -> "%02x".format(byte) }}'" }
 
-        helper.createDatabase(dbName, 3).apply {
-            execSQL(
+        helper.createDatabase(dbName, 3).use { db ->
+            db.execSQL(
                 "INSERT INTO Contact (id, enc_name, updated_at, shared_conversation_id, enc_is_using_deeplink) " +
                     "VALUES (${blobsString[0]}, ${blobsString[1]}, 0, ${blobsString[2]}, ${blobsString[3]})",
             )
-            execSQL(
+            db.execSQL(
                 "INSERT INTO Message (id, contact_id, enc_sent_at, enc_content, direction,`order`) " +
                     "VALUES (0, ${blobsString[0]}, ${blobsString[4]}, ${blobsString[5]}, 'SENT', 123)",
             )
-            execSQL(
+            db.execSQL(
                 "INSERT INTO Message (id, contact_id, enc_sent_at, enc_content, direction,`order`) " +
                     "VALUES (1, ${blobsString[0]}, ${blobsString[6]}, ${blobsString[7]}, 'FOO', 456)",
             )
-            close()
         }
 
         val db = helper.runMigrationsAndValidate(dbName, 4, true, migration3to4)
@@ -107,16 +111,15 @@ class MainDatabaseMigrationTest {
     fun migration8to9_test() {
         val ids = testUUIDs.subList(0, 9).map { it.toByteArray() }
         val idWithUpdatedAt = ids.map {
-            "X'${it.joinToString("") { byte -> "%02x".format(byte) }}'" to OSTestUtils.random.nextLong()
+            it.toSqlBlobString() to OSTestUtils.random.nextLong()
         }
 
         val valueRows = idWithUpdatedAt.joinToString(",") { (id, updatedAt) ->
             "($id, NULL, NULL, false, $updatedAt, 0.0, NULL, NULL, NULL, NULL, NULL, 0)"
         }
 
-        helper.createDatabase(dbName, 8).apply {
-            execSQL("INSERT INTO SafeItem VALUES $valueRows;")
-            close()
+        helper.createDatabase(dbName, 8).use { db ->
+            db.execSQL("INSERT INTO SafeItem VALUES $valueRows;")
         }
 
         val db = helper.runMigrationsAndValidate(dbName, 9, true, migration8to9)
@@ -127,4 +130,43 @@ class MainDatabaseMigrationTest {
             assertEquals(idWithUpdatedAt[cursor.position].second, actualCreatedAt)
         }
     }
+
+    /**
+     * Test existing recursive item migration (on parent_id and deleted_parent_id)
+     * Test triggers added
+     */
+    @Test
+    fun migration9to10_test() {
+        val id0 = testUUIDs[0].toByteArray().toSqlBlobString()
+        val id1 = testUUIDs[1].toByteArray().toSqlBlobString()
+        val id2 = testUUIDs[2].toByteArray().toSqlBlobString()
+
+        helper.createDatabase(dbName, 9).use { db ->
+            db.execSQL("INSERT INTO SafeItem VALUES ($id0, NULL, $id0, false, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 0)")
+            db.execSQL("INSERT INTO SafeItem VALUES ($id1, NULL, NULL, false, 0, 0, 0, NULL, NULL, NULL, $id1, NULL, 0)")
+            db.execSQL("INSERT INTO SafeItem VALUES ($id2, NULL, $id2, false, 0, 0, 0, NULL, NULL, NULL, $id2, NULL, 0)")
+        }
+
+        val db = helper.runMigrationsAndValidate(dbName, 10, true, migration9to10)
+
+        val cursor = db.query("SELECT parent_id, deleted_parent_id FROM SafeItem")
+        while (cursor.moveToNext()) {
+            val parentId = cursor.getBlob(0)
+            val deletedParentId = cursor.getBlob(1)
+            assertNull(parentId)
+            assertNull(deletedParentId)
+        }
+
+        val triggersCursor = db.query("SELECT * FROM sqlite_master WHERE type = 'trigger'")
+        triggersCursor.moveToFirst()
+        val trigger0 = triggersCursor.getString(triggersCursor.getColumnIndex("name"))
+        triggersCursor.moveToNext()
+        val trigger1 = triggersCursor.getString(triggersCursor.getColumnIndex("name"))
+
+        assertTrue(triggersCursor.isLast)
+        assertEquals("recursive_item_insert", trigger0)
+        assertEquals("recursive_item_update", trigger1)
+    }
+
+    private fun ByteArray.toSqlBlobString() = "X'${joinToString(separator = "") { byte -> "%02x".format(byte) }}'"
 }

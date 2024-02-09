@@ -18,6 +18,7 @@
  */
 
 import com.android.build.gradle.LibraryExtension
+import com.android.build.gradle.internal.api.DefaultAndroidSourceDirectorySet
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.publish.maven.MavenPublication
@@ -41,14 +42,15 @@ fun MavenPublication.setAndroidArtifacts(
     project: Project,
     flavorAarSuffix: String? = null,
 ) {
+    val mainSourceSets = (project.android.sourceSets.getByName("main").kotlin as DefaultAndroidSourceDirectorySet).srcDirs
     val sourceJar by project.tasks.registering(Jar::class) {
         archiveClassifier.set("sources")
-        from(project.android.sourceSets.getByName("main").java.srcDirs)
+        from(mainSourceSets)
     }
 
     val javadocJar by project.tasks.registering(Jar::class) {
         archiveClassifier.set("javadoc")
-        from(project.android.sourceSets.getByName("main").java.srcDirs)
+        from(mainSourceSets)
     }
 
     artifact(sourceJar)

@@ -32,12 +32,12 @@ class ConfirmDeleteContactDialogState(
     override val title: LbcTextSpec = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_delete_title)
     override val message: LbcTextSpec = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_delete_description)
     override val actions: List<DialogAction> = listOf(
+        DialogAction.commonCancel(dismiss),
         DialogAction(
             text = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_delete_confirm),
             type = DialogAction.Type.Dangerous,
             onClick = deleteAction,
         ),
-        DialogAction.commonCancel(dismiss),
     )
     override val customContent: (@Composable () -> Unit)? = null
 }
