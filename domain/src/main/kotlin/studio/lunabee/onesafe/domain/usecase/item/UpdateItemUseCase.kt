@@ -53,8 +53,8 @@ class UpdateItemUseCase @Inject constructor(
     suspend operator fun invoke(
         itemId: UUID,
         updateData: UpdateData,
-        fields: List<ItemFieldData> = listOf(),
-        fileSavingData: List<FileSavingData>,
+        fields: List<ItemFieldData> = emptyList(),
+        fileSavingData: List<FileSavingData> = emptyList(),
     ): LBResult<SafeItem> {
         return OSError.runCatching {
             // Get current safe item.
@@ -63,11 +63,13 @@ class UpdateItemUseCase @Inject constructor(
 
             // Update or remove icon if needed.
             val iconId: UUID? = when (updateData.icon) {
-                is UpdateState.ModifiedTo -> updateData.icon.newValue?.let {
+                is UpdateState.ModifiedTo -> updateData.icon.newValue?.let { icon ->
                     setIconUseCase(
                         itemKey = itemKey,
-                        icon = it,
-                    )
+                        icon = icon,
+                    ).also {
+                        safeItem.iconId?.let { currentIconId -> deleteIconUseCase(currentIconId) }
+                    }
                 }
                 is UpdateState.Removed -> {
                     deleteIconUseCase(safeItem = safeItem)
