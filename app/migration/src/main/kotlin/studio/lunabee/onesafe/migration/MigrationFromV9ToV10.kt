@@ -27,7 +27,6 @@ import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
 import dagger.hilt.android.qualifiers.ApplicationContext
 import studio.lunabee.onesafe.cryptography.CryptoDataMapper
-import studio.lunabee.onesafe.cryptography.CryptoEngine
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
@@ -40,61 +39,65 @@ private val logger = LBLogger.get<MigrationFromV9ToV10>()
 /**
  * Migrate photo captured and saved in png to jpeg
  * Find these field by looking for mimetype png + field value with jpeg extension
+ * The migration is non-blocking, which means if some field failed to migrate, the migration will not fail
  */
 class MigrationFromV9ToV10 @Inject constructor(
     private val safeItemFieldRepository: SafeItemFieldRepository,
     private val safeItemKeyRepository: SafeItemKeyRepository,
-    private val cryptoEngine: CryptoEngine,
     private val cryptoDataMapper: CryptoDataMapper,
     @ApplicationContext private val context: Context,
+    private val migrationCryptoUseCase: MigrationCryptoV1UseCase,
 ) {
-    suspend operator fun invoke(masterKey: ByteArray): LBResult<Unit> = OSError.runCatching {
-        val fields = safeItemFieldRepository.getAllSafeItemFields().groupBy { it.itemId }
-        fields.forEach { (itemId, fields) ->
-            val key = safeItemKeyRepository.getSafeItemKey(itemId)
-            val plainKey = cryptoEngine.decrypt(key.encValue, masterKey, null)
-            fields
-                .filter { field ->
-                    val fieldKind = field.encKind?.let { encKind ->
-                        val plainKind = cryptoEngine.decrypt(encKind, plainKey, null)
-                        cryptoDataMapper(null, plainKind, SafeItemFieldKind::class)
-                    }
-                    fieldKind == SafeItemFieldKind.Photo
-                }
-                .forEach { field ->
-                    field.encValue?.let { encValue ->
-                        val plainValue = cryptoEngine.decrypt(encValue, plainKey, null)
-                        val filenameExt = cryptoDataMapper(null, plainValue, String::class)
-                            .split(FileTypeExtSeparator)
-                        val extension = filenameExt[1]
-                        if (extension == "jpeg") {
-                            val filename = filenameExt[0]
-                            val file = File(context.filesDir, "$FileDir/$filename")
-                            val aFile = AtomicFile(file)
-                            val options = BitmapFactory.Options()
-                            options.inJustDecodeBounds = true
-                            cryptoEngine.getDecryptStream(aFile, plainKey, null).use { stream ->
-                                BitmapFactory.decodeStream(stream, null, options)
-                            }
-                            val mimeType = options.outMimeType
-                            if (mimeType == MimeTypePng) {
-                                val bitmap = cryptoEngine.getDecryptStream(aFile, plainKey, null).use { stream ->
-                                    BitmapFactory.decodeStream(stream)
-                                }
-                                val fileStream = aFile.startWrite()
-                                try {
-                                    cryptoEngine.getCipherOutputStream(fileStream, plainKey, null).use { cipherStream ->
-                                        bitmap.compress(Bitmap.CompressFormat.JPEG, 95, cipherStream)
-                                    }
-                                    logger.i("Migrate png -> jpeg for $filenameExt")
-                                } finally {
-                                    aFile.finishWrite(fileStream)
-                                }
-                            }
+    suspend operator fun invoke(masterKey: ByteArray): LBResult<Unit> {
+        val fieldsByItemId = safeItemFieldRepository.getAllSafeItemFields().groupBy { it.itemId }
+        fieldsByItemId.forEach { (itemId, fields) ->
+            OSError.runCatching(logger) {
+                val key = safeItemKeyRepository.getSafeItemKey(itemId)
+                val plainKey = migrationCryptoUseCase.decrypt(key.encValue, masterKey)
+                fields
+                    .filter { field ->
+                        val fieldKind = field.encKind?.let { encKind ->
+                            val plainKind = migrationCryptoUseCase.decrypt(encKind, plainKey)
+                            cryptoDataMapper(null, plainKind, SafeItemFieldKind::class)
                         }
-                    } ?: logger.e("Unexpected empty value in file field")
-                }
+                        fieldKind == SafeItemFieldKind.Photo
+                    }
+                    .forEach { field ->
+                        field.encValue?.let { encValue ->
+                            val plainValue = migrationCryptoUseCase.decrypt(encValue, plainKey)
+                            val filenameExt = cryptoDataMapper(null, plainValue, String::class)
+                                .split(FileTypeExtSeparator)
+                            val extension = filenameExt[1]
+                            if (extension == "jpeg") {
+                                val filename = filenameExt[0]
+                                val file = File(context.filesDir, "$FileDir/$filename")
+                                val aFile = AtomicFile(file)
+                                val options = BitmapFactory.Options()
+                                options.inJustDecodeBounds = true
+                                migrationCryptoUseCase.getDecryptStream(aFile, plainKey).use { stream ->
+                                    BitmapFactory.decodeStream(stream, null, options)
+                                }
+                                val mimeType = options.outMimeType
+                                if (mimeType == MimeTypePng) {
+                                    val bitmap = migrationCryptoUseCase.getDecryptStream(aFile, plainKey).use { stream ->
+                                        BitmapFactory.decodeStream(stream)
+                                    }
+                                    val fileStream = aFile.startWrite()
+                                    try {
+                                        migrationCryptoUseCase.getCipherOutputStream(fileStream, plainKey).use { cipherStream ->
+                                            bitmap.compress(Bitmap.CompressFormat.JPEG, 95, cipherStream)
+                                        }
+                                        logger.i("Migrate png -> jpeg for $filenameExt")
+                                    } finally {
+                                        aFile.finishWrite(fileStream)
+                                    }
+                                }
+                            }
+                        } ?: logger.e("Unexpected empty value in file field")
+                    }
+            }
         }
+        return LBResult.Success(Unit)
     }
 }
 

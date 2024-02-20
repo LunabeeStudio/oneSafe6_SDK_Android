@@ -29,6 +29,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
 import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
+import studio.lunabee.onesafe.cryptography.utils.OSCryptoInputStream
+import studio.lunabee.onesafe.cryptography.utils.OSCryptoOutputStream
 import studio.lunabee.onesafe.cryptography.utils.SafeDataMutableStateFlow
 import studio.lunabee.onesafe.cryptography.utils.dataStoreValueDelegate
 import studio.lunabee.onesafe.cryptography.utils.safeCryptoArrayDelete
@@ -405,22 +407,26 @@ class AndroidMainCryptoRepository @Inject constructor(
 
     override suspend fun getDecryptStream(cipherFile: File, key: SafeItemKey): InputStream {
         return crypto.decrypt(key.encValue, masterKey!!, null).use { rawKey ->
-            crypto.getDecryptStream(AtomicFile(cipherFile), rawKey, null)
+            val cryptoStream = crypto.getDecryptStream(AtomicFile(cipherFile), rawKey, null)
+            OSCryptoInputStream(cryptoStream)
         }
     }
 
     override suspend fun getEncryptStream(cipherFile: File, key: SafeItemKey): OutputStream {
         return crypto.decrypt(key.encValue, masterKey!!, null).use { rawKey ->
-            crypto.getEncryptStream(cipherFile, rawKey, null)
+            val cryptoStream = crypto.getEncryptStream(cipherFile, rawKey, null)
+            OSCryptoOutputStream(cryptoStream)
         }
     }
 
     override fun getFileEditionEncryptStream(plainFile: File): OutputStream {
-        return crypto.getEncryptStream(plainFile, itemEditionKey!!, null)
+        val encryptStream = crypto.getEncryptStream(plainFile, itemEditionKey!!, null)
+        return OSCryptoOutputStream(encryptStream)
     }
 
     override fun getFileEditionDecryptStream(encFile: File): InputStream {
-        return crypto.getDecryptStream(AtomicFile(encFile), itemEditionKey!!, null)
+        val decryptStream = crypto.getDecryptStream(AtomicFile(encFile), itemEditionKey!!, null)
+        return OSCryptoInputStream(decryptStream)
     }
 
     private suspend fun <Data : Any> doDecrypt(
