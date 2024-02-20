@@ -71,5 +71,8 @@ data class OSCryptoError(
         BUBBLES_DECRYPTION_FAILED_QUEUE_KEY("Unable to decrypt the queue with the provided key"),
         BUBBLES_ENCRYPTION_FAILED_QUEUE_KEY("Unable to encrypt the queue with the provided key"),
         MASTER_SALT_NOT_GENERATED("No master salt found"),
+        DECRYPT_STREAM_CRYPTO_FAILURE("Fail while reading from the decrypt stream"),
+        CRYPTO_ENCRYPT_STREAM_FAIL("Fail while writing to the encrypt stream"),
+        DECRYPT_STREAM_IO_FAILURE("Fail while reading from the decrypt stream"),
     }
 }

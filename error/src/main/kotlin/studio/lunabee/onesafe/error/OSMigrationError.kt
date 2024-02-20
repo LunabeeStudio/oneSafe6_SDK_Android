@@ -27,5 +27,9 @@ data class OSMigrationError(
     enum class Code(override val message: String) : ErrorCode<Code, OSMigrationError> {
         USERNAME_REMOVAL_FAIL("Migration to remove the username failed"),
         SET_PASSWORD_VERIFICATION_FAIL("Migration to save password verification data failed"),
+        DECRYPT_FAIL("Fail to decrypt data"),
+        ENCRYPT_FAIL("Fail to encrypt data"),
+        GET_DECRYPT_STREAM_FAIL("Fail to get the decrypt stream"),
+        GET_ENCRYPT_STREAM_FAIL("Fail to get the encrypt stream"),
     }
 }

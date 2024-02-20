@@ -43,6 +43,8 @@ import studio.lunabee.onesafe.test.CommonTestUtils.createItemFieldData
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltTest
 import studio.lunabee.onesafe.test.OSTestUtils
+import studio.lunabee.onesafe.test.assertFailure
+import studio.lunabee.onesafe.test.assertSuccess
 import studio.lunabee.onesafe.test.colorInt
 import studio.lunabee.onesafe.test.test
 import java.io.ByteArrayOutputStream
@@ -111,7 +113,8 @@ class MigrationFromV9ToV10Test : OSHiltTest() {
         )
         addFieldUseCase(item.id, itemFieldData)
 
-        migrationFromV9ToV10(masterKey())
+        val result = migrationFromV9ToV10(masterKey())
+        assertSuccess(result)
 
         val encFile = File(context.filesDir, "files/$filedId")
         val plainFileData = decryptUseCase(encFile.readBytes(), item.id, ByteArray::class).data!!
@@ -148,7 +151,8 @@ class MigrationFromV9ToV10Test : OSHiltTest() {
         )
         addFieldUseCase(item.id, itemFieldData)
 
-        migrationFromV9ToV10(masterKey())
+        val result = migrationFromV9ToV10(masterKey())
+        assertSuccess(result)
 
         val encFile = File(context.filesDir, "files/$filedId")
         val plainFileData = decryptUseCase(encFile.readBytes(), item.id, ByteArray::class).data!!
@@ -156,6 +160,81 @@ class MigrationFromV9ToV10Test : OSHiltTest() {
         val afterMimetype = getMimetype(plainFileData)
         assertEquals("image/png", afterMimetype)
         assertContentEquals(expectedPngData, plainFileData)
+    }
+
+    @Test
+    fun run_migration_v9_v10_crypto_wrong_key_error_test(): TestResult = runTest {
+        val item = createItemUseCase.test()
+        val image = createRandomImage()
+        val filename = "field_file"
+        val pngFile = File(context.cacheDir, filename)
+        pngFile.outputStream().use {
+            image.compress(Bitmap.CompressFormat.PNG, 100, it)
+        }
+
+        val beforeMimetype = getMimetype(pngFile)
+        assertEquals("image/png", beforeMimetype)
+
+        val filedId = UUID.randomUUID()
+        val encFile = File(context.filesDir, "files/$filedId")
+        addAndRemoveFileUseCase(item.id, listOf(FileSavingData.ToSave(filedId) { pngFile.inputStream() }))
+
+        val fieldId = UUID.randomUUID()
+        val itemFieldData = createItemFieldData(
+            id = fieldId,
+            kind = SafeItemFieldKind.Photo,
+            value = "$filedId|jpeg",
+        )
+        addFieldUseCase(item.id, itemFieldData)
+
+        // Makes the crypto fail with wrong key
+        val resultWrongKey = migrationFromV9ToV10(OSTestUtils.random.nextBytes(32))
+        assertSuccess(resultWrongKey)
+
+        val plainFileData = decryptUseCase(encFile.readBytes(), item.id, ByteArray::class).data!!
+
+        // no change expected as migration failed
+        val afterMimetype = getMimetype(plainFileData)
+        assertEquals(beforeMimetype, afterMimetype)
+        assertContentEquals(pngFile.readBytes(), plainFileData)
+    }
+
+    @Test
+    fun run_migration_v9_v10_crypto_corrupted_file_error_test(): TestResult = runTest {
+        val item = createItemUseCase.test()
+        val image = createRandomImage()
+        val filename = "field_file"
+        val pngFile = File(context.cacheDir, filename)
+        pngFile.outputStream().use {
+            image.compress(Bitmap.CompressFormat.PNG, 100, it)
+        }
+
+        val beforeMimetype = getMimetype(pngFile)
+        assertEquals("image/png", beforeMimetype)
+
+        val filedId = UUID.randomUUID()
+        val encFile = File(context.filesDir, "files/$filedId")
+        addAndRemoveFileUseCase(item.id, listOf(FileSavingData.ToSave(filedId) { pngFile.inputStream() }))
+
+        val fieldId = UUID.randomUUID()
+        val itemFieldData = createItemFieldData(
+            id = fieldId,
+            kind = SafeItemFieldKind.Photo,
+            value = "$filedId|jpeg",
+        )
+        addFieldUseCase(item.id, itemFieldData)
+
+        // Makes the crypto fail with corrupted file (keep crypto nonce and add random bytes)
+        val pngData = pngFile.readBytes()
+        val corruptedData = pngData.copyOfRange(0, 12) + OSTestUtils.random.nextBytes(50)
+
+        encFile.writeBytes(corruptedData)
+        val resultBadFile = migrationFromV9ToV10(masterKey())
+        assertSuccess(resultBadFile)
+        val decryptResult = decryptUseCase(encFile.readBytes(), item.id, ByteArray::class)
+        assertFailure(decryptResult)
+
+        assertContentEquals(encFile.readBytes(), corruptedData)
     }
 
     private fun createRandomImage(): Bitmap {
