@@ -39,7 +39,7 @@ class MigrationCryptoV1UseCase @Inject constructor(
 ) {
     suspend fun decrypt(cipherData: ByteArray, key: ByteArray): ByteArray {
         return try {
-            cryptoEngine.decrypt(cipherData, key, null)
+            cryptoEngine.decrypt(cipherData, key, null).getOrThrow()
         } catch (e: GeneralSecurityException) {
             throw OSMigrationError.Code.DECRYPT_FAIL.get(cause = e)
         }
@@ -47,7 +47,7 @@ class MigrationCryptoV1UseCase @Inject constructor(
 
     suspend fun encrypt(plainData: ByteArray, key: ByteArray): ByteArray {
         return try {
-            cryptoEngine.encrypt(plainData, key, null)
+            cryptoEngine.encrypt(plainData, key, null).getOrThrow()
         } catch (e: GeneralSecurityException) {
             throw OSMigrationError.Code.ENCRYPT_FAIL.get(cause = e)
         }

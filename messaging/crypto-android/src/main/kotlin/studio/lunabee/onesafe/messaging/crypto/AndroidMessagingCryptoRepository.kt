@@ -49,7 +49,9 @@ class AndroidMessagingCryptoRepository @Inject constructor(
         data: ByteArray,
         key: DRMessageKey,
     ): ByteArray {
-        return crypto.decrypt(data, key.value, null)
+        return crypto.decrypt(data, key.value, null).getOrElse {
+            throw OSCryptoError(OSCryptoError.Code.BUBBLES_DECRYPTION_FAILED_WRONG_MESSAGE_KEY, cause = it)
+        }
     }
 
     override suspend fun encryptMessage(
@@ -67,7 +69,7 @@ class AndroidMessagingCryptoRepository @Inject constructor(
             val mapBlock = encryptEntry.mapBlock
             val rawData = mapper(mapBlock, data)
             try {
-                crypto.encrypt(rawData, key, null)
+                crypto.encrypt(rawData, key, null).getOrThrow()
             } catch (e: GeneralSecurityException) {
                 throw OSCryptoError(OSCryptoError.Code.BUBBLES_ENCRYPTION_FAILED_QUEUE_KEY, cause = e)
             }
@@ -77,7 +79,7 @@ class AndroidMessagingCryptoRepository @Inject constructor(
     override suspend fun <Data : Any> queueDecrypt(decryptEntry: DecryptEntry<Data>): Data {
         return getOrCreateQueueKey().use { key ->
             val rawData = try {
-                crypto.decrypt(decryptEntry.data, key, null)
+                crypto.decrypt(decryptEntry.data, key, null).getOrThrow()
             } catch (e: GeneralSecurityException) {
                 throw OSCryptoError(OSCryptoError.Code.BUBBLES_DECRYPTION_FAILED_QUEUE_KEY, cause = e)
             }

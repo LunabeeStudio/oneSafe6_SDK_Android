@@ -57,7 +57,7 @@ class AndroidImportExportCryptoRepository @Inject constructor(
 
     override suspend fun decryptRawItemKey(cipherData: ByteArray, key: ByteArray): ByteArray {
         return try {
-            crypto.decrypt(cipherData = cipherData, key, null)
+            crypto.decrypt(cipherData = cipherData, key, null).getOrThrow()
         } catch (e: GeneralSecurityException) {
             throw OSCryptoError(OSCryptoError.Code.DECRYPTION_FAILED_WRONG_KEY, cause = e)
         }
@@ -65,7 +65,7 @@ class AndroidImportExportCryptoRepository @Inject constructor(
 
     override suspend fun decrypt(cipherData: ByteArray, key: ByteArray): ByteArray {
         return try {
-            crypto.decrypt(cipherData = cipherData, key, null)
+            crypto.decrypt(cipherData = cipherData, key, null).getOrThrow()
         } catch (e: GeneralSecurityException) {
             throw OSCryptoError(OSCryptoError.Code.DECRYPTION_FAILED_WRONG_KEY, cause = e)
         }
@@ -73,7 +73,7 @@ class AndroidImportExportCryptoRepository @Inject constructor(
 
     override suspend fun encrypt(plainData: ByteArray, key: ByteArray): ByteArray {
         return try {
-            crypto.encrypt(plainData = plainData, key, null)
+            crypto.encrypt(plainData = plainData, key, null).getOrThrow()
         } catch (e: GeneralSecurityException) {
             throw OSCryptoError(OSCryptoError.Code.ENCRYPTION_FAILED_BAD_KEY, cause = e)
         }
@@ -84,7 +84,9 @@ class AndroidImportExportCryptoRepository @Inject constructor(
         rawItemKey: ByteArray,
         cryptoKey: ByteArray,
     ): SafeItemKey {
-        val itemKey = crypto.encrypt(rawItemKey, cryptoKey, null)
+        val itemKey = crypto.encrypt(rawItemKey, cryptoKey, null).getOrElse {
+            throw OSCryptoError(OSCryptoError.Code.ITEM_KEY_ENCRYPTION_FAIL, cause = it)
+        }
         return SafeItemKey(itemId, itemKey)
     }
 
