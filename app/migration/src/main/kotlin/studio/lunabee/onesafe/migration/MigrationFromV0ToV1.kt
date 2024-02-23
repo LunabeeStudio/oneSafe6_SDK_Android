@@ -62,7 +62,7 @@ class MigrationFromV0ToV1 @Inject constructor(
                 ?: throw OSCryptoError(OSCryptoError.Code.MASTER_KEY_NOT_GENERATED)
 
             val plainMasterKeyTest = try {
-                cryptoEngine.decrypt(encMasterKeyTest, masterKey, username).decodeToString()
+                cryptoEngine.decrypt(encMasterKeyTest, masterKey, username).getOrThrow().decodeToString()
             } catch (e: Exception) {
                 throw OSCryptoError(OSCryptoError.Code.MASTER_KEY_WRONG_PASSWORD, cause = e)
             }
@@ -73,22 +73,22 @@ class MigrationFromV0ToV1 @Inject constructor(
 
                 val roomSafeItemKeys = safeItemKeyDao.getAllSafeItemKeys()
                 roomSafeItemKeys.forEach { roomSafeItemKey ->
-                    val rawKey = cryptoEngine.decrypt(roomSafeItemKey.encValue, masterKey, username)
-                    val rawMigratedKey = cryptoEngine.encrypt(rawKey, masterKey, null)
+                    val rawKey = cryptoEngine.decrypt(roomSafeItemKey.encValue, masterKey, username).getOrThrow()
+                    val rawMigratedKey = cryptoEngine.encrypt(rawKey, masterKey, null).getOrThrow()
                     rawMigratedKey.copyInto(roomSafeItemKey.encValue)
                 }
-                val migratedEncMasterKeyTest = cryptoEngine.encrypt(MASTER_KEY_TEST_VALUE.encodeToByteArray(), masterKey, null)
+                val migratedEncMasterKeyTest = cryptoEngine.encrypt(MASTER_KEY_TEST_VALUE.encodeToByteArray(), masterKey, null).getOrThrow()
 
                 val encIndexKey = dataStoreEngine.retrieveValue(DATASTORE_SEARCH_INDEX_KEY).firstOrNull()
                     ?: throw OSCryptoError(OSCryptoError.Code.MASTER_KEY_NOT_GENERATED)
-                val indexKey = cryptoEngine.decrypt(encIndexKey, masterKey, username)
-                val migratedEncIndexKey = cryptoEngine.encrypt(indexKey, masterKey, null)
+                val indexKey = cryptoEngine.decrypt(encIndexKey, masterKey, username).getOrThrow()
+                val migratedEncIndexKey = cryptoEngine.encrypt(indexKey, masterKey, null).getOrThrow()
 
                 val roomIndexWorldEntries = indexWordEntryDao.getAll().first()
                 indexKey.use {
                     roomIndexWorldEntries.forEach { roomIndexWordEntry ->
-                        val rawIndexWordEntry = cryptoEngine.decrypt(roomIndexWordEntry.encWord, indexKey, username)
-                        val rawMigratedIndexWordEntry = cryptoEngine.encrypt(rawIndexWordEntry, indexKey, null)
+                        val rawIndexWordEntry = cryptoEngine.decrypt(roomIndexWordEntry.encWord, indexKey, username).getOrThrow()
+                        val rawMigratedIndexWordEntry = cryptoEngine.encrypt(rawIndexWordEntry, indexKey, null).getOrThrow()
                         rawMigratedIndexWordEntry.copyInto(roomIndexWordEntry.encWord)
                     }
                 }

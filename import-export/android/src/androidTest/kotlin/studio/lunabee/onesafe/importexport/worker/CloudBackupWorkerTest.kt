@@ -19,7 +19,9 @@
 
 package studio.lunabee.onesafe.importexport.worker
 
+import android.Manifest
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.testing.TestDriver
@@ -66,6 +68,10 @@ class CloudBackupWorkerTest : OSHiltTest() {
     @get:Rule
     override val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
     override val initialTestState: InitialTestState = InitialTestState.SignedUp()
+
+    @get:Rule
+    val runtimePermissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.POST_NOTIFICATIONS)
+
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
     private val successCloudBackup: CloudBackup = CloudBackup(

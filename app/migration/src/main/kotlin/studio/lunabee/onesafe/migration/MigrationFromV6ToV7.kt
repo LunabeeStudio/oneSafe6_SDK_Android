@@ -25,7 +25,9 @@ import studio.lunabee.onesafe.cryptography.CryptoEngine
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.usecase.item.SortItemNameUseCase
+import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSError
+import studio.lunabee.onesafe.error.OSError.Companion.get
 import javax.inject.Inject
 
 /**
@@ -41,9 +43,13 @@ class MigrationFromV6ToV7 @Inject constructor(
     suspend operator fun invoke(masterKey: ByteArray): LBResult<Unit> = OSError.runCatching {
         val items = safeItemRepository.getAllSafeItemIdName().map { item ->
             val itemKey = safeItemKeyRepository.getSafeItemKey(item.id)
-            val itemKeyRaw = cryptoEngine.decrypt(itemKey.encValue, masterKey, null)
-            val name = item.encName?.let {
-                val plainName = cryptoEngine.decrypt(it, itemKeyRaw, null)
+            val itemKeyRaw = cryptoEngine.decrypt(itemKey.encValue, masterKey, null).getOrElse {
+                throw OSCryptoError.Code.ITEM_KEY_DECRYPTION_FAIL.get(cause = it)
+            }
+            val name = item.encName?.let { encName ->
+                val plainName = cryptoEngine.decrypt(encName, itemKeyRaw, null).getOrElse {
+                    throw OSCryptoError.Code.DECRYPTION_FAILED_WRONG_KEY.get(cause = it)
+                }
                 cryptoDataMapper(null, plainName, String::class)
             } ?: ""
             Pair(item.id, name)

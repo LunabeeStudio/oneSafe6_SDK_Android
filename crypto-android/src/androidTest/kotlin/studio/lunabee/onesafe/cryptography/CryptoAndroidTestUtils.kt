@@ -21,8 +21,8 @@ package studio.lunabee.onesafe.cryptography
 
 import androidx.core.util.AtomicFile
 import androidx.test.platform.app.InstrumentationRegistry
-import studio.lunabee.onesafe.test.CryptoTestUtils
 import studio.lunabee.compose.androidtest.helper.LbcResourcesHelper
+import studio.lunabee.onesafe.test.CryptoTestUtils
 import java.io.File
 import java.util.Base64
 import kotlin.test.assertContentEquals
@@ -30,17 +30,17 @@ import kotlin.test.assertContentEquals
 object CryptoAndroidTestUtils : CryptoTestUtils({ Base64.getDecoder().decode(it) })
 
 suspend fun CryptoEngine.encrypt_chacha20poly1305_data() {
-    val actualData = this.encrypt(CryptoAndroidTestUtils.plainData, CryptoAndroidTestUtils.key256, null)
+    val actualData = this.encrypt(CryptoAndroidTestUtils.plainData, CryptoAndroidTestUtils.key256, null).getOrNull()
     assertContentEquals(CryptoAndroidTestUtils.chacha20poly1305_data, actualData)
 }
 
 suspend fun CryptoEngine.encrypt_chacha20poly1305_data_authenticated() {
-    val actualData = this.encrypt(CryptoAndroidTestUtils.plainData, CryptoAndroidTestUtils.key256, CryptoAndroidTestUtils.ad)
+    val actualData = this.encrypt(CryptoAndroidTestUtils.plainData, CryptoAndroidTestUtils.key256, CryptoAndroidTestUtils.ad).getOrNull()
     assertContentEquals(CryptoAndroidTestUtils.chacha20poly1305_data_authenticated, actualData)
 }
 
 suspend fun CryptoEngine.decrypt_chacha20poly1305_data() {
-    val actualData = this.decrypt(CryptoAndroidTestUtils.chacha20poly1305_data, CryptoAndroidTestUtils.key256, null)
+    val actualData = this.decrypt(CryptoAndroidTestUtils.chacha20poly1305_data, CryptoAndroidTestUtils.key256, null).getOrNull()
     assertContentEquals(CryptoAndroidTestUtils.plainData, actualData)
 }
 
@@ -49,7 +49,7 @@ suspend fun CryptoEngine.decrypt_chacha20poly1305_data_authenticated() {
         CryptoAndroidTestUtils.chacha20poly1305_data_authenticated,
         CryptoAndroidTestUtils.key256,
         CryptoAndroidTestUtils.ad,
-    )
+    ).getOrNull()
     assertContentEquals(CryptoAndroidTestUtils.plainData, actualData)
 }
 
@@ -63,28 +63,29 @@ suspend fun CryptoEngine.decrypt_chacha20poly1305_file() {
     LbcResourcesHelper.copyResourceToDeviceFile(CryptoAndroidTestUtils.plainFile.name, plainFile)
 
     val aEncFile = AtomicFile(cipherFile)
-    val actualData = this.decrypt(aEncFile, CryptoAndroidTestUtils.key256, null)
+    val actualData = this.decrypt(aEncFile, CryptoAndroidTestUtils.key256, null).getOrNull()
     val expectedData = plainFile.readBytes()
     assertContentEquals(expectedData, actualData)
 }
 
 suspend fun CryptoEngine.encrypt_aes256gcm_data() {
-    val actualData = this.encrypt(CryptoAndroidTestUtils.plainData, CryptoAndroidTestUtils.key256, null)
+    val actualData = this.encrypt(CryptoAndroidTestUtils.plainData, CryptoAndroidTestUtils.key256, null).getOrNull()
     assertContentEquals(CryptoAndroidTestUtils.aes256gcm_data, actualData)
 }
 
 suspend fun CryptoEngine.encrypt_aes256gcm_data_authenticated() {
-    val actualData = this.encrypt(CryptoAndroidTestUtils.plainData, CryptoAndroidTestUtils.key256, CryptoAndroidTestUtils.ad)
+    val actualData = this.encrypt(CryptoAndroidTestUtils.plainData, CryptoAndroidTestUtils.key256, CryptoAndroidTestUtils.ad).getOrNull()
     assertContentEquals(CryptoAndroidTestUtils.aes256gcm_data, actualData)
 }
 
 suspend fun CryptoEngine.decrypt_aes256gcm_data() {
-    val actualData = this.decrypt(CryptoAndroidTestUtils.aes256gcm_data, CryptoAndroidTestUtils.key256, null)
+    val actualData = this.decrypt(CryptoAndroidTestUtils.aes256gcm_data, CryptoAndroidTestUtils.key256, null).getOrNull()
     assertContentEquals(CryptoAndroidTestUtils.plainData, actualData)
 }
 
 suspend fun CryptoEngine.decrypt_aes256gcm_data_authenticated() {
     val actualData = this.decrypt(CryptoAndroidTestUtils.aes256gcm_data, CryptoAndroidTestUtils.key256, CryptoAndroidTestUtils.ad)
+        .getOrNull()
     assertContentEquals(CryptoAndroidTestUtils.plainData, actualData)
 }
 
@@ -98,7 +99,7 @@ suspend fun CryptoEngine.decrypt_aes256gcm_file() {
     LbcResourcesHelper.copyResourceToDeviceFile(CryptoAndroidTestUtils.plainFile.name, plainFile)
 
     val aEncFile = AtomicFile(cipherFile)
-    val actualData = this.decrypt(aEncFile, CryptoAndroidTestUtils.key256, null)
+    val actualData = this.decrypt(aEncFile, CryptoAndroidTestUtils.key256, null).getOrNull()
     val expectedData = plainFile.readBytes()
     assertContentEquals(expectedData, actualData)
 }

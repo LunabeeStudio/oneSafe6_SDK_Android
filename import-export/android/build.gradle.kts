@@ -113,4 +113,5 @@ dependencies {
     androidTestImplementation(libs.lblogger)
     androidTestImplementation(libs.work.testing)
     androidTestImplementation(libs.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.test.rules)
 }

@@ -124,8 +124,10 @@ abstract class OSHiltTest : OSTest() {
         }
     }
 
+    private val context = InstrumentationRegistry.getInstrumentation().targetContext
+
     private fun initializeWorkManager() {
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val context = context
         val config = Configuration.Builder()
             .setMinimumLoggingLevel(Log.DEBUG)
             .setExecutor(SynchronousExecutor())
@@ -156,10 +158,10 @@ abstract class OSHiltTest : OSTest() {
     }
 
     protected suspend fun signOut() {
+        context.cacheDir.deleteRecursively()
+        context.filesDir.deleteRecursively()
         cryptoRepository.resetCryptography()
         recentSearchDataStore.updateData { it.defaultInstanceForType }
-        iconRepository.deleteAll()
-        fileRepository.deleteAll()
         mainDatabase.clearAllTables()
         preferencesDataStore.edit {
             it.clear()
