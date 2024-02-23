@@ -67,21 +67,27 @@ class AesCryptoEngine @Inject constructor(
         logger.i("Initialize ${javaClass.simpleName} using ${cipher.provider}")
     }
 
-    override suspend fun encrypt(plainData: ByteArray, key: ByteArray, associatedData: ByteArray?): ByteArray {
-        return withContext(dispatcher) {
-            doEncrypt(plainData, key)
+    override suspend fun encrypt(plainData: ByteArray, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
+        return runCatching {
+            withContext(dispatcher) {
+                doEncrypt(plainData, key)
+            }
         }
     }
 
-    override suspend fun decrypt(cipherData: ByteArray, key: ByteArray, associatedData: ByteArray?): ByteArray {
-        return withContext(dispatcher) {
-            doDecrypt(cipherData, key)
+    override suspend fun decrypt(cipherData: ByteArray, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
+        return runCatching {
+            withContext(dispatcher) {
+                doDecrypt(cipherData, key)
+            }
         }
     }
 
-    override suspend fun decrypt(cipherFile: AtomicFile, key: ByteArray, associatedData: ByteArray?): ByteArray {
-        return withContext(dispatcher) {
-            doDecrypt(cipherFile, key)
+    override suspend fun decrypt(cipherFile: AtomicFile, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
+        return runCatching {
+            withContext(dispatcher) {
+                doDecrypt(cipherFile, key)
+            }
         }
     }
 

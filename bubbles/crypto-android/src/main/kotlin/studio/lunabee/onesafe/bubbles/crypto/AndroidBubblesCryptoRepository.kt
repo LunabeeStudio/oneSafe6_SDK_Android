@@ -59,7 +59,7 @@ class AndroidBubblesCryptoRepository @Inject constructor(
         val rawData = mapper(mapBlock, data)
         return try {
             mainCryptoRepository.decryptBubbles(key.encKey).use { rawKey ->
-                crypto.encrypt(rawData, rawKey, null)
+                crypto.encrypt(rawData, rawKey, null).getOrThrow()
             }
         } catch (e: GeneralSecurityException) {
             throw OSCryptoError(OSCryptoError.Code.ENCRYPTION_FAILED_BAD_KEY, cause = e)
@@ -74,7 +74,7 @@ class AndroidBubblesCryptoRepository @Inject constructor(
                     val mapBlock = encryptEntry.mapBlock
                     val rawData = mapper(mapBlock, data)
                     try {
-                        crypto.encrypt(rawData, rawKey, null)
+                        crypto.encrypt(rawData, rawKey, null).getOrThrow()
                     } catch (e: GeneralSecurityException) {
                         throw OSCryptoError(OSCryptoError.Code.ENCRYPTION_FAILED_BAD_KEY, cause = e)
                     }
@@ -86,7 +86,7 @@ class AndroidBubblesCryptoRepository @Inject constructor(
     override suspend fun <Data : Any> localDecrypt(key: ContactLocalKey, decryptEntry: DecryptEntry<Data>): Data {
         val rawData = try {
             mainCryptoRepository.decryptBubbles(key.encKey).use { rawKey ->
-                crypto.decrypt(decryptEntry.data, rawKey, null)
+                crypto.decrypt(decryptEntry.data, rawKey, null).getOrThrow()
             }
         } catch (e: GeneralSecurityException) {
             throw OSCryptoError(OSCryptoError.Code.DECRYPTION_FAILED_WRONG_KEY, cause = e)
@@ -98,7 +98,7 @@ class AndroidBubblesCryptoRepository @Inject constructor(
     override suspend fun localDecrypt(key: ContactLocalKey, decryptEntries: List<DecryptEntry<out Any>?>): List<Any?> {
         val rawData = try {
             mainCryptoRepository.decryptBubbles(key.encKey).use { rawKey ->
-                decryptEntries.map { it to it?.let { crypto.decrypt(it.data, rawKey, null) } }
+                decryptEntries.map { it to it?.let { crypto.decrypt(it.data, rawKey, null).getOrThrow() } }
             }
         } catch (e: GeneralSecurityException) {
             throw OSCryptoError(OSCryptoError.Code.DECRYPTION_FAILED_WRONG_KEY, cause = e)
@@ -130,7 +130,7 @@ class AndroidBubblesCryptoRepository @Inject constructor(
         sharedKey: ContactSharedKey,
     ): ByteArray = try {
         val plainSharedKey = localDecrypt(localKey, DecryptEntry(sharedKey.encKey, ByteArray::class))
-        crypto.decrypt(data, plainSharedKey, null)
+        crypto.decrypt(data, plainSharedKey, null).getOrThrow()
     } catch (e: GeneralSecurityException) {
         throw OSCryptoError(OSCryptoError.Code.BUBBLES_DECRYPTION_FAILED_WRONG_CONTACT_KEY, cause = e)
     }

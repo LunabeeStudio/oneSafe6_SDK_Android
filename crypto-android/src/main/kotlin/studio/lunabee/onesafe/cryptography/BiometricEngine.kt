@@ -113,7 +113,7 @@ class BiometricEngine @Inject constructor(
         return try {
             encryptedMasterKey?.let { key ->
                 cipher.doFinal(key)
-            } ?: throw OSCryptoError(OSCryptoError.Code.BIOMETRIC_DECRYPTION_FAILED)
+            } ?: throw OSCryptoError(OSCryptoError.Code.BIOMETRIC_DECRYPTION_FAIL)
         } catch (e: IllegalBlockSizeException) {
             throw OSCryptoError(OSCryptoError.Code.BIOMETRIC_DECRYPTION_NOT_AUTHENTICATED, cause = e)
         }

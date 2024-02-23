@@ -88,7 +88,7 @@ class BiometricEngineTest {
             val error = assertFailsWith<OSCryptoError> {
                 biometricEngine.retrieveKey(cipher)
             }
-            assertEquals(OSCryptoError.Code.BIOMETRIC_DECRYPTION_FAILED, error.code)
+            assertEquals(OSCryptoError.Code.BIOMETRIC_DECRYPTION_FAIL, error.code)
         } else {
             println("retrieve_key_not_generated_test requires biometrics, bypassing")
         }
