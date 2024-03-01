@@ -59,7 +59,7 @@ dependencies {
     ksp(libs.dagger.hilt.compiler)
     kspAndroidTest(libs.dagger.hilt.compiler)
 
-    implementation(platform(libs.compose.beta.bom))
+    implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui.tooling.preview)

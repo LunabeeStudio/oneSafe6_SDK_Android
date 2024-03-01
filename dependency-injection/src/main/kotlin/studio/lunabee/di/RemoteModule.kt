@@ -20,12 +20,14 @@
 package studio.lunabee.di
 
 import com.lunabee.lblogger.LBLogger
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
@@ -34,7 +36,6 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import studio.lunabee.onesafe.domain.qualifier.ValidUrlStartList
 import studio.lunabee.onesafe.remote.api.ForceUpgradeApi
-import studio.lunabee.onesafe.remote.api.UrlMetadataApi
 import studio.lunabee.onesafe.remote.datasource.ForceUpdateRemoteDatasourceImpl
 import studio.lunabee.onesafe.remote.datasource.UrlMetadataRemoteDataSourceImpl
 import studio.lunabee.onesafe.repository.datasource.ForceUpdateRemoteDatasource
@@ -65,6 +66,7 @@ object RemoteModule {
                     }
                 }
             }
+            install(HttpTimeout)
         }
     }
 
@@ -80,20 +82,21 @@ object RemoteModule {
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RemoteUrlDatasourceModule {
-    @Provides
-    fun provideUrlMetadataRemoteDataSource(
-        urlMetadataApi: UrlMetadataApi,
-    ): UrlMetadataRemoteDataSource {
-        return UrlMetadataRemoteDataSourceImpl(
-            urlMetadataApi = urlMetadataApi,
-        )
-    }
+abstract class RemoteModuleBinds {
+    @Binds
+    internal abstract fun bindsUrlMetadataRemoteDataSource(
+        urlMetadataRemoteDataSource: UrlMetadataRemoteDataSourceImpl,
+    ): UrlMetadataRemoteDataSource
+}
 
+@Module
+@InstallIn(SingletonComponent::class)
+object RemoteUrlDatasourceModule {
     @ValidUrlStartList
     @Provides
     fun providesValidUrlStartList(): List<String> {
         return listOf(
+            "",
             "https://",
             "www.",
             "https://www.",

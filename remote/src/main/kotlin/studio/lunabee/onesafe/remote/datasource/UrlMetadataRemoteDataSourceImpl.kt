@@ -19,56 +19,57 @@
 
 package studio.lunabee.onesafe.remote.datasource
 
-import com.lunabee.lblogger.LBLogger
-import com.lunabee.lblogger.e
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsChannel
-import io.ktor.http.HttpStatusCode
-import io.ktor.util.cio.writeChannel
-import io.ktor.utils.io.copyAndClose
+import com.lunabee.lbcore.model.LBFlowResult
+import com.lunabee.lbcore.model.LBFlowResult.Companion.transformResult
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withTimeoutOrNull
+import studio.lunabee.onesafe.domain.qualifier.RemoteDispatcher
 import studio.lunabee.onesafe.error.OSRemoteError
 import studio.lunabee.onesafe.remote.api.UrlMetadataApi
 import studio.lunabee.onesafe.repository.datasource.UrlMetadataRemoteDataSource
 import java.io.File
 import javax.inject.Inject
-
-private val log = LBLogger.get<UrlMetadataRemoteDataSourceImpl>()
+import kotlin.time.Duration.Companion.seconds
 
 class UrlMetadataRemoteDataSourceImpl @Inject constructor(
     private val urlMetadataApi: UrlMetadataApi,
+    @RemoteDispatcher
+    private val dispatcher: CoroutineDispatcher,
 ) : UrlMetadataRemoteDataSource {
+    private val htmlPageFetchTimeout = 6.seconds
 
     override suspend fun getPageHtmlCode(url: String): String {
         return try {
-            urlMetadataApi.getHtmlPageCode(url = url)
-        } catch (e: Exception) {
-            throw OSRemoteError(code = OSRemoteError.Code.UNKNOWN_HTTP_ERROR, cause = e)
-        }
-    }
-
-    override suspend fun downloadIcon(baseUrl: String, filePath: String): Boolean {
-        return try {
-            val httpResponse = urlMetadataApi.downloadIcon(url = DefaultFaviconUrlApi + baseUrl)
-            handleResponse(httpResponse = httpResponse, filePath = filePath) || kotlin.run {
-                val fallbackHttpResponse = urlMetadataApi.downloadIcon(url = FallbackFaviconUrlApi + baseUrl)
-                handleResponse(httpResponse = fallbackHttpResponse, filePath = filePath)
+            withTimeoutOrNull(htmlPageFetchTimeout) {
+                urlMetadataApi.getHtmlPageCode(url = url)
             }
         } catch (e: Exception) {
-            // Silent exception.
-            log.e(t = e)
-            false
-        }
+            throw OSRemoteError(code = OSRemoteError.Code.UNKNOWN_HTTP_ERROR, cause = e)
+        } ?: throw OSRemoteError(code = OSRemoteError.Code.UNEXPECTED_TIMEOUT)
     }
 
-    private suspend fun handleResponse(httpResponse: HttpResponse, filePath: String): Boolean {
-        return if (httpResponse.status == HttpStatusCode.OK) {
-            val file = File(filePath)
-            httpResponse.bodyAsChannel().copyAndClose(file.writeChannel())
-            true
-        } else {
-            false
-        }
-    }
+    override fun downloadFavIcon(baseUrl: String, targetFile: File): Flow<LBFlowResult<File>> =
+        urlMetadataApi.downloadImage(url = DefaultFaviconUrlApi + baseUrl, targetFile).transformResult(
+            transformError = {
+                val fallbackFlow = urlMetadataApi.downloadImage(url = FallbackFaviconUrlApi + baseUrl, targetFile)
+                emitAll(fallbackFlow)
+            },
+        )
+            .flowOn(dispatcher)
+            .catch { throwable ->
+                emit(LBFlowResult.Failure(throwable, targetFile))
+            }
+
+    override fun downloadImage(url: String, targetFile: File): Flow<LBFlowResult<File>> =
+        urlMetadataApi.downloadImage(url, targetFile)
+            .flowOn(dispatcher)
+            .catch { throwable ->
+                emit(LBFlowResult.Failure(throwable, targetFile))
+            }
 
     companion object {
         private const val DefaultFaviconUrlApi: String =

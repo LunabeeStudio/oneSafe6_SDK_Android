@@ -33,6 +33,7 @@ import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.repository.ItemSettingsRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.usecase.search.GetMatchFromSearchUseCase
+import studio.lunabee.onesafe.test.OSTestConfig
 import studio.lunabee.onesafe.test.OSTestUtils
 import studio.lunabee.onesafe.test.testUUIDs
 import java.util.UUID
@@ -92,7 +93,7 @@ class GetMatchFromSearchUseCaseTest {
         PlainIndexWordEntry("yyyy", testUUIDs[9], null),
         PlainIndexWordEntry("xxxx", testUUIDs[9], null),
         PlainIndexWordEntry("9999", testUUIDs[9], null),
-    ).shuffled(OSTestUtils.random)
+    ).shuffled(OSTestConfig.random)
 
     @Test
     fun no_match_test(): TestResult = runTest {

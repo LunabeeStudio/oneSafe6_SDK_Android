@@ -31,7 +31,6 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.AnnotatedString
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.button.OSTextButton
@@ -74,7 +73,11 @@ class AutoBackupErrorHomeInfoData(
             title = LbcTextSpec.StringResource(OSString.autoBackup_errorCard_title),
             description = LbcTextSpec.StringResource(OSString.autoBackup_errorCard_message, errorLabel),
             attributes = OSMessageCardAttributes()
-                .dismissible(OSImageSpec.Drawable(OSDrawable.ic_baseline_close), onDismiss)
+                .dismissible(
+                    icon = OSImageSpec.Drawable(OSDrawable.ic_baseline_close),
+                    contentDescription = LbcTextSpec.StringResource(OSString.common_accessibility_dismissCta),
+                    onDismiss = onDismiss,
+                )
                 .style(OSMessageCardStyle.Alert),
             modifier = modifier
                 .testTag(UiConstants.TestTag.Item.AutoBackupErrorCard),
@@ -88,7 +91,7 @@ class AutoBackupErrorHomeInfoData(
                     OSTextButton(
                         text = LbcTextSpec.StringResource(OSString.common_copyErrorMessage_label),
                         onClick = {
-                            clipboardManager.setText(AnnotatedString(errorFull.string(context)))
+                            clipboardManager.setText(errorFull.annotated(context))
                             Toast.makeText(context, OSString.common_copyErrorMessage_feedback, Toast.LENGTH_SHORT).show()
                         },
                         modifier = Modifier.padding(bottom = OSDimens.SystemSpacing.Small),

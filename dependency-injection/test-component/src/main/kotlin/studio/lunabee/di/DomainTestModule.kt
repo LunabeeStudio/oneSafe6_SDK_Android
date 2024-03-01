@@ -40,6 +40,7 @@ import studio.lunabee.onesafe.domain.qualifier.DefaultDispatcher
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.domain.qualifier.InternalDir
 import studio.lunabee.onesafe.domain.qualifier.RemoteDispatcher
+import studio.lunabee.onesafe.test.IncrementalIdProvider
 import java.io.File
 import java.time.Clock
 import javax.inject.Singleton

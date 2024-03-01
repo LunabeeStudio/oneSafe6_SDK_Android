@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 7/6/2023 - for the oneSafe6 SDK.
- * Last modified 7/6/23, 8:31 AM
+ * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
+ * Last modified 4/7/23, 12:24 AM
  */
 
-package studio.lunabee.onesafe.domain.usecase
+package studio.lunabee.onesafe.domain.qualifier
 
-interface GetIconAndColorFromUrlUseCase {
-    suspend operator fun invoke(url: String): Pair<ByteArray?, String?>
-}
+import javax.inject.Qualifier
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class StoreBetaTrack

@@ -27,5 +27,6 @@ data class OSRemoteError(
 
     enum class Code(override val message: String) : ErrorCode<Code, OSRemoteError> {
         UNKNOWN_HTTP_ERROR("Exception occurred during execution of HTTP request"),
+        UNEXPECTED_TIMEOUT("Request did not timeout but takes too long"),
     }
 }

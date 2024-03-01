@@ -19,10 +19,14 @@
 
 package studio.lunabee.onesafe.repository.datasource
 
+import com.lunabee.lbcore.model.LBFlowResult
+import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.error.OSRemoteError
+import java.io.File
 
 interface UrlMetadataRemoteDataSource {
     @Throws(OSRemoteError::class)
     suspend fun getPageHtmlCode(url: String): String
-    suspend fun downloadIcon(baseUrl: String, filePath: String): Boolean
+    fun downloadFavIcon(baseUrl: String, targetFile: File): Flow<LBFlowResult<File>>
+    fun downloadImage(url: String, targetFile: File): Flow<LBFlowResult<File>>
 }

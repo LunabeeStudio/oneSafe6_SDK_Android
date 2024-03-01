@@ -22,24 +22,21 @@ package studio.lunabee.di
 import com.lunabee.lblogger.LBLogger
 import dagger.Module
 import dagger.Provides
-import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.android.Android
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respondError
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import studio.lunabee.onesafe.domain.qualifier.ValidUrlStartList
 import studio.lunabee.onesafe.remote.api.ForceUpgradeApi
-import studio.lunabee.onesafe.remote.api.UrlMetadataApi
 import studio.lunabee.onesafe.remote.datasource.ForceUpdateRemoteDatasourceImpl
-import studio.lunabee.onesafe.remote.datasource.UrlMetadataRemoteDataSourceImpl
 import studio.lunabee.onesafe.repository.datasource.ForceUpdateRemoteDatasource
-import studio.lunabee.onesafe.repository.datasource.UrlMetadataRemoteDataSource
 
 @Module
 @TestInstallIn(
@@ -49,12 +46,18 @@ import studio.lunabee.onesafe.repository.datasource.UrlMetadataRemoteDataSource
 object RemoteTestModule {
     @Provides
     fun provideKtorHttpClient(): HttpClient {
-        return HttpClient(engine = Android.create()) {
+        val engine = MockEngine {
+            respondError(
+                status = HttpStatusCode.NotFound,
+            )
+        }
+        return HttpClient(engine = engine) {
             install(ContentNegotiation) {
                 json(
                     Json {
                         prettyPrint = true
                         isLenient = true
+                        ignoreUnknownKeys = true
                     },
                 )
             }
@@ -77,38 +80,6 @@ object RemoteTestModule {
     ): ForceUpdateRemoteDatasource {
         return ForceUpdateRemoteDatasourceImpl(
             forceUpgradeApi = forceUpgradeApi,
-        )
-    }
-}
-
-@Module
-@TestInstallIn(
-    components = [SingletonComponent::class],
-    replaces = [RemoteUrlDatasourceModule::class],
-)
-object EmptyRemoteUrlDatasourceModule
-
-@Module
-@InstallIn(SingletonComponent::class)
-object RemoteUrlDatasourceTestModule {
-    @Provides
-    fun provideUrlMetadataRemoteDataSource(
-        urlMetadataApi: UrlMetadataApi,
-    ): UrlMetadataRemoteDataSource {
-        return UrlMetadataRemoteDataSourceImpl(
-            urlMetadataApi = urlMetadataApi,
-        )
-    }
-
-    @ValidUrlStartList
-    @Provides
-    fun providesValidUrlStartList(): List<String> {
-        return listOf(
-            "https://",
-            "http://",
-            "www.",
-            "https://www.",
-            "http://www.",
         )
     }
 }

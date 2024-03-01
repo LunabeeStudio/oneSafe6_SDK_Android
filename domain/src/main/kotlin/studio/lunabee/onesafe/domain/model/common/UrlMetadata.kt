@@ -19,8 +19,11 @@
 
 package studio.lunabee.onesafe.domain.model.common
 
+import java.io.File
+
 data class UrlMetadata(
     val url: String,
     val title: String?,
-    val filePath: String?,
+    val iconFile: File?,
+    val force: Boolean,
 )

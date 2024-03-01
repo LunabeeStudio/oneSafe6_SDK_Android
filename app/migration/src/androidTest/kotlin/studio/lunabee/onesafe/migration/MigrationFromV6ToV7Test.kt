@@ -35,7 +35,7 @@ import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
 import studio.lunabee.onesafe.storage.dao.SafeItemDao
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltTest
-import studio.lunabee.onesafe.test.OSTestUtils
+import studio.lunabee.onesafe.test.OSTestConfig
 import studio.lunabee.onesafe.test.test
 import javax.inject.Inject
 import kotlin.test.assertEquals
@@ -45,7 +45,7 @@ class MigrationFromV6ToV7Test : OSHiltTest() {
     @get:Rule override val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
     override val initialTestState: InitialTestState = InitialTestState.LoggedIn
 
-    private val salt: ByteArray = OSTestUtils.random.nextBytes(32)
+    private val salt: ByteArray = OSTestConfig.random.nextBytes(32)
 
     @Inject lateinit var hashEngine: PasswordHashEngine
 
@@ -77,7 +77,7 @@ class MigrationFromV6ToV7Test : OSHiltTest() {
         )
 
         val idName = expectedNameIndex
-            .shuffled(OSTestUtils.random) // Do not insert in the correct order
+            .shuffled(OSTestConfig.random) // Do not insert in the correct order
             .associate { nameIndex ->
                 val plainName = nameIndex.first
                 val item = createItemUseCase.test(

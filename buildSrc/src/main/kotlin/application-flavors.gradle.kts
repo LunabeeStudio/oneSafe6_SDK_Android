@@ -26,38 +26,70 @@ version = AndroidConfig.envVersionName
 group = ProjectConfig.GROUP_ID
 
 android {
-    flavorDimensions += "environment"
+    flavorDimensions += listOf(OSDimensions.Environment.value, OSDimensions.StoreChannel.value)
     productFlavors {
         val customBackupMimetype = "application/onesafe6"
 
-        create("dev") {
+        create(OSDimensions.Environment.Dev) {
             minSdk = AndroidConfig.MIN_APP_SDK
 
-            dimension = "environment"
+            dimension = OSDimensions.Environment.value
             applicationIdSuffix = ".dev"
             versionNameSuffix = "#${AndroidConfig.envVersionCode} dev"
 
             manifestPlaceholders["customBackupMimetype"] = customBackupMimetype
 
             buildConfigField("Boolean", "IS_DEV", "true")
+            buildConfigField("Boolean", "ENABLE_FIREBASE", "true")
             buildConfigField("String", "CUSTOM_BACKUP_MIMETYPE", "\"$customBackupMimetype\"")
         }
 
-        create("prod") {
+        create(OSDimensions.Environment.Store) {
             minSdk = AndroidConfig.MIN_APP_SDK
-            dimension = "environment"
+            dimension = OSDimensions.Environment.value
 
+            // TODO prod backup mimetype inverted with _dev
+            //  Verify if a migration (or something else) is needed to update cloud backups
             val customBackupMimetypeDev = "${customBackupMimetype}_dev"
             manifestPlaceholders["customBackupMimetype"] = customBackupMimetypeDev
 
             buildConfigField("Boolean", "IS_DEV", "false")
             buildConfigField("String", "CUSTOM_BACKUP_MIMETYPE", "\"$customBackupMimetypeDev\"")
         }
+
+        create(OSDimensions.StoreChannel.Beta) {
+            dimension = OSDimensions.StoreChannel.value
+            versionNameSuffix = "#${AndroidConfig.envVersionCode} beta"
+
+            buildConfigField("Boolean", "ENABLE_FIREBASE", "true")
+            buildConfigField("Boolean", "IS_BETA", "true")
+        }
+
+        create(OSDimensions.StoreChannel.Prod) {
+            dimension = OSDimensions.StoreChannel.value
+
+            buildConfigField("Boolean", "ENABLE_FIREBASE", "false")
+            buildConfigField("Boolean", "IS_BETA", "false")
+        }
     }
 
     compileOptions {
         sourceCompatibility = ProjectConfig.JDK_VERSION
         targetCompatibility = ProjectConfig.JDK_VERSION
+    }
+}
+
+androidComponents {
+    beforeVariants { variantBuilder ->
+        // devBeta -> day by day dev
+        // storeBeta -> public beta release
+        // storeProd -> public release
+        if (variantBuilder.flavorName?.lowercase() in listOf(
+                "${OSDimensions.Environment.Dev}${OSDimensions.StoreChannel.Prod}",
+            )
+        ) {
+            variantBuilder.enable = false
+        }
     }
 }
 

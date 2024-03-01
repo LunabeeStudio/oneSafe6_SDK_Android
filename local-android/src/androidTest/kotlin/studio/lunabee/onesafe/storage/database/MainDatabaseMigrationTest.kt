@@ -31,7 +31,7 @@ import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.Migration3to4
 import studio.lunabee.onesafe.storage.Migration8to9
 import studio.lunabee.onesafe.storage.Migration9to10
-import studio.lunabee.onesafe.test.OSTestUtils
+import studio.lunabee.onesafe.test.OSTestConfig
 import studio.lunabee.onesafe.test.testUUIDs
 import studio.lunabee.onesafe.toByteArray
 import javax.inject.Inject
@@ -65,7 +65,7 @@ class MainDatabaseMigrationTest {
 
     @Test
     fun migrate3To4_test() {
-        val blobs = List(8) { OSTestUtils.random.nextBytes(10) }
+        val blobs = List(8) { OSTestConfig.random.nextBytes(10) }
         val blobsString = blobs.map { "X'${it.joinToString("") { byte -> "%02x".format(byte) }}'" }
 
         helper.createDatabase(dbName, 3).use { db ->
@@ -111,7 +111,7 @@ class MainDatabaseMigrationTest {
     fun migration8to9_test() {
         val ids = testUUIDs.subList(0, 9).map { it.toByteArray() }
         val idWithUpdatedAt = ids.map {
-            it.toSqlBlobString() to OSTestUtils.random.nextLong()
+            it.toSqlBlobString() to OSTestConfig.random.nextLong()
         }
 
         val valueRows = idWithUpdatedAt.joinToString(",") { (id, updatedAt) ->

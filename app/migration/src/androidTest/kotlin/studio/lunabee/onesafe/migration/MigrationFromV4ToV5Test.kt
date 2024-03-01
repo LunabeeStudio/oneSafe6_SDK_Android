@@ -29,8 +29,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import studio.lunabee.onesafe.importexport.model.LocalBackup
-import studio.lunabee.onesafe.importexport.usecase.LocalAutoBackupUseCase
 import studio.lunabee.onesafe.importexport.usecase.GetAllLocalBackupsUseCase
+import studio.lunabee.onesafe.importexport.usecase.LocalAutoBackupUseCase
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltTest
 import java.io.File
@@ -41,7 +41,8 @@ import kotlin.test.assertContentEquals
 @HiltAndroidTest
 class MigrationFromV4ToV5Test : OSHiltTest() {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
-    private val backupsDir: File = File(context.filesDir, "backups").also { it.mkdirs() }
+    private val backupsDir: File
+        get() = File(context.filesDir, "backups").also { it.mkdirs() }
 
     @get:Rule override val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
     override val initialTestState: InitialTestState = InitialTestState.LoggedIn

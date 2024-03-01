@@ -56,7 +56,11 @@ class AutoBackupEnableCtaHomeInfoData(
             title = LbcTextSpec.StringResource(OSString.home_autoBackupCard_title),
             description = LbcTextSpec.StringResource(OSString.home_autoBackupCard_message),
             attributes = OSMessageCardAttributes()
-                .dismissible(OSImageSpec.Drawable(OSDrawable.ic_baseline_close), onDismiss)
+                .dismissible(
+                    icon = OSImageSpec.Drawable(OSDrawable.ic_baseline_close),
+                    contentDescription = LbcTextSpec.StringResource(OSString.common_accessibility_dismissCta),
+                    onDismiss = onDismiss,
+                )
                 .style(OSMessageCardStyle.Default),
             modifier = modifier
                 .testTag(UiConstants.TestTag.Item.AutoBackupEnableCtaCard),

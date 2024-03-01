@@ -32,7 +32,7 @@ import studio.lunabee.onesafe.importexport.android.test.BuildConfig
 import studio.lunabee.onesafe.importexport.model.ImportExportConstant
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltTest
-import studio.lunabee.onesafe.test.OSTestUtils
+import studio.lunabee.onesafe.test.OSTestConfig
 import java.io.File
 import java.io.FileInputStream
 import javax.inject.Inject
@@ -66,9 +66,9 @@ class BackupsProviderTest : OSHiltTest() {
         val expectedFilename = "backup.${ImportExportConstant.ExtensionOs6Backup}"
         val backupFile = File(backupsDir, expectedFilename)
         val notBackupFile = File(backupsDir, "backup.not_backup")
-        val expectedData = OSTestUtils.random.nextBytes(10)
+        val expectedData = OSTestConfig.random.nextBytes(10)
         backupFile.writeBytes(expectedData)
-        notBackupFile.writeBytes(OSTestUtils.random.nextBytes(1))
+        notBackupFile.writeBytes(OSTestConfig.random.nextBytes(1))
 
         val authority = BuildConfig.APPLICATION_ID + BuildConfig.BACKUPS_PROVIDER_AUTHORITY_SUFFIX
         val provider =

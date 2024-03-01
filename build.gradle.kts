@@ -17,6 +17,8 @@
  * Last modified 4/7/23, 12:24 AM
  */
 
+import org.gradle.kotlin.dsl.support.uppercaseFirstChar
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
@@ -96,7 +98,6 @@ val allConnectedTestsTask: Task? = tasks.findByName("allConnectedTests")
 val excludedTestProjects: List<String> = listOf(
     "Commons_Android",
     "Commons_OS6",
-    "common-test",
     "common-test-android",
     "benchmark-android",
     "macrobenchmark-android",
@@ -118,8 +119,7 @@ subprojects {
 
         val isAndroidLibrary = extensions.findByType<com.android.build.gradle.LibraryExtension>() != null
         val isApp = extensions.findByType<com.android.build.gradle.AppExtension>() != null
-        val hasEnvironmentFlavor = isApp ||
-            project.name == "import-export-android" ||
+        val hasEnvironmentFlavor = project.name == "import-export-android" ||
             project.name == "ime" ||
             project.name == "migration" ||
             project.name == "login"
@@ -132,8 +132,11 @@ subprojects {
             ancestor = ancestor.parent
         }
 
+        val envFlavor = OSDimensions.Environment.Store.uppercaseFirstChar()
+        val appVariant = "$envFlavor${OSDimensions.StoreChannel.Prod.uppercaseFirstChar()}"
         val testTaskNames: List<String> = when {
-            hasEnvironmentFlavor -> listOf("$parentName$name:testProdReleaseUnitTest")
+            isApp -> listOf("app:test${appVariant}ReleaseUnitTest")
+            hasEnvironmentFlavor -> listOf("$parentName$name:test${envFlavor}ReleaseUnitTest")
             isCryptoModule -> listOf(
                 "$parentName$name:testJceReleaseUnitTest",
                 "$parentName$name:testTinkReleaseUnitTest",
@@ -143,7 +146,8 @@ subprojects {
         }
 
         val androidTestTaskNames: List<String>? = when {
-            hasEnvironmentFlavor -> listOf("$parentName$name:connectedProdDebugAndroidTest")
+            isApp -> listOf("app:connected${appVariant}DebugAndroidTest")
+            hasEnvironmentFlavor -> listOf("$parentName$name:connected${envFlavor}DebugAndroidTest")
             isCryptoModule -> listOf(
                 "$parentName$name:connectedJceDebugAndroidTest",
                 "$parentName$name:connectedTinkDebugAndroidTest",

@@ -154,11 +154,18 @@ abstract class OSHiltTest : OSTest() {
             }
         }
 
-        itemSettingsRepository.setItemsLayoutSetting(style = OSTestUtils.itemsLayoutSettings)
+        itemSettingsRepository.setItemsLayoutSetting(style = OSTestConfig.itemsLayoutSettings)
+        osAppSettings.setCameraSystem(value = OSTestConfig.cameraSystem)
     }
 
     protected suspend fun signOut() {
-        context.cacheDir.deleteRecursively()
+        context.cacheDir.listFiles { pathname ->
+            pathname?.let {
+                !pathname.path.contains("screenshot") && !pathname.path.contains("test")
+            } ?: true
+        }?.forEach {
+            it.deleteRecursively()
+        }
         context.filesDir.deleteRecursively()
         cryptoRepository.resetCryptography()
         recentSearchDataStore.updateData { it.defaultInstanceForType }

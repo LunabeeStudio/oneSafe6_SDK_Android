@@ -177,3 +177,5 @@ style:
     ignoreAnnotated: [ 'Preview' ]
   FunctionOnlyReturningConstant:
     ignoreAnnotated: [ 'Provides' ]
+  ForbiddenComment:
+    active: false

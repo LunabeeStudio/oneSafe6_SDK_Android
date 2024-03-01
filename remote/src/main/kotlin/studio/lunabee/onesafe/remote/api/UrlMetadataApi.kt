@@ -19,18 +19,53 @@
 
 package studio.lunabee.onesafe.remote.api
 
+import co.touchlab.kermit.Logger
+import com.lunabee.lbcore.model.LBFlowResult
+import com.lunabee.lblogger.LBLogger
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.onDownload
+import io.ktor.client.plugins.timeout
 import io.ktor.client.request.get
-import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsChannel
 import io.ktor.client.statement.bodyAsText
+import io.ktor.util.cio.writeChannel
+import io.ktor.utils.io.copyAndClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import studio.lunabee.onesafe.domain.Constant
+import java.io.File
 import javax.inject.Inject
 
-class UrlMetadataApi @Inject constructor(private val httpClient: HttpClient) {
+private val logger: Logger = LBLogger.get<UrlMetadataApi>()
+
+class UrlMetadataApi @Inject constructor(
+    private val httpClient: HttpClient,
+) {
+    private val getHtmlPageTimeout = 5_000L
+
     suspend fun getHtmlPageCode(url: String): String {
-        return httpClient.get(urlString = url).bodyAsText()
+        return httpClient.get(urlString = url) {
+            timeout {
+                HttpTimeout.HttpTimeoutCapabilityConfiguration(getHtmlPageTimeout, getHtmlPageTimeout, getHtmlPageTimeout)
+            }
+        }.bodyAsText()
     }
 
-    suspend fun downloadIcon(url: String): HttpResponse {
-        return httpClient.get(urlString = url)
+    fun downloadImage(url: String, targetFile: File): Flow<LBFlowResult<File>> = callbackFlow {
+        val byteReadChannel = httpClient.get(urlString = url) {
+            onDownload { bytesSentTotal, contentLength ->
+                val progress = if (contentLength == 0L) {
+                    Constant.IndeterminateProgress
+                } else {
+                    bytesSentTotal.toFloat() / contentLength
+                }
+                logger.v { "downloading ${(progress * 100).toInt()}%" }
+                send(LBFlowResult.Loading(targetFile, progress))
+            }
+        }.bodyAsChannel()
+        byteReadChannel.copyAndClose(targetFile.writeChannel())
+        send(LBFlowResult.Success(targetFile))
+        close()
     }
 }

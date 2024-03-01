@@ -46,5 +46,6 @@ data class OSDomainError(
         UNZIP_SECURITY_TRAVERSAL_VULNERABILITY("Archive contains unauthorized transversal path"),
         ALPHA_INDEX_COMPUTE_FAILED("Failed to compute the alphabetic index"),
         UNKNOWN_ERROR("Unknown error happened"),
+        NO_HTML_PAGE_FOUND("No html page found for the provided url"),
     }
 }

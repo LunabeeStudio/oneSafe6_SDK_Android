@@ -43,9 +43,9 @@ import studio.lunabee.onesafe.atom.button.OSIconButton
 import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
+import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.commonui.OSItemIllustrationHelper
 import studio.lunabee.onesafe.commonui.OSNameProvider
-import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.extension.loremIpsum
 import studio.lunabee.onesafe.model.OSActionState
@@ -125,8 +125,8 @@ fun AppWriteMessageTopBarPreview() {
                 OSIconButton(
                     image = OSImageSpec.Drawable(OSDrawable.ic_back),
                     onClick = {},
-                    buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
                     contentDescription = LbcTextSpec.StringResource(OSString.common_accessibility_back),
+                    buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
                     colors = OSIconButtonDefaults.iconButtonColors(
                         containerColor = LocalDesignSystem.current.bubblesSecondaryContainer(),
                         contentColor = MaterialTheme.colorScheme.onSurface,
@@ -136,8 +136,9 @@ fun AppWriteMessageTopBarPreview() {
             },
             trailingSlot = {
                 OSIconButton(
-                    image = OSImageSpec.Drawable(OSDrawable.ic_more),
+                    image = OSImageSpec.Drawable(OSDrawable.ic_menu),
                     onClick = { },
+                    contentDescription = LbcTextSpec.StringResource(OSString.common_accessibility_moreAction),
                     colors = OSIconButtonDefaults.secondaryIconButtonColors(state = OSActionState.Enabled),
                 )
                 ContactActionMenu(

@@ -63,8 +63,8 @@ import studio.lunabee.onesafe.atom.button.OSIconButton
 import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.bubbles.ui.extension.getDeepLinkFromMessage
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
-import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
 import studio.lunabee.onesafe.commonui.dialog.ImeDialog
@@ -441,8 +441,9 @@ private fun TrailingSlot(
     var isActionMenuExpanded: Boolean by rememberSaveable { mutableStateOf(false) }
     Box {
         OSIconButton(
-            image = OSImageSpec.Drawable(OSDrawable.ic_more),
+            image = OSImageSpec.Drawable(OSDrawable.ic_menu),
             onClick = { isActionMenuExpanded = true },
+            contentDescription = LbcTextSpec.StringResource(OSString.common_accessibility_moreAction),
             buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
             colors = OSIconButtonDefaults.iconButtonColors(
                 containerColor = LocalDesignSystem.current.bubblesSecondaryContainer(),
@@ -472,15 +473,18 @@ private fun ImeTrailingSlot(
     onHideConversationClick: () -> Unit,
     isConversationHidden: Boolean,
 ) {
-    val image = if (isConversationHidden) {
-        OSImageSpec.Drawable(OSDrawable.ic_visibility_on)
+    val (image, contentDescription) = if (isConversationHidden) {
+        OSImageSpec.Drawable(OSDrawable.ic_visibility_on) to
+            LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_hideConversation)
     } else {
-        OSImageSpec.Drawable(OSDrawable.ic_visibility_off)
+        OSImageSpec.Drawable(OSDrawable.ic_visibility_off) to
+            LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_showConversation)
     }
 
     OSIconButton(
         image = image,
         onClick = onHideConversationClick,
+        contentDescription = contentDescription,
         buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
         colors = OSIconButtonDefaults.iconButtonColors(
             containerColor = LocalDesignSystem.current.bubblesSecondaryContainer(),

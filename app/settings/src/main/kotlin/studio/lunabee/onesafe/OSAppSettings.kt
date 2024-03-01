@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import studio.lunabee.onesafe.domain.model.camera.CameraSystem
 import javax.inject.Inject
 
@@ -64,6 +65,8 @@ class OSAppSettings @Inject constructor(
     private val cameraSystemKey = stringPreferencesKey(SettingsConstants.CameraSystem)
     val cameraSystemFlow: Flow<CameraSystem> = dataStore.data
         .map { preferences -> CameraSystem.valueOf(preferences[cameraSystemKey] ?: SettingsDefaults.CameraSystemDefault.name) }
+    val cameraSystem: CameraSystem
+        get() = runBlocking { cameraSystemFlow.first() }
 
     suspend fun allowScreenshot(): Boolean = dataStore.data
         .map { preferences -> preferences[allowScreenshotKey] ?: SettingsDefaults.AllowScreenshotSettingDefault }.first()

@@ -65,11 +65,6 @@ class FileLocalDatasourceImpl @Inject constructor(
         return localFile
     }
 
-    override fun removeFile(filename: String): Boolean {
-        val file = File(fileDir, filename)
-        return file.delete()
-    }
-
     override fun removeAllFiles(): Boolean {
         return fileDir.deleteRecursively()
     }

@@ -42,7 +42,6 @@ class AddAndRemoveFileUseCase @Inject constructor(
         val key = safeItemKeyRepository.getSafeItemKey(itemId)
         fileSavingData.forEach { data ->
             when (data) {
-                FileSavingData.AlreadySaved -> {}
                 is FileSavingData.ToRemove -> fileRepository.deleteFile(data.fileId)
                 is FileSavingData.ToSave -> {
                     val file = fileRepository.getFile(data.fileId.toString())

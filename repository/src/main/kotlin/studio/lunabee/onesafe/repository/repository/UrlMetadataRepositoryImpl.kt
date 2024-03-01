@@ -19,8 +19,13 @@
 
 package studio.lunabee.onesafe.repository.repository
 
+import com.lunabee.lbcore.model.LBFlowResult
+import com.lunabee.lbcore.model.LBResult
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.last
 import studio.lunabee.onesafe.domain.repository.UrlMetadataRepository
 import studio.lunabee.onesafe.repository.datasource.UrlMetadataRemoteDataSource
+import java.io.File
 import javax.inject.Inject
 
 class UrlMetadataRepositoryImpl @Inject constructor(
@@ -30,7 +35,10 @@ class UrlMetadataRepositoryImpl @Inject constructor(
         return remoteDataSource.getPageHtmlCode(url = url)
     }
 
-    override suspend fun downloadIcon(baseUrl: String, filePath: String): Boolean {
-        return remoteDataSource.downloadIcon(baseUrl = baseUrl, filePath = filePath)
+    override suspend fun downloadFavIcon(baseUrl: String, targetFile: File): LBResult<File> {
+        return remoteDataSource.downloadFavIcon(baseUrl = baseUrl, targetFile = targetFile).last().asResult()
     }
+
+    override fun downloadImage(url: String, targetFile: File): Flow<LBFlowResult<File>> =
+        remoteDataSource.downloadImage(url, targetFile)
 }

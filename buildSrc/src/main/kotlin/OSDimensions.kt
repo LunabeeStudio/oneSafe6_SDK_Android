@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2024 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 10/12/2023 - for the oneSafe6 SDK.
- * Last modified 12/10/2023 13:59
+ * Created by Lunabee Studio / Date - 2/26/2024 - for the oneSafe6 SDK.
+ * Last modified 2/26/24, 4:07 PM
  */
 
-package studio.lunabee.onesafe.domain.model.safeitem
+object OSDimensions {
+    object Environment {
+        const val value: String = "environment"
+        const val Dev: String = "dev"
+        const val Store: String = "store"
+    }
 
-import java.io.InputStream
-import java.util.UUID
-
-sealed interface FileSavingData {
-    data class ToRemove(val fileId: UUID) : FileSavingData
-    data class ToSave(
-        val fileId: UUID,
-        val getStream: () -> InputStream?,
-    ) : FileSavingData
+    object StoreChannel {
+        const val value: String = "store_channel"
+        const val Beta: String = "beta"
+        const val Prod: String = "prod"
+    }
 }
