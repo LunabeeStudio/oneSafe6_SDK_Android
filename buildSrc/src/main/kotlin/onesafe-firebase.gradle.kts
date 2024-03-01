@@ -17,6 +17,8 @@
  * Last modified 4/7/23, 12:24 AM
  */
 
+import org.gradle.kotlin.dsl.support.uppercaseFirstChar
+
 plugins {
     id("com.google.firebase.crashlytics")
 }
@@ -27,58 +29,41 @@ plugins {
  * https://github.com/firebase/firebase-android-sdk/issues/1560#issuecomment-862686404
  */
 afterEvaluate {
-    tasks.named<com.google.firebase.crashlytics.buildtools.gradle.tasks.UploadMappingFileTask>(
-        "uploadCrashlyticsMappingFileProdRelease",
-    ) {
-        // Set the property usually set by play services plugin
-        val firebasePropDir: DirectoryProperty = project.objects.directoryProperty().fileValue(file("firebase/prod"))
-        googleServicesResourceRoot.value(firebasePropDir)
+    val variants = listOf(
+        "${OSDimensions.Environment.Store.uppercaseFirstChar()}${OSDimensions.StoreChannel.Prod.uppercaseFirstChar()}",
+        "${OSDimensions.Environment.Store.uppercaseFirstChar()}${OSDimensions.StoreChannel.Beta.uppercaseFirstChar()}",
+        "${OSDimensions.Environment.Dev.uppercaseFirstChar()}${OSDimensions.StoreChannel.Beta.uppercaseFirstChar()}",
+    )
 
-        // Set all tasks dependencies to make gradle ok
-        dependsOn(
-            "mergeProdReleaseAssets",
-            "writeProdReleaseAppMetadata",
-            "compileProdReleaseArtProfile",
-            "processApplicationManifestProdReleaseForBundle",
-            "compressProdReleaseAssets",
-            "l8DexDesugarLibProdRelease",
-            "optimizeProdReleaseResources",
-            "lintVitalReportProdRelease",
-            "createProdReleaseApkListingFileRedirect",
-            "mergeProdReleaseJniLibFolders",
-            "packageProdRelease",
-            "mergeProdReleaseNativeLibs",
-            "writeProdReleaseApplicationId",
-            "extractProdReleaseNativeSymbolTables",
-            "createProdReleaseVariantModel",
-            "mergeProdReleaseNativeDebugMetadata",
-        )
-    }
-    tasks.named<com.google.firebase.crashlytics.buildtools.gradle.tasks.UploadMappingFileTask>(
-        "uploadCrashlyticsMappingFileDevRelease",
-    ) {
-        // Set the property usually set by play services plugin
-        val firebasePropDir: DirectoryProperty = project.objects.directoryProperty().fileValue(file("firebase/dev"))
-        googleServicesResourceRoot.value(firebasePropDir)
+    variants.forEach { variant ->
+        tasks.named<com.google.firebase.crashlytics.buildtools.gradle.tasks.UploadMappingFileTask>(
+            "uploadCrashlyticsMappingFile${variant}Release",
+        ) {
+            val valuesPath = "src/${variant.replaceFirstChar { it.lowercase() }}/res"
 
-        // Set all tasks dependencies to make gradle ok
-        dependsOn(
-            "mergeDevReleaseAssets",
-            "writeDevReleaseAppMetadata",
-            "compileDevReleaseArtProfile",
-            "processApplicationManifestDevReleaseForBundle",
-            "compressDevReleaseAssets",
-            "l8DexDesugarLibDevRelease",
-            "optimizeDevReleaseResources",
-            "lintVitalReportDevRelease",
-            "createDevReleaseApkListingFileRedirect",
-            "mergeDevReleaseJniLibFolders",
-            "packageDevRelease",
-            "mergeDevReleaseNativeLibs",
-            "writeDevReleaseApplicationId",
-            "extractDevReleaseNativeSymbolTables",
-            "createDevReleaseVariantModel",
-            "mergeDevReleaseNativeDebugMetadata",
-        )
+            // Set the property usually set by play services plugin
+            val firebasePropDir: DirectoryProperty = project.objects.directoryProperty().fileValue(file(valuesPath))
+            googleServicesResourceRoot.value(firebasePropDir)
+
+            // Set all tasks dependencies to make gradle ok
+            dependsOn(
+                "merge${variant}ReleaseAssets",
+                "write${variant}ReleaseAppMetadata",
+                "compile${variant}ReleaseArtProfile",
+                "processApplicationManifest${variant}ReleaseForBundle",
+                "compress${variant}ReleaseAssets",
+                "l8DexDesugarLib${variant}Release",
+                "optimize${variant}ReleaseResources",
+                "lintVitalReport${variant}Release",
+                "create${variant}ReleaseApkListingFileRedirect",
+                "merge${variant}ReleaseJniLibFolders",
+                "package${variant}Release",
+                "merge${variant}ReleaseNativeLibs",
+                "write${variant}ReleaseApplicationId",
+                "extract${variant}ReleaseNativeSymbolTables",
+                "create${variant}ReleaseVariantModel",
+                "merge${variant}ReleaseNativeDebugMetadata",
+            )
+        }
     }
 }

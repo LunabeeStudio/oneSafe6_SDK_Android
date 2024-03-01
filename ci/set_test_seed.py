@@ -30,14 +30,14 @@ parser.add_argument(
 args = parser.parse_args()
 
 test_seed = args.seed
-os_test_utils_path = "common-test/src/main/kotlin/studio/lunabee/onesafe/test/OSTestUtils.kt"
+os_test_config_path = "common-test/src/main/kotlin/studio/lunabee/onesafe/test/OSTestConfig.kt"
 
-with open(os_test_utils_path, "r") as f:
+with open(os_test_config_path, "r") as f:
     content = f.read()
 
 content = content.replace("private val seed = Random.nextInt()", f"private val seed = {test_seed}")
 
-with open(os_test_utils_path, "w") as f:
+with open(os_test_config_path, "w") as f:
     f.write(content)
 
 print(f"Use seed {test_seed} for testing")

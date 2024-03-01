@@ -37,7 +37,7 @@ dependencies {
     implementation(libs.datastore)
     implementation(libs.datastore.preferences)
 
-    platform(libs.lunabee.bom)
+    implementation(platform(libs.lunabee.bom))
     implementation(libs.lbextensions)
     implementation(libs.lblogger)
 

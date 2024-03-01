@@ -31,6 +31,7 @@ import studio.lunabee.onesafe.domain.qualifier.ArchiveCacheDir
 import studio.lunabee.onesafe.domain.qualifier.BuildNumber
 import studio.lunabee.onesafe.domain.qualifier.InternalBackupMimetype
 import studio.lunabee.onesafe.domain.qualifier.RemoteDir
+import studio.lunabee.onesafe.domain.qualifier.StoreBetaTrack
 import studio.lunabee.onesafe.domain.qualifier.VersionName
 import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.usecase.ResizeIconUseCase
@@ -100,4 +101,8 @@ object FrameworkTestModule {
     @Provides
     @RemoteDir(RemoteDir.Type.Backups)
     fun provideRemoteBackupsDir(): String = "OS6 Test auto-backups"
+
+    @Provides
+    @StoreBetaTrack
+    fun provideStoreBetaTrack(): Boolean = false
 }

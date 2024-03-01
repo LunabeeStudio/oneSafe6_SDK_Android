@@ -20,8 +20,8 @@
 package studio.lunabee.onesafe.importexport.worker
 
 import android.Manifest
+import android.os.Build
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.GrantPermissionRule
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.testing.TestDriver
@@ -44,6 +44,7 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
@@ -69,10 +70,21 @@ class CloudBackupWorkerTest : OSHiltTest() {
     override val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
     override val initialTestState: InitialTestState = InitialTestState.SignedUp()
 
-    @get:Rule
-    val runtimePermissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.POST_NOTIFICATIONS)
-
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
+
+    companion object {
+        @JvmStatic
+        @BeforeClass
+        fun notificationPermission() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val context = InstrumentationRegistry.getInstrumentation().targetContext
+                InstrumentationRegistry.getInstrumentation().uiAutomation.grantRuntimePermission(
+                    context.packageName,
+                    Manifest.permission.POST_NOTIFICATIONS,
+                )
+            }
+        }
+    }
 
     private val successCloudBackup: CloudBackup = CloudBackup(
         remoteId = "remoteId",

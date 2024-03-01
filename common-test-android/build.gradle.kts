@@ -46,7 +46,7 @@ android {
 dependencies {
     implementation(libs.hilt.android.testing)
 
-    implementation(platform(libs.compose.beta.bom))
+    implementation(platform(libs.compose.bom))
     implementation(libs.androidx.test.runner)
     implementation(libs.compose.ui.test)
     implementation(libs.compose.ui.test.junit4)

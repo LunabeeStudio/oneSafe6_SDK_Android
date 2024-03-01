@@ -25,11 +25,11 @@ plugins {
 dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(libs.ktor.client.android)
-
     implementation(libs.ktor.client.logging)
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(platform(libs.lunabee.bom))
-    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.lbcore)
     implementation(libs.lblogger)
 
     implementation(project(":repository"))

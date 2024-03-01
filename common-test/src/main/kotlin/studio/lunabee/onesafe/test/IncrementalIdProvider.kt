@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2023 Lunabee Studio
+ * Copyright (c) 2023-2024 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:30 AM
+ * Created by Lunabee Studio / Date - 2/15/2024 - for the oneSafe6 SDK.
+ * Last modified 2/15/24, 3:58 PM
  */
 
-package studio.lunabee.di
+package studio.lunabee.onesafe.test
 
 import studio.lunabee.onesafe.domain.common.FieldIdProvider
 import studio.lunabee.onesafe.domain.common.FileIdProvider
 import studio.lunabee.onesafe.domain.common.IconIdProvider
 import studio.lunabee.onesafe.domain.common.ItemIdProvider
 import studio.lunabee.onesafe.domain.common.MessageIdProvider
-import studio.lunabee.onesafe.test.testUUIDs
 import java.util.UUID
 
 class IncrementalIdProvider : ItemIdProvider, FieldIdProvider, IconIdProvider, MessageIdProvider, FileIdProvider {

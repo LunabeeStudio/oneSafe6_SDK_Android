@@ -23,7 +23,10 @@ import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.domain.model.common.UrlMetadata
 import studio.lunabee.onesafe.domain.qualifier.ValidUrlStartList
 import studio.lunabee.onesafe.domain.repository.UrlMetadataRepository
+import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
+import studio.lunabee.onesafe.error.OSError.Companion.get
+import java.io.File
 import javax.inject.Inject
 
 class GetUrlMetadataUseCase @Inject constructor(
@@ -31,48 +34,63 @@ class GetUrlMetadataUseCase @Inject constructor(
     @ValidUrlStartList
     private val validUrlStartList: List<String>,
 ) {
-    suspend operator fun invoke(url: String, iconPath: String, requestedData: RequestedData = RequestedData.All): LBResult<UrlMetadata> {
-        var result = getHtmlPageCode(url = url.lowercase())
+    suspend operator fun invoke(
+        url: String,
+        iconFile: File,
+        force: Boolean,
+        requestedData: RequestedData = RequestedData.All,
+    ): LBResult<UrlMetadata> {
+        val lowerUrl = url.lowercase()
+        val (htmlCode: String, finalUrl: String) = validUrlStartList.firstNotNullOfOrNull { prefix ->
+            val candidateUrl = prefix + lowerUrl
+            val htmlPageCode = getHtmlPageCode(url = candidateUrl)
+            (htmlPageCode as? LBResult.Success)?.let { it.successData to candidateUrl }
+        } ?: return LBResult.Failure(OSDomainError.Code.NO_HTML_PAGE_FOUND.get())
 
-        var finalUrl = url
-        var schemeIndexTested = 0
-        while (result is LBResult.Failure && validUrlStartList.getOrNull(schemeIndexTested) != null) {
-            finalUrl = validUrlStartList[schemeIndexTested] + url
-            result = getHtmlPageCode(url = finalUrl)
-            schemeIndexTested++
-        }
-
-        return when {
-            requestedData == RequestedData.Title && result is LBResult.Success -> {
+        return when (requestedData) {
+            RequestedData.Title -> {
                 LBResult.Success(
                     successData = UrlMetadata(
                         url = url, // keep url enters by user
-                        title = extractTitle(htmlCode = result.successData),
-                        filePath = null,
+                        title = extractTitle(htmlCode = htmlCode),
+                        iconFile = null,
+                        force = force,
                     ),
                 )
             }
-            requestedData == RequestedData.Image && result is LBResult.Success -> {
-                val isSuccessful = urlMetadataRepository.downloadIcon(baseUrl = finalUrl, filePath = iconPath)
-                LBResult.Success(
-                    successData = UrlMetadata(
-                        url = url, // keep url enters by user
-                        title = null,
-                        filePath = iconPath.takeIf { isSuccessful },
-                    ),
+            RequestedData.Image -> {
+                val fileResult = urlMetadataRepository.downloadFavIcon(baseUrl = finalUrl, targetFile = iconFile)
+                val urlMetadata = UrlMetadata(
+                    url = url, // keep url enters by user
+                    title = null,
+                    iconFile = fileResult.data,
+                    force = force,
                 )
+                when (fileResult) {
+                    is LBResult.Failure -> LBResult.Failure(
+                        throwable = fileResult.throwable,
+                        failureData = urlMetadata,
+                    )
+                    is LBResult.Success -> LBResult.Success(
+                        successData = urlMetadata,
+                    )
+                }
             }
-            requestedData == RequestedData.All && result is LBResult.Success -> {
-                val isSuccessful = urlMetadataRepository.downloadIcon(baseUrl = finalUrl, filePath = iconPath)
-                LBResult.Success(
-                    successData = UrlMetadata(
-                        url = url, // keep url enters by user
-                        title = extractTitle(htmlCode = result.successData),
-                        filePath = iconPath.takeIf { isSuccessful },
-                    ),
+            RequestedData.All -> {
+                val fileResult = urlMetadataRepository.downloadFavIcon(baseUrl = finalUrl, targetFile = iconFile)
+                val title = extractTitle(htmlCode = htmlCode)
+                val metadata = UrlMetadata(
+                    url = url, // keep url enters by user
+                    title = title,
+                    iconFile = fileResult.data,
+                    force = force,
                 )
+                if (title != null || fileResult is LBResult.Success) {
+                    LBResult.Success(successData = metadata)
+                } else {
+                    LBResult.Failure(failureData = metadata)
+                }
             }
-            else -> LBResult.Failure(throwable = (result as? LBResult.Failure)?.throwable)
         }
     }
 

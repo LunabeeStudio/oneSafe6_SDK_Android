@@ -17,6 +17,7 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "google-dagger" }
 [versions]
 
 benchmark = "1.2.3"
+##     ⬆ = "1.3.0-alpha01"
 
 android-gradle-plugin = "8.2.2"
 ##                 ⬆ = "8.3.0-alpha01"
@@ -39,6 +40,8 @@ android-gradle-plugin = "8.2.2"
 ##                 ⬆ = "8.3.0-alpha18"
 ##                 ⬆ = "8.3.0-beta01"
 ##                 ⬆ = "8.3.0-beta02"
+##                 ⬆ = "8.3.0-rc01"
+##                 ⬆ = "8.3.0-rc02"
 ##                 ⬆ = "8.4.0-alpha01"
 ##                 ⬆ = "8.4.0-alpha02"
 ##                 ⬆ = "8.4.0-alpha03"
@@ -46,28 +49,34 @@ android-gradle-plugin = "8.2.2"
 ##                 ⬆ = "8.4.0-alpha05"
 ##                 ⬆ = "8.4.0-alpha06"
 ##                 ⬆ = "8.4.0-alpha07"
+##                 ⬆ = "8.4.0-alpha08"
+##                 ⬆ = "8.4.0-alpha09"
+##                 ⬆ = "8.4.0-alpha10"
+##                 ⬆ = "8.4.0-alpha11"
 
 kotlin = "1.9.22"
 ##  ⬆ = "2.0.0-Beta1"
 ##  ⬆ = "2.0.0-Beta2"
 ##  ⬆ = "2.0.0-Beta3"
+##  ⬆ = "2.0.0-Beta4"
 
 ksp = "1.9.22-1.0.17"
 ##⬆= "2.0.0-Beta1-1.0.14"
 ##⬆= "2.0.0-Beta1-1.0.15"
 ##⬆= "2.0.0-Beta2-1.0.16"
 ##⬆= "2.0.0-Beta3-1.0.17"
+##⬆= "2.0.0-Beta4-1.0.17"
 
-google-dagger = "2.50"
+google-dagger = "2.51"
 
 florisboard-library = "0.4.0-alpha06-0.1.18"
 
 doubleratchet-jvm = "0.1.4"
 
-logback-classic = "1.4.14"
+logback-classic = "1.5.0"
 
 play-services-base = "18.3.0"
-play-services-auth-base = "18.0.10"
+play-services-auth-base = "18.0.11"
 google-api-client = "2.3.0"
 google-api-services-drive = "v3-rev20240123-2.0.0"
 
@@ -75,15 +84,11 @@ threeten-extra = "1.7.2"
 
 zxing-android-embedded = "4.3.0"
 
-androidx-hilt = "1.1.0"
-##         ⬆ = "1.2.0-alpha01"
-##         ⬆ = "1.2.0-beta01"
+androidx-hilt = "1.2.0"
 
 junit4 = "4.13.2"
 
-kotlinx-coroutines = "1.7.3"
-##              ⬆ = "1.8.0-RC"
-##              ⬆ = "1.8.0-RC2"
+kotlinx-coroutines = "1.8.0"
 
 androidx-test-core = "1.6.0-alpha05"
 
@@ -106,7 +111,7 @@ androidx-tracing = "1.2.0"
 
 androidx-security-crypto = "1.1.0-alpha06"
 
-kotlinx-serialization = "1.6.2"
+kotlinx-serialization = "1.6.3"
 
 androidx-appcompat = "1.7.0-alpha03"
 
@@ -115,18 +120,14 @@ androidx-core = "1.12.0"
 ##         ⬆ = "1.13.0-alpha02"
 ##         ⬆ = "1.13.0-alpha03"
 ##         ⬆ = "1.13.0-alpha04"
+##         ⬆ = "1.13.0-alpha05"
 
 androidx-lifecycle = "2.7.0"
 ##              ⬆ = "2.8.0-alpha01"
+##              ⬆ = "2.8.0-alpha02"
 
-# FIXME
-#  2024.01.00-alpha01 -> M3 1.2.0-beta02 cards broken https://issuetracker.google.com/issues/319671246
-#  2024.01.00-alpha02 -> do not use (broken release)
-#  2024.01.00-alpha03 -> M3 1.2.0-rc01 OK, but wait for the release to move to the stable BoM
-compose-bom-alpha = "2023.12.00-alpha04"
-##             ⬆ = "2024.01.00-alpha01"
-##             ⬆ = "2024.01.00-alpha02"
-##             ⬆ = "2024.01.00-alpha03"
+compose-bom-stable = "2024.02.01"
+compose-bom-alpha = "2024.02.00-alpha01"
 
 google-android-material = "1.11.0"
 ##                   ⬆ = "1.12.0-alpha01"
@@ -143,6 +144,7 @@ androidx-biometric = "1.1.0"
 androidx-paging = "3.2.1"
 ##           ⬆ = "3.3.0-alpha01"
 ##           ⬆ = "3.3.0-alpha02"
+##           ⬆ = "3.3.0-alpha03"
 
 androidx-core-splashscreen = "1.0.1"
 ##                      ⬆ = "1.1.0-alpha01"
@@ -165,14 +167,14 @@ androidx-emoji2 = "1.4.0"
 androidx-paging-compose = "3.2.1"
 ##                   ⬆ = "3.3.0-alpha01"
 ##                   ⬆ = "3.3.0-alpha02"
+##                   ⬆ = "3.3.0-alpha03"
 
 androidx-activity = "1.8.2"
 ##             ⬆ = "1.9.0-alpha01"
 ##             ⬆ = "1.9.0-alpha02"
+##             ⬆ = "1.9.0-alpha03"
 
-androidx-hilt-navigation-compose = "1.1.0"
-##                            ⬆ = "1.2.0-alpha01"
-##                            ⬆ = "1.2.0-beta01"
+androidx-hilt-navigation-compose = "1.2.0"
 
 kotlinx-collections-immutable = "0.3.7"
 
@@ -181,20 +183,22 @@ google-accompanist = "0.34.0"
 
 androidx-palette = "1.0.0"
 
-firebase-bom = "32.7.1"
+firebase-bom = "32.7.2"
 
 firebase-crashlytics-gradle = "2.9.9"
 
 # Used to set kotlinCompilerExtensionVersion
-compose-compiler = "1.5.8"
+compose-compiler = "1.5.10"
 
 androidx-test-ext-junit = "1.2.0-alpha03"
 
 androidx-benchmark = "1.2.3"
+##              ⬆ = "1.3.0-alpha01"
 
 junit-jupiter = "5.10.2"
 
 androidx-annotation = "1.7.1"
+##               ⬆ = "1.8.0-alpha01"
 
 androidx-datastore = "1.0.0"
 ##              ⬆ = "1.1.0-dev01"
@@ -214,45 +218,38 @@ ktor = "2.3.8"
 
 androidx-test-espresso = "3.6.0-alpha03"
 
-androidx-test-uiautomator = "2.3.0-beta01"
+androidx-test-uiautomator = "2.3.0"
 
-coil-kt = "2.5.0"
+coil-kt = "2.6.0"
 
 androidx-startup = "1.1.1"
 ##            ⬆ = "1.2.0-alpha01"
 ##            ⬆ = "1.2.0-alpha02"
 
-navigation-compose = "2.7.6"
+navigation-compose = "2.7.7"
 ##              ⬆ = "2.8.0-alpha01"
+##              ⬆ = "2.8.0-alpha02"
+##              ⬆ = "2.8.0-alpha03"
 
 detekt = "1.23.5"
 
-protobuf = "3.25.2"
+protobuf = "3.25.3"
 ##    ⬆ = "4.26.0-RC1"
+##    ⬆ = "4.26.0-RC2"
 
 protobuf-plugin = "0.9.4"
 
-lunabee-library = "4.0.0"
-##           ⬆ = "4.0.1-0-SNAPSHOT"
-##           ⬆ = "4.1.0-lbext-kmp-0-SNAPSHOT"
-##           ⬆ = "4.1.0-test_publish-0-SNAPSHOT"
-##           ⬆ = "4.1.0-test_publish-1-SNAPSHOT"
-##           ⬆ = "4.1.0-85-develop-SNAPSHOT"
-##           ⬆ = "4.1.0-87-develop-SNAPSHOT"
-##           ⬆ = "4.1.0-88-develop-SNAPSHOT"
-##           ⬆ = "4.1.0-89-develop-SNAPSHOT"
-##           ⬆ = "4.1.0-90-develop-SNAPSHOT"
-##           ⬆ = "4.1.0-91-develop-SNAPSHOT"
+lunabee-library = "4.1.0-95-develop-SNAPSHOT"
 
 compose-shimmer = "1.2.0"
 
-lbcaccessibility = "1.5.0-211-SNAPSHOT"
+lbcaccessibility = "1.5.0-214-SNAPSHOT"
 
-lbcandroidtest = "1.2.1-211-SNAPSHOT"
+lbcandroidtest = "1.2.1-213-SNAPSHOT"
 
-lbctheme = "1.1.0-211-SNAPSHOT"
+lbctheme = "1.1.0-214-SNAPSHOT"
 
-lbccore = "1.1.0-211-SNAPSHOT"
+lbccore = "1.1.0-214-SNAPSHOT"
 
 tink-android = "1.12.0"
 
@@ -283,6 +280,8 @@ lint = "31.2.2"
 ##⬆ = "31.3.0-alpha18"
 ##⬆ = "31.3.0-beta01"
 ##⬆ = "31.3.0-beta02"
+##⬆ = "31.3.0-rc01"
+##⬆ = "31.3.0-rc02"
 ##⬆ = "31.4.0-alpha01"
 ##⬆ = "31.4.0-alpha02"
 ##⬆ = "31.4.0-alpha03"
@@ -290,17 +289,24 @@ lint = "31.2.2"
 ##⬆ = "31.4.0-alpha05"
 ##⬆ = "31.4.0-alpha06"
 ##⬆ = "31.4.0-alpha07"
+##⬆ = "31.4.0-alpha08"
+##⬆ = "31.4.0-alpha09"
+##⬆ = "31.4.0-alpha10"
+##⬆ = "31.4.0-alpha11"
 
 javapoet = "1.13.0"
 
 bouquet = "1.1.3"
 
 zoomable = "1.6.0"
+##    ⬆ = "1.7.0-beta01"
 
 exifinterface = "1.3.7"
 
 androidx-media3 = "1.2.1"
 ##           ⬆ = "1.3.0-alpha01"
+##           ⬆ = "1.3.0-beta01"
+##           ⬆ = "1.3.0-rc01"
 
 camerax = "1.3.1"
 ##   ⬆ = "1.4.0-alpha01"
@@ -312,6 +318,8 @@ espresso-core = "3.5.1"
 ##         ⬆ = "3.6.0-alpha01"
 ##         ⬆ = "3.6.0-alpha02"
 ##         ⬆ = "3.6.0-alpha03"
+
+uiautomator = "2.3.0"
 
 skydoves-colorpicker = "1.0.7"
 
@@ -364,13 +372,17 @@ ktor-client-android = { group = "io.ktor", name = "ktor-client-android", version
 ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor" }
 
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
 room-testing = { group = "androidx.room", name = "room-testing", version.ref = "androidx-room" }
 room-paging = { group = "androidx.room", name = "room-paging", version.ref = "androidx-room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidx-room" }
 
-compose-beta-bom = { group = "dev.chrisbanes.compose", name = "compose-bom", version.ref = "compose-bom-alpha" }
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom-stable" }
+# Keep both for easier switch
+compose-bom-stable = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom-stable" }
+compose-bom-alpha = { group = "dev.chrisbanes.compose", name = "compose-bom", version.ref = "compose-bom-alpha" }
 compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
@@ -425,6 +437,7 @@ paging-compose = { group = "androidx.paging", name = "paging-compose", version.r
 androidx-test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidx-test-core" }
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidx-test-runner" }
 androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidx-test-rules" }
+androidx-test-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "androidx-test-uiautomator" }
 
 emoji2 = { group = "androidx.emoji2", name = "emoji2", version.ref = "androidx-emoji2" }
 emoji2-bundled = { group = "androidx.emoji2", name = "emoji2-bundled", version.ref = "androidx-emoji2" }
@@ -444,7 +457,6 @@ benchmark-junit4 = { group = "androidx.benchmark", name = "benchmark-junit4", ve
 annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidx-annotation" }
 preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "androidx-preference" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-test-espresso" }
-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "androidx-test-uiautomator" }
 benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "androidx-benchmark" }
 startup-runtime = { group = "androidx.startup", name = "startup-runtime", version.ref = "androidx-startup" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }

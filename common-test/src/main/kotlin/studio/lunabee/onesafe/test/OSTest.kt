@@ -38,15 +38,15 @@ import org.junit.rules.TestName
  */
 open class OSTest {
     @get:Rule
-    val name: TestName = TestName()
+    val testName: TestName = TestName()
 
     @Before
     fun logStart() {
-        println("++ Start ${name.methodName}")
+        println("++ Start ${testName.methodName}")
     }
 
     @After
     fun logEnd() {
-        println("-- End ${name.methodName}")
+        println("-- End ${testName.methodName}")
     }
 }

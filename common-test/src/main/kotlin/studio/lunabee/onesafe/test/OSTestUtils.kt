@@ -23,7 +23,6 @@ import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import studio.lunabee.onesafe.domain.common.FeatureFlags
-import studio.lunabee.onesafe.domain.model.safeitem.ItemsLayoutSettings
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
@@ -31,20 +30,8 @@ import studio.lunabee.onesafe.domain.usecase.item.CreateItemUseCase
 import java.nio.ByteBuffer
 import java.time.Instant
 import java.util.UUID
-import kotlin.random.Random
 
 object OSTestUtils {
-
-    // ⚠️ Replaced by CI, see ci/set_test_seed.py
-    private val seed = Random.nextInt().also {
-        println("Random seed = $it")
-    }
-    val random: Random = Random(seed)
-
-    val itemsLayoutSettings: ItemsLayoutSettings = ItemsLayoutSettings.entries[Math.floorMod(seed, ItemsLayoutSettings.entries.size)].also {
-        println("${ItemsLayoutSettings::class.simpleName} = $it")
-    }
-
     fun createSafeItem(
         id: UUID = UUID.randomUUID(),
         encName: ByteArray? = byteArrayOf(),
@@ -194,7 +181,7 @@ val testUUIDs: List<UUID> by lazy {
     val randomBytes = ByteArray(16)
     val buffer = ByteBuffer.wrap(randomBytes)
     (0..999).map {
-        OSTestUtils.random.nextBytes(randomBytes)
+        OSTestConfig.random.nextBytes(randomBytes)
         randomBytes[6] = (randomBytes[6].toInt() and 0x0f).toByte() // clear version
         randomBytes[6] = (randomBytes[6].toInt() or 0x40).toByte() // set to version 4
         randomBytes[8] = (randomBytes[8].toInt() and 0x3f).toByte() // clear variant

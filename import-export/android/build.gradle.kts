@@ -38,8 +38,8 @@ android {
 
     flavorDimensions += "environment"
     productFlavors {
-        create("dev")
-        create("prod")
+        create(OSDimensions.Environment.Dev)
+        create(OSDimensions.Environment.Store)
     }
 
     packaging {
@@ -79,7 +79,7 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.play.services.auth.base) // required to get GoogleAuthUtil class
 
-    implementation(platform(libs.compose.beta.bom))
+    implementation(platform(libs.compose.bom))
     implementation(libs.compose.material3)
 
     implementation(platform(libs.lunabee.bom))

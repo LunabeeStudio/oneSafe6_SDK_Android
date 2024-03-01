@@ -33,11 +33,10 @@ import io.mockk.mockk
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.test.TestResult
-import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.threeten.extra.MutableClock
 import studio.lunabee.compose.androidtest.LbcComposeTest
@@ -62,7 +61,7 @@ class AutoBackupSettingsScreenTest : LbcComposeTest() {
     private val testClock = MutableClock.epochUTC()
 
     @Test
-    fun cloud_loading_test(): TestResult = runTest {
+    fun cloud_loading_test() {
         setScreen(
             cloudBackupEnabledState = OSSwitchState.Loading,
         ) {
@@ -72,7 +71,7 @@ class AutoBackupSettingsScreenTest : LbcComposeTest() {
     }
 
     @Test
-    fun error_snackbar_test(): TestResult = runTest {
+    fun error_snackbar_test() {
         setScreen(
             errorSnackbarState = ErrorSnackbarState(LbcTextSpec.Raw("error"), {}),
         ) {
@@ -82,7 +81,7 @@ class AutoBackupSettingsScreenTest : LbcComposeTest() {
     }
 
     @Test
-    fun feedback_snackbar_test(): TestResult = runTest {
+    fun feedback_snackbar_test() {
         setScreen(
             latestBackup = null,
         ) {
@@ -104,7 +103,7 @@ class AutoBackupSettingsScreenTest : LbcComposeTest() {
     }
 
     @Test
-    fun show_access_cloud_test(): TestResult = runTest {
+    fun show_access_cloud_test() {
         val driveUri: MutableStateFlow<URI?> = MutableStateFlow(null)
         setScreen(
             driveUri = driveUri,
@@ -118,7 +117,7 @@ class AutoBackupSettingsScreenTest : LbcComposeTest() {
     }
 
     @Test
-    fun show_dialog_test(): TestResult = runTest {
+    fun show_dialog_test() {
         val dialogState: MutableStateFlow<DialogState?> = MutableStateFlow(null)
         setScreen(
             dialogState = dialogState,
@@ -131,7 +130,7 @@ class AutoBackupSettingsScreenTest : LbcComposeTest() {
         }
     }
 
-    private suspend fun setScreen(
+    private fun setScreen(
         cloudBackupEnabledState: OSSwitchState = OSSwitchState.True,
         errorSnackbarState: ErrorSnackbarState? = null,
         driveUri: StateFlow<URI?> = MutableStateFlow(URI.create("")),
@@ -140,18 +139,13 @@ class AutoBackupSettingsScreenTest : LbcComposeTest() {
         block: ComposeUiTest.() -> Unit,
     ) {
         val viewModel = mockk<AutoBackupSettingsViewModel> {
-            every { uiState } returns driveUri.map { uri ->
-                AutoBackupSettingsUiState(
-                    isBackupEnabled = true,
-                    autoBackupFrequency = AutoBackupFrequency.DAILY,
-                    latestBackup = latestBackup,
-                    cloudBackupEnabledState = cloudBackupEnabledState,
-                    isKeepLocalBackupEnabled = true,
-                    toggleKeepLocalBackup = {},
-                    driveUri = uri,
-                    driveAccount = "",
-                )
-            }.stateIn(CoroutineScope(Dispatchers.Main.immediate))
+            every { uiState } returns driveUri.map {
+                autoBackupSettingsUiState(latestBackup, cloudBackupEnabledState, it)
+            }.stateIn(
+                CoroutineScope(Dispatchers.Main.immediate),
+                SharingStarted.Eagerly,
+                autoBackupSettingsUiState(latestBackup, cloudBackupEnabledState, driveUri.value),
+            )
             every { authorizeDrive } returns MutableStateFlow(null)
             every { snackbarState } returns MutableStateFlow(errorSnackbarState)
             every { featureFlagCloudBackup } returns true
@@ -169,4 +163,19 @@ class AutoBackupSettingsScreenTest : LbcComposeTest() {
             block()
         }
     }
+
+    private fun autoBackupSettingsUiState(
+        latestBackup: Backup?,
+        cloudBackupEnabledState: OSSwitchState,
+        driveUri: URI?,
+    ) = AutoBackupSettingsUiState(
+        isBackupEnabled = true,
+        autoBackupFrequency = AutoBackupFrequency.DAILY,
+        latestBackup = latestBackup,
+        cloudBackupEnabledState = cloudBackupEnabledState,
+        isKeepLocalBackupEnabled = true,
+        toggleKeepLocalBackup = {},
+        driveUri = driveUri,
+        driveAccount = "",
+    )
 }

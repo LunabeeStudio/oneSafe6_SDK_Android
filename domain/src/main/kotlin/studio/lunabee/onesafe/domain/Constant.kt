@@ -31,4 +31,5 @@ object Constant {
         get() = "[:\\\\/*?|<>']".toRegex()
     const val FileMaxSizeMegaBytes: Int = 50
     const val FileMaxSizeBytes: Int = FileMaxSizeMegaBytes * 1024 * 1024
+    const val IndeterminateProgress: Float = -1f
 }

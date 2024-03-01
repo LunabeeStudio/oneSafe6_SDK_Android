@@ -43,20 +43,21 @@ dependencies {
     implementation(libs.hilt.android.testing)
     ksp(libs.dagger.hilt.compiler)
 
+    implementation(libs.ktor.client.mock)
+    implementation(libs.ktor.client.logging)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.client.content.negotiation)
+
     implementation(libs.room.ktx)
     implementation(libs.androidx.test.core.ktx)
     implementation(libs.lblogger)
-    implementation(libs.ktor.client.android)
-    implementation(libs.ktor.client.logging)
     implementation(libs.datastore)
     implementation(libs.datastore.preferences)
 
-    implementation(platform(libs.compose.beta.bom))
+    implementation(platform(libs.compose.bom))
     implementation(libs.androidx.test.runner)
     implementation(libs.compose.ui.test)
     implementation(libs.compose.ui.test.junit4)
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.client.content.negotiation)
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lblogger)

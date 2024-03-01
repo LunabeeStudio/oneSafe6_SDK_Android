@@ -46,8 +46,8 @@ android {
 
     flavorDimensions += "environment"
     productFlavors {
-        create("dev")
-        create("prod")
+        create(OSDimensions.Environment.Dev)
+        create(OSDimensions.Environment.Store)
     }
 
     packaging {
@@ -78,7 +78,7 @@ dependencies {
     implementation(libs.lbccore)
     implementation(libs.protobuf.kotlinlite)
 
-    implementation(platform(libs.compose.beta.bom))
+    implementation(platform(libs.compose.bom))
     implementation(libs.hilt.navigation.compose)
     implementation(libs.compose.ui)
     implementation(libs.compose.runtime.livedata)

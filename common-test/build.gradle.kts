@@ -19,11 +19,13 @@
 
 plugins {
     `kotlin-library`
+    alias(libs.plugins.kotlin.serialization)
 }
 
 dependencies {
     implementation(libs.annotation)
     implementation(libs.kotlin.reflect)
+    implementation(libs.kotlinx.serialization.json)
     api(libs.threeten.extra)
 
     implementation(project(":domain"))
@@ -35,4 +37,6 @@ dependencies {
     api(libs.junit.jupiter)
     api(libs.junit4)
     api(libs.kotlin.test)
+
+    testImplementation(libs.junit.jupiter)
 }

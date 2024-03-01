@@ -13,18 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 1/26/2024 - for the oneSafe6 SDK.
- * Last modified 1/26/24, 4:18 PM
+ * Created by Lunabee Studio / Date - 2/26/2024 - for the oneSafe6 SDK.
+ * Last modified 2/26/24, 3:05 PM
  */
 
 package studio.lunabee.onesafe.test
 
-import android.graphics.Color
-import kotlin.random.Random
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import org.junit.jupiter.api.Test
+import java.io.File
 
-fun Random.colorInt(): Int {
-    val red = (OSTestConfig.random.nextDouble(1.0) * 256).toInt()
-    val green = (OSTestConfig.random.nextDouble(1.0) * 256).toInt()
-    val blue = (OSTestConfig.random.nextDouble(1.0) * 256).toInt()
-    return Color.argb(255, red, green, blue)
+class TestConfigTest {
+
+    @Test
+    fun export_test_config() {
+        // export test config
+        val file = File("test_config.json")
+        val json = Json {
+            prettyPrint = true
+            encodeDefaults = true
+        }
+        val configJson = json.encodeToString(OSTestConfig.config)
+        println(configJson)
+        file.writeText(configJson)
+    }
 }

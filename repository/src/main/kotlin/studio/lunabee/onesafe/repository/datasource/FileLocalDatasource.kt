@@ -28,7 +28,6 @@ interface FileLocalDatasource {
     fun getFile(filename: String): File
     fun createTempFile(fileId: String): File
     fun addFile(filename: String, file: ByteArray): File
-    fun removeFile(filename: String): Boolean
     fun removeAllFiles(): Boolean
     fun deleteFile(filename: String): Boolean
     fun getAllFiles(): List<File>

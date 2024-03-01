@@ -26,6 +26,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.paging.common.ktx)
 
+    implementation(platform(libs.lunabee.bom))
+    implementation(libs.lbcore)
+
     implementation(project(":domain"))
     implementation(project(":import-export-domain"))
     implementation(project(":error"))

@@ -34,8 +34,8 @@ android {
 
     flavorDimensions += "environment"
     productFlavors {
-        create("dev")
-        create("prod")
+        create(OSDimensions.Environment.Dev)
+        create(OSDimensions.Environment.Store)
     }
 
     packaging {
