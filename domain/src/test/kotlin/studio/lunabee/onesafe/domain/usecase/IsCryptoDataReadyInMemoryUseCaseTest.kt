@@ -19,9 +19,8 @@
 
 package studio.lunabee.onesafe.domain.usecase
 
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
@@ -31,16 +30,16 @@ import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import studio.lunabee.onesafe.error.OSDomainError
 import kotlin.test.assertEquals
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 class IsCryptoDataReadyInMemoryUseCaseTest {
-    private val mainCryptoRepository: MainCryptoRepository = mockk {
-        every { this@mockk.isCryptoDataInMemoryFlow() } returns MutableStateFlow(true)
-    }
+    private val mainCryptoRepository: MainCryptoRepository = mockk()
     private val useCase: IsCryptoDataReadyInMemoryUseCase = IsCryptoDataReadyInMemoryUseCase(mainCryptoRepository)
 
     @Test
     fun wait_crypto_loaded_test(): TestResult = runTest {
+        coEvery { mainCryptoRepository.isCryptoDataInMemory(Duration.INFINITE) } returns true
         assertDoesNotThrow {
             useCase.wait()
         }
@@ -48,7 +47,7 @@ class IsCryptoDataReadyInMemoryUseCaseTest {
 
     @Test
     fun wait_crypto_timeout_test(): TestResult = runTest {
-        every { mainCryptoRepository.isCryptoDataInMemoryFlow() } returns MutableStateFlow(false)
+        coEvery { mainCryptoRepository.isCryptoDataInMemory(any()) } returns false
         val err = assertThrows<OSDomainError> {
             useCase.wait(10.milliseconds)
         }

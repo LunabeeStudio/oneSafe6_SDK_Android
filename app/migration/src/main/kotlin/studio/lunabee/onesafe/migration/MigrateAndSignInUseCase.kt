@@ -21,12 +21,15 @@ package studio.lunabee.onesafe.migration
 
 import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import studio.lunabee.onesafe.OSAppSettings
 import studio.lunabee.onesafe.cryptography.BiometricEngine
 import studio.lunabee.onesafe.cryptography.DatastoreEngine
 import studio.lunabee.onesafe.cryptography.PasswordHashEngine
 import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
 import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
+import studio.lunabee.onesafe.domain.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSignUpUseCase
 import studio.lunabee.onesafe.use
@@ -56,6 +59,7 @@ class MigrateAndSignInUseCase @Inject constructor(
     biometricEngine: BiometricEngine,
     hashEngine: PasswordHashEngine,
     @DatastoreEngineProvider(DataStoreType.Plain) dataStoreEngine: DatastoreEngine,
+    @CryptoDispatcher private val dispatcher: CoroutineDispatcher,
 ) {
     private val migrationGetMasterKeyV0UseCase: MigrationGetMasterKeyV0UseCase = MigrationGetMasterKeyV0UseCase(
         biometricEngine,
@@ -65,18 +69,18 @@ class MigrateAndSignInUseCase @Inject constructor(
 
     suspend fun needToMigrate(): Boolean = getCurrentVersion() < MigrationConstant.LastVersion
 
-    suspend operator fun invoke(password: CharArray): LBResult<Unit> {
+    suspend operator fun invoke(password: CharArray): LBResult<Unit> = withContext(dispatcher) {
         val masterKey = migrationGetMasterKeyV0UseCase(password).data
 
-        return masterKey?.use {
+        masterKey?.use {
             doMigrations(it)
         } ?: LBResult.Failure()
     }
 
-    suspend operator fun invoke(cipher: Cipher): LBResult<Unit> {
+    suspend operator fun invoke(cipher: Cipher): LBResult<Unit> = withContext(dispatcher) {
         val masterKey = migrationGetMasterKeyV0UseCase(cipher).data
 
-        return masterKey?.use {
+        masterKey?.use {
             doMigrations(it)
         } ?: LBResult.Failure()
     }

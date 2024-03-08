@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.map
 import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
 import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
 import studio.lunabee.onesafe.cryptography.utils.dataStoreValueDelegate
+import studio.lunabee.onesafe.domain.repository.BiometricCipherRepository
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.use
 import javax.crypto.Cipher
@@ -42,7 +43,7 @@ import javax.inject.Inject
 class BiometricEngine @Inject constructor(
     private val androidKeyStoreEngine: AndroidKeyStoreEngine,
     @DatastoreEngineProvider(DataStoreType.Encrypted) private val dataStoreEngine: DatastoreEngine,
-) {
+) : BiometricCipherRepository {
 
     private var encryptedMasterKey: ByteArray? by dataStoreValueDelegate(
         key = ENC_MASTER_KEY_KEY,
@@ -74,7 +75,7 @@ class BiometricEngine @Inject constructor(
     }
 
     @Throws(OSCryptoError::class)
-    fun getCipherBiometricForDecrypt(): Cipher {
+    override fun getCipherBiometricForDecrypt(): Cipher {
         val cipher = getCipher()
         val secretKey = getSecretKey()
         biometricIV?.use { iv ->
@@ -88,7 +89,7 @@ class BiometricEngine @Inject constructor(
         return cipher
     }
 
-    fun createCipherBiometricForEncrypt(): Cipher {
+    override fun createCipherBiometricForEncrypt(): Cipher {
         val cipher = getCipher()
         val secretKey = generateKeyBiometric()
         cipher.init(Cipher.ENCRYPT_MODE, secretKey)
@@ -136,11 +137,11 @@ class BiometricEngine @Inject constructor(
         }
     }
 
-    fun isBiometricEnabledFlow(): Flow<Boolean> = dataStoreEngine.retrieveValue(ENC_MASTER_KEY_KEY).map {
+    override fun isBiometricEnabledFlow(): Flow<Boolean> = dataStoreEngine.retrieveValue(ENC_MASTER_KEY_KEY).map {
         it != null
     }
 
-    fun disableBiometric() {
+    override fun disableBiometric() {
         encryptedMasterKey = null
         biometricIV = null
         androidKeyStoreEngine.removeSecretKey(KEY_ALIAS)

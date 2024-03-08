@@ -32,7 +32,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
 import studio.lunabee.onesafe.cryptography.PasswordHashEngine
 import studio.lunabee.onesafe.cryptography.ProtoData
-import studio.lunabee.onesafe.cryptography.qualifier.CryptoDispatcher
+import studio.lunabee.onesafe.domain.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.cryptography.utils.SecuredDataSerializer
 
 @Module

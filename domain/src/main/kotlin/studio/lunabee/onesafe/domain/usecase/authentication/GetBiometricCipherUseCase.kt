@@ -21,7 +21,7 @@ package studio.lunabee.onesafe.domain.usecase.authentication
 
 import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
-import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
+import studio.lunabee.onesafe.domain.repository.BiometricCipherRepository
 import studio.lunabee.onesafe.error.OSError
 import javax.crypto.Cipher
 import javax.inject.Inject
@@ -29,18 +29,17 @@ import javax.inject.Inject
 private val log = LBLogger.get<GetBiometricCipherUseCase>()
 
 class GetBiometricCipherUseCase @Inject constructor(
-    private val cryptoRepository: MainCryptoRepository,
+    private val biometricCipherRepository: BiometricCipherRepository,
 ) {
-
     fun forVerify(): LBResult<Cipher> {
         return OSError.runCatching(log) {
-            cryptoRepository.getCipherForBiometricForVerify()
+            biometricCipherRepository.getCipherBiometricForDecrypt()
         }
     }
 
     fun forCreate(): LBResult<Cipher> {
         return OSError.runCatching(log) {
-            cryptoRepository.getCipherForBiometricForCreate()
+            biometricCipherRepository.createCipherBiometricForEncrypt()
         }
     }
 }

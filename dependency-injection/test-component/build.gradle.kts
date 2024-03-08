@@ -50,7 +50,6 @@ dependencies {
 
     implementation(libs.room.ktx)
     implementation(libs.androidx.test.core.ktx)
-    implementation(libs.lblogger)
     implementation(libs.datastore)
     implementation(libs.datastore.preferences)
 

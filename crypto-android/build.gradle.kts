@@ -135,6 +135,8 @@ dependencies {
     androidTestImplementation(libs.biometric) // used to check if device has biometric
 
     testImplementation(project(":common-test-android"))
+
+    lintChecks(project(":crypto-android:checks"))
 }
 
 tasks.register("cleanProtobuf") {

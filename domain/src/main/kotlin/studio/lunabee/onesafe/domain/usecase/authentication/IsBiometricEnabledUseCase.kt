@@ -20,11 +20,11 @@
 package studio.lunabee.onesafe.domain.usecase.authentication
 
 import kotlinx.coroutines.flow.Flow
-import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
+import studio.lunabee.onesafe.domain.repository.BiometricCipherRepository
 import javax.inject.Inject
 
 class IsBiometricEnabledUseCase @Inject constructor(
-    private val cryptoRepository: MainCryptoRepository,
+    private val biometricCipherRepository: BiometricCipherRepository,
 ) {
-    operator fun invoke(): Flow<Boolean> = cryptoRepository.isBiometricEnabledFlow()
+    operator fun invoke(): Flow<Boolean> = biometricCipherRepository.isBiometricEnabledFlow()
 }

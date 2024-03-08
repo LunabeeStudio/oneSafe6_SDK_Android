@@ -27,7 +27,7 @@ class LockAppUseCase @Inject constructor(
     private val mainCryptoRepository: MainCryptoRepository,
     private val loadFileCancelAllUseCase: LoadFileCancelAllUseCase,
 ) {
-    operator fun invoke() {
+    suspend operator fun invoke() {
         loadFileCancelAllUseCase.invoke()
         mainCryptoRepository.unloadMasterKeys()
     }

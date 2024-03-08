@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2024 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:24 AM
+ * Created by Lunabee Studio / Date - 3/1/2024 - for the oneSafe6 SDK.
+ * Last modified 3/1/24, 11:03 AM
  */
 
-package studio.lunabee.onesafe.domain.usecase.authentication
+package studio.lunabee.onesafe.domain.repository
 
-import studio.lunabee.onesafe.domain.repository.BiometricCipherRepository
-import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.error.OSCryptoError
+import javax.crypto.Cipher
 
-class DisableBiometricUseCase @Inject constructor(
-    private val biometricCipherRepository: BiometricCipherRepository,
-) {
-    operator fun invoke() {
-        biometricCipherRepository.disableBiometric()
-    }
+interface BiometricCipherRepository {
+    @Throws(OSCryptoError::class)
+    fun getCipherBiometricForDecrypt(): Cipher
+    fun createCipherBiometricForEncrypt(): Cipher
+    fun isBiometricEnabledFlow(): Flow<Boolean>
+    fun disableBiometric()
 }

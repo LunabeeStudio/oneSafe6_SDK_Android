@@ -28,5 +28,5 @@ import javax.inject.Inject
 class IsSignUpUseCase @Inject constructor(
     private val cryptoRepository: MainCryptoRepository,
 ) {
-    operator fun invoke(): Boolean = cryptoRepository.hasMasterSalt()
+    suspend operator fun invoke(): Boolean = cryptoRepository.hasMasterSalt()
 }

@@ -26,6 +26,6 @@ sealed interface FileSavingData {
     data class ToRemove(val fileId: UUID) : FileSavingData
     data class ToSave(
         val fileId: UUID,
-        val getStream: () -> InputStream?,
+        val getStream: suspend () -> InputStream?,
     ) : FileSavingData
 }

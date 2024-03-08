@@ -30,6 +30,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import studio.lunabee.doubleratchet.crypto.DoubleRatchetKeyRepository
 import studio.lunabee.onesafe.bubbles.crypto.AndroidBubblesCryptoRepository
 import studio.lunabee.onesafe.bubbles.crypto.AndroidDoubleRatchetKeyRepository
@@ -42,7 +43,7 @@ import studio.lunabee.onesafe.cryptography.AndroidEditCryptoRepository
 import studio.lunabee.onesafe.cryptography.AndroidImportExportCryptoRepository
 import studio.lunabee.onesafe.cryptography.AndroidMainCryptoRepository
 import studio.lunabee.onesafe.cryptography.AndroidMigrationCryptoRepository
-import studio.lunabee.onesafe.cryptography.PlainDatastoreEngine
+import studio.lunabee.onesafe.cryptography.BiometricEngine
 import studio.lunabee.onesafe.cryptography.CryptoConstants
 import studio.lunabee.onesafe.cryptography.DatastoreEngine
 import studio.lunabee.onesafe.cryptography.EncryptedDataStoreEngine
@@ -50,13 +51,15 @@ import studio.lunabee.onesafe.cryptography.IVProvider
 import studio.lunabee.onesafe.cryptography.JceRsaCryptoEngine
 import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
 import studio.lunabee.onesafe.cryptography.PasswordHashEngine
+import studio.lunabee.onesafe.cryptography.PlainDatastoreEngine
 import studio.lunabee.onesafe.cryptography.ProtoData
 import studio.lunabee.onesafe.cryptography.RsaCryptoEngine
 import studio.lunabee.onesafe.cryptography.SecureIVProvider
-import studio.lunabee.onesafe.cryptography.qualifier.CryptoDispatcher
+import studio.lunabee.onesafe.domain.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
 import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
 import studio.lunabee.onesafe.cryptography.utils.SecuredDataSerializer
+import studio.lunabee.onesafe.domain.repository.BiometricCipherRepository
 import studio.lunabee.onesafe.domain.repository.EditCryptoRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.MigrationCryptoRepository
@@ -71,6 +74,9 @@ abstract class CryptoModule {
 
     @Binds
     internal abstract fun bindMainCryptoRepository(androidMainCryptoRepository: AndroidMainCryptoRepository): MainCryptoRepository
+
+    @Binds
+    internal abstract fun bindBiometricCipherRepository(biometricEngine: BiometricEngine): BiometricCipherRepository
 
     @Binds
     internal abstract fun bindEditCryptoRepository(
@@ -123,9 +129,10 @@ abstract class CryptoModule {
 @InstallIn(SingletonComponent::class)
 object CryptoDispatcherModule {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @CryptoDispatcher
     @Provides
-    fun provideCryptoDispatcher(): CoroutineDispatcher = Dispatchers.Default
+    fun provideCryptoDispatcher(): CoroutineDispatcher = Dispatchers.Default.limitedParallelism(1)
 }
 
 @Module
