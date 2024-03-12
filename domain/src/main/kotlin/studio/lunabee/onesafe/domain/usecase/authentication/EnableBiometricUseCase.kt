@@ -34,7 +34,7 @@ private val log = LBLogger.get<EnableBiometricUseCase>()
 class EnableBiometricUseCase @Inject constructor(
     private val cryptoRepository: MainCryptoRepository,
 ) {
-    operator fun invoke(cipher: Cipher): LBResult<Unit> {
+    suspend operator fun invoke(cipher: Cipher): LBResult<Unit> {
         return OSError.runCatching(log) {
             cryptoRepository.enableBiometric(cipher)
         }

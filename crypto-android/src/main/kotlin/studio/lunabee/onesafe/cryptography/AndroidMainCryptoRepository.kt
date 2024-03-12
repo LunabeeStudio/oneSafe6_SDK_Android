@@ -23,10 +23,17 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.util.AtomicFile
 import com.lunabee.lblogger.LBLogger
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.timeout
+import kotlinx.coroutines.withContext
 import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
 import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
 import studio.lunabee.onesafe.cryptography.utils.OSCryptoInputStream
@@ -40,6 +47,7 @@ import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
+import studio.lunabee.onesafe.domain.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSError.Companion.get
@@ -54,9 +62,13 @@ import javax.crypto.Cipher
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.reflect.KClass
+import kotlin.time.Duration
 
 private val logger = LBLogger.get<AndroidMainCryptoRepository>()
 
+/**
+ * @param dispatcher The coroutine dispatcher used to run cryptographic operation on
+ */
 @Suppress("ObsoleteSdkInt")
 @RequiresApi(Build.VERSION_CODES.M)
 @Singleton
@@ -68,6 +80,7 @@ class AndroidMainCryptoRepository @Inject constructor(
     private val featureFlags: FeatureFlags,
     private val randomKeyProvider: RandomKeyProvider,
     private val mapper: CryptoDataMapper,
+    @CryptoDispatcher private val dispatcher: CoroutineDispatcher,
 ) : MainCryptoRepository {
 
     private val masterKeyFlow: SafeDataMutableStateFlow = SafeDataMutableStateFlow(
@@ -98,14 +111,28 @@ class AndroidMainCryptoRepository @Inject constructor(
         val flows = mutableListOf(masterKeyFlow, searchIndexKeyFlow, itemEditionKeyFlow)
         return combine(flows) { keys ->
             keys.all { it != null }
-        }.distinctUntilChanged()
+        }
+            .flowOn(dispatcher)
+            .distinctUntilChanged()
     }
 
-    override fun isCryptoDataInMemory(): Boolean {
-        return try {
-            masterKey != null && searchIndexKey != null
-        } catch (e: OSCryptoError) {
-            false
+    @OptIn(FlowPreview::class)
+    override suspend fun isCryptoDataInMemory(timeout: Duration): Boolean {
+        return withContext(dispatcher) {
+            when (timeout) {
+                in -Duration.INFINITE..Duration.ZERO -> isCryptoDataInMemoryFlow().first()
+                Duration.INFINITE -> isCryptoDataInMemoryFlow().filter { it }.first()
+                else -> {
+                    try {
+                        isCryptoDataInMemoryFlow()
+                            .filter { it }
+                            .timeout(timeout)
+                            .first()
+                    } catch (e: TimeoutCancellationException) {
+                        false
+                    }
+                }
+            }
         }
     }
 
@@ -139,16 +166,16 @@ class AndroidMainCryptoRepository @Inject constructor(
         errorCodeIfOverrideExistingValue = OSCryptoError.Code.BUBBLES_CONTACT_KEY_ALREADY_GENERATED,
     )
 
-    override fun hasMasterSalt(): Boolean = saltDataStore != null
+    override suspend fun hasMasterSalt(): Boolean = withContext(dispatcher) { saltDataStore != null }
 
-    override fun getCurrentSalt(): ByteArray = saltDataStore!!
+    override suspend fun getCurrentSalt(): ByteArray = withContext(dispatcher) { saltDataStore!! }
 
-    override suspend fun resetCryptography() {
+    override suspend fun resetCryptography(): Unit = withContext(dispatcher) {
         dataStoreEngine.clearDataStore()
         unloadMasterKeys()
     }
 
-    override fun unloadMasterKeys() {
+    override suspend fun unloadMasterKeys(): Unit = withContext(dispatcher) {
         masterKey = null
         searchIndexKey = null
         bubblesMasterKey = null
@@ -156,7 +183,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         logger.v("cryptographic keys unloaded")
     }
 
-    override suspend fun storeMasterKeyAndSalt(key: ByteArray, salt: ByteArray) {
+    override suspend fun storeMasterKeyAndSalt(key: ByteArray, salt: ByteArray): Unit = withContext(dispatcher) {
         if (saltDataStore != null) {
             throw OSCryptoError(OSCryptoError.Code.MASTER_SALT_ALREADY_LOADED)
         }
@@ -178,7 +205,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    override suspend fun overrideMasterKeyAndSalt(key: ByteArray, salt: ByteArray) {
+    override suspend fun overrideMasterKeyAndSalt(key: ByteArray, salt: ByteArray): Unit = withContext(dispatcher) {
         key.copyInto(masterKey!!)
 
         dataStoreEngine.editValue(value = salt, key = DATASTORE_MASTER_SALT)
@@ -197,7 +224,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    override suspend fun loadMasterKeyFromBiometric(cipher: Cipher) {
+    override suspend fun loadMasterKeyFromBiometric(cipher: Cipher): Unit = withContext(dispatcher) {
         masterKey = biometricEngine.retrieveKey(cipher)
         retrieveKeyForIndex()
         retrieveKeyForEdition()
@@ -207,12 +234,12 @@ class AndroidMainCryptoRepository @Inject constructor(
         logger.v("cryptographic keys loaded using biometric")
     }
 
-    override suspend fun retrieveMasterKeyFromBiometric(cipher: Cipher): ByteArray {
-        return biometricEngine.retrieveKey(cipher)
+    override suspend fun retrieveMasterKeyFromBiometric(cipher: Cipher): ByteArray = withContext(dispatcher) {
+        biometricEngine.retrieveKey(cipher)
     }
 
-    override suspend fun loadMasterKeyExternal(masterKey: ByteArray) {
-        this.masterKey = masterKey.copyOf()
+    override suspend fun loadMasterKeyExternal(masterKey: ByteArray): Unit = withContext(dispatcher) {
+        this@AndroidMainCryptoRepository.masterKey = masterKey.copyOf()
         retrieveKeyForIndex()
         retrieveKeyForEdition()
         if (featureFlags.bubbles().first()) {
@@ -221,7 +248,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         logger.v("cryptographic keys externally loaded")
     }
 
-    private suspend fun generateIndexKey() {
+    private suspend fun generateIndexKey(): Unit = withContext(dispatcher) {
         searchIndexKeyDataStore = randomKeyProvider().use { keyData ->
             searchIndexKey = keyData.copyOf()
             crypto.encrypt(keyData, masterKey!!, null)
@@ -230,7 +257,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    private suspend fun generateItemEditionKey() {
+    private suspend fun generateItemEditionKey(): Unit = withContext(dispatcher) {
         itemEditionKeyDataStore = randomKeyProvider().use { keyData ->
             itemEditionKey = keyData.copyOf()
             crypto.encrypt(keyData, masterKey!!, null)
@@ -239,7 +266,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    override suspend fun generateBubblesKey() {
+    override suspend fun generateBubblesKey(): Unit = withContext(dispatcher) {
         bubblesMasterKeyDataStore = randomKeyProvider().use { keyData ->
             bubblesMasterKey = keyData.copyOf()
             crypto.encrypt(keyData, masterKey!!, null)
@@ -248,27 +275,27 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    private suspend fun reEncryptIndexKey() {
+    private suspend fun reEncryptIndexKey(): Unit = withContext(dispatcher) {
         val key = crypto.encrypt(searchIndexKey!!, masterKey!!, null).getOrElse {
             throw OSCryptoError.Code.INDEX_KEY_ENCRYPTION_FAIL.get(cause = it)
         }
         dataStoreEngine.editValue(value = key, key = DATASTORE_SEARCH_INDEX_KEY)
     }
 
-    private suspend fun reEncryptItemEditionKey() {
+    private suspend fun reEncryptItemEditionKey(): Unit = withContext(dispatcher) {
         val key = crypto.encrypt(itemEditionKey!!, masterKey!!, null).getOrElse {
             throw OSCryptoError.Code.ITEM_EDITION_KEY_ENCRYPTION_FAIL.get(cause = it)
         }
         dataStoreEngine.editValue(value = key, key = DATASTORE_ITEM_EDITION_KEY)
     }
 
-    private suspend fun retrieveKeyForIndex() {
+    private suspend fun retrieveKeyForIndex(): Unit = withContext(dispatcher) {
         searchIndexKey = crypto.decrypt(searchIndexKeyDataStore!!, masterKey!!, null).getOrElse {
             throw OSCryptoError.Code.INDEX_KEY_DECRYPTION_FAIL.get(cause = it)
         }
     }
 
-    private suspend fun retrieveKeyForEdition() {
+    private suspend fun retrieveKeyForEdition(): Unit = withContext(dispatcher) {
         if (itemEditionKeyDataStore != null) {
             itemEditionKey = crypto.decrypt(itemEditionKeyDataStore!!, masterKey!!, null).getOrElse {
                 throw OSCryptoError.Code.ITEM_EDITION_KEY_DECRYPTION_FAIL.get(cause = it)
@@ -278,7 +305,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    private suspend fun retrieveKeyForBubblesContact() {
+    private suspend fun retrieveKeyForBubblesContact(): Unit = withContext(dispatcher) {
         if (bubblesMasterKeyDataStore != null) {
             bubblesMasterKey = crypto.decrypt(bubblesMasterKeyDataStore!!, masterKey!!, null).getOrElse {
                 throw OSCryptoError.Code.BUBBLES_CONTACT_KEY_DECRYPTION_FAIL.get(cause = it)
@@ -288,24 +315,19 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    override suspend fun deleteBubblesCrypto() {
+    override suspend fun deleteBubblesCrypto(): Unit = withContext(dispatcher) {
         bubblesMasterKey = null
         dataStoreEngine.editValue(null, DATASTORE_BUBBLES_CONTACT_KEY)
     }
 
-    private suspend fun reEncryptBubblesContactKey() {
+    private suspend fun reEncryptBubblesContactKey(): Unit = withContext(dispatcher) {
         val key = crypto.encrypt(bubblesMasterKey!!, masterKey!!, null).getOrElse {
             throw OSCryptoError.Code.BUBBLES_CONTACT_KEY_ENCRYPTION_FAIL.get(cause = it)
         }
         dataStoreEngine.editValue(value = key, key = DATASTORE_BUBBLES_CONTACT_KEY)
     }
 
-    override fun getCipherForBiometricForVerify(): Cipher = biometricEngine.getCipherBiometricForDecrypt()
-
-    override fun getCipherForBiometricForCreate(): Cipher = biometricEngine.createCipherBiometricForEncrypt()
-    override fun isBiometricEnabledFlow(): Flow<Boolean> = biometricEngine.isBiometricEnabledFlow()
-    override fun disableBiometric(): Unit = biometricEngine.disableBiometric()
-    override fun enableBiometric(biometricCipher: Cipher) {
+    override suspend fun enableBiometric(biometricCipher: Cipher): Unit = withContext(dispatcher) {
         try {
             biometricEngine.storeKey(masterKey!!, biometricCipher)
         } catch (osError: OSCryptoError) {
@@ -316,7 +338,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    override suspend fun loadMasterKeyFromPassword(password: CharArray) {
+    override suspend fun loadMasterKeyFromPassword(password: CharArray): Unit = withContext(dispatcher) {
         password.use {
             retrieveMasterKeyFromPassword(password)?.let {
                 masterKey = it
@@ -330,12 +352,12 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    override suspend fun testPassword(password: CharArray): Boolean {
-        return retrieveMasterKeyFromPassword(password)?.randomize() != null
+    override suspend fun testPassword(password: CharArray): Boolean = withContext(dispatcher) {
+        retrieveMasterKeyFromPassword(password)?.randomize() != null
     }
 
-    private suspend fun retrieveMasterKeyFromPassword(password: CharArray): ByteArray? {
-        return password.use {
+    private suspend fun retrieveMasterKeyFromPassword(password: CharArray): ByteArray? = withContext(dispatcher) {
+        password.use {
             val salt = saltDataStore ?: throw OSCryptoError(OSCryptoError.Code.MASTER_KEY_NOT_GENERATED)
             salt.use {
                 val encMasterKeyTest = masterKeyTestDataStore ?: throw OSCryptoError(OSCryptoError.Code.MASTER_KEY_NOT_GENERATED)
@@ -358,8 +380,8 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    override suspend fun generateKeyForItemId(itemId: UUID): SafeItemKey {
-        return randomKeyProvider().use { keyData ->
+    override suspend fun generateKeyForItemId(itemId: UUID): SafeItemKey = withContext(dispatcher) {
+        randomKeyProvider().use { keyData ->
             val encryptedKey = crypto.encrypt(keyData, masterKey!!, null).getOrElse {
                 throw OSCryptoError.Code.ITEM_KEY_ENCRYPTION_FAIL.get(cause = it)
             }
@@ -367,15 +389,15 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    override suspend fun importItemKey(rawKeyValue: ByteArray, keyId: UUID): SafeItemKey {
+    override suspend fun importItemKey(rawKeyValue: ByteArray, keyId: UUID): SafeItemKey = withContext(dispatcher) {
         val encKeyValue = crypto.encrypt(rawKeyValue, masterKey!!, null).getOrElse {
             throw OSCryptoError.Code.ITEM_KEY_ENCRYPTION_FAIL.get(cause = it)
         }
-        return SafeItemKey(id = keyId, encValue = encKeyValue)
+        SafeItemKey(id = keyId, encValue = encKeyValue)
     }
 
-    override suspend fun <Data : Any> decrypt(key: SafeItemKey, decryptEntry: DecryptEntry<Data>): Data {
-        return try {
+    override suspend fun <Data : Any> decrypt(key: SafeItemKey, decryptEntry: DecryptEntry<Data>): Data = withContext(dispatcher) {
+        try {
             doDecrypt(
                 key = key,
                 decrypt = { rawKey ->
@@ -389,8 +411,8 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    override suspend fun decrypt(key: SafeItemKey, decryptEntries: List<DecryptEntry<out Any>?>): List<Any?> {
-        return try {
+    override suspend fun decrypt(key: SafeItemKey, decryptEntries: List<DecryptEntry<out Any>?>): List<Any?> = withContext(dispatcher) {
+        try {
             crypto.decrypt(key.encValue, masterKey!!, null).getOrThrow().use { rawKey ->
                 decryptEntries.map { decryptEntry ->
                     if (decryptEntry == null) {
@@ -409,8 +431,8 @@ class AndroidMainCryptoRepository @Inject constructor(
     override suspend fun <Data : Any?, Out : Any> decryptWithData(
         key: SafeItemKey,
         decryptEntries: List<Pair<Data, DecryptEntry<out Out>?>>,
-    ): List<Pair<Data, Out?>> {
-        return try {
+    ): List<Pair<Data, Out?>> = withContext(dispatcher) {
+        try {
             crypto.decrypt(key.encValue, masterKey!!, null).getOrThrow().use { rawKey ->
                 decryptEntries.map { (data, decryptEntry) ->
                     if (decryptEntry == null) {
@@ -426,9 +448,14 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    override suspend fun <Data : Any> decrypt(file: File, key: SafeItemKey, clazz: KClass<Data>, mapper: (ByteArray.() -> Data)?): Data {
+    override suspend fun <Data : Any> decrypt(
+        file: File,
+        key: SafeItemKey,
+        clazz: KClass<Data>,
+        mapper: (ByteArray.() -> Data)?,
+    ): Data = withContext(dispatcher) {
         val aFile = AtomicFile(file)
-        return doDecrypt(
+        doDecrypt(
             key = key,
             decrypt = { rawKey ->
                 crypto.decrypt(aFile, rawKey, null).getOrElse {
@@ -440,8 +467,8 @@ class AndroidMainCryptoRepository @Inject constructor(
         )
     }
 
-    override suspend fun getDecryptStream(cipherFile: File, key: SafeItemKey): InputStream {
-        return crypto.decrypt(key.encValue, masterKey!!, null).getOrElse {
+    override suspend fun getDecryptStream(cipherFile: File, key: SafeItemKey): InputStream = withContext(dispatcher) {
+        crypto.decrypt(key.encValue, masterKey!!, null).getOrElse {
             throw OSCryptoError.Code.ITEM_KEY_DECRYPTION_FAIL.get(cause = it)
         }.use { rawKey ->
             val cryptoStream = crypto.getDecryptStream(AtomicFile(cipherFile), rawKey, null)
@@ -449,8 +476,8 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    override suspend fun getEncryptStream(cipherFile: File, key: SafeItemKey): OutputStream {
-        return crypto.decrypt(key.encValue, masterKey!!, null).getOrElse {
+    override suspend fun getEncryptStream(cipherFile: File, key: SafeItemKey): OutputStream = withContext(dispatcher) {
+        crypto.decrypt(key.encValue, masterKey!!, null).getOrElse {
             throw OSCryptoError.Code.ITEM_KEY_DECRYPTION_FAIL.get(cause = it)
         }.use { rawKey ->
             val cryptoStream = crypto.getEncryptStream(cipherFile, rawKey, null)
@@ -458,14 +485,123 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    override fun getFileEditionEncryptStream(plainFile: File): OutputStream {
+    override suspend fun getFileEditionEncryptStream(plainFile: File): OutputStream = withContext(dispatcher) {
         val encryptStream = crypto.getEncryptStream(plainFile, itemEditionKey!!, null)
-        return OSCryptoOutputStream(encryptStream)
+        OSCryptoOutputStream(encryptStream)
     }
 
-    override fun getFileEditionDecryptStream(encFile: File): InputStream {
+    override suspend fun getFileEditionDecryptStream(encFile: File): InputStream = withContext(dispatcher) {
         val decryptStream = crypto.getDecryptStream(AtomicFile(encFile), itemEditionKey!!, null)
-        return OSCryptoInputStream(decryptStream)
+        OSCryptoInputStream(decryptStream)
+    }
+
+    override suspend fun <Data : Any> encrypt(key: SafeItemKey, encryptEntry: EncryptEntry<Data>): ByteArray = withContext(dispatcher) {
+        val data = encryptEntry.data
+        val mapBlock = encryptEntry.mapBlock
+
+        val rawData = mapper(mapBlock, data)
+
+        try {
+            crypto.decrypt(key.encValue, masterKey!!, null).getOrThrow().use { rawKey ->
+                crypto.encrypt(rawData, rawKey, null).getOrThrow()
+            }
+        } catch (e: GeneralSecurityException) {
+            throw OSCryptoError(OSCryptoError.Code.ENCRYPTION_FAILED_BAD_KEY, cause = e)
+        }
+    }
+
+    override suspend fun <Data : Any> encrypt(
+        key: SafeItemKey,
+        encryptEntries: List<EncryptEntry<Data>?>,
+    ): List<ByteArray?> = withContext(dispatcher) {
+        val rawDataList = encryptEntries.map { entry ->
+            entry?.let { encryptEntry ->
+                mapper(encryptEntry.mapBlock, encryptEntry.data)
+            }
+        }
+
+        try {
+            crypto.decrypt(key.encValue, masterKey!!, null).getOrThrow().use { rawKey ->
+                rawDataList.map { data ->
+                    data?.let { crypto.encrypt(it, rawKey, null).getOrThrow() }
+                }
+            }
+        } catch (e: GeneralSecurityException) {
+            throw OSCryptoError(OSCryptoError.Code.ENCRYPTION_FAILED_BAD_KEY, cause = e)
+        }
+    }
+
+    override suspend fun encrypt(outputStream: OutputStream, key: ByteArray): OutputStream = withContext(dispatcher) {
+        crypto.getCipherOutputStream(outputStream, key, null)
+    }
+
+    override suspend fun encryptIndexWord(indexWordEntry: List<PlainIndexWordEntry>): List<IndexWordEntry> = withContext(dispatcher) {
+        indexWordEntry.map { wordEntry ->
+            val encWord = crypto.encrypt(
+                plainData = wordEntry.word.encodeToByteArray(),
+                key = searchIndexKey!!,
+                associatedData = null,
+            ).getOrElse { err -> throw OSCryptoError.Code.INDEX_WORD_ENCRYPTION_FAIL.get(cause = err) }
+            IndexWordEntry(
+                encWord,
+                wordEntry.itemMatch,
+                wordEntry.fieldMatch,
+            )
+        }
+    }
+
+    override suspend fun encryptRecentSearch(plainRecentSearch: List<String>): List<ByteArray> = withContext(dispatcher) {
+        plainRecentSearch.map { element ->
+            crypto.encrypt(plainData = element.encodeToByteArray(), key = searchIndexKey!!, associatedData = null).getOrElse {
+                throw OSCryptoError.Code.RECENT_SEARCH_ENCRYPTION_FAIL.get(cause = it)
+            }
+        }
+    }
+
+    override suspend fun decryptRecentSearch(encRecentSearch: List<ByteArray>): List<String> = withContext(dispatcher) {
+        encRecentSearch.map { cypherData ->
+            crypto.decrypt(cypherData, searchIndexKey!!, null).getOrElse {
+                throw OSCryptoError.Code.RECENT_SEARCH_DECRYPTION_FAIL.get(cause = it)
+            }.decodeToString()
+        }
+    }
+
+    override suspend fun decryptIndexWord(encIndexWordEntry: List<IndexWordEntry>): List<PlainIndexWordEntry> = withContext(dispatcher) {
+        encIndexWordEntry.map { wordEntry ->
+            PlainIndexWordEntry(
+                crypto.decrypt(wordEntry.encWord, searchIndexKey!!, null).getOrElse {
+                    throw OSCryptoError.Code.INDEX_WORD_DECRYPTION_FAIL.get(cause = it)
+                }.decodeToString(),
+                wordEntry.itemMatch,
+                wordEntry.fieldMatch,
+            )
+        }
+    }
+
+    override suspend fun reEncryptItemKey(itemKey: SafeItemKey, key: ByteArray): Unit = withContext(dispatcher) {
+        crypto.decrypt(cipherData = itemKey.encValue, key = masterKey!!, associatedData = null).getOrElse {
+            throw OSCryptoError.Code.ITEM_KEY_DECRYPTION_FAIL.get(cause = it)
+        }.use { plainKey ->
+            crypto.encrypt(plainKey, key, null).getOrElse {
+                throw OSCryptoError.Code.ITEM_EDITION_KEY_ENCRYPTION_FAIL.get(cause = it)
+            }.copyInto(itemKey.encValue)
+        }
+    }
+
+    override suspend fun encryptBubbles(data: ByteArray): ByteArray = withContext(dispatcher) {
+        try {
+            crypto.encrypt(data, bubblesMasterKey!!, null).getOrThrow()
+        } catch (e: GeneralSecurityException) {
+            throw OSCryptoError(OSCryptoError.Code.BUBBLES_ENCRYPTION_FAILED_BAD_KEY, cause = e)
+        }
+    }
+
+    override suspend fun decryptBubbles(data: ByteArray): ByteArray = withContext(dispatcher) {
+        try {
+            crypto.decrypt(data, bubblesMasterKey!!, null).getOrThrow()
+        } catch (e: GeneralSecurityException) {
+            throw OSCryptoError(OSCryptoError.Code.BUBBLES_DECRYPTION_FAILED_WRONG_KEY, cause = e)
+        }
     }
 
     private suspend fun <Data : Any> doDecrypt(
@@ -485,105 +621,6 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
 
         return mapper(mapBlock, rawData, clazz)
-    }
-
-    override suspend fun <Data : Any> encrypt(key: SafeItemKey, encryptEntry: EncryptEntry<Data>): ByteArray {
-        val data = encryptEntry.data
-        val mapBlock = encryptEntry.mapBlock
-
-        val rawData = mapper(mapBlock, data)
-
-        return try {
-            crypto.decrypt(key.encValue, masterKey!!, null).getOrThrow().use { rawKey ->
-                crypto.encrypt(rawData, rawKey, null).getOrThrow()
-            }
-        } catch (e: GeneralSecurityException) {
-            throw OSCryptoError(OSCryptoError.Code.ENCRYPTION_FAILED_BAD_KEY, cause = e)
-        }
-    }
-
-    override suspend fun <Data : Any> encrypt(key: SafeItemKey, encryptEntries: List<EncryptEntry<Data>?>): List<ByteArray?> {
-        val rawDataList = encryptEntries.map { entry ->
-            entry?.let { encryptEntry ->
-                mapper(encryptEntry.mapBlock, encryptEntry.data)
-            }
-        }
-
-        return try {
-            crypto.decrypt(key.encValue, masterKey!!, null).getOrThrow().use { rawKey ->
-                rawDataList.map { data ->
-                    data?.let { crypto.encrypt(it, rawKey, null).getOrThrow() }
-                }
-            }
-        } catch (e: GeneralSecurityException) {
-            throw OSCryptoError(OSCryptoError.Code.ENCRYPTION_FAILED_BAD_KEY, cause = e)
-        }
-    }
-
-    override suspend fun encrypt(outputStream: OutputStream, key: ByteArray): OutputStream {
-        return crypto.getCipherOutputStream(outputStream, key, null)
-    }
-
-    override suspend fun encryptIndexWord(indexWordEntry: List<PlainIndexWordEntry>): List<IndexWordEntry> {
-        return indexWordEntry.map {
-            IndexWordEntry(
-                crypto.encrypt(plainData = it.word.encodeToByteArray(), key = searchIndexKey!!, associatedData = null).getOrElse {
-                    throw OSCryptoError.Code.INDEX_WORD_ENCRYPTION_FAIL.get(cause = it)
-                },
-                it.itemMatch,
-                it.fieldMatch,
-            )
-        }
-    }
-
-    override suspend fun encryptRecentSearch(plainRecentSearch: List<String>): List<ByteArray> {
-        return plainRecentSearch.map { element ->
-            crypto.encrypt(plainData = element.encodeToByteArray(), key = searchIndexKey!!, associatedData = null).getOrElse {
-                throw OSCryptoError.Code.RECENT_SEARCH_ENCRYPTION_FAIL.get(cause = it)
-            }
-        }
-    }
-
-    override suspend fun decryptRecentSearch(encRecentSearch: List<ByteArray>): List<String> {
-        return encRecentSearch.map { cypherData ->
-            crypto.decrypt(cypherData, searchIndexKey!!, null).getOrElse {
-                throw OSCryptoError.Code.RECENT_SEARCH_DECRYPTION_FAIL.get(cause = it)
-            }.decodeToString()
-        }
-    }
-
-    override suspend fun decryptIndexWord(encIndexWordEntry: List<IndexWordEntry>): List<PlainIndexWordEntry> {
-        return encIndexWordEntry.map { wordEntry ->
-            PlainIndexWordEntry(
-                crypto.decrypt(wordEntry.encWord, searchIndexKey!!, null).getOrElse {
-                    throw OSCryptoError.Code.INDEX_WORD_DECRYPTION_FAIL.get(cause = it)
-                }.decodeToString(),
-                wordEntry.itemMatch,
-                wordEntry.fieldMatch,
-            )
-        }
-    }
-
-    override suspend fun reEncryptItemKey(itemKey: SafeItemKey, key: ByteArray) {
-        crypto.decrypt(cipherData = itemKey.encValue, key = masterKey!!, associatedData = null).getOrElse {
-            throw OSCryptoError.Code.ITEM_KEY_DECRYPTION_FAIL.get(cause = it)
-        }.use { plainKey ->
-            crypto.encrypt(plainKey, key, null).getOrElse {
-                throw OSCryptoError.Code.ITEM_EDITION_KEY_ENCRYPTION_FAIL.get(cause = it)
-            }.copyInto(itemKey.encValue)
-        }
-    }
-
-    override suspend fun encryptBubbles(data: ByteArray): ByteArray = try {
-        crypto.encrypt(data, bubblesMasterKey!!, null).getOrThrow()
-    } catch (e: GeneralSecurityException) {
-        throw OSCryptoError(OSCryptoError.Code.BUBBLES_ENCRYPTION_FAILED_BAD_KEY, cause = e)
-    }
-
-    override suspend fun decryptBubbles(data: ByteArray): ByteArray = try {
-        crypto.decrypt(data, bubblesMasterKey!!, null).getOrThrow()
-    } catch (e: GeneralSecurityException) {
-        throw OSCryptoError(OSCryptoError.Code.BUBBLES_DECRYPTION_FAILED_WRONG_KEY, cause = e)
     }
 
     companion object {

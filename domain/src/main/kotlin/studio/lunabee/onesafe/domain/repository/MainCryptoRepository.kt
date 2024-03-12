@@ -31,6 +31,7 @@ import java.io.OutputStream
 import java.util.UUID
 import javax.crypto.Cipher
 import kotlin.reflect.KClass
+import kotlin.time.Duration
 
 interface MainCryptoRepository {
     suspend fun <Data : Any> decrypt(key: SafeItemKey, decryptEntry: DecryptEntry<Data>): Data
@@ -46,17 +47,17 @@ interface MainCryptoRepository {
     suspend fun <Data : Any> encrypt(key: SafeItemKey, encryptEntries: List<EncryptEntry<Data>?>): List<ByteArray?>
     suspend fun getDecryptStream(cipherFile: File, key: SafeItemKey): InputStream
     suspend fun getEncryptStream(cipherFile: File, key: SafeItemKey): OutputStream
-    fun getFileEditionEncryptStream(plainFile: File): OutputStream
-    fun getFileEditionDecryptStream(encFile: File): InputStream
+    suspend fun getFileEditionEncryptStream(plainFile: File): OutputStream
+    suspend fun getFileEditionDecryptStream(encFile: File): InputStream
     suspend fun encrypt(outputStream: OutputStream, key: ByteArray): OutputStream
     suspend fun encryptIndexWord(indexWordEntry: List<PlainIndexWordEntry>): List<IndexWordEntry>
     suspend fun decryptIndexWord(encIndexWordEntry: List<IndexWordEntry>): List<PlainIndexWordEntry>
     suspend fun generateKeyForItemId(itemId: UUID): SafeItemKey
     suspend fun importItemKey(rawKeyValue: ByteArray, keyId: UUID): SafeItemKey
     suspend fun resetCryptography()
-    fun unloadMasterKeys()
-    fun hasMasterSalt(): Boolean
-    fun getCurrentSalt(): ByteArray
+    suspend fun unloadMasterKeys()
+    suspend fun hasMasterSalt(): Boolean
+    suspend fun getCurrentSalt(): ByteArray
     suspend fun loadMasterKeyFromPassword(password: CharArray)
 
     /**
@@ -72,11 +73,7 @@ interface MainCryptoRepository {
 
     suspend fun loadMasterKeyFromBiometric(cipher: Cipher)
     suspend fun retrieveMasterKeyFromBiometric(cipher: Cipher): ByteArray
-    fun getCipherForBiometricForVerify(): Cipher
-    fun getCipherForBiometricForCreate(): Cipher
-    fun isBiometricEnabledFlow(): Flow<Boolean>
-    fun disableBiometric()
-    fun enableBiometric(biometricCipher: Cipher)
+    suspend fun enableBiometric(biometricCipher: Cipher)
     suspend fun reEncryptItemKey(itemKey: SafeItemKey, key: ByteArray)
     fun isCryptoDataInMemoryFlow(): Flow<Boolean>
     suspend fun loadMasterKeyExternal(masterKey: ByteArray)
@@ -94,5 +91,12 @@ interface MainCryptoRepository {
      * Decrypt [data] with the bubbles master key
      */
     suspend fun decryptBubbles(data: ByteArray): ByteArray
-    fun isCryptoDataInMemory(): Boolean
+
+    /**
+     * Returns true if the cryptographic keys are loaded
+     *
+     * @param timeout Optional duration to wait before returning false. Use [Duration.ZERO] or negative value to return immediately and
+     * [Duration.INFINITE] to wait indefinitely.
+     */
+    suspend fun isCryptoDataInMemory(timeout: Duration): Boolean
 }

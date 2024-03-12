@@ -24,10 +24,16 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -36,6 +42,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import studio.lunabee.onesafe.domain.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
@@ -45,8 +52,10 @@ import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.test.testUUIDs
+import java.lang.Thread.UncaughtExceptionHandler
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.concurrent.thread
 import kotlin.random.Random
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -54,6 +63,9 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @HiltAndroidTest
 class AndroidMainCryptoRepositoryTest {
@@ -76,12 +88,25 @@ class AndroidMainCryptoRepositoryTest {
     @Inject
     internal lateinit var mapper: CryptoDataMapper
 
+    @Inject
+    @CryptoDispatcher
+    internal lateinit var cryptoDispatcher: CoroutineDispatcher
+
     private val featureFlags: FeatureFlags = mockk {
         every { this@mockk.bubbles() } returns flowOf(false)
     }
 
     private val repository: AndroidMainCryptoRepository by lazy {
-        AndroidMainCryptoRepository(crypto, hashEngine, mockk(), dataStore, featureFlags, randomKeyProvider, mapper)
+        AndroidMainCryptoRepository(
+            crypto = crypto,
+            hashEngine = hashEngine,
+            biometricEngine = mockk(),
+            dataStoreEngine = dataStore,
+            featureFlags = featureFlags,
+            randomKeyProvider = randomKeyProvider,
+            mapper = mapper,
+            dispatcher = cryptoDispatcher,
+        )
     }
 
     @Before
@@ -297,17 +322,38 @@ class AndroidMainCryptoRepositoryTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun collect_crypto_data_missing_test_test(): TestResult = runTest {
+    fun collect_crypto_data_missing_test(): TestResult = runTest {
         val values = mutableListOf<Boolean>()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             this@AndroidMainCryptoRepositoryTest.repository.isCryptoDataInMemoryFlow().toList(values)
         }
+
+        this@AndroidMainCryptoRepositoryTest.repository.isCryptoDataInMemoryFlow().filter { !it }.first()
         assertFalse(values[0])
         loadMasterKey()
+        this@AndroidMainCryptoRepositoryTest.repository.isCryptoDataInMemoryFlow().filter { it }.first()
         assertTrue(values[1])
         unloadMasterKey()
+        this@AndroidMainCryptoRepositoryTest.repository.isCryptoDataInMemoryFlow().filter { !it }.first()
         assertFalse(values[2])
+
         assertEquals(3, values.size)
+    }
+
+    @Test
+    fun isCryptoDataInMemory_test(): TestResult = runTest {
+        assertFalse(repository.isCryptoDataInMemory(Duration.ZERO))
+        assertFalse(repository.isCryptoDataInMemory(10.milliseconds))
+        loadMasterKey()
+        assertTrue(repository.isCryptoDataInMemory(Duration.ZERO))
+        assertTrue(repository.isCryptoDataInMemory(10.milliseconds))
+        unloadMasterKey()
+        launch { assertFalse(repository.isCryptoDataInMemory(Duration.ZERO)) }
+        launch { assertTrue(repository.isCryptoDataInMemory(1.seconds)) }
+        launch(Dispatchers.Default) {
+            delay(100.milliseconds)
+            repository.loadMasterKeyExternal(key)
+        }
     }
 
     @Test
@@ -337,11 +383,71 @@ class AndroidMainCryptoRepositoryTest {
         assertEquals(plainData, decryptedData.decodeToString())
     }
 
+    /**
+     * ~Reproduce AEADBadTagException which happens during index key decryption by flooding loadMasterKeyExternal and unloadMasterKey
+     * concurrently during 10 seconds. Ignore expected errors until AEADBadTagException is thrown (actually IllegalBlockSizeException is
+     * thrown, but it seems to be the same cause). Use thread API directly, easier to manage in test.
+     *
+     * @see <a href="https://www.notion.so/lunabeestudio/Refacto-cryto-pour-viter-la-concurrence-2a4dec45f9a04c58ad09c49ed6ea5015?pvs=4">
+     *     Notion</a>
+     */
+    @Test
+    fun stress_unloadMasterKeys_vs_loadMasterKeyExternal_test() {
+        var error: Throwable? = null
+        val maxTime = System.currentTimeMillis() + 10_000
+        val repeat = 100
+        runTest {
+            loadMasterKey()
+        }
+
+        val loadThreads = List(10) { threadIdx ->
+            thread(start = false) {
+                println("Run loadMasterKeyExternal $threadIdx on thread #${Thread.currentThread().id}")
+                runBlocking {
+                    repeat(repeat) {
+                        println("run $threadIdx $it")
+                        if (error != null) {
+                            return@runBlocking
+                        } else if (System.currentTimeMillis() > maxTime) {
+                            println("Thread #${Thread.currentThread().id} timeout")
+                            return@runBlocking
+                        }
+                        try {
+                            repository.loadMasterKeyExternal(key)
+                        } catch (e: OSCryptoError) {
+                            val expectedErrors = listOf(
+                                OSCryptoError.Code.MASTER_KEY_ALREADY_LOADED,
+                                OSCryptoError.Code.MASTER_KEY_NOT_LOADED,
+                                OSCryptoError.Code.SEARCH_INDEX_KEY_ALREADY_LOADED,
+                            )
+                            if (e.code !in expectedErrors) throw e
+                        }
+                    }
+                }
+            }
+        }
+        val handler = UncaughtExceptionHandler { _, e ->
+            println("Error on on thread #${Thread.currentThread().id}")
+            error = e
+        }
+        loadThreads.forEach { it.setUncaughtExceptionHandler(handler) }
+        loadThreads.forEach { it.start() }
+
+        thread {
+            println("Run unloadMasterKeys on thread #${Thread.currentThread().id}")
+            while (loadThreads.any { it.isAlive }) {
+                runBlocking { unloadMasterKey() }
+            }
+        }
+        loadThreads.forEach { it.join() }
+        error?.let { throw it }
+    }
+
     private suspend fun loadMasterKey(repository: AndroidMainCryptoRepository = this.repository) {
         repository.storeMasterKeyAndSalt(key, salt)
     }
 
-    private fun unloadMasterKey() {
+    private suspend fun unloadMasterKey() {
         this.repository.unloadMasterKeys()
     }
 

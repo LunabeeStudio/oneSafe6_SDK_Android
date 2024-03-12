@@ -32,7 +32,6 @@ import org.junit.Test
 import studio.lunabee.compose.androidtest.helper.LbcResourcesHelper
 import studio.lunabee.onesafe.cryptography.ChachaPolyJCECryptoEngine
 import java.io.File
-import java.lang.reflect.Method
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.time.measureTime
@@ -51,33 +50,6 @@ class ChachaPolyJCECryptoEngineBenchmark {
         ivProvider = { CryptoBenchUtils.iv12 },
     )
 
-    val doEncrypt: Method = ChachaPolyJCECryptoEngine::class.java.getDeclaredMethod(
-        "doEncrypt",
-        ByteArray::class.java,
-        ByteArray::class.java,
-        ByteArray::class.java,
-    ).apply {
-        isAccessible = true
-    }
-
-    val doDecryptData: Method = ChachaPolyJCECryptoEngine::class.java.getDeclaredMethod(
-        "doDecrypt",
-        ByteArray::class.java,
-        ByteArray::class.java,
-        ByteArray::class.java,
-    ).apply {
-        isAccessible = true
-    }
-
-    val doDecryptFile: Method = ChachaPolyJCECryptoEngine::class.java.getDeclaredMethod(
-        "doDecrypt",
-        AtomicFile::class.java,
-        ByteArray::class.java,
-        ByteArray::class.java,
-    ).apply {
-        isAccessible = true
-    }
-
     @Before
     fun setUp() {
         hiltRule.inject()
@@ -86,14 +58,14 @@ class ChachaPolyJCECryptoEngineBenchmark {
     @Test
     fun chachaPoly1305_encrypt_benchmark() {
         benchmarkRule.measureRepeated {
-            doEncrypt(cryptoEngine, CryptoBenchUtils.plainData, CryptoBenchUtils.key256, null)
+            cryptoEngine.encrypt(CryptoBenchUtils.plainData, CryptoBenchUtils.key256, null)
         }
     }
 
     @Test
     fun chachaPoly1305_decrypt_data_benchmark() {
         benchmarkRule.measureRepeated {
-            doDecryptData(cryptoEngine, CryptoBenchUtils.chacha20poly1305_data, CryptoBenchUtils.key256, null)
+            cryptoEngine.decrypt(CryptoBenchUtils.chacha20poly1305_data, CryptoBenchUtils.key256, null)
         }
     }
 
@@ -104,7 +76,7 @@ class ChachaPolyJCECryptoEngineBenchmark {
         val atomicFile = AtomicFile(cipherFile)
 
         benchmarkRule.measureRepeated {
-            doDecryptFile(cryptoEngine, atomicFile, CryptoBenchUtils.key256, null)
+            cryptoEngine.decrypt(atomicFile, CryptoBenchUtils.key256, null)
         }
     }
 

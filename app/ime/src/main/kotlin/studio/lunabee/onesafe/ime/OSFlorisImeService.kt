@@ -240,7 +240,9 @@ class OSFlorisImeService : FlorisImeService() {
 
     override fun onCreateInputView(): View {
         // Always lock on UI (re)creation
-        lockAppUseCase()
+        lifecycleScope.launch {
+            lockAppUseCase()
+        }
         return super.onCreateInputView()
     }
 
@@ -326,15 +328,19 @@ class OSFlorisImeService : FlorisImeService() {
                         imeClient = imeClient,
                         isCryptoDataReady = isCryptoDataReady,
                         onLogoClick = {
-                            coroutineScope.launch { osAppVisit.storeHasDoneTutorialOpenOsk(true) }
-                            showOneSafeUi()
+                            coroutineScope.launch {
+                                osAppVisit.storeHasDoneTutorialOpenOsk(true)
+                                showOneSafeUi()
+                            }
                         },
                         onLockClick = {
-                            if (isCryptoDataReady) {
-                                coroutineScope.launch { osAppVisit.storeHasDoneTutorialLockOsk(true) }
-                                lockUseCase()
-                            } else {
-                                showOneSafeUi()
+                            coroutineScope.launch {
+                                if (isCryptoDataReady) {
+                                    osAppVisit.storeHasDoneTutorialLockOsk(true)
+                                    lockUseCase()
+                                } else {
+                                    showOneSafeUi()
+                                }
                             }
                         },
                         displayOpenTutorial = !hasDoneOpenTutorial && !isOneSafeUiVisible,
@@ -489,7 +495,7 @@ class OSFlorisImeService : FlorisImeService() {
         }
     }
 
-    private fun showOneSafeUi() {
+    private suspend fun showOneSafeUi() {
         if (isSignUpUseCase()) {
             isOneSafeUiVisibleFlow.value = true
         } else {

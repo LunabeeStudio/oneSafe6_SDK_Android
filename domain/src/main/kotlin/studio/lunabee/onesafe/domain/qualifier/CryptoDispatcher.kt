@@ -17,15 +17,10 @@
  * Last modified 4/7/23, 12:24 AM
  */
 
-package studio.lunabee.onesafe.domain.usecase.authentication
+package studio.lunabee.onesafe.domain.qualifier
 
-import studio.lunabee.onesafe.domain.repository.BiometricCipherRepository
-import javax.inject.Inject
+import javax.inject.Qualifier
 
-class DisableBiometricUseCase @Inject constructor(
-    private val biometricCipherRepository: BiometricCipherRepository,
-) {
-    operator fun invoke() {
-        biometricCipherRepository.disableBiometric()
-    }
-}
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class CryptoDispatcher

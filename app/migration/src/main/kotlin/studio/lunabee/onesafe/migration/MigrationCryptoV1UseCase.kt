@@ -37,7 +37,7 @@ import javax.inject.Inject
 class MigrationCryptoV1UseCase @Inject constructor(
     private val cryptoEngine: CryptoEngine,
 ) {
-    suspend fun decrypt(cipherData: ByteArray, key: ByteArray): ByteArray {
+    fun decrypt(cipherData: ByteArray, key: ByteArray): ByteArray {
         return try {
             cryptoEngine.decrypt(cipherData, key, null).getOrThrow()
         } catch (e: GeneralSecurityException) {
@@ -45,7 +45,7 @@ class MigrationCryptoV1UseCase @Inject constructor(
         }
     }
 
-    suspend fun encrypt(plainData: ByteArray, key: ByteArray): ByteArray {
+    fun encrypt(plainData: ByteArray, key: ByteArray): ByteArray {
         return try {
             cryptoEngine.encrypt(plainData, key, null).getOrThrow()
         } catch (e: GeneralSecurityException) {

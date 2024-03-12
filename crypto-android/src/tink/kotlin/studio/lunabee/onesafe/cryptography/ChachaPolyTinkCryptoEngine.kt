@@ -24,10 +24,6 @@ import com.google.crypto.tink.aead.internal.InsecureNonceChaCha20Poly1305
 import com.google.crypto.tink.aead.internal.Poly1305
 import com.google.crypto.tink.subtle.ChaCha20Poly1305
 import com.lunabee.lblogger.LBLogger
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import studio.lunabee.onesafe.cryptography.qualifier.CryptoDispatcher
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
@@ -38,39 +34,34 @@ private val logger = LBLogger.get<ChachaPolyTinkCryptoEngine>()
 
 class ChachaPolyTinkCryptoEngine @Inject constructor(
     private val ivProvider: IVProvider,
-    @CryptoDispatcher private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : CryptoEngine {
 
     init {
         logger.i("Initialize ${javaClass.simpleName} using Google Tink")
     }
 
-    override suspend fun encrypt(plainData: ByteArray, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
+    override fun encrypt(plainData: ByteArray, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
         return runCatching {
-            withContext(dispatcher) {
-                val cipher = InsecureNonceChaCha20Poly1305(key)
-                val nonce = ivProvider(NONCE_LENGTH)
-                val output = ByteBuffer.allocate(NONCE_LENGTH + plainData.size + Poly1305.MAC_TAG_SIZE_IN_BYTES)
-                output.put(nonce)
-                cipher.encrypt(output, nonce, plainData, associatedData)
-                output.array()
-            }
+            val cipher = InsecureNonceChaCha20Poly1305(key)
+            val nonce = ivProvider(NONCE_LENGTH)
+            val output = ByteBuffer.allocate(NONCE_LENGTH + plainData.size + Poly1305.MAC_TAG_SIZE_IN_BYTES)
+            output.put(nonce)
+            cipher.encrypt(output, nonce, plainData, associatedData)
+            output.array()
         }
     }
 
-    override suspend fun decrypt(cipherData: ByteArray, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
+    override fun decrypt(cipherData: ByteArray, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
         return runCatching {
-            withContext(dispatcher) { ChaCha20Poly1305(key).decrypt(cipherData, associatedData) }
+            ChaCha20Poly1305(key).decrypt(cipherData, associatedData)
         }
     }
 
     // This implementation does not scale well for large data
-    override suspend fun decrypt(cipherFile: AtomicFile, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
+    override fun decrypt(cipherFile: AtomicFile, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
         return runCatching {
-            withContext(dispatcher) {
-                val cipherData = cipherFile.readFully()
-                ChaCha20Poly1305(key).decrypt(cipherData, associatedData)
-            }
+            val cipherData = cipherFile.readFully()
+            ChaCha20Poly1305(key).decrypt(cipherData, associatedData)
         }
     }
 

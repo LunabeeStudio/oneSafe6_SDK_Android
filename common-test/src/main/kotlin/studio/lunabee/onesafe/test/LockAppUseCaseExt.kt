@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2024 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:24 AM
+ * Created by Lunabee Studio / Date - 3/1/2024 - for the oneSafe6 SDK.
+ * Last modified 3/1/24, 11:49 AM
  */
 
-package studio.lunabee.onesafe.cryptography.qualifier
+package studio.lunabee.onesafe.test
 
-import javax.inject.Qualifier
+import kotlinx.coroutines.runBlocking
+import studio.lunabee.onesafe.domain.usecase.autolock.LockAppUseCase
 
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class CryptoDispatcher
+fun LockAppUseCase.blocking(): Unit = runBlocking { this@blocking.invoke() }

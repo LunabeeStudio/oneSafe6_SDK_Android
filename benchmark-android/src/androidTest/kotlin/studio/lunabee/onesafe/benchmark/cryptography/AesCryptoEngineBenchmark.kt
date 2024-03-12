@@ -26,10 +26,9 @@ import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Rule
 import org.junit.Test
-import studio.lunabee.onesafe.cryptography.AesCryptoEngine
 import studio.lunabee.compose.androidtest.helper.LbcResourcesHelper
+import studio.lunabee.onesafe.cryptography.AesCryptoEngine
 import java.io.File
-import java.lang.reflect.Method
 
 @LargeTest
 class AesCryptoEngineBenchmark {
@@ -41,41 +40,17 @@ class AesCryptoEngineBenchmark {
         ivProvider = { CryptoBenchUtils.iv12 },
     )
 
-    val doEncrypt: Method = AesCryptoEngine::class.java.getDeclaredMethod(
-        "doEncrypt",
-        ByteArray::class.java,
-        ByteArray::class.java,
-    ).apply {
-        isAccessible = true
-    }
-
-    val doDecryptData: Method = AesCryptoEngine::class.java.getDeclaredMethod(
-        "doDecrypt",
-        ByteArray::class.java,
-        ByteArray::class.java,
-    ).apply {
-        isAccessible = true
-    }
-
-    val doDecryptFile: Method = AesCryptoEngine::class.java.getDeclaredMethod(
-        "doDecrypt",
-        AtomicFile::class.java,
-        ByteArray::class.java,
-    ).apply {
-        isAccessible = true
-    }
-
     @Test
     fun aesGcm_encrypt_benchmark() {
         benchmarkRule.measureRepeated {
-            doEncrypt(cryptoEngine, CryptoBenchUtils.plainData, CryptoBenchUtils.key256)
+            cryptoEngine.encrypt(CryptoBenchUtils.plainData, CryptoBenchUtils.key256, null)
         }
     }
 
     @Test
     fun aesGcm_decrypt_data_benchmark() {
         benchmarkRule.measureRepeated {
-            doDecryptData(cryptoEngine, CryptoBenchUtils.aes256gcm_data, CryptoBenchUtils.key256)
+            cryptoEngine.decrypt(CryptoBenchUtils.aes256gcm_data, CryptoBenchUtils.key256, null)
         }
     }
 
@@ -86,18 +61,7 @@ class AesCryptoEngineBenchmark {
         val atomicFile = AtomicFile(cipherFile)
 
         benchmarkRule.measureRepeated {
-            doDecryptFile(cryptoEngine, atomicFile, CryptoBenchUtils.key256)
-        }
-    }
-
-    @Test
-    fun aesGcm_encrypt_file_benchmark() {
-        val cipherFile = File(InstrumentationRegistry.getInstrumentation().targetContext.cacheDir, "cipher_file")
-        LbcResourcesHelper.copyResourceToDeviceFile(CryptoBenchUtils.aes256gcm_file.name, cipherFile)
-        val atomicFile = AtomicFile(cipherFile)
-
-        benchmarkRule.measureRepeated {
-            doEncrypt(cryptoEngine, atomicFile, CryptoBenchUtils.key256)
+            cryptoEngine.decrypt(atomicFile, CryptoBenchUtils.key256, null)
         }
     }
 }

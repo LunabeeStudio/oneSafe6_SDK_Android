@@ -198,7 +198,7 @@ abstract class OSHiltTest : OSTest() {
      *      // You will not be sign-in anymore but you can now test with a database filled with the new item.
      * ```
      */
-    fun unloadMasterKey() {
+    fun unloadMasterKey(): Unit = runBlocking {
         lockAppUseCase()
     }
 
@@ -209,6 +209,11 @@ abstract class OSHiltTest : OSTest() {
 
     @After
     fun teardown() {
-        unmockkAll()
+        // benchmark exclude mockk (but use OSHiltTest), so ignore class not found error
+        try {
+            unmockkAll()
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
     }
 }

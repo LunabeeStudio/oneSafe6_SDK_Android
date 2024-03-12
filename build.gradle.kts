@@ -104,12 +104,18 @@ val excludedTestProjects: List<String> = listOf(
     "dependency-injection",
     "test-component",
     "mockos5",
-    "checks",
+    "core-ui:checks",
 )
 
 subprojects {
     afterEvaluate {
-        if (excludedTestProjects.contains(project.name) || !project.buildFile.exists()) {
+        var ancestor = parent
+        var qualifiedName = name
+        while (ancestor != rootProject && ancestor != null) {
+            qualifiedName = "${ancestor.name}:$qualifiedName"
+            ancestor = ancestor.parent
+        }
+        if (excludedTestProjects.any { qualifiedName.contains(it) } || !project.buildFile.exists()) {
             return@afterEvaluate
         }
 
@@ -125,34 +131,27 @@ subprojects {
             project.name == "login"
         val isCryptoModule = project.name == "crypto-android"
 
-        var ancestor = parent
-        var parentName = ""
-        while (ancestor != rootProject && ancestor != null) {
-            parentName += "${ancestor.name}:"
-            ancestor = ancestor.parent
-        }
-
         val envFlavor = OSDimensions.Environment.Store.uppercaseFirstChar()
         val appVariant = "$envFlavor${OSDimensions.StoreChannel.Prod.uppercaseFirstChar()}"
         val testTaskNames: List<String> = when {
             isApp -> listOf("app:test${appVariant}ReleaseUnitTest")
-            hasEnvironmentFlavor -> listOf("$parentName$name:test${envFlavor}ReleaseUnitTest")
+            hasEnvironmentFlavor -> listOf("$qualifiedName:test${envFlavor}ReleaseUnitTest")
             isCryptoModule -> listOf(
-                "$parentName$name:testJceReleaseUnitTest",
-                "$parentName$name:testTinkReleaseUnitTest",
+                "$qualifiedName:testJceReleaseUnitTest",
+                "$qualifiedName:testTinkReleaseUnitTest",
             )
-            isAndroidLibrary -> listOf("$parentName$name:testReleaseUnitTest")
-            else -> listOf("$parentName$name:test")
+            isAndroidLibrary -> listOf("$qualifiedName:testReleaseUnitTest")
+            else -> listOf("$qualifiedName:test")
         }
 
         val androidTestTaskNames: List<String>? = when {
             isApp -> listOf("app:connected${appVariant}DebugAndroidTest")
-            hasEnvironmentFlavor -> listOf("$parentName$name:connected${envFlavor}DebugAndroidTest")
+            hasEnvironmentFlavor -> listOf("$qualifiedName:connected${envFlavor}DebugAndroidTest")
             isCryptoModule -> listOf(
-                "$parentName$name:connectedJceDebugAndroidTest",
-                "$parentName$name:connectedTinkDebugAndroidTest",
+                "$qualifiedName:connectedJceDebugAndroidTest",
+                "$qualifiedName:connectedTinkDebugAndroidTest",
             )
-            isAndroidLibrary -> listOf("$parentName$name:connectedDebugAndroidTest")
+            isAndroidLibrary -> listOf("$qualifiedName:connectedDebugAndroidTest")
             else -> null
         }
 

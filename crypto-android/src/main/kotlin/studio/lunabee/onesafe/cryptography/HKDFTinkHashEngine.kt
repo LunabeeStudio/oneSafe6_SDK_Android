@@ -22,7 +22,7 @@ package studio.lunabee.onesafe.cryptography
 import com.google.crypto.tink.subtle.Hkdf
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import studio.lunabee.onesafe.cryptography.qualifier.CryptoDispatcher
+import studio.lunabee.onesafe.domain.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.toByteArray
 import studio.lunabee.onesafe.use
 import javax.inject.Inject

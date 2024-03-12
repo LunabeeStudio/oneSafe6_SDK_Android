@@ -21,10 +21,6 @@ package studio.lunabee.onesafe.cryptography
 
 import androidx.core.util.AtomicFile
 import com.lunabee.lblogger.LBLogger
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import studio.lunabee.onesafe.cryptography.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.cryptography.utils.SelfDestroyCipherInputStream
 import studio.lunabee.onesafe.error.OSCryptoError
 import java.io.ByteArrayOutputStream
@@ -55,11 +51,9 @@ private val logger = LBLogger.get<AesCryptoEngine>()
  * Actual decrypt/encrypt code is extracted to non suspend fun for benchmarking purpose.
  *
  * @param ivProvider The Initialization Vector provider (formally Nonce provider here) to be used when encrypting data
- * @param dispatcher The coroutine dispatcher used to run cryptographic operation on
  */
 class AesCryptoEngine @Inject constructor(
     private val ivProvider: IVProvider,
-    @CryptoDispatcher private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : CryptoEngine {
 
     init {
@@ -67,27 +61,52 @@ class AesCryptoEngine @Inject constructor(
         logger.i("Initialize ${javaClass.simpleName} using ${cipher.provider}")
     }
 
-    override suspend fun encrypt(plainData: ByteArray, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
+    override fun encrypt(plainData: ByteArray, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
         return runCatching {
-            withContext(dispatcher) {
-                doEncrypt(plainData, key)
+            val bos = ByteArrayOutputStream()
+            getCipherOutputStream(bos, key, null).use { cos ->
+                plainData.inputStream().use { input ->
+                    input.copyTo(cos)
+                }
             }
+            bos.toByteArray()
         }
     }
 
-    override suspend fun decrypt(cipherData: ByteArray, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
+    override fun decrypt(cipherData: ByteArray, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
         return runCatching {
-            withContext(dispatcher) {
-                doDecrypt(cipherData, key)
+            val cipher = getCipher()
+            val iv: ByteArray = try {
+                cipherData.copyOfRange(0, AES_GCM_IV_LENGTH)
+            } catch (e: IndexOutOfBoundsException) {
+                throw OSCryptoError(OSCryptoError.Code.DECRYPTION_UNKNOWN_FAILURE, cause = e)
             }
+            val ivSpec = getGcmParameterSpec(iv)
+            val secretKey = getSecretKeySpec(key)
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec)
+            cipher.doFinal(
+                cipherData,
+                AES_GCM_IV_LENGTH,
+                cipherData.size - AES_GCM_IV_LENGTH,
+            )
         }
     }
 
-    override suspend fun decrypt(cipherFile: AtomicFile, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
+    override fun decrypt(cipherFile: AtomicFile, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
         return runCatching {
-            withContext(dispatcher) {
-                doDecrypt(cipherFile, key)
+            val secretKey = getSecretKeySpec(key)
+
+            val fis = cipherFile.openRead()
+            val cis = getCipherInputStream(fis, secretKey)
+            val bos = ByteArrayOutputStream()
+
+            bos.use { output ->
+                cis.use { cis ->
+                    cis.copyTo(output, STREAM_BUFFER_SIZE)
+                }
             }
+
+            bos.toByteArray()
         }
     }
 
@@ -100,52 +119,6 @@ class AesCryptoEngine @Inject constructor(
         val secretKey = getSecretKeySpec(key)
         val fis = cipherFile.openRead()
         return getCipherInputStream(fis, secretKey)
-    }
-
-    @Suppress("NOTHING_TO_INLINE")
-    private inline fun doEncrypt(plainData: ByteArray, key: ByteArray): ByteArray {
-        val bos = ByteArrayOutputStream()
-        getCipherOutputStream(bos, key, null).use { cos ->
-            plainData.inputStream().use { input ->
-                input.copyTo(cos)
-            }
-        }
-        return bos.toByteArray()
-    }
-
-    @Suppress("NOTHING_TO_INLINE")
-    private inline fun doDecrypt(cipherData: ByteArray, key: ByteArray): ByteArray {
-        val cipher = getCipher()
-        val iv: ByteArray = try {
-            cipherData.copyOfRange(0, AES_GCM_IV_LENGTH)
-        } catch (e: IndexOutOfBoundsException) {
-            throw OSCryptoError(OSCryptoError.Code.DECRYPTION_UNKNOWN_FAILURE, cause = e)
-        }
-        val ivSpec = getGcmParameterSpec(iv)
-        val secretKey = getSecretKeySpec(key)
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec)
-        return cipher.doFinal(
-            cipherData,
-            AES_GCM_IV_LENGTH,
-            cipherData.size - AES_GCM_IV_LENGTH,
-        )
-    }
-
-    @Suppress("NOTHING_TO_INLINE")
-    private inline fun doDecrypt(cipherFile: AtomicFile, key: ByteArray): ByteArray {
-        val secretKey = getSecretKeySpec(key)
-
-        val fis = cipherFile.openRead()
-        val cis = getCipherInputStream(fis, secretKey)
-        val bos = ByteArrayOutputStream()
-
-        bos.use { output ->
-            cis.use { cis ->
-                cis.copyTo(output, STREAM_BUFFER_SIZE)
-            }
-        }
-
-        return bos.toByteArray()
     }
 
     /**

@@ -19,7 +19,6 @@
 
 plugins {
     `android-library`
-    alias(libs.plugins.androidx.benchmark)
     alias(libs.plugins.ksp)
 }
 
@@ -77,8 +76,37 @@ dependencies {
     androidTestImplementation(libs.benchmark.junit4)
     androidTestImplementation(libs.lblogger)
     androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.datastore)
+    androidTestImplementation(libs.datastore.preferences)
+    androidTestImplementation(libs.ktor.client.android)
+    androidTestImplementation(libs.room.ktx)
+    androidTestImplementation(libs.room.testing)
 
-    androidTestImplementation(project(":common-test-android"))
+    androidTestImplementation(platform(libs.lunabee.bom))
+    androidTestImplementation(libs.lbcore)
+
+    androidTestImplementation(project(":dependency-injection"))
+    androidTestImplementation(project(":dependency-injection:test-component"))
+    androidTestImplementation(project(":common-test-android")) {
+        exclude(group = "io.mockk")
+    }
     androidTestImplementation(project(":domain"))
     androidTestImplementation(project(":crypto-android"))
+    androidTestImplementation(project(":local-android"))
+    androidTestImplementation(project(":app:core-ui"))
+    androidTestImplementation(project(":app:settings"))
+    androidTestImplementation(project(":bubbles-repository"))
+    androidTestImplementation(project(":bubbles-crypto-android"))
+    androidTestImplementation(project(":bubbles-domain"))
+    androidTestImplementation(project(":messaging-domain"))
+    androidTestImplementation(project(":messaging-repository"))
+    androidTestImplementation(project(":messaging-crypto-android"))
+    androidTestImplementation(project(":import-export-core"))
+    androidTestImplementation(project(":import-export-domain"))
+    androidTestImplementation(project(":import-export-repository"))
+    androidTestImplementation(project(":import-export-drive"))
+    androidTestImplementation(project(":remote"))
+    androidTestImplementation(project(":repository"))
+    androidTestImplementation(libs.doubleratchet)
 }

@@ -19,12 +19,7 @@
 
 package studio.lunabee.onesafe.domain.usecase.authentication
 
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.timeout
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.error.OSDomainError
 import javax.inject.Inject
@@ -33,21 +28,14 @@ import kotlin.time.Duration
 class IsCryptoDataReadyInMemoryUseCase @Inject constructor(
     private val mainCryptoRepository: MainCryptoRepository,
 ) {
-    operator fun invoke(): Boolean = mainCryptoRepository.isCryptoDataInMemory()
+    suspend operator fun invoke(): Boolean = mainCryptoRepository.isCryptoDataInMemory(Duration.ZERO)
 
     fun flow(): Flow<Boolean> = mainCryptoRepository.isCryptoDataInMemoryFlow()
 
-    @OptIn(FlowPreview::class)
-    suspend fun wait(timeout: Duration? = null) {
-        val flow = flow().filter { it }
-        if (timeout == null) {
-            flow.first()
-        } else {
-            try {
-                flow.timeout(timeout).first()
-            } catch (e: TimeoutCancellationException) {
-                throw OSDomainError(OSDomainError.Code.CRYPTO_NOT_READY_TIMEOUT, cause = e)
-            }
+    suspend fun wait(timeout: Duration = Duration.INFINITE) {
+        val isCryptoReady = mainCryptoRepository.isCryptoDataInMemory(timeout)
+        if (!isCryptoReady) {
+            throw OSDomainError(OSDomainError.Code.CRYPTO_NOT_READY_TIMEOUT)
         }
     }
 }
