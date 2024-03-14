@@ -39,6 +39,7 @@ class ImportCacheDataSourceImpl @Inject constructor() : ImportCacheDataSource {
 
     override var newEncryptedValue: MutableMap<UUID, ByteArray> = mutableMapOf()
     override val newFileIdsByOldOnes: MutableMap<UUID, UUID> = mutableMapOf()
+    override val thumbnails: MutableMap<UUID, ByteArray> = mutableMapOf()
     override var newItemIdsByOldOnes: MutableMap<UUID, UUID> = mutableMapOf()
     override var newIconIdsByOldOnes: MutableMap<UUID, UUID> = mutableMapOf()
     override var newFieldIdsByOldOnes: MutableMap<UUID, UUID> = mutableMapOf()

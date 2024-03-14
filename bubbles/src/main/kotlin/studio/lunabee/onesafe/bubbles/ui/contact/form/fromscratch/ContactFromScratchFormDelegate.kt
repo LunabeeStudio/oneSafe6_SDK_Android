@@ -20,11 +20,12 @@
 package studio.lunabee.onesafe.bubbles.ui.contact.form.fromscratch
 
 import com.lunabee.lbcore.model.LBResult
+import com.lunabee.lbloading.LoadingManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormDelegate
+import studio.lunabee.onesafe.bubbles.ui.contact.form.common.DefaultContactFormDelegate
 import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormViewModel
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.messaging.domain.usecase.CreateInvitationUseCase
@@ -38,12 +39,13 @@ class ContactFromScratchFormDelegate @Inject constructor(
 
 class ContactCreationFromScratchDelegate @Inject constructor(
     private val createInvitationUseCase: CreateInvitationUseCase,
-) : ContactFormDelegate {
+    loadingManager: LoadingManager,
+) : DefaultContactFormDelegate(loadingManager) {
 
     private val _createInvitationResult: MutableStateFlow<LBResult<UUID>?> = MutableStateFlow(null)
     override val createInvitationResult: StateFlow<LBResult<UUID>?> = _createInvitationResult.asStateFlow()
 
-    override suspend fun saveContact(contactName: String, isUsingDeeplink: Boolean) {
+    override suspend fun doSaveContact(contactName: String, isUsingDeeplink: Boolean) {
         _createInvitationResult.value = OSError.runCatching {
             createInvitationUseCase(contactName, isUsingDeeplink)
         }

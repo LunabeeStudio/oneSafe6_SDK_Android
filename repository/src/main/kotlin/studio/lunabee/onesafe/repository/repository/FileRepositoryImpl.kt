@@ -39,11 +39,11 @@ class FileRepositoryImpl @Inject constructor(
 
     override fun getFiles(): List<File> = fileLocalDatasource.getAllFiles()
 
-    override fun addFile(fileId: UUID, file: ByteArray): File = fileLocalDatasource.addFile(fileId.toString(), file)
+    override suspend fun addFile(fileId: UUID, file: ByteArray): File = fileLocalDatasource.addFile(fileId.toString(), file)
 
     override fun deleteFile(fileId: UUID): Boolean = fileLocalDatasource.deleteFile(fileId.toString())
 
-    override fun copyAndDeleteFile(file: File, fileId: UUID) {
+    override suspend fun copyAndDeleteFile(file: File, fileId: UUID) {
         fileLocalDatasource.copyAndDeleteFile(newFile = file, fileId = fileId)
     }
 
@@ -55,11 +55,16 @@ class FileRepositoryImpl @Inject constructor(
         return fileLocalDatasource.savePlainFile(inputStream, filename, itemId, fieldId)
     }
 
+    // TODO <debug> move to debug only code (only used by debug menu)
     override fun deleteAll() {
         fileLocalDatasource.removeAllFiles()
     }
 
-    override fun deleteCacheDir() {
-        fileLocalDatasource.deleteCacheDir()
+    override fun getThumbnailFile(thumbnailFileName: String, isFullWidth: Boolean): File {
+        return fileLocalDatasource.getThumbnailFile(thumbnailFileName, isFullWidth)
+    }
+
+    override fun deletePlainFilesCacheDir() {
+        fileLocalDatasource.deletePlainFilesCacheDir()
     }
 }

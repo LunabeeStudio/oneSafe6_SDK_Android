@@ -203,6 +203,12 @@ class ImportEngineTest : OSHiltTest() {
                             itemFieldDataToIndex += ItemFieldDataToIndex(value, safeItemField.isSecured, safeItem.id, safeItemField.id)
                         }
                     }
+
+                    safeItemField.encThumbnailFileName?.let {
+                        val valueResult = decryptUseCase(it, safeItem.id, String::class)
+                        value = valueResult.data!!
+                        assertSuccess(valueResult)
+                    }
                 }
                 expectedSearchIndex.addAll(createIndexWordEntriesFromItemFieldUseCase(itemFieldDataToIndex))
             }

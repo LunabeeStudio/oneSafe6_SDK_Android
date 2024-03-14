@@ -27,13 +27,14 @@ interface FileLocalDatasource {
     fun getPlainFile(itemId: UUID, fieldId: UUID, filename: String): File
     fun getFile(filename: String): File
     fun createTempFile(fileId: String): File
-    fun addFile(filename: String, file: ByteArray): File
-    fun removeAllFiles(): Boolean
+    suspend fun addFile(filename: String, file: ByteArray): File
+    fun removeAllFiles()
     fun deleteFile(filename: String): Boolean
     fun getAllFiles(): List<File>
-    fun copyAndDeleteFile(newFile: File, fileId: UUID)
+    suspend fun copyAndDeleteFile(newFile: File, fileId: UUID)
     fun getFiles(filesId: List<String>): List<File>
     fun deleteItemDir(itemId: UUID)
-    fun deleteCacheDir()
+    fun deletePlainFilesCacheDir()
+    fun getThumbnailFile(thumbnailFileName: String, isFullWidth: Boolean): File
     suspend fun savePlainFile(inputStream: InputStream, filename: String, itemId: UUID, fieldId: UUID): File
 }

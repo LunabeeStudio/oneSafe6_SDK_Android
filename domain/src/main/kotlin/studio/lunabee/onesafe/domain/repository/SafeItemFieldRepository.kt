@@ -32,6 +32,8 @@ interface SafeItemFieldRepository {
     suspend fun save(safeItemField: SafeItemField, indexWordEntries: List<IndexWordEntry>)
     suspend fun save(safeItemFields: List<SafeItemField>, indexWordEntries: List<IndexWordEntry>)
 
+    suspend fun saveThumbnailFileName(fieldId: UUID, encThumbnailFileName: ByteArray?)
+
     suspend fun deleteByItemId(itemId: UUID)
     suspend fun getAllSafeItemFieldIds(): List<UUID>
     suspend fun getAllSafeItemFields(): List<SafeItemField>

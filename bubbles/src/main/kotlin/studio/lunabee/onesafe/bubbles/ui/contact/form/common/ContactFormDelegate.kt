@@ -20,15 +20,39 @@
 package studio.lunabee.onesafe.bubbles.ui.contact.form.common
 
 import com.lunabee.lbcore.model.LBResult
+import com.lunabee.lbloading.LoadingManager
+import com.lunabee.lbloading.withLoading
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import studio.lunabee.onesafe.commonui.utils.CloseableCoroutineScope
+import studio.lunabee.onesafe.commonui.utils.CloseableMainCoroutineScope
+import java.io.Closeable
 import java.util.UUID
 
-interface ContactFormDelegate {
-
+interface ContactFormDelegate : Closeable {
     val createInvitationResult: StateFlow<LBResult<UUID>?>
-
-    suspend fun saveContact(
+    fun saveContact(
         contactName: String,
         isUsingDeeplink: Boolean,
     )
+}
+
+abstract class DefaultContactFormDelegate(
+    private val loadingManager: LoadingManager,
+) : ContactFormDelegate, CloseableCoroutineScope by CloseableMainCoroutineScope() {
+
+    final override fun saveContact(
+        contactName: String,
+        isUsingDeeplink: Boolean,
+    ) {
+        if (createInvitationResult.value !is LBResult.Success) {
+            coroutineScope.launch {
+                loadingManager.withLoading {
+                    doSaveContact(contactName, isUsingDeeplink)
+                }
+            }
+        }
+    }
+
+    protected abstract suspend fun doSaveContact(contactName: String, isUsingDeeplink: Boolean)
 }

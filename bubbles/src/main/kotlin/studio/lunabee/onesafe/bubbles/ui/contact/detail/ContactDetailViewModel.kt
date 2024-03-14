@@ -49,6 +49,7 @@ class ContactDetailViewModel @Inject constructor(
     private val contactRepository: ContactRepository,
     private val updateIsUsingDeeplinkContactUseCase: UpdateIsUsingDeeplinkContactUseCase,
     private val getConversationStateUseCase: GetConversationStateUseCase,
+    private val imageHelper: ImageHelper,
 ) : ViewModel() {
     val contactId: UUID = savedStateHandle.get<String>(ContactDetailDestination.ContactIdArgs)?.let { UUID.fromString(it) }
         ?: error("Missing contact id in args")
@@ -78,18 +79,20 @@ class ContactDetailViewModel @Inject constructor(
                         nameProvider = decryptedNameResult.getNameProvider(),
                         isDeeplinkActivated = decryptedIsUsingDeeplink.data ?: false,
                         conversationState = getConversationStateUseCase(contactId),
-                        color = decryptedNameResult.data?.let(::getColorFromName),
+                        color = decryptedNameResult.data?.let { plainColor ->
+                            getColorFromName(plainColor)
+                        },
                     )
                 }
             }
         }
     }
 
-    private fun getColorFromName(name: String): Color? {
+    private suspend fun getColorFromName(name: String): Color? {
         val emoji = name.startEmojiOrNull()
         return emoji?.let {
-            val bitmapWithText = ImageHelper.createBitmapWithText(emoji)
-            ImageHelper.extractColorPaletteFromBitmap(bitmapWithText).getFirstColorGenerated()
+            val bitmapWithText = imageHelper.createBitmapWithText(emoji)
+            imageHelper.extractColorPaletteFromBitmap(bitmapWithText).getFirstColorGenerated()
         }
     }
 

@@ -55,6 +55,7 @@ interface ImportCacheDataSource {
     val newIconIdsByOldOnes: MutableMap<UUID, UUID>
     val newFieldIdsByOldOnes: MutableMap<UUID, UUID>
     val newFileIdsByOldOnes: MutableMap<UUID, UUID>
+    val thumbnails: MutableMap<UUID, ByteArray>
     val reEncryptedSafeItemKeys: MutableMap<UUID, SafeItemKey?>
 
     // Following variables contains the final object to save in database.

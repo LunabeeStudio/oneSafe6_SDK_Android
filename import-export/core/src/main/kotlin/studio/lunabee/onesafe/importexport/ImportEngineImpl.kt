@@ -64,6 +64,7 @@ import studio.lunabee.onesafe.importexport.repository.ImportExportItemRepository
 import studio.lunabee.onesafe.proto.OSExportProto
 import studio.lunabee.onesafe.proto.OSExportProto.ArchiveSafeItem
 import studio.lunabee.onesafe.proto.OSExportProto.ArchiveSafeItemField
+import studio.lunabee.onesafe.toByteArray
 import studio.lunabee.onesafe.use
 import java.io.File
 import java.time.Clock
@@ -318,6 +319,11 @@ class ImportEngineImpl @Inject constructor(
                     key = decryptedKey,
                 ).decodeToString(),
             )
+            val fieldId = UUID.fromString(archiveSafeItemField.id)
+            importCacheDataSource.thumbnails[fieldId] = importCryptoRepository.encrypt(
+                Constant.ThumbnailPlaceHolderName.toByteArray(),
+                decryptedKey,
+            )
             if (SafeItemFieldKind.isKindFile(itemFieldKind)) {
                 val decryptedValue = importCryptoRepository.decrypt(
                     cipherData = archiveSafeItemField.encValue.toByteArray(),
@@ -325,7 +331,6 @@ class ImportEngineImpl @Inject constructor(
                 ).decodeToString()
                 val fileId = decryptedValue.substringBefore(Constant.FileTypeExtSeparator)
                 val newId = fileIdProvider()
-                val fieldId = UUID.fromString(archiveSafeItemField.id)
                 val newValue = decryptedValue.replace(fileId, newId.toString())
                 val newEncValue = importCryptoRepository.encrypt(newValue.encodeToByteArray(), decryptedKey)
                 importCacheDataSource.newEncryptedValue[fieldId] = newEncValue
@@ -478,12 +483,14 @@ class ImportEngineImpl @Inject constructor(
         importCacheDataSource.migratedSafeItemFieldsToImport = safeItemFieldsToImport.mapNotNull { field ->
             val oldItemFieldId: UUID = field.id
             val newItemFieldId = newSafeItemFieldIdsByOldOnes.getValue(key = oldItemFieldId)
+            val thumbnail = importCacheDataSource.thumbnails[oldItemFieldId]
             val newItemFieldEncryptedValue = importCacheDataSource.newEncryptedValue[oldItemFieldId] ?: field.encValue
             newSafeItemIdsByOldOnes[field.itemId]?.let { itemId ->
                 field.copy(
                     id = newItemFieldId,
                     itemId = itemId,
                     encValue = newItemFieldEncryptedValue,
+                    encThumbnailFileName = thumbnail,
                 )
             }.apply {
                 if (this == null) {
@@ -538,6 +545,7 @@ class ImportEngineImpl @Inject constructor(
                 encFormattingMask = archiveSafeItemField.formattingMask.toByteArrayOrNull(),
                 encSecureDisplayMask = archiveSafeItemField.secureDisplayMask.toByteArrayOrNull(),
                 isSecured = archiveSafeItemField.isSecured,
+                encThumbnailFileName = null,
             )
         }
     }

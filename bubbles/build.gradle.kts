@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.lbextensions)
     implementation(libs.lbcore)
     implementation(libs.lbccore)
+    implementation(libs.lbloading.compose)
 
     implementation(libs.android.material)
     implementation(libs.androidx.core.ktx)

@@ -61,6 +61,7 @@ dependencies {
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lblogger)
     implementation(libs.lbcore)
+    implementation(libs.lbloading.compose)
 
     implementation(libs.doubleratchet)
 

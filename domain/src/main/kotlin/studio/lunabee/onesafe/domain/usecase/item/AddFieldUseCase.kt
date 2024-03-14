@@ -20,9 +20,12 @@
 package studio.lunabee.onesafe.domain.usecase.item
 
 import com.lunabee.lbcore.model.LBResult
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import studio.lunabee.onesafe.domain.model.safeitem.ItemFieldData
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
 import studio.lunabee.onesafe.domain.model.search.ItemFieldDataToIndex
+import studio.lunabee.onesafe.domain.qualifier.DefaultDispatcher
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.usecase.EncryptFieldsUseCase
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemFieldUseCase
@@ -37,6 +40,7 @@ class AddFieldUseCase @Inject constructor(
     private val safeItemFieldRepository: SafeItemFieldRepository,
     private val encryptFieldsUseCase: EncryptFieldsUseCase,
     private val createIndexWordEntriesFromItemFieldUseCase: CreateIndexWordEntriesFromItemFieldUseCase,
+    @DefaultDispatcher private val dispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
         itemId: UUID,
@@ -52,8 +56,8 @@ class AddFieldUseCase @Inject constructor(
     suspend operator fun invoke(
         itemId: UUID,
         itemFieldsData: List<ItemFieldData>,
-    ): LBResult<List<SafeItemField>> {
-        return OSError.runCatching {
+    ): LBResult<List<SafeItemField>> = withContext(dispatcher) {
+        OSError.runCatching {
             val safeItemFields = encryptFieldsUseCase(itemId, itemFieldsData)
             val dataToIndex = itemFieldsData.zip(safeItemFields).mapNotNull { (data, safeField) ->
                 data.value?.let {

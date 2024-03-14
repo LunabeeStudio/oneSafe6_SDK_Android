@@ -21,11 +21,12 @@ package studio.lunabee.onesafe.bubbles.ui.contact.form.frominvitation
 
 import androidx.lifecycle.SavedStateHandle
 import com.lunabee.lbcore.model.LBResult
+import com.lunabee.lbloading.LoadingManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormDelegate
+import studio.lunabee.onesafe.bubbles.ui.contact.form.common.DefaultContactFormDelegate
 import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormViewModel
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
@@ -43,7 +44,8 @@ class ContactFromInvitationViewModel @Inject constructor(
 class CreateContactFromInvitationDelegate @Inject constructor(
     private val acceptInvitationUseCase: AcceptInvitationUseCase,
     savedStateHandle: SavedStateHandle,
-) : ContactFormDelegate {
+    loadingManager: LoadingManager,
+) : DefaultContactFormDelegate(loadingManager) {
     private val messageString: String = savedStateHandle.get<String>(CreateContactFromInvitationDestination.MessageString)
         ?: error("Missing message string in args")
 
@@ -51,7 +53,7 @@ class CreateContactFromInvitationDelegate @Inject constructor(
     override val createInvitationResult: StateFlow<LBResult<UUID>?> = _createInvitationResult.asStateFlow()
 
     @OptIn(ExperimentalEncodingApi::class)
-    override suspend fun saveContact(contactName: String, isUsingDeeplink: Boolean) {
+    override suspend fun doSaveContact(contactName: String, isUsingDeeplink: Boolean) {
         _createInvitationResult.value = OSError.runCatching {
             try {
                 acceptInvitationUseCase(contactName, isUsingDeeplink, Base64.decode(messageString))
