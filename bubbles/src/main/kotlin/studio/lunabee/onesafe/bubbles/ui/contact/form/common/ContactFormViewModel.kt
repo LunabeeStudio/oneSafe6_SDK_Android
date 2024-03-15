@@ -39,4 +39,9 @@ open class ContactFormViewModel(
     fun setIsUsingDeepLink(value: Boolean) {
         mFormState.value = mFormState.value.copy(isUsingDeepLink = value)
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        contactFormDelegate.close()
+    }
 }

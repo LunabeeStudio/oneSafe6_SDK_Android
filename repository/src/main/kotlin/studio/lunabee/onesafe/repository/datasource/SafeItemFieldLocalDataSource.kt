@@ -33,5 +33,6 @@ interface SafeItemFieldLocalDataSource {
     suspend fun deleteByItemId(itemId: UUID)
     suspend fun getAllSafeItemFieldIds(): List<UUID>
     suspend fun getAllSafeItemFields(): List<SafeItemField>
+    suspend fun saveThumbnailFileName(fieldId: UUID, encThumbnailFileName: ByteArray?)
     suspend fun getAllSafeItemFieldsOfItems(items: List<UUID>): List<SafeItemField>
 }

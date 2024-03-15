@@ -56,4 +56,7 @@ interface SafeItemFieldDao {
 
     @Query("SELECT * FROM SafeItemField WHERE item_id IN (:items)")
     suspend fun getAllSafeItemFieldsOfItems(items: List<UUID>): List<RoomSafeItemField>
+
+    @Query("UPDATE SafeItemField SET enc_thumbnail_file_name  = :encThumbnailFileName WHERE id = :fieldId")
+    suspend fun saveThumbnailFileName(fieldId: UUID, encThumbnailFileName: ByteArray?)
 }

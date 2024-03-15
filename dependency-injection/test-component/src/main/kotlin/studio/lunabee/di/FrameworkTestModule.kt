@@ -20,12 +20,15 @@
 package studio.lunabee.di
 
 import android.content.Context
+import com.lunabee.lbcore.helper.LBLoadingVisibilityDelayDelegate
+import com.lunabee.lbloading.DelayedLoadingManager
+import com.lunabee.lbloading.LoadingManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import studio.lunabee.onesafe.commonui.usecase.AndroidResizeIconUseCase
+import studio.lunabee.onesafe.commonui.usecase.AndroidResizeIconUseCaseFactory
 import studio.lunabee.onesafe.domain.LoadFileCancelAllUseCase
 import studio.lunabee.onesafe.domain.qualifier.ArchiveCacheDir
 import studio.lunabee.onesafe.domain.qualifier.BuildNumber
@@ -48,9 +51,12 @@ object FrameworkTestModule {
 
     @Provides
     @Singleton
-    internal fun provideResizeIconUseCase(@ApplicationContext context: Context): ResizeIconUseCase {
+    internal fun provideResizeIconUseCase(
+        @ApplicationContext context: Context,
+        androidResizeIconUseCaseFactory: AndroidResizeIconUseCaseFactory,
+    ): ResizeIconUseCase {
         val tmpDir = File(context.cacheDir, ICON_DIR)
-        return AndroidResizeIconUseCase(
+        return androidResizeIconUseCaseFactory.create(
             width = RESIZE_ICON_SIZE,
             height = RESIZE_ICON_SIZE,
             tmpDir = tmpDir,
@@ -87,7 +93,7 @@ object FrameworkTestModule {
             }
 
             override operator fun invoke() {
-                fileRepository.deleteCacheDir()
+                fileRepository.deletePlainFilesCacheDir()
             }
         }
     }
@@ -105,4 +111,8 @@ object FrameworkTestModule {
     @Provides
     @StoreBetaTrack
     fun provideStoreBetaTrack(): Boolean = false
+
+    @Provides
+    @Singleton
+    fun provideLoadingManager(): LoadingManager = DelayedLoadingManager(LBLoadingVisibilityDelayDelegate())
 }

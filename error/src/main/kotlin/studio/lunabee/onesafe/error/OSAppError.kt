@@ -44,5 +44,6 @@ data class OSAppError(
         FILE_SAVING_ERROR("An error occurred during file saving"),
         IMAGE_CAPTURE_FAILED("Image capture using cameraX has failed"),
         IMAGE_CAPTURED_NOT_FOUND("Failed to retrieve the captured file"),
+        CAMERA_SETUP_FAILED("Failed to setup camera"),
     }
 }

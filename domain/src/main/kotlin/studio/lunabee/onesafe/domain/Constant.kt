@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.domain
 
+import java.util.UUID
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -32,4 +33,5 @@ object Constant {
     const val FileMaxSizeMegaBytes: Int = 50
     const val FileMaxSizeBytes: Int = FileMaxSizeMegaBytes * 1024 * 1024
     const val IndeterminateProgress: Float = -1f
+    val ThumbnailPlaceHolderName: UUID = UUID.fromString("2ae4e851-508b-456c-93b6-dd4236d6b6a1")
 }

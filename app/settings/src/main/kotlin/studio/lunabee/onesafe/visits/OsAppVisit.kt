@@ -96,4 +96,15 @@ class OsAppVisit @Inject constructor(
             preferences[hasDoneTutorialLockOskKey] = value
         }
     }
+
+    private val hasHiddenCameraTipsKey = booleanPreferencesKey(AppVisitConstants.hasHiddenCameraTips)
+    val hasHiddenCameraTipsFlow: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[hasHiddenCameraTipsKey] ?: AppVisitConstants.hasHiddenCameraTipsDefault
+    }
+
+    suspend fun storeHasHiddenCameraTips(value: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[hasHiddenCameraTipsKey] = value
+        }
+    }
 }

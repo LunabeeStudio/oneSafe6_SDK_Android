@@ -35,6 +35,7 @@ data class SafeItemField(
     val isItemIdentifier: Boolean,
     val encFormattingMask: ByteArray?,
     val encSecureDisplayMask: ByteArray?,
+    val encThumbnailFileName: ByteArray?,
     val isSecured: Boolean,
 ) {
     override fun equals(other: Any?): Boolean {
@@ -73,6 +74,10 @@ data class SafeItemField(
             if (other.encSecureDisplayMask == null) return false
             if (!encSecureDisplayMask.contentEquals(other.encSecureDisplayMask)) return false
         } else if (other.encSecureDisplayMask != null) return false
+        if (encThumbnailFileName != null) {
+            if (other.encThumbnailFileName == null) return false
+            if (!encThumbnailFileName.contentEquals(other.encThumbnailFileName)) return false
+        } else if (other.encThumbnailFileName != null) return false
         if (isSecured != other.isSecured) return false
 
         return true
@@ -91,7 +96,47 @@ data class SafeItemField(
         result = 31 * result + isItemIdentifier.hashCode()
         result = 31 * result + (encFormattingMask?.contentHashCode() ?: 0)
         result = 31 * result + (encSecureDisplayMask?.contentHashCode() ?: 0)
+        result = 31 * result + (encThumbnailFileName?.contentHashCode() ?: 0)
         result = 31 * result + isSecured.hashCode()
         return result
+    }
+
+    companion object {
+        fun equalsForThumbnails(olds: List<SafeItemField>, news: List<SafeItemField>): Boolean {
+            if (olds.size != news.size) return false
+            return olds.asSequence()
+                .zip(news.asSequence()) { old, new -> equalsForThumbnail(old, new) }
+                .all { it }
+        }
+
+        @Suppress("ReturnCount")
+        private fun equalsForThumbnail(old: SafeItemField, new: SafeItemField): Boolean {
+            if (old.id != new.id) return false
+            if (old.encName != null) {
+                if (new.encName == null) return false
+                if (!old.encName.contentEquals(new.encName)) return false
+            } else if (new.encName != null) return false
+            if (old.position != new.position) return false
+            if (old.itemId != new.itemId) return false
+            if (old.encValue != null) {
+                if (new.encValue == null) return false
+                if (!old.encValue.contentEquals(new.encValue)) return false
+            } else if (new.encValue != null) return false
+            if (old.encKind != null) {
+                if (new.encKind == null) return false
+                if (!old.encKind.contentEquals(new.encKind)) return false
+            } else if (new.encKind != null) return false
+            if (old.encFormattingMask != null) {
+                if (new.encFormattingMask == null) return false
+                if (!old.encFormattingMask.contentEquals(new.encFormattingMask)) return false
+            } else if (new.encFormattingMask != null) return false
+            if (old.encSecureDisplayMask != null) {
+                if (new.encSecureDisplayMask == null) return false
+                if (!old.encSecureDisplayMask.contentEquals(new.encSecureDisplayMask)) return false
+            } else if (new.encSecureDisplayMask != null) return false
+            if (old.isSecured != new.isSecured) return false
+
+            return true
+        }
     }
 }

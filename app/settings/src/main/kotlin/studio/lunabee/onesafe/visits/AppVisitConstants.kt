@@ -34,4 +34,7 @@ object AppVisitConstants {
 
     const val hasDoneTutorialLockOsk: String = "ef1d7a93-b1fd-45f3-aa55-e39e32ddf201"
     const val hasDoneTutorialLockOskDefault: Boolean = false
+
+    const val hasHiddenCameraTips: String = "a34333b3-e332-4d8d-aa2f-c8316aa52ecc"
+    const val hasHiddenCameraTipsDefault: Boolean = false
 }

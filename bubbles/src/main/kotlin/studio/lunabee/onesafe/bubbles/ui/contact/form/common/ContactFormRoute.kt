@@ -24,12 +24,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
 import com.lunabee.lblogger.e
-import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.commonui.EmojiNameProvider
 import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.model.OSItemIllustration
@@ -44,7 +42,6 @@ fun ContactFormRoute(
     viewModel: ContactFormViewModel,
 ) {
     val state by viewModel.formState.collectAsStateWithLifecycle()
-    val coroutineScope = rememberCoroutineScope()
     val createResult by viewModel.createInvitationResult.collectAsStateWithLifecycle()
     val icon by remember {
         derivedStateOf {
@@ -78,9 +75,7 @@ fun ContactFormRoute(
         onBackClick = navigateBack,
         icon = icon,
         onInviteClick = {
-            coroutineScope.launch {
-                viewModel.saveContact(state.name, state.isUsingDeepLink)
-            }
+            viewModel.saveContact(state.name, state.isUsingDeepLink)
         },
         onDeeplinkChange = viewModel::setIsUsingDeepLink,
         isDeeplinkChecked = state.isUsingDeepLink,

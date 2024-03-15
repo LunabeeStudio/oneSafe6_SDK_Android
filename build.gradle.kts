@@ -35,6 +35,7 @@ val artifactoryPassword: String = project.findProperty("artifactory_consumer_api
 
 allprojects {
     repositories {
+        mavenLocal()
         maven {
             url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
         }

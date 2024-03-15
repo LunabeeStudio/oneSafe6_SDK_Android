@@ -26,14 +26,15 @@ import java.util.UUID
 interface FileRepository {
     fun getPlainFile(itemId: UUID, fieldId: UUID, filename: String): File
     fun getFile(fileId: String): File
-    fun createTempFile(fileId: String): File
+    fun createTempFile(fileId: String = UUID.randomUUID().toString()): File
     fun getFiles(filesId: List<String>): List<File>
-    fun addFile(fileId: UUID, file: ByteArray): File
+    suspend fun addFile(fileId: UUID, file: ByteArray): File
     fun deleteFile(fileId: UUID): Boolean
     fun getFiles(): List<File>
-    fun copyAndDeleteFile(file: File, fileId: UUID)
+    suspend fun copyAndDeleteFile(file: File, fileId: UUID)
     fun deleteItemDir(itemId: UUID)
-    fun deleteCacheDir()
+    fun deletePlainFilesCacheDir()
     suspend fun savePlainFile(inputStream: InputStream, filename: String, itemId: UUID, fieldId: UUID): File
     fun deleteAll()
+    fun getThumbnailFile(thumbnailFileName: String, isFullWidth: Boolean): File
 }

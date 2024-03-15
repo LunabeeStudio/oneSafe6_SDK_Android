@@ -125,6 +125,7 @@ object OSTestUtils {
         position: Double = 0.0,
         itemId: UUID = UUID.randomUUID(),
         encPlaceholder: ByteArray? = byteArrayOf(),
+        encThumbnailFileName: ByteArray? = byteArrayOf(),
         encValue: ByteArray? = byteArrayOf(),
         showPrediction: Boolean = false,
         encKind: ByteArray? = byteArrayOf(),
@@ -147,6 +148,7 @@ object OSTestUtils {
             isItemIdentifier,
             formattingMask,
             secureDisplayMask,
+            encThumbnailFileName,
             isSecured,
         )
     }

@@ -46,6 +46,10 @@ class SafeItemFieldRepositoryImpl @Inject constructor(
     override suspend fun save(safeItemFields: List<SafeItemField>, indexWordEntries: List<IndexWordEntry>): Unit =
         localDataSource.save(safeItemFields, indexWordEntries)
 
+    override suspend fun saveThumbnailFileName(fieldId: UUID, encThumbnailFileName: ByteArray?) {
+        localDataSource.saveThumbnailFileName(fieldId, encThumbnailFileName)
+    }
+
     override suspend fun deleteByItemId(itemId: UUID): Unit = localDataSource.deleteByItemId(itemId)
     override suspend fun getAllSafeItemFieldIds(): List<UUID> {
         return localDataSource.getAllSafeItemFieldIds()

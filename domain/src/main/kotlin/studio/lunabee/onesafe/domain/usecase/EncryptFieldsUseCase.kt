@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.domain.usecase
 
+import studio.lunabee.onesafe.domain.Constant
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.domain.model.safeitem.ItemFieldData
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
@@ -55,8 +56,9 @@ class EncryptFieldsUseCase @Inject constructor(
             encryptEntries += data.kind?.let { EncryptEntry(it) } // +3
             encryptEntries += data.secureDisplayMask?.let { EncryptEntry(it) } // +4
             encryptEntries += data.formattingMask?.let { EncryptEntry(it) } // +5
+            encryptEntries += EncryptEntry(Constant.ThumbnailPlaceHolderName) // +6
         }
-        val fieldEncryptedPropertiesCount = 6
+        val fieldEncryptedPropertiesCount = 7
 
         val encryptedEntries = cryptoRepository.encrypt(key, encryptEntries)
         return fieldsData.mapIndexed { idx, data ->
@@ -75,6 +77,7 @@ class EncryptFieldsUseCase @Inject constructor(
                 encSecureDisplayMask = encryptedEntries[offsetIdx + 4],
                 encFormattingMask = encryptedEntries[offsetIdx + 5],
                 isSecured = data.isSecured,
+                encThumbnailFileName = encryptedEntries[offsetIdx + 6],
             )
         }
     }

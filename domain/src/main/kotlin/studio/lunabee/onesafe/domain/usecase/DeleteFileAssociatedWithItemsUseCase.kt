@@ -51,24 +51,29 @@ class DeleteFileAssociatedWithItemsUseCase @Inject constructor(
         // For each item (itemKey), decrypt each fields kind in association with the field encValue and then decrypt value for file kind
         keyToFieldMap.forEach { (itemKey, fields) ->
             // Decrypt all fields kind at once. Ignore null values or kinds
-            val encValueKindPairs: List<Pair<ByteArray, String?>> = cryptoRepository.decryptWithData(
+            val encValueKindPairs: List<Pair<SafeItemField, String?>> = cryptoRepository.decryptWithData(
                 itemKey,
                 fields.mapNotNull { field ->
-                    field.encValue?.let { encValue ->
-                        field.encKind?.let { encKind ->
-                            encValue to DecryptEntry(encKind, String::class)
-                        }
+                    field.encKind?.let { encKind ->
+                        field to DecryptEntry(encKind, String::class)
                     }
                 },
             )
 
             // Iterate over value/kind pairs to delete
-            encValueKindPairs.forEach kinds@{ (encValue, strKind) ->
+            encValueKindPairs.forEach kinds@{ (field, strKind) ->
                 val kind = strKind?.let(SafeItemFieldKind::fromString) ?: return@kinds
                 if (SafeItemFieldKind.isKindFile(kind)) {
-                    val plainValue = cryptoRepository.decrypt(itemKey, DecryptEntry(encValue, String::class))
-                    val fileId = plainValue.substringBefore(Constant.FileTypeExtSeparator)
-                    fileRepository.deleteFile(fileId = UUID.fromString(fileId))
+                    field.encValue?.let {
+                        val plainValue = cryptoRepository.decrypt(itemKey, DecryptEntry(it, String::class))
+                        val fileId = plainValue.substringBefore(Constant.FileTypeExtSeparator)
+                        fileRepository.deleteFile(fileId = UUID.fromString(fileId))
+                    }
+                    field.encThumbnailFileName?.let {
+                        val thumbnailFileName = cryptoRepository.decrypt(itemKey, DecryptEntry(it, UUID::class)).toString()
+                        fileRepository.getThumbnailFile(thumbnailFileName, isFullWidth = true).delete()
+                        fileRepository.getThumbnailFile(thumbnailFileName, isFullWidth = false).delete()
+                    }
                 }
             }
         }

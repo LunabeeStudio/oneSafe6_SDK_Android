@@ -20,7 +20,11 @@
 package studio.lunabee.onesafe.domain.usecase.item
 
 import com.lunabee.lbcore.model.LBResult
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
+import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.safeitem.FileSavingData
+import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
@@ -34,6 +38,7 @@ class AddAndRemoveFileUseCase @Inject constructor(
     private val safeItemKeyRepository: SafeItemKeyRepository,
     private val cryptoRepository: MainCryptoRepository,
     private val fileRepository: FileRepository,
+    @FileDispatcher private val dispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
         itemId: UUID,
@@ -42,16 +47,25 @@ class AddAndRemoveFileUseCase @Inject constructor(
         val key = safeItemKeyRepository.getSafeItemKey(itemId)
         fileSavingData.forEach { data ->
             when (data) {
-                is FileSavingData.ToRemove -> fileRepository.deleteFile(data.fileId)
+                is FileSavingData.ToRemove -> {
+                    data.encThumbnailFileName?.let {
+                        val fileName = cryptoRepository.decrypt(key, DecryptEntry(data.encThumbnailFileName, UUID::class)).toString()
+                        fileRepository.getThumbnailFile(fileName, isFullWidth = true).delete()
+                        fileRepository.getThumbnailFile(fileName, isFullWidth = false).delete()
+                    }
+                    fileRepository.deleteFile(data.fileId)
+                }
                 is FileSavingData.ToSave -> {
-                    val file = fileRepository.getFile(data.fileId.toString())
-                    file.parentFile.mkdirs()
-                    cryptoRepository.getEncryptStream(file, key).use { outputStream ->
-                        try {
-                            val stream = data.getStream()
-                            stream?.use { it.copyTo(outputStream) }
-                        } catch (e: FileNotFoundException) {
-                            throw OSDomainError(OSDomainError.Code.MISSING_URI_OUTPUT_STREAM)
+                    withContext(dispatcher) {
+                        val file = fileRepository.getFile(data.fileId.toString())
+                        file.parentFile.mkdirs()
+                        cryptoRepository.getEncryptStream(file, key).use { outputStream ->
+                            try {
+                                val stream = data.getStream()
+                                stream?.use { it.copyTo(outputStream) }
+                            } catch (e: FileNotFoundException) {
+                                throw OSDomainError(OSDomainError.Code.MISSING_URI_OUTPUT_STREAM)
+                            }
                         }
                     }
                 }

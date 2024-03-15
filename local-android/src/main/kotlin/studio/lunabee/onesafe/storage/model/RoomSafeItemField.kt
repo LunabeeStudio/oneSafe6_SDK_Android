@@ -56,6 +56,7 @@ data class RoomSafeItemField(
     @ColumnInfo(name = "enc_formatting_mask", typeAffinity = ColumnInfo.BLOB) val encFormattingMask: ByteArray?,
     @ColumnInfo(name = "enc_secure_display_mask", typeAffinity = ColumnInfo.BLOB) val encSecureDisplayMask: ByteArray?,
     @ColumnInfo(name = "is_secured") val isSecured: Boolean,
+    @ColumnInfo(name = "enc_thumbnail_file_name", defaultValue = "null") val encThumbnailFileName: ByteArray?,
 ) {
     fun toSafeItemField(): SafeItemField =
         SafeItemField(
@@ -72,6 +73,7 @@ data class RoomSafeItemField(
             encSecureDisplayMask = encSecureDisplayMask,
             encFormattingMask = encFormattingMask,
             isSecured = isSecured,
+            encThumbnailFileName = encThumbnailFileName,
         )
 
     override fun equals(other: Any?): Boolean {
@@ -142,6 +144,7 @@ data class RoomSafeItemField(
                 encFormattingMask = itemField.encFormattingMask,
                 encSecureDisplayMask = itemField.encSecureDisplayMask,
                 isSecured = itemField.isSecured,
+                encThumbnailFileName = itemField.encThumbnailFileName,
             )
         }
     }

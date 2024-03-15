@@ -25,6 +25,6 @@ import java.io.File
  * Resize the icon
  */
 interface ResizeIconUseCase {
-    operator fun invoke(srcData: ByteArray): ByteArray
-    operator fun invoke(srcFile: File): ByteArray
+    suspend operator fun invoke(srcData: ByteArray): ByteArray
+    suspend operator fun invoke(srcFile: File): ByteArray
 }

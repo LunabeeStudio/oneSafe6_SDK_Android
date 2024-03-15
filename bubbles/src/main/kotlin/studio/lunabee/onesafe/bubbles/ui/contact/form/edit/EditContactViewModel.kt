@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.bubbles.ui.contact.form.edit
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.lunabee.lbcore.model.LBResult
+import com.lunabee.lbloading.LoadingManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,7 +32,7 @@ import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.UpdateContactUseCase
-import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormDelegate
+import studio.lunabee.onesafe.bubbles.ui.contact.form.common.DefaultContactFormDelegate
 import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormState
 import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormViewModel
 import java.util.UUID
@@ -73,13 +74,14 @@ class EditContactViewModel @Inject constructor(
 class EditContactDelegate @Inject constructor(
     private val updateContactUseCase: UpdateContactUseCase,
     savedStateHandle: SavedStateHandle,
-) : ContactFormDelegate {
+    loadingManager: LoadingManager,
+) : DefaultContactFormDelegate(loadingManager) {
     private val contactId: UUID = savedStateHandle.get<String>(EditContactDestination.ContactIdArgs)?.let(UUID::fromString)
         ?: error("Missing contact id in args")
 
     private val _createInvitationResult: MutableStateFlow<LBResult<UUID>?> = MutableStateFlow(null)
     override val createInvitationResult: StateFlow<LBResult<UUID>?> = _createInvitationResult.asStateFlow()
-    override suspend fun saveContact(contactName: String, isUsingDeeplink: Boolean) {
+    override suspend fun doSaveContact(contactName: String, isUsingDeeplink: Boolean) {
         updateContactUseCase(contactId, isUsingDeeplink, contactName)
         _createInvitationResult.value = LBResult.Success(contactId)
     }

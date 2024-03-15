@@ -15,6 +15,7 @@ complexity:
   CyclomaticComplexMethod:
     ignoreSingleWhenExpression: true
     ignoreSimpleWhenEntries: true
+    ignoreFunction: [ 'equals' ]
 
 empty-blocks:
   EmptyFunctionBlock:

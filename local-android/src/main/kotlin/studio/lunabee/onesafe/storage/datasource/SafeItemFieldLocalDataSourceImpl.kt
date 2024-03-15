@@ -25,9 +25,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.repository.datasource.SafeItemFieldLocalDataSource
+import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.dao.IndexWordEntryDao
 import studio.lunabee.onesafe.storage.dao.SafeItemFieldDao
-import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.model.RoomIndexWordEntry
 import studio.lunabee.onesafe.storage.model.RoomSafeItemField
 import studio.lunabee.onesafe.storage.utils.TransactionProvider
@@ -80,6 +80,10 @@ class SafeItemFieldLocalDataSourceImpl @Inject constructor(
 
     override suspend fun getAllSafeItemFields(): List<SafeItemField> {
         return safeItemFieldDao.getAllSafeItemFields().map { it.toSafeItemField() }
+    }
+
+    override suspend fun saveThumbnailFileName(fieldId: UUID, encThumbnailFileName: ByteArray?) {
+        return safeItemFieldDao.saveThumbnailFileName(fieldId, encThumbnailFileName)
     }
 
     override suspend fun getAllSafeItemFieldsOfItems(items: List<UUID>): List<SafeItemField> {

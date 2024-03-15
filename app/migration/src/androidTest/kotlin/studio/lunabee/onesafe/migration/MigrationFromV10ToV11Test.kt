@@ -27,7 +27,6 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
-import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.usecase.item.CreateItemUseCase
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltTest
@@ -45,8 +44,6 @@ class MigrationFromV10ToV11Test : OSHiltTest() {
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private val iconDir: File = File(context.filesDir, "icons")
-
-    @Inject lateinit var safeItemRepository: SafeItemRepository
 
     @Inject lateinit var createItemUseCase: CreateItemUseCase
 

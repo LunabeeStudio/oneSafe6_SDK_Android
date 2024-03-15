@@ -63,7 +63,7 @@ import javax.inject.Inject
 
 @TypeConverters(InstantConverter::class, FileConverter::class)
 @Database(
-    version = 10,
+    version = 11,
     entities = [
         RoomSafeItem::class,
         RoomSafeItemField::class,
@@ -86,6 +86,7 @@ import javax.inject.Inject
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
         AutoMigration(from = 7, to = 8),
+        AutoMigration(from = 10, to = 11),
     ],
 )
 abstract class MainDatabase : RoomDatabase() {
