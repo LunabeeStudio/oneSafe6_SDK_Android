@@ -32,12 +32,12 @@ import studio.lunabee.onesafe.ime.ui.biometric.ImeBiometricResultRepository
 import studio.lunabee.onesafe.login.viewmodel.LoginFromPasswordDelegateImpl
 import studio.lunabee.onesafe.login.viewmodel.LoginUiStateHolder
 import studio.lunabee.onesafe.migration.MigrateAndSignInUseCase
-import studio.lunabee.onesafe.visits.OsAppVisit
+import studio.lunabee.onesafe.visits.OSAppVisit
 import javax.inject.Inject
 
 class ImeLoginViewModelFactory @Inject constructor(
     private val isBiometricEnabledUseCase: IsBiometricEnabledUseCase,
-    private val osAppVisit: OsAppVisit,
+    private val osAppVisit: OSAppVisit,
     private val migrateAndSignInUseCase: MigrateAndSignInUseCase,
     @VersionName val versionName: String,
     private val localSignInUseCase: LocalSignInUseCase,

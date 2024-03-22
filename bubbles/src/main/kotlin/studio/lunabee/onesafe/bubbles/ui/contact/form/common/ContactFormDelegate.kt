@@ -21,7 +21,6 @@ package studio.lunabee.onesafe.bubbles.ui.contact.form.common
 
 import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lbloading.LoadingManager
-import com.lunabee.lbloading.withLoading
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.commonui.utils.CloseableCoroutineScope

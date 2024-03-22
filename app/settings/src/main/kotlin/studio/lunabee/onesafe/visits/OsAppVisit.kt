@@ -21,90 +21,25 @@ package studio.lunabee.onesafe.visits
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import studio.lunabee.onesafe.blockingReadDatastore
+import studio.lunabee.onesafe.get
+import studio.lunabee.onesafe.getAsFlow
+import studio.lunabee.onesafe.store
 import javax.inject.Inject
+import kotlin.properties.ReadOnlyProperty
 
-class OsAppVisit @Inject constructor(
+class OSAppVisit @Inject constructor(
     private val dataStore: DataStore<Preferences>,
 ) {
-
-    private val hasVisitedLoginKey = booleanPreferencesKey(AppVisitConstants.hasVisitedLoginKey)
-    val hasVisitedLogin: Boolean by blockingReadDatastore(
-        dataStore,
-        hasVisitedLoginKey,
-        AppVisitConstants.hasVisitedLoginDefault,
-    )
-
-    suspend fun storeHasVisitedLogin() {
-        dataStore.edit { preferences ->
-            preferences[hasVisitedLoginKey] = true
-        }
+    suspend fun <T> store(value: T, preferencesTips: OSPreferenceTips<T>) {
+        dataStore.store(value = value, preferencesKey = preferencesTips.preferencesKey)
     }
 
-    private val hasFinishOneSafeKOnBoardingKey = booleanPreferencesKey(AppVisitConstants.hasFinishOneSafeKOnBoarding)
-
-    val hasFinishOneSafeKOnBoarding: Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[hasFinishOneSafeKOnBoardingKey] ?: AppVisitConstants.hasFinishOneSafeKOnBoardingDefault
+    fun <T> getAsFlow(preferencesTips: OSPreferenceTips<T>): Flow<T> {
+        return dataStore.getAsFlow(preferencesKey = preferencesTips.preferencesKey, defaultValue = preferencesTips.defaultValue)
     }
 
-    suspend fun storeHasFinishOneSafeKOnBoarding() {
-        dataStore.edit { preferences ->
-            preferences[hasFinishOneSafeKOnBoardingKey] = true
-        }
-    }
-
-    private val hasDoneOnBoardingBubblesKey = booleanPreferencesKey(AppVisitConstants.hasDoneOnBoardingBubbles)
-
-    val hasDoneOnBoardingBubblesFlow: Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[hasDoneOnBoardingBubblesKey] ?: AppVisitConstants.hasDoneOnBoardingBubblesDefault
-    }
-
-    val hasDoneOnBoardingBubbles: Boolean by blockingReadDatastore(
-        dataStore = dataStore,
-        key = hasDoneOnBoardingBubblesKey,
-        defaultValue = AppVisitConstants.hasDoneOnBoardingBubblesDefault,
-    )
-
-    suspend fun storeHasDoneOnBoardingBubbles() {
-        dataStore.edit { preferences ->
-            preferences[hasDoneOnBoardingBubblesKey] = true
-        }
-    }
-
-    private val hasDoneTutorialOpenOskKey = booleanPreferencesKey(AppVisitConstants.hasDoneTutorialOpenOsk)
-    val hasDoneTutorialOpenOskFlow: Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[hasDoneTutorialOpenOskKey] ?: AppVisitConstants.hasDoneTutorialOpenOskDefault
-    }
-
-    suspend fun storeHasDoneTutorialOpenOsk(value: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[hasDoneTutorialOpenOskKey] = value
-        }
-    }
-
-    private val hasDoneTutorialLockOskKey = booleanPreferencesKey(AppVisitConstants.hasDoneTutorialLockOsk)
-    val hasDoneTutorialLockOskFlow: Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[hasDoneTutorialLockOskKey] ?: AppVisitConstants.hasDoneTutorialLockOskDefault
-    }
-
-    suspend fun storeHasDoneTutorialLockOsk(value: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[hasDoneTutorialLockOskKey] = value
-        }
-    }
-
-    private val hasHiddenCameraTipsKey = booleanPreferencesKey(AppVisitConstants.hasHiddenCameraTips)
-    val hasHiddenCameraTipsFlow: Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[hasHiddenCameraTipsKey] ?: AppVisitConstants.hasHiddenCameraTipsDefault
-    }
-
-    suspend fun storeHasHiddenCameraTips(value: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[hasHiddenCameraTipsKey] = value
-        }
+    fun <T, Output> get(preferencesTips: OSPreferenceTips<Output>): ReadOnlyProperty<T, Output> {
+        return dataStore.get(preferencesKey = preferencesTips.preferencesKey, defaultValue = preferencesTips.defaultValue)
     }
 }
