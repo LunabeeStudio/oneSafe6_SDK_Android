@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.ime
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -27,10 +28,12 @@ import studio.lunabee.onesafe.ui.theme.OSTheme
 
 @Composable
 fun ImeOSTheme(
+    isNightTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
     val colorPalette = OSKColorPalette
     OSTheme(
+        isSystemInDarkTheme = isNightTheme,
         isMaterialYouSettingsEnabled = false,
         colorPalette = colorPalette,
         darkColorScheme = darkColorScheme(

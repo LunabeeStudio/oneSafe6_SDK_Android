@@ -37,4 +37,13 @@ object AppVisitConstants {
 
     const val hasHiddenCameraTips: String = "a34333b3-e332-4d8d-aa2f-c8316aa52ecc"
     const val hasHiddenCameraTipsDefault: Boolean = false
+
+    const val hasSeenItemEditionUrlToolTip: String = "6f3deb8b-c235-43ba-9fc2-6b933d5b48e2"
+    const val hasSeenItemEditionUrlToolTipDefault: Boolean = false
+
+    const val hasSeenItemEditionEmojiToolTip: String = "a12678b2-7c5a-4b6c-9c4e-e78d9e7f9be1"
+    const val hasSeenItemEditionEmojiToolTipDefault: Boolean = false
+
+    const val hasSeenItemReadEditToolTip: String = "1ef71667-3b5f-414d-a3ba-7973b248e939"
+    const val hasSeenItemReadEditToolTipDefault: Boolean = false
 }

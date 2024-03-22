@@ -24,21 +24,22 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import studio.lunabee.compose.core.LbcTextSpec
+import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.extension.loremIpsum
@@ -48,6 +49,7 @@ import studio.lunabee.onesafe.ime.ui.res.ImeDimens
 import studio.lunabee.onesafe.ime.ui.res.ImeShape
 import studio.lunabee.onesafe.ime.ui.tutorial.LockOskTutorialLayout
 import studio.lunabee.onesafe.ime.ui.tutorial.OpenOskTutorialLayout
+import studio.lunabee.onesafe.molecule.OSActionButton
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.utils.OsDefaultPreview
 
@@ -79,6 +81,7 @@ fun ImeOSTopBar(
         }
         Row(
             verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
         ) {
             if (isCryptoDataReady) {
                 OSKeyboardStatus.LoggedIn
@@ -91,28 +94,30 @@ fun ImeOSTopBar(
                     .padding(vertical = ImeDimens.LogoVerticalPadding, horizontal = ImeDimens.LogoHorizontalPadding),
             )
             imeClient?.let {
-                it.Logo(
-                    Modifier.padding(end = OSDimens.SystemSpacing.Small),
-                )
-                it.Name()
+                it.Logo(Modifier.padding(end = OSDimens.SystemSpacing.Small))
+                it.Name(modifier = Modifier.weight(1f))
             }
-            Spacer(Modifier.weight(1f))
-            if (isCryptoDataReady) {
-                IconButton(onClick = onLockClick) {
-                    Icon(
-                        painter = painterResource(OSDrawable.ic_unlock),
-                        contentDescription = stringResource(id = OSString.oneSafeK_imeTopBar_lock_contentDescription),
-                        // FIXME set tint to its default value (fixed in bom 2024.01.00-alpha01, but another issue)
-                        tint = LocalContentColor.current,
+            Box(
+                modifier = Modifier.width(IntrinsicSize.Max),
+                contentAlignment = Alignment.CenterEnd,
+            ) {
+                if (isCryptoDataReady) {
+                    OSActionButton(
+                        onClick = onLockClick,
+                        text = LbcTextSpec.StringResource(OSString.oneSafeK_lock),
+                        contentPadding = PaddingValues(horizontal = OSDimens.SystemSpacing.Medium),
+                        startIcon = OSImageSpec.Drawable(OSDrawable.ic_lock),
+                    ).Composable(
+                        modifier = Modifier.clip(ImeShape.Key),
                     )
-                }
-            } else {
-                IconButton(onClick = onLockClick) {
-                    Icon(
-                        painter = painterResource(OSDrawable.ic_lock),
-                        contentDescription = stringResource(id = OSString.oneSafeK_imeTopBar_unlock_contentDescription),
-                        // FIXME set tint to its default value (fixed in bom 2024.01.00-alpha01, but another issue)
-                        tint = LocalContentColor.current,
+                } else {
+                    OSActionButton(
+                        onClick = onLockClick,
+                        text = LbcTextSpec.StringResource(OSString.oneSafeK_open),
+                        contentPadding = PaddingValues(horizontal = OSDimens.SystemSpacing.Medium),
+                        startIcon = OSImageSpec.Drawable(OSDrawable.ic_key),
+                    ).Composable(
+                        modifier = Modifier.clip(ImeShape.Key),
                     )
                 }
             }

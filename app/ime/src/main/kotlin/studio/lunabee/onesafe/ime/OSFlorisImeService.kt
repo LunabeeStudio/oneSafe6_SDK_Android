@@ -98,7 +98,8 @@ import studio.lunabee.onesafe.messaging.domain.usecase.ProcessMessageQueueUseCas
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.LocalColorPalette
-import studio.lunabee.onesafe.visits.OsAppVisit
+import studio.lunabee.onesafe.visits.OSAppVisit
+import studio.lunabee.onesafe.visits.OSPreferenceTips
 import javax.inject.Inject
 
 // TODO oSK extract business call to a viewmodel class
@@ -133,7 +134,7 @@ class OSFlorisImeService : FlorisImeService() {
 
     @Inject lateinit var isSignUpUseCase: IsSignUpUseCase
 
-    @Inject lateinit var osAppVisit: OsAppVisit
+    @Inject lateinit var osAppVisit: OSAppVisit
 
     @Inject lateinit var autolockVisibilityManager: OSKAutoLockVisibilityManager
 
@@ -290,8 +291,12 @@ class OSFlorisImeService : FlorisImeService() {
     override fun ThemeImeView() {
         val coroutineScope = rememberCoroutineScope()
         val imeClient by imeClientFlow.collectAsStateWithLifecycle()
-        val hasDoneOpenTutorial by osAppVisit.hasDoneTutorialOpenOskFlow.collectAsStateWithLifecycle(initialValue = true)
-        val hasDoneLockTutorial by osAppVisit.hasDoneTutorialLockOskFlow.collectAsStateWithLifecycle(initialValue = true)
+        val hasDoneOpenTutorial by osAppVisit
+            .getAsFlow(preferencesTips = OSPreferenceTips.HasDoneTutorialOpenOsk)
+            .collectAsStateWithLifecycle(initialValue = true)
+        val hasDoneLockTutorial by osAppVisit
+            .getAsFlow(preferencesTips = OSPreferenceTips.HasDoneTutorialLockOsk)
+            .collectAsStateWithLifecycle(initialValue = true)
 
         if (imeClient?.packageName == packageName) {
             // Disable oneSafe K when using oneSafe
@@ -323,35 +328,39 @@ class OSFlorisImeService : FlorisImeService() {
             CompositionLocalProvider(
                 LocalKeyboardIsNightMode provides isNightTheme,
             ) {
-                Surface(color = Color.Transparent, contentColor = contentColor) {
-                    ImeOSTopBar(
-                        imeClient = imeClient,
-                        isCryptoDataReady = isCryptoDataReady,
-                        onLogoClick = {
-                            coroutineScope.launch {
-                                osAppVisit.storeHasDoneTutorialOpenOsk(true)
-                                showOneSafeUi()
-                            }
-                        },
-                        onLockClick = {
-                            coroutineScope.launch {
-                                if (isCryptoDataReady) {
-                                    osAppVisit.storeHasDoneTutorialLockOsk(true)
-                                    lockUseCase()
-                                } else {
+                ImeOSTheme(isNightTheme) {
+                    Surface(color = Color.Transparent, contentColor = contentColor) {
+                        ImeOSTopBar(
+                            imeClient = imeClient,
+                            isCryptoDataReady = isCryptoDataReady,
+                            onLogoClick = {
+                                coroutineScope.launch {
+                                    osAppVisit.store(value = true, preferencesTips = OSPreferenceTips.HasDoneTutorialOpenOsk)
                                     showOneSafeUi()
                                 }
-                            }
-                        },
-                        displayOpenTutorial = !hasDoneOpenTutorial && !isOneSafeUiVisible,
-                        displayLockTutorial = !hasDoneLockTutorial && isCryptoDataReady,
-                        closeLockTutorial = {
-                            coroutineScope.launch { osAppVisit.storeHasDoneTutorialLockOsk(true) }
-                        },
-                        closeOpenTutorial = {
-                            coroutineScope.launch { osAppVisit.storeHasDoneTutorialOpenOsk(true) }
-                        },
-                    )
+                            },
+                            onLockClick = {
+                                coroutineScope.launch {
+                                    if (isCryptoDataReady) {
+                                        osAppVisit.store(value = true, OSPreferenceTips.HasDoneTutorialLockOsk)
+                                        lockUseCase()
+                                    } else {
+                                        showOneSafeUi()
+                                    }
+                                }
+                            },
+                            displayOpenTutorial = !hasDoneOpenTutorial && !isOneSafeUiVisible,
+                            displayLockTutorial = !hasDoneLockTutorial && isCryptoDataReady,
+                            closeLockTutorial = {
+                                coroutineScope.launch { osAppVisit.store(value = true, OSPreferenceTips.HasDoneTutorialLockOsk) }
+                            },
+                            closeOpenTutorial = {
+                                coroutineScope.launch {
+                                    osAppVisit.store(value = true, preferencesTips = OSPreferenceTips.HasDoneTutorialOpenOsk)
+                                }
+                            },
+                        )
+                    }
                 }
             }
         }
@@ -507,6 +516,7 @@ class OSFlorisImeService : FlorisImeService() {
     fun OneSafeKUi(
         modifier: Modifier,
     ) {
+        val hasDoneOnBoardingBubbles: Boolean by osAppVisit.get(OSPreferenceTips.HasDoneOnBoardingBubbles)
         Surface(
             modifier = modifier,
             color = MaterialTheme.colorScheme.background,
@@ -531,7 +541,7 @@ class OSFlorisImeService : FlorisImeService() {
                         it.commitText(encryptedMessage, 0)
                     }
                 },
-                hasDoneOnBoardingBubbles = osAppVisit.hasDoneOnBoardingBubbles,
+                hasDoneOnBoardingBubbles = hasDoneOnBoardingBubbles,
                 hideKeyboard = { isKeyboardVisibleFlow.value = false },
             )
         }

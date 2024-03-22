@@ -22,6 +22,9 @@ package studio.lunabee.onesafe
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlin.properties.ReadOnlyProperty
 
 suspend fun <T> DataStore<Preferences>.setOrRemove(prefKey: Preferences.Key<T>, value: T?) {
     edit {
@@ -31,4 +34,16 @@ suspend fun <T> DataStore<Preferences>.setOrRemove(prefKey: Preferences.Key<T>, 
             it[prefKey] = value
         }
     }
+}
+
+suspend fun <T> DataStore<Preferences>.store(value: T, preferencesKey: Preferences.Key<T>) {
+    edit { preferences -> preferences[preferencesKey] = value }
+}
+
+fun <T> DataStore<Preferences>.getAsFlow(preferencesKey: Preferences.Key<T>, defaultValue: T): Flow<T> {
+    return data.map { preferences -> preferences[preferencesKey] ?: defaultValue }
+}
+
+fun <T, Output> DataStore<Preferences>.get(preferencesKey: Preferences.Key<Output>, defaultValue: Output): ReadOnlyProperty<T, Output> {
+    return blockingReadDatastore(dataStore = this, key = preferencesKey, defaultValue = defaultValue)
 }

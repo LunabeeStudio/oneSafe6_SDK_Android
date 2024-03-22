@@ -23,16 +23,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import studio.lunabee.onesafe.visits.OsAppVisit
+import studio.lunabee.onesafe.visits.OSPreferenceTips
+import studio.lunabee.onesafe.visits.OSAppVisit
 import javax.inject.Inject
 
 @HiltViewModel
 class OnBoardingBubblesViewModel @Inject constructor(
-    private val osAppVisit: OsAppVisit,
+    private val osAppVisit: OSAppVisit,
 ) : ViewModel() {
     fun setHasDoneOnBoarding() {
         viewModelScope.launch {
-            osAppVisit.storeHasDoneOnBoardingBubbles()
+            osAppVisit.store(value = true, preferencesTips = OSPreferenceTips.HasDoneOnBoardingBubbles)
         }
     }
 }
