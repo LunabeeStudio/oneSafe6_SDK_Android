@@ -33,14 +33,11 @@ class PlainDatastoreEngine @Inject constructor(
     dataStore: DataStore<ProtoData>,
     @FileDispatcher private val fileDispatcher: CoroutineDispatcher,
 ) : DatastoreEngine(dataStore) {
-    override suspend fun editValue(value: ByteArray?, key: String) {
+    override suspend fun insertValue(value: ByteArray, key: String, override: Boolean) {
         withContext(fileDispatcher) {
+            super.insertValue(value, key, override)
             dataStore.updateData { data ->
-                if (value == null) {
-                    data.toBuilder().removeData(key).build()
-                } else {
-                    data.toBuilder().putData(key, value.toByteString()).build()
-                }
+                data.toBuilder().putData(key, value.toByteString()).build()
             }
         }
     }

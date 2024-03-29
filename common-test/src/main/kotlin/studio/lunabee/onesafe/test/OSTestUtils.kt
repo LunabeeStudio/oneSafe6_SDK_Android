@@ -170,6 +170,7 @@ object OSTestUtils {
             override fun quickSignIn(): Boolean = quickSignIn
             override fun cloudBackup(): Boolean = cloudBackup
             override fun backupWorkerExpedited(): Boolean = backupForegroundService
+            override fun sqlcipher(): Boolean = false
         }
     }
 }

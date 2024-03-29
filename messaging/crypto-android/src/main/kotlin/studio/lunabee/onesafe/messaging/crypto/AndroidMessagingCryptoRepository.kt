@@ -92,7 +92,7 @@ class AndroidMessagingCryptoRepository @Inject constructor(
         var key = dataStoreEngine.retrieveValue(QUEUE_KEY_ALIAS).first()
         if (key == null) {
             key = randomKeyProvider()
-            dataStoreEngine.editValue(key, QUEUE_KEY_ALIAS)
+            dataStoreEngine.insertValue(key, QUEUE_KEY_ALIAS)
         }
         return key
     }

@@ -97,6 +97,7 @@ dependencies {
     implementation(libs.room.paging)
     implementation(libs.paging.runtime)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.sqlcipher.android)
 
     implementation(libs.kotlinx.serialization.protobuf)
     implementation(libs.datastore)

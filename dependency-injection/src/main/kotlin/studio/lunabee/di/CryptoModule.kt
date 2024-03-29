@@ -45,6 +45,7 @@ import studio.lunabee.onesafe.cryptography.AndroidMainCryptoRepository
 import studio.lunabee.onesafe.cryptography.AndroidMigrationCryptoRepository
 import studio.lunabee.onesafe.cryptography.BiometricEngine
 import studio.lunabee.onesafe.cryptography.CryptoConstants
+import studio.lunabee.onesafe.cryptography.DatabaseKeyRepositoryImpl
 import studio.lunabee.onesafe.cryptography.DatastoreEngine
 import studio.lunabee.onesafe.cryptography.EncryptedDataStoreEngine
 import studio.lunabee.onesafe.cryptography.IVProvider
@@ -55,11 +56,12 @@ import studio.lunabee.onesafe.cryptography.PlainDatastoreEngine
 import studio.lunabee.onesafe.cryptography.ProtoData
 import studio.lunabee.onesafe.cryptography.RsaCryptoEngine
 import studio.lunabee.onesafe.cryptography.SecureIVProvider
-import studio.lunabee.onesafe.domain.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
 import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
 import studio.lunabee.onesafe.cryptography.utils.SecuredDataSerializer
+import studio.lunabee.onesafe.domain.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.domain.repository.BiometricCipherRepository
+import studio.lunabee.onesafe.domain.repository.DatabaseKeyRepository
 import studio.lunabee.onesafe.domain.repository.EditCryptoRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.MigrationCryptoRepository
@@ -92,6 +94,11 @@ abstract class CryptoModule {
     internal abstract fun bindMessagingCryptoRepository(
         androidMessagingCryptoRepository: AndroidMessagingCryptoRepository,
     ): MessagingCryptoRepository
+
+    @Binds
+    internal abstract fun bindDatabaseKeyRepository(
+        databaseKeyRepository: DatabaseKeyRepositoryImpl,
+    ): DatabaseKeyRepository
 
     @Binds
     @DatastoreEngineProvider(DataStoreType.Plain)

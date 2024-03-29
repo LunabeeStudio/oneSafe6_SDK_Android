@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2024 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 11/21/2023 - for the oneSafe6 SDK.
- * Last modified 11/21/23, 4:20 PM
+ * Created by Lunabee Studio / Date - 3/25/2024 - for the oneSafe6 SDK.
+ * Last modified 3/25/24, 9:05 AM
  */
 
-package studio.lunabee.importexport.repository.datasource
+package studio.lunabee.onesafe.importexport.usecase
 
-import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.importexport.model.AutoBackupError
+import studio.lunabee.onesafe.importexport.repository.AutoBackupErrorRepository
+import javax.inject.Inject
 
-interface AutoBackupErrorLocalDataSource {
-    fun getError(): Flow<AutoBackupError?>
-    suspend fun setError(error: AutoBackupError?)
+class StoreAutoBackupErrorUseCase @Inject constructor(
+    private val autoBackupErrorRepository: AutoBackupErrorRepository,
+) {
+    suspend operator fun invoke(autoBackupError: AutoBackupError) {
+        autoBackupErrorRepository.setError(autoBackupError)
+    }
 }

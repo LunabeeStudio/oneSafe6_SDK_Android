@@ -29,9 +29,13 @@ import androidx.annotation.RequiresApi
 import androidx.datastore.core.DataStore
 import com.google.protobuf.kotlin.toByteString
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import studio.lunabee.onesafe.cryptography.extension.use
+import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.error.OSCryptoError
 import java.io.ByteArrayOutputStream
 import javax.crypto.AEADBadTagException
@@ -47,27 +51,27 @@ class EncryptedDataStoreEngine @Inject constructor(
     @ApplicationContext private val context: Context,
     private val androidKeyStoreEngine: AndroidKeyStoreEngine,
     private val ivProvider: IVProvider,
+    @FileDispatcher private val fileDispatcher: CoroutineDispatcher,
     dataStore: DataStore<ProtoData>,
 ) : DatastoreEngine(dataStore) {
 
     private fun getCipher() = Cipher.getInstance(TRANSFORMATION)
 
     /**
-     * Encrypt the value and store it in datastore
+     * Encrypt the value and store it in the [dataStore]
      */
-    override suspend fun editValue(value: ByteArray?, key: String) {
-        val encValue = value?.let { encryptData(value) }
-        dataStore.updateData { data ->
-            if (encValue == null) {
-                data.toBuilder().removeData(key).build()
-            } else {
+    override suspend fun insertValue(value: ByteArray, key: String, override: Boolean) {
+        withContext(fileDispatcher) {
+            super.insertValue(value, key, override)
+            val encValue = encryptData(value)
+            dataStore.updateData { data ->
                 data.toBuilder().putData(key, encValue.toByteString()).build()
             }
         }
     }
 
     /**
-     * Retrieve Value from datastore and decrypt it
+     * Retrieve Value from the [dataStore] and decrypt it
      */
     override fun retrieveValue(
         key: String,
@@ -79,7 +83,7 @@ class EncryptedDataStoreEngine @Inject constructor(
                 null
             }
             encValue?.toByteArray()?.let(::decryptData)
-        }
+        }.flowOn(fileDispatcher)
 
     @Throws(OSCryptoError::class)
     @Suppress("ThrowsCount")
@@ -124,9 +128,11 @@ class EncryptedDataStoreEngine @Inject constructor(
     }
 
     override suspend fun clearDataStore() {
-        super.clearDataStore()
-        androidKeyStoreEngine.removeSecretKey(MASTER_KEY_ALIAS)
-        androidKeyStoreEngine.removeSecretKey(BiometricEngine.KEY_ALIAS)
+        withContext(fileDispatcher) {
+            super.clearDataStore()
+            androidKeyStoreEngine.removeSecretKey(MASTER_KEY_ALIAS)
+            androidKeyStoreEngine.removeSecretKey(BiometricEngine.KEY_ALIAS)
+        }
     }
 
     private fun getGcmParameterSpec(iv: ByteArray) = GCMParameterSpec(AES_GCM_TAG_LENGTH_IN_BITS, iv)

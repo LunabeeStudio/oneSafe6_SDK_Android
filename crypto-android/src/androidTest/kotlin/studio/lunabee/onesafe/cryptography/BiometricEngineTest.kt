@@ -97,7 +97,7 @@ class BiometricEngineTest {
     @Test
     fun retrieve_key_not_authenticated_test(): TestResult = runTest {
         if (hasBiometric()) {
-            dataStore.editValue("key".encodeToByteArray(), encMasterKeyAlias)
+            dataStore.insertValue("key".encodeToByteArray(), encMasterKeyAlias)
             assertEquals(true, biometricEngine.isBiometricEnabledFlow().first())
 
             val cipher = biometricEngine.createCipherBiometricForEncrypt()

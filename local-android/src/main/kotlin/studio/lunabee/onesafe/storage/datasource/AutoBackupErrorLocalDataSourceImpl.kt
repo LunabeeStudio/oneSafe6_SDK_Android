@@ -39,11 +39,13 @@ class AutoBackupErrorLocalDataSourceImpl @Inject constructor(
             localAutoBackupError.takeUnless { it == LocalAutoBackupError.default }?.toAutoBackupError()
         }.flowOn(fileDispatcher)
 
-    override suspend fun setError(error: AutoBackupError?): AutoBackupError? = dataStore.updateData {
-        if (error == null) {
-            LocalAutoBackupError.default
-        } else {
-            LocalAutoBackupError.fromAutoBackupError(error)
+    override suspend fun setError(error: AutoBackupError?) {
+        dataStore.updateData {
+            if (error == null) {
+                LocalAutoBackupError.default
+            } else {
+                LocalAutoBackupError.fromAutoBackupError(error)
+            }
         }
-    }.takeUnless { it == LocalAutoBackupError.default }?.toAutoBackupError()
+    }
 }

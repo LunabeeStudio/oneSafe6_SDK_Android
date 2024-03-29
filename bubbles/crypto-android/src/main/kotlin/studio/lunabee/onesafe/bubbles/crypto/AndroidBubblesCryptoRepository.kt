@@ -28,7 +28,9 @@ import studio.lunabee.onesafe.cryptography.RandomKeyProvider
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
+import studio.lunabee.onesafe.error.OSBubblesError
 import studio.lunabee.onesafe.error.OSCryptoError
+import studio.lunabee.onesafe.error.OSError.Companion.get
 import studio.lunabee.onesafe.toByteArray
 import studio.lunabee.onesafe.use
 import java.io.OutputStream
@@ -63,6 +65,8 @@ class AndroidBubblesCryptoRepository @Inject constructor(
             }
         } catch (e: GeneralSecurityException) {
             throw OSCryptoError(OSCryptoError.Code.ENCRYPTION_FAILED_BAD_KEY, cause = e)
+        } catch (e: OSCryptoError) {
+            throw OSBubblesError.Code.LOCAL_ENCRYPTION_FAILED.get(cause = e)
         }
     }
 
@@ -77,6 +81,8 @@ class AndroidBubblesCryptoRepository @Inject constructor(
                         crypto.encrypt(rawData, rawKey, null).getOrThrow()
                     } catch (e: GeneralSecurityException) {
                         throw OSCryptoError(OSCryptoError.Code.ENCRYPTION_FAILED_BAD_KEY, cause = e)
+                    } catch (e: OSCryptoError) {
+                        throw OSBubblesError.Code.LOCAL_ENCRYPTION_FAILED.get(cause = e)
                     }
                 }
             }
@@ -90,6 +96,8 @@ class AndroidBubblesCryptoRepository @Inject constructor(
             }
         } catch (e: GeneralSecurityException) {
             throw OSCryptoError(OSCryptoError.Code.DECRYPTION_FAILED_WRONG_KEY, cause = e)
+        } catch (e: OSCryptoError) {
+            throw OSBubblesError.Code.LOCAL_DECRYPTION_FAILED.get(cause = e)
         }
 
         return mapper(decryptEntry.mapBlock, rawData, decryptEntry.clazz)
@@ -102,6 +110,8 @@ class AndroidBubblesCryptoRepository @Inject constructor(
             }
         } catch (e: GeneralSecurityException) {
             throw OSCryptoError(OSCryptoError.Code.DECRYPTION_FAILED_WRONG_KEY, cause = e)
+        } catch (e: OSCryptoError) {
+            throw OSBubblesError.Code.LOCAL_DECRYPTION_FAILED.get(cause = e)
         }
 
         return rawData.map { entry ->

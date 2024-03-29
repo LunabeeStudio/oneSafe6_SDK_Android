@@ -48,8 +48,8 @@ import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.dialog.ErrorDialogState
 import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
-import studio.lunabee.onesafe.importexport.model.Backup
 import studio.lunabee.onesafe.importexport.model.CloudBackup
+import studio.lunabee.onesafe.importexport.model.LatestBackups
 import studio.lunabee.onesafe.model.OSSwitchState
 import studio.lunabee.onesafe.ui.UiConstants
 import java.net.URI
@@ -135,7 +135,7 @@ class AutoBackupSettingsScreenTest : LbcComposeTest() {
         errorSnackbarState: ErrorSnackbarState? = null,
         driveUri: StateFlow<URI?> = MutableStateFlow(URI.create("")),
         dialogState: StateFlow<DialogState?> = MutableStateFlow(null),
-        latestBackup: Backup? = CloudBackup("", "", Instant.now(testClock)),
+        latestBackup: CloudBackup? = CloudBackup("", "", Instant.now(testClock)),
         block: ComposeUiTest.() -> Unit,
     ) {
         val viewModel = mockk<AutoBackupSettingsViewModel> {
@@ -165,13 +165,13 @@ class AutoBackupSettingsScreenTest : LbcComposeTest() {
     }
 
     private fun autoBackupSettingsUiState(
-        latestBackup: Backup?,
+        backup: CloudBackup?,
         cloudBackupEnabledState: OSSwitchState,
         driveUri: URI?,
     ) = AutoBackupSettingsUiState(
         isBackupEnabled = true,
         autoBackupFrequency = AutoBackupFrequency.DAILY,
-        latestBackup = latestBackup,
+        latestBackups = LatestBackups(local = null, cloud = backup),
         cloudBackupEnabledState = cloudBackupEnabledState,
         isKeepLocalBackupEnabled = true,
         toggleKeepLocalBackup = {},
