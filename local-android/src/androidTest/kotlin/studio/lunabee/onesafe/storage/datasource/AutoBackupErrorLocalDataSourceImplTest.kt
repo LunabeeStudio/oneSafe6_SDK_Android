@@ -22,15 +22,16 @@ package studio.lunabee.onesafe.storage.datasource
 import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.yield
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import studio.lunabee.onesafe.importexport.model.AutoBackupError
+import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import java.io.File
 import java.time.Clock
 import java.time.ZonedDateTime
@@ -62,14 +63,30 @@ class AutoBackupErrorLocalDataSourceImplTest {
 
         val expected = listOf(
             null,
-            AutoBackupError(ZonedDateTime.now(clock), "error_code_0", null),
-            AutoBackupError(ZonedDateTime.now(clock).plusDays(1), "error_code_1", "error_message_1"),
+            AutoBackupError(
+                date = ZonedDateTime.now(clock),
+                code = "error_code_0",
+                message = null,
+                source = AutoBackupMode.Synchronized,
+            ),
+            AutoBackupError(
+                date = ZonedDateTime.now(clock).plusDays(1),
+                code = "error_code_1",
+                message = "error_message_1",
+                source = AutoBackupMode.Synchronized,
+            ),
             null,
         )
 
-        expected.forEach { autoBackupErrorDataStore.setError(it) }
+        expected.forEach {
+            val size = actual.size
+            autoBackupErrorDataStore.setError(it)
+            // Force sync between set and get
+            while (actual.size == size) {
+                yield()
+            }
+        }
 
-        autoBackupErrorDataStore.getError().first() // sync wait collection
         assertContentEquals(expected, actual)
         job.cancel()
     }

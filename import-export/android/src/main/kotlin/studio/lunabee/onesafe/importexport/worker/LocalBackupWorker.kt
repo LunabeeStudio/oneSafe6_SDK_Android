@@ -45,6 +45,7 @@ import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
 import studio.lunabee.onesafe.commonui.utils.setForegroundSafe
 import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
+import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.usecase.DeleteOldLocalBackupsUseCase
 import studio.lunabee.onesafe.importexport.usecase.LocalAutoBackupUseCase
 import studio.lunabee.onesafe.importexport.utils.ForegroundInfoCompat
@@ -77,10 +78,14 @@ class LocalBackupWorker @AssistedInject constructor(
             }
 
         return when (val result = flowResult.asResult()) {
-            is LBResult.Failure -> autoBackupWorkersHelper.onBackupWorkerFails(result.throwable, runAttemptCount)
+            is LBResult.Failure -> autoBackupWorkersHelper.onBackupWorkerFails(
+                error = result.throwable,
+                runAttemptCount = runAttemptCount,
+                errorSource = AutoBackupMode.LocalOnly,
+            )
             is LBResult.Success -> {
                 deleteOldBackupsUseCase()
-                autoBackupWorkersHelper.onBackupWorkerSucceed()
+                autoBackupWorkersHelper.onBackupWorkerSucceed(AutoBackupMode.LocalOnly)
             }
         }
     }

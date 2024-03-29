@@ -39,8 +39,10 @@ import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
 import studio.lunabee.onesafe.error.OSDriveError
 import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
 import studio.lunabee.onesafe.importexport.model.AutoBackupError
-import studio.lunabee.onesafe.importexport.repository.AutoBackupErrorRepository
+import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
+import studio.lunabee.onesafe.importexport.usecase.ClearAutoBackupErrorUseCase
+import studio.lunabee.onesafe.importexport.usecase.StoreAutoBackupErrorUseCase
 import java.time.Clock
 import java.time.ZonedDateTime
 import javax.inject.Inject
@@ -51,8 +53,9 @@ class AutoBackupWorkersHelper @Inject constructor(
     @ApplicationContext private val context: Context,
     private val autoBackupSettingsRepository: AutoBackupSettingsRepository,
     private val osNotificationManager: OSNotificationManager,
-    private val autoBackupErrorRepository: AutoBackupErrorRepository,
     private val clock: Clock,
+    private val storeAutoBackupErrorUseCase: StoreAutoBackupErrorUseCase,
+    private val clearAutoBackupErrorUseCase: ClearAutoBackupErrorUseCase,
 ) {
     fun start(
         synchronizeCloudFirst: Boolean,
@@ -100,8 +103,9 @@ class AutoBackupWorkersHelper @Inject constructor(
      * @param runAttemptCount see ListenableWorker.getRunAttemptCount
      * @return The worker [Result]
      */
+    // TODO permission should be add by the module if it needs it
     @SuppressLint("MissingPermission")
-    suspend fun onBackupWorkerFails(error: Throwable?, runAttemptCount: Int): Result {
+    suspend fun onBackupWorkerFails(error: Throwable?, runAttemptCount: Int, errorSource: AutoBackupMode): Result {
         logger.e("fail #$runAttemptCount", error)
         val canRetry = canRetry(error)
 
@@ -111,8 +115,9 @@ class AutoBackupWorkersHelper @Inject constructor(
                 date = ZonedDateTime.now(clock),
                 code = error.codeText().string(context),
                 message = error?.stackTraceToString(),
+                source = errorSource,
             )
-            autoBackupErrorRepository.setError(autoBackupError)
+            storeAutoBackupErrorUseCase(autoBackupError)
             // Notify
             if (osNotificationManager.areNotificationsEnabled(OSNotificationChannelId.BACKUP_CHANNEL_ID)) {
                 val title = context.getString(OSString.notification_autobackup_error_title)
@@ -170,9 +175,9 @@ class AutoBackupWorkersHelper @Inject constructor(
         return canRetry
     }
 
-    suspend fun onBackupWorkerSucceed(): Result {
+    suspend fun onBackupWorkerSucceed(backupMode: AutoBackupMode): Result {
         osNotificationManager.manager.cancel(OSNotificationManager.AUTO_BACKUP_ERROR_WORKER_NOTIFICATION_ID)
-        autoBackupErrorRepository.setError(null)
+        clearAutoBackupErrorUseCase.ifNeeded(backupMode)
         return Result.success()
     }
 

@@ -19,17 +19,48 @@
 
 package studio.lunabee.onesafe.cryptography
 
+import androidx.annotation.CallSuper
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
+import studio.lunabee.onesafe.error.OSCryptoError
+import studio.lunabee.onesafe.error.OSError.Companion.get
 
 abstract class DatastoreEngine(
     protected val dataStore: DataStore<ProtoData>,
 ) {
 
-    abstract suspend fun editValue(value: ByteArray?, key: String)
+    /**
+     * Insert or update a data in the [dataStore]
+     *
+     * @param value The data to insert or update.
+     * @param key The key of the datastore entry
+     * @param override Allow overriding the entry with new value. Default true.
+     */
+    @CallSuper
+    @Throws(OSCryptoError::class)
+    open suspend fun insertValue(value: ByteArray, key: String, override: Boolean = true) {
+        if (!override && dataStore.data.map { it.dataMap[key] }.firstOrNull() != null) {
+            throw OSCryptoError.Code.DATASTORE_ENTRY_KEY_ALREADY_EXIST.get()
+        }
+    }
 
+    suspend fun removeValue(key: String) {
+        dataStore.updateData { it.toBuilder().removeData(key).build() }
+    }
+
+    /**
+     * Retrieve a value from the [dataStore]
+     *
+     * @param key The key of the datastore entry
+     * @return A flow of the stored data
+     */
     abstract fun retrieveValue(key: String): Flow<ByteArray?>
 
+    /**
+     * Clear the whole datastore
+     */
     open suspend fun clearDataStore() {
         dataStore.updateData { it.toBuilder().clearData().build() }
     }

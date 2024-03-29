@@ -90,5 +90,6 @@ data class OSCryptoError(
         INDEX_WORD_DECRYPTION_FAIL("Fail to decrypt an index word"),
         RECENT_SEARCH_ENCRYPTION_FAIL("Fail to encrypt a recent search"),
         RECENT_SEARCH_DECRYPTION_FAIL("Fail to decrypt a recent search"),
+        DATASTORE_ENTRY_KEY_ALREADY_EXIST("The key already exist in the datastore and override is false."),
     }
 }

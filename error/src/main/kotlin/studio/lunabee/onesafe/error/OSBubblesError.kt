@@ -13,16 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 11/21/2023 - for the oneSafe6 SDK.
- * Last modified 11/21/23, 4:20 PM
+ * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
+ * Last modified 4/7/23, 12:24 AM
  */
 
-package studio.lunabee.importexport.repository.datasource
+package studio.lunabee.onesafe.error
 
-import kotlinx.coroutines.flow.Flow
-import studio.lunabee.onesafe.importexport.model.AutoBackupError
+data class OSBubblesError(
+    override val code: Code,
+    override val message: String = code.message,
+    override val cause: Throwable? = null,
+) : OSError(message, cause, code) {
 
-interface AutoBackupErrorLocalDataSource {
-    fun getError(): Flow<AutoBackupError?>
-    suspend fun setError(error: AutoBackupError?)
+    enum class Code(override val message: String) : ErrorCode<Code, OSBubblesError> {
+        LOCAL_ENCRYPTION_FAILED("Fail to encrypt the data with local contact key"),
+        LOCAL_DECRYPTION_FAILED("Fail to decrypt the data with local contact key"),
+    }
 }

@@ -19,7 +19,6 @@
 
 package studio.lunabee.onesafe.bubbles.ui.composables
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import studio.lunabee.compose.core.LbcTextSpec
@@ -29,7 +28,6 @@ import studio.lunabee.onesafe.atom.OSInputChip
 import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.commonui.OSString
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PendingInputChip(
     modifier: Modifier = Modifier,

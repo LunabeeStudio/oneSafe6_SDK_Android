@@ -47,8 +47,8 @@ import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.error.OSDriveError
 import studio.lunabee.onesafe.importexport.GoogleDriveHelper
 import studio.lunabee.onesafe.importexport.dialog.ConfirmDeleteLocalBackupsDialogState
-import studio.lunabee.onesafe.importexport.model.Backup
 import studio.lunabee.onesafe.importexport.model.CloudInfo
+import studio.lunabee.onesafe.importexport.model.LatestBackups
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
 import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
@@ -96,7 +96,7 @@ class AutoBackupSettingsViewModel @Inject constructor(
                 localBackupRepository.hasBackupFlow(),
             ) { values ->
                 val frequency = values[0] as Duration
-                val backup = values[1] as Backup?
+                val latestBackups = values[1] as LatestBackups
                 val cloudBackupEnabledState = values[2] as OSSwitchState
                 val isKeepLocalBackupEnabled = values[3] as Boolean
                 val cloudInfo = values[4] as CloudInfo
@@ -104,7 +104,7 @@ class AutoBackupSettingsViewModel @Inject constructor(
                 AutoBackupSettingsUiState(
                     isBackupEnabled = true,
                     autoBackupFrequency = AutoBackupFrequency.valueForDuration(frequency),
-                    latestBackup = backup,
+                    latestBackups = latestBackups,
                     cloudBackupEnabledState = cloudBackupEnabledState,
                     isKeepLocalBackupEnabled = isKeepLocalBackupEnabled,
                     toggleKeepLocalBackup = { toggleKeepLocalBackup(hasBackup, isKeepLocalBackupEnabled) },

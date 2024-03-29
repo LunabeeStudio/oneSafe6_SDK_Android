@@ -24,10 +24,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
-import studio.lunabee.onesafe.importexport.model.Backup
-import studio.lunabee.onesafe.importexport.model.CloudBackup
-import studio.lunabee.onesafe.importexport.model.LocalBackup
+import studio.lunabee.onesafe.importexport.model.LatestBackups
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
 import javax.inject.Inject
 
@@ -42,16 +41,16 @@ class GetLatestBackupUseCase @Inject constructor(
     /**
      * Get all distinct & sorted backups
      */
-    suspend operator fun invoke(): Backup? {
+    suspend operator fun invoke(): LatestBackups? {
         val mode = getAutoBackupModeUseCase()
         return when (mode) {
-            AutoBackupMode.DISABLED -> null
-            AutoBackupMode.LOCAL_ONLY -> getLatestLocalBackupUseCase()
-            AutoBackupMode.CLOUD_ONLY -> cloudBackupRepository.getLatestBackup()
-            AutoBackupMode.SYNCHRONIZED -> {
+            AutoBackupMode.Disabled -> null
+            AutoBackupMode.LocalOnly -> getLatestLocalBackupUseCase()?.let { LatestBackups(it, null) }
+            AutoBackupMode.CloudOnly -> cloudBackupRepository.getLatestBackup()?.let { LatestBackups(null, it) }
+            AutoBackupMode.Synchronized -> {
                 val localBackup = getLatestLocalBackupUseCase()
                 val cloudBackup = cloudBackupRepository.getLatestBackup()
-                return filterResult(localBackup, cloudBackup)
+                return LatestBackups(localBackup, cloudBackup)
             }
         }
     }
@@ -60,27 +59,19 @@ class GetLatestBackupUseCase @Inject constructor(
      * Get a flow of all all distinct & sorted backups
      */
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun flow(): Flow<Backup?> {
+    fun flow(): Flow<LatestBackups?> {
         return getAutoBackupModeUseCase.flow().flatMapLatest { mode ->
             when (mode) {
-                AutoBackupMode.DISABLED -> flowOf(null)
-                AutoBackupMode.LOCAL_ONLY -> getLatestLocalBackupUseCase.flow()
-                AutoBackupMode.CLOUD_ONLY -> cloudBackupRepository.getLatestBackupFlow()
-                AutoBackupMode.SYNCHRONIZED -> combine(
+                AutoBackupMode.Disabled -> flowOf(null)
+                AutoBackupMode.LocalOnly -> getLatestLocalBackupUseCase.flow().map { LatestBackups(it, null) }
+                AutoBackupMode.CloudOnly -> cloudBackupRepository.getLatestBackupFlow().map { LatestBackups(null, it) }
+                AutoBackupMode.Synchronized -> combine(
                     getLatestLocalBackupUseCase.flow(),
                     cloudBackupRepository.getLatestBackupFlow(),
                 ) { localBackup, cloudBackup ->
-                    filterResult(localBackup, cloudBackup)
+                    LatestBackups(localBackup, cloudBackup)
                 }
             }
         }
-    }
-
-    private fun filterResult(localBackup: LocalBackup?, cloudBackup: CloudBackup?): Backup? {
-        return localBackup?.let {
-            cloudBackup?.let {
-                maxOf(localBackup, cloudBackup)
-            } ?: localBackup
-        } ?: cloudBackup
     }
 }

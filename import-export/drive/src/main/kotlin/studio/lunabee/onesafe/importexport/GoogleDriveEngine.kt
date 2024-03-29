@@ -54,6 +54,7 @@ import studio.lunabee.onesafe.domain.qualifier.RemoteDispatcher
 import studio.lunabee.onesafe.error.OSDriveError
 import studio.lunabee.onesafe.error.osCode
 import studio.lunabee.onesafe.importexport.model.AutoBackupError
+import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.importexport.model.CloudInfo
 import studio.lunabee.onesafe.importexport.model.LocalBackup
@@ -106,6 +107,7 @@ class GoogleDriveEngine @Inject constructor(
                                     date = ZonedDateTime.now(clock),
                                     code = OSDriveError.Code.WRONG_ACCOUNT_TYPE.name,
                                     message = OSDriveError.Code.WRONG_ACCOUNT_TYPE.message,
+                                    source = AutoBackupMode.CloudOnly,
                                 ),
                             )
                         }
@@ -116,6 +118,7 @@ class GoogleDriveEngine @Inject constructor(
                                 date = ZonedDateTime.now(clock),
                                 code = OSDriveError.Code.UNEXPECTED_NULL_ACCOUNT.name,
                                 message = OSDriveError.Code.UNEXPECTED_NULL_ACCOUNT.message,
+                                source = AutoBackupMode.CloudOnly,
                             ),
                         )
                     }
