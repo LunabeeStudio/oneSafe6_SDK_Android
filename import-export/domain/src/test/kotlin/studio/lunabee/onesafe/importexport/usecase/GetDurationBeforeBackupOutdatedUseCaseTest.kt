@@ -44,7 +44,7 @@ class GetDurationBeforeBackupOutdatedUseCaseTest {
     }
     private val getAllLocalBackupsUseCase: GetAllLocalBackupsUseCase = mockk()
     private val getAutoBackupModeUseCase: GetAutoBackupModeUseCase = mockk {
-        coEvery { this@mockk.invoke() } returns AutoBackupMode.LocalOnly // TODO <AutoBackup> update test with other cases
+        coEvery { this@mockk.invoke() } returns AutoBackupMode.LOCAL_ONLY // TODO <AutoBackup> update test with other cases
     }
     private val cloudBackupRepository: CloudBackupRepository = mockk()
     private val nowClock = Clock.fixed(Instant.EPOCH, ZoneOffset.UTC)

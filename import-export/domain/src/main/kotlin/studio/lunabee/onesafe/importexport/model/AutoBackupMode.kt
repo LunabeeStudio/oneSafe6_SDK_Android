@@ -20,8 +20,8 @@
 package studio.lunabee.onesafe.importexport.model
 
 enum class AutoBackupMode {
-    Disabled,
-    LocalOnly,
-    CloudOnly,
-    Synchronized, // Unidirectional sync (local -> remote)
+    DISABLED,
+    LOCAL_ONLY,
+    CLOUD_ONLY,
+    SYNCHRONIZED, // Unidirectional sync (local -> remote)
 }

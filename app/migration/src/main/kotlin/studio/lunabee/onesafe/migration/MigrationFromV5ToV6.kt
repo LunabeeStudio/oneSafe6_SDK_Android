@@ -43,7 +43,7 @@ class MigrationFromV5ToV6 @Inject constructor(
         dataStore.edit {
             it.remove(booleanPreferencesKey("1d361eb7-a13f-49d1-9f9b-a37520c12361"))
         }
-        if (getAutoBackupModeUseCase() != AutoBackupMode.Disabled) {
+        if (getAutoBackupModeUseCase() != AutoBackupMode.DISABLED) {
             autoBackupWorkersHelper.start(false)
         }
     }

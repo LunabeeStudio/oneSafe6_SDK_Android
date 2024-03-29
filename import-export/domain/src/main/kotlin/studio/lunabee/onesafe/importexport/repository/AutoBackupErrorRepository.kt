@@ -24,5 +24,5 @@ import studio.lunabee.onesafe.importexport.model.AutoBackupError
 
 interface AutoBackupErrorRepository {
     fun getError(): Flow<AutoBackupError?>
-    suspend fun setError(error: AutoBackupError?)
+    suspend fun setError(error: AutoBackupError?): AutoBackupError?
 }

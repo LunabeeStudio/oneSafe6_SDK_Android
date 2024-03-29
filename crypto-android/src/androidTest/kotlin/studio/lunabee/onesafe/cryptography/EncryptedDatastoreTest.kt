@@ -22,7 +22,6 @@ package studio.lunabee.onesafe.cryptography
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -33,7 +32,6 @@ import java.security.KeyStore
 import javax.inject.Inject
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertNull
 
 @HiltAndroidTest
 class EncryptedDatastoreTest {
@@ -49,38 +47,20 @@ class EncryptedDatastoreTest {
     @Before
     fun setUp() {
         hiltRule.inject()
+    }
+
+    @Test
+    fun edit_value_and_retrieve_it() {
         runTest {
-            dataStore.removeValue(keyAlias)
+            dataStore.editValue("key".encodeToByteArray(), keyAlias)
+            assertEquals("key", dataStore.retrieveValue(keyAlias).first()?.decodeToString())
         }
     }
 
     @Test
-    fun insert_edit_retrieve_remove_test() {
+    fun delete_master_key_and_try_to_get_value() {
         runTest {
-            dataStore.insertValue("value".encodeToByteArray(), keyAlias)
-            dataStore.insertValue("value2".encodeToByteArray(), keyAlias)
-            assertEquals("value2", dataStore.retrieveValue(keyAlias).first()?.decodeToString())
-            dataStore.removeValue(keyAlias)
-            val actual = dataStore.retrieveValue(keyAlias).firstOrNull()
-            assertNull(actual)
-        }
-    }
-
-    @Test
-    fun edit_value_override_error_test() {
-        runTest {
-            dataStore.insertValue(value = "key".encodeToByteArray(), key = keyAlias, override = false)
-            val error = assertFailsWith<OSCryptoError> {
-                dataStore.insertValue(value = byteArrayOf(), key = keyAlias, override = false)
-            }
-            assertEquals(OSCryptoError.Code.DATASTORE_ENTRY_KEY_ALREADY_EXIST, error.code)
-        }
-    }
-
-    @Test
-    fun delete_master_key_and_try_to_get_value_test() {
-        runTest {
-            dataStore.insertValue("key".encodeToByteArray(), keyAlias)
+            dataStore.editValue("key".encodeToByteArray(), keyAlias)
             val keyStore = KeyStore.getInstance("AndroidKeyStore")
             keyStore.load(null)
             keyStore.deleteEntry(accessMasterKeyString())

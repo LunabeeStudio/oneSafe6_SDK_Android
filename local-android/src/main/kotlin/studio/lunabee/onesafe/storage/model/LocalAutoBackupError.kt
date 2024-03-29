@@ -21,21 +21,18 @@ package studio.lunabee.onesafe.storage.model
 
 import kotlinx.serialization.Serializable
 import studio.lunabee.onesafe.importexport.model.AutoBackupError
-import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import java.time.ZonedDateTime
 
 @Serializable
 data class LocalAutoBackupError(
-    val date: String = "",
-    val code: String = "",
-    val message: String? = null,
-    val source: AutoBackupMode = AutoBackupMode.Disabled,
+    val date: String,
+    val code: String,
+    val message: String?,
 ) {
     fun toAutoBackupError(): AutoBackupError = AutoBackupError(
         date = ZonedDateTime.parse(date),
         code = code,
         message = message,
-        source = source,
     )
 
     companion object {
@@ -43,9 +40,9 @@ data class LocalAutoBackupError(
             date = autoBackupError.date.toString(),
             code = autoBackupError.code,
             message = autoBackupError.message,
-            source = autoBackupError.source,
         )
 
-        val default: LocalAutoBackupError = LocalAutoBackupError()
+        val default: LocalAutoBackupError
+            get() = LocalAutoBackupError("", "", null)
     }
 }

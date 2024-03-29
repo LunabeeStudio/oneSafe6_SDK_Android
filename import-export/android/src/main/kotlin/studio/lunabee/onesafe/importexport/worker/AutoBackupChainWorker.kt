@@ -52,14 +52,14 @@ class AutoBackupChainWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         if (itemRepository.getSafeItemsCount() != 0) {
             when (val backupMode = getAutoBackupModeUseCase()) {
-                AutoBackupMode.Disabled -> {
+                AutoBackupMode.DISABLED -> {
                     // Unexpected, log and cancel workers
                     logger.e("${AutoBackupChainWorker::class.simpleName} run but ${AutoBackupMode::class.simpleName} is $backupMode")
                     autoBackupWorkersHelper.cancel()
                 }
-                AutoBackupMode.LocalOnly -> LocalBackupWorker.start(applicationContext, featureFlags.backupWorkerExpedited())
-                AutoBackupMode.CloudOnly -> CloudBackupWorker.start(applicationContext, featureFlags.backupWorkerExpedited())
-                AutoBackupMode.Synchronized -> {
+                AutoBackupMode.LOCAL_ONLY -> LocalBackupWorker.start(applicationContext, featureFlags.backupWorkerExpedited())
+                AutoBackupMode.CLOUD_ONLY -> CloudBackupWorker.start(applicationContext, featureFlags.backupWorkerExpedited())
+                AutoBackupMode.SYNCHRONIZED -> {
                     val localWorkRequest = LocalBackupWorker.getWorkRequest(featureFlags.backupWorkerExpedited())
                     val cloudSyncWorkRequest = CloudSynchronizeBackupWorker.getWorkRequest()
 

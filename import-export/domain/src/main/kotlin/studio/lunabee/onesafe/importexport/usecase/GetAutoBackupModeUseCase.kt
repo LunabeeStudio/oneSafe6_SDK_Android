@@ -33,12 +33,12 @@ class GetAutoBackupModeUseCase @Inject constructor(
         return if (settingsRepository.autoBackupEnabled.first()) {
             val cloudBackupEnabled = settingsRepository.cloudBackupEnabled.first()
             when {
-                cloudBackupEnabled && settingsRepository.keepLocalBackupEnabled.first() -> AutoBackupMode.Synchronized
-                cloudBackupEnabled -> AutoBackupMode.CloudOnly
-                else -> AutoBackupMode.LocalOnly
+                cloudBackupEnabled && settingsRepository.keepLocalBackupEnabled.first() -> AutoBackupMode.SYNCHRONIZED
+                cloudBackupEnabled -> AutoBackupMode.CLOUD_ONLY
+                else -> AutoBackupMode.LOCAL_ONLY
             }
         } else {
-            AutoBackupMode.Disabled
+            AutoBackupMode.DISABLED
         }
     }
 
@@ -50,12 +50,12 @@ class GetAutoBackupModeUseCase @Inject constructor(
         ) { autoBackupEnabled, cloudBackupEnabled, keepLocalBackupEnabled ->
             if (autoBackupEnabled) {
                 when {
-                    cloudBackupEnabled && keepLocalBackupEnabled -> AutoBackupMode.Synchronized
-                    cloudBackupEnabled -> AutoBackupMode.CloudOnly
-                    else -> AutoBackupMode.LocalOnly
+                    cloudBackupEnabled && keepLocalBackupEnabled -> AutoBackupMode.SYNCHRONIZED
+                    cloudBackupEnabled -> AutoBackupMode.CLOUD_ONLY
+                    else -> AutoBackupMode.LOCAL_ONLY
                 }
             } else {
-                AutoBackupMode.Disabled
+                AutoBackupMode.DISABLED
             }
         }
     }

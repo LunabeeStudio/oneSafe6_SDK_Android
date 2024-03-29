@@ -47,7 +47,5 @@ data class OSDomainError(
         ALPHA_INDEX_COMPUTE_FAILED("Failed to compute the alphabetic index"),
         UNKNOWN_ERROR("Unknown error happened"),
         NO_HTML_PAGE_FOUND("No html page found for the provided url"),
-        DATABASE_ENCRYPTION_NOT_ENABLED("The database encryption is not enabled"),
-        DATABASE_ENCRYPTION_ALREADY_ENABLED("The database encryption is already enabled"),
     }
 }

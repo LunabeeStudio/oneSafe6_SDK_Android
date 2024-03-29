@@ -32,7 +32,7 @@ import kotlin.time.Duration.Companion.seconds
 // TODO <AutoBackup> update tests
 
 /**
- * Check if the latest backup is outdated regarding the frequency param and the backup mode. In case of [AutoBackupMode.Synchronized] mode,
+ * Check if the latest backup is outdated regarding the frequency param and the backup mode. In case of [AutoBackupMode.SYNCHRONIZED] mode,
  * check get the older backups between the latest local and latest cloud.
  */
 class GetDurationBeforeBackupOutdatedUseCase @Inject constructor(
@@ -45,20 +45,20 @@ class GetDurationBeforeBackupOutdatedUseCase @Inject constructor(
     suspend operator fun invoke(): Duration {
         val backupMode = getAutoBackupModeUseCase()
         return when (backupMode) {
-            AutoBackupMode.Disabled -> Duration.INFINITE
-            AutoBackupMode.LocalOnly -> {
+            AutoBackupMode.DISABLED -> Duration.INFINITE
+            AutoBackupMode.LOCAL_ONLY -> {
                 getAllLocalBackupsUseCase().firstOrNull()?.let { latestBackup ->
                     val durationSinceLatest = latestBackup.date.until(Instant.now(clock), ChronoUnit.SECONDS).seconds
                     settingsRepository.autoBackupFrequency - durationSinceLatest
                 }
             }
-            AutoBackupMode.CloudOnly -> {
+            AutoBackupMode.CLOUD_ONLY -> {
                 cloudBackupRepository.getBackups().firstOrNull()?.let { latestBackup ->
                     val durationSinceLatest = latestBackup.date.until(Instant.now(clock), ChronoUnit.SECONDS).seconds
                     settingsRepository.autoBackupFrequency - durationSinceLatest
                 }
             }
-            AutoBackupMode.Synchronized -> {
+            AutoBackupMode.SYNCHRONIZED -> {
                 cloudBackupRepository.getBackups().firstOrNull()?.date?.let { latestCloud ->
                     getAllLocalBackupsUseCase().maxOrNull()?.date?.let { latestLocal ->
                         val durationSinceLatest = minOf(latestCloud, latestLocal)

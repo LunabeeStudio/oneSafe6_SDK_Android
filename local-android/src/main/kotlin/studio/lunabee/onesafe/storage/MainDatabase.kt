@@ -28,11 +28,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import kotlinx.coroutines.runBlocking
-import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 import studio.lunabee.onesafe.domain.common.MessageIdProvider
-import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
-import studio.lunabee.onesafe.domain.usecase.authentication.FinishSetupDatabaseEncryptionUseCase
 import studio.lunabee.onesafe.storage.converter.FileConverter
 import studio.lunabee.onesafe.storage.converter.InstantConverter
 import studio.lunabee.onesafe.storage.dao.BackupDao
@@ -110,33 +106,15 @@ abstract class MainDatabase : RoomDatabase() {
     abstract fun backupDao(): BackupDao
 
     companion object {
-
-        private const val sqlCipherLibrary: String = "sqlcipher"
-
-        const val mainDatabaseName: String = "bc9fe798-a4f0-402e-9f5b-80339d87a041"
-
-        fun build(
-            appContext: Context,
-            dbKey: DatabaseKey?,
-            finishSetupDatabaseEncryptionUseCase: FinishSetupDatabaseEncryptionUseCase,
-            vararg migrations: Migration,
-        ): MainDatabase {
-            System.loadLibrary(sqlCipherLibrary)
-
-            runBlocking {
-                finishSetupDatabaseEncryptionUseCase()
-            }
-
-            val builder = Room.databaseBuilder(
+        fun build(appContext: Context, vararg migrations: Migration): MainDatabase {
+            return Room.databaseBuilder(
                 appContext,
                 MainDatabase::class.java,
-                mainDatabaseName,
+                "bc9fe798-a4f0-402e-9f5b-80339d87a041",
             )
                 .addCallback(MainDatabaseCallback())
                 .addMigrations(*migrations)
-                .openHelperFactory(SupportOpenHelperFactory(dbKey?.raw))
-
-            return builder.build()
+                .build()
         }
     }
 }
@@ -144,7 +122,7 @@ abstract class MainDatabase : RoomDatabase() {
 private fun SupportSQLiteDatabase.addRecursiveCheckTriggers() {
     execSQL(
         """
-             CREATE TRIGGER IF NOT EXISTS recursive_item_insert
+             CREATE TRIGGER recursive_item_insert
              BEFORE INSERT
              ON SafeItem
              WHEN NEW.id = NEW.parent_id OR NEW.id = NEW.deleted_parent_id
@@ -155,7 +133,7 @@ private fun SupportSQLiteDatabase.addRecursiveCheckTriggers() {
     )
     execSQL(
         """
-             CREATE TRIGGER IF NOT EXISTS recursive_item_update
+             CREATE TRIGGER recursive_item_update
              BEFORE UPDATE OF parent_id, deleted_parent_id
              ON SafeItem
              WHEN NEW.id = NEW.parent_id OR NEW.id = NEW.deleted_parent_id

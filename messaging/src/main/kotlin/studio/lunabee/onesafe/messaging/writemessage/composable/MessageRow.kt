@@ -19,7 +19,9 @@
 
 package studio.lunabee.onesafe.messaging.writemessage.composable
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +35,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,7 +50,6 @@ import studio.lunabee.onesafe.extension.loremIpsum
 import studio.lunabee.onesafe.messaging.domain.model.MessageDirection
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
 import studio.lunabee.onesafe.model.OSSafeItemStyle
-import studio.lunabee.onesafe.model.combinedClickableWithHaptic
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
 import studio.lunabee.onesafe.ui.theme.OSTypography.labelXSmall
@@ -56,12 +59,14 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.UUID
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MessageRow(
     messageData: ConversationUiData.Message,
     contactName: OSNameProvider,
     messageLongPress: MessageLongPress,
 ) {
+    val haptics = LocalHapticFeedback.current
     val style: MessageRowStyle = when (messageData.direction) {
         MessageDirection.SENT -> MessageRowDefault.send()
         MessageDirection.RECEIVED -> MessageRowDefault.received()
@@ -80,12 +85,13 @@ fun MessageRow(
                 .clip(style.shape)
                 .background(style.backgroundColor)
                 .fillMaxWidth(style.widthRow)
-                .combinedClickableWithHaptic(
+                .combinedClickable(
                     enabled = messageLongPress.enabled(messageData.type),
-                    onLongClick = { messageLongPress.onLongClick(messageData.id) },
+                    onLongClick = {
+                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                        messageLongPress.onLongClick(messageData.id)
+                    },
                     onClick = {},
-                    onClickLabel = null,
-                    onLongClickLabel = null,
                 )
                 .padding(horizontal = OSDimens.SystemSpacing.Regular, vertical = OSDimens.SystemSpacing.Small),
             verticalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.ExtraSmall),

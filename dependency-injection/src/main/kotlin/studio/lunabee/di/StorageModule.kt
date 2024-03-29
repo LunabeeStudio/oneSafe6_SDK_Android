@@ -28,9 +28,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.runBlocking
 import studio.lunabee.bubbles.repository.datasource.ContactKeyLocalDataSource
 import studio.lunabee.bubbles.repository.datasource.ContactLocalDataSource
 import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
@@ -42,11 +39,7 @@ import studio.lunabee.messaging.repository.datasource.EnqueuedMessageLocalDataSo
 import studio.lunabee.messaging.repository.datasource.HandShakeDataLocalDatasource
 import studio.lunabee.messaging.repository.datasource.MessageLocalDataSource
 import studio.lunabee.messaging.repository.datasource.SentMessageLocalDatasource
-import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
-import studio.lunabee.onesafe.domain.repository.DatabaseKeyRepository
-import studio.lunabee.onesafe.domain.repository.SqlCipherManager
 import studio.lunabee.onesafe.domain.repository.TransactionManager
-import studio.lunabee.onesafe.domain.usecase.authentication.FinishSetupDatabaseEncryptionUseCase
 import studio.lunabee.onesafe.repository.datasource.FileLocalDatasource
 import studio.lunabee.onesafe.repository.datasource.ForceUpgradeLocalDatasource
 import studio.lunabee.onesafe.repository.datasource.IconLocalDataSource
@@ -57,7 +50,6 @@ import studio.lunabee.onesafe.repository.datasource.SafeItemFieldLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.SafeItemKeyLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.SafeItemLocalDataSource
 import studio.lunabee.onesafe.storage.MainDatabase
-import studio.lunabee.onesafe.storage.DefaultSqlCipherManager
 import studio.lunabee.onesafe.storage.MainDatabaseTransactionManager
 import studio.lunabee.onesafe.storage.Migration3to4
 import studio.lunabee.onesafe.storage.Migration8to9
@@ -204,27 +196,12 @@ interface StorageModule {
 object DatabaseModule {
     @Provides
     @Singleton
-    @Suppress("LongParameterList")
     fun provideMainDatabase(
         @ApplicationContext appContext: Context,
         migration3to4: Migration3to4,
         migration8to9: Migration8to9,
         migration9to10: Migration9to10,
-        databaseKeyRepository: DatabaseKeyRepository,
-        finishSetupDatabaseEncryptionUseCase: FinishSetupDatabaseEncryptionUseCase,
-    ): MainDatabase {
-        return runBlocking {
-            val dbKey = databaseKeyRepository.getKeyFlow().firstOrNull()
-            MainDatabase.build(
-                appContext = appContext,
-                dbKey = dbKey,
-                finishSetupDatabaseEncryptionUseCase = finishSetupDatabaseEncryptionUseCase,
-                migration3to4,
-                migration8to9,
-                migration9to10,
-            )
-        }
-    }
+    ): MainDatabase = MainDatabase.build(appContext, migration3to4, migration8to9, migration9to10)
 }
 
 @Module
@@ -237,14 +214,6 @@ object MainDatabaseModule {
         return MainDatabaseTransactionManager(
             mainDatabase,
         )
-    }
-
-    @Provides
-    fun provideSqlCipherManager(
-        @FileDispatcher dispatcher: CoroutineDispatcher,
-        @ApplicationContext context: Context,
-    ): SqlCipherManager {
-        return DefaultSqlCipherManager(dispatcher, context, MainDatabase.mainDatabaseName)
     }
 
     @Provides

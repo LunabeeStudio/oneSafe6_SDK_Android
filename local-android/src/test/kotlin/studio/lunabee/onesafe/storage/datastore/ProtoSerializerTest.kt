@@ -22,7 +22,6 @@ package studio.lunabee.onesafe.storage.datastore
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
-import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.storage.model.LocalAutoBackupError
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -37,7 +36,6 @@ class ProtoSerializerTest {
             date = "date",
             code = "code",
             message = "message",
-            source = AutoBackupMode.CloudOnly,
         )
         val serializer = ProtoSerializer(LocalAutoBackupError.default, typeOf<LocalAutoBackupError>())
         val output = ByteArrayOutputStream()

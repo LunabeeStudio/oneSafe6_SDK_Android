@@ -29,5 +29,4 @@ interface FeatureFlags {
     fun quickSignIn(): Boolean
     fun cloudBackup(): Boolean
     fun backupWorkerExpedited(): Boolean
-    fun sqlcipher(): Boolean
 }

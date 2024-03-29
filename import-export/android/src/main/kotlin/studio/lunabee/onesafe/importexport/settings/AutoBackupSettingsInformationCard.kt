@@ -19,78 +19,43 @@
 
 package studio.lunabee.onesafe.importexport.settings
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.atom.OSSmallSpacer
 import studio.lunabee.onesafe.commonui.OSString
-import studio.lunabee.onesafe.importexport.model.CloudBackup
-import studio.lunabee.onesafe.importexport.model.LatestBackups
-import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.utils.BackupDateTimeLocaleFormatter
 import studio.lunabee.onesafe.molecule.OSRow
 import studio.lunabee.onesafe.organism.card.OSCustomCard
 import studio.lunabee.onesafe.ui.res.OSDimens
-import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
+import studio.lunabee.onesafe.ui.theme.OSTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
-import java.io.File
 import java.time.Instant
 import java.util.Locale
 
 @Composable
 fun AutoBackupSettingsInformationCard(
-    latestBackups: LatestBackups?,
+    date: Instant?,
     modifier: Modifier = Modifier,
 ) {
+    val dateText = if (date == null) {
+        LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_informations_noBackups)
+    } else {
+        val context = LocalContext.current
+        val locale = Locale(context.getString(OSString.locale_lang))
+        LbcTextSpec.Raw(BackupDateTimeLocaleFormatter(locale).format(date))
+    }
+
     OSCustomCard(
         modifier = modifier,
         title = LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_informations_title),
         content = {
-            if (latestBackups?.latest == null) {
-                OSRow(
-                    modifier = Modifier.padding(horizontal = OSDimens.SystemSpacing.Regular),
-                    label = LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_lastAutoBackupDate_title),
-                    text = LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_informations_noBackups),
-                )
-            } else {
-                val context = LocalContext.current
-                val locale = Locale(context.getString(OSString.locale_lang))
-                val backupCount = latestBackups.count()
-                Column(verticalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.Small)) {
-                    latestBackups.local?.date?.let { date ->
-                        val label = if (backupCount == 1) {
-                            LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_lastAutoBackupDate_title)
-                        } else {
-                            LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_lastLocalAutoBackupDate_title)
-                        }
-                        OSRow(
-                            modifier = Modifier.padding(horizontal = OSDimens.SystemSpacing.Regular),
-                            label = label,
-                            text = LbcTextSpec.Raw(BackupDateTimeLocaleFormatter(locale).format(date)),
-                        )
-                        if (backupCount > 1) {
-                            OSSmallSpacer()
-                        }
-                    }
-                    latestBackups.cloud?.date?.let { date ->
-                        val label = if (backupCount == 1) {
-                            LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_lastAutoBackupDate_title)
-                        } else {
-                            LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_lastCloudAutoBackupDate_title)
-                        }
-                        OSRow(
-                            modifier = Modifier.padding(horizontal = OSDimens.SystemSpacing.Regular),
-                            label = label,
-                            text = LbcTextSpec.Raw(BackupDateTimeLocaleFormatter(locale).format(date)),
-                        )
-                    }
-                }
-            }
+            OSRow(
+                modifier = Modifier.padding(horizontal = OSDimens.SystemSpacing.Regular),
+                label = LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_lastAutoBackupDate_title),
+                text = dateText,
+            )
         },
     )
 }
@@ -98,31 +63,9 @@ fun AutoBackupSettingsInformationCard(
 @OsDefaultPreview
 @Composable
 fun AutoBackupSettingsInformationCardPreview() {
-    OSPreviewBackgroundTheme {
-        Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-            AutoBackupSettingsInformationCard(
-                LatestBackups(
-                    LocalBackup(date = Instant.now(), file = File("")),
-                    CloudBackup(remoteId = "", name = "", date = Instant.now()),
-                ),
-            )
-            AutoBackupSettingsInformationCard(
-                LatestBackups(
-                    LocalBackup(date = Instant.now(), file = File("")),
-                    null,
-                ),
-            )
-            AutoBackupSettingsInformationCard(
-                null,
-            )
-        }
-    }
-}
-
-private fun LatestBackups.count(): Int {
-    return when {
-        local != null && cloud != null -> 2
-        local != null || cloud != null -> 1
-        else -> 0
+    OSTheme {
+        AutoBackupSettingsInformationCard(
+            Instant.now(),
+        )
     }
 }

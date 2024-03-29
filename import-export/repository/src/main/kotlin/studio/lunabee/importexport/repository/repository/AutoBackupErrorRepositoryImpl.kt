@@ -29,5 +29,5 @@ class AutoBackupErrorRepositoryImpl @Inject constructor(
     private val dataSource: AutoBackupErrorLocalDataSource,
 ) : AutoBackupErrorRepository {
     override fun getError(): Flow<AutoBackupError?> = dataSource.getError()
-    override suspend fun setError(error: AutoBackupError?): Unit = dataSource.setError(error)
+    override suspend fun setError(error: AutoBackupError?): AutoBackupError? = dataSource.setError(error)
 }

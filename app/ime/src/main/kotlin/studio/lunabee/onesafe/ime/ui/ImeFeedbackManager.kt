@@ -73,7 +73,6 @@ class ImeFeedbackManager @Inject constructor(
             }
         }
 
-        // TODO permission should be add by the module if it needs it
         @SuppressLint("MissingPermission")
         if (osNotificationManager.areNotificationsEnabled(OSNotificationChannelId.MESSAGING_CHANNEL_ID)) {
             val notification = osNotificationManager.messagingNotificationBuilder

@@ -52,11 +52,7 @@ private class DataStoreValueDelegate<T>(
     override fun setValue(thisRef: T, property: KProperty<*>, value: ByteArray?) {
         val currentValue = getValueInDataStore()
         if (currentValue == null || value == null) {
-            if (value == null) {
-                runBlocking { datastoreEngine.removeValue(key) }
-            } else {
-                runBlocking { datastoreEngine.insertValue(value, key) }
-            }
+            runBlocking { datastoreEngine.editValue(value, key) }
         } else {
             throw OSCryptoError(errorCodeIfOverrideExistingValue)
         }

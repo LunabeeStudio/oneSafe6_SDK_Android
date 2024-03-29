@@ -36,13 +36,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.compose.foundation.haptic.rememberLbcHapticFeedback
 import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
 import studio.lunabee.onesafe.bubbles.ui.model.ConversationSubtitle
 import studio.lunabee.onesafe.commonui.EmojiNameProvider
 import studio.lunabee.onesafe.commonui.OSString
-import studio.lunabee.onesafe.model.OSHapticEffect
 import studio.lunabee.onesafe.model.OSItemIllustration
 import studio.lunabee.onesafe.model.OSLazyCardContent
 import studio.lunabee.onesafe.model.OSSafeItemStyle
@@ -58,7 +56,6 @@ class ConversationCardContent(
 
     @Composable
     override fun Content(padding: PaddingValues, modifier: Modifier) {
-        val hapticFeedback = rememberLbcHapticFeedback()
         val nameProvider = conversationInfo.nameProvider
         ConversationRow(
             osItemIllustration = if (nameProvider is EmojiNameProvider) {
@@ -68,10 +65,7 @@ class ConversationCardContent(
             },
             label = nameProvider.name,
             paddingValues = padding,
-            onClick = {
-                OSHapticEffect.Primary.perform(hapticFeedback)
-                onClick()
-            },
+            onClick = onClick,
             subtitle = when (conversationInfo.subtitle) {
                 is ConversationSubtitle.Message -> conversationInfo.subtitle.content
                 ConversationSubtitle.NotReady -> LbcTextSpec.StringResource(

@@ -37,7 +37,6 @@ import kotlinx.coroutines.flow.onEach
 import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
 import studio.lunabee.onesafe.importexport.usecase.SynchronizeCloudBackupsUseCase
 import com.lunabee.lblogger.LBLogger
-import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 
 private val logger = LBLogger.get<CloudSynchronizeBackupWorker>()
 
@@ -64,12 +63,8 @@ class CloudSynchronizeBackupWorker @AssistedInject constructor(
             }
 
         return when (val result = flowResult.asResult()) {
-            is LBResult.Failure -> autoBackupWorkersHelper.onBackupWorkerFails(
-                error = result.throwable,
-                runAttemptCount = runAttemptCount,
-                errorSource = AutoBackupMode.Synchronized,
-            )
-            is LBResult.Success -> autoBackupWorkersHelper.onBackupWorkerSucceed(AutoBackupMode.Synchronized)
+            is LBResult.Failure -> autoBackupWorkersHelper.onBackupWorkerFails(result.throwable, runAttemptCount)
+            is LBResult.Success -> autoBackupWorkersHelper.onBackupWorkerSucceed()
         }
     }
 

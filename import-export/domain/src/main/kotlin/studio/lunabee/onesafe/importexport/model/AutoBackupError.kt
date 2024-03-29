@@ -25,5 +25,4 @@ data class AutoBackupError(
     val date: ZonedDateTime,
     val code: String,
     val message: String?,
-    val source: AutoBackupMode,
 )

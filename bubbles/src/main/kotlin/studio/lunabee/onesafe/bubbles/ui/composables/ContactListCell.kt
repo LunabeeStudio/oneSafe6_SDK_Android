@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.bubbles.ui.composables
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -37,10 +38,8 @@ import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.EmojiNameProvider
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
-import studio.lunabee.onesafe.model.OSHapticEffect
 import studio.lunabee.onesafe.model.OSItemIllustration
 import studio.lunabee.onesafe.model.OSSafeItemStyle
-import studio.lunabee.onesafe.model.clickableWithHaptic
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.LocalColorPalette
 
@@ -54,7 +53,7 @@ fun ContactListCell(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickableWithHaptic(onClick = onClick, osHapticEffect = OSHapticEffect.Primary)
+            .clickable(onClick = onClick)
             .padding(paddingValues)
             .padding(horizontal = OSDimens.SystemSpacing.Regular),
         verticalAlignment = Alignment.CenterVertically,

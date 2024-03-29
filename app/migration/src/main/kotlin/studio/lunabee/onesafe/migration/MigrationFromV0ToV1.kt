@@ -98,11 +98,11 @@ class MigrationFromV0ToV1 @Inject constructor(
                 // Update index word entries
                 indexWordEntryDao.update(roomIndexWorldEntries)
                 // Update key test value
-                dataStoreEngine.insertValue(migratedEncMasterKeyTest, DATASTORE_MASTER_KEY_TEST)
+                dataStoreEngine.editValue(migratedEncMasterKeyTest, DATASTORE_MASTER_KEY_TEST)
                 // Update index key
-                dataStoreEngine.insertValue(migratedEncIndexKey, DATASTORE_SEARCH_INDEX_KEY)
+                dataStoreEngine.editValue(migratedEncIndexKey, DATASTORE_SEARCH_INDEX_KEY)
                 // Clear username
-                dataStoreEngine.removeValue(DATASTORE_USERNAME)
+                dataStoreEngine.editValue(null, DATASTORE_USERNAME)
             } else {
                 throw OSCryptoError(
                     OSCryptoError.Code.MASTER_KEY_WRONG_PASSWORD,

@@ -76,8 +76,6 @@ import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.extension.findFragmentActivity
 import studio.lunabee.onesafe.commonui.notification.NotificationPermissionRationaleDialogState
 import studio.lunabee.onesafe.commonui.snackbar.SnackbarState
-import studio.lunabee.onesafe.importexport.model.CloudBackup
-import studio.lunabee.onesafe.importexport.model.LatestBackups
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.utils.AccountPermissionRationaleDialogState
 import studio.lunabee.onesafe.importexport.utils.BackupFileManagerHelper
@@ -341,7 +339,7 @@ private fun AutoBackupSettingsScreen(
                 item {
                     AutoBackupSettingsRestoreCard(
                         onRestoreBackupClick = {
-                            val backupId = uiState.latestBackups?.latest?.id
+                            val backupId = uiState.latestBackup?.id
                             if (backupId != null) {
                                 navigateToRestoreBackup(backupId)
                             } else {
@@ -356,7 +354,7 @@ private fun AutoBackupSettingsScreen(
                 }
                 item {
                     AutoBackupSettingsInformationCard(
-                        latestBackups = uiState.latestBackups,
+                        date = uiState.latestBackup?.date,
                     )
                 }
             }
@@ -457,10 +455,7 @@ private fun AutoBackupSettingsScreenOnPreview() {
             uiState = AutoBackupSettingsUiState(
                 isBackupEnabled = true,
                 autoBackupFrequency = AutoBackupFrequency.WEEKLY,
-                latestBackups = LatestBackups(
-                    LocalBackup(date = Instant.now(), file = File("")),
-                    CloudBackup(remoteId = "", name = "", date = Instant.now()),
-                ),
+                latestBackup = LocalBackup(Instant.now(), File("")),
                 cloudBackupEnabledState = OSSwitchState.True,
                 isKeepLocalBackupEnabled = true,
                 toggleKeepLocalBackup = {},

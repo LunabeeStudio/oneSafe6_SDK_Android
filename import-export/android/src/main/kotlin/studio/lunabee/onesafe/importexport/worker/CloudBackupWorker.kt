@@ -36,7 +36,6 @@ import androidx.work.WorkerParameters
 import com.lunabee.lbcore.model.LBFlowResult
 import com.lunabee.lbcore.model.LBFlowResult.Companion.transformResult
 import com.lunabee.lbcore.model.LBResult
-import com.lunabee.lblogger.LBLogger
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.catch
@@ -48,10 +47,10 @@ import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
 import studio.lunabee.onesafe.commonui.utils.setForegroundSafe
 import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
-import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.usecase.CloudAutoBackupUseCase
 import studio.lunabee.onesafe.importexport.usecase.DeleteOldCloudBackupsUseCase
 import studio.lunabee.onesafe.importexport.utils.ForegroundInfoCompat
+import com.lunabee.lblogger.LBLogger
 
 // TODO <AutoBackup> split cloudAutoBackupUseCase with zip and upload part so the worker can chain them to have finer control over the flow
 
@@ -88,12 +87,8 @@ class CloudBackupWorker @AssistedInject constructor(
         }
 
         return when (val result = flowResult.asResult()) {
-            is LBResult.Failure -> autoBackupWorkersHelper.onBackupWorkerFails(
-                error = result.throwable,
-                runAttemptCount = runAttemptCount,
-                errorSource = AutoBackupMode.CloudOnly,
-            )
-            is LBResult.Success -> autoBackupWorkersHelper.onBackupWorkerSucceed(AutoBackupMode.CloudOnly)
+            is LBResult.Failure -> autoBackupWorkersHelper.onBackupWorkerFails(result.throwable, runAttemptCount)
+            is LBResult.Success -> autoBackupWorkersHelper.onBackupWorkerSucceed()
         }
     }
 
