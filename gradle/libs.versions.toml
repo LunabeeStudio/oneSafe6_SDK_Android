@@ -62,6 +62,7 @@ android-gradle-plugin = "8.2.2"
 ##                 ⬆ = "8.4.0-beta02"
 ##                 ⬆ = "8.5.0-alpha01"
 ##                 ⬆ = "8.5.0-alpha02"
+##                 ⬆ = "8.5.0-alpha03"
 
 kotlin = "1.9.23"
 ##  ⬆ = "2.0.0-Beta1"
@@ -80,7 +81,7 @@ ksp = "1.9.23-1.0.19"
 ##⬆= "2.0.0-Beta4-1.0.19"
 ##⬆= "2.0.0-Beta5-1.0.19"
 
-google-dagger = "2.51"
+google-dagger = "2.51.1"
 
 florisboard-library = "0.4.0-beta01-1.0.0"
 
@@ -273,8 +274,7 @@ lunabee-library = "4.1.1"
 ##           ⬆ = "4.2.0-112-develop-SNAPSHOT"
 ##           ⬆ = "4.2.0-114-develop-SNAPSHOT"
 
-compose-shimmer = "1.2.0"
-##           ⬆ = "1.3.0-SNAPSHOT"
+compose-shimmer = "1.3.0"
 
 lbcaccessibility = "1.6.0"
 
@@ -288,7 +288,7 @@ lbcfoundation = "1.1.0"
 
 lbchaptic = "1.0.0"
 
-tink-android = "1.12.0"
+tink-android = "1.13.0"
 
 conscrypt-android = "2.5.2"
 
@@ -338,6 +338,7 @@ lint = "31.2.2"
 ##⬆ = "31.4.0-beta02"
 ##⬆ = "31.5.0-alpha01"
 ##⬆ = "31.5.0-alpha02"
+##⬆ = "31.5.0-alpha03"
 
 javapoet = "1.13.0"
 

@@ -36,5 +36,11 @@ data class OSStorageError(
         ENQUEUED_MESSAGE_NOT_FOUND_FOR_DELETE("No message with the id provided found for delete"),
         UNKNOWN_FILE_ERROR("Unknown file error"),
         MISSING_BACKUP_FILE("The file associated to the local backup does not exist on file system"),
+        DATABASE_WRONG_KEY("Failed to decrypt the database with the provided key"),
+        DATABASE_NOT_FOUND("The database does not exists"),
+        DATABASE_BACKUP_ERROR("Something went wrong during database backup for migration"),
+        DATABASE_CANNOT_ACCESS_DIR("Cannot access the database parent directory"),
+        DATABASE_CANNOT_ACCESS_FILES("Cannot access files in database directory"),
+        DATABASE_CORRUPTED("The database is corrupted"),
     }
 }

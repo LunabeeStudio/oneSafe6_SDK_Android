@@ -19,11 +19,17 @@
 
 package studio.lunabee.onesafe.domain.model.crypto
 
+import com.lunabee.lbextensions.remove
+import studio.lunabee.onesafe.error.OSDomainError
+import studio.lunabee.onesafe.error.OSError.Companion.get
 import studio.lunabee.onesafe.randomize
 import java.io.Closeable
 
 @JvmInline
 value class DatabaseKey(val raw: ByteArray) : Closeable {
+
+    constructor(key: String) : this(fromString(key))
+
     init {
         check(raw.size == DatabaseKeyByteSize)
     }
@@ -42,6 +48,20 @@ value class DatabaseKey(val raw: ByteArray) : Closeable {
     companion object {
         private val hexArray = "0123456789ABCDEF".toCharArray()
         const val DatabaseKeyByteSize: Int = 32
+
+        // https://stackoverflow.com/a/66614516/9994620
+        private fun fromString(key: String): ByteArray {
+            val rawString = key.removePrefix("0x").remove(" ")
+            return try {
+                rawString.chunked(2)
+                    .map { it.toInt(16).toByte() }
+                    .toByteArray().also {
+                        if (it.size != DatabaseKeyByteSize) throw OSDomainError.Code.DATABASE_KEY_BAD_FORMAT.get()
+                    }
+            } catch (e: NumberFormatException) {
+                throw OSDomainError.Code.DATABASE_KEY_BAD_FORMAT.get(cause = e)
+            }
+        }
     }
 
     override fun close() {

@@ -100,7 +100,11 @@ class ClearAutoBackupErrorUseCaseTest {
             .random(OSTestConfig.random)
         useCase.ifNeeded(otherBackupMode)
 
-        assertEquals(backupMode, backupError?.source)
+        if (backupMode == AutoBackupMode.Disabled) {
+            assertNull(backupError)
+        } else {
+            assertEquals(backupMode, backupError?.source)
+        }
         assertNotEquals(backupMode, otherBackupMode)
     }
 }

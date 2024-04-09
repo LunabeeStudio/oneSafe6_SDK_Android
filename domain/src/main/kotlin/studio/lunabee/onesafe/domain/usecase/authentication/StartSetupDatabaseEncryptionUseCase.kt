@@ -21,8 +21,8 @@ package studio.lunabee.onesafe.domain.usecase.authentication
 
 import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.firstOrNull
+import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
 import studio.lunabee.onesafe.domain.repository.DatabaseKeyRepository
-import studio.lunabee.onesafe.domain.repository.SqlCipherManager
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
@@ -33,11 +33,11 @@ import javax.inject.Inject
  * Initialize the activation or deactivation of the database encryption. Must be finish by calling [FinishSetupDatabaseEncryptionUseCase].
  * The key of the database will be stored in the encrypted datastore.
  *
- * @see SqlCipherManager
+ * @see DatabaseEncryptionManager
  */
 class StartSetupDatabaseEncryptionUseCase @Inject constructor(
     private val databaseCryptoRepository: DatabaseKeyRepository,
-    private val sqlCipherManager: SqlCipherManager,
+    private val sqlCipherManager: DatabaseEncryptionManager,
 ) {
     /**
      * @see StartSetupDatabaseEncryptionUseCase
@@ -60,7 +60,6 @@ class StartSetupDatabaseEncryptionUseCase @Inject constructor(
             try {
                 sqlCipherManager.migrateToEncrypted(key)
             } catch (t: Throwable) {
-                // safely remove the
                 runCatching { databaseCryptoRepository.removeKey() }
                 throw t
             }
@@ -70,9 +69,14 @@ class StartSetupDatabaseEncryptionUseCase @Inject constructor(
     private suspend fun startDisable() = OSError.runCatching {
         val databaseKey = databaseCryptoRepository.getKeyFlow().firstOrNull()
             ?: throw OSDomainError.Code.DATABASE_ENCRYPTION_NOT_ENABLED.get()
-
-        databaseKey.use { key ->
-            sqlCipherManager.migrateToPlain(key)
+        databaseCryptoRepository.copyKeyToBackupKey()
+        try {
+            databaseKey.use { key ->
+                sqlCipherManager.migrateToPlain(key)
+            }
+        } catch (e: Throwable) {
+            runCatching { databaseCryptoRepository.removeBackupKey() }
+            throw e
         }
         databaseCryptoRepository.removeKey()
     }

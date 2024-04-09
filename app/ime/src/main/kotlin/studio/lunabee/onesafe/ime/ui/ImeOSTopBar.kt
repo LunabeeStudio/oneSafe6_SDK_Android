@@ -23,40 +23,34 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.atom.OSImageSpec
-import studio.lunabee.onesafe.commonui.OSDrawable
-import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.extension.loremIpsum
 import studio.lunabee.onesafe.ime.ImeOSTheme
 import studio.lunabee.onesafe.ime.model.ImeClient
 import studio.lunabee.onesafe.ime.ui.res.ImeDimens
-import studio.lunabee.onesafe.ime.ui.res.ImeShape
 import studio.lunabee.onesafe.ime.ui.tutorial.LockOskTutorialLayout
 import studio.lunabee.onesafe.ime.ui.tutorial.OpenOskTutorialLayout
-import studio.lunabee.onesafe.molecule.OSActionButton
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.utils.OsDefaultPreview
 
 @Composable
 fun ImeOSTopBar(
     imeClient: ImeClient?,
-    isCryptoDataReady: Boolean,
+    keyboardStatus: OSKeyboardStatus,
     onLogoClick: () -> Unit,
     onLockClick: () -> Unit,
     displayOpenTutorial: Boolean,
@@ -83,13 +77,8 @@ fun ImeOSTopBar(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            if (isCryptoDataReady) {
-                OSKeyboardStatus.LoggedIn
-            } else {
-                OSKeyboardStatus.LoggedOut
-            }.Logo(
+            keyboardStatus.Logo(
                 modifier = Modifier
-                    .clip(ImeShape.Key)
                     .clickable { onLogoClick() }
                     .padding(vertical = ImeDimens.LogoVerticalPadding, horizontal = ImeDimens.LogoHorizontalPadding),
             )
@@ -101,25 +90,7 @@ fun ImeOSTopBar(
                 modifier = Modifier.width(IntrinsicSize.Max),
                 contentAlignment = Alignment.CenterEnd,
             ) {
-                if (isCryptoDataReady) {
-                    OSActionButton(
-                        onClick = onLockClick,
-                        text = LbcTextSpec.StringResource(OSString.oneSafeK_lock),
-                        contentPadding = PaddingValues(horizontal = OSDimens.SystemSpacing.Medium),
-                        startIcon = OSImageSpec.Drawable(OSDrawable.ic_lock),
-                    ).Composable(
-                        modifier = Modifier.clip(ImeShape.Key),
-                    )
-                } else {
-                    OSActionButton(
-                        onClick = onLockClick,
-                        text = LbcTextSpec.StringResource(OSString.oneSafeK_open),
-                        contentPadding = PaddingValues(horizontal = OSDimens.SystemSpacing.Medium),
-                        startIcon = OSImageSpec.Drawable(OSDrawable.ic_key),
-                    ).Composable(
-                        modifier = Modifier.clip(ImeShape.Key),
-                    )
-                }
+                keyboardStatus.LockAction(onLockClick)
             }
         }
     }
@@ -128,19 +99,24 @@ fun ImeOSTopBar(
 @Composable
 @OsDefaultPreview
 private fun ImeOSTopBarPreview() {
+    val isNight = isSystemInDarkTheme()
     ImeOSTheme {
-        Surface {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                arrayOf(true, false).forEach { isCryptoDataReady ->
-                    ImeOSTopBar(
-                        imeClient = ImeClient("", loremIpsum(1), null),
-                        isCryptoDataReady = isCryptoDataReady,
-                        onLogoClick = {},
-                        onLockClick = {},
-                        displayOpenTutorial = false,
-                        displayLockTutorial = true,
-                        closeLockTutorial = {},
-                    ) {}
+        CompositionLocalProvider(
+            LocalKeyboardIsNightMode provides isNight,
+        ) {
+            Surface {
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    OSKeyboardStatus.entries.forEach { keyboardStatus ->
+                        ImeOSTopBar(
+                            imeClient = ImeClient("", loremIpsum(1), null),
+                            keyboardStatus = keyboardStatus,
+                            onLogoClick = {},
+                            onLockClick = {},
+                            displayOpenTutorial = false,
+                            displayLockTutorial = true,
+                            closeLockTutorial = {},
+                        ) {}
+                    }
                 }
             }
         }

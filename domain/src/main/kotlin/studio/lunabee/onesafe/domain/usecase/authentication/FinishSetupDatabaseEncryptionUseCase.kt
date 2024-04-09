@@ -19,21 +19,67 @@
 
 package studio.lunabee.onesafe.domain.usecase.authentication
 
-import studio.lunabee.onesafe.domain.repository.SqlCipherManager
+import com.lunabee.lbcore.model.LBFlowResult
+import com.lunabee.lbcore.model.LBFlowResult.Companion.mapResult
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
+import studio.lunabee.onesafe.domain.repository.DatabaseKeyRepository
 import javax.inject.Inject
 
 /**
- * Finish the activation or deactivation of the database encryption. Must be called after [StartSetupDatabaseEncryptionUseCase].
+ * Finish the activation or deactivation of the database encryption. Must be call after [StartSetupDatabaseEncryptionUseCase] has run.
  *
- * @see SqlCipherManager
+ * @see DatabaseEncryptionManager
  */
 class FinishSetupDatabaseEncryptionUseCase @Inject constructor(
-    private val sqlCipherManager: SqlCipherManager,
+    private val databaseKeyRepository: DatabaseKeyRepository,
+    private val sqlCipherManager: DatabaseEncryptionManager,
 ) {
     /**
      * @see FinishSetupDatabaseEncryptionUseCase
      */
-    suspend operator fun invoke() {
-        sqlCipherManager.finishMigrationIfNeeded()
+    operator fun invoke(): Flow<LBFlowResult<SuccessState>> = flow {
+        val key = databaseKeyRepository.getKeyFlow().first()
+        val backupKey = databaseKeyRepository.getBackupKeyFlow().first()
+        emitAll(
+            sqlCipherManager.finishMigrationIfNeeded(key, backupKey).mapResult { state ->
+                when (state) {
+                    DatabaseEncryptionManager.MigrationState.Noop -> SuccessState.Noop
+                    DatabaseEncryptionManager.MigrationState.Done -> {
+                        databaseKeyRepository.removeBackupKey()
+                        SuccessState.Success
+                    }
+                    DatabaseEncryptionManager.MigrationState.Canceled -> {
+                        if (backupKey != null) {
+                            databaseKeyRepository.setKey(backupKey)
+                        } else {
+                            databaseKeyRepository.removeKey()
+                        }
+                        databaseKeyRepository.removeBackupKey()
+                        SuccessState.Canceled
+                    }
+                }
+            },
+        )
+    }
+
+    enum class SuccessState {
+        /**
+         * No encryption setup to finish
+         */
+        Noop,
+
+        /**
+         * Database encryption change succeeded
+         */
+        Success,
+
+        /**
+         * Database encryption change has been canceled
+         */
+        Canceled,
     }
 }

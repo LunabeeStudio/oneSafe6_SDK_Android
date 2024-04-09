@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 3/19/2024 - for the oneSafe6 SDK.
- * Last modified 3/19/24, 5:29 PM
+ * Created by Lunabee Studio / Date - 4/8/2024 - for the oneSafe6 SDK.
+ * Last modified 4/8/24, 11:40 AM
  */
 
-package studio.lunabee.onesafe.domain.repository
+package studio.lunabee.di
 
-import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
+import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
+import studio.lunabee.onesafe.storage.SqlCipherDBManager
 
-interface DatabaseKeyRepository {
-    suspend fun createKey(): DatabaseKey
-    suspend fun removeKey()
-    fun getKeyFlow(): Flow<DatabaseKey?>
-    suspend fun setKey(key: DatabaseKey)
-
-    fun getBackupKeyFlow(): Flow<DatabaseKey?>
-    suspend fun removeBackupKey()
-    suspend fun copyKeyToBackupKey()
+class InMemoryDatabaseEncryptionManager(
+    private val sqlCipherDBManager: SqlCipherDBManager,
+    private val dbName: String,
+) : DatabaseEncryptionManager by sqlCipherDBManager {
+    override fun checkDatabaseAccess(key: DatabaseKey?) {
+        // Do not check database if name is blank (i.e in memory db)
+        if (dbName.isNotBlank()) sqlCipherDBManager.checkDatabaseAccess(key)
+    }
 }

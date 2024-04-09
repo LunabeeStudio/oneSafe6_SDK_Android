@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.test
 
+import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -36,6 +37,7 @@ import org.junit.After
 import org.junit.Before
 import org.threeten.extra.MutableClock
 import studio.lunabee.onesafe.OSAppSettings
+import studio.lunabee.onesafe.domain.qualifier.DatabaseName
 import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.repository.IconRepository
 import studio.lunabee.onesafe.domain.repository.ItemSettingsRepository
@@ -103,6 +105,10 @@ abstract class OSHiltTest : OSTest() {
 
     @Inject lateinit var itemSettingsRepository: ItemSettingsRepository
 
+    @Inject
+    @DatabaseName(DatabaseName.Type.Main)
+    lateinit var mainDatabaseName: String
+
     protected val testClock: MutableClock
         get() = clock as MutableClock
 
@@ -169,7 +175,11 @@ abstract class OSHiltTest : OSTest() {
         context.filesDir.deleteRecursively()
         cryptoRepository.resetCryptography()
         recentSearchDataStore.updateData { it.defaultInstanceForType }
-        mainDatabase.clearAllTables()
+        mainDatabaseName.takeIf { it.isNotBlank() }?.let { mainDatabaseName ->
+            context.getDatabasePath(mainDatabaseName)?.let { dbFile ->
+                SQLiteDatabase.deleteDatabase(dbFile)
+            }
+        } ?: mainDatabase.clearAllTables() // in-memory db
         preferencesDataStore.edit {
             it.clear()
         }

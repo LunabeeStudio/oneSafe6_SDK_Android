@@ -64,6 +64,7 @@ import androidx.lifecycle.map
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.lunabee.lbcore.model.LBResult
 import dagger.hilt.android.AndroidEntryPoint
 import dev.patrickgold.florisboard.FlorisImeService
 import dev.patrickgold.florisboard.editorInstance
@@ -78,9 +79,11 @@ import studio.lunabee.onesafe.OSAppSettings
 import studio.lunabee.onesafe.atom.textfield.LocalTextFieldInteraction
 import studio.lunabee.onesafe.commonui.localprovider.LocalIsKeyBoardVisible
 import studio.lunabee.onesafe.commonui.localprovider.LocalIsOneSafeK
+import studio.lunabee.onesafe.domain.usecase.authentication.CheckDatabaseAccessUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSignUpUseCase
 import studio.lunabee.onesafe.domain.usecase.autolock.LockAppUseCase
+import studio.lunabee.onesafe.help.HelpActivity
 import studio.lunabee.onesafe.ime.model.ImeClient
 import studio.lunabee.onesafe.ime.model.OSKImeState
 import studio.lunabee.onesafe.ime.ui.ImeFeedbackManager
@@ -88,6 +91,7 @@ import studio.lunabee.onesafe.ime.ui.ImeNavGraph
 import studio.lunabee.onesafe.ime.ui.ImeNavGraphRoute
 import studio.lunabee.onesafe.ime.ui.ImeOSTopBar
 import studio.lunabee.onesafe.ime.ui.LocalKeyboardIsNightMode
+import studio.lunabee.onesafe.ime.ui.OSKeyboardStatus
 import studio.lunabee.onesafe.ime.ui.extension.keyboardTextfield
 import studio.lunabee.onesafe.ime.viewmodel.ImeLoginViewModelFactory
 import studio.lunabee.onesafe.ime.viewmodel.SelectContactViewModelFactory
@@ -144,11 +148,14 @@ class OSFlorisImeService : FlorisImeService() {
 
     @Inject lateinit var lockAppUseCase: LockAppUseCase
 
+    @Inject lateinit var checkDatabaseAccessUseCase: CheckDatabaseAccessUseCase
+
     private val themeManager by themeManager()
     private val isWindowVisibleFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val isKeyboardVisibleFlow: MutableStateFlow<Boolean> = MutableStateFlow(true)
     private val isOneSafeUiVisibleFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val imeClientFlow: MutableStateFlow<ImeClient?> = MutableStateFlow(null)
+    private var isDatabaseAccessible: MutableStateFlow<Boolean> = MutableStateFlow(true)
     private val oskImeStateFlow = combine(
         isKeyboardVisibleFlow,
         isOneSafeUiVisibleFlow,
@@ -237,6 +244,10 @@ class OSFlorisImeService : FlorisImeService() {
                 refreshBlockInput()
             }
         }
+
+        lifecycleScope.launch {
+            isDatabaseAccessible.value = checkDatabaseAccessUseCase() is LBResult.Success
+        }
     }
 
     override fun onCreateInputView(): View {
@@ -289,24 +300,25 @@ class OSFlorisImeService : FlorisImeService() {
 
     @Composable
     override fun ThemeImeView() {
-        val coroutineScope = rememberCoroutineScope()
         val imeClient by imeClientFlow.collectAsStateWithLifecycle()
-        val hasDoneOpenTutorial by osAppVisit
-            .getAsFlow(preferencesTips = OSPreferenceTips.HasDoneTutorialOpenOsk)
-            .collectAsStateWithLifecycle(initialValue = true)
-        val hasDoneLockTutorial by osAppVisit
-            .getAsFlow(preferencesTips = OSPreferenceTips.HasDoneTutorialLockOsk)
-            .collectAsStateWithLifecycle(initialValue = true)
 
         if (imeClient?.packageName == packageName) {
             // Disable oneSafe K when using oneSafe
             super.ThemeImeView()
         } else {
+            val coroutineScope = rememberCoroutineScope()
+            val hasDoneOpenTutorial by osAppVisit
+                .getAsFlow(preferencesTips = OSPreferenceTips.HasDoneTutorialOpenOsk)
+                .collectAsStateWithLifecycle(initialValue = true)
+            val hasDoneLockTutorial by osAppVisit
+                .getAsFlow(preferencesTips = OSPreferenceTips.HasDoneTutorialLockOsk)
+                .collectAsStateWithLifecycle(initialValue = true)
             val isCryptoDataReady by isCryptoDataReadyInMemoryUseCase.flow().collectAsStateWithLifecycle(
                 false,
             )
             val isOneSafeUiVisible by isOneSafeUiVisibleFlow.collectAsStateWithLifecycle()
             val entry by navController.currentBackStackEntryAsState()
+            val isDatabaseAccessible by isDatabaseAccessible.collectAsStateWithLifecycle()
             val forceDark =
                 entry?.destination?.route == WriteMessageDestination.Route && isOneSafeUiVisible
             LaunchedEffect(key1 = forceDark) {
@@ -332,20 +344,30 @@ class OSFlorisImeService : FlorisImeService() {
                     Surface(color = Color.Transparent, contentColor = contentColor) {
                         ImeOSTopBar(
                             imeClient = imeClient,
-                            isCryptoDataReady = isCryptoDataReady,
+                            keyboardStatus = when {
+                                !isDatabaseAccessible -> OSKeyboardStatus.DatabaseError
+                                isCryptoDataReady -> OSKeyboardStatus.LoggedIn
+                                else -> OSKeyboardStatus.LoggedOut
+                            },
                             onLogoClick = {
-                                coroutineScope.launch {
-                                    osAppVisit.store(value = true, preferencesTips = OSPreferenceTips.HasDoneTutorialOpenOsk)
-                                    showOneSafeUi()
+                                if (isDatabaseAccessible) {
+                                    coroutineScope.launch {
+                                        osAppVisit.store(value = true, preferencesTips = OSPreferenceTips.HasDoneTutorialOpenOsk)
+                                        showOneSafeUi()
+                                    }
+                                } else {
+                                    HelpActivity.launch(this@OSFlorisImeService)
                                 }
                             },
                             onLockClick = {
                                 coroutineScope.launch {
-                                    if (isCryptoDataReady) {
-                                        osAppVisit.store(value = true, OSPreferenceTips.HasDoneTutorialLockOsk)
-                                        lockUseCase()
-                                    } else {
-                                        showOneSafeUi()
+                                    when {
+                                        !isDatabaseAccessible -> HelpActivity.launch(this@OSFlorisImeService)
+                                        isCryptoDataReady -> {
+                                            osAppVisit.store(value = true, OSPreferenceTips.HasDoneTutorialLockOsk)
+                                            lockUseCase()
+                                        }
+                                        else -> showOneSafeUi()
                                     }
                                 }
                             },

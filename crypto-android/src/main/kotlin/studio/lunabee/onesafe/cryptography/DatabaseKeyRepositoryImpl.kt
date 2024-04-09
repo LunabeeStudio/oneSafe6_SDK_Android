@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.cryptography
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
 import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
@@ -38,14 +39,37 @@ class DatabaseKeyRepositoryImpl @Inject constructor(
     }
 
     override suspend fun removeKey() {
-        dataStore.removeValue(DATABASE_KEY_ALIAS)
+        removeKey(DATABASE_KEY_ALIAS)
     }
 
     override fun getKeyFlow(): Flow<DatabaseKey?> {
-        return dataStore.retrieveValue(DATABASE_KEY_ALIAS).map { it?.let { DatabaseKey(it) } }
+        return getKeyFlow(DATABASE_KEY_ALIAS)
     }
+
+    override suspend fun setKey(key: DatabaseKey) {
+        dataStore.insertValue(value = key.raw, key = DATABASE_KEY_ALIAS, override = true)
+    }
+
+    override fun getBackupKeyFlow(): Flow<DatabaseKey?> {
+        return getKeyFlow(DATABASE_BACKUP_KEY_ALIAS)
+    }
+
+    override suspend fun removeBackupKey() {
+        removeKey(DATABASE_BACKUP_KEY_ALIAS)
+    }
+
+    override suspend fun copyKeyToBackupKey() {
+        getKeyFlow().firstOrNull()?.let { key ->
+            dataStore.insertValue(value = key.raw, key = DATABASE_BACKUP_KEY_ALIAS)
+        }
+    }
+
+    private fun getKeyFlow(alias: String) = dataStore.retrieveValue(alias).map { it?.let { DatabaseKey(it) } }
+
+    private suspend fun removeKey(alias: String) = dataStore.removeValue(alias)
 
     companion object {
         private const val DATABASE_KEY_ALIAS = "fa8ea4fd-bea0-4705-be5c-78b5d9ec0d35"
+        private const val DATABASE_BACKUP_KEY_ALIAS = "788a5a8f-a412-468b-9b80-3aff37f214b7"
     }
 }

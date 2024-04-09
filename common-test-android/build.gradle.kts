@@ -29,6 +29,7 @@ android {
     buildToolsVersion = AndroidConfig.BUILD_TOOLS_VERSION
 
     defaultConfig {
+        minSdk = AndroidConfig.MIN_LIB_SDK
         missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
     }
 
