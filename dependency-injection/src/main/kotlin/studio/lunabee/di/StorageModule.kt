@@ -42,11 +42,11 @@ import studio.lunabee.messaging.repository.datasource.EnqueuedMessageLocalDataSo
 import studio.lunabee.messaging.repository.datasource.HandShakeDataLocalDatasource
 import studio.lunabee.messaging.repository.datasource.MessageLocalDataSource
 import studio.lunabee.messaging.repository.datasource.SentMessageLocalDatasource
+import studio.lunabee.onesafe.domain.qualifier.DatabaseName
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
+import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
 import studio.lunabee.onesafe.domain.repository.DatabaseKeyRepository
-import studio.lunabee.onesafe.domain.repository.SqlCipherManager
 import studio.lunabee.onesafe.domain.repository.TransactionManager
-import studio.lunabee.onesafe.domain.usecase.authentication.FinishSetupDatabaseEncryptionUseCase
 import studio.lunabee.onesafe.repository.datasource.FileLocalDatasource
 import studio.lunabee.onesafe.repository.datasource.ForceUpgradeLocalDatasource
 import studio.lunabee.onesafe.repository.datasource.IconLocalDataSource
@@ -57,7 +57,6 @@ import studio.lunabee.onesafe.repository.datasource.SafeItemFieldLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.SafeItemKeyLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.SafeItemLocalDataSource
 import studio.lunabee.onesafe.storage.MainDatabase
-import studio.lunabee.onesafe.storage.DefaultSqlCipherManager
 import studio.lunabee.onesafe.storage.MainDatabaseTransactionManager
 import studio.lunabee.onesafe.storage.Migration3to4
 import studio.lunabee.onesafe.storage.Migration8to9
@@ -65,6 +64,7 @@ import studio.lunabee.onesafe.storage.Migration9to10
 import studio.lunabee.onesafe.storage.OSForceUpgradeProto.ForceUpgradeProtoData
 import studio.lunabee.onesafe.storage.OSPasswordGeneratorConfigProto.PasswordGeneratorConfigProto
 import studio.lunabee.onesafe.storage.OSRecentSearchProto.RecentSearchProto
+import studio.lunabee.onesafe.storage.SqlCipherDBManager
 import studio.lunabee.onesafe.storage.dao.BackupDao
 import studio.lunabee.onesafe.storage.dao.ContactDao
 import studio.lunabee.onesafe.storage.dao.ContactKeyDao
@@ -203,6 +203,14 @@ interface StorageModule {
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
     @Provides
+    @DatabaseName(DatabaseName.Type.Main)
+    fun provideMainDatabaseName(): String = "bc9fe798-a4f0-402e-9f5b-80339d87a041"
+
+    @Provides
+    @DatabaseName(DatabaseName.Type.CipherTemp)
+    fun provideCipherTempDatabaseName(): String = "c0308558-69cc-49ee-a096-fbbf0da408c1"
+
+    @Provides
     @Singleton
     @Suppress("LongParameterList")
     fun provideMainDatabase(
@@ -211,19 +219,29 @@ object DatabaseModule {
         migration8to9: Migration8to9,
         migration9to10: Migration9to10,
         databaseKeyRepository: DatabaseKeyRepository,
-        finishSetupDatabaseEncryptionUseCase: FinishSetupDatabaseEncryptionUseCase,
+        @DatabaseName(DatabaseName.Type.Main) dbName: String,
     ): MainDatabase {
         return runBlocking {
             val dbKey = databaseKeyRepository.getKeyFlow().firstOrNull()
             MainDatabase.build(
                 appContext = appContext,
                 dbKey = dbKey,
-                finishSetupDatabaseEncryptionUseCase = finishSetupDatabaseEncryptionUseCase,
+                mainDatabaseName = dbName,
                 migration3to4,
                 migration8to9,
                 migration9to10,
             )
         }
+    }
+
+    @Provides
+    fun provideSqlCipherManager(
+        @FileDispatcher dispatcher: CoroutineDispatcher,
+        @ApplicationContext context: Context,
+        @DatabaseName(DatabaseName.Type.Main) dbName: String,
+        @DatabaseName(DatabaseName.Type.CipherTemp) tempDbName: String,
+    ): DatabaseEncryptionManager {
+        return SqlCipherDBManager(dispatcher, context, dbName, tempDbName)
     }
 }
 
@@ -237,14 +255,6 @@ object MainDatabaseModule {
         return MainDatabaseTransactionManager(
             mainDatabase,
         )
-    }
-
-    @Provides
-    fun provideSqlCipherManager(
-        @FileDispatcher dispatcher: CoroutineDispatcher,
-        @ApplicationContext context: Context,
-    ): SqlCipherManager {
-        return DefaultSqlCipherManager(dispatcher, context, MainDatabase.mainDatabaseName)
     }
 
     @Provides

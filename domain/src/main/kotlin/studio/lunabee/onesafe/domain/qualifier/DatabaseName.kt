@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 3/19/2024 - for the oneSafe6 SDK.
- * Last modified 3/19/24, 5:29 PM
+ * Created by Lunabee Studio / Date - 4/2/2024 - for the oneSafe6 SDK.
+ * Last modified 4/2/24, 11:58 PM
  */
 
-package studio.lunabee.onesafe.domain.repository
+package studio.lunabee.onesafe.domain.qualifier
 
-import kotlinx.coroutines.flow.Flow
-import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
+import javax.inject.Qualifier
 
-interface DatabaseKeyRepository {
-    suspend fun createKey(): DatabaseKey
-    suspend fun removeKey()
-    fun getKeyFlow(): Flow<DatabaseKey?>
-    suspend fun setKey(key: DatabaseKey)
-
-    fun getBackupKeyFlow(): Flow<DatabaseKey?>
-    suspend fun removeBackupKey()
-    suspend fun copyKeyToBackupKey()
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class DatabaseName(val type: Type) {
+    enum class Type {
+        Main,
+        CipherTemp,
+    }
 }

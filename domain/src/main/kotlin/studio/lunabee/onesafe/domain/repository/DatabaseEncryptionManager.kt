@@ -19,12 +19,15 @@
 
 package studio.lunabee.onesafe.domain.repository
 
+import com.lunabee.lbcore.model.LBFlowResult
+import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
+import studio.lunabee.onesafe.error.OSStorageError
 
 /**
- * Manage interaction with SQLCipher library
+ * Manage whole database encryption
  */
-interface SqlCipherManager {
+interface DatabaseEncryptionManager {
     /**
      * Export a plain database to a temporary encrypted database. Run [finishMigrationIfNeeded] to finish the migration by replacing the
      * plain database by the new encrypted database before using it (i.e during app launch)
@@ -39,6 +42,42 @@ interface SqlCipherManager {
 
     /**
      * Finish the export of the database from plain (or encrypted) to encrypted (or plain)
+     *
+     * @param key The current database key (after migrating)
+     * @param oldKey The previous database key (before migrating)
      */
-    suspend fun finishMigrationIfNeeded()
+    suspend fun finishMigrationIfNeeded(key: DatabaseKey?, oldKey: DatabaseKey?): Flow<LBFlowResult<MigrationState>>
+
+    /**
+     * Try to open the main database with the provided [key].
+     *
+     * Throws OSStorageError with code [OSStorageError.Code.DATABASE_WRONG_KEY] if the provided [key] does not open the database.
+     * Throws OSStorageError with code [OSStorageError.Code.DATABASE_NOT_FOUND] if the database does not exist.
+     */
+    fun checkDatabaseAccess(key: DatabaseKey?)
+
+    /**
+     * State of migration after calling [finishMigrationIfNeeded]
+     */
+    enum class MigrationState {
+        /**
+         * No migration requested
+         */
+        Noop,
+
+        /**
+         * Migration succeeded
+         */
+        Done,
+
+        /**
+         * Migration failed and database has been rollback to its previous state
+         */
+        Canceled,
+    }
+
+    /**
+     * Check if the [error] is due to the database key missing
+     */
+    fun isMissingDatabaseKeyError(error: Throwable): Boolean
 }

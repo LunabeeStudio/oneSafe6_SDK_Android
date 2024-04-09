@@ -1,5 +1,5 @@
 {
-    "branchName": "refs/heads/master",
+    "branchName": "%teamcity.build.branch%",
     "buildType": {
         "id": "LunabeeStudio_Android_OneSafe_Release"
     },

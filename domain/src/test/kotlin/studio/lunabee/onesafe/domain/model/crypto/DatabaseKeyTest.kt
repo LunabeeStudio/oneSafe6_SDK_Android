@@ -20,17 +20,76 @@
 package studio.lunabee.onesafe.domain.model.crypto
 
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
+import studio.lunabee.onesafe.error.OSDomainError
 import kotlin.random.Random
 import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
 
 class DatabaseKeyTest {
 
-    private val databaseKey = DatabaseKey(Random.Default.nextBytes(DatabaseKey.DatabaseKeyByteSize))
-
     @Test
     fun asCharArray_test() {
+        val databaseKey = DatabaseKey(Random.Default.nextBytes(DatabaseKey.DatabaseKeyByteSize))
         val actual = databaseKey.asCharArray()
         val expected = databaseKey.raw.joinToString("") { "%02X".format(it) }.toCharArray()
         assertContentEquals(expected, actual)
     }
+
+    @Test
+    fun string_ctor_test() {
+        listOf(
+            "0123456789ABCDEF0123456789abcdef0123456789ABCDEF0123456789abcdef", // string ok
+            "0x0123456789ABCDEF0123456789abcdef0123456789ABCDEF0123456789abcdef", // string ok prefix
+            " 0123456789ABCDEF01234567  89abcdef0123456789ABCDEF0123456789abcdef ", // string ok whitespaces
+        ).forEach { keyString ->
+            val actual = assertDoesNotThrow { DatabaseKey(keyString) }.raw
+            assertContentEquals(expected, actual)
+        }
+
+        listOf(
+            "0123456789ABCDEF0123456789abcdef0123456789ABCDEF0123456789abcd ", // string too short
+            "0123456789ABCDEF0123456789abcdef0123456789ABCDEF0123456789abcdeZ", // string wrong char
+            "", // string empty
+        ).forEach { keyString ->
+            val actualCode = assertThrows<OSDomainError> { DatabaseKey(keyString) }.code
+            assertEquals(OSDomainError.Code.DATABASE_KEY_BAD_FORMAT, actualCode)
+        }
+    }
+
+    private val expected: ByteArray = byteArrayOf(
+        1,
+        35,
+        69,
+        103,
+        -119,
+        -85,
+        -51,
+        -17,
+        1,
+        35,
+        69,
+        103,
+        -119,
+        -85,
+        -51,
+        -17,
+        1,
+        35,
+        69,
+        103,
+        -119,
+        -85,
+        -51,
+        -17,
+        1,
+        35,
+        69,
+        103,
+        -119,
+        -85,
+        -51,
+        -17,
+    )
 }

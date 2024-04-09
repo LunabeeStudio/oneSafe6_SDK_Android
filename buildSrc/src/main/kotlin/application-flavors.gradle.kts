@@ -40,7 +40,6 @@ android {
             manifestPlaceholders["customBackupMimetype"] = customBackupMimetype
 
             buildConfigField("Boolean", "IS_DEV", "true")
-            buildConfigField("Boolean", "ENABLE_FIREBASE", "true")
             buildConfigField("String", "CUSTOM_BACKUP_MIMETYPE", "\"$customBackupMimetype\"")
         }
 
@@ -61,14 +60,12 @@ android {
             dimension = OSDimensions.StoreChannel.value
             versionNameSuffix = "#${AndroidConfig.envVersionCode} beta"
 
-            buildConfigField("Boolean", "ENABLE_FIREBASE", "true")
             buildConfigField("Boolean", "IS_BETA", "true")
         }
 
         create(OSDimensions.StoreChannel.Prod) {
             dimension = OSDimensions.StoreChannel.value
 
-            buildConfigField("Boolean", "ENABLE_FIREBASE", "false")
             buildConfigField("Boolean", "IS_BETA", "false")
         }
     }

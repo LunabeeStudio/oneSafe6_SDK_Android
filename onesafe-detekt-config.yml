@@ -8,6 +8,7 @@ comments:
       - '**/app/core-ui/**'
       - '**/app/common-ui/**'
       - '**/app/login/**'
+      - '**/app/help/**'
       - '**/Commons_Android/**'
       - '**/macrobenchmark-android/**'
       - '**/mockos5/*'

@@ -29,9 +29,14 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
+import kotlinx.coroutines.CoroutineDispatcher
+import studio.lunabee.onesafe.domain.qualifier.DatabaseName
+import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
+import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.MainDatabaseCallback
 import studio.lunabee.onesafe.storage.OSForceUpgradeProto.ForceUpgradeProtoData
+import studio.lunabee.onesafe.storage.SqlCipherDBManager
 import studio.lunabee.onesafe.storage.datastore.ForceUpgradeDataSerializer
 import studio.lunabee.onesafe.storage.datastore.ProtoSerializer
 import studio.lunabee.onesafe.storage.model.LocalAutoBackupError
@@ -52,11 +57,29 @@ object EmptyMainDatabaseModule
 @InstallIn(SingletonComponent::class)
 object InMemoryMainDatabaseModule {
     @Provides
+    @DatabaseName(DatabaseName.Type.Main)
+    fun provideMainDatabaseName(): String = ""
+
+    @Provides
+    @DatabaseName(DatabaseName.Type.CipherTemp)
+    fun provideCipherTempDatabaseName(): String = "test_temp_cipher_db"
+
+    @Provides
     @Singleton
     internal fun provideMainDatabase(@ApplicationContext appContext: Context): MainDatabase {
         return Room.inMemoryDatabaseBuilder(appContext, MainDatabase::class.java)
             .addCallback(MainDatabaseCallback())
             .build()
+    }
+
+    @Provides
+    fun provideSqlCipherManager(
+        @FileDispatcher dispatcher: CoroutineDispatcher,
+        @ApplicationContext context: Context,
+        @DatabaseName(DatabaseName.Type.Main) dbName: String,
+        @DatabaseName(DatabaseName.Type.CipherTemp) tempDbName: String,
+    ): DatabaseEncryptionManager {
+        return InMemoryDatabaseEncryptionManager(SqlCipherDBManager(dispatcher, context, dbName, tempDbName), dbName)
     }
 }
 
