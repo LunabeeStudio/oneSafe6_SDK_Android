@@ -30,5 +30,4 @@ object ImportExportConstant {
     const val ArchiveFileSeparator: String = "-"
     val ArchiveTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HHmmss")
     val ArchiveDateFormatter: DateTimeFormatter = DateTimeFormatter.BASIC_ISO_DATE
-    const val KeepBackupsNumber: Int = 5
 }

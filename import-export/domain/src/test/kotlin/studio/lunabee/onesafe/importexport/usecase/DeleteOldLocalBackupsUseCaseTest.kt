@@ -21,6 +21,7 @@ package studio.lunabee.onesafe.importexport.usecase
 
 import com.lunabee.lbcore.model.LBResult
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
@@ -30,12 +31,15 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import studio.lunabee.onesafe.importexport.model.ImportExportConstant
 import studio.lunabee.onesafe.importexport.model.LocalBackup
+import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
 import java.io.File
+import java.nio.file.Files.delete
 import java.time.Instant
 import kotlin.test.assertContentEquals
 
 class DeleteOldLocalBackupsUseCaseTest {
+    private val keepBackupsNumber: Int = 5
     private val backupDb = mutableMapOf<String, LocalBackup>()
     private val backupRepository: LocalBackupRepository = mockk {
         coEvery { addBackup(any()) } answers {
@@ -49,8 +53,12 @@ class DeleteOldLocalBackupsUseCaseTest {
         }
         coEvery { getBackups() } answers { backupDb.values.map { LBResult.Success(it) } }
     }
+    private val autoBackupSettingsRepository: AutoBackupSettingsRepository = mockk {
+        every { autoBackupMaxNumber } returns keepBackupsNumber
+    }
     private val useCase: DeleteOldLocalBackupsUseCase = DeleteOldLocalBackupsUseCase(
         backupRepository = backupRepository,
+        autoBackupSettingsRepository = autoBackupSettingsRepository,
     )
 
     @BeforeEach
@@ -111,7 +119,7 @@ class DeleteOldLocalBackupsUseCaseTest {
             it.file.createNewFile()
         }
 
-        val expected = localBackups.take(ImportExportConstant.KeepBackupsNumber)
+        val expected = localBackups.take(keepBackupsNumber)
         useCase()
         val actual = backupRepository.getBackups().map { it.data!! }
         assertContentEquals(expected, actual)

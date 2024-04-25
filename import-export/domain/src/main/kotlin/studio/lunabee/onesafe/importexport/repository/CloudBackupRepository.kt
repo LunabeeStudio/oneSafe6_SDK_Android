@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.importexport.repository
 import com.lunabee.lbcore.model.LBFlowResult
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.importexport.model.CloudBackup
+import studio.lunabee.onesafe.importexport.model.CloudInfo
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import java.io.InputStream
 
@@ -37,4 +38,6 @@ interface CloudBackupRepository {
     suspend fun getLatestBackup(): CloudBackup?
     fun getLatestBackupFlow(): Flow<CloudBackup?>
     suspend fun clearBackupsLocally()
+    fun getCloudInfo(): Flow<CloudInfo>
+    fun setupAccount(accountName: String): Flow<LBFlowResult<Unit>>
 }

@@ -39,7 +39,7 @@ class SetDatabaseKeyUseCase @Inject constructor(
             val result = OSError.runCatching { encryptionManager.checkDatabaseAccess(dbKey) }
             when (result) {
                 is LBResult.Failure -> result.getOrThrow()
-                is LBResult.Success -> databaseKeyRepository.setKey(dbKey)
+                is LBResult.Success -> databaseKeyRepository.setKey(dbKey, true)
             }
         }
     }

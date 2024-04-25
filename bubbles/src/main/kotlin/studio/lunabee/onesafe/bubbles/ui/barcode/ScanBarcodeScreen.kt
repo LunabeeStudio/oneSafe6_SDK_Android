@@ -35,7 +35,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -61,7 +60,7 @@ import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
-import studio.lunabee.onesafe.commonui.dialog.DialogState
+import studio.lunabee.onesafe.commonui.dialog.rememberDialogState
 import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
 import studio.lunabee.onesafe.messaging.domain.model.DecryptResult
 import studio.lunabee.onesafe.model.OSActionState
@@ -99,7 +98,7 @@ private fun CameraPermission(
     viewModel: ScanBarcodeViewModel,
     showSnackbar: (visuals: SnackbarVisuals) -> Unit,
 ) {
-    var permissionDialogState: DialogState? by remember { mutableStateOf(null) }
+    var permissionDialogState by rememberDialogState()
     permissionDialogState?.DefaultAlertDialog()
     val deniedFeedbackSnackbar =
         ErrorSnackbarState(

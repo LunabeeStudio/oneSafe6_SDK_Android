@@ -38,6 +38,7 @@ import studio.lunabee.onesafe.domain.qualifier.StoreBetaTrack
 import studio.lunabee.onesafe.domain.qualifier.VersionName
 import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.usecase.ResizeIconUseCase
+import studio.lunabee.onesafe.domain.usecase.clipboard.ClipboardClearUseCase
 import java.io.File
 import java.util.UUID
 import javax.inject.Singleton
@@ -74,13 +75,13 @@ object FrameworkTestModule {
     @Provides
     @ArchiveCacheDir(type = ArchiveCacheDir.Type.AutoBackup)
     fun provideArchiveAutoBackupDirectory(@ApplicationContext context: Context): File {
-        return File(context.cacheDir, "test_archiveAutoBackup")
+        return File(context.cacheDir, "keep_archiveAutoBackup")
     }
 
     @Provides
     @ArchiveCacheDir(type = ArchiveCacheDir.Type.Export)
     fun provideArchiveExportedDirectory(@ApplicationContext context: Context): File {
-        return File(context.cacheDir, "test_archiveExported")
+        return File(context.cacheDir, "keep_archiveExported")
     }
 
     @Provides
@@ -115,4 +116,13 @@ object FrameworkTestModule {
     @Provides
     @Singleton
     fun provideLoadingManager(): LoadingManager = DelayedLoadingManager(LBLoadingVisibilityDelayDelegate())
+
+    @Provides
+    fun provideClipboardClearUseCase(): ClipboardClearUseCase {
+        return object : ClipboardClearUseCase {
+            override fun invoke() {
+                /* no-op */
+            }
+        }
+    }
 }

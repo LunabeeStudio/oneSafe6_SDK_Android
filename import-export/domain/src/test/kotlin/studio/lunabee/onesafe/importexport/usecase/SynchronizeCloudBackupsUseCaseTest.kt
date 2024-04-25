@@ -33,7 +33,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.threeten.extra.MutableClock
 import studio.lunabee.onesafe.importexport.model.CloudBackup
-import studio.lunabee.onesafe.importexport.model.ImportExportConstant
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
@@ -41,6 +40,7 @@ import java.io.File
 import java.time.Instant
 
 class SynchronizeCloudBackupsUseCaseTest {
+    private val keepBackupsNumber: Int = 5
 
     private val remoteMap = mutableMapOf<String, CloudBackup>()
     private val localMap = mutableMapOf<String, Pair<LocalBackup, Boolean>>() // boolean -> true if exist in remote
@@ -83,11 +83,17 @@ class SynchronizeCloudBackupsUseCaseTest {
 
     private val settings: AutoBackupSettingsRepository = mockk {
         every { keepLocalBackupEnabled } returns flowOf(true)
+        every { autoBackupMaxNumber } returns keepBackupsNumber
     }
 
-    private val deleteOldCloudBackupsUseCase = DeleteOldCloudBackupsUseCase(cloudBackupRepository)
+    private val deleteOldCloudBackupsUseCase = DeleteOldCloudBackupsUseCase(cloudBackupRepository, settings)
 
-    private val useCase = SynchronizeCloudBackupsUseCase(cloudBackupRepository, getAllLocalBackupsUseCase, deleteOldCloudBackupsUseCase)
+    private val useCase = SynchronizeCloudBackupsUseCase(
+        cloudBackupRepository,
+        getAllLocalBackupsUseCase,
+        deleteOldCloudBackupsUseCase,
+        settings,
+    )
 
     @Test
     fun no_op_test(): TestResult = runTest {
@@ -122,7 +128,7 @@ class SynchronizeCloudBackupsUseCaseTest {
 
     @Test
     fun backup_to_upload_over_limit_test(): TestResult = runTest {
-        repeat(ImportExportConstant.KeepBackupsNumber + 3) {
+        repeat(keepBackupsNumber + 3) {
             val id = "to_upload_$it"
             localMap += id to (LocalBackup(Instant.now(testClock), File(id)) to false)
         }
@@ -133,7 +139,7 @@ class SynchronizeCloudBackupsUseCaseTest {
         coVerify(exactly = 1) { cloudBackupRepository.getBackups() }
         coVerify(exactly = 1) {
             cloudBackupRepository.uploadBackup(
-                backups = localMap.values.map { it.first }.sortedDescending().take(ImportExportConstant.KeepBackupsNumber),
+                backups = localMap.values.map { it.first }.sortedDescending().take(keepBackupsNumber),
             )
         }
         coVerify(exactly = 1) { cloudBackupRepository.deleteBackup(backups = emptyList()) }
@@ -143,7 +149,7 @@ class SynchronizeCloudBackupsUseCaseTest {
 
     @Test
     fun backup_to_delete_test(): TestResult = runTest {
-        val cloudBackups = List(ImportExportConstant.KeepBackupsNumber + 3) {
+        val cloudBackups = List(keepBackupsNumber + 3) {
             val id = "to_delete_$it"
             CloudBackup(
                 remoteId = id,
@@ -161,7 +167,7 @@ class SynchronizeCloudBackupsUseCaseTest {
         coVerify(exactly = 1) { cloudBackupRepository.getBackups() }
         coVerify(exactly = 1) {
             cloudBackupRepository.deleteBackup(
-                backups = cloudBackups.sortedDescending().drop(ImportExportConstant.KeepBackupsNumber),
+                backups = cloudBackups.sortedDescending().drop(keepBackupsNumber),
             )
         }
 

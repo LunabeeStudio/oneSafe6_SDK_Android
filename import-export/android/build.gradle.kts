@@ -43,9 +43,10 @@ android {
     }
 
     packaging {
-        resources.pickFirsts.add("META-INF/LICENSE.md")
-        resources.pickFirsts.add("META-INF/LICENSE-notice.md")
-        resources.pickFirsts.add("META-INF/DEPENDENCIES")
+        resources.pickFirsts += "META-INF/LICENSE.md"
+        resources.pickFirsts += "META-INF/LICENSE-notice.md"
+        resources.pickFirsts += "META-INF/DEPENDENCIES"
+        resources.pickFirsts += "META-INF/INDEX.LIST"
     }
 
     compileOptions {
@@ -93,7 +94,7 @@ dependencies {
 
     implementation(project(":import-export-core"))
     implementation(project(":import-export-proto"))
-    implementation(project(":import-export-domain"))
+    api(project(":import-export-domain"))
     implementation(project(":import-export-repository"))
     implementation(project(":import-export-drive"))
     implementation(project(":domain"))
@@ -109,6 +110,7 @@ dependencies {
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(project(":app:settings"))
     androidTestImplementation(project(":crypto-android"))
+    androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(libs.room.testing)
     androidTestImplementation(libs.lblogger)
     androidTestImplementation(libs.work.testing)

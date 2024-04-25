@@ -32,9 +32,8 @@ class DatabaseKeyRepositoryImpl @Inject constructor(
     @DatastoreEngineProvider(type = DataStoreType.Encrypted) private val dataStore: DatastoreEngine,
     private val keyProvider: RandomKeyProvider,
 ) : DatabaseKeyRepository {
-    override suspend fun createKey(): DatabaseKey {
+    override fun generateKey(): DatabaseKey {
         val key = keyProvider()
-        dataStore.insertValue(value = key, key = DATABASE_KEY_ALIAS, override = false)
         return DatabaseKey(key)
     }
 
@@ -46,8 +45,8 @@ class DatabaseKeyRepositoryImpl @Inject constructor(
         return getKeyFlow(DATABASE_KEY_ALIAS)
     }
 
-    override suspend fun setKey(key: DatabaseKey) {
-        dataStore.insertValue(value = key.raw, key = DATABASE_KEY_ALIAS, override = true)
+    override suspend fun setKey(key: DatabaseKey, override: Boolean) {
+        dataStore.insertValue(value = key.raw, key = DATABASE_KEY_ALIAS, override = override)
     }
 
     override fun getBackupKeyFlow(): Flow<DatabaseKey?> {

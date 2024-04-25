@@ -1,0 +1,65 @@
+package studio.lunabee.onesafe.help.lostkey
+
+import android.net.Uri
+import androidx.core.net.toUri
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.lunabee.lbcore.model.LBResult
+import com.lunabee.lbloading.LoadingManager
+import com.lunabee.lbloading.withLoading
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import studio.lunabee.onesafe.commonui.CommonUiConstants
+import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
+import studio.lunabee.onesafe.commonui.snackbar.SnackbarState
+import studio.lunabee.onesafe.importexport.model.CloudInfo
+import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
+import studio.lunabee.onesafe.importexport.usecase.StoreExternalBackupUseCase
+import javax.inject.Inject
+
+@HiltViewModel
+class LostKeyViewModel @Inject constructor(
+    cloudBackupRepository: CloudBackupRepository,
+    private val storeExternalBackupUseCase: StoreExternalBackupUseCase,
+    private val loadingManager: LoadingManager,
+) : ViewModel() {
+
+    private val _uiState: MutableStateFlow<LostKeyUiState> = MutableStateFlow(LostKeyUiState.Idle)
+    val uiState: StateFlow<LostKeyUiState> = _uiState.asStateFlow()
+
+    private val _snackbarState = MutableSharedFlow<SnackbarState?>()
+    val snackbarState: SharedFlow<SnackbarState?> = _snackbarState.asSharedFlow()
+
+    val cloudInfo: StateFlow<CloudInfo> = cloudBackupRepository.getCloudInfo()
+        .stateIn(
+            viewModelScope,
+            CommonUiConstants.Flow.DefaultSharingStarted,
+            CloudInfo(null, null),
+        )
+
+    fun cacheBackupFile(uri: Uri) {
+        viewModelScope.launch {
+            val result = storeExternalBackupUseCase(uri).withLoading(loadingManager).last().asResult()
+            when (result) {
+                is LBResult.Failure -> showSnackbar(ErrorSnackbarState(error = result.throwable, onClick = {}))
+                is LBResult.Success -> {
+                    _uiState.value = LostKeyUiState.ExitToMain(result.successData.file.toUri())
+                }
+            }
+        }
+    }
+
+    fun showSnackbar(errorSnackbarState: ErrorSnackbarState) {
+        viewModelScope.launch {
+            _snackbarState.emit(errorSnackbarState)
+        }
+    }
+}

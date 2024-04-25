@@ -38,6 +38,7 @@ object SettingsDefaults {
     const val BubblesPreviewDefault: Boolean = false
     const val autoBackupEnabledDefault: Boolean = false
     val autoBackupFrequencyMsDefault: Long = 1.days.inWholeMilliseconds
+    const val autoBackupMaxNumberDefault: Int = 5
     val CameraSystemDefault: CameraSystem = CameraSystem.InApp
     const val cloudBackupEnabledDefault: Boolean = false
     const val keepLocalBackupEnabledDefault: Boolean = false

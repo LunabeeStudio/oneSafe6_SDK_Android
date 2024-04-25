@@ -1,4 +1,4 @@
-package studio.lunabee.onesafe.help
+package studio.lunabee.onesafe.help.main
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,6 +12,10 @@ import studio.lunabee.onesafe.commonui.animation.slideHorizontalPopExitTransitio
 import studio.lunabee.onesafe.help.cipherkeyprompt.CipherKeyPromptDestination
 import studio.lunabee.onesafe.help.cipherkeyprompt.CipherKeyPromptNavigation
 import studio.lunabee.onesafe.help.cipherkeyprompt.cipherKeyPromptScreen
+import studio.lunabee.onesafe.help.lostkey.LostKeyNavigation
+import studio.lunabee.onesafe.help.lostkey.lostKeyScreen
+import studio.lunabee.onesafe.help.lostkeyexplain.LostKeyExplainNavigation
+import studio.lunabee.onesafe.help.lostkeyexplain.lostKeyExplainScreen
 
 internal const val HelpNavGraphRoute: String = "help_nav_host"
 
@@ -36,8 +40,23 @@ fun HelpNavGraph(
             navigateBack = navController::popBackStack,
             context = context,
         )
+        val lostKeyNavigation = LostKeyNavigation(
+            navigateBack = navController::popBackStack,
+        )
+        val lostKeyExplainNavigation = LostKeyExplainNavigation(
+            navigateBack = navController::popBackStack,
+        )
+
         with(cipherKeyPromptNavigation) {
             cipherKeyPromptScreen()
+        }
+
+        with(lostKeyNavigation) {
+            lostKeyScreen()
+        }
+
+        with(lostKeyExplainNavigation) {
+            lostKeyExplainScreen()
         }
     }
 }

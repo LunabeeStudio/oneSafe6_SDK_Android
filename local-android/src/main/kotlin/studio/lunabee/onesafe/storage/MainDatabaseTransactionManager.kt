@@ -19,14 +19,27 @@
 
 package studio.lunabee.onesafe.storage
 
+import android.content.Context
 import androidx.room.withTransaction
-import studio.lunabee.onesafe.domain.repository.TransactionManager
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
+import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
+import studio.lunabee.onesafe.domain.repository.StorageManager
 import javax.inject.Inject
 
 class MainDatabaseTransactionManager @Inject constructor(
     private val mainDatabase: MainDatabase,
-) : TransactionManager {
+    @ApplicationContext private val context: Context,
+    @FileDispatcher private val dispatcher: CoroutineDispatcher,
+) : StorageManager {
     override suspend fun withTransaction(block: suspend () -> Unit) {
         mainDatabase.withTransaction(block)
+    }
+
+    override suspend fun deleteStorage() {
+        withContext(dispatcher) {
+            context.deleteDatabase(mainDatabase.openHelper.databaseName)
+        }
     }
 }

@@ -23,10 +23,13 @@ import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
 
 interface DatabaseKeyRepository {
-    suspend fun createKey(): DatabaseKey
+    /**
+     * Create a key suitable for database encryption. Does not store it.
+     */
+    fun generateKey(): DatabaseKey
     suspend fun removeKey()
     fun getKeyFlow(): Flow<DatabaseKey?>
-    suspend fun setKey(key: DatabaseKey)
+    suspend fun setKey(key: DatabaseKey, override: Boolean)
 
     fun getBackupKeyFlow(): Flow<DatabaseKey?>
     suspend fun removeBackupKey()

@@ -37,6 +37,7 @@ import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -67,7 +68,9 @@ class LocalBackupWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         val flowResult = localAutoBackupUseCase()
-            .onStart {
+            .catch { error ->
+                emit(LBFlowResult.Failure(error))
+            }.onStart {
                 updateProgress(0f)
             }.onEach { result ->
                 if (result is LBFlowResult.Loading) {

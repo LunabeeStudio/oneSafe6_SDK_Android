@@ -114,14 +114,22 @@ class SettingsRepository @Inject constructor(
 
     override val autoBackupFrequency: Duration
         get() = settingsDataSource.autoBackupFrequency
+    override val autoBackupMaxNumber: Int
+        get() = settingsDataSource.autoBackupMaxNumber
     override val autoBackupFrequencyFlow: Flow<Duration>
         get() = settingsDataSource.autoBackupFrequencyFlow
+    override val autoBackupMaxNumberFlow: Flow<Int>
+        get() = settingsDataSource.autoBackupMaxNumberFlow
 
     override fun toggleAutoBackupSettings(): Boolean =
         settingsDataSource.toggleAutoBackupSettings()
 
     override fun setAutoBackupFrequency(delay: Duration) {
         settingsDataSource.autoBackupFrequency = delay
+    }
+
+    override fun updateAutoBackupMaxNumber(updatedValue: Int) {
+        settingsDataSource.updateAutoBackupMaxNumber(updatedValue)
     }
 
     override val cloudBackupEnabled: Flow<Boolean>

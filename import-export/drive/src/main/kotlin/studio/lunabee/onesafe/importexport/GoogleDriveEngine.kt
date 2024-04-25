@@ -105,8 +105,8 @@ class GoogleDriveEngine @Inject constructor(
                             resetCloudBackup(
                                 AutoBackupError(
                                     date = ZonedDateTime.now(clock),
-                                    code = OSDriveError.Code.WRONG_ACCOUNT_TYPE.name,
-                                    message = OSDriveError.Code.WRONG_ACCOUNT_TYPE.message,
+                                    code = OSDriveError.Code.DRIVE_WRONG_ACCOUNT_TYPE.name,
+                                    message = OSDriveError.Code.DRIVE_WRONG_ACCOUNT_TYPE.message,
                                     source = AutoBackupMode.CloudOnly,
                                 ),
                             )
@@ -116,8 +116,8 @@ class GoogleDriveEngine @Inject constructor(
                         resetCloudBackup(
                             AutoBackupError(
                                 date = ZonedDateTime.now(clock),
-                                code = OSDriveError.Code.UNEXPECTED_NULL_ACCOUNT.name,
-                                message = OSDriveError.Code.UNEXPECTED_NULL_ACCOUNT.message,
+                                code = OSDriveError.Code.DRIVE_UNEXPECTED_NULL_ACCOUNT.name,
+                                message = OSDriveError.Code.DRIVE_UNEXPECTED_NULL_ACCOUNT.message,
                                 source = AutoBackupMode.CloudOnly,
                             ),
                         )
@@ -143,8 +143,8 @@ class GoogleDriveEngine @Inject constructor(
     }
 
     override fun setupAccount(accountName: String): Flow<LBFlowResult<Unit>> = flow {
-        val account = getGoogleAccount(accountName) ?: throw OSDriveError(OSDriveError.Code.UNEXPECTED_NULL_ACCOUNT)
-        if (account.type != GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE) throw OSDriveError(OSDriveError.Code.WRONG_ACCOUNT_TYPE)
+        val account = getGoogleAccount(accountName) ?: throw OSDriveError(OSDriveError.Code.DRIVE_UNEXPECTED_NULL_ACCOUNT)
+        if (account.type != GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE) throw OSDriveError(OSDriveError.Code.DRIVE_WRONG_ACCOUNT_TYPE)
         val accountCredential = googleAccountCredential(account)
         setupDriveInstance(accountCredential)
         if (preferences.selectedAccount.first() != account.name) {
@@ -184,7 +184,7 @@ class GoogleDriveEngine @Inject constructor(
             val am = AccountManager.get(context)
             am.accounts.firstOrNull { account ->
                 account.name == name
-            } ?: throw OSDriveError(OSDriveError.Code.UNEXPECTED_NULL_ACCOUNT)
+            } ?: throw OSDriveError(OSDriveError.Code.DRIVE_UNEXPECTED_NULL_ACCOUNT)
         }
     }
 
@@ -256,7 +256,7 @@ class GoogleDriveEngine @Inject constructor(
                     .executeAsFlow()
                     .transformResult(
                         transformError = {
-                            if (it.throwable.osCode() == OSDriveError.Code.BACKUP_REMOTE_ID_NOT_FOUND) {
+                            if (it.throwable.osCode() == OSDriveError.Code.DRIVE_BACKUP_REMOTE_ID_NOT_FOUND) {
                                 logger.v("Stored folder $folderId not found, create a new one")
                                 preferences.setFolderId(null)
                                 emitAll(retrieveOrCreateOneSafeFolder())

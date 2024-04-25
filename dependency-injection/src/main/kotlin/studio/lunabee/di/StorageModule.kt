@@ -37,6 +37,7 @@ import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
 import studio.lunabee.importexport.repository.datasource.AutoBackupErrorLocalDataSource
 import studio.lunabee.importexport.repository.datasource.CloudBackupLocalDataSource
 import studio.lunabee.importexport.repository.datasource.ImportExportSafeItemLocalDataSource
+import studio.lunabee.importexport.repository.datasource.LocalBackupCacheDataSource
 import studio.lunabee.importexport.repository.datasource.LocalBackupLocalDataSource
 import studio.lunabee.messaging.repository.datasource.EnqueuedMessageLocalDataSource
 import studio.lunabee.messaging.repository.datasource.HandShakeDataLocalDatasource
@@ -46,7 +47,7 @@ import studio.lunabee.onesafe.domain.qualifier.DatabaseName
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
 import studio.lunabee.onesafe.domain.repository.DatabaseKeyRepository
-import studio.lunabee.onesafe.domain.repository.TransactionManager
+import studio.lunabee.onesafe.domain.repository.StorageManager
 import studio.lunabee.onesafe.repository.datasource.FileLocalDatasource
 import studio.lunabee.onesafe.repository.datasource.ForceUpgradeLocalDatasource
 import studio.lunabee.onesafe.repository.datasource.IconLocalDataSource
@@ -90,6 +91,7 @@ import studio.lunabee.onesafe.storage.datasource.ForceUpgradeLocalDatasourceImpl
 import studio.lunabee.onesafe.storage.datasource.HandShakeDataLocalDatasourceImpl
 import studio.lunabee.onesafe.storage.datasource.IconLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.IndexWordEntryLocalDataSourceImpl
+import studio.lunabee.onesafe.storage.datasource.LocalBackupFileCacheDataSource
 import studio.lunabee.onesafe.storage.datasource.LocalBackupLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.MessageLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.PasswordGeneratorConfigLocalDataSourceImpl
@@ -176,6 +178,11 @@ interface StorageModule {
     ): LocalBackupLocalDataSource
 
     @Binds
+    fun bindLocalBackupCacheDataSource(
+        backupMessageLocalDataSourceImpl: LocalBackupFileCacheDataSource,
+    ): LocalBackupCacheDataSource
+
+    @Binds
     fun bindCloudBackupLocalDataSource(
         cloudBackupLocalDataSourceImpl: CloudBackupLocalDataSourceImpl,
     ): CloudBackupLocalDataSource
@@ -251,9 +258,13 @@ object MainDatabaseModule {
     @Provides
     fun provideTransactionManager(
         mainDatabase: MainDatabase,
-    ): TransactionManager {
+        @ApplicationContext context: Context,
+        @FileDispatcher dispatcher: CoroutineDispatcher,
+    ): StorageManager {
         return MainDatabaseTransactionManager(
-            mainDatabase,
+            mainDatabase = mainDatabase,
+            context = context,
+            dispatcher = dispatcher,
         )
     }
 

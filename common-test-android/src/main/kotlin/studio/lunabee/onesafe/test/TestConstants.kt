@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2024 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:24 AM
+ * Created by Lunabee Studio / Date - 4/16/2024 - for the oneSafe6 SDK.
+ * Last modified 4/16/24, 9:25 AM
  */
 
-package studio.lunabee.onesafe.domain.repository
+package studio.lunabee.onesafe.test
 
-fun interface TransactionManager {
-    suspend fun withTransaction(block: suspend () -> Unit)
+object TestConstants {
+    object ResourcesFile {
+        const val ArchiveValid: String = "archive_valid.os6lsb"
+        const val ArchiveNoMetadata: String = "archive_no_metadata.os6lsb"
+        const val ArchiveNoZip: String = "archive_no_zip.os6lsb"
+        val PasswordValidArchive: CharArray = "a".toCharArray()
+    }
 }

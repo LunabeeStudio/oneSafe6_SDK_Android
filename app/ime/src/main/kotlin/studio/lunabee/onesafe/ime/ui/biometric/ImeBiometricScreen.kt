@@ -19,8 +19,6 @@
 
 package studio.lunabee.onesafe.ime.ui.biometric
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -33,20 +31,20 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.painterResource
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSScreen
 import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.commonui.OSString
+import studio.lunabee.onesafe.commonui.home.TextLogo
 import studio.lunabee.onesafe.molecule.OSTopImageBox
 import studio.lunabee.onesafe.organism.card.OSMessageCard
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
+import studio.lunabee.onesafe.ui.theme.OSTheme
+import studio.lunabee.onesafe.utils.OsDefaultPreview
 
 @Composable
 fun ImeBiometricScreen() {
@@ -60,20 +58,12 @@ fun ImeBiometricScreen() {
                 .imePadding()
                 .verticalScroll(rememberScrollState()),
         ) {
-            Box(
+            TextLogo(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(OSDimens.SystemSpacing.Regular),
-            ) {
-                Image(
-                    painter = painterResource(id = OSDrawable.ic_onesafe_text),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(width = OSDimens.LayoutSize.LoginLogoTextWidth)
-                        .align(Alignment.Center),
-                    colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.primary),
-                )
-            }
+                    .width(OSDimens.LayoutSize.LoginLogoTextWidth)
+                    .padding(OSDimens.SystemSpacing.Regular)
+                    .align(Alignment.CenterHorizontally),
+            )
             OSTopImageBox(
                 imageRes = OSDrawable.character_hello,
                 modifier = Modifier
@@ -89,5 +79,13 @@ fun ImeBiometricScreen() {
                 )
             }
         }
+    }
+}
+
+@OsDefaultPreview
+@Composable
+fun ImeBiometricScreenPreview() {
+    OSTheme {
+        ImeBiometricScreen()
     }
 }

@@ -5,10 +5,11 @@
 
     <application>
         <activity
-            android:name=".HelpActivity"
+            android:name=".main.HelpActivity"
             android:exported="false"
             android:multiprocess="true"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Splashscreen"
             android:windowSoftInputMode="adjustResize"
             tools:ignore="LockedOrientationActivity" />
     </application>

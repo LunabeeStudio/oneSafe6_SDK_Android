@@ -73,6 +73,7 @@ object InMemoryMainDatabaseModule {
     }
 
     @Provides
+    @Singleton
     fun provideSqlCipherManager(
         @FileDispatcher dispatcher: CoroutineDispatcher,
         @ApplicationContext context: Context,

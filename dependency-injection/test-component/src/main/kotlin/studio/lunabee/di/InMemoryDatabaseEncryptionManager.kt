@@ -21,14 +21,31 @@ package studio.lunabee.di
 
 import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
 import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
+import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.error.OSStorageError
 import studio.lunabee.onesafe.storage.SqlCipherDBManager
 
 class InMemoryDatabaseEncryptionManager(
     private val sqlCipherDBManager: SqlCipherDBManager,
     private val dbName: String,
 ) : DatabaseEncryptionManager by sqlCipherDBManager {
+
+    var throwOnMigrate: Boolean = false
+
     override fun checkDatabaseAccess(key: DatabaseKey?) {
         // Do not check database if name is blank (i.e in memory db)
         if (dbName.isNotBlank()) sqlCipherDBManager.checkDatabaseAccess(key)
+    }
+
+    override suspend fun migrateToEncrypted(key: DatabaseKey) {
+        if (throwOnMigrate) {
+            throw OSStorageError.Code.UNKNOWN_DATABASE_ERROR.get()
+        }
+    }
+
+    override suspend fun migrateToPlain(key: DatabaseKey) {
+        if (throwOnMigrate) {
+            throw OSStorageError.Code.UNKNOWN_DATABASE_ERROR.get()
+        }
     }
 }

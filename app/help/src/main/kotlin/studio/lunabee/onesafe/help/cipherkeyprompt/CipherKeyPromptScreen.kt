@@ -1,24 +1,19 @@
 package studio.lunabee.onesafe.help.cipherkeyprompt
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import studio.lunabee.compose.core.LbcTextSpec
@@ -30,6 +25,8 @@ import studio.lunabee.onesafe.atom.button.OSIconButton
 import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.commonui.OSString
+import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
+import studio.lunabee.onesafe.commonui.home.TextLogo
 import studio.lunabee.onesafe.molecule.OSTopImageBox
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
@@ -42,11 +39,18 @@ context(CipherKeyPromptNavigation)
 fun CipherKeyPromptRoute(
     viewModel: CipherKeyPromptViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     if (uiState.openDatabaseResult == CipherKeyPromptUiState.OpenDatabaseState.Success) {
         exitToMain()
     }
+
+    // TODO <cipher> add test which call tryFinishSetupDatabaseEncryption
+    // Try to run FinishSetupDatabaseEncryption in case something went wrong during restart
+    viewModel.tryFinishSetupDatabaseEncryption(context)
+    val dialogState by viewModel.dialogState.collectAsStateWithLifecycle()
+    dialogState?.DefaultAlertDialog()
 
     CipherKeyPromptScreen(
         uiState = uiState,
@@ -75,20 +79,12 @@ private fun CipherKeyPromptScreen(
                 .imePadding()
                 .verticalScroll(rememberScrollState()),
         ) {
-            Box(
+            TextLogo(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(OSDimens.SystemSpacing.Regular),
-            ) {
-                Image(
-                    painter = painterResource(id = OSDrawable.ic_onesafe_text),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(width = OSDimens.LayoutSize.LoginLogoTextWidth)
-                        .align(Alignment.Center),
-                    colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.primary),
-                )
-            }
+                    .padding(OSDimens.SystemSpacing.Regular)
+                    .width(OSDimens.LayoutSize.LoginLogoTextWidth)
+                    .align(Alignment.CenterHorizontally),
+            )
             OSTopImageBox(
                 imageRes = OSDrawable.character_hello,
                 modifier = Modifier

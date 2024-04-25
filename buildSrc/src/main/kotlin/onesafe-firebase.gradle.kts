@@ -61,7 +61,6 @@ afterEvaluate {
                 "merge${variant}ReleaseNativeLibs",
                 "write${variant}ReleaseApplicationId",
                 "extract${variant}ReleaseNativeSymbolTables",
-                "create${variant}ReleaseVariantModel",
                 "merge${variant}ReleaseNativeDebugMetadata",
             )
         }
