@@ -29,6 +29,7 @@ import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.settings.SettingsCard
 import studio.lunabee.onesafe.commonui.settings.SwitchSettingAction
+import studio.lunabee.onesafe.importexport.settings.backupnumber.AutoBackupMaxNumber
 import studio.lunabee.onesafe.model.OSSwitchState
 import studio.lunabee.onesafe.ui.theme.LocalColorPalette
 import studio.lunabee.onesafe.ui.theme.OSTheme
@@ -72,15 +73,21 @@ internal fun AutoBackupSettingsMainCard(
                         frequency = uiState.autoBackupFrequency,
                         onClick = uiState.selectAutoBackupFrequency,
                     )
+                    this += CardSettingsSelectBackupNumber(
+                        number = uiState.autoBackupMaxNumber,
+                        onClick = uiState.selectAutoBackupMaxNumber,
+                    )
                 }
             },
         )
         OSSmallSpacer()
-        OSText(
-            text = uiState.footer,
-            style = MaterialTheme.typography.bodySmall,
-            color = LocalColorPalette.current.Neutral60,
-        )
+        if (uiState is AutoBackupSettingsMainCardUiState.Disabled) {
+            OSText(
+                text = uiState.footer,
+                style = MaterialTheme.typography.bodySmall,
+                color = LocalColorPalette.current.Neutral60,
+            )
+        }
     }
 }
 
@@ -91,7 +98,9 @@ fun AutoBackupSettingsMainCardPreview() {
         AutoBackupSettingsMainCard(
             uiState = AutoBackupSettingsMainCardUiState.Enabled(
                 selectAutoBackupFrequency = { },
+                selectAutoBackupMaxNumber = { },
                 autoBackupFrequency = AutoBackupFrequency.WEEKLY,
+                autoBackupMaxNumber = AutoBackupMaxNumber.FIVE,
                 isCloudBackupEnabled = OSSwitchState.True,
                 isKeepLocalBackupEnabled = false,
                 toggleAutoBackup = {},

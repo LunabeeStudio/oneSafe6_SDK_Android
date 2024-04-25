@@ -22,11 +22,10 @@ package studio.lunabee.onesafe.importexport.usecase
 import com.lunabee.lbcore.model.LBFlowResult
 import com.lunabee.lbcore.model.LBFlowResult.Companion.transformResult
 import com.lunabee.lblogger.LBLogger
-import com.lunabee.lblogger.v
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
-import studio.lunabee.onesafe.importexport.model.ImportExportConstant
 import studio.lunabee.onesafe.importexport.model.LocalBackup
+import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
 import javax.inject.Inject
 
@@ -43,24 +42,26 @@ class SynchronizeCloudBackupsUseCase @Inject constructor(
     private val cloudBackupRepository: CloudBackupRepository,
     private val getAllLocalBackupsUseCase: GetAllLocalBackupsUseCase,
     private val deleteOldCloudBackupsUseCase: DeleteOldCloudBackupsUseCase,
+    private val autoBackupSettingsRepository: AutoBackupSettingsRepository,
 ) {
     operator fun invoke(): Flow<LBFlowResult<Unit>> {
         // 1. Refresh cloud backup list
-        return cloudBackupRepository.refreshBackupList().transformResult { backupsResult ->
-            val backupsToUpload = (backupsResult.successData + getAllLocalBackupsUseCase(true))
-                .sortedDescending()
-                .take(ImportExportConstant.KeepBackupsNumber)
-                .filterIsInstance<LocalBackup>()
-            log.v("Found ${backupsToUpload.size} to upload")
+        return cloudBackupRepository.refreshBackupList()
+            .transformResult { backupsResult ->
+                val backupsToUpload = (backupsResult.successData + getAllLocalBackupsUseCase(true))
+                    .sortedDescending()
+                    .take(autoBackupSettingsRepository.autoBackupMaxNumber)
+                    .filterIsInstance<LocalBackup>()
+                log.v("Found ${backupsToUpload.size} to upload")
 
-            // 2. Upload the latest locals backups
-            val uploadAndDeleteFlow = cloudBackupRepository.uploadBackup(backupsToUpload)
-                .transformResult {
-                    // 3. Delete oldest cloud backups
-                    emitAll(deleteOldCloudBackupsUseCase(cloudBackupRepository.getBackups()))
-                }
+                // 2. Upload the latest locals backups
+                val uploadAndDeleteFlow = cloudBackupRepository.uploadBackup(backupsToUpload)
+                    .transformResult {
+                        // 3. Delete oldest cloud backups
+                        emitAll(deleteOldCloudBackupsUseCase(cloudBackupRepository.getBackups()))
+                    }
 
-            emitAll(uploadAndDeleteFlow)
-        }
+                emitAll(uploadAndDeleteFlow)
+            }
     }
 }

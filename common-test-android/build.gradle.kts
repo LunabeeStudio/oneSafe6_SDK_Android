@@ -23,7 +23,7 @@ plugins {
 }
 
 android {
-    namespace = "studio.lunabee.onesafe.test"
+    namespace = "studio.lunabee.onesafe.test.android"
 
     compileSdk = AndroidConfig.COMPILE_SDK
     buildToolsVersion = AndroidConfig.BUILD_TOOLS_VERSION
@@ -42,9 +42,16 @@ android {
         resources.pickFirsts.add("META-INF/LICENSE-notice.md")
         resources.pickFirsts.add("META-INF/DEPENDENCIES")
     }
+
+    kotlinOptions.freeCompilerArgs += "-Xcontext-receivers"
+
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+    }
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.hilt.android.testing)
 
     implementation(platform(libs.compose.bom))
@@ -65,6 +72,7 @@ dependencies {
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)
+    implementation(libs.lbextensions.android)
 
     implementation(project(":domain"))
     implementation(project(":app:settings"))

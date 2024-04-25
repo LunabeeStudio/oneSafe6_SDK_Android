@@ -50,6 +50,7 @@ import studio.lunabee.onesafe.commonui.dialog.ErrorDialogState
 import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
 import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.importexport.model.LatestBackups
+import studio.lunabee.onesafe.importexport.settings.backupnumber.AutoBackupMaxNumber
 import studio.lunabee.onesafe.model.OSSwitchState
 import studio.lunabee.onesafe.ui.UiConstants
 import java.net.URI
@@ -171,6 +172,7 @@ class AutoBackupSettingsScreenTest : LbcComposeTest() {
     ) = AutoBackupSettingsUiState(
         isBackupEnabled = true,
         autoBackupFrequency = AutoBackupFrequency.DAILY,
+        autoBackupMaxNumber = AutoBackupMaxNumber.FIVE,
         latestBackups = LatestBackups(local = null, cloud = backup),
         cloudBackupEnabledState = cloudBackupEnabledState,
         isKeepLocalBackupEnabled = true,

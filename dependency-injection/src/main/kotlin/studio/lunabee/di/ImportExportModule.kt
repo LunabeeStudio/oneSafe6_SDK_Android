@@ -25,7 +25,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import studio.lunabee.importexport.repository.datasource.CloudBackupEngine
-import studio.lunabee.importexport.repository.repository.GoogleDriveBackupRepository
+import studio.lunabee.importexport.repository.repository.DefaultBackupRepository
 import studio.lunabee.onesafe.domain.qualifier.BackupType
 import studio.lunabee.onesafe.domain.qualifier.DateFormatterType
 import studio.lunabee.onesafe.importexport.BackupExportEngineImpl
@@ -64,7 +64,7 @@ interface ImportExportModule {
     fun bindCloudBackupEngine(googleDriveEngine: GoogleDriveEngine): CloudBackupEngine
 
     @Binds
-    fun bindGoogleDriveBackupRepository(googleDriveBackupRepository: GoogleDriveBackupRepository): CloudBackupRepository
+    fun bindGoogleDriveBackupRepository(googleDriveBackupRepository: DefaultBackupRepository): CloudBackupRepository
 }
 
 @Module

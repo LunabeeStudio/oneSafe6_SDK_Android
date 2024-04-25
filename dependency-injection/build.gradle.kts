@@ -40,6 +40,11 @@ android {
             dimension = AndroidConfig.CRYPTO_BACKEND_FLAVOR_DIMENSION
         }
     }
+
+    packaging {
+        resources.pickFirsts += "META-INF/INDEX.LIST"
+        resources.pickFirsts += "META-INF/DEPENDENCIES"
+    }
 }
 
 dependencies {

@@ -90,4 +90,10 @@ object DomainModule {
     fun providesInternalDirBackups(
         @ApplicationContext context: Context,
     ): File = File(context.filesDir, "backups")
+
+    @Provides
+    @InternalDir(InternalDir.Type.Cache)
+    fun providesInternalDirCache(
+        @ApplicationContext context: Context,
+    ): File = context.cacheDir
 }

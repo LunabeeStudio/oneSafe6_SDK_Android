@@ -21,17 +21,20 @@ package studio.lunabee.onesafe.domain.usecase.authentication
 
 import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.firstOrNull
+import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
 import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
 import studio.lunabee.onesafe.domain.repository.DatabaseKeyRepository
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.error.osCode
 import javax.inject.Inject
 
 /**
- * Initialize the activation or deactivation of the database encryption. Must be finish by calling [FinishSetupDatabaseEncryptionUseCase].
- * The key of the database will be stored in the encrypted datastore.
+ * Initialize the activation or deactivation (if key is null) of the database encryption. Must be finish by calling
+ * [FinishSetupDatabaseEncryptionUseCase].
+ * The key of the database will be consumed and stored in the encrypted datastore.
  *
  * @see DatabaseEncryptionManager
  */
@@ -42,11 +45,11 @@ class StartSetupDatabaseEncryptionUseCase @Inject constructor(
     /**
      * @see StartSetupDatabaseEncryptionUseCase
      */
-    suspend operator fun invoke(enable: Boolean): LBResult<Unit> {
-        return if (enable) startEnable() else startDisable()
+    suspend operator fun invoke(key: DatabaseKey?): LBResult<Unit> {
+        return if (key != null) startEnable(key) else startDisable()
     }
 
-    private suspend fun startEnable() = OSError.runCatching(
+    private suspend fun startEnable(key: DatabaseKey) = OSError.runCatching(
         mapErr = { e ->
             if (e.code == OSCryptoError.Code.DATASTORE_ENTRY_KEY_ALREADY_EXIST) {
                 OSDomainError.Code.DATABASE_ENCRYPTION_ALREADY_ENABLED.get(cause = e)
@@ -55,12 +58,14 @@ class StartSetupDatabaseEncryptionUseCase @Inject constructor(
             }
         },
     ) {
-        val createKey = databaseCryptoRepository.createKey()
-        createKey.use { key ->
+        key.use { key ->
             try {
+                databaseCryptoRepository.setKey(key, false)
                 sqlCipherManager.migrateToEncrypted(key)
             } catch (t: Throwable) {
-                runCatching { databaseCryptoRepository.removeKey() }
+                if (t.osCode() != OSCryptoError.Code.DATASTORE_ENTRY_KEY_ALREADY_EXIST) {
+                    runCatching { databaseCryptoRepository.removeKey() }
+                }
                 throw t
             }
         }

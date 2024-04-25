@@ -36,9 +36,22 @@ android {
             dimension = AndroidConfig.CRYPTO_BACKEND_FLAVOR_DIMENSION
         }
     }
+
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+    }
+
+    packaging {
+        resources.pickFirsts += "META-INF/DEPENDENCIES"
+        resources.pickFirsts += "META-INF/LICENSE.md"
+        resources.pickFirsts += "META-INF/INDEX.LIST"
+        resources.pickFirsts += "META-INF/LICENSE-notice.md"
+    }
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(libs.hilt.android)
     implementation(libs.hilt.android.testing)
     ksp(libs.dagger.hilt.compiler)
@@ -81,5 +94,6 @@ dependencies {
     implementation(project(":messaging-domain"))
     implementation(project(":messaging-repository"))
     implementation(project(":messaging-crypto-android"))
+    implementation(project(":error"))
     api(project(":common-test"))
 }

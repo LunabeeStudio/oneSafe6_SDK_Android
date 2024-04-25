@@ -45,14 +45,14 @@ fun OpenOskTutorialLayout(
             .padding(top = OSDimens.SystemSpacing.Regular)
             .padding(horizontal = OSDimens.SystemSpacing.Small),
     ) {
-        OSImage(
-            image = OSImageSpec.Drawable(ImeR.drawable.left_handdraw_arrow),
-        )
         ImeTutorialCard(
             modifier = Modifier.weight(1f),
             title = LbcTextSpec.StringResource(OSString.oneSafeK_tutorial_open_title),
             description = LbcTextSpec.StringResource(OSString.oneSafeK_tutorial_open_description),
             onClose = onCloseClick,
+        )
+        OSImage(
+            image = OSImageSpec.Drawable(ImeR.drawable.right_handdraw_arrow),
         )
     }
 }

@@ -27,6 +27,7 @@ android {
     packaging {
         resources {
             pickFirsts += "META-INF/DEPENDENCIES"
+            pickFirsts += "META-INF/INDEX.LIST"
         }
     }
 

@@ -129,7 +129,8 @@ subprojects {
         val hasEnvironmentFlavor = project.name == "import-export-android" ||
             project.name == "ime" ||
             project.name == "migration" ||
-            project.name == "login"
+            project.name == "login" ||
+            project.name == "help"
         val isCryptoModule = project.name == "crypto-android"
 
         val envFlavor = OSDimensions.Environment.Store.uppercaseFirstChar()

@@ -50,7 +50,7 @@ class GetAutoBackupStreamUseCase @Inject constructor(
         } else {
             val flow = cloudBackupRepository.getInputStream(backupId)
                 .onFailure {
-                    if (it.throwable.osCode() == OSDriveError.Code.BACKUP_REMOTE_ID_NOT_FOUND) {
+                    if (it.throwable.osCode() == OSDriveError.Code.DRIVE_BACKUP_REMOTE_ID_NOT_FOUND) {
                         cloudBackupRepository.refreshBackupList().collect()
                     }
                 }

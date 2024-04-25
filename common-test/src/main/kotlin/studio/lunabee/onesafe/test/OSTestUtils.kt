@@ -161,6 +161,7 @@ object OSTestUtils {
         quickSignIn: Boolean = false,
         cloudBackup: Boolean = false,
         backupForegroundService: Boolean = false,
+        sqlcipher: Boolean = true,
     ): FeatureFlags {
         return object : FeatureFlags {
             override fun florisBoard(): Boolean = florisBoard
@@ -170,7 +171,7 @@ object OSTestUtils {
             override fun quickSignIn(): Boolean = quickSignIn
             override fun cloudBackup(): Boolean = cloudBackup
             override fun backupWorkerExpedited(): Boolean = backupForegroundService
-            override fun sqlcipher(): Boolean = false
+            override fun sqlcipher(): Boolean = sqlcipher
         }
     }
 }

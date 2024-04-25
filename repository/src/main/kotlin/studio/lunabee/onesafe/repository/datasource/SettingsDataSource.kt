@@ -55,6 +55,10 @@ interface SettingsDataSource {
     val autoBackupFrequencyFlow: Flow<Duration>
     var autoBackupFrequency: Duration
 
+    fun updateAutoBackupMaxNumber(updatedValue: Int)
+    val autoBackupMaxNumberFlow: Flow<Int>
+    val autoBackupMaxNumber: Int
+
     val cloudBackupEnabled: Flow<Boolean>
     suspend fun setCloudBackupSettings(enabled: Boolean)
 

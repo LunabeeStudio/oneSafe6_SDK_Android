@@ -26,5 +26,6 @@ import javax.inject.Qualifier
 annotation class InternalDir(val type: Type) {
     enum class Type {
         Backups,
+        Cache,
     }
 }

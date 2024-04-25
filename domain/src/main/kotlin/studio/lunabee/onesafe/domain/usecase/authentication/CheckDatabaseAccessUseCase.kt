@@ -21,6 +21,7 @@ package studio.lunabee.onesafe.domain.usecase.authentication
 
 import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.firstOrNull
+import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
 import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
 import studio.lunabee.onesafe.domain.repository.DatabaseKeyRepository
 import studio.lunabee.onesafe.error.OSError
@@ -40,6 +41,13 @@ class CheckDatabaseAccessUseCase @Inject constructor(
      */
     suspend operator fun invoke(): LBResult<Unit> {
         val key = databaseKeyRepository.getKeyFlow().firstOrNull()
+        return invoke(key)
+    }
+
+    /**
+     * @return [LBResult.Success] if the database is accessible or does not exist and the key is null
+     */
+    operator fun invoke(key: DatabaseKey?): LBResult<Unit> {
         val result = OSError.runCatching { encryptionManager.checkDatabaseAccess(key) }
 
         return if ((result as? LBResult.Failure)?.throwable?.osCode() == OSStorageError.Code.DATABASE_NOT_FOUND && key == null) {

@@ -20,6 +20,7 @@
 plugins {
     `android-library`
     alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -47,6 +48,7 @@ android {
         resources.pickFirsts.add("META-INF/LICENSE.md")
         resources.pickFirsts.add("META-INF/LICENSE-notice.md")
         resources.pickFirsts.add("META-INF/DEPENDENCIES")
+        resources.pickFirsts.add("META-INF/INDEX.LIST")
     }
 
     flavorDimensions += AndroidConfig.CRYPTO_BACKEND_FLAVOR_DIMENSION
@@ -68,6 +70,7 @@ android {
 dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
+    implementation(libs.hilt.android)
     kspAndroidTest(libs.dagger.hilt.compiler)
 
     androidTestImplementation(libs.androidx.test.runner)

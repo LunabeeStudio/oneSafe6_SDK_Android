@@ -16,6 +16,7 @@
 #  Last modified 2/26/24, 1:06 PM
 
 import argparse
+import json
 import logging
 import os
 
@@ -41,10 +42,17 @@ parser.add_argument(
     required=True,
     type=str,
 )
+parser.add_argument(
+    "--branch",
+    help="Git branch to build",
+    required=True,
+    type=str,
+)
 args = parser.parse_args()
 
 server_url = args.server
 api_token = args.token
+branch = args.branch
 
 endpoint = server_url + '/app/rest/buildQueue'
 headers = {
@@ -52,11 +60,11 @@ headers = {
     'Accept': 'application/json',
     'Authorization': f'Bearer {api_token}'
 }
-payload = (open(os.path.dirname(os.path.realpath(__file__)) + "/beta_trigger_teamcity_payload.json")
-           .read()
-           .encode('utf-8'))
+with open(os.path.dirname(os.path.realpath(__file__)) + "/beta_trigger_teamcity_payload.json") as json_file:
+    payload = json.load(json_file)
+payload["branchName"] = branch
 param = {
     'moveToTop': 'true',
 }
-response = requests.post(endpoint, json=param, headers=headers, data=payload)
+response = requests.post(endpoint, json=param, headers=headers, data=json.dumps(payload).encode('utf8'))
 print(response)

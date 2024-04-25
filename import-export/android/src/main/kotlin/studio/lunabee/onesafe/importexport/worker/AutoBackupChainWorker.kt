@@ -25,13 +25,13 @@ import androidx.work.CoroutineWorker
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.lunabee.lblogger.LBLogger
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.usecase.GetAutoBackupModeUseCase
-import com.lunabee.lblogger.LBLogger
 
 // TODO <AutoBackup> test (manually, maybe unit test?)
 
@@ -50,29 +50,39 @@ class AutoBackupChainWorker @AssistedInject constructor(
     private val featureFlags: FeatureFlags,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
-        if (itemRepository.getSafeItemsCount() != 0) {
-            when (val backupMode = getAutoBackupModeUseCase()) {
-                AutoBackupMode.Disabled -> {
-                    // Unexpected, log and cancel workers
-                    logger.e("${AutoBackupChainWorker::class.simpleName} run but ${AutoBackupMode::class.simpleName} is $backupMode")
-                    autoBackupWorkersHelper.cancel()
-                }
-                AutoBackupMode.LocalOnly -> LocalBackupWorker.start(applicationContext, featureFlags.backupWorkerExpedited())
-                AutoBackupMode.CloudOnly -> CloudBackupWorker.start(applicationContext, featureFlags.backupWorkerExpedited())
-                AutoBackupMode.Synchronized -> {
-                    val localWorkRequest = LocalBackupWorker.getWorkRequest(featureFlags.backupWorkerExpedited())
-                    val cloudSyncWorkRequest = CloudSynchronizeBackupWorker.getWorkRequest()
+        var backupMode: AutoBackupMode? = null
+        try {
+            backupMode = getAutoBackupModeUseCase()
+            if (itemRepository.getSafeItemsCount() != 0) {
+                when (backupMode) {
+                    AutoBackupMode.Disabled -> {
+                        // Unexpected, log and cancel workers
+                        logger.e("${AutoBackupChainWorker::class.simpleName} run but ${AutoBackupMode::class.simpleName} is $backupMode")
+                        autoBackupWorkersHelper.cancel()
+                    }
+                    AutoBackupMode.LocalOnly -> LocalBackupWorker.start(applicationContext, featureFlags.backupWorkerExpedited())
+                    AutoBackupMode.CloudOnly -> CloudBackupWorker.start(applicationContext, featureFlags.backupWorkerExpedited())
+                    AutoBackupMode.Synchronized -> {
+                        val localWorkRequest = LocalBackupWorker.getWorkRequest(featureFlags.backupWorkerExpedited())
+                        val cloudSyncWorkRequest = CloudSynchronizeBackupWorker.getWorkRequest()
 
-                    WorkManager.getInstance(applicationContext)
-                        .beginUniqueWork(
-                            AUTO_BACKUP_UNIQUE_CHAIN_WORK_NAME,
-                            ExistingWorkPolicy.APPEND_OR_REPLACE,
-                            localWorkRequest,
-                        )
-                        .then(cloudSyncWorkRequest)
-                        .enqueue()
+                        WorkManager.getInstance(applicationContext)
+                            .beginUniqueWork(
+                                AUTO_BACKUP_UNIQUE_CHAIN_WORK_NAME,
+                                ExistingWorkPolicy.APPEND_OR_REPLACE,
+                                localWorkRequest,
+                            )
+                            .then(cloudSyncWorkRequest)
+                            .enqueue()
+                    }
                 }
             }
+        } catch (e: Throwable) {
+            return autoBackupWorkersHelper.onBackupWorkerFails(
+                error = e,
+                runAttemptCount = runAttemptCount,
+                errorSource = backupMode ?: AutoBackupMode.Disabled,
+            )
         }
 
         return Result.success()

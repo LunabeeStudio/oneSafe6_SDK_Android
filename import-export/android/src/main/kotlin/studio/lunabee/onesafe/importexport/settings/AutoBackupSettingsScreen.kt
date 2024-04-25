@@ -73,12 +73,15 @@ import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
 import studio.lunabee.onesafe.commonui.dialog.DialogState
+import studio.lunabee.onesafe.commonui.dialog.rememberDialogState
 import studio.lunabee.onesafe.commonui.extension.findFragmentActivity
 import studio.lunabee.onesafe.commonui.notification.NotificationPermissionRationaleDialogState
 import studio.lunabee.onesafe.commonui.snackbar.SnackbarState
 import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.importexport.model.LatestBackups
 import studio.lunabee.onesafe.importexport.model.LocalBackup
+import studio.lunabee.onesafe.importexport.settings.backupnumber.AutoBackupMaxNumber
+import studio.lunabee.onesafe.importexport.settings.backupnumber.AutoBackupMaxNumberBottomSheet
 import studio.lunabee.onesafe.importexport.utils.AccountPermissionRationaleDialogState
 import studio.lunabee.onesafe.importexport.utils.BackupFileManagerHelper
 import studio.lunabee.onesafe.model.OSSwitchState
@@ -102,7 +105,7 @@ fun AutoBackupSettingsRoute(
     val context = LocalContext.current
     val uiState: AutoBackupSettingsUiState? by viewModel.uiState.collectAsStateWithLifecycle()
 
-    var permissionDialogState: DialogState? by remember { mutableStateOf(null) }
+    var permissionDialogState by rememberDialogState()
     permissionDialogState?.DefaultAlertDialog()
 
     val notificationPermissionState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -137,8 +140,8 @@ fun AutoBackupSettingsRoute(
     dialogState?.DefaultAlertDialog()
 
     val openFileManager = {
-        if (!BackupFileManagerHelper.openFileManager(context)) {
-            viewModel.showError(LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_saveAccess_error_noFileManager))
+        if (!BackupFileManagerHelper.openInternalFileManager(context)) {
+            viewModel.showError(LbcTextSpec.StringResource(OSString.common_error_noFileManager))
         }
     }
 
@@ -174,6 +177,7 @@ fun AutoBackupSettingsRoute(
                     }
                 },
                 setAutoBackupFrequency = { viewModel.setAutoBackupFrequency(it) },
+                setAutoBackupMaxNumber = { viewModel.setAutoBackupMaxNumber(it) },
                 navigateToRestoreBackup = navigateToRestoreBackup,
                 openFileManager = openFileManager,
                 featureFlagCloudBackup = viewModel.featureFlagCloudBackup,
@@ -261,6 +265,7 @@ private fun AutoBackupSettingsScreen(
     toggleAutoBackup: () -> Unit,
     toggleCloudBackup: (() -> Unit)?,
     setAutoBackupFrequency: (AutoBackupFrequency) -> Unit,
+    setAutoBackupMaxNumber: (AutoBackupMaxNumber) -> Unit,
     navigateToRestoreBackup: (String) -> Unit,
     openFileManager: (() -> Unit)?,
     featureFlagCloudBackup: Boolean,
@@ -270,6 +275,7 @@ private fun AutoBackupSettingsScreen(
     val coroutineScope = rememberCoroutineScope()
     val mainCardUiState = if (uiState.isBackupEnabled) {
         var isAutoBackupFrequencyBottomSheetVisible by rememberSaveable { mutableStateOf(value = false) }
+        var isAutoBackupMaxNumberBottomSheetVisible by rememberSaveable { mutableStateOf(value = false) }
 
         AutoBackupFrequencyBottomSheet(
             isVisible = isAutoBackupFrequencyBottomSheetVisible,
@@ -278,10 +284,19 @@ private fun AutoBackupSettingsScreen(
             selectedAutoBackupFrequency = uiState.autoBackupFrequency,
         )
 
+        AutoBackupMaxNumberBottomSheet(
+            isVisible = isAutoBackupMaxNumberBottomSheetVisible,
+            onSelect = setAutoBackupMaxNumber,
+            onBottomSheetClosed = { isAutoBackupMaxNumberBottomSheetVisible = false },
+            selectedAutoBackupMaxNumber = uiState.autoBackupMaxNumber,
+        )
+
         AutoBackupSettingsMainCardUiState.Enabled(
             toggleAutoBackup = toggleAutoBackup,
             selectAutoBackupFrequency = { isAutoBackupFrequencyBottomSheetVisible = true },
+            selectAutoBackupMaxNumber = { isAutoBackupMaxNumberBottomSheetVisible = true },
             autoBackupFrequency = uiState.autoBackupFrequency,
+            autoBackupMaxNumber = uiState.autoBackupMaxNumber,
             isCloudBackupEnabled = uiState.cloudBackupEnabledState,
             isKeepLocalBackupEnabled = uiState.isKeepLocalBackupEnabled,
             toggleKeepLocalBackup = { uiState.toggleKeepLocalBackup() },
@@ -457,6 +472,7 @@ private fun AutoBackupSettingsScreenOnPreview() {
             uiState = AutoBackupSettingsUiState(
                 isBackupEnabled = true,
                 autoBackupFrequency = AutoBackupFrequency.WEEKLY,
+                autoBackupMaxNumber = AutoBackupMaxNumber.FIVE,
                 latestBackups = LatestBackups(
                     LocalBackup(date = Instant.now(), file = File("")),
                     CloudBackup(remoteId = "", name = "", date = Instant.now()),
@@ -471,6 +487,7 @@ private fun AutoBackupSettingsScreenOnPreview() {
             toggleAutoBackup = {},
             toggleCloudBackup = {},
             setAutoBackupFrequency = {},
+            setAutoBackupMaxNumber = {},
             navigateToRestoreBackup = {},
             openFileManager = {},
             featureFlagCloudBackup = true,
@@ -489,6 +506,7 @@ private fun AutoBackupSettingsScreenOffPreview() {
             toggleAutoBackup = {},
             toggleCloudBackup = {},
             setAutoBackupFrequency = {},
+            setAutoBackupMaxNumber = {},
             navigateToRestoreBackup = {},
             openFileManager = {},
             featureFlagCloudBackup = true,

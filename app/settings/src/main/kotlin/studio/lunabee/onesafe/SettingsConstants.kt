@@ -36,6 +36,7 @@ internal object SettingsConstants {
     const val AutoLockOSKHiddenDelay: String = "98ce4448-efb6-477d-92dc-1b1741bde987"
     const val autoBackupEnabledKeyVal: String = "11349132-0642-433b-8324-c57acb9a1296"
     const val autoBackupFrequencyKeyVal: String = "35917f5a-7ed8-45e0-8e13-908cf0a30c48"
+    const val autoBackupMaxNumberKeyVal: String = "55434ab2-c681-45de-83a4-93354587c6dc"
     const val CameraSystem: String = "73467738-e9c8-44b1-a4b5-c41c1b84e199"
     const val cloudBackupEnabledKeyVal: String = "9ea24a6d-7e61-453f-9bdb-c431ced470cf"
     const val keepLocalBackupEnabledKeyVal: String = "20b36aa9-3e7b-4982-8706-737016f10e87"

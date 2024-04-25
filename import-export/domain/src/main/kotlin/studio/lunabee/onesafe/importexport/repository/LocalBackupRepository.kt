@@ -23,6 +23,7 @@ import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import java.io.File
+import java.io.InputStream
 
 interface LocalBackupRepository {
     suspend fun addBackup(localBackup: LocalBackup)
@@ -33,4 +34,6 @@ interface LocalBackupRepository {
     suspend fun deleteAll()
     suspend fun getFile(backupId: String): File?
     fun hasBackupFlow(): Flow<Boolean>
+    suspend fun cacheBackup(inputStream: InputStream): LocalBackup
+    suspend fun clearCachedBackup(localBackup: LocalBackup)
 }
