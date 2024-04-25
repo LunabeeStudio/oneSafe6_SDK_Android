@@ -26,14 +26,14 @@ data class OSDriveError(
 ) : OSError(message, cause, code) {
 
     enum class Code(override val message: String) : ErrorCode<Code, OSDriveError> {
-        WRONG_ACCOUNT_TYPE(message = "The provided account must have \"com.google\" type"),
-        REQUEST_EXECUTION_FAILED(message = "The request failed to execute"),
-        AUTHENTICATION_REQUIRED(message = "User must authenticate by using the intent wrapped in error's cause"),
-        UNEXPECTED_NULL_ACCOUNT(message = "Unable to retrieve the Google account from account manager"),
+        DRIVE_WRONG_ACCOUNT_TYPE(message = "The provided account must have \"com.google\" type"),
+        DRIVE_REQUEST_EXECUTION_FAILED(message = "The request failed to execute"),
+        DRIVE_AUTHENTICATION_REQUIRED(message = "User must authenticate by using the intent wrapped in error's cause"),
+        DRIVE_UNEXPECTED_NULL_ACCOUNT(message = "Unable to retrieve the Google account from account manager"),
         DRIVE_ENGINE_NOT_INITIALIZED(message = "GoogleDriveEngine must be initialized by calling initialize fun"),
-        UNEXPECTED_NULL_AUTH_INTENT(message = "Authentication required but no intent provided"),
-        NETWORK_FAILURE(message = "The request failed due to network"),
-        BACKUP_REMOTE_ID_NOT_FOUND(message = "No remote backup found for provided remote id"),
-        UNKNOWN_ERROR(message = "Unknown error happened"),
+        DRIVE_UNEXPECTED_NULL_AUTH_INTENT(message = "Authentication required but no intent provided"),
+        DRIVE_NETWORK_FAILURE(message = "The request failed due to network"),
+        DRIVE_BACKUP_REMOTE_ID_NOT_FOUND(message = "No remote backup found for provided remote id"),
+        DRIVE_UNKNOWN_ERROR(message = "Unknown error happened"),
     }
 }

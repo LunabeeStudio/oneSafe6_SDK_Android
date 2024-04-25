@@ -22,21 +22,21 @@ package studio.lunabee.onesafe.importexport.usecase
 import com.lunabee.lbcore.model.LBFlowResult
 import com.lunabee.lbcore.model.LBFlowResult.Companion.transformResult
 import com.lunabee.lblogger.LBLogger
-import com.lunabee.lblogger.v
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import studio.lunabee.onesafe.importexport.model.CloudBackup
-import studio.lunabee.onesafe.importexport.model.ImportExportConstant
+import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
 import javax.inject.Inject
 
 private val log = LBLogger.get<DeleteOldCloudBackupsUseCase>()
 
 /**
- * Delete oldest backups from cloud to keep only the [ImportExportConstant.KeepBackupsNumber] backups
+ * Delete oldest backups from cloud to keep only the number required by the user
  */
 class DeleteOldCloudBackupsUseCase @Inject constructor(
     private val backupRepository: CloudBackupRepository,
+    private val autoBackupSettingsRepository: AutoBackupSettingsRepository,
 ) {
     /**
      * Refresh and delete old cloud backups
@@ -53,7 +53,7 @@ class DeleteOldCloudBackupsUseCase @Inject constructor(
     operator fun invoke(allBackups: List<CloudBackup>): Flow<LBFlowResult<Unit>> {
         val backupsToDelete = allBackups
             .sortedDescending()
-            .drop(ImportExportConstant.KeepBackupsNumber)
+            .drop(autoBackupSettingsRepository.autoBackupMaxNumber)
         log.v("Found ${backupsToDelete.size} to delete")
         return backupRepository.deleteBackup(backupsToDelete)
     }

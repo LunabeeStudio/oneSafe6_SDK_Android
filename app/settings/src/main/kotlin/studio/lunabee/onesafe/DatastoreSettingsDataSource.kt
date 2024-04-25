@@ -23,6 +23,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.lunabee.lbextensions.enumValueOfOrNull
@@ -56,6 +57,7 @@ class DatastoreSettingsDataSource @Inject constructor(
     private val autoLockOSKHiddenDelayKey = longPreferencesKey(SettingsConstants.AutoLockOSKHiddenDelay)
     private val autoBackupEnabledKey = booleanPreferencesKey(SettingsConstants.autoBackupEnabledKeyVal)
     private val autoBackupFrequencyKey = longPreferencesKey(SettingsConstants.autoBackupFrequencyKeyVal)
+    private val autoBackupMaxNumberKey = intPreferencesKey(SettingsConstants.autoBackupMaxNumberKeyVal)
     private val cloudBackupEnabledKey = booleanPreferencesKey(SettingsConstants.cloudBackupEnabledKeyVal)
     private val keepLocalBackupEnabledKey = booleanPreferencesKey(SettingsConstants.keepLocalBackupEnabledKeyVal)
     private val itemOrderingKey = stringPreferencesKey(SettingsConstants.itemOrderingKeyVal)
@@ -174,6 +176,24 @@ class DatastoreSettingsDataSource @Inject constructor(
         key = autoBackupFrequencyKey,
         defaultValue = SettingsDefaults.autoBackupFrequencyMsDefault.milliseconds,
     )
+
+    override fun updateAutoBackupMaxNumber(updatedValue: Int): Unit = runBlocking {
+        dataStore.edit { preferences ->
+            preferences[autoBackupMaxNumberKey] = updatedValue
+        }
+    }
+
+    override val autoBackupMaxNumberFlow: Flow<Int> =
+        dataStore.data.map { preferences ->
+            preferences[autoBackupMaxNumberKey] ?: SettingsDefaults.autoBackupMaxNumberDefault
+        }
+
+    override val autoBackupMaxNumber: Int
+        get() = runBlocking {
+            dataStore.data.map { preferences ->
+                preferences[autoBackupMaxNumberKey]
+            }.firstOrNull() ?: SettingsDefaults.autoBackupMaxNumberDefault
+        }
 
     override val autoBackupFrequencyFlow: Flow<Duration>
         get() = dataStore.data.map { preferences ->

@@ -21,14 +21,17 @@ package studio.lunabee.importexport.repository.repository
 
 import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.importexport.repository.datasource.LocalBackupCacheDataSource
 import studio.lunabee.importexport.repository.datasource.LocalBackupLocalDataSource
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
 import java.io.File
+import java.io.InputStream
 import javax.inject.Inject
 
 class LocalBackupRepositoryImpl @Inject constructor(
     private val dataSource: LocalBackupLocalDataSource,
+    private val cacheDataSource: LocalBackupCacheDataSource,
 ) : LocalBackupRepository {
     override suspend fun addBackup(localBackup: LocalBackup) {
         dataSource.addBackup(localBackup)
@@ -59,4 +62,12 @@ class LocalBackupRepositoryImpl @Inject constructor(
 
     override fun hasBackupFlow(): Flow<Boolean> =
         dataSource.hasBackup()
+
+    override suspend fun cacheBackup(inputStream: InputStream): LocalBackup {
+        return cacheDataSource.addBackup(inputStream)
+    }
+
+    override suspend fun clearCachedBackup(localBackup: LocalBackup) {
+        cacheDataSource.removeBackup(localBackup)
+    }
 }

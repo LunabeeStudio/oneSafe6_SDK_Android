@@ -43,6 +43,7 @@ android {
             pickFirsts += "META-INF/DEPENDENCIES"
             pickFirsts += "META-INF/LICENSE.md"
             pickFirsts += "META-INF/LICENSE-notice.md"
+            pickFirsts += "META-INF/INDEX.LIST"
         }
     }
 

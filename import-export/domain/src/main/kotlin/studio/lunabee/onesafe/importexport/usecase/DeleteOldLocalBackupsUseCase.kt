@@ -20,19 +20,20 @@
 package studio.lunabee.onesafe.importexport.usecase
 
 import studio.lunabee.onesafe.data
-import studio.lunabee.onesafe.importexport.model.ImportExportConstant
+import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
 import javax.inject.Inject
 
 /**
- * Delete oldest local backups to keep only the [ImportExportConstant.KeepBackupsNumber] backups
+ * Delete oldest local backups to keep only the number required by the user
  */
 class DeleteOldLocalBackupsUseCase @Inject constructor(
     private val backupRepository: LocalBackupRepository,
+    private val autoBackupSettingsRepository: AutoBackupSettingsRepository,
 ) {
     suspend operator fun invoke() {
         val oldBackups = backupRepository.getBackups()
-            .drop(ImportExportConstant.KeepBackupsNumber)
+            .drop(autoBackupSettingsRepository.autoBackupMaxNumber)
         backupRepository.delete(oldBackups.data.filterNotNull())
     }
 }

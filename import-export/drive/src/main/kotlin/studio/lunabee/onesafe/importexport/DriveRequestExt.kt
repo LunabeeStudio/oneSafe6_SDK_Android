@@ -48,13 +48,13 @@ private fun <T> Flow<LBFlowResult<T>>.setupFlow(): Flow<LBFlowResult<T>> = onSta
 }.catch { error ->
     val osError = when (error) {
         is UserRecoverableAuthIOException -> OSDriveError(
-            code = OSDriveError.Code.AUTHENTICATION_REQUIRED,
+            code = OSDriveError.Code.DRIVE_AUTHENTICATION_REQUIRED,
             cause = error,
         )
         is GoogleJsonResponseException -> error.toOSDriveError()
-        is UnknownHostException -> OSDriveError.Code.NETWORK_FAILURE.get(cause = error)
-        is IOException -> OSDriveError.Code.REQUEST_EXECUTION_FAILED.get(cause = error)
-        else -> OSDriveError.Code.UNKNOWN_ERROR.get(cause = error, message = error.localizedMessage)
+        is UnknownHostException -> OSDriveError.Code.DRIVE_NETWORK_FAILURE.get(cause = error)
+        is IOException -> OSDriveError.Code.DRIVE_REQUEST_EXECUTION_FAILED.get(cause = error)
+        else -> OSDriveError.Code.DRIVE_UNKNOWN_ERROR.get(cause = error, message = error.localizedMessage)
     }
 
     emit(LBFlowResult.Failure(osError))
@@ -66,7 +66,7 @@ private fun GoogleJsonResponseException.toOSDriveError(): OSDriveError {
     return when {
         details.code == 404 &&
             details.errors.firstOrNull()?.location == "fileId" &&
-            details.errors.firstOrNull()?.reason == "notFound" -> OSDriveError.Code.BACKUP_REMOTE_ID_NOT_FOUND.get(cause = this)
-        else -> OSDriveError.Code.REQUEST_EXECUTION_FAILED.get(cause = this, message = message)
+            details.errors.firstOrNull()?.reason == "notFound" -> OSDriveError.Code.DRIVE_BACKUP_REMOTE_ID_NOT_FOUND.get(cause = this)
+        else -> OSDriveError.Code.DRIVE_REQUEST_EXECUTION_FAILED.get(cause = this, message = message)
     }
 }

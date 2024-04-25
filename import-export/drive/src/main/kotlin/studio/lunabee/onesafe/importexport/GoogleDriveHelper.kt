@@ -37,6 +37,6 @@ object GoogleDriveHelper {
         }
         return cause?.let {
             LBResult.Success(it.intent)
-        } ?: LBResult.Failure(OSDriveError.Code.UNEXPECTED_NULL_AUTH_INTENT.get())
+        } ?: LBResult.Failure(OSDriveError.Code.DRIVE_UNEXPECTED_NULL_AUTH_INTENT.get())
     }
 }

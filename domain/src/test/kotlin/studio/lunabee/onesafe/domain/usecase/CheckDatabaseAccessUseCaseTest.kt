@@ -57,7 +57,7 @@ class CheckDatabaseAccessUseCaseTest {
 
     @BeforeEach
     fun setUp(): TestResult = runTest {
-        databaseKeyRepository.createKey()
+        databaseKeyRepository.setKey(databaseKey, true)
     }
 
     @Test
@@ -68,7 +68,7 @@ class CheckDatabaseAccessUseCaseTest {
 
     @Test
     fun check_bad_key_test(): TestResult = runTest {
-        databaseKeyRepository.setKey(badKey)
+        databaseKeyRepository.setKey(badKey, true)
         val actual: LBResult<Unit> = useCase()
         val failure: LBResult.Failure<Unit> = assertFailure(actual)
         assertEquals(OSStorageError.Code.DATABASE_WRONG_KEY, failure.throwable.osCode())

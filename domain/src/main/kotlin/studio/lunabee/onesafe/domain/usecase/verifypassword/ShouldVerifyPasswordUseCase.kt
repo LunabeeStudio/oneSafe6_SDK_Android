@@ -36,6 +36,7 @@ class ShouldVerifyPasswordUseCase @Inject constructor(
             val verificationInterval = securityOptionRepository.verifyPasswordInterval
             var shouldVerifyDateTime = LocalDateTime.ofInstant(lastPasswordVerification, ZoneId.systemDefault())
             shouldVerifyDateTime = when (verificationInterval) {
+                VerifyPasswordInterval.EVERY_TWO_WEEKS -> shouldVerifyDateTime.plusWeeks(2)
                 VerifyPasswordInterval.EVERY_MONTH -> shouldVerifyDateTime.plusMonths(1)
                 VerifyPasswordInterval.EVERY_TWO_MONTHS -> shouldVerifyDateTime.plusMonths(2)
                 VerifyPasswordInterval.EVERY_SIX_MONTHS -> shouldVerifyDateTime.plusMonths(6)

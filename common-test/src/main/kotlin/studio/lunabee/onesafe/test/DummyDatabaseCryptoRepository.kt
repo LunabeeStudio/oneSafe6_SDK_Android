@@ -27,9 +27,8 @@ import studio.lunabee.onesafe.domain.repository.DatabaseKeyRepository
 class DummyDatabaseCryptoRepository(private val databaseKey: DatabaseKey) : DatabaseKeyRepository {
     val key: MutableStateFlow<DatabaseKey?> = MutableStateFlow(null)
     val backupKey: MutableStateFlow<DatabaseKey?> = MutableStateFlow(null)
-
-    override suspend fun createKey(): DatabaseKey = databaseKey.also {
-        key.value = it
+    override fun generateKey(): DatabaseKey {
+        return databaseKey
     }
 
     override suspend fun removeKey() {
@@ -37,7 +36,7 @@ class DummyDatabaseCryptoRepository(private val databaseKey: DatabaseKey) : Data
     }
 
     override fun getKeyFlow(): Flow<DatabaseKey?> = key
-    override suspend fun setKey(key: DatabaseKey) {
+    override suspend fun setKey(key: DatabaseKey, override: Boolean) {
         this.key.value = key
     }
 

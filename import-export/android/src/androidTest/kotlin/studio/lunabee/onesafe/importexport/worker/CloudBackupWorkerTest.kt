@@ -146,7 +146,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
     @Test
     fun retry_test(): TestResult = runTest {
         every { cloudAutoBackupUseCase.invoke() } returns
-            flowOf(LBFlowResult.Failure(OSDriveError(OSDriveError.Code.REQUEST_EXECUTION_FAILED)))
+            flowOf(LBFlowResult.Failure(OSDriveError(OSDriveError.Code.DRIVE_REQUEST_EXECUTION_FAILED)))
 
         val workManager = WorkManager.getInstance(context)
         val testDriver = WorkManagerTestInitHelper.getTestDriver(context)!!
@@ -171,7 +171,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
     @Test
     fun unrecoverable_failure_test(): TestResult = runTest {
         every { cloudAutoBackupUseCase.invoke() } returns
-            flowOf(LBFlowResult.Failure(OSDriveError(OSDriveError.Code.AUTHENTICATION_REQUIRED)))
+            flowOf(LBFlowResult.Failure(OSDriveError(OSDriveError.Code.DRIVE_AUTHENTICATION_REQUIRED)))
 
         val workManager = WorkManager.getInstance(context)
         val testDriver = WorkManagerTestInitHelper.getTestDriver(context)!!
@@ -198,14 +198,14 @@ class CloudBackupWorkerTest : OSHiltTest() {
 
         val actualError = autoBackupErrorRepository.getError().first()
         assertNotNull(actualError)
-        assertEquals(OSDriveError.Code.AUTHENTICATION_REQUIRED.name, actualError.code)
+        assertEquals(OSDriveError.Code.DRIVE_AUTHENTICATION_REQUIRED.name, actualError.code)
         assertEquals(ZonedDateTime.now(testClock), actualError.date)
     }
 
     @Test
     fun error_notification_test(): TestResult = runTest {
         every { cloudAutoBackupUseCase.invoke() } returns
-            flowOf(LBFlowResult.Failure(OSDriveError(OSDriveError.Code.AUTHENTICATION_REQUIRED)))
+            flowOf(LBFlowResult.Failure(OSDriveError(OSDriveError.Code.DRIVE_AUTHENTICATION_REQUIRED)))
 
         val workManager = WorkManager.getInstance(context)
         val testDriver = WorkManagerTestInitHelper.getTestDriver(context)!!

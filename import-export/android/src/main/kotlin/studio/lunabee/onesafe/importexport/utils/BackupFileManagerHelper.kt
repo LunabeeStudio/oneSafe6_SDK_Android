@@ -22,21 +22,31 @@ package studio.lunabee.onesafe.importexport.utils
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.provider.DocumentsContract
+import androidx.activity.compose.ManagedActivityResultLauncher
 import com.lunabee.lblogger.LBLogger
+import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
 import studio.lunabee.onesafe.importexport.provider.BackupsProvider
 
 private val logger = LBLogger.get<BackupFileManagerHelper>()
 
-/**
- * Helper to open the device file manager using the [BackupsProvider]
- * Inspired from Yuzu app
- *
- * @see <a href="https://t.ly/MnrR9" />Yuzu HomeSettingsFragment.kt</a>
- */
 object BackupFileManagerHelper {
 
-    fun openFileManager(context: Context): Boolean {
+    /**
+     * Open the default file picker to pick a backup
+     */
+    fun launchFilePicker(pickFileLauncher: ManagedActivityResultLauncher<String, Uri?>) {
+        pickFileLauncher.launch(ImportExportAndroidConstants.MimeTypeOs6lsb)
+    }
+
+    /**
+     * Helper to open the device file manager using the [BackupsProvider]
+     * Inspired from Yuzu app 🪦
+     *
+     * @see <a href="https://t.ly/MnrR9" />Yuzu HomeSettingsFragment.kt</a>
+     */
+    fun openInternalFileManager(context: Context): Boolean {
         // First, try to open the user data folder directly
         var result = false
         try {

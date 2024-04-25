@@ -22,7 +22,7 @@ package studio.lunabee.onesafe.domain.usecase.authentication
 import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
 import studio.lunabee.onesafe.domain.repository.EditCryptoRepository
-import studio.lunabee.onesafe.domain.repository.TransactionManager
+import studio.lunabee.onesafe.domain.repository.StorageManager
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.domain.usecase.verifypassword.SetLastPasswordVerificationUseCase
 import studio.lunabee.onesafe.error.OSError
@@ -33,7 +33,7 @@ private val log = LBLogger.get<ChangePasswordUseCase>()
 class ChangePasswordUseCase @Inject constructor(
     private val safeItemKeyRepository: SafeItemKeyRepository,
     private val editCryptoRepository: EditCryptoRepository,
-    private val transactionManager: TransactionManager,
+    private val transactionManager: StorageManager,
     private val setLastPasswordVerificationUseCase: SetLastPasswordVerificationUseCase,
 ) {
     suspend operator fun invoke(newPassword: CharArray): LBResult<Unit> = OSError.runCatching(logger = log) {

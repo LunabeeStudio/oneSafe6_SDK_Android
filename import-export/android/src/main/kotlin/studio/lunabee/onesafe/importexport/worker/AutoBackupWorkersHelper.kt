@@ -159,17 +159,17 @@ class AutoBackupWorkersHelper @Inject constructor(
     private fun canRetry(error: Throwable?): Boolean {
         val driveError = error as? OSDriveError
         val canRetry = when (driveError?.code) {
-            OSDriveError.Code.REQUEST_EXECUTION_FAILED,
-            OSDriveError.Code.NETWORK_FAILURE,
-            OSDriveError.Code.BACKUP_REMOTE_ID_NOT_FOUND,
+            OSDriveError.Code.DRIVE_REQUEST_EXECUTION_FAILED,
+            OSDriveError.Code.DRIVE_NETWORK_FAILURE,
+            OSDriveError.Code.DRIVE_BACKUP_REMOTE_ID_NOT_FOUND,
             OSDriveError.Code.DRIVE_ENGINE_NOT_INITIALIZED,
-            OSDriveError.Code.UNEXPECTED_NULL_AUTH_INTENT,
-            OSDriveError.Code.UNKNOWN_ERROR,
+            OSDriveError.Code.DRIVE_UNEXPECTED_NULL_AUTH_INTENT,
+            OSDriveError.Code.DRIVE_UNKNOWN_ERROR,
             null, // Retry by default
             -> true
-            OSDriveError.Code.WRONG_ACCOUNT_TYPE,
-            OSDriveError.Code.AUTHENTICATION_REQUIRED,
-            OSDriveError.Code.UNEXPECTED_NULL_ACCOUNT,
+            OSDriveError.Code.DRIVE_WRONG_ACCOUNT_TYPE,
+            OSDriveError.Code.DRIVE_AUTHENTICATION_REQUIRED,
+            OSDriveError.Code.DRIVE_UNEXPECTED_NULL_ACCOUNT,
             -> false
         }
         return canRetry

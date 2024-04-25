@@ -38,7 +38,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.importexport.repository.datasource.CloudBackupEngine
 import studio.lunabee.onesafe.commonui.CommonUiConstants
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
@@ -52,6 +51,7 @@ import studio.lunabee.onesafe.importexport.model.LatestBackups
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
 import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
+import studio.lunabee.onesafe.importexport.settings.backupnumber.AutoBackupMaxNumber
 import studio.lunabee.onesafe.importexport.usecase.GetLatestBackupUseCase
 import studio.lunabee.onesafe.importexport.usecase.SetKeepLocalBackupUseCase
 import studio.lunabee.onesafe.importexport.worker.AutoBackupWorkersHelper
@@ -65,7 +65,6 @@ private val logger = LBLogger.get<AutoBackupSettingsViewModel>()
 class AutoBackupSettingsViewModel @Inject constructor(
     private val settings: AutoBackupSettingsRepository,
     private val getLatestBackupUseCase: GetLatestBackupUseCase,
-    private val cloudBackupEngine: CloudBackupEngine,
     private val cloudBackupRepository: CloudBackupRepository,
     private val autoBackupWorkersHelper: AutoBackupWorkersHelper,
     featureFlags: FeatureFlags,
@@ -92,8 +91,9 @@ class AutoBackupSettingsViewModel @Inject constructor(
                 getLatestBackupUseCase.flow(),
                 cloudBackupEnabledState,
                 settings.keepLocalBackupEnabled,
-                cloudBackupEngine.getCloudInfo(),
+                cloudBackupRepository.getCloudInfo(),
                 localBackupRepository.hasBackupFlow(),
+                settings.autoBackupMaxNumberFlow,
             ) { values ->
                 val frequency = values[0] as Duration
                 val latestBackups = values[1] as LatestBackups
@@ -101,9 +101,11 @@ class AutoBackupSettingsViewModel @Inject constructor(
                 val isKeepLocalBackupEnabled = values[3] as Boolean
                 val cloudInfo = values[4] as CloudInfo
                 val hasBackup = values[5] as Boolean
+                val autoBackupMaxNumber = values[6] as Int
                 AutoBackupSettingsUiState(
                     isBackupEnabled = true,
                     autoBackupFrequency = AutoBackupFrequency.valueForDuration(frequency),
+                    autoBackupMaxNumber = AutoBackupMaxNumber.valueForInt(autoBackupMaxNumber),
                     latestBackups = latestBackups,
                     cloudBackupEnabledState = cloudBackupEnabledState,
                     isKeepLocalBackupEnabled = isKeepLocalBackupEnabled,
@@ -145,9 +147,13 @@ class AutoBackupSettingsViewModel @Inject constructor(
         autoBackupWorkersHelper.start(synchronizeCloudFirst = false)
     }
 
+    fun setAutoBackupMaxNumber(frequency: AutoBackupMaxNumber) {
+        settings.updateAutoBackupMaxNumber(frequency.value)
+    }
+
     fun setupCloudBackupAndSync(accountName: String) {
         viewModelScope.launch {
-            cloudBackupEngine.setupAccount(accountName).transformResult {
+            cloudBackupRepository.setupAccount(accountName).transformResult {
                 emitAll(cloudBackupRepository.refreshBackupList())
             }.collect { result ->
                 when (result) {
@@ -156,7 +162,7 @@ class AutoBackupSettingsViewModel @Inject constructor(
                     }
                     is LBFlowResult.Failure -> {
                         val error = result.throwable as? OSDriveError
-                        if (error?.code == OSDriveError.Code.AUTHENTICATION_REQUIRED) {
+                        if (error?.code == OSDriveError.Code.DRIVE_AUTHENTICATION_REQUIRED) {
                             val authIntentRes = GoogleDriveHelper.getAuthorizationIntent(error)
                             when (authIntentRes) {
                                 is LBResult.Failure -> {

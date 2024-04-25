@@ -83,7 +83,7 @@ import studio.lunabee.onesafe.domain.usecase.authentication.CheckDatabaseAccessU
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSignUpUseCase
 import studio.lunabee.onesafe.domain.usecase.autolock.LockAppUseCase
-import studio.lunabee.onesafe.help.HelpActivity
+import studio.lunabee.onesafe.help.main.HelpActivity
 import studio.lunabee.onesafe.ime.model.ImeClient
 import studio.lunabee.onesafe.ime.model.OSKImeState
 import studio.lunabee.onesafe.ime.ui.ImeFeedbackManager

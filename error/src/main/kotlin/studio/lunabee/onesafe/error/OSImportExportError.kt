@@ -41,5 +41,7 @@ data class OSImportExportError(
         ENGINE_NOT_PREPARED("Export engine is not initialized with required values"),
         BACKUP_FILE_DELETE_FAILED("Fail to delete backup file"),
         BACKUP_ID_NOT_FOUND_IN_DB("No backup found for the provided id"),
+        FILE_NOT_A_BACKUP("The file is not a backup"),
+        CANNOT_OPEN_URI("Unable to open a stream on the Uri"),
     }
 }

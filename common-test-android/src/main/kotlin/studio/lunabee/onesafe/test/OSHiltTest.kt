@@ -167,7 +167,7 @@ abstract class OSHiltTest : OSTest() {
     protected suspend fun signOut() {
         context.cacheDir.listFiles { pathname ->
             pathname?.let {
-                !pathname.path.contains("screenshot") && !pathname.path.contains("test")
+                !pathname.path.contains("screenshot") && !pathname.path.contains("keep_")
             } ?: true
         }?.forEach {
             it.deleteRecursively()

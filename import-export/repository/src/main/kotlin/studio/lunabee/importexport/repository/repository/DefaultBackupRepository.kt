@@ -30,6 +30,7 @@ import studio.lunabee.importexport.repository.datasource.CloudBackupLocalDataSou
 import studio.lunabee.onesafe.combine
 import studio.lunabee.onesafe.error.OSImportExportError
 import studio.lunabee.onesafe.importexport.model.CloudBackup
+import studio.lunabee.onesafe.importexport.model.CloudInfo
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
 import java.io.InputStream
@@ -37,12 +38,12 @@ import javax.inject.Inject
 
 // TODO <AutoBackup> cache refreshBackupList to avoid multiple call too close
 
-class GoogleDriveBackupRepository @Inject constructor(
-    private val driveEngine: CloudBackupEngine,
+class DefaultBackupRepository @Inject constructor(
+    private val cloudBackupEngine: CloudBackupEngine,
     private val localCloudBackupDatasource: CloudBackupLocalDataSource,
 ) : CloudBackupRepository {
     override fun refreshBackupList(): Flow<LBFlowResult<List<CloudBackup>>> =
-        driveEngine.fetchBackupList().mapResult { cloudBackups ->
+        cloudBackupEngine.fetchBackupList().mapResult { cloudBackups ->
             localCloudBackupDatasource.refreshCloudBackups(cloudBackups)
             cloudBackups
         }
@@ -50,7 +51,7 @@ class GoogleDriveBackupRepository @Inject constructor(
     override fun uploadBackup(
         backup: LocalBackup,
     ): Flow<LBFlowResult<CloudBackup>> =
-        driveEngine.uploadBackup(backup).mapResult { cloudBackup ->
+        cloudBackupEngine.uploadBackup(backup).mapResult { cloudBackup ->
             localCloudBackupDatasource.saveCloudBackup(cloudBackup)
         }
 
@@ -60,7 +61,7 @@ class GoogleDriveBackupRepository @Inject constructor(
         }.combine()
 
     override fun deleteBackup(backup: CloudBackup): Flow<LBFlowResult<Unit>> {
-        return driveEngine.deleteBackup(backup).mapResult {
+        return cloudBackupEngine.deleteBackup(backup).mapResult {
             localCloudBackupDatasource.deleteCloudBackup(backup.id)
         }
     }
@@ -76,7 +77,7 @@ class GoogleDriveBackupRepository @Inject constructor(
 
     override fun getInputStream(backupId: String): Flow<LBFlowResult<InputStream>> = flow {
         localCloudBackupDatasource.getRemoteId(backupId)?.let { remoteId ->
-            emitAll(driveEngine.getInputStream(remoteId))
+            emitAll(cloudBackupEngine.getInputStream(remoteId))
         } ?: emit(LBFlowResult.Failure(OSImportExportError(OSImportExportError.Code.BACKUP_ID_NOT_FOUND_IN_DB)))
     }
 
@@ -88,5 +89,13 @@ class GoogleDriveBackupRepository @Inject constructor(
 
     override suspend fun clearBackupsLocally() {
         localCloudBackupDatasource.deleteAll()
+    }
+
+    override fun getCloudInfo(): Flow<CloudInfo> {
+        return cloudBackupEngine.getCloudInfo()
+    }
+
+    override fun setupAccount(accountName: String): Flow<LBFlowResult<Unit>> {
+        return cloudBackupEngine.setupAccount(accountName)
     }
 }
