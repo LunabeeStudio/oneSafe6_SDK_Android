@@ -30,6 +30,10 @@ android {
         isCoreLibraryDesugaringEnabled = true
     }
 
+    defaultConfig {
+        testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
+    }
+
     flavorDimensions += AndroidConfig.CRYPTO_BACKEND_FLAVOR_DIMENSION
     productFlavors {
         create(AndroidConfig.CRYPTO_BACKEND_FLAVOR_JCE) {
@@ -43,6 +47,9 @@ android {
 
     packaging {
         resources.pickFirsts += "META-INF/INDEX.LIST"
+        resources.pickFirsts += "META-INF/DEPENDENCIES"
+        resources.pickFirsts += "META-INF/LICENSE.md"
+        resources.pickFirsts += "META-INF/LICENSE-notice.md"
         resources.pickFirsts += "META-INF/DEPENDENCIES"
     }
 }
@@ -81,4 +88,6 @@ dependencies {
     implementation(project(":messaging-domain"))
     implementation(project(":messaging-repository"))
     implementation(project(":messaging-crypto-android"))
+
+    androidTestImplementation(project(":common-test-android"))
 }

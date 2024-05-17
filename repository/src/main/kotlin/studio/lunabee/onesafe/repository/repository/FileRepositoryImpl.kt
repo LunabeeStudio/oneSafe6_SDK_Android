@@ -47,7 +47,7 @@ class FileRepositoryImpl @Inject constructor(
         fileLocalDatasource.copyAndDeleteFile(newFile = file, fileId = fileId)
     }
 
-    override fun deleteItemDir(itemId: UUID) {
+    override suspend fun deleteItemDir(itemId: UUID) {
         fileLocalDatasource.deleteItemDir(itemId)
     }
 
@@ -64,7 +64,7 @@ class FileRepositoryImpl @Inject constructor(
         return fileLocalDatasource.getThumbnailFile(thumbnailFileName, isFullWidth)
     }
 
-    override fun deletePlainFilesCacheDir() {
+    override suspend fun deletePlainFilesCacheDir() {
         fileLocalDatasource.deletePlainFilesCacheDir()
     }
 }

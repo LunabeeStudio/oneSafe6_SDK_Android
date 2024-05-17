@@ -32,8 +32,8 @@ interface FileRepository {
     fun deleteFile(fileId: UUID): Boolean
     fun getFiles(): List<File>
     suspend fun copyAndDeleteFile(file: File, fileId: UUID)
-    fun deleteItemDir(itemId: UUID)
-    fun deletePlainFilesCacheDir()
+    suspend fun deleteItemDir(itemId: UUID)
+    suspend fun deletePlainFilesCacheDir()
     suspend fun savePlainFile(inputStream: InputStream, filename: String, itemId: UUID, fieldId: UUID): File
     fun deleteAll()
     fun getThumbnailFile(thumbnailFileName: String, isFullWidth: Boolean): File

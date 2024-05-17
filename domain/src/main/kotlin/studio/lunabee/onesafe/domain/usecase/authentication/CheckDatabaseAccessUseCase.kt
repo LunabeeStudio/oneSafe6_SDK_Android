@@ -40,8 +40,15 @@ class CheckDatabaseAccessUseCase @Inject constructor(
      * @return [LBResult.Success] if the database is accessible or does not exist and the key is null
      */
     suspend operator fun invoke(): LBResult<Unit> {
-        val key = databaseKeyRepository.getKeyFlow().firstOrNull()
-        return invoke(key)
+        val result = OSError.runCatching {
+            databaseKeyRepository
+                .getKeyFlow()
+                .firstOrNull()
+        }
+        return when (result) {
+            is LBResult.Failure -> LBResult.Failure(result.throwable)
+            else -> invoke(result.data)
+        }
     }
 
     /**

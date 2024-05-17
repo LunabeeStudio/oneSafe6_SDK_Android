@@ -229,7 +229,7 @@ object DatabaseModule {
         @DatabaseName(DatabaseName.Type.Main) dbName: String,
     ): MainDatabase {
         return runBlocking {
-            val dbKey = databaseKeyRepository.getKeyFlow().firstOrNull()
+            val dbKey = kotlin.runCatching { databaseKeyRepository.getKeyFlow().firstOrNull() }.getOrNull()
             MainDatabase.build(
                 appContext = appContext,
                 dbKey = dbKey,

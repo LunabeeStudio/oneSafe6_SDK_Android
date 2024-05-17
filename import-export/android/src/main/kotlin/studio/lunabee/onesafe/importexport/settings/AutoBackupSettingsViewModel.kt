@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import studio.lunabee.compose.core.LbcTextSpec
@@ -54,6 +55,7 @@ import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
 import studio.lunabee.onesafe.importexport.settings.backupnumber.AutoBackupMaxNumber
 import studio.lunabee.onesafe.importexport.usecase.GetLatestBackupUseCase
 import studio.lunabee.onesafe.importexport.usecase.SetKeepLocalBackupUseCase
+import studio.lunabee.onesafe.importexport.usecase.UpdateAutoBackUpsMaxNumberUseCase
 import studio.lunabee.onesafe.importexport.worker.AutoBackupWorkersHelper
 import studio.lunabee.onesafe.model.OSSwitchState
 import javax.inject.Inject
@@ -70,6 +72,7 @@ class AutoBackupSettingsViewModel @Inject constructor(
     featureFlags: FeatureFlags,
     private val localBackupRepository: LocalBackupRepository,
     private val setKeepLocalBackupUseCase: SetKeepLocalBackupUseCase,
+    private val updateAutoBackUpsMaxNumberUseCase: UpdateAutoBackUpsMaxNumberUseCase,
 ) : ViewModel() {
     val featureFlagCloudBackup: Boolean = featureFlags.cloudBackup()
 
@@ -148,7 +151,8 @@ class AutoBackupSettingsViewModel @Inject constructor(
     }
 
     fun setAutoBackupMaxNumber(frequency: AutoBackupMaxNumber) {
-        settings.updateAutoBackupMaxNumber(frequency.value)
+        // We don't care about the result
+        updateAutoBackUpsMaxNumberUseCase(frequency.value).launchIn(viewModelScope)
     }
 
     fun setupCloudBackupAndSync(accountName: String) {

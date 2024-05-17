@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.runtime.Stable
 import androidx.navigation.NavController
 import studio.lunabee.onesafe.commonui.utils.OSProcessPhoenix
+import studio.lunabee.onesafe.commonui.utils.safeNavigate
 import studio.lunabee.onesafe.help.lostkey.LostKeyDestination
 import studio.lunabee.onesafe.help.lostkeyexplain.LostKeyExplainDestination
 
@@ -14,11 +15,11 @@ class CipherKeyPromptNavigation(
     private val context: Context,
 ) {
     fun navigateToWhyKeyMissing() {
-        navController.navigate(LostKeyExplainDestination.route)
+        navController.safeNavigate(LostKeyExplainDestination.route)
     }
 
     fun navigateToLostKey() {
-        navController.navigate(LostKeyDestination.route)
+        navController.safeNavigate(LostKeyDestination.route)
     }
 
     fun exitToMain() {

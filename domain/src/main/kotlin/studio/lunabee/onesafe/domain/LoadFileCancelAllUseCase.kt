@@ -22,6 +22,6 @@ package studio.lunabee.onesafe.domain
 import java.util.UUID
 
 interface LoadFileCancelAllUseCase {
-    operator fun invoke(itemId: UUID)
-    operator fun invoke()
+    suspend operator fun invoke(itemId: UUID)
+    suspend operator fun invoke()
 }

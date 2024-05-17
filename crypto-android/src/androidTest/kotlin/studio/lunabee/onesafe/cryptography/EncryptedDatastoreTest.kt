@@ -57,8 +57,8 @@ class EncryptedDatastoreTest {
     @Test
     fun insert_edit_retrieve_remove_test() {
         runTest {
-            dataStore.insertValue("value".encodeToByteArray(), keyAlias)
-            dataStore.insertValue("value2".encodeToByteArray(), keyAlias)
+            dataStore.insertValue(keyAlias, "value".encodeToByteArray())
+            dataStore.insertValue(keyAlias, "value2".encodeToByteArray())
             assertEquals("value2", dataStore.retrieveValue(keyAlias).first()?.decodeToString())
             dataStore.removeValue(keyAlias)
             val actual = dataStore.retrieveValue(keyAlias).firstOrNull()
@@ -69,9 +69,9 @@ class EncryptedDatastoreTest {
     @Test
     fun edit_value_override_error_test() {
         runTest {
-            dataStore.insertValue(value = "key".encodeToByteArray(), key = keyAlias, override = false)
+            dataStore.insertValue(key = keyAlias, value = "key".encodeToByteArray(), override = false)
             val error = assertFailsWith<OSCryptoError> {
-                dataStore.insertValue(value = byteArrayOf(), key = keyAlias, override = false)
+                dataStore.insertValue(key = keyAlias, value = byteArrayOf(), override = false)
             }
             assertEquals(OSCryptoError.Code.DATASTORE_ENTRY_KEY_ALREADY_EXIST, error.code)
         }
@@ -80,7 +80,7 @@ class EncryptedDatastoreTest {
     @Test
     fun delete_master_key_and_try_to_get_value_test() {
         runTest {
-            dataStore.insertValue("key".encodeToByteArray(), keyAlias)
+            dataStore.insertValue(keyAlias, "key".encodeToByteArray())
             val keyStore = KeyStore.getInstance("AndroidKeyStore")
             keyStore.load(null)
             keyStore.deleteEntry(accessMasterKeyString())

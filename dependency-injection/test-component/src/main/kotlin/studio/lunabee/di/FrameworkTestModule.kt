@@ -89,11 +89,11 @@ object FrameworkTestModule {
         fileRepository: FileRepository,
     ): LoadFileCancelAllUseCase {
         return object : LoadFileCancelAllUseCase {
-            override operator fun invoke(itemId: UUID) {
+            override suspend operator fun invoke(itemId: UUID) {
                 fileRepository.deleteItemDir(itemId)
             }
 
-            override operator fun invoke() {
+            override suspend operator fun invoke() {
                 fileRepository.deletePlainFilesCacheDir()
             }
         }

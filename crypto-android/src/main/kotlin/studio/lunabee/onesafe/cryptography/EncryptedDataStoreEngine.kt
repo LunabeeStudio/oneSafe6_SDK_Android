@@ -60,9 +60,9 @@ class EncryptedDataStoreEngine @Inject constructor(
     /**
      * Encrypt the value and store it in the [dataStore]
      */
-    override suspend fun insertValue(value: ByteArray, key: String, override: Boolean) {
+    override suspend fun insertValue(key: String, value: ByteArray, override: Boolean) {
         withContext(fileDispatcher) {
-            super.insertValue(value, key, override)
+            super.insertValue(key, value, override)
             val encValue = encryptData(value)
             dataStore.updateData { data ->
                 data.toBuilder().putData(key, encValue.toByteString()).build()

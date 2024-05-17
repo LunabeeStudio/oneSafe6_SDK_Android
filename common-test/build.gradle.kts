@@ -29,6 +29,7 @@ dependencies {
     api(libs.threeten.extra)
 
     implementation(project(":domain"))
+    implementation(project(":error"))
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)

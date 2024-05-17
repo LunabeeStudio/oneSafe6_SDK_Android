@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -48,7 +49,9 @@ fun CipherKeyPromptRoute(
 
     // TODO <cipher> add test which call tryFinishSetupDatabaseEncryption
     // Try to run FinishSetupDatabaseEncryption in case something went wrong during restart
-    viewModel.tryFinishSetupDatabaseEncryption(context)
+    LaunchedEffect(Unit) {
+        viewModel.tryFinishSetupDatabaseEncryption(context)
+    }
     val dialogState by viewModel.dialogState.collectAsStateWithLifecycle()
     dialogState?.DefaultAlertDialog()
 

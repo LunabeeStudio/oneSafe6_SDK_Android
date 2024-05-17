@@ -33,8 +33,8 @@ interface FileLocalDatasource {
     fun getAllFiles(): List<File>
     suspend fun copyAndDeleteFile(newFile: File, fileId: UUID)
     fun getFiles(filesId: List<String>): List<File>
-    fun deleteItemDir(itemId: UUID)
-    fun deletePlainFilesCacheDir()
+    suspend fun deleteItemDir(itemId: UUID)
+    suspend fun deletePlainFilesCacheDir()
     fun getThumbnailFile(thumbnailFileName: String, isFullWidth: Boolean): File
     suspend fun savePlainFile(inputStream: InputStream, filename: String, itemId: UUID, fieldId: UUID): File
 }

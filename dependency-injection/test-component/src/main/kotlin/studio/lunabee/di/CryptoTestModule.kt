@@ -33,7 +33,7 @@ import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
 import studio.lunabee.onesafe.cryptography.PasswordHashEngine
 import studio.lunabee.onesafe.cryptography.ProtoData
 import studio.lunabee.onesafe.domain.qualifier.CryptoDispatcher
-import studio.lunabee.onesafe.cryptography.utils.SecuredDataSerializer
+import studio.lunabee.onesafe.cryptography.utils.ProtoDataSerializer
 
 @Module
 @TestInstallIn(
@@ -42,14 +42,14 @@ import studio.lunabee.onesafe.cryptography.utils.SecuredDataSerializer
 )
 object CryptoDatastoreTestModule {
 
-    private const val EncProtoDatastoreFile: String = "crypto_datastore"
+    private const val ProtoDataDatastoreFile: String = "crypto_datastore"
 
     @Provides
     fun provideDatastore(@ApplicationContext context: Context): DataStore<ProtoData> = context.dataStoreProto
 
     private val Context.dataStoreProto: DataStore<ProtoData> by dataStore(
-        fileName = EncProtoDatastoreFile,
-        serializer = SecuredDataSerializer,
+        fileName = ProtoDataDatastoreFile,
+        serializer = ProtoDataSerializer,
     )
 }
 

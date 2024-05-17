@@ -55,7 +55,7 @@ private class DataStoreValueDelegate<T>(
             if (value == null) {
                 runBlocking { datastoreEngine.removeValue(key) }
             } else {
-                runBlocking { datastoreEngine.insertValue(value, key) }
+                runBlocking { datastoreEngine.insertValue(key, value) }
             }
         } else {
             throw OSCryptoError(errorCodeIfOverrideExistingValue)
