@@ -120,12 +120,16 @@ class FileLocalDatasourceImpl @Inject constructor(
         file
     }
 
-    override fun deleteItemDir(itemId: UUID) {
-        File(plainFilesCacheDir, itemId.toString()).deleteRecursively()
+    override suspend fun deleteItemDir(itemId: UUID) {
+        withContext(dispatcher) {
+            File(plainFilesCacheDir, itemId.toString()).deleteRecursively()
+        }
     }
 
-    override fun deletePlainFilesCacheDir() {
-        plainFilesCacheDir.deleteRecursively()
+    override suspend fun deletePlainFilesCacheDir() {
+        withContext(dispatcher) {
+            plainFilesCacheDir.deleteRecursively()
+        }
     }
 
     override fun getThumbnailFile(thumbnailFileName: String, isFullWidth: Boolean): File {

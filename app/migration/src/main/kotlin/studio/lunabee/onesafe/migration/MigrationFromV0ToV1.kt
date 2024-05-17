@@ -98,9 +98,9 @@ class MigrationFromV0ToV1 @Inject constructor(
                 // Update index word entries
                 indexWordEntryDao.update(roomIndexWorldEntries)
                 // Update key test value
-                dataStoreEngine.insertValue(migratedEncMasterKeyTest, DATASTORE_MASTER_KEY_TEST)
+                dataStoreEngine.insertValue(DATASTORE_MASTER_KEY_TEST, migratedEncMasterKeyTest)
                 // Update index key
-                dataStoreEngine.insertValue(migratedEncIndexKey, DATASTORE_SEARCH_INDEX_KEY)
+                dataStoreEngine.insertValue(DATASTORE_SEARCH_INDEX_KEY, migratedEncIndexKey)
                 // Clear username
                 dataStoreEngine.removeValue(DATASTORE_USERNAME)
             } else {

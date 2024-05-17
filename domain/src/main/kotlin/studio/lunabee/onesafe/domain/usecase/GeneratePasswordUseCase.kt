@@ -19,20 +19,17 @@
 
 package studio.lunabee.onesafe.domain.usecase
 
-import me.gosimple.nbvcxz.Nbvcxz
 import studio.lunabee.onesafe.domain.model.password.GeneratedPassword
 import studio.lunabee.onesafe.domain.model.password.PasswordConfig
-import studio.lunabee.onesafe.domain.model.password.fromEntropy
 import java.security.SecureRandom
 import javax.inject.Inject
 import kotlin.random.Random
 import kotlin.random.asKotlinRandom
 
-class GeneratePasswordUseCase @Inject constructor() {
-
-    private val strengthEstimator = Nbvcxz()
-
-    operator fun invoke(passwordConfig: PasswordConfig): GeneratedPassword {
+class GeneratePasswordUseCase @Inject constructor(
+    private val estimatePasswordStrengthUseCase: EstimatePasswordStrengthUseCase,
+) {
+    suspend operator fun invoke(passwordConfig: PasswordConfig): GeneratedPassword {
         val charPool = mutableListOf<Char>()
 
         if (passwordConfig.includeUpperCase) {
@@ -61,7 +58,7 @@ class GeneratePasswordUseCase @Inject constructor() {
         }
         return GeneratedPassword(
             value = generatedPassword,
-            strength = fromEntropy(strengthEstimator.estimate(generatedPassword).entropy),
+            strength = estimatePasswordStrengthUseCase(generatedPassword),
         )
     }
 }

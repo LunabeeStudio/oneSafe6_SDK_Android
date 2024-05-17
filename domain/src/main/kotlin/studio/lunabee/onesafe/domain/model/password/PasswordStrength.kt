@@ -22,13 +22,3 @@ package studio.lunabee.onesafe.domain.model.password
 enum class PasswordStrength {
     VeryWeak, Weak, Good, Strong, VeryStrong, BulletProof, Unknown
 }
-
-fun fromEntropy(entropy: Double): PasswordStrength = when {
-    entropy < 25 -> PasswordStrength.VeryWeak
-    entropy >= 25 && entropy < 50 -> PasswordStrength.Weak
-    entropy >= 50 && entropy < 75 -> PasswordStrength.Good
-    entropy >= 75 && entropy < 85 -> PasswordStrength.Strong
-    entropy >= 85 && entropy < 100 -> PasswordStrength.VeryStrong
-    entropy >= 100 -> PasswordStrength.BulletProof
-    else -> PasswordStrength.Unknown
-}

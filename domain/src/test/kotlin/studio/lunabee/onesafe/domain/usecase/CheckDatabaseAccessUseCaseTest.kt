@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test
 import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
 import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
 import studio.lunabee.onesafe.domain.usecase.authentication.CheckDatabaseAccessUseCase
+import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSError.Companion.get
 import studio.lunabee.onesafe.error.OSStorageError
 import studio.lunabee.onesafe.error.osCode
@@ -72,6 +73,15 @@ class CheckDatabaseAccessUseCaseTest {
         val actual: LBResult<Unit> = useCase()
         val failure: LBResult.Failure<Unit> = assertFailure(actual)
         assertEquals(OSStorageError.Code.DATABASE_WRONG_KEY, failure.throwable.osCode())
+    }
+
+    @Test
+    fun check_key_throw_test(): TestResult = runTest {
+        databaseKeyRepository.throwInKeyFlow = OSCryptoError(code = OSCryptoError.Code.DATASTORE_KEY_PERMANENTLY_INVALIDATE)
+        databaseKeyRepository.setKey(badKey, override = true)
+        val actual: LBResult<Unit> = useCase()
+        val failure: LBResult.Failure<Unit> = assertFailure(actual)
+        assertEquals(OSCryptoError.Code.DATASTORE_KEY_PERMANENTLY_INVALIDATE, failure.throwable.osCode())
     }
 
     @Test

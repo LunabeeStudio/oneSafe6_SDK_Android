@@ -46,7 +46,7 @@ class DatabaseKeyRepositoryImpl @Inject constructor(
     }
 
     override suspend fun setKey(key: DatabaseKey, override: Boolean) {
-        dataStore.insertValue(value = key.raw, key = DATABASE_KEY_ALIAS, override = override)
+        dataStore.insertValue(key = DATABASE_KEY_ALIAS, value = key.raw, override = override)
     }
 
     override fun getBackupKeyFlow(): Flow<DatabaseKey?> {
@@ -59,7 +59,7 @@ class DatabaseKeyRepositoryImpl @Inject constructor(
 
     override suspend fun copyKeyToBackupKey() {
         getKeyFlow().firstOrNull()?.let { key ->
-            dataStore.insertValue(value = key.raw, key = DATABASE_BACKUP_KEY_ALIAS)
+            dataStore.insertValue(key = DATABASE_BACKUP_KEY_ALIAS, value = key.raw)
         }
     }
 

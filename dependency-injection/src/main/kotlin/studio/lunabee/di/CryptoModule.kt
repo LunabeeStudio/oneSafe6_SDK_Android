@@ -58,7 +58,7 @@ import studio.lunabee.onesafe.cryptography.RsaCryptoEngine
 import studio.lunabee.onesafe.cryptography.SecureIVProvider
 import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
 import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
-import studio.lunabee.onesafe.cryptography.utils.SecuredDataSerializer
+import studio.lunabee.onesafe.cryptography.utils.ProtoDataSerializer
 import studio.lunabee.onesafe.domain.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.domain.repository.BiometricCipherRepository
 import studio.lunabee.onesafe.domain.repository.DatabaseKeyRepository
@@ -146,14 +146,20 @@ object CryptoDispatcherModule {
 @InstallIn(SingletonComponent::class)
 object CryptoDatastoreModule {
 
-    private const val EncProtoDatastoreFile: String = "e6c59819-f0ea-4e32-bb0f-442e546bf9bd.pb"
+    private const val ProtoDataDatastoreFile: String = "bad0bd70-277d-4362-86a1-4bcabaa3f1eb"
 
     @Provides
-    fun provideDatastore(@ApplicationContext context: Context): DataStore<ProtoData> = context.dataStoreProto
+    fun provideDatastore(
+        @ApplicationContext context: Context,
+        renameLegacyDatastore: RenameLegacyDatastore,
+    ): DataStore<ProtoData> {
+        renameLegacyDatastore("e6c59819-f0ea-4e32-bb0f-442e546bf9bd.pb", ProtoDataDatastoreFile)
+        return context.dataStoreProto
+    }
 
     private val Context.dataStoreProto: DataStore<ProtoData> by dataStore(
-        fileName = EncProtoDatastoreFile,
-        serializer = SecuredDataSerializer,
+        fileName = ProtoDataDatastoreFile,
+        serializer = ProtoDataSerializer,
     )
 }
 

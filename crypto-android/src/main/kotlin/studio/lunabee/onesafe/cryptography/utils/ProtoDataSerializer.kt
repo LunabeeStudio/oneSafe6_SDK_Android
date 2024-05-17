@@ -26,7 +26,7 @@ import studio.lunabee.onesafe.error.OSCryptoError
 import java.io.InputStream
 import java.io.OutputStream
 
-object SecuredDataSerializer : Serializer<ProtoData> {
+object ProtoDataSerializer : Serializer<ProtoData> {
     override val defaultValue: ProtoData = ProtoData.getDefaultInstance()
 
     override suspend fun readFrom(input: InputStream): ProtoData {

@@ -208,7 +208,7 @@ class AndroidMainCryptoRepository @Inject constructor(
     override suspend fun overrideMasterKeyAndSalt(key: ByteArray, salt: ByteArray): Unit = withContext(dispatcher) {
         key.copyInto(masterKey!!)
 
-        dataStoreEngine.insertValue(value = salt, key = DATASTORE_MASTER_SALT)
+        dataStoreEngine.insertValue(key = DATASTORE_MASTER_SALT, value = salt)
         val masterKeyTestValue = crypto.encrypt(
             plainData = MASTER_KEY_TEST_VALUE.encodeToByteArray(),
             key = masterKey!!,
@@ -216,7 +216,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         ).getOrElse {
             throw OSCryptoError.Code.MASTER_KEY_TEST_ENCRYPTION_FAILED.get(cause = it)
         }
-        dataStoreEngine.insertValue(value = masterKeyTestValue, key = DATASTORE_MASTER_KEY_TEST)
+        dataStoreEngine.insertValue(key = DATASTORE_MASTER_KEY_TEST, value = masterKeyTestValue)
         reEncryptIndexKey()
         reEncryptItemEditionKey()
         if (featureFlags.bubbles().first()) {
@@ -279,14 +279,14 @@ class AndroidMainCryptoRepository @Inject constructor(
         val key = crypto.encrypt(searchIndexKey!!, masterKey!!, null).getOrElse {
             throw OSCryptoError.Code.INDEX_KEY_ENCRYPTION_FAIL.get(cause = it)
         }
-        dataStoreEngine.insertValue(value = key, key = DATASTORE_SEARCH_INDEX_KEY)
+        dataStoreEngine.insertValue(key = DATASTORE_SEARCH_INDEX_KEY, value = key)
     }
 
     private suspend fun reEncryptItemEditionKey(): Unit = withContext(dispatcher) {
         val key = crypto.encrypt(itemEditionKey!!, masterKey!!, null).getOrElse {
             throw OSCryptoError.Code.ITEM_EDITION_KEY_ENCRYPTION_FAIL.get(cause = it)
         }
-        dataStoreEngine.insertValue(value = key, key = DATASTORE_ITEM_EDITION_KEY)
+        dataStoreEngine.insertValue(key = DATASTORE_ITEM_EDITION_KEY, value = key)
     }
 
     private suspend fun retrieveKeyForIndex(): Unit = withContext(dispatcher) {
@@ -324,7 +324,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         val key = crypto.encrypt(bubblesMasterKey!!, masterKey!!, null).getOrElse {
             throw OSCryptoError.Code.BUBBLES_CONTACT_KEY_ENCRYPTION_FAIL.get(cause = it)
         }
-        dataStoreEngine.insertValue(value = key, key = DATASTORE_BUBBLES_CONTACT_KEY)
+        dataStoreEngine.insertValue(key = DATASTORE_BUBBLES_CONTACT_KEY, value = key)
     }
 
     override suspend fun enableBiometric(biometricCipher: Cipher): Unit = withContext(dispatcher) {

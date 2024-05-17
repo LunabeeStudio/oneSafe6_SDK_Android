@@ -40,7 +40,7 @@ abstract class DatastoreEngine(
      */
     @CallSuper
     @Throws(OSCryptoError::class)
-    open suspend fun insertValue(value: ByteArray, key: String, override: Boolean = true) {
+    open suspend fun insertValue(key: String, value: ByteArray, override: Boolean = true) {
         if (!override && dataStore.data.map { it.dataMap[key] }.firstOrNull() != null) {
             throw OSCryptoError.Code.DATASTORE_ENTRY_KEY_ALREADY_EXIST.get()
         }

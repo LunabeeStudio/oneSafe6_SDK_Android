@@ -21,10 +21,13 @@ package studio.lunabee.onesafe.test
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
 import studio.lunabee.onesafe.domain.repository.DatabaseKeyRepository
 
 class DummyDatabaseCryptoRepository(private val databaseKey: DatabaseKey) : DatabaseKeyRepository {
+    var throwInKeyFlow: Exception? = null
+
     val key: MutableStateFlow<DatabaseKey?> = MutableStateFlow(null)
     val backupKey: MutableStateFlow<DatabaseKey?> = MutableStateFlow(null)
     override fun generateKey(): DatabaseKey {
@@ -35,7 +38,13 @@ class DummyDatabaseCryptoRepository(private val databaseKey: DatabaseKey) : Data
         key.value = null
     }
 
-    override fun getKeyFlow(): Flow<DatabaseKey?> = key
+    override fun getKeyFlow(): Flow<DatabaseKey?> = flow {
+        throwInKeyFlow?.let {
+            throw it
+        }
+        emit(key.value)
+    }
+
     override suspend fun setKey(key: DatabaseKey, override: Boolean) {
         this.key.value = key
     }
