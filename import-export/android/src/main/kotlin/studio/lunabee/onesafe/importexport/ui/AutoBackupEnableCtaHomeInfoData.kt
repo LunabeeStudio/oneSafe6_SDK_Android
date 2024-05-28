@@ -81,6 +81,7 @@ private fun AutoBackupEnableCtaCardPreview() {
     OSPreviewBackgroundTheme {
         with(object : HomeInfoDataNavScope {
             override val navigateFromHomeInfoDataToBackupSettings: () -> Unit = {}
+            override val navigateFromHomeInfoDataToBubblesOnBoarding: () -> Unit = {}
         }) {
             AutoBackupEnableCtaHomeInfoData(
                 visibleSince = Instant.EPOCH,

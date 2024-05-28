@@ -28,15 +28,21 @@ import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import javax.inject.Inject
 
-class GetAllContactsUseCase @Inject constructor(
+class GetRecentContactsUseCase @Inject constructor(
     private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
     private val bubblesContactRepository: ContactRepository,
 ) {
+    /**
+     * Retrieves a flow of the most recently updated contacts if the crypto data is ready.
+     *
+     * @param maxNumber The maximum number of contacts to retrieve.
+     * @return A Flow emitting a list of `Contact` objects sorted by `updatedAt` in descending order
+     */
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(): Flow<List<Contact>> = isCryptoDataReadyInMemoryUseCase.flow()
+    operator fun invoke(maxNumber: Int): Flow<List<Contact>> = isCryptoDataReadyInMemoryUseCase.flow()
         .flatMapLatest { isCryptoReady ->
             if (isCryptoReady) {
-                bubblesContactRepository.getAllContactsFlow()
+                bubblesContactRepository.getRecentContactsFlow(maxNumber)
             } else {
                 flowOf()
             }

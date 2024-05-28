@@ -29,4 +29,6 @@ dependencies {
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)
+
+    testImplementation(project(":common-test"))
 }

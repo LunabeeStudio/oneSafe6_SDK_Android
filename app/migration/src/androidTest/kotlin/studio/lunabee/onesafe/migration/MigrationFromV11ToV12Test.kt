@@ -27,7 +27,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.cryptography.PasswordHashEngine
 import studio.lunabee.onesafe.cryptography.SaltProvider
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry

@@ -24,12 +24,13 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.Before
+import kotlin.test.Test
 import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
 import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
 import studio.lunabee.onesafe.domain.usecase.authentication.CheckDatabaseAccessUseCase
 import studio.lunabee.onesafe.error.OSCryptoError
+import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError.Companion.get
 import studio.lunabee.onesafe.error.OSStorageError
 import studio.lunabee.onesafe.error.osCode
@@ -56,7 +57,7 @@ class CheckDatabaseAccessUseCaseTest {
         databaseKeyRepository = databaseKeyRepository,
     )
 
-    @BeforeEach
+    @Before
     fun setUp(): TestResult = runTest {
         databaseKeyRepository.setKey(databaseKey, true)
     }
@@ -77,11 +78,11 @@ class CheckDatabaseAccessUseCaseTest {
 
     @Test
     fun check_key_throw_test(): TestResult = runTest {
-        databaseKeyRepository.throwInKeyFlow = OSCryptoError(code = OSCryptoError.Code.DATASTORE_KEY_PERMANENTLY_INVALIDATE)
+        databaseKeyRepository.throwInKeyFlow = OSCryptoError(code = OSCryptoError.Code.ANDROID_KEYSTORE_KEY_PERMANENTLY_INVALIDATE)
         databaseKeyRepository.setKey(badKey, override = true)
         val actual: LBResult<Unit> = useCase()
         val failure: LBResult.Failure<Unit> = assertFailure(actual)
-        assertEquals(OSCryptoError.Code.DATASTORE_KEY_PERMANENTLY_INVALIDATE, failure.throwable.osCode())
+        assertEquals(OSDomainError.Code.DATABASE_ENCRYPTION_KEY_KEYSTORE_LOST, failure.throwable.osCode())
     }
 
     @Test

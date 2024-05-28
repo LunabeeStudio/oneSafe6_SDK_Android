@@ -41,6 +41,7 @@ object SettingsDefaults {
     const val DisplayShareWarningDefault: Boolean = true
     val VerifyPasswordIntervalDefault: VerifyPasswordInterval = VerifyPasswordInterval.NEVER
     const val BubblesPreviewDefault: Boolean = true
+    const val BubblesPreviewCardDefault: Boolean = true
     val BubblesResendMessageDelayMsDefault: Long = 1.days.inWholeMilliseconds
     const val autoBackupEnabledDefault: Boolean = false
     val autoBackupFrequencyMsDefault: Long = 1.days.inWholeMilliseconds

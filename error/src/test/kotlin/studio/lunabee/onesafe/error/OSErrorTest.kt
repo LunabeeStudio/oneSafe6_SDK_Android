@@ -19,7 +19,7 @@
 
 package studio.lunabee.onesafe.error
 
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.error.OSError.Companion.get
 import kotlin.test.assertEquals
 

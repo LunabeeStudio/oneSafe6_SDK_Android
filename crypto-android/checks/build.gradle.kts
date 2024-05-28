@@ -30,7 +30,7 @@ dependencies {
 
     testImplementation(libs.lint.api)
     testImplementation(libs.lint.tests)
-    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlinx.coroutines.core)
     testImplementation(project(":domain"))
 }

@@ -26,10 +26,10 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
-import org.junit.jupiter.api.assertDoesNotThrow
-import org.junit.jupiter.api.assertThrows
+import kotlin.test.Test
+import studio.lunabee.onesafe.test.assertThrows
 import studio.lunabee.onesafe.error.OSCryptoError
+import studio.lunabee.onesafe.test.assertDoesNotThrow
 import javax.crypto.Cipher
 import javax.inject.Inject
 import kotlin.test.assertFalse

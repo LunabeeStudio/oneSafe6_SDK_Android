@@ -24,7 +24,10 @@ import kotlinx.coroutines.flow.firstOrNull
 import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
 import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
 import studio.lunabee.onesafe.domain.repository.DatabaseKeyRepository
+import studio.lunabee.onesafe.error.OSCryptoError
+import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
+import studio.lunabee.onesafe.error.OSError.Companion.get
 import studio.lunabee.onesafe.error.OSStorageError
 import studio.lunabee.onesafe.error.osCode
 import javax.inject.Inject
@@ -40,7 +43,15 @@ class CheckDatabaseAccessUseCase @Inject constructor(
      * @return [LBResult.Success] if the database is accessible or does not exist and the key is null
      */
     suspend operator fun invoke(): LBResult<Unit> {
-        val result = OSError.runCatching {
+        val result = OSError.runCatching(
+            mapErr = {
+                if (it.code == OSCryptoError.Code.ANDROID_KEYSTORE_KEY_PERMANENTLY_INVALIDATE) {
+                    OSDomainError.Code.DATABASE_ENCRYPTION_KEY_KEYSTORE_LOST.get()
+                } else {
+                    it
+                }
+            },
+        ) {
             databaseKeyRepository
                 .getKeyFlow()
                 .firstOrNull()

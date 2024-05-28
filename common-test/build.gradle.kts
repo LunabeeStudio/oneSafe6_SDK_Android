@@ -35,9 +35,6 @@ dependencies {
     implementation(libs.lbcore)
 
     api(libs.kotlinx.coroutines.test)
-    api(libs.junit.jupiter)
     api(libs.junit4)
     api(libs.kotlin.test)
-
-    testImplementation(libs.junit.jupiter)
 }

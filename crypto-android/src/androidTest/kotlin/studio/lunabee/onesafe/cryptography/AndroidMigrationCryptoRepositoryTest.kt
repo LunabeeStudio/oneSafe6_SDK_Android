@@ -23,7 +23,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.toByteArray
 import javax.inject.Inject
 import kotlin.test.assertContentEquals

@@ -21,7 +21,7 @@ package studio.lunabee.onesafe.cryptography
 
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import org.junit.Test
+import kotlin.test.Test
 
 class AesCryptoEngineTest {
 

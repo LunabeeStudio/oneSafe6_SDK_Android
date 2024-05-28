@@ -19,10 +19,31 @@
 
 package studio.lunabee.onesafe.model
 
+import androidx.datastore.core.DataStore
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import studio.lunabee.onesafe.domain.common.CtaState
 import java.time.Instant
+
+@Serializable
+class LocalCtaStateMap(
+    val data: Map<String, LocalCtaState>,
+) {
+    operator fun get(key: String): LocalCtaState {
+        return data.getOrDefault(key, LocalCtaState.Hidden)
+    }
+}
+
+/**
+ * Mimic the DataStore<Preferences>.edit API
+ */
+suspend fun DataStore<LocalCtaStateMap>.edit(
+    transform: suspend (MutableMap<String, LocalCtaState>) -> Unit,
+): LocalCtaStateMap {
+    return this.updateData {
+        LocalCtaStateMap(it.data.toMutableMap().apply { transform(this) })
+    }
+}
 
 @Serializable
 sealed interface LocalCtaState {

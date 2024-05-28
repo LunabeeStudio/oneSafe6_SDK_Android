@@ -23,7 +23,7 @@ import androidx.test.filters.LargeTest
 import studio.lunabee.onesafe.cryptography.ChachaPolyTinkCryptoEngine
 import studio.lunabee.onesafe.cryptography.CryptoEngine
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.Test
+import kotlin.test.Test
 
 @LargeTest
 @HiltAndroidTest

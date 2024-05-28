@@ -176,7 +176,7 @@ class OSFlorisImeService : FlorisImeService() {
     private var lastImeClient: ImeClient? = null
     private var clipboardResultJob: Job? = null
 
-    private lateinit var navController: NavHostController
+    private var navController: NavHostController? = null
 
     override fun onShowInputRequested(flags: Int, configChange: Boolean): Boolean {
         isKeyboardVisibleFlow.value = true
@@ -204,6 +204,11 @@ class OSFlorisImeService : FlorisImeService() {
         super.onWindowShown()
         isWindowVisibleFlow.value = true
         refreshBlockInput()
+        navController?.currentBackStackEntry?.let { entry ->
+            val isOneSafeUiVisible = isOneSafeUiVisibleFlow.value
+            val forceDark = entry.destination.route == WriteMessageDestination.Route && isOneSafeUiVisible
+            themeManager.updateActiveTheme(forceNight = forceDark)
+        }
     }
 
     private fun refreshBlockInput() {
@@ -317,10 +322,10 @@ class OSFlorisImeService : FlorisImeService() {
                 false,
             )
             val isOneSafeUiVisible by isOneSafeUiVisibleFlow.collectAsStateWithLifecycle()
-            val entry by navController.currentBackStackEntryAsState()
+            val entry = navController?.currentBackStackEntryAsState()
             val isDatabaseAccessible by isDatabaseAccessible.collectAsStateWithLifecycle()
             val forceDark =
-                entry?.destination?.route == WriteMessageDestination.Route && isOneSafeUiVisible
+                entry?.value?.destination?.route == WriteMessageDestination.Route && isOneSafeUiVisible
             LaunchedEffect(key1 = forceDark) {
                 themeManager.updateActiveTheme(forceNight = forceDark)
             }
@@ -414,8 +419,8 @@ class OSFlorisImeService : FlorisImeService() {
 
         // Reset nav on crypto changes
         LaunchedEffect(key1 = isCryptoDataReady) {
-            if (!isCryptoDataReady && navController.currentBackStackEntry != null) {
-                navController.navigate(LoginDestination.route) {
+            if (!isCryptoDataReady && navController?.currentBackStackEntry != null) {
+                navController?.navigate(LoginDestination.route) {
                     popUpTo(ImeNavGraphRoute) {
                         inclusive = false
                     }
@@ -544,7 +549,7 @@ class OSFlorisImeService : FlorisImeService() {
             color = MaterialTheme.colorScheme.background,
         ) {
             ImeNavGraph(
-                navController = navController,
+                navController = navController!!,
                 imeLoginViewModelFactory = imeLoginViewModelFactory,
                 selectContactViewModelFactory = selectContactViewModelFactory,
                 writeMessageViewModelFactory = writeMessageViewModelFactory,

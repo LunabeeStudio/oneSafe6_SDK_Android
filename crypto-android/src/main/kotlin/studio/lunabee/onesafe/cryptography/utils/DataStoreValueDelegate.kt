@@ -50,15 +50,10 @@ private class DataStoreValueDelegate<T>(
 
     @Throws(OSCryptoError::class)
     override fun setValue(thisRef: T, property: KProperty<*>, value: ByteArray?) {
-        val currentValue = getValueInDataStore()
-        if (currentValue == null || value == null) {
-            if (value == null) {
-                runBlocking { datastoreEngine.removeValue(key) }
-            } else {
-                runBlocking { datastoreEngine.insertValue(key, value) }
-            }
-        } else {
-            throw OSCryptoError(errorCodeIfOverrideExistingValue)
+        when {
+            value == null -> runBlocking { datastoreEngine.removeValue(key) }
+            getValueInDataStore() == null -> runBlocking { datastoreEngine.insertValue(key, value) }
+            else -> throw OSCryptoError(errorCodeIfOverrideExistingValue)
         }
     }
 

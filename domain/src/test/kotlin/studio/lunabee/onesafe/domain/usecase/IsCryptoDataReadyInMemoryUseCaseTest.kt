@@ -23,12 +23,12 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
-import org.junit.jupiter.api.assertThrows
+import kotlin.test.Test
+import studio.lunabee.onesafe.test.assertThrows
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import studio.lunabee.onesafe.error.OSDomainError
+import studio.lunabee.onesafe.test.assertDoesNotThrow
 import kotlin.test.assertEquals
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds

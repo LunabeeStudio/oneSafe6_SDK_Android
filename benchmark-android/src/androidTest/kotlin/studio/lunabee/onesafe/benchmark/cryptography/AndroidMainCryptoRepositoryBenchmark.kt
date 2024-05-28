@@ -25,7 +25,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.cryptography.AndroidMainCryptoRepository
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.test.InitialTestState

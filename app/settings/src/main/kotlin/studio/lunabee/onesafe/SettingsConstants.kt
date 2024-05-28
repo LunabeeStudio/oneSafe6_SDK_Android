@@ -42,4 +42,6 @@ internal object SettingsConstants {
     const val keepLocalBackupEnabledKeyVal: String = "20b36aa9-3e7b-4982-8706-737016f10e87"
     const val itemOrderingKeyVal: String = "f3bd5c99-f828-4a57-b1e5-c563c3021935"
     const val itemsLayoutSettingKeyVal: String = "5716b94b-9079-4c2f-85e6-f0db4e6d0528"
+    const val backupCtaKeyVal: String = "1aa3c807-e989-4b63-ae1c-e020daa4a569"
+    const val bubblesCtaKeyVal: String = "fe6d86ee-7b5b-4d36-99d9-58517230e38c"
 }

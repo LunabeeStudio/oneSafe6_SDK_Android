@@ -27,7 +27,7 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.usecase.GetAllLocalBackupsUseCase
 import studio.lunabee.onesafe.importexport.usecase.LocalAutoBackupUseCase

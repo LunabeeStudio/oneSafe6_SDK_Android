@@ -25,7 +25,7 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.storage.extension.testInsertCloud
 import studio.lunabee.onesafe.storage.extension.testInsertLocal

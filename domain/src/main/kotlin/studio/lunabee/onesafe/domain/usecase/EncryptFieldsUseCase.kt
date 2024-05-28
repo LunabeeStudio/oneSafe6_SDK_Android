@@ -26,6 +26,7 @@ import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
+import java.time.Clock
 import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
@@ -33,6 +34,7 @@ import javax.inject.Inject
 class EncryptFieldsUseCase @Inject constructor(
     private val safeItemKeyRepository: SafeItemKeyRepository,
     private val cryptoRepository: MainCryptoRepository,
+    private val clock: Clock,
 ) {
     suspend operator fun invoke(
         itemId: UUID,
@@ -72,7 +74,7 @@ class EncryptFieldsUseCase @Inject constructor(
                 encValue = encryptedEntries[offsetIdx + 2],
                 showPrediction = data.showPrediction,
                 encKind = encryptedEntries[offsetIdx + 3],
-                updatedAt = Instant.now(),
+                updatedAt = Instant.now(clock),
                 isItemIdentifier = data.isItemIdentifier,
                 encSecureDisplayMask = encryptedEntries[offsetIdx + 4],
                 encFormattingMask = encryptedEntries[offsetIdx + 5],

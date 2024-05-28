@@ -30,13 +30,13 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 import org.junit.After
-import org.junit.Test
-import org.junit.jupiter.api.assertDoesNotThrow
-import org.junit.jupiter.api.assertThrows
+import kotlin.test.Test
+import studio.lunabee.onesafe.test.assertThrows
 import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
 import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
 import studio.lunabee.onesafe.error.OSStorageError
 import studio.lunabee.onesafe.test.OSTestConfig
+import studio.lunabee.onesafe.test.assertDoesNotThrow
 import studio.lunabee.onesafe.test.assertSuccess
 import kotlin.random.Random
 import kotlin.test.assertEquals

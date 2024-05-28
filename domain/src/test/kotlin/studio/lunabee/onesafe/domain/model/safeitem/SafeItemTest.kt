@@ -19,7 +19,7 @@
 
 package studio.lunabee.onesafe.domain.model.safeitem
 
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.domain.Constant
 import studio.lunabee.onesafe.test.OSTestUtils
 import java.time.Instant

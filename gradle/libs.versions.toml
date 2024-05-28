@@ -18,40 +18,32 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "google-dagger" }
 
 benchmark = "1.2.3"
 
-android-gradle-plugin = "8.3.2"
-##                 ⬆ = "8.4.0-alpha01"
-##                 ⬆ = "8.4.0-alpha02"
-##                 ⬆ = "8.4.0-alpha03"
-##                 ⬆ = "8.4.0-alpha04"
-##                 ⬆ = "8.4.0-alpha05"
-##                 ⬆ = "8.4.0-alpha06"
-##                 ⬆ = "8.4.0-alpha07"
-##                 ⬆ = "8.4.0-alpha08"
-##                 ⬆ = "8.4.0-alpha09"
-##                 ⬆ = "8.4.0-alpha10"
-##                 ⬆ = "8.4.0-alpha11"
-##                 ⬆ = "8.4.0-alpha12"
-##                 ⬆ = "8.4.0-alpha13"
-##                 ⬆ = "8.4.0-beta01"
-##                 ⬆ = "8.4.0-beta02"
-##                 ⬆ = "8.4.0-rc01"
-##                 ⬆ = "8.4.0-rc02"
+android-gradle-plugin = "8.4.1"
 ##                 ⬆ = "8.5.0-alpha01"
 ##                 ⬆ = "8.5.0-alpha02"
 ##                 ⬆ = "8.5.0-alpha03"
 ##                 ⬆ = "8.5.0-alpha04"
 ##                 ⬆ = "8.5.0-alpha05"
 ##                 ⬆ = "8.5.0-alpha06"
+##                 ⬆ = "8.5.0-alpha07"
+##                 ⬆ = "8.5.0-alpha08"
+##                 ⬆ = "8.5.0-beta01"
+##                 ⬆ = "8.5.0-beta02"
+##                 ⬆ = "8.6.0-alpha01"
+##                 ⬆ = "8.6.0-alpha02"
 
-kotlin = "1.9.23"
+kotlin = "1.9.24"
 ##  ⬆ = "2.0.0-Beta1"
 ##  ⬆ = "2.0.0-Beta2"
 ##  ⬆ = "2.0.0-Beta3"
 ##  ⬆ = "2.0.0-Beta4"
 ##  ⬆ = "2.0.0-Beta5"
 ##  ⬆ = "2.0.0-RC1"
+##  ⬆ = "2.0.0-RC2"
+##  ⬆ = "2.0.0-RC3"
+##  ⬆ = "2.0.0"
 
-ksp = "1.9.23-1.0.20"
+ksp = "1.9.24-1.0.20"
 ##⬆= "2.0.0-Beta1-1.0.14"
 ##⬆= "2.0.0-Beta1-1.0.15"
 ##⬆= "2.0.0-Beta2-1.0.16"
@@ -62,6 +54,8 @@ ksp = "1.9.23-1.0.20"
 ##⬆= "2.0.0-Beta5-1.0.19"
 ##⬆= "2.0.0-Beta5-1.0.20"
 ##⬆= "2.0.0-RC1-1.0.20"
+##⬆= "2.0.0-RC2-1.0.20"
+##⬆= "2.0.0-RC3-1.0.20"
 
 google-dagger = "2.51.1"
 
@@ -73,8 +67,8 @@ logback-classic = "1.5.6"
 
 play-services-base = "18.4.0"
 play-services-auth-base = "18.0.12"
-google-api-client = "2.4.1"
-google-api-services-drive = "v3-rev20240327-2.0.0"
+google-api-client = "2.5.1"
+google-api-services-drive = "v3-rev20240509-2.0.0"
 
 threeten-extra = "1.8.0"
 
@@ -84,23 +78,19 @@ androidx-hilt = "1.2.0"
 
 junit4 = "4.13.2"
 
-kotlinx-coroutines = "1.8.0"
-##              ⬆ = "1.8.1-Beta"
+kotlinx-coroutines = "1.8.1"
 
-androidx-test-core = "1.6.0-alpha05"
+androidx-test-core = "1.6.0-beta01"
 
-androidx-test-runner = "1.6.0-alpha06"
+androidx-test-runner = "1.6.0-beta01"
 
-androidx-test-rules = "1.5.0"
-##               ⬆ = "1.6.0-alpha01"
-##               ⬆ = "1.6.0-alpha02"
-##               ⬆ = "1.6.0-alpha03"
+androidx-test-rules = "1.6.0-beta01"
 
 androidx-room = "2.6.1"
+##         ⬆ = "2.7.0-alpha01"
+##         ⬆ = "2.7.0-alpha02"
 
-# FIXME 1.13.10 breaks value class (like Duration) https://github.com/mockk/mockk/issues/1225 https://github.com/mockk/mockk/pull/1230
-mockk = "1.13.9"
-## ⬆ = "1.13.10"
+mockk = "1.13.11"
 
 android-tools-desugar_jdk_libs = "2.0.4"
 
@@ -111,28 +101,29 @@ androidx-tracing = "1.2.0"
 androidx-security-crypto = "1.1.0-alpha06"
 
 kotlinx-serialization = "1.6.3"
+##                 ⬆ = "1.7.0-RC"
 
-androidx-appcompat = "1.7.0-alpha03"
+androidx-appcompat = "1.7.0-rc01"
 
-androidx-core = "1.13.0"
+androidx-core = "1.13.1"
+##         ⬆ = "1.14.0-alpha01"
 
+# FIXME lifecycle 2.8.0 requires Compose 1.7.0 https://issuetracker.google.com/issues/336842920
 androidx-lifecycle = "2.7.0"
 ##              ⬆ = "2.8.0-alpha01"
 ##              ⬆ = "2.8.0-alpha02"
 ##              ⬆ = "2.8.0-alpha03"
 ##              ⬆ = "2.8.0-alpha04"
 ##              ⬆ = "2.8.0-beta01"
+##              ⬆ = "2.8.0-rc01"
+##              ⬆ = "2.8.0"
 
-compose-bom-stable = "2024.04.01"
+compose-bom-stable = "2024.05.00"
 compose-bom-alpha = "2024.02.00-alpha01"
 
-google-android-material = "1.11.0"
-##                   ⬆ = "1.12.0-alpha01"
-##                   ⬆ = "1.12.0-alpha02"
-##                   ⬆ = "1.12.0-alpha03"
-##                   ⬆ = "1.12.0-beta01"
-##                   ⬆ = "1.12.0-rc01"
+google-android-material = "1.12.0"
 ##                   ⬆ = "1.13.0-alpha01"
+##                   ⬆ = "1.13.0-alpha02"
 
 androidx-biometric = "1.1.0"
 ##              ⬆ = "1.2.0-alpha01"
@@ -141,13 +132,7 @@ androidx-biometric = "1.1.0"
 ##              ⬆ = "1.2.0-alpha04"
 ##              ⬆ = "1.2.0-alpha05"
 
-androidx-paging = "3.2.1"
-##           ⬆ = "3.3.0-alpha01"
-##           ⬆ = "3.3.0-alpha02"
-##           ⬆ = "3.3.0-alpha03"
-##           ⬆ = "3.3.0-alpha04"
-##           ⬆ = "3.3.0-alpha05"
-##           ⬆ = "3.3.0-beta01"
+androidx-paging = "3.3.0"
 
 androidx-core-splashscreen = "1.0.1"
 ##                      ⬆ = "1.1.0-alpha01"
@@ -170,13 +155,7 @@ androidx-slice-builders-ktx = "1.0.0-alpha08"
 androidx-emoji2 = "1.4.0"
 ##           ⬆ = "1.5.0-alpha01"
 
-androidx-paging-compose = "3.2.1"
-##                   ⬆ = "3.3.0-alpha01"
-##                   ⬆ = "3.3.0-alpha02"
-##                   ⬆ = "3.3.0-alpha03"
-##                   ⬆ = "3.3.0-alpha04"
-##                   ⬆ = "3.3.0-alpha05"
-##                   ⬆ = "3.3.0-beta01"
+androidx-paging-compose = "3.3.0"
 
 androidx-activity = "1.9.0"
 
@@ -186,34 +165,35 @@ kotlinx-collections-immutable = "0.3.7"
 
 google-accompanist = "0.34.0"
 ##              ⬆ = "0.35.0-alpha"
+##              ⬆ = "0.35.1-alpha"
 
 androidx-palette = "1.0.0"
 
-firebase-bom = "32.8.1"
+firebase-bom = "33.0.0"
 
+# FIXME 3.0.0+ Requires play services to be applied
 firebase-crashlytics-gradle = "2.9.9"
+##                       ⬆ = "3.0.0"
+##                       ⬆ = "3.0.1"
 
 # Used to set kotlinCompilerExtensionVersion
-compose-compiler = "1.5.12"
+compose-compiler = "1.5.14"
 
 androidx-test-ext-junit = "1.1.5"
 ##                   ⬆ = "1.2.0-alpha01"
 ##                   ⬆ = "1.2.0-alpha02"
 ##                   ⬆ = "1.2.0-alpha03"
+##                   ⬆ = "1.2.0-alpha04"
+##                   ⬆ = "1.2.0-beta01"
 
 androidx-benchmark = "1.2.4"
 ##              ⬆ = "1.3.0-alpha01"
 ##              ⬆ = "1.3.0-alpha02"
 ##              ⬆ = "1.3.0-alpha03"
+##              ⬆ = "1.3.0-alpha04"
+##              ⬆ = "1.3.0-alpha05"
 
-junit-jupiter = "5.10.2"
-##         ⬆ = "5.11.0-M1"
-
-androidx-annotation = "1.7.1"
-##               ⬆ = "1.8.0-alpha01"
-##               ⬆ = "1.8.0-alpha02"
-##               ⬆ = "1.8.0-beta01"
-##               ⬆ = "1.8.0-beta02"
+androidx-annotation = "1.8.0"
 
 # FIXME 1.1.0 have some issue when cleaning and re-reading data (see export_engine_not_signed_up_test). To investigate
 androidx-datastore = "1.0.0"
@@ -229,13 +209,14 @@ androidx-datastore = "1.0.0"
 ##              ⬆ = "1.1.0-beta02"
 ##              ⬆ = "1.1.0-rc01"
 ##              ⬆ = "1.1.0"
+##              ⬆ = "1.1.1"
 
 androidx-preference = "1.2.1"
 
-ktor = "2.3.10"
+ktor = "2.3.11"
 ##⬆ = "3.0.0-beta-1"
 
-androidx-test-espresso = "3.6.0-alpha03"
+androidx-test-espresso = "3.6.0-beta01"
 
 androidx-test-uiautomator = "2.3.0"
 
@@ -253,15 +234,23 @@ navigation-compose = "2.7.7"
 ##              ⬆ = "2.8.0-alpha05"
 ##              ⬆ = "2.8.0-alpha06"
 ##              ⬆ = "2.8.0-alpha07"
+##              ⬆ = "2.8.0-alpha08"
+##              ⬆ = "2.8.0-beta01"
 
 detekt = "1.23.6"
 
 protobuf = "4.26.1"
 ##    ⬆ = "4.27.0-RC1"
+##    ⬆ = "4.27.0-RC2"
+##    ⬆ = "4.27.0-RC3"
 
 protobuf-plugin = "0.9.4"
 
 lunabee-library = "4.2.0-118-develop-SNAPSHOT"
+##           ⬆ = "4.2.0-119-ktor-SNAPSHOT"
+##           ⬆ = "4.2.0-180-ktor-SNAPSHOT"
+##           ⬆ = "4.2.0-181-ktor-SNAPSHOT"
+##           ⬆ = "4.2.0-182-ktor-SNAPSHOT"
 
 compose-shimmer = "1.3.0"
 
@@ -285,30 +274,19 @@ bouncycastle = "1.78.1"
 
 nbvcxz = "1.5.1"
 
-lint = "31.3.2"
-##⬆ = "31.4.0-alpha01"
-##⬆ = "31.4.0-alpha02"
-##⬆ = "31.4.0-alpha03"
-##⬆ = "31.4.0-alpha04"
-##⬆ = "31.4.0-alpha05"
-##⬆ = "31.4.0-alpha06"
-##⬆ = "31.4.0-alpha07"
-##⬆ = "31.4.0-alpha08"
-##⬆ = "31.4.0-alpha09"
-##⬆ = "31.4.0-alpha10"
-##⬆ = "31.4.0-alpha11"
-##⬆ = "31.4.0-alpha12"
-##⬆ = "31.4.0-alpha13"
-##⬆ = "31.4.0-beta01"
-##⬆ = "31.4.0-beta02"
-##⬆ = "31.4.0-rc01"
-##⬆ = "31.4.0-rc02"
+lint = "31.4.1"
 ##⬆ = "31.5.0-alpha01"
 ##⬆ = "31.5.0-alpha02"
 ##⬆ = "31.5.0-alpha03"
 ##⬆ = "31.5.0-alpha04"
 ##⬆ = "31.5.0-alpha05"
 ##⬆ = "31.5.0-alpha06"
+##⬆ = "31.5.0-alpha07"
+##⬆ = "31.5.0-alpha08"
+##⬆ = "31.5.0-beta01"
+##⬆ = "31.5.0-beta02"
+##⬆ = "31.6.0-alpha01"
+##⬆ = "31.6.0-alpha02"
 
 javapoet = "1.13.0"
 
@@ -317,6 +295,10 @@ bouquet = "1.1.3"
 zoomable = "1.6.1"
 ##    ⬆ = "1.7.0-beta01"
 ##    ⬆ = "1.7.0-beta02"
+##    ⬆ = "2.0.0-alpha01"
+##    ⬆ = "2.0.0-alpha02"
+##    ⬆ = "2.0.0-alpha03"
+##    ⬆ = "2.0.0-beta01"
 
 exifinterface = "1.3.7"
 
@@ -329,18 +311,25 @@ camerax = "1.3.3"
 ##   ⬆ = "1.4.0-alpha03"
 ##   ⬆ = "1.4.0-alpha04"
 ##   ⬆ = "1.4.0-alpha05"
+##   ⬆ = "1.4.0-beta01"
 
 espresso-core = "3.5.1"
 ##         ⬆ = "3.6.0-alpha01"
 ##         ⬆ = "3.6.0-alpha02"
 ##         ⬆ = "3.6.0-alpha03"
+##         ⬆ = "3.6.0-alpha04"
+##         ⬆ = "3.6.0-beta01"
 
-skydoves-colorpicker = "1.0.7"
+skydoves-colorpicker = "1.0.8"
 sqlcipher-android = "4.5.7"
 
 process-phoenix = "3.0.0"
 
 lottie = "6.4.0"
+robolectric = "4.12.2"
+slf4j-simple = "2.0.13"
+
+review = "2.0.1"
 
 [libraries]
 
@@ -466,7 +455,6 @@ emoji2 = { group = "androidx.emoji2", name = "emoji2", version.ref = "androidx-e
 emoji2-bundled = { group = "androidx.emoji2", name = "emoji2-bundled", version.ref = "androidx-emoji2" }
 
 junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
-junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit-jupiter" }
 
 tracing = { group = "androidx.tracing", name = "tracing", version.ref = "androidx-tracing" }
 security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "androidx-security-crypto" }
@@ -479,7 +467,6 @@ androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version
 benchmark-junit4 = { group = "androidx.benchmark", name = "benchmark-junit4", version.ref = "androidx-benchmark" }
 annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidx-annotation" }
 preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "androidx-preference" }
-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-test-espresso" }
 benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "androidx-benchmark" }
 startup-runtime = { group = "androidx.startup", name = "startup-runtime", version.ref = "androidx-startup" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
@@ -508,8 +495,12 @@ camerax-view = { group = "androidx.camera", name = "camera-view", version.ref = 
 camerax-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camerax" }
 camerax-extensions = { group = "androidx.camera", name = "camera-extensions", version.ref = "camerax" }
 logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback-classic" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
 skydoves-colorpicker = { group = "com.github.skydoves", name = "colorpicker-compose", version.ref = "skydoves-colorpicker" }
 lottie = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
 sqlcipher-android = { group = "net.zetetic", name = "sqlcipher-android", version.ref = "sqlcipher-android" }
 process-phoenix = { group = "com.jakewharton", name = "process-phoenix", version.ref = "process-phoenix" }
+review = { group = "com.google.android.play", name = "review", version.ref = "review" }
+review-ktx = { group = "com.google.android.play", name = "review-ktx", version.ref = "review" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+slf4j-simple = { group = "org.slf4j", name = "slf4j-simple", version.ref = "slf4j-simple" }

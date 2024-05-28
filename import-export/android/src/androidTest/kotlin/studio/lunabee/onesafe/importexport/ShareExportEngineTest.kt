@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.di.CryptoConstantsTestModule
 import studio.lunabee.onesafe.cryptography.CryptoConstants
 import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine

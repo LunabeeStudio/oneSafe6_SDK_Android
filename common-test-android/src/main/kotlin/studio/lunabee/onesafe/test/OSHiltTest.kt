@@ -31,8 +31,10 @@ import androidx.work.testing.SynchronousExecutor
 import androidx.work.testing.WorkManagerTestInitHelper
 import dagger.hilt.android.testing.HiltAndroidRule
 import io.mockk.unmockkAll
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import org.junit.After
 import org.junit.Before
 import org.threeten.extra.MutableClock
@@ -165,23 +167,25 @@ abstract class OSHiltTest : OSTest() {
     }
 
     protected suspend fun signOut() {
-        context.cacheDir.listFiles { pathname ->
-            pathname?.let {
-                !pathname.path.contains("screenshot") && !pathname.path.contains("keep_")
-            } ?: true
-        }?.forEach {
-            it.deleteRecursively()
-        }
-        context.filesDir.deleteRecursively()
-        cryptoRepository.resetCryptography()
-        recentSearchDataStore.updateData { it.defaultInstanceForType }
-        mainDatabaseName.takeIf { it.isNotBlank() }?.let { mainDatabaseName ->
-            context.getDatabasePath(mainDatabaseName)?.let { dbFile ->
-                SQLiteDatabase.deleteDatabase(dbFile)
+        withContext(Dispatchers.IO) {
+            context.cacheDir.listFiles { pathname ->
+                pathname?.let {
+                    !pathname.path.contains("screenshot") && !pathname.path.contains("keep_")
+                } ?: true
+            }?.forEach {
+                it.deleteRecursively()
             }
-        } ?: mainDatabase.clearAllTables() // in-memory db
-        preferencesDataStore.edit {
-            it.clear()
+            context.filesDir.deleteRecursively()
+            cryptoRepository.resetCryptography()
+            recentSearchDataStore.updateData { it.defaultInstanceForType }
+            mainDatabaseName.takeIf { it.isNotBlank() }?.let { mainDatabaseName ->
+                context.getDatabasePath(mainDatabaseName)?.let { dbFile ->
+                    SQLiteDatabase.deleteDatabase(dbFile)
+                }
+            } ?: mainDatabase.clearAllTables() // in-memory db
+            preferencesDataStore.edit {
+                it.clear()
+            }
         }
     }
 

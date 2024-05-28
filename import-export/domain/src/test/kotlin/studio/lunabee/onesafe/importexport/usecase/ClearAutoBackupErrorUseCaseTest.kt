@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.importexport.model.AutoBackupError
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.repository.AutoBackupErrorRepository

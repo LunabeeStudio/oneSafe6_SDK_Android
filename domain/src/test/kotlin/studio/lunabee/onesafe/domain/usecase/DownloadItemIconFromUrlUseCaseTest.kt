@@ -28,8 +28,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Test
+import org.junit.After
+import kotlin.test.Test
 import studio.lunabee.onesafe.domain.model.common.UrlMetadata
 import studio.lunabee.onesafe.domain.repository.UrlMetadataRepository
 import studio.lunabee.onesafe.domain.usecase.item.DownloadItemIconFromUrlUseCase
@@ -59,7 +59,7 @@ class DownloadItemIconFromUrlUseCaseTest {
         getUrlMetadataUseCase,
     )
 
-    @AfterEach
+    @After
     fun tearsDown() {
         tmpFile.delete()
     }

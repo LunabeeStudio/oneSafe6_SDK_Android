@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 import org.threeten.extra.MutableClock
 import studio.lunabee.onesafe.domain.common.CtaState
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository

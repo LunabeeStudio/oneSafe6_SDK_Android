@@ -31,7 +31,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.compose.androidtest.LbcComposeTest
 import studio.lunabee.compose.androidtest.extension.waitUntilExactlyOneExists
 import studio.lunabee.onesafe.atom.OSImageSpec

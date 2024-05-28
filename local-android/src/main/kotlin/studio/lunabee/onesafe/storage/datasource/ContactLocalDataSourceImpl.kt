@@ -58,6 +58,9 @@ class ContactLocalDataSourceImpl @Inject constructor(
 
     override fun getAllContactsFlow(): Flow<List<Contact>> = dao.getAllInFlow().mapValues { it.toContact() }
 
+    override fun getRecentContactsFlow(maxNumber: Int): Flow<List<Contact>> =
+        dao.getRecentContactsFlow(maxNumber).mapValues { it.toContact() }
+
     override suspend fun getContact(id: UUID): Flow<Contact?> = dao.getById(id).map { it?.toContact() }
 
     override suspend fun getContactSharedKey(id: UUID): ContactSharedKey? = dao.getContactSharedKey(id)

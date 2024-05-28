@@ -33,8 +33,8 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.Before
+import kotlin.test.Test
 import studio.lunabee.onesafe.domain.manager.SearchIndexManager
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
@@ -60,7 +60,7 @@ class SearchIndexManagerTest {
     private val indexList: List<IndexWordEntry> = listOf(IndexWordEntry(byteArrayOf(), testUUIDs[0], null))
     private val clearIndexWordEntries = listOf(PlainIndexWordEntry("word", testUUIDs[0], null))
 
-    @BeforeEach
+    @Before
     fun setup() {
         MockKAnnotations.init(this)
 

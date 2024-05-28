@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 import org.threeten.extra.MutableClock
 import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.importexport.model.LocalBackup

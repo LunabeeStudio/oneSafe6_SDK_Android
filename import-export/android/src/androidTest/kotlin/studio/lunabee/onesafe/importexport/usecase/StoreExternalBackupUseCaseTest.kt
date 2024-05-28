@@ -31,7 +31,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.compose.androidtest.helper.LbcResourcesHelper
 import studio.lunabee.onesafe.commonui.utils.FileDetails
 import studio.lunabee.onesafe.error.OSImportExportError

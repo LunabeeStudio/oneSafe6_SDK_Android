@@ -30,6 +30,7 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 /**
@@ -132,4 +133,18 @@ inline fun <reified T : Any> assertPropertiesEquals(
             )
         }
     }
+}
+
+inline fun <reified T : Throwable> assertThrows(bloc: () -> Any?): T {
+    val error = runCatching(bloc).exceptionOrNull()
+    assertNotNull(error)
+    assertIs<T>(error)
+    return error
+}
+
+inline fun <T> assertDoesNotThrow(message: String? = null, bloc: () -> T): T {
+    val result = runCatching(bloc)
+    val error = result.exceptionOrNull()
+    assertNull(error, message ?: error?.localizedMessage)
+    return result.getOrThrow()
 }

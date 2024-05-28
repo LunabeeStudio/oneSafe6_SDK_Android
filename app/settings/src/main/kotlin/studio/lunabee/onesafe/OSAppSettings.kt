@@ -30,11 +30,16 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
+import studio.lunabee.onesafe.domain.common.CtaState
 import studio.lunabee.onesafe.domain.model.camera.CameraSystem
+import studio.lunabee.onesafe.model.LocalCtaState
+import studio.lunabee.onesafe.model.LocalCtaStateMap
+import studio.lunabee.onesafe.model.edit
 import javax.inject.Inject
 
 class OSAppSettings @Inject constructor(
     private val dataStore: DataStore<Preferences>,
+    private val ctaDataStore: DataStore<LocalCtaStateMap>,
 ) {
 
     private val materialYouSettingKey = booleanPreferencesKey(SettingsConstants.MaterialYouSetting)
@@ -61,6 +66,9 @@ class OSAppSettings @Inject constructor(
 
     val bubblesPreview: Flow<Boolean> = dataStore.data
         .map { preferences -> preferences[bubblesPreviewKey] ?: SettingsDefaults.BubblesPreviewDefault }
+
+    val bubblesHomeCardCtaState: Flow<CtaState>
+        get() = ctaDataStore.data.map { it[SettingsConstants.bubblesCtaKeyVal].toCtaState() }
 
     private val cameraSystemKey = stringPreferencesKey(SettingsConstants.CameraSystem)
     val cameraSystemFlow: Flow<CameraSystem> = dataStore.data
@@ -120,5 +128,9 @@ class OSAppSettings @Inject constructor(
         dataStore.edit { preferences ->
             preferences[cameraSystemKey] = value.name
         }
+    }
+
+    suspend fun setBubblesHomeCardCtaState(ctaState: CtaState) {
+        ctaDataStore.edit { it[SettingsConstants.bubblesCtaKeyVal] = LocalCtaState.fromCtaState(ctaState) }
     }
 }

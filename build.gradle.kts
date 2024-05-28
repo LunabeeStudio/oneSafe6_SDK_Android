@@ -120,10 +120,6 @@ subprojects {
             return@afterEvaluate
         }
 
-        project.tasks.withType<Test> {
-            useJUnitPlatform()
-        }
-
         val isAndroidLibrary = extensions.findByType<com.android.build.gradle.LibraryExtension>() != null
         val isApp = extensions.findByType<com.android.build.gradle.AppExtension>() != null
         val hasEnvironmentFlavor = project.name == "import-export-android" ||

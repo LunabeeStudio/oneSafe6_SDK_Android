@@ -19,7 +19,7 @@
 
 package studio.lunabee.onesafe.domain.utils
 
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.domain.common.SortedAncestors
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.test.OSTestUtils

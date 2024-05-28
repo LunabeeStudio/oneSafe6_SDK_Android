@@ -24,8 +24,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
+import org.junit.After
+import org.junit.Before
 
 /**
  * Use this class for any test that should use ui thread with no UI.
@@ -34,12 +34,12 @@ import org.junit.jupiter.api.BeforeEach
 abstract class OSUiThreadTest protected constructor() : OSTest() {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    @BeforeEach
+    @Before
     fun initMainDispatcher() {
         Dispatchers.setMain(testDispatcher)
     }
 
-    @AfterEach
+    @After
     fun resetMainDispatcher() {
         Dispatchers.resetMain()
     }

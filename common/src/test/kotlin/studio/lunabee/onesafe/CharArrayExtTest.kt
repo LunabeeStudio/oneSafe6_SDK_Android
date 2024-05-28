@@ -19,9 +19,9 @@
 
 package studio.lunabee.onesafe
 
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
+import studio.lunabee.onesafe.test.assertDoesNotThrow
 import kotlin.random.Random
+import kotlin.test.Test
 
 class CharArrayExtTest {
 

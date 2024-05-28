@@ -21,10 +21,12 @@ package studio.lunabee.onesafe.model
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromHexString
+import kotlinx.serialization.encodeToHexString
 import kotlinx.serialization.protobuf.ProtoBuf
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
+import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import studio.lunabee.onesafe.test.assertDoesNotThrow
 
 @OptIn(ExperimentalSerializationApi::class)
 class LocalCtaStateTest {
@@ -52,5 +54,24 @@ class LocalCtaStateTest {
             val dismissedAt456Decoded = ProtoBuf.decodeFromHexString<LocalCtaState>(dismissedAt456Encoded)
             assertEquals(dismissedAt456, dismissedAt456Decoded)
         }
+    }
+
+    @Test
+    fun serialize_map_test() {
+        val expected = "0a200a046374613112180a144c6f63616c43746153746174652e48696464656e12000a270a0463746132121f0a1a4c6f63616c43746153746" +
+            "174652e56697369626c6553696e636510d209"
+        val expectedMap = mapOf(
+            "cta1" to LocalCtaState.Hidden,
+            "cta2" to LocalCtaState.VisibleSince(1234L),
+        )
+        val actual: String = ProtoBuf.encodeToHexString(
+            LocalCtaStateMap(
+                expectedMap,
+            ),
+        )
+        assertEquals(expected, actual)
+        val actualMap = ProtoBuf.decodeFromHexString<LocalCtaStateMap>(actual)
+        assertEquals(expectedMap.keys, actualMap.data.keys)
+        assertContentEquals(expectedMap.values, actualMap.data.values)
     }
 }

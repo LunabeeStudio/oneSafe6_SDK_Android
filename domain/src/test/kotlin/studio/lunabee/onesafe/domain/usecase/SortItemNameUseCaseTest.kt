@@ -19,7 +19,7 @@
 
 package studio.lunabee.onesafe.domain.usecase
 
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.domain.usecase.item.CleanForAlphaIndexingUseCase
 import studio.lunabee.onesafe.domain.usecase.item.SortItemNameUseCase
 import studio.lunabee.onesafe.test.testUUIDs

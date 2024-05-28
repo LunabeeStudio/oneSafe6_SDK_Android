@@ -29,7 +29,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.yield
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.importexport.model.AutoBackupError
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import java.io.File

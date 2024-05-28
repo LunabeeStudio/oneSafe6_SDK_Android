@@ -22,22 +22,25 @@ package studio.lunabee.onesafe.ime.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lunabee.lbcore.model.LBResult
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.launch
+import studio.lunabee.onesafe.commonui.CommonUiConstants
 import studio.lunabee.onesafe.commonui.error.description
+import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
+import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
+import studio.lunabee.onesafe.domain.usecase.authentication.IsBiometricEnabledState
+import studio.lunabee.onesafe.domain.usecase.authentication.IsBiometricEnabledUseCase
+import studio.lunabee.onesafe.error.OSError
+import studio.lunabee.onesafe.ime.ui.biometric.ImeBiometricResultRepository
 import studio.lunabee.onesafe.login.state.LoginUiState
 import studio.lunabee.onesafe.login.viewmodel.LoginFromPasswordDelegate
 import studio.lunabee.onesafe.login.viewmodel.LoginFromPasswordDelegateImpl
 import studio.lunabee.onesafe.login.viewmodel.LoginUiStateHolder
-import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
-import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
-import studio.lunabee.onesafe.domain.usecase.authentication.IsBiometricEnabledUseCase
-import studio.lunabee.onesafe.error.OSError
-import studio.lunabee.onesafe.ime.ui.biometric.ImeBiometricResultRepository
 
 class ImeLoginViewModel(
     isBiometricEnabledUseCase: IsBiometricEnabledUseCase,
@@ -49,7 +52,17 @@ class ImeLoginViewModel(
 ) : ViewModel(),
     LoginFromPasswordDelegate by loginFromPasswordDelegate {
     val uiState: StateFlow<LoginUiState> = loginUiStateHolder.uiState
-    val isBiometricEnabled: Flow<Boolean> = isBiometricEnabledUseCase()
+
+    val isBiometricEnabled: StateFlow<Boolean> = isBiometricEnabledUseCase().map { result ->
+        if (result is IsBiometricEnabledState.Error) {
+            _biometricError.emit(ErrorSnackbarState(error = result.error, onClick = {}))
+        }
+        result.isEnabled
+    }.stateIn(
+        viewModelScope,
+        CommonUiConstants.Flow.DefaultSharingStarted,
+        false,
+    )
 
     private val _biometricError: MutableStateFlow<ErrorSnackbarState?> = MutableStateFlow(null)
     val biometricError: StateFlow<ErrorSnackbarState?> = _biometricError.asStateFlow()

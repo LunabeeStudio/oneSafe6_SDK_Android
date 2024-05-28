@@ -37,6 +37,8 @@ class ContactRepositoryImpl @Inject constructor(
 
     override fun getAllContactsFlow(): Flow<List<Contact>> = localDataSource.getAllContactsFlow()
 
+    override fun getRecentContactsFlow(maxNumber: Int): Flow<List<Contact>> = localDataSource.getRecentContactsFlow(maxNumber)
+
     override suspend fun getContact(id: UUID): Flow<Contact?> = localDataSource.getContact(id)
 
     override suspend fun getSharedKey(id: UUID): ContactSharedKey? = localDataSource.getContactSharedKey(id)
