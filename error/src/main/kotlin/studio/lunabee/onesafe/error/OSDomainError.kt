@@ -50,5 +50,6 @@ data class OSDomainError(
         DATABASE_ENCRYPTION_NOT_ENABLED("The database encryption is not enabled"),
         DATABASE_ENCRYPTION_ALREADY_ENABLED("The database encryption is already enabled"),
         DATABASE_KEY_BAD_FORMAT("The string does not represent a 32 bytes database key"),
+        DATABASE_ENCRYPTION_KEY_KEYSTORE_LOST("Unable to decrypt the database encryption key using the Android keystore"),
     }
 }

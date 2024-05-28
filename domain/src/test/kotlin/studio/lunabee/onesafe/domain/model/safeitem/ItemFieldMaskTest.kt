@@ -19,7 +19,7 @@
 
 package studio.lunabee.onesafe.domain.model.safeitem
 
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue

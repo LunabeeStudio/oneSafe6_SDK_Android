@@ -28,8 +28,8 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
-import org.junit.jupiter.api.assertThrows
+import kotlin.test.Test
+import studio.lunabee.onesafe.test.assertThrows
 import studio.lunabee.onesafe.domain.qualifier.InternalDir
 import studio.lunabee.onesafe.error.OSError.Companion.get
 import studio.lunabee.onesafe.error.OSStorageError

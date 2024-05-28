@@ -24,7 +24,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.domain.model.safeitem.ItemNameWithIndex
 import studio.lunabee.onesafe.domain.usecase.item.CleanForAlphaIndexingUseCase
 import studio.lunabee.onesafe.domain.usecase.item.ComputeItemAlphaIndexUseCase

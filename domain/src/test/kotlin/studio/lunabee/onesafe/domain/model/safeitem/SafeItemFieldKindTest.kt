@@ -19,7 +19,7 @@
 
 package studio.lunabee.onesafe.domain.model.safeitem
 
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 
 class SafeItemFieldKindTest {
     private val text: String = "text"

@@ -37,6 +37,8 @@ import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.ItemsLayoutSettings
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import studio.lunabee.onesafe.model.LocalCtaState
+import studio.lunabee.onesafe.model.LocalCtaStateMap
+import studio.lunabee.onesafe.model.edit
 import studio.lunabee.onesafe.repository.datasource.SettingsDataSource
 import java.time.Instant
 import javax.inject.Inject
@@ -45,7 +47,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class DatastoreSettingsDataSource @Inject constructor(
     private val dataStore: DataStore<Preferences>,
-    private val ctaDataStore: DataStore<LocalCtaState>,
+    private val ctaDataStore: DataStore<LocalCtaStateMap>,
 ) : SettingsDataSource {
     private val autoLockInactivityDelayKey = longPreferencesKey(SettingsConstants.AutoLockInactivityDelay)
     private val autoLockAppChangeDelayKey = longPreferencesKey(SettingsConstants.AutoLockAppChangeDelay)
@@ -239,9 +241,9 @@ class DatastoreSettingsDataSource @Inject constructor(
     }
 
     override val enableAutoBackupCtaState: Flow<CtaState>
-        get() = ctaDataStore.data.map { it.toCtaState() }
+        get() = ctaDataStore.data.map { it[SettingsConstants.backupCtaKeyVal].toCtaState() }
 
     override suspend fun setEnableAutoBackupCtaState(ctaState: CtaState) {
-        ctaDataStore.updateData { LocalCtaState.fromCtaState(ctaState) }
+        ctaDataStore.edit { it[SettingsConstants.backupCtaKeyVal] = LocalCtaState.fromCtaState(ctaState) }
     }
 }

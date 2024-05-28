@@ -31,7 +31,7 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.error.OSCryptoError
 import java.lang.reflect.InvocationTargetException
 import java.security.KeyStore
@@ -98,7 +98,7 @@ class BiometricEngineTest {
     fun retrieve_key_not_authenticated_test(): TestResult = runTest {
         if (hasBiometric()) {
             dataStore.insertValue(encMasterKeyAlias, "key".encodeToByteArray())
-            assertEquals(true, biometricEngine.isBiometricEnabledFlow().first())
+            assertEquals(true, biometricEngine.hasEncryptedMasterKeyStored().first())
 
             val cipher = biometricEngine.createCipherBiometricForEncrypt()
             val error = assertFailsWith<OSCryptoError> {
@@ -132,7 +132,7 @@ class BiometricEngineTest {
     fun has_biometric_flow_test() {
         runTest {
             this.launch {
-                biometricEngine.isBiometricEnabledFlow().collectIndexed { index, value ->
+                biometricEngine.hasEncryptedMasterKeyStored().collectIndexed { index, value ->
                     when (index) {
                         0 -> {
                             assertEquals(false, value)

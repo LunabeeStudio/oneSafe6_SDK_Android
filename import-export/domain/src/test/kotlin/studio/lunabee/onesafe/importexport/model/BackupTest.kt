@@ -19,7 +19,7 @@
 
 package studio.lunabee.onesafe.importexport.model
 
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 import java.io.File
 import java.time.Instant
 import kotlin.test.assertContentEquals

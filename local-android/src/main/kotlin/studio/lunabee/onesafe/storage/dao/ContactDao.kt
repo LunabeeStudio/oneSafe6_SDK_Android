@@ -39,6 +39,9 @@ interface ContactDao {
     @Query("SELECT * FROM Contact")
     fun getAllInFlow(): Flow<List<RoomContact>>
 
+    @Query("SELECT * FROM Contact ORDER BY updated_at DESC LIMIT :maxNumber")
+    fun getRecentContactsFlow(maxNumber: Int): Flow<List<RoomContact>>
+
     @Query("SELECT * FROM Contact WHERE id = :id")
     fun getById(id: UUID): Flow<RoomContact?>
 

@@ -25,7 +25,7 @@ import androidx.benchmark.junit4.measureRepeated
 import androidx.test.filters.LargeTest
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.cryptography.CryptoConstants
 import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
 import java.lang.reflect.Method

@@ -39,10 +39,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
-import org.junit.jupiter.api.assertDoesNotThrow
-import org.junit.jupiter.api.assertThrows
-import studio.lunabee.onesafe.domain.qualifier.CryptoDispatcher
+import kotlin.test.Test
 import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
@@ -50,7 +47,10 @@ import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
+import studio.lunabee.onesafe.domain.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.error.OSCryptoError
+import studio.lunabee.onesafe.test.assertDoesNotThrow
+import studio.lunabee.onesafe.test.assertThrows
 import studio.lunabee.onesafe.test.testUUIDs
 import java.lang.Thread.UncaughtExceptionHandler
 import java.util.UUID
@@ -135,18 +135,16 @@ class AndroidMainCryptoRepositoryTest {
         assertEquals(OSCryptoError.Code.MASTER_SALT_ALREADY_LOADED, error.code)
     }
 
-    @Test
+    @Test(expected = OSCryptoError::class)
     fun loadMasterKey_no_password_stored_test(): TestResult = runTest {
-        assertThrows<OSCryptoError> {
-            this@AndroidMainCryptoRepositoryTest.repository.loadMasterKeyFromPassword(password.toCharArray())
-        }
+        this@AndroidMainCryptoRepositoryTest.repository.loadMasterKeyFromPassword(password.toCharArray())
     }
 
     @Test
     fun loadMasterKey_test(): TestResult = runTest {
         loadMasterKey()
         unloadMasterKey()
-        assertDoesNotThrow { this@AndroidMainCryptoRepositoryTest.repository.loadMasterKeyFromPassword(password.toCharArray()) }
+        this@AndroidMainCryptoRepositoryTest.repository.loadMasterKeyFromPassword(password.toCharArray()) // no throw
     }
 
     @Test

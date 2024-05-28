@@ -29,8 +29,8 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
-import org.junit.jupiter.api.assertThrows
+import kotlin.test.Test
+import studio.lunabee.onesafe.test.assertThrows
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.OSStorageTestUtils
 import studio.lunabee.onesafe.storage.dao.SafeItemDao

@@ -13,20 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 3/1/2024 - for the oneSafe6 SDK.
- * Last modified 3/1/24, 11:03 AM
+ * Created by Lunabee Studio / Date - 4/23/2024 - for the oneSafe6 SDK.
+ * Last modified 4/23/24, 2:41 PM
  */
 
-package studio.lunabee.onesafe.domain.repository
+package studio.lunabee.onesafe.usecase
 
-import kotlinx.coroutines.flow.Flow
-import studio.lunabee.onesafe.error.OSCryptoError
-import javax.crypto.Cipher
+import studio.lunabee.onesafe.OSAppSettings
+import studio.lunabee.onesafe.domain.common.CtaState
+import java.time.Clock
+import java.time.Instant
+import javax.inject.Inject
 
-interface BiometricCipherRepository {
-    @Throws(OSCryptoError::class)
-    fun getCipherBiometricForDecrypt(): Cipher
-    fun createCipherBiometricForEncrypt(): Cipher
-    fun hasEncryptedMasterKeyStored(): Flow<Boolean>
-    fun disableBiometric()
+class DismissBubblesHomeCardUseCase @Inject constructor(
+    private val osAppSettings: OSAppSettings,
+    private val clock: Clock,
+) {
+
+    suspend operator fun invoke() {
+        osAppSettings.setBubblesHomeCardCtaState(CtaState.DismissedAt(Instant.now(clock)))
+    }
 }

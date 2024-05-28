@@ -19,7 +19,7 @@
 
 package studio.lunabee.onesafe.bubbles.crypto
 
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.test.testUUIDs
 import studio.lunabee.onesafe.toByteArray
 import kotlin.test.assertContentEquals

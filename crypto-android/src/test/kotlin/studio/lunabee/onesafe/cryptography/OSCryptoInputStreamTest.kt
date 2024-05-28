@@ -19,8 +19,8 @@
 
 package studio.lunabee.onesafe.cryptography
 
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
+import kotlin.test.Test
+import studio.lunabee.onesafe.test.assertThrows
 import studio.lunabee.onesafe.cryptography.utils.OSCryptoInputStream
 import studio.lunabee.onesafe.error.OSCryptoError
 import java.io.IOException

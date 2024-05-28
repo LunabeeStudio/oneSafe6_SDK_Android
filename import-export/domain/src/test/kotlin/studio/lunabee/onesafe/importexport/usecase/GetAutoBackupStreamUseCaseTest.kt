@@ -26,9 +26,9 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
+import org.junit.AfterClass
+import org.junit.BeforeClass
+import kotlin.test.Test
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
 import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
 import java.io.File
@@ -63,7 +63,7 @@ class GetAutoBackupStreamUseCaseTest {
         val cloudFile: File = File("cloud")
 
         @JvmStatic
-        @BeforeAll
+        @BeforeClass
         fun setUp() {
             localFile.writeText(localFile.name)
             localSyncFile.writeText(localSyncFile.name)
@@ -71,7 +71,7 @@ class GetAutoBackupStreamUseCaseTest {
         }
 
         @JvmStatic
-        @AfterAll
+        @AfterClass
         fun tearsDown() {
             localFile.delete()
             localSyncFile.delete()

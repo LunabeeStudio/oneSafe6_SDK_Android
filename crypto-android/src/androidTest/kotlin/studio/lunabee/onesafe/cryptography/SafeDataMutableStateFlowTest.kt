@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.cryptography.utils.SafeDataMutableStateFlow
 import studio.lunabee.onesafe.error.OSCryptoError
 import kotlin.test.assertContentEquals

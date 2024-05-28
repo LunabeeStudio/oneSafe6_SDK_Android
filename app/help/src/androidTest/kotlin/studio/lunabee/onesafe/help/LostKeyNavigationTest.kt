@@ -8,7 +8,7 @@ import androidx.test.espresso.Espresso
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.compose.androidtest.extension.waitUntilExactlyOneExists
 import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.test.InitialTestState

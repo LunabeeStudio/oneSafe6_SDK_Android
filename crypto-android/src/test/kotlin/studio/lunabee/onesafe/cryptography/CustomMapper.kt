@@ -19,7 +19,7 @@
 
 package studio.lunabee.onesafe.cryptography
 
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.error.OSCryptoError
 import kotlin.random.Random
 import kotlin.test.assertEquals

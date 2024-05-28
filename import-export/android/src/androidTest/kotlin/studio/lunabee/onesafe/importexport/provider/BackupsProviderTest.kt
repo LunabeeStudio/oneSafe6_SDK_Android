@@ -26,7 +26,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.domain.qualifier.InternalDir
 import studio.lunabee.onesafe.importexport.android.test.BuildConfig
 import studio.lunabee.onesafe.importexport.model.ImportExportConstant

@@ -30,7 +30,7 @@ import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.compose.androidtest.LbcComposeTest
 import studio.lunabee.compose.androidtest.extension.waitUntilExactlyOneExists
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo

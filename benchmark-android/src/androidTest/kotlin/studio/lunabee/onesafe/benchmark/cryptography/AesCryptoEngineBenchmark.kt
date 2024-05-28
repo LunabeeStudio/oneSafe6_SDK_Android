@@ -25,7 +25,7 @@ import androidx.core.util.AtomicFile
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.compose.androidtest.helper.LbcResourcesHelper
 import studio.lunabee.onesafe.cryptography.AesCryptoEngine
 import java.io.File

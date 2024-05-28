@@ -23,6 +23,7 @@ import com.lunabee.lbcore.model.LBFlowResult
 import com.lunabee.lbcore.model.LBFlowResult.Companion.transformResult
 import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -30,6 +31,10 @@ import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
 import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
 import studio.lunabee.onesafe.domain.repository.DatabaseKeyRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.FinishSetupDatabaseEncryptionUseCase.SuccessState
+import studio.lunabee.onesafe.error.OSCryptoError
+import studio.lunabee.onesafe.error.OSDomainError
+import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.error.osCode
 import javax.inject.Inject
 
 /**
@@ -59,6 +64,12 @@ class FinishSetupDatabaseEncryptionUseCase @Inject constructor(
                 emit(result)
             },
         )
+    }.catch { e ->
+        throw if (e.osCode() == OSCryptoError.Code.ANDROID_KEYSTORE_KEY_PERMANENTLY_INVALIDATE) {
+            OSDomainError.Code.DATABASE_ENCRYPTION_KEY_KEYSTORE_LOST.get() // re-throw specific error for the OSUncaughtExceptionHandler
+        } else {
+            e
+        }
     }
 
     private suspend fun checkDatabaseAccess(backupKey: DatabaseKey?): LBFlowResult<SuccessState> {

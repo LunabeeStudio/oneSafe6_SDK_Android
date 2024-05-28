@@ -19,12 +19,42 @@
 
 package studio.lunabee.onesafe.domain.usecase.authentication
 
+import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import studio.lunabee.onesafe.domain.repository.BiometricCipherRepository
+import studio.lunabee.onesafe.error.OSCryptoError
+import studio.lunabee.onesafe.error.OSError
+import studio.lunabee.onesafe.error.osCode
 import javax.inject.Inject
 
+// TODO unit test
+/**
+ * Check if biometric is enabled. In case of unrecoverable error, reset the data and emit failure.
+ */
 class IsBiometricEnabledUseCase @Inject constructor(
     private val biometricCipherRepository: BiometricCipherRepository,
 ) {
-    operator fun invoke(): Flow<Boolean> = biometricCipherRepository.isBiometricEnabledFlow()
+    operator fun invoke(): Flow<IsBiometricEnabledState> = flow {
+        val hasBiometricResult = OSError.runCatching {
+            val isBiometricEnabledStateFlow = biometricCipherRepository.hasEncryptedMasterKeyStored().map { isEnabled ->
+                if (isEnabled) IsBiometricEnabledState.Enabled else IsBiometricEnabledState.Disabled
+            }
+            emitAll(isBiometricEnabledStateFlow)
+        }
+        if (hasBiometricResult is LBResult.Failure) {
+            if (hasBiometricResult.throwable.osCode() == OSCryptoError.Code.ANDROID_KEYSTORE_KEY_PERMANENTLY_INVALIDATE) {
+                biometricCipherRepository.disableBiometric()
+            }
+            emit(IsBiometricEnabledState.Error(hasBiometricResult.throwable))
+        }
+    }
+}
+
+sealed class IsBiometricEnabledState(val isEnabled: Boolean) {
+    data object Enabled : IsBiometricEnabledState(true)
+    data object Disabled : IsBiometricEnabledState(false)
+    data class Error(val error: Throwable?) : IsBiometricEnabledState(false)
 }

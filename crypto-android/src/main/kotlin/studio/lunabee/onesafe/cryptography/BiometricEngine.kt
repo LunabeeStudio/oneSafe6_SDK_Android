@@ -137,7 +137,7 @@ class BiometricEngine @Inject constructor(
         }
     }
 
-    override fun isBiometricEnabledFlow(): Flow<Boolean> = dataStoreEngine.retrieveValue(ENC_MASTER_KEY_KEY).map {
+    override fun hasEncryptedMasterKeyStored(): Flow<Boolean> = dataStoreEngine.retrieveValue(ENC_MASTER_KEY_KEY).map {
         it != null
     }
 

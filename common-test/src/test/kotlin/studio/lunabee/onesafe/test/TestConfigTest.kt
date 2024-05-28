@@ -21,7 +21,7 @@ package studio.lunabee.onesafe.test
 
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 import java.io.File
 
 class TestConfigTest {

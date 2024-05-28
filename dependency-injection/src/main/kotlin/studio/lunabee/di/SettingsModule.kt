@@ -31,7 +31,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import studio.lunabee.onesafe.DatastoreSettingsDataSource
-import studio.lunabee.onesafe.model.LocalCtaState
+import studio.lunabee.onesafe.model.LocalCtaStateMap
 import studio.lunabee.onesafe.repository.datasource.SettingsDataSource
 import studio.lunabee.onesafe.repository.datasource.SupportOSDataSource
 import studio.lunabee.onesafe.storage.datastore.ProtoSerializer
@@ -66,11 +66,11 @@ object SettingsPreferenceDataStoreModule {
         }
     }
 
-    private const val CtaDataStore: String = "b0e3c5a2-7959-4121-b664-372e544252cd"
+    private const val CtaMapDataStore: String = "64ed5309-0f38-4dac-8451-473247a6ea41"
 
     @Provides
     @Singleton
-    fun provideCtaStateDatastore(
+    fun provideCtaStateMapDatastore(
         @ApplicationContext context: Context,
-    ): DataStore<LocalCtaState> = ProtoSerializer.dataStore(context, LocalCtaState.Hidden, CtaDataStore)
+    ): DataStore<LocalCtaStateMap> = ProtoSerializer.dataStore(context, LocalCtaStateMap(emptyMap()), CtaMapDataStore)
 }

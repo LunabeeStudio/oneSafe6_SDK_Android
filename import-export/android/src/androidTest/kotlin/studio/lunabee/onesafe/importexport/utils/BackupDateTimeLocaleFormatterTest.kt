@@ -19,7 +19,7 @@
 
 package studio.lunabee.onesafe.importexport.utils
 
-import org.junit.Test
+import kotlin.test.Test
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset

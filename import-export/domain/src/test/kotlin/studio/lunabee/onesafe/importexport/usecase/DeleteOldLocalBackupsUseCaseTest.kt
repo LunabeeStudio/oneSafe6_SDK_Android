@@ -25,16 +25,15 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.AfterClass
+import org.junit.Before
+import org.junit.BeforeClass
+import kotlin.test.Test
 import studio.lunabee.onesafe.importexport.model.ImportExportConstant
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
 import java.io.File
-import java.nio.file.Files.delete
 import java.time.Instant
 import kotlin.test.assertContentEquals
 
@@ -61,7 +60,7 @@ class DeleteOldLocalBackupsUseCaseTest {
         autoBackupSettingsRepository = autoBackupSettingsRepository,
     )
 
-    @BeforeEach
+    @Before
     fun setUpEach() {
         backupDb.clear()
     }
@@ -70,13 +69,13 @@ class DeleteOldLocalBackupsUseCaseTest {
         private const val ext: String = ".${ImportExportConstant.ExtensionOs6Backup}"
         private val tmpDir = File("DeleteOldLocalBackupsUseCaseTest")
 
-        @BeforeAll
+        @BeforeClass
         @JvmStatic
         fun setUp() {
             tmpDir.mkdir()
         }
 
-        @AfterAll
+        @AfterClass
         @JvmStatic
         fun tearsDown() {
             tmpDir.deleteRecursively()

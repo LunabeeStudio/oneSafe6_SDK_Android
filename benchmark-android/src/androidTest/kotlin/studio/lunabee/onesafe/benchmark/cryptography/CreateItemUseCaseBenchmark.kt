@@ -25,7 +25,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.domain.usecase.item.CreateItemUseCase
 import studio.lunabee.onesafe.extension.iconSample
 import studio.lunabee.onesafe.test.InitialTestState

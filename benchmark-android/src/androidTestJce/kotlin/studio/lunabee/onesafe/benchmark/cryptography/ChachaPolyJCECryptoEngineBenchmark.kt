@@ -28,7 +28,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.compose.androidtest.helper.LbcResourcesHelper
 import studio.lunabee.onesafe.cryptography.ChachaPolyJCECryptoEngine
 import java.io.File

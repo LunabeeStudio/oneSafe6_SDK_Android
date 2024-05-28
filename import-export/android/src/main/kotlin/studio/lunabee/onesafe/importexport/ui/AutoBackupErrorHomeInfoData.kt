@@ -108,6 +108,7 @@ private fun AutoBackupErrorCardPreview() {
     OSPreviewBackgroundTheme {
         with(object : HomeInfoDataNavScope {
             override val navigateFromHomeInfoDataToBackupSettings: () -> Unit = {}
+            override val navigateFromHomeInfoDataToBubblesOnBoarding: () -> Unit = {}
         }) {
             AutoBackupErrorHomeInfoData(
                 errorLabel = loremIpsumSpec(1),

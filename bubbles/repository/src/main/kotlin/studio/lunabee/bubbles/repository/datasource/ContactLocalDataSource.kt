@@ -29,6 +29,7 @@ import java.util.UUID
 interface ContactLocalDataSource {
     suspend fun saveContact(contact: Contact, key: ContactLocalKey)
     fun getAllContactsFlow(): Flow<List<Contact>>
+    fun getRecentContactsFlow(maxNumber: Int): Flow<List<Contact>>
     suspend fun getContact(id: UUID): Flow<Contact?>
     suspend fun getContactSharedKey(id: UUID): ContactSharedKey?
     suspend fun clearAll()

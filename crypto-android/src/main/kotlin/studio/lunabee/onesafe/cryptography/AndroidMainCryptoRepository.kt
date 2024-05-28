@@ -108,7 +108,7 @@ class AndroidMainCryptoRepository @Inject constructor(
     private var itemEditionKey: ByteArray? by safeCryptoArrayDelete(itemEditionKeyFlow)
 
     override fun isCryptoDataInMemoryFlow(): Flow<Boolean> {
-        val flows = mutableListOf(masterKeyFlow, searchIndexKeyFlow, itemEditionKeyFlow)
+        val flows = listOf(masterKeyFlow, searchIndexKeyFlow, itemEditionKeyFlow)
         return combine(flows) { keys ->
             keys.all { it != null }
         }

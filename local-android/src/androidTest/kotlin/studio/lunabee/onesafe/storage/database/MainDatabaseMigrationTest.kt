@@ -26,7 +26,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.Migration3to4
 import studio.lunabee.onesafe.storage.Migration8to9

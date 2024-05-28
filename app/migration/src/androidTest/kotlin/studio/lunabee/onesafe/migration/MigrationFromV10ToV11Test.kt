@@ -26,7 +26,7 @@ import junit.framework.TestCase.assertFalse
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.domain.usecase.item.CreateItemUseCase
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltTest

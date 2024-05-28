@@ -34,6 +34,7 @@ import studio.lunabee.onesafe.domain.usecase.SetIconUseCase
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemUseCase
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.getOrThrow
+import java.time.Clock
 import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
@@ -49,6 +50,7 @@ class UpdateItemUseCase @Inject constructor(
     private val createIndexWordEntriesFromItemUseCase: CreateIndexWordEntriesFromItemUseCase,
     private val updateFieldsUseCase: UpdateFieldsUseCase,
     private val computeItemAlphaIndexUseCase: ComputeItemAlphaIndexUseCase,
+    private val clock: Clock,
 ) {
     suspend operator fun invoke(
         itemId: UUID,
@@ -124,7 +126,7 @@ class UpdateItemUseCase @Inject constructor(
             }
 
             // Updated at
-            itemWithUpdatedValue = itemWithUpdatedValue.copy(updatedAt = Instant.now())
+            itemWithUpdatedValue = itemWithUpdatedValue.copy(updatedAt = Instant.now(clock))
 
             safeItemRepository.updateSafeItem(
                 safeItem = itemWithUpdatedValue,

@@ -92,7 +92,7 @@ dependencies {
     androidTestImplementation(project(":local-android"))
     androidTestImplementation(libs.datastore.preferences)
     androidTestImplementation(libs.hilt.android.testing)
-    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.espresso.core)
     kspAndroidTest(libs.androidx.hilt.compiler)
     androidTestImplementation(libs.compose.ui.test.junit4)
     debugImplementation(libs.compose.ui.test.manifest)

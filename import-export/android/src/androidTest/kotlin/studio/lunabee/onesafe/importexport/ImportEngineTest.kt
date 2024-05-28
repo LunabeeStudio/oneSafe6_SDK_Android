@@ -32,8 +32,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
-import org.junit.Test
-import org.junit.jupiter.api.assertThrows
+import kotlin.test.Test
+import studio.lunabee.onesafe.test.assertThrows
 import studio.lunabee.compose.androidtest.helper.LbcFolderResource
 import studio.lunabee.compose.androidtest.helper.LbcResourcesHelper
 import studio.lunabee.di.CryptoConstantsTestModule

@@ -33,13 +33,12 @@ android {
     testBuildType = "release"
     buildTypes {
         debug {
-            // Since isDebuggable can't be modified by gradle for library modules,
-            // it must be done in a manifest - see src/AndroidManifest.xml
-            isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "benchmark-proguard-rules.pro")
         }
         release {
             isDefault = true
+            isMinifyEnabled = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
             signingConfig = signingConfigs.getByName("debug")
         }
     }

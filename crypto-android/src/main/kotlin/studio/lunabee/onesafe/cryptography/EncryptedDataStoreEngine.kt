@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import studio.lunabee.onesafe.cryptography.extension.use
+import studio.lunabee.onesafe.domain.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.error.OSCryptoError
 import java.io.ByteArrayOutputStream
@@ -52,6 +53,7 @@ class EncryptedDataStoreEngine @Inject constructor(
     private val androidKeyStoreEngine: AndroidKeyStoreEngine,
     private val ivProvider: IVProvider,
     @FileDispatcher private val fileDispatcher: CoroutineDispatcher,
+    @CryptoDispatcher private val cryptoDispatcher: CoroutineDispatcher,
     dataStore: DataStore<ProtoData>,
 ) : DatastoreEngine(dataStore) {
 
@@ -82,48 +84,52 @@ class EncryptedDataStoreEngine @Inject constructor(
             } catch (e: Exception) {
                 null
             }
-            encValue?.toByteArray()?.let(::decryptData)
+            encValue?.toByteArray()?.let { decryptData(it) }
         }.flowOn(fileDispatcher)
 
     @Throws(OSCryptoError::class)
     @Suppress("ThrowsCount")
-    private fun decryptData(encData: ByteArray): ByteArray {
+    private suspend fun decryptData(encData: ByteArray): ByteArray {
         try {
-            withMasterKey { masterKey ->
-                val cipher = getCipher()
-                val iv: ByteArray = encData.copyOfRange(0, AES_GCM_IV_LENGTH)
-                val ivSpec = getGcmParameterSpec(iv)
-                cipher.init(Cipher.DECRYPT_MODE, masterKey, ivSpec)
-                return cipher.doFinal(
-                    encData,
-                    AES_GCM_IV_LENGTH,
-                    encData.size - AES_GCM_IV_LENGTH,
-                )
+            return withContext(cryptoDispatcher) {
+                withMasterKey { masterKey ->
+                    val cipher = getCipher()
+                    val iv: ByteArray = encData.copyOfRange(0, AES_GCM_IV_LENGTH)
+                    val ivSpec = getGcmParameterSpec(iv)
+                    cipher.init(Cipher.DECRYPT_MODE, masterKey, ivSpec)
+                    cipher.doFinal(
+                        encData,
+                        AES_GCM_IV_LENGTH,
+                        encData.size - AES_GCM_IV_LENGTH,
+                    )
+                }
             }
         } catch (e: Exception) {
             when (e) {
                 is KeyPermanentlyInvalidatedException,
                 is AEADBadTagException,
-                -> throw OSCryptoError(OSCryptoError.Code.DATASTORE_KEY_PERMANENTLY_INVALIDATE, cause = e)
+                -> throw OSCryptoError(OSCryptoError.Code.ANDROID_KEYSTORE_KEY_PERMANENTLY_INVALIDATE, cause = e)
                 is IndexOutOfBoundsException -> throw OSCryptoError(OSCryptoError.Code.DECRYPTION_UNKNOWN_FAILURE, cause = e)
                 else -> throw e
             }
         }
     }
 
-    private fun encryptData(value: ByteArray): ByteArray {
-        return withMasterKey { masterKey ->
-            val bos = ByteArrayOutputStream()
-            val cipher = getCipher()
-            val iv = ivProvider(AES_GCM_IV_LENGTH)
-            cipher.init(Cipher.ENCRYPT_MODE, masterKey, getGcmParameterSpec(iv))
-            bos.write(iv)
-            CipherOutputStream(bos, cipher).use { cos ->
-                value.inputStream().use { input ->
-                    input.copyTo(cos)
+    private suspend fun encryptData(value: ByteArray): ByteArray {
+        return withContext(cryptoDispatcher) {
+            withMasterKey { masterKey ->
+                val bos = ByteArrayOutputStream()
+                val cipher = getCipher()
+                val iv = ivProvider(AES_GCM_IV_LENGTH)
+                cipher.init(Cipher.ENCRYPT_MODE, masterKey, getGcmParameterSpec(iv))
+                bos.write(iv)
+                CipherOutputStream(bos, cipher).use { cos ->
+                    value.inputStream().use { input ->
+                        input.copyTo(cos)
+                    }
                 }
+                bos.toByteArray()
             }
-            bos.toByteArray()
         }
     }
 

@@ -22,7 +22,7 @@ package studio.lunabee.onesafe.cryptography
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import org.junit.Test
+import kotlin.test.Test
 import java.util.Base64
 
 class HKDFTinkHashEngineTest {

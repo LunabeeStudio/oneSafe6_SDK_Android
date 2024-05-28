@@ -46,7 +46,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.BeforeClass
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
 import studio.lunabee.onesafe.error.OSDriveError
 import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants

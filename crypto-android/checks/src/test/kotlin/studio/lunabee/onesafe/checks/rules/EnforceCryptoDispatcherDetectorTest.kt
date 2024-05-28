@@ -21,10 +21,10 @@ package studio.lunabee.onesafe.checks.rules
 
 import com.android.tools.lint.checks.infrastructure.TestFiles.kt
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
-import org.junit.jupiter.api.Test
 import studio.lunabee.onesafe.checks.EnforceCryptoDispatcherDetector
 import studio.lunabee.onesafe.domain.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
+import kotlin.test.Test
 
 class EnforceCryptoDispatcherDetectorTest {
     // Make sure we always test correct classes

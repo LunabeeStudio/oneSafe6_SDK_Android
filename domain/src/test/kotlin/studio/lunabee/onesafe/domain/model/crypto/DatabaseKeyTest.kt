@@ -19,10 +19,10 @@
 
 package studio.lunabee.onesafe.domain.model.crypto
 
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
-import org.junit.jupiter.api.assertThrows
+import kotlin.test.Test
+import studio.lunabee.onesafe.test.assertThrows
 import studio.lunabee.onesafe.error.OSDomainError
+import studio.lunabee.onesafe.test.assertDoesNotThrow
 import kotlin.random.Random
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals

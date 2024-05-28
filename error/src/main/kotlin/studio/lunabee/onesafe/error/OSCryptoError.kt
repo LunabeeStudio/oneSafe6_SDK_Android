@@ -42,7 +42,7 @@ data class OSCryptoError(
         BIOMETRIC_DECRYPTION_FAIL("Unable to decrypt masterKey with biometric"),
         BIOMETRIC_KEY_GENERATION_ERROR("Unable to generate key for biometric"),
         BIOMETRIC_KEY_INVALIDATE("Biometric Key permanently invalidated"),
-        DATASTORE_KEY_PERMANENTLY_INVALIDATE("Datastore Key permanently invalidated"),
+        ANDROID_KEYSTORE_KEY_PERMANENTLY_INVALIDATE("Datastore key permanently invalidated due to Android keystore error"),
         BIOMETRIC_DECRYPTION_NOT_AUTHENTICATED("retrieve Key user not authenticated"),
         IV_ALREADY_USED("IV has already been used"),
         BIOMETRIC_MASTER_KEY_ALREADY_GENERATED("A master key have already been generated and encrypted for biometric"),

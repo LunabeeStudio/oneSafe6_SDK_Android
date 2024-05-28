@@ -18,6 +18,7 @@ import com.lunabee.lblogger.e
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.firstOrNull
@@ -111,9 +112,16 @@ internal class HelpDebugViewModel @Inject constructor(
     private val clearAutoBackupErrorUseCase: ClearAutoBackupErrorUseCase,
 ) : ViewModel() {
 
+    private val databaseKeyFlow = databaseKeyRepository.getKeyFlow()
+        .map { it != null }
+        .catch { err ->
+            logger.e(err)
+            emit(false)
+        }
+
     val uiState: StateFlow<HelpDebugUiState> = combine(
         settings.materialYouSetting,
-        databaseKeyRepository.getKeyFlow().map { it != null },
+        databaseKeyFlow,
         autoBackupErrorRepository.getError(),
         itemSettingsRepository.itemOrdering,
         itemSettingsRepository.itemsLayoutSetting,
@@ -304,16 +312,18 @@ internal class HelpDebugViewModel @Inject constructor(
     }
 
     private suspend fun dumpDatabaseKey(): Boolean {
-        val databaseKey = databaseKeyRepository.getKeyFlow().firstOrNull()
-        databaseKey?.let {
-            // FIXME The raw key export should be able the database with DBBrowser for SQLite, but it does not work
-            //  https://github.com/sqlitebrowser/sqlitebrowser/discussions/3588
-            val rawKeyString = it.asCharArray().joinToString("").lowercase()
-            context.copyToClipBoard("0x$rawKeyString", LbcTextSpec.Raw("debug"))
-            showFeedback("SQLCipher key copied")
-        } ?: showFeedback("No SQLCipher key found")
+        return kotlin.runCatching {
+            val databaseKey = databaseKeyRepository.getKeyFlow().firstOrNull()
+            databaseKey?.let {
+                // FIXME The raw key export should be able the database with DBBrowser for SQLite, but it does not work
+                //  https://github.com/sqlitebrowser/sqlitebrowser/discussions/3588
+                val rawKeyString = it.asCharArray().joinToString("").lowercase()
+                context.copyToClipBoard("0x$rawKeyString", LbcTextSpec.Raw("debug"))
+                showFeedback("SQLCipher key copied")
+            } ?: showFeedback("No SQLCipher key found")
 
-        return databaseKey != null
+            databaseKey != null
+        }.getOrNull() ?: false
     }
 
     fun createContact() {

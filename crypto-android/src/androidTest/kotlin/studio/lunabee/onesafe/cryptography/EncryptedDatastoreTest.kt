@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSError
 import java.security.KeyStore
@@ -87,7 +87,7 @@ class EncryptedDatastoreTest {
             val error = assertFailsWith<OSError> {
                 dataStore.retrieveValue(keyAlias).first()
             }
-            assertEquals(OSCryptoError.Code.DATASTORE_KEY_PERMANENTLY_INVALIDATE, (error as OSCryptoError).code)
+            assertEquals(OSCryptoError.Code.ANDROID_KEYSTORE_KEY_PERMANENTLY_INVALIDATE, (error as OSCryptoError).code)
         }
     }
 

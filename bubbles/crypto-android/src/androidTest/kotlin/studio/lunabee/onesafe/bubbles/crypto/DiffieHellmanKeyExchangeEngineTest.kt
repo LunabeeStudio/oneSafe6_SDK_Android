@@ -19,7 +19,7 @@
 
 package studio.lunabee.onesafe.bubbles.crypto
 
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 
 class DiffieHellmanKeyExchangeEngineTest {

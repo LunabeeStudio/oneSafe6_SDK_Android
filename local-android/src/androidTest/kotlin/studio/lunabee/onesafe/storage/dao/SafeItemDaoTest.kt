@@ -26,7 +26,7 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import studio.lunabee.onesafe.storage.OSStorageTestUtils
 import studio.lunabee.onesafe.test.testUUIDs
 import java.time.Instant

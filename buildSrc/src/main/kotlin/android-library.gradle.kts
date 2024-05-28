@@ -52,7 +52,6 @@ val libs: LibrariesForLibs = the<LibrariesForLibs>()
 dependencies {
     implementation(libs.javax.inject)
 
-    testImplementation(libs.junit.jupiter)
     testImplementation(libs.kotlin.test)
     testImplementation(libs.logback.classic)
     testImplementation(project(":common-test"))
