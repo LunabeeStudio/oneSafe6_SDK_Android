@@ -39,9 +39,9 @@ class RecentSearchLocalDataSourceImpl @Inject constructor(
 ) : RecentSearchLocalDatasource {
     private val limitRecentSearchSaved: Int = 12
 
-    override fun getRecentSearch(): Flow<LinkedHashSet<ByteArray>> = dataStore.data.map { _data ->
+    override fun getRecentSearch(): Flow<LinkedHashSet<ByteArray>> = dataStore.data.map { data ->
         LinkedHashSet<ByteArray>().also {
-            it.addAll(_data.recentSearchList.map(ByteString::toByteArray))
+            it.addAll(data.recentSearchList.map(ByteString::toByteArray))
         }
     }.flowOn(fileDispatcher)
 

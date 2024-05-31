@@ -35,12 +35,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -51,6 +50,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -92,7 +92,7 @@ import studio.lunabee.onesafe.ime.ui.ImeNavGraphRoute
 import studio.lunabee.onesafe.ime.ui.ImeOSTopBar
 import studio.lunabee.onesafe.ime.ui.LocalKeyboardIsNightMode
 import studio.lunabee.onesafe.ime.ui.OSKeyboardStatus
-import studio.lunabee.onesafe.ime.ui.extension.keyboardTextfield
+import studio.lunabee.onesafe.ime.ui.keyboardTextfield
 import studio.lunabee.onesafe.ime.viewmodel.ImeLoginViewModelFactory
 import studio.lunabee.onesafe.ime.viewmodel.SelectContactViewModelFactory
 import studio.lunabee.onesafe.ime.viewmodel.WriteMessageViewModelFactory
@@ -225,10 +225,10 @@ class OSFlorisImeService : FlorisImeService() {
                 // hide oSK UI and let ime handle back
                 OSKImeState.Screen -> isOneSafeUiVisibleFlow.value = false
                 // hide keyboard and let ime handle back
-                OSKImeState.Keyboard -> isKeyboardVisibleFlow.value = false
+                OSKImeState.Keyboard -> hideKeyboard()
                 // hide keyboard and consume event
                 OSKImeState.ScreenWithKeyboard -> {
-                    isKeyboardVisibleFlow.value = false
+                    hideKeyboard()
                     return true
                 }
             }
@@ -444,8 +444,8 @@ class OSFlorisImeService : FlorisImeService() {
                     OneSafeKView(isOneSafeUiVisible, isKeyboardVisible)
                     AnimatedVisibility(
                         visible = isKeyboardVisible,
-                        enter = expandVertically(expandFrom = Alignment.Top),
-                        exit = shrinkVertically(shrinkTowards = Alignment.Top),
+                        enter = expandVertically(expandFrom = Alignment.Bottom),
+                        exit = shrinkVertically(shrinkTowards = Alignment.Bottom),
                     ) {
                         ImeUi()
                     }
@@ -467,7 +467,7 @@ class OSFlorisImeService : FlorisImeService() {
                         toggleKeyboardVisibility = {
                             isKeyboardVisibleFlow.value = !isKeyboardVisible
                         },
-                        textFieldValue = textFieldValue,
+                        getTextFieldValue = textFieldValue,
                         setTextFieldValue = setTextFieldValue,
                         keyboardOptions = keyboardOptions,
                         keyboardActions = keyboardActions,
@@ -482,42 +482,38 @@ class OSFlorisImeService : FlorisImeService() {
             }),
         ) {
             Box(
-                modifier = Modifier.Companion.weight(1f, true),
+                modifier = Modifier.weight(1f, true),
             ) {
-                Column(Modifier.fillMaxSize()) {
-                    AnimatedVisibility(
-                        visible = isOneSafeVisible,
-                        enter = fadeIn(),
-                        exit = fadeOut(),
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .background(Color.Black.copy(0.5f))
-                                .fillMaxSize()
-                                .clickable(
-                                    onClick = {
-                                        isOneSafeUiVisibleFlow.value = false
-                                        isKeyboardVisibleFlow.value = true
-                                    },
-                                ),
-                        )
-                    }
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = isOneSafeVisible,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .background(Color.Black.copy(0.5f))
+                            .fillMaxSize()
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClick = ::switchOSKToKeyboard,
+                            ),
+                    )
                 }
-                Column(
+                Box(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .statusBarsPadding()
                         .padding(top = OSDimens.SystemSpacing.ExtraLarge),
                 ) {
-                    AnimatedVisibility(
+                    androidx.compose.animation.AnimatedVisibility(
                         visible = isOneSafeVisible,
-                        enter = expandVertically(expandFrom = Alignment.Top),
-                        exit = shrinkVertically(shrinkTowards = Alignment.Top),
+                        enter = expandVertically(expandFrom = Alignment.Bottom),
+                        exit = shrinkVertically(shrinkTowards = Alignment.Bottom),
                     ) {
                         OneSafeKUi(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight()
+                                .fillMaxSize()
                                 .clip(
                                     RoundedCornerShape(
                                         topStart = OSDimens.SystemSpacing.Regular,
@@ -554,24 +550,29 @@ class OSFlorisImeService : FlorisImeService() {
                 selectContactViewModelFactory = selectContactViewModelFactory,
                 writeMessageViewModelFactory = writeMessageViewModelFactory,
                 onLoginSuccess = {
-                    // TODO = Fix navigation glitch on keyboard close
+                    // TODO <oSK> = Fix navigation glitch on keyboard close
                     //  isKeyboardVisibleFlow.value = false
                 },
-                dismissUi = {
-                    isOneSafeUiVisibleFlow.value = false
-                    isKeyboardVisibleFlow.value = true
-                },
+                dismissUi = ::switchOSKToKeyboard,
                 sendMessage = { encryptedMessage ->
-                    currentInputConnection.also {
-                        isOneSafeUiVisibleFlow.value = false
-                        isKeyboardVisibleFlow.value = true
-                        it.commitText(encryptedMessage, 0)
+                    currentInputConnection.also { inputConnection ->
+                        switchOSKToKeyboard()
+                        inputConnection.commitText(encryptedMessage, 0)
                     }
                 },
                 hasDoneOnBoardingBubbles = hasDoneOnBoardingBubbles,
-                hideKeyboard = { isKeyboardVisibleFlow.value = false },
+                hideKeyboard = ::hideKeyboard,
             )
         }
+    }
+
+    private fun hideKeyboard() {
+        isKeyboardVisibleFlow.value = false
+    }
+
+    private fun switchOSKToKeyboard() {
+        isOneSafeUiVisibleFlow.value = false
+        isKeyboardVisibleFlow.value = true
     }
 
     companion object {

@@ -20,15 +20,21 @@
 package studio.lunabee.onesafe.domain.usecase
 
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestResult
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlin.test.Test
-import studio.lunabee.onesafe.test.assertThrows
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.test.assertDoesNotThrow
+import studio.lunabee.onesafe.test.assertThrows
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -52,5 +58,40 @@ class IsCryptoDataReadyInMemoryUseCaseTest {
             useCase.wait(10.milliseconds)
         }
         assertEquals(OSDomainError.Code.CRYPTO_NOT_READY_TIMEOUT, err.code)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun with_crypto_test(): TestResult = runTest {
+        val cryptoFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
+        every { mainCryptoRepository.isCryptoDataInMemoryFlow() } returns cryptoFlow
+
+        val testFlow = MutableStateFlow("data_0")
+
+        val actual: MutableList<String> = mutableListOf()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            useCase.withCrypto(testFlow).toList(actual)
+        }
+
+        // No crypto
+        assertEquals(0, actual.size)
+
+        // Load crypto
+        cryptoFlow.value = true
+        assertEquals(1, actual.size)
+        assertEquals("data_0", actual[0])
+
+        // Unload crypto
+        cryptoFlow.value = false
+        assertEquals(1, actual.size)
+
+        // Update data with crypto unload
+        testFlow.value = "data_1"
+        assertEquals(1, actual.size)
+
+        // Load crypto
+        cryptoFlow.value = true
+        assertEquals(2, actual.size)
+        assertEquals("data_1", actual[1])
     }
 }

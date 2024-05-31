@@ -30,13 +30,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSCard
 import studio.lunabee.onesafe.atom.OSImageSpec
@@ -52,13 +51,13 @@ import studio.lunabee.onesafe.ui.theme.LocalColorPalette
 
 @Composable
 fun NoPreviewComposeMessageCard(
-    plainMessage: String,
-    onPlainMessageChange: (String) -> Unit,
+    plainMessage: TextFieldValue,
+    onPlainMessageChange: (TextFieldValue) -> Unit,
     onClickOnSend: () -> Unit,
     sendIcon: OSImageSpec,
+    focusRequester: FocusRequester,
 ) {
     val isKeyboardVisible: Boolean = LocalIsKeyBoardVisible.current
-    val focusRequester = remember { FocusRequester() }
     Box(
         modifier = Modifier
             .background(LocalColorPalette.current.Neutral70)
@@ -88,14 +87,11 @@ fun NoPreviewComposeMessageCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 OSTextField(
-                    value = plainMessage,
+                    textFieldValue = plainMessage,
                     onValueChange = onPlainMessageChange,
                     modifier = Modifier
                         .weight(1.0f)
-                        .focusRequester(focusRequester)
-                        .onPlaced {
-                            focusRequester.requestFocus()
-                        },
+                        .focusRequester(focusRequester),
                     label = null,
                     placeholder = LbcTextSpec.StringResource(OSString.oneSafeK_composeMessageCard_label),
                     colors = TextFieldDefaults.colors(
@@ -110,7 +106,7 @@ fun NoPreviewComposeMessageCard(
                     ),
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions {
-                        if (plainMessage.isNotEmpty()) onClickOnSend()
+                        if (plainMessage.text.isNotEmpty()) onClickOnSend()
                     },
                 )
                 OSIconButton(
@@ -119,7 +115,7 @@ fun NoPreviewComposeMessageCard(
                     buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
                     contentDescription = LbcTextSpec.StringResource(OSString.accessibility_oneSafeK_sendAction),
                     colors = OSIconButtonDefaults.primaryIconButtonColors(),
-                    state = if (plainMessage.isEmpty()) OSActionState.Disabled else OSActionState.Enabled,
+                    state = if (plainMessage.text.isEmpty()) OSActionState.Disabled else OSActionState.Enabled,
                 )
             }
         }

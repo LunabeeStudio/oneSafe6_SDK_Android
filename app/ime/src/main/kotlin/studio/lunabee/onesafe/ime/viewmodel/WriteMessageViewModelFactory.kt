@@ -36,6 +36,7 @@ import studio.lunabee.onesafe.messaging.domain.usecase.GetSendMessageDataUseCase
 import studio.lunabee.onesafe.messaging.domain.usecase.SaveMessageUseCase
 import studio.lunabee.onesafe.messaging.domain.usecase.SaveSentMessageUseCase
 import studio.lunabee.onesafe.messaging.writemessage.viewmodel.WriteMessageViewModel
+import java.time.Clock
 import javax.inject.Inject
 
 class WriteMessageViewModelFactory @Inject constructor(
@@ -52,6 +53,7 @@ class WriteMessageViewModelFactory @Inject constructor(
     private val sentMessageRepository: SentMessageRepository,
     private val messageIdProvider: MessageIdProvider,
     private val contactRepository: ContactRepository,
+    private val clock: Clock,
 ) : AbstractSavedStateViewModelFactory() {
     override fun <T : ViewModel> create(key: String, modelClass: Class<T>, handle: SavedStateHandle): T {
         @Suppress("UNCHECKED_CAST")
@@ -70,6 +72,7 @@ class WriteMessageViewModelFactory @Inject constructor(
             sentMessageRepository = sentMessageRepository,
             messageIdProvider = messageIdProvider,
             contactRepository = contactRepository,
+            clock = clock,
         ) as T
     }
 }

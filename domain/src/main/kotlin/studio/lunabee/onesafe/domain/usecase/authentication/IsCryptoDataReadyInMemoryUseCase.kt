@@ -19,7 +19,10 @@
 
 package studio.lunabee.onesafe.domain.usecase.authentication
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.error.OSDomainError
 import javax.inject.Inject
@@ -36,6 +39,15 @@ class IsCryptoDataReadyInMemoryUseCase @Inject constructor(
         val isCryptoReady = mainCryptoRepository.isCryptoDataInMemory(timeout)
         if (!isCryptoReady) {
             throw OSDomainError(OSDomainError.Code.CRYPTO_NOT_READY_TIMEOUT)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun <T> withCrypto(block: Flow<T>): Flow<T> = flow().flatMapLatest { isCryptoLoaded ->
+        if (isCryptoLoaded) {
+            block
+        } else {
+            flowOf()
         }
     }
 }

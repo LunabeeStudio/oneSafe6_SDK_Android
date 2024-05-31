@@ -22,11 +22,15 @@ package studio.lunabee.onesafe.domain.usecase.item
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import javax.inject.Inject
 
-class GetRecentItemUseCase @Inject constructor(
+class SecureGetRecentItemUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
+    private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
 ) {
     private val itemDisplayedLimit: Int = 12
-    operator fun invoke(): Flow<List<SafeItem>> = safeItemRepository.getLastConsultedNotDeletedSafeItem(itemDisplayedLimit)
+    operator fun invoke(): Flow<List<SafeItem>> = isCryptoDataReadyInMemoryUseCase.withCrypto(
+        safeItemRepository.getLastConsultedNotDeletedSafeItem(itemDisplayedLimit),
+    )
 }
