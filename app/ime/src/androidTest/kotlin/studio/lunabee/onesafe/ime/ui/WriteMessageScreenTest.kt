@@ -24,6 +24,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.text.input.TextFieldValue
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
@@ -31,20 +32,21 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlin.test.Test
 import studio.lunabee.compose.androidtest.LbcComposeTest
 import studio.lunabee.compose.androidtest.extension.waitUntilExactlyOneExists
 import studio.lunabee.onesafe.atom.OSImageSpec
-import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
 import studio.lunabee.onesafe.commonui.OSDrawable
-import studio.lunabee.onesafe.messaging.domain.model.ConversationState
+import studio.lunabee.onesafe.messaging.writemessage.model.BubblesWritingMessage
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageNavScope
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageRoute
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageUiState
 import studio.lunabee.onesafe.messaging.writemessage.viewmodel.WriteMessageViewModel
+import studio.lunabee.onesafe.test.OSTestConfig
+import studio.lunabee.onesafe.test.testUUIDs
 import studio.lunabee.onesafe.ui.UiConstants
 import java.util.UUID
+import kotlin.test.Test
 
 class WriteMessageScreenTest : LbcComposeTest() {
 
@@ -53,21 +55,19 @@ class WriteMessageScreenTest : LbcComposeTest() {
 
     private val mockkVm: WriteMessageViewModel = mockk {
         every { uiState } returns MutableStateFlow(
-            WriteMessageUiState(
-                currentContact = UIBubblesContactInfo(
-                    id = UUID.randomUUID(),
-                    nameProvider = DefaultNameProvider("Florian"),
-                    conversationState = ConversationState.FullySetup,
-                ),
-                plainMessage = plainMessage,
-                encryptedPreview = encryptedMessage,
+            WriteMessageUiState.Data(
+                contactId = testUUIDs.random(OSTestConfig.random),
+                nameProvider = DefaultNameProvider("Florian"),
+                message = BubblesWritingMessage(TextFieldValue(plainMessage), encryptedMessage),
+                isUsingDeepLink = false,
+                isConversationReady = true,
             ),
         )
         every { conversation } returns emptyFlow()
-        every { isPreviewEnabled } returns MutableStateFlow(true)
         every { dialogState } returns MutableStateFlow(null)
         every { isMaterialYouSettingsEnabled } returns flowOf(false)
         every { snackbarState } returns MutableStateFlow(null)
+        every { onPlainMessageChange(any()) } returns Unit
     }
     private val onClickOnChangeContact: () -> Unit = spyk({})
 

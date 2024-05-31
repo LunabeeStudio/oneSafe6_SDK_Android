@@ -40,9 +40,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -58,6 +59,7 @@ import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.localprovider.LocalIsKeyBoardVisible
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
+import studio.lunabee.onesafe.extension.loremIpsum
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.LocalColorPalette
@@ -66,15 +68,15 @@ import java.util.UUID
 
 @Composable
 fun ComposeMessageCard(
-    plainMessage: String,
+    plainMessage: TextFieldValue,
     encryptedMessage: String,
-    onPlainMessageChange: (String) -> Unit,
+    onPlainMessageChange: (TextFieldValue) -> Unit,
     onClickOnSend: () -> Unit,
     onPreviewClick: () -> Unit,
     sendIcon: OSImageSpec,
+    focusRequester: FocusRequester,
 ) {
     val isKeyboardVisible: Boolean = LocalIsKeyBoardVisible.current
-    val focusRequester = remember { FocusRequester() }
     Box(
         modifier = Modifier
             .background(LocalColorPalette.current.Neutral70)
@@ -98,14 +100,11 @@ fun ComposeMessageCard(
                 ),
         ) {
             OSTextField(
-                value = plainMessage,
+                textFieldValue = plainMessage,
                 onValueChange = onPlainMessageChange,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .focusRequester(focusRequester)
-                    .onPlaced {
-                        focusRequester.requestFocus()
-                    },
+                    .focusRequester(focusRequester),
                 label = null,
                 placeholder = LbcTextSpec.StringResource(OSString.oneSafeK_composeMessageCard_label),
                 colors = TextFieldDefaults.colors(
@@ -120,7 +119,7 @@ fun ComposeMessageCard(
                 ),
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions {
-                    if (plainMessage.isNotEmpty()) onClickOnSend()
+                    if (plainMessage.text.isNotEmpty()) onClickOnSend()
                 },
             )
             Row(
@@ -156,14 +155,13 @@ fun ComposeMessageCard(
                         .weight(1f)
                         .clickable(onClick = onPreviewClick),
                 )
-
                 OSIconButton(
                     image = sendIcon,
                     onClick = onClickOnSend,
                     buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
                     contentDescription = LbcTextSpec.StringResource(OSString.accessibility_oneSafeK_sendAction),
                     colors = OSIconButtonDefaults.primaryIconButtonColors(),
-                    state = if (plainMessage.isEmpty()) OSActionState.Disabled else OSActionState.Enabled,
+                    state = if (plainMessage.text.isEmpty()) OSActionState.Disabled else OSActionState.Enabled,
                 )
             }
         }
@@ -178,12 +176,13 @@ private val LockIconSize = 18.dp
 fun ComposeMessageCardPreview() {
     OSPreviewBackgroundTheme {
         ComposeMessageCard(
-            plainMessage = "This is a plain message",
+            plainMessage = TextFieldValue(loremIpsum(10), TextRange(10)),
             encryptedMessage = UUID.randomUUID().toString(),
             onPlainMessageChange = {},
             onClickOnSend = {},
-            sendIcon = OSImageSpec.Drawable(OSDrawable.ic_send),
             onPreviewClick = {},
+            sendIcon = OSImageSpec.Drawable(OSDrawable.ic_send),
+            focusRequester = remember { FocusRequester() },
         )
     }
 }

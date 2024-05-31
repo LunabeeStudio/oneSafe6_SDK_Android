@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.messaging.writemessage.viewmodel
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -32,13 +33,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -49,7 +50,6 @@ import studio.lunabee.onesafe.bubbles.domain.BubblesConstant
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.GetContactUseCase
-import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.CommonUiConstants
 import studio.lunabee.onesafe.commonui.ErrorNameProvider
 import studio.lunabee.onesafe.commonui.OSNameProvider
@@ -73,15 +73,17 @@ import studio.lunabee.onesafe.messaging.domain.usecase.GetSendMessageDataUseCase
 import studio.lunabee.onesafe.messaging.domain.usecase.SaveMessageUseCase
 import studio.lunabee.onesafe.messaging.domain.usecase.SaveSentMessageUseCase
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
+import studio.lunabee.onesafe.messaging.writemessage.model.BubblesWritingMessage
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
 import studio.lunabee.onesafe.messaging.writemessage.model.SentMessageData
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageUiState
+import java.time.Clock
 import java.time.Instant
-import java.util.Random
 import java.util.UUID
 import javax.inject.Inject
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
+import kotlin.random.Random
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -100,26 +102,18 @@ class WriteMessageViewModel @Inject constructor(
     private val messageIdProvider: MessageIdProvider,
     private val contactRepository: ContactRepository,
     osAppSettings: OSAppSettings,
+    private val clock: Clock,
 ) : ViewModel() {
-
-    private val _uiState: MutableStateFlow<WriteMessageUiState> = MutableStateFlow(WriteMessageUiState())
-    val uiState: StateFlow<WriteMessageUiState> = _uiState.asStateFlow()
-
-    private val _dialogState = MutableStateFlow<DialogState?>(null)
-    val dialogState: StateFlow<DialogState?> get() = _dialogState.asStateFlow()
-
-    val isMaterialYouSettingsEnabled: Flow<Boolean> = osAppSettings.materialYouSetting
-    val isPreviewEnabled: StateFlow<Boolean> = osAppSettings.bubblesPreview.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(),
-        true,
-    )
 
     private val _snackbarState: MutableStateFlow<SnackbarState?> = MutableStateFlow(null)
     val snackbarState: StateFlow<SnackbarState?> = _snackbarState.asStateFlow()
 
-    fun resetSnackbarState() {
-        _snackbarState.value = null
+    init {
+        savedStateHandle.get<String>(WriteMessageDestination.ErrorArg)?.let {
+            val error = DecryptResult.Error.valueOf(it).osError
+            _snackbarState.value = ErrorSnackbarState(error) {}
+            savedStateHandle[WriteMessageDestination.ErrorArg] = null
+        }
     }
 
     val contactId: StateFlow<UUID?> = savedStateHandle.getStateFlow(
@@ -133,7 +127,79 @@ class WriteMessageViewModel @Inject constructor(
         savedStateHandle.get<String>(WriteMessageDestination.ContactIdArg)?.let(UUID::fromString),
     )
 
-    private var lastMessageChange = Instant.now()
+    private val writeContactInfoFlow: Flow<WriteContactInfo?> = savedStateHandle.getStateFlow(
+        WriteMessageDestination.ContactIdArg,
+        savedStateHandle.get<String>(WriteMessageDestination.ContactIdArg),
+    ).flatMapLatest { contactId ->
+        val uuid = UUID.fromString(contactId)
+        this.contactId.value?.let { getContactUseCase(uuid).distinctUntilChanged() } ?: flowOf(null)
+    }.map { encContact ->
+        encContact?.let {
+            val decryptedNameResult = contactLocalDecryptUseCase(encContact.encName, encContact.id, String::class)
+            val isUsingDeeplink = contactLocalDecryptUseCase(encContact.encIsUsingDeeplink, encContact.id, Boolean::class).data
+                ?: true
+            val nameProvider = if (decryptedNameResult is LBResult.Failure) {
+                ErrorNameProvider
+            } else {
+                OSNameProvider.fromName(
+                    name = decryptedNameResult.data,
+                    hasIcon = false,
+                )
+            }
+            val isConversationReady = getConversationStateUseCase(contactId = encContact.id) != ConversationState.WaitingForReply
+            WriteContactInfo(
+                id = encContact.id,
+                nameProvider = nameProvider,
+                isUsingDeeplink = isUsingDeeplink,
+                isConversationReady = isConversationReady,
+            )
+        }
+    }
+
+    private val plainMessageFlow: MutableStateFlow<TextFieldValue> = MutableStateFlow(TextFieldValue())
+    private val bubblesWritingMessageFlow: Flow<BubblesWritingMessage> = combine(
+        plainMessageFlow,
+        osAppSettings.bubblesPreview,
+    ) { plainMessage, isPreviewEnabled ->
+        val preview = when {
+            !isPreviewEnabled -> null
+            plainMessage.text.isEmpty() -> ""
+            plainMessage.text == (uiState.value as WriteMessageUiState.Data).message.plainMessage.text ->
+                (uiState.value as WriteMessageUiState.Data).message.preview
+            else -> generatePreview()
+        }
+        BubblesWritingMessage(plainMessage = plainMessage, preview = preview)
+    }
+
+    val uiState: StateFlow<WriteMessageUiState> = combine(
+        writeContactInfoFlow,
+        bubblesWritingMessageFlow,
+    ) { writeContactInfo, bubblesWritingMessage ->
+        writeContactInfo?.let {
+            WriteMessageUiState.Data(
+                contactId = writeContactInfo.id,
+                nameProvider = writeContactInfo.nameProvider,
+                isUsingDeepLink = writeContactInfo.isUsingDeeplink,
+                isConversationReady = writeContactInfo.isConversationReady,
+                message = bubblesWritingMessage,
+            )
+        } ?: WriteMessageUiState.Initializing
+    }.stateIn(
+        viewModelScope,
+        CommonUiConstants.Flow.DefaultSharingStarted,
+        WriteMessageUiState.Initializing,
+    )
+
+    private val _dialogState = MutableStateFlow<DialogState?>(null)
+    val dialogState: StateFlow<DialogState?> get() = _dialogState.asStateFlow()
+
+    val isMaterialYouSettingsEnabled: Flow<Boolean> = osAppSettings.materialYouSetting
+
+    private var lastMessageChange = Instant.now(clock)
+
+    fun resetSnackbarState() {
+        _snackbarState.value = null
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val conversation: Flow<PagingData<ConversationUiData>> =
@@ -149,10 +215,10 @@ class WriteMessageViewModel @Inject constructor(
             }.map { pagingData ->
                 contactId.value?.let { contactId ->
                     messageRepository.markMessagesAsRead(contactId)
-                    contactRepository.updateContactConsultedAt(contactId, Instant.now())
+                    contactRepository.updateContactConsultedAt(contactId, Instant.now(clock))
                 }
                 pagingData.map { message ->
-                    // TODO bubbles handle decrypt error
+                    // TODO <bubbles> handle decrypt error
                     val sentAt = contactLocalDecryptUseCase(message.encSentAt, message.fromContactId, Instant::class).data!!
                     val plainContent = contactLocalDecryptUseCase(message.encContent, message.fromContactId, String::class).data!!
                     val channel = message.encChannel?.let { encChannel ->
@@ -183,45 +249,8 @@ class WriteMessageViewModel @Inject constructor(
                 }
             }
 
-    init {
-        savedStateHandle.get<String>(WriteMessageDestination.ErrorArg)?.let {
-            val error = DecryptResult.Error.valueOf(it).osError
-            _snackbarState.value = ErrorSnackbarState(error) {}
-            savedStateHandle[WriteMessageDestination.ErrorArg] = null
-        }
-
-        viewModelScope.launch {
-            contactId.filterNotNull().flatMapLatest { contactId ->
-                getContactUseCase(contactId).filterNotNull().distinctUntilChanged().map { encContact ->
-                    val decryptedNameResult = contactLocalDecryptUseCase(encContact.encName, encContact.id, String::class)
-                    _uiState.value = _uiState.value.copy(
-                        currentContact = UIBubblesContactInfo(
-                            id = encContact.id,
-                            nameProvider = if (decryptedNameResult is LBResult.Failure) {
-                                ErrorNameProvider
-                            } else {
-                                OSNameProvider.fromName(
-                                    name = decryptedNameResult.data,
-                                    hasIcon = false,
-                                )
-                            },
-                            conversationState = ConversationState.FullySetup,
-                        ),
-                        isUsingDeepLink = contactLocalDecryptUseCase(encContact.encIsUsingDeeplink, encContact.id, Boolean::class).data
-                            ?: true,
-                        isConversationReady = getConversationStateUseCase(contactId = contactId)
-                            != ConversationState.WaitingForReply,
-                    )
-                }
-            }.collect()
-        }
-    }
-
-    fun onPlainMessageChange(value: String) {
-        _uiState.value = _uiState.value.copy(
-            plainMessage = value,
-            encryptedPreview = if (isPreviewEnabled.value) generatePreview() else "",
-        )
+    fun onPlainMessageChange(value: TextFieldValue) {
+        plainMessageFlow.value = value
     }
 
     private suspend fun generateSendMessageData(): SendMessageData? {
@@ -245,11 +274,11 @@ class WriteMessageViewModel @Inject constructor(
 
     suspend fun encryptMessage(content: String): SentMessageData? {
         return generateSendMessageData()?.let { sendMessageData ->
-            lastMessageChange = Instant.now()
+            lastMessageChange = Instant.now(clock)
             val contactId = contactId.value!!
             val encMessage = encryptMessageUseCase(
                 content,
-                uiState.value.currentContact!!.id,
+                (uiState.value as WriteMessageUiState.Data).contactId,
                 lastMessageChange,
                 sendMessageData,
             ).data
@@ -266,7 +295,7 @@ class WriteMessageViewModel @Inject constructor(
 
     fun saveEncryptedMessage(sendMessageData: SentMessageData) {
         viewModelScope.launch {
-            onPlainMessageChange("")
+            onPlainMessageChange(TextFieldValue())
             val messageId = messageIdProvider()
             val messageOrder = saveMessageUseCase(
                 plainMessage = OSPlainMessage(
@@ -349,7 +378,7 @@ class WriteMessageViewModel @Inject constructor(
     @OptIn(ExperimentalEncodingApi::class)
     // Simply create a random byte array, and encode it to Base64
     private fun generatePreview(): String {
-        return Base64.encode(ByteArray(128).apply { random.nextBytes(this) })
+        return Base64.encode(Random.nextBytes(128))
     }
 
     fun displayPreviewInfo() {
@@ -380,7 +409,10 @@ class WriteMessageViewModel @Inject constructor(
         _dialogState.value = null
     }
 
-    private companion object {
-        private val random = Random()
-    }
+    private data class WriteContactInfo(
+        val id: UUID,
+        val nameProvider: OSNameProvider,
+        val isUsingDeeplink: Boolean,
+        val isConversationReady: Boolean,
+    )
 }

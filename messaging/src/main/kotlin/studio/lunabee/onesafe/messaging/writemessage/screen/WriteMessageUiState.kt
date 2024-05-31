@@ -20,19 +20,20 @@
 package studio.lunabee.onesafe.messaging.writemessage.screen
 
 import androidx.compose.runtime.Stable
-import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
+import studio.lunabee.onesafe.commonui.OSNameProvider
+import studio.lunabee.onesafe.messaging.writemessage.model.BubblesWritingMessage
+import java.util.UUID
 
-// TODO bubbles real UiState
-//  • currentContact must not be null
-//  • error state (no contact found on deeplink for example)
-//  • initializing state ?
-//  • remove default values
+// TODO <bubbles> error state (no contact found on deeplink for example)
 
 @Stable
-data class WriteMessageUiState(
-    val currentContact: UIBubblesContactInfo? = null,
-    val plainMessage: String = "",
-    val encryptedPreview: String = "",
-    val isUsingDeepLink: Boolean = false,
-    val isConversationReady: Boolean = true,
-)
+sealed interface WriteMessageUiState {
+    data object Initializing : WriteMessageUiState
+    data class Data(
+        val contactId: UUID,
+        val nameProvider: OSNameProvider,
+        val message: BubblesWritingMessage,
+        val isUsingDeepLink: Boolean,
+        val isConversationReady: Boolean,
+    ) : WriteMessageUiState
+}

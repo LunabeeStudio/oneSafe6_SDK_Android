@@ -49,7 +49,7 @@ import studio.lunabee.onesafe.messaging.writemessage.viewmodel.WriteMessageViewM
 
 internal const val ImeNavGraphRoute: String = "ime_nav_host"
 
-// TODO oSK extract NavGraphBuilder extensions
+// TODO <oSK> extract NavGraphBuilder extensions
 
 @Composable
 fun ImeNavGraph(

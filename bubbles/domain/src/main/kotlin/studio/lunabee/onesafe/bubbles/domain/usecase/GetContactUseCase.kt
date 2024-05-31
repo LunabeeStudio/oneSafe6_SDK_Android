@@ -28,5 +28,5 @@ import javax.inject.Inject
 class GetContactUseCase @Inject constructor(
     private val contactRepository: ContactRepository,
 ) {
-    suspend operator fun invoke(id: UUID): Flow<Contact?> = contactRepository.getContact(id)
+    operator fun invoke(id: UUID): Flow<Contact?> = contactRepository.getContact(id)
 }

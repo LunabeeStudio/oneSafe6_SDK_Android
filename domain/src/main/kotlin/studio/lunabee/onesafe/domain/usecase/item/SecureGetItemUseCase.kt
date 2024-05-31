@@ -19,10 +19,7 @@
 
 package studio.lunabee.onesafe.domain.usecase.item
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
@@ -41,12 +38,7 @@ class SecureGetItemUseCase @Inject constructor(
      *
      * @return a flow of nullable [SafeItem] (null if item with [id] does not exist) or an empty flow if the master key is not loaded
      */
-    @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(id: UUID): Flow<SafeItem?> = isCryptoDataReadyInMemoryUseCase.flow().flatMapLatest { isCryptoLoaded ->
-        if (isCryptoLoaded) {
-            safeItemRepository.getSafeItemFlow(id)
-        } else {
-            flowOf()
-        }
-    }
+    operator fun invoke(id: UUID): Flow<SafeItem?> = isCryptoDataReadyInMemoryUseCase.withCrypto(
+        safeItemRepository.getSafeItemFlow(id),
+    )
 }

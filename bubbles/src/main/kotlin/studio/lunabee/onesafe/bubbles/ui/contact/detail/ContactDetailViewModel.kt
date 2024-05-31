@@ -91,8 +91,9 @@ class ContactDetailViewModel @Inject constructor(
     private suspend fun getColorFromName(name: String): Color? {
         val emoji = name.startEmojiOrNull()
         return emoji?.let {
-            val bitmapWithText = imageHelper.createBitmapWithText(emoji)
-            imageHelper.extractColorPaletteFromBitmap(bitmapWithText).getFirstColorGenerated()
+            imageHelper.createBitmapWithText(emoji)?.let { bitmapWithText ->
+                imageHelper.extractColorPaletteFromBitmap(bitmapWithText).getFirstColorGenerated()
+            }
         }
     }
 

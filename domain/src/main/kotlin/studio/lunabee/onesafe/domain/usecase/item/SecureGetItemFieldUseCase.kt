@@ -19,10 +19,7 @@
 
 package studio.lunabee.onesafe.domain.usecase.item
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.transformLatest
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
@@ -41,10 +38,7 @@ class SecureGetItemFieldUseCase @Inject constructor(
      *
      * @return a flow of [SafeItemField] list or an empty flow master key is not loaded
      */
-    @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(id: UUID): Flow<List<SafeItemField>> = isCryptoDataReadyInMemoryUseCase.flow().transformLatest { isCryptoLoaded ->
-        if (isCryptoLoaded) {
-            emitAll(safeItemFieldRepository.getSafeItemFieldsFlow(id))
-        }
-    }
+    operator fun invoke(id: UUID): Flow<List<SafeItemField>> = isCryptoDataReadyInMemoryUseCase.withCrypto(
+        safeItemFieldRepository.getSafeItemFieldsFlow(id),
+    )
 }

@@ -30,7 +30,7 @@ interface ContactRepository {
     suspend fun save(contact: Contact, key: ContactLocalKey)
     fun getAllContactsFlow(): Flow<List<Contact>>
     fun getRecentContactsFlow(maxNumber: Int): Flow<List<Contact>>
-    suspend fun getContact(id: UUID): Flow<Contact?>
+    fun getContact(id: UUID): Flow<Contact?>
     suspend fun getSharedKey(id: UUID): ContactSharedKey?
     suspend fun addContactSharedKey(id: UUID, sharedKey: ContactSharedKey)
     suspend fun clearAll()

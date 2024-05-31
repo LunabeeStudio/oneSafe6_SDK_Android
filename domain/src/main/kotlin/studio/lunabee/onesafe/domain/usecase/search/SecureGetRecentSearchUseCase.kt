@@ -23,13 +23,20 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.RecentSearchRepository
+import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import javax.inject.Inject
 
-class GetRecentSearchUseCase @Inject constructor(
+/**
+ * Retrieve the recent searches only if the master key is loaded
+ */
+class SecureGetRecentSearchUseCase @Inject constructor(
     private val recentSearchRepository: RecentSearchRepository,
     private val cryptoRepository: MainCryptoRepository,
+    private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
 ) {
-    operator fun invoke(): Flow<List<String>> = recentSearchRepository.getRecentSearch().map { _encRecentSearch ->
-        cryptoRepository.decryptRecentSearch(_encRecentSearch.toList())
-    }
+    operator fun invoke(): Flow<List<String>> = isCryptoDataReadyInMemoryUseCase.withCrypto(
+        recentSearchRepository.getRecentSearch().map { encRecentSearch ->
+            cryptoRepository.decryptRecentSearch(encRecentSearch.toList())
+        },
+    )
 }
