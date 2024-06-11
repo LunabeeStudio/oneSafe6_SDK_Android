@@ -20,60 +20,24 @@
 package studio.lunabee.onesafe.storage.datasource
 
 import studio.lunabee.messaging.repository.datasource.HandShakeDataLocalDatasource
-import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
-import studio.lunabee.onesafe.bubbles.domain.repository.ContactKeyRepository
-import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
-import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.messaging.domain.model.EncHandShakeData
-import studio.lunabee.onesafe.messaging.domain.model.HandShakeData
 import studio.lunabee.onesafe.storage.dao.HandShakeDataDao
 import studio.lunabee.onesafe.storage.model.RoomHandShakeData
 import java.util.UUID
 import javax.inject.Inject
 
-// TODO rework KMP lib to have use case like GetHandShakeDataUseCase
 class HandShakeDataLocalDatasourceImpl @Inject constructor(
     private val handShakeDataDao: HandShakeDataDao,
-    private val bubblesCryptoRepository: BubblesCryptoRepository,
-    private val contactKeyRepository: ContactKeyRepository,
 ) : HandShakeDataLocalDatasource {
-    override suspend fun insert(handShakeData: HandShakeData) {
-        val key = contactKeyRepository.getContactLocalKey(handShakeData.conversationLocalId)
-        val encryptEntries = listOf<EncryptEntry<Any>?>(
-            EncryptEntry(handShakeData.conversationSharedId), // +0
-            handShakeData.oneSafePrivateKey?.let { EncryptEntry(it) }, // +1
-            handShakeData.oneSafePublicKey?.let { EncryptEntry(it) }, // +2
-        )
-        val encEntries = bubblesCryptoRepository.localEncrypt(key, encryptEntries)
-        val encHandShakeData = EncHandShakeData(
-            conversationLocalId = handShakeData.conversationLocalId,
-            encConversationSharedId = encEntries[0]!!,
-            encOneSafePrivateKey = encEntries[1],
-            encOneSafePublicKey = encEntries[2],
-        )
-
-        handShakeDataDao.insert(RoomHandShakeData.fromHandShakeData(encHandShakeData))
+    override suspend fun insert(handShakeData: EncHandShakeData) {
+        handShakeDataDao.insert(RoomHandShakeData.fromHandShakeData(handShakeData))
     }
 
     override suspend fun delete(conversationLocalId: UUID) {
         handShakeDataDao.deleteById(conversationLocalId)
     }
 
-    override suspend fun getById(conversationLocalId: UUID): HandShakeData? {
-        val key = contactKeyRepository.getContactLocalKey(conversationLocalId)
-        return handShakeDataDao.getById(conversationLocalId)?.toHandShakeData()?.let { encHandShakeData ->
-            val decryptEntries = listOf(
-                DecryptEntry(encHandShakeData.encConversationSharedId, UUID::class), // +0
-                encHandShakeData.encOneSafePrivateKey?.let { DecryptEntry(it, ByteArray::class) }, // +1
-                encHandShakeData.encOneSafePublicKey?.let { DecryptEntry(it, ByteArray::class) }, // +2
-            )
-            val plainEntries = bubblesCryptoRepository.localDecrypt(key, decryptEntries)
-            HandShakeData(
-                conversationLocalId,
-                plainEntries[0] as UUID,
-                plainEntries[1] as ByteArray?,
-                plainEntries[2] as ByteArray?,
-            )
-        }
+    override suspend fun getById(conversationLocalId: UUID): EncHandShakeData? {
+        return handShakeDataDao.getById(conversationLocalId)?.toHandShakeData()
     }
 }

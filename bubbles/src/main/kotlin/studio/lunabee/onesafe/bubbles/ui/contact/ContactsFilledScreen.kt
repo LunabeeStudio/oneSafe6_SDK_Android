@@ -34,10 +34,9 @@ import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.button.defaults.OSTextButtonDefaults
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
-import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.OSString
-import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
@@ -99,8 +98,8 @@ private fun FilledContactsScreenPreview() {
         FilledContactsScreen(
             onAddContactClick = {},
             onScanClick = {},
-            contacts = ConversationState.entries.map { state ->
-                UIBubblesContactInfo(UUID.randomUUID(), OSNameProvider.fromName(state.name, false), state)
+            contacts = listOf(true, false).map { state ->
+                UIBubblesContactInfo(UUID.randomUUID(), OSNameProvider.fromName(state.toString(), false), state)
             },
             onContactClick = {},
             modifier = Modifier.Companion.testTag(UiConstants.TestTag.Screen.BubblesHomeScreenContactTab),

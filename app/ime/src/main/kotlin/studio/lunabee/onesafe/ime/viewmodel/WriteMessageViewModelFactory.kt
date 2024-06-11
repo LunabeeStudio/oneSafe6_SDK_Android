@@ -26,14 +26,14 @@ import studio.lunabee.onesafe.OSAppSettings
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.GetContactUseCase
-import studio.lunabee.onesafe.domain.common.MessageIdProvider
+import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
 import studio.lunabee.onesafe.messaging.domain.repository.SentMessageRepository
+import studio.lunabee.onesafe.messaging.domain.usecase.DecryptSafeMessageUseCase
 import studio.lunabee.onesafe.messaging.domain.usecase.EncryptMessageUseCase
 import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCase
 import studio.lunabee.onesafe.messaging.domain.usecase.GetSendMessageDataUseCase
-import studio.lunabee.onesafe.messaging.domain.usecase.SaveMessageUseCase
 import studio.lunabee.onesafe.messaging.domain.usecase.SaveSentMessageUseCase
 import studio.lunabee.onesafe.messaging.writemessage.viewmodel.WriteMessageViewModel
 import java.time.Clock
@@ -44,16 +44,16 @@ class WriteMessageViewModelFactory @Inject constructor(
     private val decryptForContactUseCase: ContactLocalDecryptUseCase,
     private val encryptMessageUseCase: EncryptMessageUseCase,
     private val messageRepository: MessageRepository,
-    private val saveMessageUseCase: SaveMessageUseCase,
     private val channelRepository: MessageChannelRepository,
     private val getSendMessageDataUseCase: GetSendMessageDataUseCase,
     private val osAppSettings: OSAppSettings,
     private val getConversationStateUseCase: GetConversationStateUseCase,
     private val saveSentMessageUseCase: SaveSentMessageUseCase,
     private val sentMessageRepository: SentMessageRepository,
-    private val messageIdProvider: MessageIdProvider,
     private val contactRepository: ContactRepository,
     private val clock: Clock,
+    private val decryptSafeMessageUseCase: DecryptSafeMessageUseCase,
+    private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
 ) : AbstractSavedStateViewModelFactory() {
     override fun <T : ViewModel> create(key: String, modelClass: Class<T>, handle: SavedStateHandle): T {
         @Suppress("UNCHECKED_CAST")
@@ -63,16 +63,16 @@ class WriteMessageViewModelFactory @Inject constructor(
             contactLocalDecryptUseCase = decryptForContactUseCase,
             encryptMessageUseCase = encryptMessageUseCase,
             messageRepository = messageRepository,
-            saveMessageUseCase = saveMessageUseCase,
             channelRepository = channelRepository,
             getSendMessageDataUseCase = getSendMessageDataUseCase,
             osAppSettings = osAppSettings,
             getConversationStateUseCase = getConversationStateUseCase,
             saveSentMessageUseCase = saveSentMessageUseCase,
             sentMessageRepository = sentMessageRepository,
-            messageIdProvider = messageIdProvider,
             contactRepository = contactRepository,
             clock = clock,
+            decryptSafeMessageUseCase = decryptSafeMessageUseCase,
+            isCryptoDataReadyInMemoryUseCase = isCryptoDataReadyInMemoryUseCase,
         ) as T
     }
 }

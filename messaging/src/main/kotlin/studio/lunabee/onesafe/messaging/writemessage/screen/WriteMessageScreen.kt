@@ -58,6 +58,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
@@ -65,6 +66,7 @@ import studio.lunabee.onesafe.atom.OSScreen
 import studio.lunabee.onesafe.atom.button.OSIconButton
 import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.bubbles.ui.extension.getDeepLinkFromMessage
+import studio.lunabee.onesafe.commonui.ErrorNameProvider
 import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.OSString
@@ -199,9 +201,9 @@ fun WriteMessageRoute(
                         navigationToInvitation(viewModel.contactId.value!!)
                     },
                     onPlainMessageChange = viewModel::onPlainMessageChange,
-                    sendMessage = {
+                    sendMessage = { // TODO <bubbles> fix flooding send button trigger many share sheets
                         coroutineScope.launch {
-                            val sentMessageData = viewModel.encryptMessage(content = state.message.plainMessage.text)
+                            val sentMessageData = viewModel.getSentMessageData(content = state.message.plainMessage.text)
                             sentMessageData?.let {
                                 sendMessage(
                                     sentMessageData,
@@ -222,6 +224,7 @@ fun WriteMessageRoute(
                     isOneSafeK = isOneSafeK,
                     messageLongPress = messageLongPress,
                     focusRequester = composeMessageFocusRequester,
+                    canSend = !state.isCorrupted,
                 )
             }
         }
@@ -246,6 +249,7 @@ fun WriteMessageScreen(
     isOneSafeK: Boolean,
     messageLongPress: MessageLongPress,
     focusRequester: FocusRequester,
+    canSend: Boolean,
 ) {
     val focusManager = LocalFocusManager.current
     val lazyListState = rememberLazyListState()
@@ -363,6 +367,7 @@ fun WriteMessageScreen(
                             sendIcon = sendIcon,
                             onPreviewClick = onPreviewClick,
                             focusRequester = focusRequester,
+                            canSend = canSend,
                         )
                     } else {
                         NoPreviewComposeMessageCard(
@@ -371,6 +376,7 @@ fun WriteMessageScreen(
                             onClickOnSend = sendMessage,
                             sendIcon = sendIcon,
                             focusRequester = focusRequester,
+                            canSend = canSend,
                         )
                     }
                 }
@@ -525,6 +531,7 @@ fun WriteMessageScreenPreview() {
                         sendAt = Instant.ofEpochSecond(0),
                         channelName = loremIpsum(1),
                         type = ConversationUiData.MessageType.Message,
+                        hasCorruptedData = false,
                     ),
                     ConversationUiData.Message(
                         id = UUID.randomUUID(),
@@ -533,6 +540,7 @@ fun WriteMessageScreenPreview() {
                         sendAt = Instant.ofEpochSecond(0),
                         channelName = loremIpsum(1),
                         type = ConversationUiData.MessageType.Message,
+                        hasCorruptedData = false,
                     ),
                 ),
             ),
@@ -557,6 +565,7 @@ fun WriteMessageScreenPreview() {
                 override fun onLongClick(id: UUID) {}
             },
             focusRequester = remember { FocusRequester() },
+            canSend = true,
         )
     }
 }
@@ -575,6 +584,16 @@ fun ImeWriteMessageScreenPreview() {
                         sendAt = Instant.ofEpochSecond(0),
                         channelName = loremIpsum(1),
                         type = ConversationUiData.MessageType.Message,
+                        hasCorruptedData = false,
+                    ),
+                    ConversationUiData.Message(
+                        id = UUID.randomUUID(),
+                        text = LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_corruptedMessage),
+                        direction = MessageDirection.SENT,
+                        sendAt = null,
+                        channelName = null,
+                        type = ConversationUiData.MessageType.Message,
+                        hasCorruptedData = true,
                     ),
                     ConversationUiData.Message(
                         id = UUID.randomUUID(),
@@ -583,6 +602,7 @@ fun ImeWriteMessageScreenPreview() {
                         sendAt = Instant.ofEpochSecond(0),
                         channelName = loremIpsum(1),
                         type = ConversationUiData.MessageType.Message,
+                        hasCorruptedData = false,
                     ),
                 ),
             ),
@@ -607,6 +627,36 @@ fun ImeWriteMessageScreenPreview() {
                 override fun onLongClick(id: UUID) {}
             },
             focusRequester = remember { FocusRequester() },
+            canSend = true,
+        )
+    }
+}
+
+@OsDefaultPreview
+@Composable
+fun ImeWriteMessageScreenCorruptedPreview() {
+    OSTheme {
+        val pagingItems = flowOf(PagingData.empty<ConversationUiData>()).collectAsLazyPagingItems()
+        WriteMessageScreen(
+            nameProvider = ErrorNameProvider,
+            message = BubblesWritingMessage(TextFieldValue(), ""),
+            onContactNameClick = {},
+            onResendInvitationClick = {},
+            onPlainMessageChange = {},
+            sendMessage = {},
+            conversation = pagingItems,
+            onBackClick = {},
+            sendIcon = OSImageSpec.Drawable(OSDrawable.ic_send),
+            isMaterialYouEnabled = false,
+            isConversationReady = true,
+            onPreviewClick = {},
+            onDeleteAllMessagesClick = {},
+            isOneSafeK = false,
+            messageLongPress = object : MessageLongPress() {
+                override fun onLongClick(id: UUID) {}
+            },
+            focusRequester = remember { FocusRequester() },
+            canSend = false,
         )
     }
 }

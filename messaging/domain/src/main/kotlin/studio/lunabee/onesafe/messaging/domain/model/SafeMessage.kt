@@ -13,13 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 7/20/2023 - for the oneSafe6 SDK.
- * Last modified 20/07/2023 15:49
+ * Created by Lunabee Studio / Date - 6/14/2023 - for the oneSafe6 SDK.
+ * Last modified 6/14/23, 1:24 PM
  */
 
-package studio.lunabee.onesafe.bubbles.domain
+package studio.lunabee.onesafe.messaging.domain.model
 
-object BubblesConstant {
-    // Used to determine that the message is the invitation response message
-    const val FirstMessageData: String = "c08b1cb8-3a94-4e9a-af30-6677053b7a60"
-}
+import java.util.UUID
+
+/**
+ * Encrypted message for storage
+ */
+class SafeMessage(
+    val id: UUID,
+    val fromContactId: UUID,
+    val encSentAt: ByteArray,
+    val encContent: ByteArray,
+    val direction: MessageDirection,
+    val encChannel: ByteArray?,
+    val isRead: Boolean,
+)

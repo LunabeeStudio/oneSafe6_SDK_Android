@@ -21,6 +21,7 @@ plugins {
     `android-library`
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -31,7 +32,6 @@ android {
     }
 
     buildFeatures {
-        compose = true
         buildConfig = true
     }
 
@@ -55,10 +55,6 @@ android {
         resources.pickFirsts += "META-INF/LICENSE-notice.md"
         resources.pickFirsts += "META-INF/DEPENDENCIES"
         resources.pickFirsts += "META-INF/INDEX.LIST"
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 
     compileOptions {

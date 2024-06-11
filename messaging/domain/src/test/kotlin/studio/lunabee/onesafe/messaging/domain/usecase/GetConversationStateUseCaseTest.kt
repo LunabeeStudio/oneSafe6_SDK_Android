@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2023-2024 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,40 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 9/20/2023 - for the oneSafe6 SDK.
- * Last modified 9/20/23, 11:27 AM
+ * Created by Lunabee Studio / Date - 6/3/2024 - for the oneSafe6 SDK.
+ * Last modified 6/3/24, 11:53 PM
  */
 
-package studio.lunabee.onesafe.messaging.domain
+package studio.lunabee.onesafe.messaging.domain.usecase
 
+import com.lunabee.lbcore.model.LBResult
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import kotlin.test.Test
 import studio.lunabee.doubleratchet.model.Conversation
 import studio.lunabee.doubleratchet.model.DRChainKey
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.onesafe.error.OSMessagingError
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.messaging.domain.repository.ConversationRepository
-import studio.lunabee.onesafe.messaging.domain.repository.HandShakeDataRepository
-import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCase
+import studio.lunabee.onesafe.test.assertFailure
+import studio.lunabee.onesafe.test.assertSuccess
 import studio.lunabee.onesafe.test.testUUIDs
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class GetConversationStateUseCaseTest {
-
-    private val handShakeDataRepository: HandShakeDataRepository = mockk {
-        coEvery { getById(testUUIDs.first()) } returns null
-    }
 
     private val conversationRepository: ConversationRepository = mockk {
         coEvery { getConversation(testUUIDs.first()) } returns null
     }
 
+    private val getHandShakeDataUseCase: GetHandShakeDataUseCase = mockk {
+        coEvery { this@mockk(testUUIDs.first()) } returns LBResult.Success(null)
+    }
+
     private val getConversationStateUseCase: GetConversationStateUseCase = GetConversationStateUseCase(
-        handShakeDataRepository = handShakeDataRepository,
         conversationRepository = conversationRepository,
+        getHandShakeDataUseCase = getHandShakeDataUseCase,
     )
 
     /**
@@ -55,7 +57,8 @@ class GetConversationStateUseCaseTest {
     @Test
     fun no_conversation_error_test(): TestResult = runTest {
         val actual = getConversationStateUseCase(testUUIDs.first())
-        assertEquals(ConversationState.Error, actual)
+        val error = assertFailure(actual).throwable
+        assertEquals(OSMessagingError(OSMessagingError.Code.CONVERSATION_NOT_FOUND), error)
     }
 
     /**
@@ -69,7 +72,8 @@ class GetConversationStateUseCaseTest {
             messageNumber = 1,
             sendingChainKey = DRChainKey(byteArrayOf()),
         )
-        val actual = getConversationStateUseCase(testUUIDs.first())
+        val actualRes = getConversationStateUseCase(testUUIDs.first())
+        val actual = assertSuccess(actualRes).successData
         assertEquals(ConversationState.Running, actual)
     }
 
@@ -84,7 +88,8 @@ class GetConversationStateUseCaseTest {
             messageNumber = 0,
             sendingChainKey = DRChainKey(byteArrayOf()),
         )
-        val actual = getConversationStateUseCase(testUUIDs.first())
+        val actualRes = getConversationStateUseCase(testUUIDs.first())
+        val actual = assertSuccess(actualRes).successData
         assertEquals(ConversationState.FullySetup, actual)
     }
 
@@ -99,9 +104,10 @@ class GetConversationStateUseCaseTest {
             receivedLastMessageNumber = 0,
             sendingChainKey = DRChainKey(byteArrayOf()),
         )
-        coEvery { handShakeDataRepository.getById(testUUIDs.first()) } returns mockk()
+        coEvery { getHandShakeDataUseCase(testUUIDs.first()) } returns LBResult.Success(mockk())
 
-        val actual = getConversationStateUseCase(testUUIDs.first())
+        val actualRes = getConversationStateUseCase(testUUIDs.first())
+        val actual = assertSuccess(actualRes).successData
         assertEquals(ConversationState.WaitingForFirstMessage, actual)
     }
 
@@ -115,7 +121,8 @@ class GetConversationStateUseCaseTest {
             personalKeyPair = mockk(),
         )
 
-        val actual = getConversationStateUseCase(testUUIDs.first())
+        val actualRes = getConversationStateUseCase(testUUIDs.first())
+        val actual = assertSuccess(actualRes).successData
         assertEquals(ConversationState.WaitingForReply, actual)
     }
 }

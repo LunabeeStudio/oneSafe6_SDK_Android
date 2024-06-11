@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.bubbles.ui.home
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lbextensions.enumValueOfOrNull
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,19 +30,19 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.bubbles.domain.BubblesConstant
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.GetAllContactsUseCase
+import studio.lunabee.onesafe.bubbles.ui.conversation.ConversationSubtitleFromMessageDelegate
 import studio.lunabee.onesafe.bubbles.ui.extension.getNameProvider
-import studio.lunabee.onesafe.bubbles.ui.model.BubbleContactInfo
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
 import studio.lunabee.onesafe.bubbles.ui.model.ConversationSubtitle
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
-import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.domain.common.FeatureFlags
+import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
 import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCase
+import java.time.Instant
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -52,6 +53,7 @@ class BubblesHomeScreenViewModel @Inject constructor(
     private val messageRepository: MessageRepository,
     val osFeatureFlags: FeatureFlags,
     savedStateHandle: SavedStateHandle,
+    private val conversationSubtitleFromMessageDelegate: ConversationSubtitleFromMessageDelegate,
 ) : ViewModel() {
 
     private val _conversation = MutableStateFlow<List<BubblesConversationInfo>?>(null)
@@ -67,35 +69,30 @@ class BubblesHomeScreenViewModel @Inject constructor(
             getEncryptedBubblesContactList().collect { encryptedContacts ->
                 val contactLists = encryptedContacts.map { contact ->
                     val decryptedNameResult = contactLocalDecryptUseCase(contact.encName, contact.id, String::class)
+                    val conversationState = getConversationStateUseCase.invoke(contact.id)
+
                     BubbleContactInfo(
                         id = contact.id,
-                        conversationState = getConversationStateUseCase.invoke(contact.id),
-                        isConvReady = contact.encSharedKey != null,
-                        rawName = decryptedNameResult,
+                        conversationState = conversationState,
+                        isConversationReady = contact.encSharedKey != null,
+                        plainName = decryptedNameResult,
                         updatedAt = contact.updatedAt,
                     )
                 }
-                _contacts.value = contactLists.sortedBy { it.rawName.data }.map {
+                _contacts.value = contactLists.sortedBy { it.plainName.data }.map {
                     UIBubblesContactInfo(
                         id = it.id,
-                        conversationState = it.conversationState,
-                        nameProvider = it.rawName.getNameProvider(),
+                        isConversationReady = it.conversationState.data != ConversationState.WaitingForReply,
+                        nameProvider = it.plainName.getNameProvider(),
                     )
                 }
+                // TODO <bubbles> contact list sorting should be done in DAO as updatedAt is not encrypted
                 _conversation.value = contactLists.sortedByDescending { it.updatedAt }.map { info ->
                     val lastMessage = messageRepository.getLastMessage(info.id).firstOrNull()
                     BubblesConversationInfo(
-                        nameProvider = info.rawName.getNameProvider(),
-                        subtitle = if (info.isConvReady) {
-                            lastMessage?.let { message ->
-                                val content = contactLocalDecryptUseCase(message.encContent, info.id, String::class).data.orEmpty()
-                                val realContent = if (content == BubblesConstant.FirstMessageData) {
-                                    LbcTextSpec.StringResource(OSString.bubbles_acceptedInvitation)
-                                } else {
-                                    LbcTextSpec.Raw(content)
-                                }
-                                ConversationSubtitle.Message(content = realContent)
-                            }
+                        nameProvider = info.plainName.getNameProvider(),
+                        subtitle = if (info.isConversationReady) {
+                            lastMessage?.let { conversationSubtitleFromMessageDelegate(lastMessage) }
                         } else {
                             ConversationSubtitle.NotReady
                         },
@@ -106,4 +103,12 @@ class BubblesHomeScreenViewModel @Inject constructor(
             }
         }
     }
+
+    private data class BubbleContactInfo(
+        val id: UUID,
+        val conversationState: LBResult<ConversationState>,
+        val isConversationReady: Boolean,
+        val plainName: LBResult<String>,
+        val updatedAt: Instant,
+    )
 }

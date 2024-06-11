@@ -104,3 +104,4 @@ lint/tmp/
 versions.properties
 
 .DS_Store
+/.kotlin/sessions/*.salive

@@ -23,17 +23,19 @@ import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.domain.Constant
 import studio.lunabee.onesafe.domain.repository.SafeItemDeletedRepository
 import studio.lunabee.onesafe.error.OSError
+import java.time.Clock
 import java.time.Instant
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
 
 class RemoveOldItemsUseCase @Inject constructor(
     private val safeItemDeletedRepository: SafeItemDeletedRepository,
+    private val clock: Clock,
 ) {
     suspend operator fun invoke(): LBResult<Unit> {
         return OSError.runCatching {
             safeItemDeletedRepository.removeOldItems(
-                Instant.now()
+                Instant.now(clock)
                     .minusMillis(Constant.DefinitiveItemRemoveAfterDays.days.inWholeMilliseconds),
             )
         }

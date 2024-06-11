@@ -30,7 +30,8 @@ interface ContactLocalDataSource {
     suspend fun saveContact(contact: Contact, key: ContactLocalKey)
     fun getAllContactsFlow(): Flow<List<Contact>>
     fun getRecentContactsFlow(maxNumber: Int): Flow<List<Contact>>
-    fun getContact(id: UUID): Flow<Contact?>
+    fun getContactFlow(id: UUID): Flow<Contact?>
+    suspend fun getContact(id: UUID): Contact?
     suspend fun getContactSharedKey(id: UUID): ContactSharedKey?
     suspend fun clearAll()
     suspend fun addContactSharedKey(id: UUID, sharedKey: ContactSharedKey)

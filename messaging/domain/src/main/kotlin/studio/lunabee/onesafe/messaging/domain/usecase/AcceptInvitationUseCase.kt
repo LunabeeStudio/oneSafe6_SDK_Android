@@ -31,7 +31,6 @@ import studio.lunabee.onesafe.domain.common.ItemIdProvider
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.messagecompanion.OSMessage
 import studio.lunabee.onesafe.messaging.domain.model.HandShakeData
-import studio.lunabee.onesafe.messaging.domain.repository.HandShakeDataRepository
 import java.util.UUID
 import javax.inject.Inject
 
@@ -40,14 +39,14 @@ class AcceptInvitationUseCase @Inject constructor(
     private val doubleRatchetEngine: DoubleRatchetEngine,
     private val doubleRatchetKeyRepository: DoubleRatchetKeyRepository,
     private val createContactUseCase: CreateContactUseCase,
-    private val handShakeDataRepository: HandShakeDataRepository,
     private val randomIdProvider: ItemIdProvider,
     private val bubblesCryptoRepository: BubblesCryptoRepository,
+    private val insertHandShakeDataUseCase: InsertHandShakeDataUseCase,
 ) {
 
     /**
      * Create a conversation for double ratchet message exchange
-     * Create a buble contact with id corresponding to the conversation
+     * Create a bubbles contact with id corresponding to the conversation
      * @return the id of the contact created
      */
     suspend operator fun invoke(contactName: String, isUsingDeeplink: Boolean, invitationMessage: ByteArray): UUID {
@@ -88,7 +87,7 @@ class AcceptInvitationUseCase @Inject constructor(
             conversationSharedId = UUID.fromString(invitationMessageProto.conversationId),
         )
 
-        handShakeDataRepository.insert(handShakeData)
+        insertHandShakeDataUseCase(handShakeData)
         return contactId
     }
 }

@@ -21,6 +21,8 @@ package studio.lunabee.onesafe.ime.ui
 
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.performClick
@@ -37,6 +39,7 @@ import studio.lunabee.compose.androidtest.extension.waitUntilExactlyOneExists
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
 import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.messaging.writemessage.model.BubblesWritingMessage
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageNavScope
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageRoute
@@ -51,16 +54,17 @@ import kotlin.test.Test
 class WriteMessageScreenTest : LbcComposeTest() {
 
     private val plainMessage = "Plain Message"
-    private val encryptedMessage = UUID.randomUUID().toString()
+    private val preview = testUUIDs[0].toString()
 
     private val mockkVm: WriteMessageViewModel = mockk {
         every { uiState } returns MutableStateFlow(
             WriteMessageUiState.Data(
                 contactId = testUUIDs.random(OSTestConfig.random),
                 nameProvider = DefaultNameProvider("Florian"),
-                message = BubblesWritingMessage(TextFieldValue(plainMessage), encryptedMessage),
+                message = BubblesWritingMessage(TextFieldValue(plainMessage), preview),
                 isUsingDeepLink = false,
                 isConversationReady = true,
+                isCorrupted = false,
             ),
         )
         every { conversation } returns emptyFlow()
@@ -73,10 +77,36 @@ class WriteMessageScreenTest : LbcComposeTest() {
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun test_write_message_screen_ui() {
+    fun change_contact_test() {
         setScreen {
             hasText(plainMessage)
-            hasText(encryptedMessage)
+            hasText(preview)
+
+            // Test change contact interaction
+            hasTestTag(UiConstants.TestTag.Item.WriteMessageTopBar)
+                .waitUntilExactlyOneExists()
+                .performClick()
+            verify(exactly = 1) { onClickOnChangeContact.invoke() }
+        }
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun corrupted_test() {
+        every { mockkVm.uiState } returns MutableStateFlow(
+            WriteMessageUiState.Data(
+                contactId = testUUIDs.random(OSTestConfig.random),
+                nameProvider = DefaultNameProvider("Florian"),
+                message = BubblesWritingMessage(TextFieldValue(""), ""),
+                isUsingDeepLink = false,
+                isConversationReady = true,
+                isCorrupted = true,
+            ),
+        )
+        setScreen {
+            hasContentDescription(getString(OSString.accessibility_oneSafeK_sendAction))
+                .waitUntilExactlyOneExists()
+                .assertIsNotEnabled()
 
             // Test change contact interaction
             hasTestTag(UiConstants.TestTag.Item.WriteMessageTopBar)

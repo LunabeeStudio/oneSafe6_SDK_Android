@@ -32,7 +32,6 @@ import studio.lunabee.doubleratchet.model.DRPublicKey
 import studio.lunabee.doubleratchet.model.DoubleRatchetError
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.doubleratchet.model.MessageHeader
-import studio.lunabee.onesafe.bubbles.domain.BubblesConstant
 import studio.lunabee.onesafe.bubbles.domain.model.Contact
 import studio.lunabee.onesafe.bubbles.domain.model.ContactLocalKey
 import studio.lunabee.onesafe.bubbles.domain.model.ContactSharedKey
@@ -45,11 +44,12 @@ import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.messagecompanion.OSMessage
+import studio.lunabee.onesafe.messaging.domain.MessagingConstant
 import studio.lunabee.onesafe.messaging.domain.extension.asOSError
 import studio.lunabee.onesafe.messaging.domain.extension.toInstant
 import studio.lunabee.onesafe.messaging.domain.model.DecryptIncomingMessageData
 import studio.lunabee.onesafe.messaging.domain.model.OSEncryptedMessage
-import studio.lunabee.onesafe.messaging.domain.model.OSPlainMessage
+import studio.lunabee.onesafe.messaging.domain.model.SharedMessage
 import studio.lunabee.onesafe.messaging.domain.repository.HandShakeDataRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessagingCryptoRepository
 import java.util.UUID
@@ -67,6 +67,7 @@ class DecryptIncomingMessageUseCase @Inject constructor(
     private val contactKeyRepository: ContactKeyRepository,
     private val doubleRatchetKeyRepository: DoubleRatchetKeyRepository,
     private val contactRepository: ContactRepository,
+    private val getHandShakeDataUseCase: GetHandShakeDataUseCase,
 ) {
     /**
      * @param messageData The raw message
@@ -138,9 +139,9 @@ class DecryptIncomingMessageUseCase @Inject constructor(
             ),
             recipientId = UUID.fromString(plainMessageProto.recipientId),
         )
-        // We skip the hand step if we already did one
+        // We skip the handshake step if we already did one
         if (contact.encSharedKey == null) {
-            val privateKey = handShakeDataRepository.getById(contact.id)?.oneSafePrivateKey!!
+            val privateKey = getHandShakeDataUseCase(contact.id).data?.oneSafePrivateKey!!
             val sharedSecret = doubleRatchetKeyRepository.createDiffieHellmanSharedSecret(
                 DRPublicKey(plainMessageProto.oneSafePublicKey.toByteArray()),
                 DRPrivateKey(privateKey),
@@ -165,10 +166,10 @@ class DecryptIncomingMessageUseCase @Inject constructor(
         val plainMessageDataProto = OSMessage.MessageData.parseFrom(plainBody)
 
         // Don't return the message if it's an invitation message and you already received the handShake
-        val osPlainMessage = if (plainMessageDataProto.content == BubblesConstant.FirstMessageData && contact.encSharedKey != null) {
+        val osPlainMessage = if (plainMessageDataProto.content == MessagingConstant.FirstMessageData && contact.encSharedKey != null) {
             null
         } else {
-            OSPlainMessage(
+            SharedMessage(
                 content = plainMessageDataProto.content,
                 sentAt = plainMessageDataProto.sentAt.toInstant(),
                 recipientId = plainMessage.recipientId,
@@ -214,7 +215,7 @@ class DecryptIncomingMessageUseCase @Inject constructor(
                 val plainMessageDataProto = OSMessage.MessageData.parseFrom(plainBody)
                 DecryptIncomingMessageData.NewMessage(
                     contact.id,
-                    OSPlainMessage(
+                    SharedMessage(
                         content = plainMessageDataProto.content,
                         recipientId = plainMessage.recipientId,
                         sentAt = plainMessageDataProto.sentAt.toInstant(),

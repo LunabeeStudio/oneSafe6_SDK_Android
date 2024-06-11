@@ -22,15 +22,15 @@ package studio.lunabee.onesafe.messaging.domain.repository
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
-import studio.lunabee.onesafe.messaging.domain.model.Message
+import studio.lunabee.onesafe.messaging.domain.model.SafeMessage
 import java.util.UUID
 
 interface MessageRepository {
-    suspend fun save(message: Message, order: Float)
-    suspend fun getAllByContact(contactId: UUID): List<Message>
-    suspend fun getLastMessage(contactId: UUID): Flow<Message?>
-    suspend fun getByContactByOrder(contactId: UUID, order: Float): Message
-    fun getAllPaged(config: PagingConfig, contactId: UUID): Flow<PagingData<Message>>
+    suspend fun save(message: SafeMessage, order: Float)
+    suspend fun getAllByContact(contactId: UUID): List<SafeMessage>
+    suspend fun getLastMessage(contactId: UUID): Flow<SafeMessage?>
+    suspend fun getByContactByOrder(contactId: UUID, order: Float): SafeMessage
+    fun getAllPaged(config: PagingConfig, contactId: UUID): Flow<PagingData<SafeMessage>>
     suspend fun deleteAllMessages(contactId: UUID)
     suspend fun deleteMessage(messageId: UUID)
     suspend fun markMessagesAsRead(contactId: UUID)

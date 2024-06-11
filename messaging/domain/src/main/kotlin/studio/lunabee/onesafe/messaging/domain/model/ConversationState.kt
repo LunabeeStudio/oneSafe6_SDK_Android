@@ -39,9 +39,4 @@ enum class ConversationState {
      * The invitation has been accepted, but the inviter did not sent an encrypted message yet
      */
     WaitingForFirstMessage,
-
-    /**
-     * The conversation is in an unexpected state
-     */
-    Error,
 }

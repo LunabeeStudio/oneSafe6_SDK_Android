@@ -19,11 +19,11 @@
 
 package studio.lunabee.messaging.repository.datasource
 
-import studio.lunabee.onesafe.messaging.domain.model.HandShakeData
+import studio.lunabee.onesafe.messaging.domain.model.EncHandShakeData
 import java.util.UUID
 
 interface HandShakeDataLocalDatasource {
-    suspend fun insert(handShakeData: HandShakeData)
+    suspend fun insert(handShakeData: EncHandShakeData)
     suspend fun delete(conversationLocalId: UUID)
-    suspend fun getById(conversationLocalId: UUID): HandShakeData?
+    suspend fun getById(conversationLocalId: UUID): EncHandShakeData?
 }

@@ -56,6 +56,7 @@ fun NoPreviewComposeMessageCard(
     onClickOnSend: () -> Unit,
     sendIcon: OSImageSpec,
     focusRequester: FocusRequester,
+    canSend: Boolean,
 ) {
     val isKeyboardVisible: Boolean = LocalIsKeyBoardVisible.current
     Box(
@@ -115,7 +116,11 @@ fun NoPreviewComposeMessageCard(
                     buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
                     contentDescription = LbcTextSpec.StringResource(OSString.accessibility_oneSafeK_sendAction),
                     colors = OSIconButtonDefaults.primaryIconButtonColors(),
-                    state = if (plainMessage.text.isEmpty()) OSActionState.Disabled else OSActionState.Enabled,
+                    state = when {
+                        plainMessage.text.isEmpty() -> OSActionState.Disabled
+                        canSend -> OSActionState.Enabled
+                        else -> OSActionState.DisabledWithAction
+                    },
                 )
             }
         }

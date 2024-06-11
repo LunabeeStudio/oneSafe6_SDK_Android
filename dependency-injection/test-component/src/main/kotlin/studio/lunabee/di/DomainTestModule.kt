@@ -27,7 +27,6 @@ import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import org.threeten.extra.MutableClock
 import studio.lunabee.doubleratchet.DoubleRatchetEngine
 import studio.lunabee.doubleratchet.crypto.DoubleRatchetKeyRepository
 import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
@@ -41,6 +40,7 @@ import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.domain.qualifier.InternalDir
 import studio.lunabee.onesafe.domain.qualifier.RemoteDispatcher
 import studio.lunabee.onesafe.test.IncrementalIdProvider
+import studio.lunabee.onesafe.test.OSTestConfig
 import java.io.File
 import java.time.Clock
 import javax.inject.Singleton
@@ -94,7 +94,7 @@ object DomainTestModule {
 
     @Provides
     @Singleton
-    fun providesClock(): Clock = MutableClock.epochUTC()
+    fun providesClock(): Clock = OSTestConfig.clock
 
     @Provides
     @InternalDir(InternalDir.Type.Backups)

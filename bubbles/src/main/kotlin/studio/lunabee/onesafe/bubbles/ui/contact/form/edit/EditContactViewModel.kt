@@ -32,9 +32,9 @@ import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.UpdateContactUseCase
-import studio.lunabee.onesafe.bubbles.ui.contact.form.common.DefaultContactFormDelegate
 import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormState
 import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormViewModel
+import studio.lunabee.onesafe.bubbles.ui.contact.form.common.DefaultContactFormDelegate
 import java.util.UUID
 import javax.inject.Inject
 
@@ -50,7 +50,7 @@ class EditContactViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val contact = contactRepository.getContact(contactId).firstOrNull()
+            val contact = contactRepository.getContactFlow(contactId).firstOrNull()
             contact?.let {
                 val decryptedNameResult = contactLocalDecryptUseCase(
                     contact.encName,
@@ -82,7 +82,10 @@ class EditContactDelegate @Inject constructor(
     private val _createInvitationResult: MutableStateFlow<LBResult<UUID>?> = MutableStateFlow(null)
     override val createInvitationResult: StateFlow<LBResult<UUID>?> = _createInvitationResult.asStateFlow()
     override suspend fun doSaveContact(contactName: String, isUsingDeeplink: Boolean) {
-        updateContactUseCase(contactId, isUsingDeeplink, contactName)
-        _createInvitationResult.value = LBResult.Success(contactId)
+        val updateRes = updateContactUseCase(contactId, isUsingDeeplink, contactName)
+        when (updateRes) {
+            is LBResult.Failure -> _createInvitationResult.value = LBResult.Failure(updateRes.throwable, contactId)
+            is LBResult.Success -> _createInvitationResult.value = LBResult.Success(contactId)
+        }
     }
 }

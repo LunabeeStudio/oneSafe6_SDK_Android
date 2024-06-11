@@ -31,11 +31,10 @@ import studio.lunabee.onesafe.atom.OSIconDecorationButton
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.button.defaults.OSTextButtonDefaults
 import studio.lunabee.onesafe.commonui.EmojiNameProvider
-import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.OSDrawable
+import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.extension.markdown
-import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.model.OSItemIllustration
 import studio.lunabee.onesafe.molecule.OSLargeItemTitle
@@ -46,14 +45,14 @@ import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 object ContactDetailScreenFactory {
 
     fun conversationStateCard(
-        conversationState: ConversationState,
+        conversationState: ContactDetailUiState.UIConversationState,
         contactName: OSNameProvider,
         lazyListScope: LazyListScope,
     ) {
         lazyListScope.item {
             when (conversationState) {
-                ConversationState.FullySetup,
-                ConversationState.WaitingForFirstMessage,
+                ContactDetailUiState.UIConversationState.FullySetup,
+                ContactDetailUiState.UIConversationState.WaitingForFirstMessage,
                 -> {
                     OSMessageCard(
                         title = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_congratulation_title),
@@ -63,7 +62,7 @@ object ContactDetailScreenFactory {
                         ),
                     )
                 }
-                ConversationState.WaitingForReply -> {
+                ContactDetailUiState.UIConversationState.WaitingForReply -> {
                     OSMessageCard(
                         title = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_waitingForReply_title),
                         description = LbcTextSpec.StringResource(
@@ -72,7 +71,11 @@ object ContactDetailScreenFactory {
                         ).markdown(),
                     )
                 }
-                ConversationState.Running, ConversationState.Error -> {}
+                ContactDetailUiState.UIConversationState.Running -> {}
+                ContactDetailUiState.UIConversationState.Indecipherable -> OSMessageCard(
+                    title = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_corruptedCard_title),
+                    description = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_corruptedCard_description),
+                )
             }
         }
     }
@@ -119,7 +122,7 @@ object ContactDetailScreenFactory {
 
     @Suppress("LongParameterList")
     fun actionCard(
-        conversationState: ConversationState,
+        conversationState: ContactDetailUiState.UIConversationState,
         onConversationClick: () -> Unit,
         onResendInvitationClick: () -> Unit,
         onResendResponseClick: () -> Unit,
@@ -135,13 +138,13 @@ object ContactDetailScreenFactory {
                     text = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_sendMessage),
                     onClick = onConversationClick,
                     buttonColors = OSTextButtonDefaults.secondaryTextButtonColors(
-                        state = if (conversationState != ConversationState.WaitingForReply) {
+                        state = if (conversationState != ContactDetailUiState.UIConversationState.WaitingForReply) {
                             OSActionState.Enabled
                         } else {
                             OSActionState.Disabled
                         },
                     ),
-                    state = if (conversationState != ConversationState.WaitingForReply) {
+                    state = if (conversationState != ContactDetailUiState.UIConversationState.WaitingForReply) {
                         OSActionState.Enabled
                     } else {
                         OSActionState.Disabled
@@ -150,8 +153,8 @@ object ContactDetailScreenFactory {
                     contentPadding = LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
                         index = 0,
                         elementsCount = if (
-                            (conversationState == ConversationState.FullySetup) ||
-                            (conversationState == ConversationState.Running)
+                            (conversationState == ContactDetailUiState.UIConversationState.FullySetup) ||
+                            (conversationState == ContactDetailUiState.UIConversationState.Running)
                         ) {
                             1
                         } else {
@@ -160,8 +163,13 @@ object ContactDetailScreenFactory {
                     ),
                 )
                 when (conversationState) {
-                    ConversationState.Running, ConversationState.FullySetup, ConversationState.Error -> {}
-                    ConversationState.WaitingForReply -> {
+                    ContactDetailUiState.UIConversationState.Running,
+                    ContactDetailUiState.UIConversationState.FullySetup,
+                    ContactDetailUiState.UIConversationState.Indecipherable,
+                    -> {
+                        /* no-op */
+                    }
+                    ContactDetailUiState.UIConversationState.WaitingForReply -> {
                         OSClickableRow(
                             text = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_resendInvitation),
                             onClick = onResendInvitationClick,
@@ -183,7 +191,7 @@ object ContactDetailScreenFactory {
                             ),
                         )
                     }
-                    ConversationState.WaitingForFirstMessage -> {
+                    ContactDetailUiState.UIConversationState.WaitingForFirstMessage -> {
                         OSClickableRow(
                             text = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_resendResponse),
                             onClick = onResendResponseClick,

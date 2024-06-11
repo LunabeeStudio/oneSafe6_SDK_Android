@@ -35,5 +35,6 @@ sealed interface WriteMessageUiState {
         val message: BubblesWritingMessage,
         val isUsingDeepLink: Boolean,
         val isConversationReady: Boolean,
+        val isCorrupted: Boolean,
     ) : WriteMessageUiState
 }

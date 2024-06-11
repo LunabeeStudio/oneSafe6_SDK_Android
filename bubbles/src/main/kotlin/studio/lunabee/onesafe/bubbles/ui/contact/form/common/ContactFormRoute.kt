@@ -24,16 +24,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lunabee.lbcore.model.LBResult
-import com.lunabee.lblogger.LBLogger
-import com.lunabee.lblogger.e
 import studio.lunabee.onesafe.commonui.EmojiNameProvider
 import studio.lunabee.onesafe.commonui.OSNameProvider
+import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
+import studio.lunabee.onesafe.commonui.dialog.DialogAction
+import studio.lunabee.onesafe.commonui.dialog.ErrorDialogState
+import studio.lunabee.onesafe.commonui.dialog.rememberDialogState
 import studio.lunabee.onesafe.model.OSItemIllustration
 import java.util.UUID
-
-private val logger = LBLogger.get("ContactFormRoute")
 
 context(ContactFormNavScope)
 @Composable
@@ -59,12 +60,15 @@ fun ContactFormRoute(
             }
         }
     }
+
+    var errorDialogState by rememberDialogState()
+    errorDialogState?.DefaultAlertDialog()
+
     LaunchedEffect(createResult) {
         when (val result = createResult) {
             is LBResult.Success -> navigateToNextScreen(result.successData)
             is LBResult.Failure -> {
-                // TODO What append if error?
-                result.throwable?.let(logger::e)
+                errorDialogState = ErrorDialogState(result.throwable, listOf(DialogAction.commonOk(navigateBack)), navigateBack)
             }
             null -> {}
         }

@@ -22,20 +22,23 @@ package studio.lunabee.onesafe.domain.usecase.item
 import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import java.time.Clock
+import java.time.Instant
 import javax.inject.Inject
 
 class MoveToBinItemUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
+    private val clock: Clock,
 ) {
     suspend operator fun invoke(
         safeItem: SafeItem,
     ): LBResult<Unit> {
-        safeItemRepository.setDeletedAndRemoveFromFavorite(safeItem.id)
+        safeItemRepository.setDeletedAndRemoveFromFavorite(safeItem.id, Instant.now(clock))
         return LBResult.Success(Unit)
     }
 
     suspend fun all(): LBResult<Unit> {
-        safeItemRepository.setDeletedAndRemoveFromFavorite(null)
+        safeItemRepository.setDeletedAndRemoveFromFavorite(null, Instant.now(clock))
         return LBResult.Success(Unit)
     }
 }

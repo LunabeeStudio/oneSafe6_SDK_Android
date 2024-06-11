@@ -43,7 +43,10 @@ interface ContactDao {
     fun getRecentContactsFlow(maxNumber: Int): Flow<List<RoomContact>>
 
     @Query("SELECT * FROM Contact WHERE id = :id")
-    fun getById(id: UUID): Flow<RoomContact?>
+    fun getByIdFlow(id: UUID): Flow<RoomContact?>
+
+    @Query("SELECT * FROM Contact WHERE id = :id")
+    suspend fun getById(id: UUID): RoomContact?
 
     @Query("SELECT enc_shared_key FROM Contact WHERE id = :id")
     suspend fun getContactSharedKey(id: UUID): ContactSharedKey?

@@ -19,11 +19,14 @@
 
 package studio.lunabee.onesafe.bubbles.domain.usecase
 
+import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.bubbles.domain.model.ContactLocalKey
 import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactKeyRepository
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
+import studio.lunabee.onesafe.error.OSError
+import java.time.Clock
 import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
@@ -32,13 +35,14 @@ class UpdateIsUsingDeeplinkContactUseCase @Inject constructor(
     private val contactRepository: ContactRepository,
     private val contactKeyRepository: ContactKeyRepository,
     private val bubblesCryptoRepository: BubblesCryptoRepository,
+    private val clock: Clock,
 ) {
-    suspend operator fun invoke(id: UUID, isUsingDeeplink: Boolean) {
+    suspend operator fun invoke(id: UUID, isUsingDeeplink: Boolean): LBResult<Unit> = OSError.runCatching {
         val localKey: ContactLocalKey = contactKeyRepository.getContactLocalKey(id)
         contactRepository.updateIsUsingDeeplink(
             id = id,
             encIsUsingDeeplink = bubblesCryptoRepository.localEncrypt(localKey, EncryptEntry(isUsingDeeplink)),
-            updateAt = Instant.now(),
+            updateAt = Instant.now(clock),
         )
     }
 }

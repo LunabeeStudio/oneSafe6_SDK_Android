@@ -26,7 +26,6 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
-import kotlin.test.Test
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
@@ -34,10 +33,12 @@ import studio.lunabee.onesafe.storage.OSStorageTestUtils
 import studio.lunabee.onesafe.storage.extension.data
 import studio.lunabee.onesafe.storage.model.RoomSafeItem
 import studio.lunabee.onesafe.storage.model.RoomSafeItemField
+import studio.lunabee.onesafe.test.OSTestConfig
 import studio.lunabee.onesafe.test.OSTestUtils
 import studio.lunabee.onesafe.test.testUUIDs
 import java.time.Instant
 import javax.inject.Inject
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
@@ -216,12 +217,12 @@ class SafeItemRawDaoTest {
 
     @Test
     fun findDeletedByParentIdAsPagingSource_delete_parent_with_child_test(): TestResult = runTest {
-        val parent = OSStorageTestUtils.createRoomSafeItem(id = testUUIDs[0], deletedAt = Instant.now())
+        val parent = OSStorageTestUtils.createRoomSafeItem(id = testUUIDs[0], deletedAt = Instant.now(OSTestConfig.clock))
         val child = OSStorageTestUtils.createRoomSafeItem(
             id = testUUIDs[1],
             parentId = parent.id,
             deletedParentId = parent.id,
-            deletedAt = Instant.now(),
+            deletedAt = Instant.now(OSTestConfig.clock),
         )
 
         safeItemDao.insert(listOf(parent, child))
@@ -287,8 +288,8 @@ class SafeItemRawDaoTest {
 
     @Test
     fun findByDeletedParentIdWithIdentifierQuery_test(): TestResult = runTest {
-        safeItemDao.setDeletedAndRemoveFromFavorite(itemB.id)
-        safeItemDao.setDeletedAndRemoveFromFavorite(itemA.id)
+        safeItemDao.setDeletedAndRemoveFromFavorite(itemB.id, Instant.now(OSTestConfig.clock))
+        safeItemDao.setDeletedAndRemoveFromFavorite(itemA.id, Instant.now(OSTestConfig.clock))
         ItemOrder.entries.forEach { itemOrder ->
             val expected = listOf(itemA, itemB).sortedBy(itemOrder)
             val actual = rawDao.getSafeItemsWithIdentifierFlow(

@@ -20,11 +20,10 @@
 package studio.lunabee.onesafe.bubbles.ui.model
 
 import studio.lunabee.onesafe.commonui.OSNameProvider
-import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import java.util.UUID
 
 data class UIBubblesContactInfo(
     val id: UUID,
     val nameProvider: OSNameProvider,
-    val conversationState: ConversationState,
+    val isConversationReady: Boolean,
 )
