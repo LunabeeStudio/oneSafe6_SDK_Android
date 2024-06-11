@@ -21,6 +21,9 @@ package studio.lunabee.onesafe.messaging.domain.model
 
 import java.util.UUID
 
+/**
+ * Whole message already sent to be use in case of re-sending a message
+ */
 class SentMessage(
     val id: UUID,
     val contactId: UUID,

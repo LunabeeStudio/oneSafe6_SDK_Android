@@ -30,7 +30,6 @@ import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlin.test.Test
 import studio.lunabee.compose.androidtest.LbcComposeTest
 import studio.lunabee.compose.androidtest.extension.waitUntilExactlyOneExists
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
@@ -39,9 +38,9 @@ import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.ime.ui.contact.ImeContactRoute
 import studio.lunabee.onesafe.ime.ui.contact.ImeContactUiState
 import studio.lunabee.onesafe.ime.ui.contact.ImeContactViewModel
-import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.ui.UiConstants
 import java.util.UUID
+import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
 class ImeContactScreenTest : LbcComposeTest() {
@@ -62,14 +61,14 @@ class ImeContactScreenTest : LbcComposeTest() {
         val contact1Name = "toto"
         val contact2Name = "tata"
         val contact1 = UIBubblesContactInfo(
-            UUID.randomUUID(),
+            id = UUID.randomUUID(),
             nameProvider = DefaultNameProvider(contact1Name),
-            ConversationState.FullySetup,
+            isConversationReady = true,
         )
         val contact2 = UIBubblesContactInfo(
-            UUID.randomUUID(),
+            id = UUID.randomUUID(),
             nameProvider = DefaultNameProvider(contact2Name),
-            ConversationState.FullySetup,
+            isConversationReady = true,
         )
 
         every { mockkVM.uiState } returns MutableStateFlow(ImeContactUiState.Data(listOf(contact1, contact2)))

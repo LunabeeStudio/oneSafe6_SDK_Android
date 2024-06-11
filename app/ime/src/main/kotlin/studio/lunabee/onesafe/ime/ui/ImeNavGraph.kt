@@ -128,7 +128,7 @@ fun ImeNavGraph(
         }
 
         composable(
-            route = WriteMessageDestination.Route,
+            route = WriteMessageDestination.route,
         ) { backStackEntry ->
             with(ImeWriteMessageNav(dismissUi, context)) {
                 val viewModel: WriteMessageViewModel = viewModel(
@@ -160,7 +160,7 @@ fun ImeNavGraph(
             ImeContactRoute(
                 navigateBack = { navController.popBackStack() },
                 navigateToWriteMessage = { contactId ->
-                    navController.getBackStackEntry(WriteMessageDestination.Route)
+                    navController.getBackStackEntry(WriteMessageDestination.route)
                         .savedStateHandle[WriteMessageDestination.ContactIdArg] = contactId.toString()
                     navController.popBackStack()
                 },

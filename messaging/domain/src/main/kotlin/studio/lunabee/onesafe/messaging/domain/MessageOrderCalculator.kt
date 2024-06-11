@@ -19,9 +19,13 @@
 
 package studio.lunabee.onesafe.messaging.domain
 
+import com.lunabee.lblogger.LBLogger
+import com.lunabee.lblogger.e
 import studio.lunabee.onesafe.bubbles.domain.model.ContactLocalKey
 import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
+import studio.lunabee.onesafe.error.OSCryptoError
+import studio.lunabee.onesafe.messaging.domain.model.MessageOrder
 import studio.lunabee.onesafe.messaging.domain.repository.MessageOrderRepository
 import java.time.Instant
 import java.util.UUID
@@ -29,27 +33,65 @@ import javax.inject.Inject
 import kotlin.math.ceil
 import kotlin.math.floor
 
+private val logger = LBLogger.get<MessageOrderCalculator>()
+
 /**
  * Compute the order of a message from it sentAt date
  *   • If the new message is the new most recent, increment current most recent and round backward
  *   • If the new message is the new least recent, decrement current least recent and round toward
  *   • Else put the message between two others
+ *
+ * Handle potential corrupted messages by ignoring them
  */
 class MessageOrderCalculator @Inject constructor(
     private val messageOrderRepository: MessageOrderRepository,
     private val bubblesCryptoRepository: BubblesCryptoRepository,
 ) {
-    suspend operator fun invoke(messageSentAt: Instant, contactId: UUID, key: ContactLocalKey): OrderResult {
-        val lastMessageOrder = messageOrderRepository.getMostRecent(contactId)
-        return if (lastMessageOrder == null) {
-            OrderResult.Found(0f)
-        } else {
-            val lastSentAt = bubblesCryptoRepository.localDecrypt(key, DecryptEntry(lastMessageOrder.encSentAt, Instant::class))
-            if (messageSentAt > lastSentAt) {
-                OrderResult.Found(floor(lastMessageOrder.order + 1f))
+    suspend operator fun invoke(
+        messageSentAt: Instant,
+        contactId: UUID,
+        key: ContactLocalKey,
+    ): OrderResult {
+        val excludedMessages: MutableList<MessageOrder> = mutableListOf()
+
+        var lastMessageOrder: MessageOrder? = null
+        var lastSentAt: Instant? = null
+        var orderFirstMsg: Float? = null
+
+        while (lastSentAt == null && orderFirstMsg == null) {
+            lastMessageOrder = messageOrderRepository.getMostRecent(contactId, excludedMessages.map { it.id })
+            if (lastMessageOrder == null) {
+                orderFirstMsg = 0f
             } else {
-                val firstMessageOrder = messageOrderRepository.getLeastRecent(contactId)!!.order
-                binarySearch(messageSentAt, contactId, key, lastMessageOrder.order to firstMessageOrder)
+                lastSentAt = try {
+                    bubblesCryptoRepository.localDecrypt(key, DecryptEntry(lastMessageOrder.encSentAt, Instant::class))
+                } catch (e: OSCryptoError) {
+                    logger.e(e)
+                    excludedMessages += lastMessageOrder // exclude failing and continue
+                    null
+                }
+            }
+        }
+
+        return if (orderFirstMsg != null) {
+            // If order found is equal to an excluded message, increment it to make sure we keep the order unique
+            if (excludedMessages.any { it.order == orderFirstMsg }) {
+                orderFirstMsg += 0.01f
+            }
+            OrderResult.Found(orderFirstMsg)
+        } else {
+            checkNotNull(lastMessageOrder)
+            if (messageSentAt > lastSentAt) {
+                // If excluded messages is not empty, set the order to max excluded message +1
+                val order = if (excludedMessages.isNotEmpty()) {
+                    floor(excludedMessages.maxOf { it.order } + 1)
+                } else {
+                    floor(lastMessageOrder.order + 1f)
+                }
+                OrderResult.Found(order)
+            } else {
+                val firstMessageOrder = messageOrderRepository.getLeastRecent(contactId, excludedMessages.map { it.id })!!.order
+                binarySearch(messageSentAt, contactId, key, lastMessageOrder.order to firstMessageOrder, excludedMessages)
             }
         }
     }
@@ -59,8 +101,9 @@ class MessageOrderCalculator @Inject constructor(
         contactId: UUID,
         key: ContactLocalKey,
         orderRange: Pair<Float, Float>,
+        excludedMessages: MutableList<MessageOrder>,
     ): OrderResult {
-        val count = messageOrderRepository.count(contactId) - 1
+        val count = messageOrderRepository.count(contactId, excludedMessages.map { it.id }) - 1
         var start = 0
         var end = count
 
@@ -70,15 +113,21 @@ class MessageOrderCalculator @Inject constructor(
 
         while (start <= end) {
             val mid = (start + (end - start) / 2f).toInt()
-            val midMessage = messageOrderRepository.getAt(contactId, mid)!!
-            val midSentAt = bubblesCryptoRepository.localDecrypt(key, DecryptEntry(midMessage.encSentAt, Instant::class))
+            val midMessage = messageOrderRepository.getAt(contactId, mid, excludedMessages.map { it.id })!!
+            val midSentAt = try {
+                bubblesCryptoRepository.localDecrypt(key, DecryptEntry(midMessage.encSentAt, Instant::class))
+            } catch (e: OSCryptoError) {
+                logger.e(e)
+                excludedMessages += midMessage // exclude failing
+                continue
+            }
             when {
                 midSentAt == newMessageSentAt -> {
                     return when (mid) {
                         0 -> OrderResult.Duplicated(floor(midMessage.order + 1f), midMessage.order)
                         count -> OrderResult.Duplicated(ceil(midMessage.order - 1f), midMessage.order)
                         else -> {
-                            val nextMessageOrder = messageOrderRepository.getAt(contactId, mid - 1)!!.order
+                            val nextMessageOrder = messageOrderRepository.getAt(contactId, mid - 1, excludedMessages.map { it.id })!!.order
                             OrderResult.Duplicated((nextMessageOrder + midMessage.order) / 2f, midMessage.order)
                         }
                     }
@@ -99,6 +148,11 @@ class MessageOrderCalculator @Inject constructor(
         // Handle edge case where the new message is the before the first
         if (next == orderRange.second) {
             order = ceil(orderRange.second - 1f)
+        }
+
+        // If order found is equal to an excluded message, increment it to make sure we keep the order unique
+        if (excludedMessages.any { it.order == order }) {
+            order += 0.01f
         }
 
         return OrderResult.Found(order)

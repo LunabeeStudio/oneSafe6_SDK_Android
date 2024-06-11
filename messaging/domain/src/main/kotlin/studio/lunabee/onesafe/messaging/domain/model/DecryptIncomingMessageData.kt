@@ -22,23 +22,23 @@ package studio.lunabee.onesafe.messaging.domain.model
 import java.util.UUID
 
 sealed interface DecryptIncomingMessageData {
-    val osPlainMessage: OSPlainMessage?
+    val osPlainMessage: SharedMessage?
     val contactId: UUID
 
     data class NewMessage(
         override val contactId: UUID,
-        override val osPlainMessage: OSPlainMessage?,
+        override val osPlainMessage: SharedMessage?,
     ) : DecryptIncomingMessageData
 
     data class DecryptOwnMessage(
         override val contactId: UUID,
     ) : DecryptIncomingMessageData {
-        override val osPlainMessage: OSPlainMessage? = null
+        override val osPlainMessage: SharedMessage? = null
     }
 
     data class AlreadyDecryptedMessage(
         override val contactId: UUID,
     ) : DecryptIncomingMessageData {
-        override val osPlainMessage: OSPlainMessage? = null
+        override val osPlainMessage: SharedMessage? = null
     }
 }

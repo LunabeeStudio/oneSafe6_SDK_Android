@@ -64,7 +64,7 @@ interface SafeItemRepository {
     suspend fun toggleFavorite(id: UUID)
     suspend fun getHighestChildPosition(parentId: UUID?): Double?
     suspend fun getNextSiblingPosition(id: UUID): Double?
-    suspend fun setDeletedAndRemoveFromFavorite(id: UUID?)
+    suspend fun setDeletedAndRemoveFromFavorite(id: UUID?, deletedAt: Instant)
     suspend fun updateParentIds(oldParentId: UUID, newParentId: UUID?, newDeletedParentId: UUID?)
     suspend fun updateSafeItem(safeItem: SafeItem, indexWordEntries: List<IndexWordEntry>?)
     suspend fun findByIdWithChildren(id: UUID): List<SafeItem>

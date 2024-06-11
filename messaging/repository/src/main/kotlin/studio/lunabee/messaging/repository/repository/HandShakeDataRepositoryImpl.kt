@@ -20,7 +20,7 @@
 package studio.lunabee.messaging.repository.repository
 
 import studio.lunabee.messaging.repository.datasource.HandShakeDataLocalDatasource
-import studio.lunabee.onesafe.messaging.domain.model.HandShakeData
+import studio.lunabee.onesafe.messaging.domain.model.EncHandShakeData
 import studio.lunabee.onesafe.messaging.domain.repository.HandShakeDataRepository
 import java.util.UUID
 import javax.inject.Inject
@@ -28,7 +28,7 @@ import javax.inject.Inject
 class HandShakeDataRepositoryImpl @Inject constructor(
     private val handShakeDataLocalDatasource: HandShakeDataLocalDatasource,
 ) : HandShakeDataRepository {
-    override suspend fun insert(handShakeData: HandShakeData) {
+    override suspend fun insert(handShakeData: EncHandShakeData) {
         handShakeDataLocalDatasource.insert(handShakeData)
     }
 
@@ -36,7 +36,7 @@ class HandShakeDataRepositoryImpl @Inject constructor(
         handShakeDataLocalDatasource.delete(conversationLocalId)
     }
 
-    override suspend fun getById(conversationLocalId: UUID): HandShakeData? {
+    override suspend fun getById(conversationLocalId: UUID): EncHandShakeData? {
         return handShakeDataLocalDatasource.getById(conversationLocalId)
     }
 }

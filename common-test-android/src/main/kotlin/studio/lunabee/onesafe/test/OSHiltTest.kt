@@ -51,6 +51,7 @@ import studio.lunabee.onesafe.domain.usecase.onboarding.FinishOnboardingUseCase
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.OSRecentSearchProto
 import java.time.Clock
+import java.time.Instant
 import javax.inject.Inject
 
 /**
@@ -124,6 +125,7 @@ abstract class OSHiltTest : OSTest() {
 
     @Before
     fun injectAndInit() {
+        OSTestConfig.clock.setInstant(Instant.EPOCH)
         hiltRule.inject()
         initializeWorkManager()
         // Use runBlocking to make sure the test cannot start before/while initialize

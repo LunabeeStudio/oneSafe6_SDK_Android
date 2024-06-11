@@ -20,25 +20,29 @@
 package studio.lunabee.onesafe.messaging.domain.usecase
 
 import com.google.protobuf.kotlin.toByteString
+import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
 import studio.lunabee.onesafe.error.OSDomainError
+import studio.lunabee.onesafe.error.OSError
+import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.error.OSMessagingError
+import studio.lunabee.onesafe.getOrThrow
 import studio.lunabee.onesafe.messagecompanion.invitationMessage
-import studio.lunabee.onesafe.messaging.domain.repository.HandShakeDataRepository
 import java.util.UUID
 import javax.inject.Inject
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 class GetInvitationMessageUseCase @Inject constructor(
-    private val handShakeDataRepository: HandShakeDataRepository,
     private val doubleRatchetLocalDatasource: DoubleRatchetLocalDatasource,
+    private val getHandShakeDataUseCase: GetHandShakeDataUseCase,
 ) {
 
     @OptIn(ExperimentalEncodingApi::class)
-    suspend operator fun invoke(contactId: UUID): String {
-        val handShakeData = handShakeDataRepository.getById(conversationLocalId = contactId)
-            ?: throw OSDomainError(OSDomainError.Code.HAND_SHAKE_DATA_NOT_FOUND)
+    suspend operator fun invoke(contactId: UUID): LBResult<String> = OSError.runCatching {
+        val handShakeData = getHandShakeDataUseCase(conversationLocalId = contactId).getOrThrow()
+            ?: throw OSMessagingError.Code.HANDSHAKE_DATA_NOT_FOUND.get()
         val conversation = doubleRatchetLocalDatasource.getConversation(DoubleRatchetUUID(contactId))
             ?: throw OSDomainError(OSDomainError.Code.NO_MATCHING_CONTACT)
         val invitationProto = invitationMessage {
@@ -47,6 +51,6 @@ class GetInvitationMessageUseCase @Inject constructor(
             conversationId = handShakeData.conversationSharedId.toString()
             recipientId = handShakeData.conversationLocalId.toString()
         }
-        return Base64.encode(invitationProto.toByteArray())
+        Base64.encode(invitationProto.toByteArray())
     }
 }

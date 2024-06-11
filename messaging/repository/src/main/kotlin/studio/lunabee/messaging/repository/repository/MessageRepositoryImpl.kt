@@ -23,7 +23,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.messaging.repository.datasource.MessageLocalDataSource
-import studio.lunabee.onesafe.messaging.domain.model.Message
+import studio.lunabee.onesafe.messaging.domain.model.SafeMessage
 import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
 import java.util.UUID
 import javax.inject.Inject
@@ -31,14 +31,14 @@ import javax.inject.Inject
 class MessageRepositoryImpl @Inject constructor(
     private val datasource: MessageLocalDataSource,
 ) : MessageRepository {
-    override suspend fun save(message: Message, order: Float): Unit = datasource.save(message, order)
-    override suspend fun getAllByContact(contactId: UUID): List<Message> = datasource.getAllByContact(contactId)
-    override suspend fun getLastMessage(contactId: UUID): Flow<Message?> {
+    override suspend fun save(message: SafeMessage, order: Float): Unit = datasource.save(message, order)
+    override suspend fun getAllByContact(contactId: UUID): List<SafeMessage> = datasource.getAllByContact(contactId)
+    override suspend fun getLastMessage(contactId: UUID): Flow<SafeMessage?> {
         return datasource.getLastMessage(contactId)
     }
 
-    override suspend fun getByContactByOrder(contactId: UUID, order: Float): Message = datasource.getByContactByOrder(contactId, order)
-    override fun getAllPaged(config: PagingConfig, contactId: UUID): Flow<PagingData<Message>> =
+    override suspend fun getByContactByOrder(contactId: UUID, order: Float): SafeMessage = datasource.getByContactByOrder(contactId, order)
+    override fun getAllPaged(config: PagingConfig, contactId: UUID): Flow<PagingData<SafeMessage>> =
         datasource.getAllPaged(config, contactId)
 
     override suspend fun deleteAllMessages(contactId: UUID) {

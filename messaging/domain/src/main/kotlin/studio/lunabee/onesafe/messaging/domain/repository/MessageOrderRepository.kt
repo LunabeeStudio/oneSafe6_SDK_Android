@@ -23,8 +23,8 @@ import studio.lunabee.onesafe.messaging.domain.model.MessageOrder
 import java.util.UUID
 
 interface MessageOrderRepository {
-    suspend fun getMostRecent(contactId: UUID): MessageOrder?
-    suspend fun getLeastRecent(contactId: UUID): MessageOrder?
-    suspend fun count(contactId: UUID): Int
-    suspend fun getAt(contactId: UUID, position: Int): MessageOrder?
+    suspend fun getMostRecent(contactId: UUID, exceptIds: List<UUID>): MessageOrder?
+    suspend fun getLeastRecent(contactId: UUID, exceptIds: List<UUID>): MessageOrder?
+    suspend fun count(contactId: UUID, exceptIds: List<UUID>): Int
+    suspend fun getAt(contactId: UUID, position: Int, exceptIds: List<UUID>): MessageOrder?
 }

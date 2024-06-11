@@ -40,6 +40,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import studio.lunabee.onesafe.atom.OSImageSpec
+import studio.lunabee.onesafe.commonui.OSDestination
 import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.commonui.extension.getTextSharingIntent
 import studio.lunabee.onesafe.messaging.domain.model.DecryptResult
@@ -49,12 +50,12 @@ import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageRoute
 import studio.lunabee.onesafe.messaging.writemessage.viewmodel.WriteMessageViewModel
 import java.util.UUID
 
-object WriteMessageDestination {
+object WriteMessageDestination : OSDestination {
 
     const val ContactIdArg: String = "ContactIdArg"
     const val ErrorArg: String = "ErrorArg"
     const val Path: String = "write_message"
-    const val Route: String = "$Path?" +
+    override val route: String = "$Path?" +
         "$ContactIdArg={$ContactIdArg}" +
         "&$ErrorArg={$ErrorArg}"
 
@@ -83,7 +84,7 @@ fun NavGraphBuilder.writeMessageScreen(
     createMessagingViewModel: @Composable (NavBackStackEntry) -> Unit,
 ) {
     composable(
-        route = WriteMessageDestination.Route,
+        route = WriteMessageDestination.route,
         arguments = listOf(
             navArgument(WriteMessageDestination.ContactIdArg) {
                 type = NavType.StringType

@@ -23,19 +23,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lunabee.lbcore.model.LBResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.GetContactUseCase
 import studio.lunabee.onesafe.bubbles.domain.usecase.UpdateIsUsingDeeplinkContactUseCase
 import studio.lunabee.onesafe.bubbles.ui.extension.getNameProvider
+import studio.lunabee.onesafe.commonui.dialog.DialogAction
 import studio.lunabee.onesafe.commonui.dialog.DialogState
+import studio.lunabee.onesafe.commonui.dialog.ErrorDialogState
 import studio.lunabee.onesafe.commonui.extension.startEmojiOrNull
 import studio.lunabee.onesafe.commonui.utils.ImageHelper
+import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
 import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCase
 import studio.lunabee.onesafe.ui.extensions.getFirstColorGenerated
 import java.util.UUID
@@ -50,8 +56,9 @@ class ContactDetailViewModel @Inject constructor(
     private val updateIsUsingDeeplinkContactUseCase: UpdateIsUsingDeeplinkContactUseCase,
     private val getConversationStateUseCase: GetConversationStateUseCase,
     private val imageHelper: ImageHelper,
+    isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
 ) : ViewModel() {
-    val contactId: UUID = savedStateHandle.get<String>(ContactDetailDestination.ContactIdArgs)?.let { UUID.fromString(it) }
+    val contactId: UUID = savedStateHandle.get<String>(ContactDetailDestination.ContactIdArg)?.let { UUID.fromString(it) }
         ?: error("Missing contact id in args")
 
     private val _dialogState = MutableStateFlow<DialogState?>(null)
@@ -61,31 +68,55 @@ class ContactDetailViewModel @Inject constructor(
     val uiState: StateFlow<ContactDetailUiState> = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            getContactUseCase(contactId).collect { encryptedContacts ->
-                encryptedContacts?.let {
-                    val decryptedNameResult = contactLocalDecryptUseCase(
-                        encryptedContacts.encName,
-                        encryptedContacts.id,
-                        String::class,
-                    )
-                    val decryptedIsUsingDeeplink = contactLocalDecryptUseCase(
-                        encryptedContacts.encIsUsingDeeplink,
-                        encryptedContacts.id,
-                        Boolean::class,
-                    )
-                    _uiState.value = ContactDetailUiState.Data(
-                        id = encryptedContacts.id,
-                        nameProvider = decryptedNameResult.getNameProvider(),
-                        isDeeplinkActivated = decryptedIsUsingDeeplink.data ?: false,
-                        conversationState = getConversationStateUseCase(contactId),
-                        color = decryptedNameResult.data?.let { plainColor ->
-                            getColorFromName(plainColor)
-                        },
-                    )
+        combine(
+            getContactUseCase.flow(contactId),
+            isCryptoDataReadyInMemoryUseCase.flow(),
+        ) { encryptedContacts, isCryptoDataReadyInMemory ->
+            encryptedContacts?.let {
+                val decryptedNameResult = contactLocalDecryptUseCase(
+                    encryptedContacts.encName,
+                    encryptedContacts.id,
+                    String::class,
+                )
+                val decryptedIsUsingDeeplink = contactLocalDecryptUseCase(
+                    encryptedContacts.encIsUsingDeeplink,
+                    encryptedContacts.id,
+                    Boolean::class,
+                )
+                val conversationState = getConversationStateUseCase(contactId)
+
+                when (conversationState) {
+                    is LBResult.Failure -> {
+                        if (isCryptoDataReadyInMemory) {
+                            showError(conversationState.throwable)
+                        }
+
+                        _uiState.value = ContactDetailUiState.Data(
+                            id = encryptedContacts.id,
+                            nameProvider = decryptedNameResult.getNameProvider(),
+                            isDeeplinkActivated = decryptedIsUsingDeeplink.data ?: false,
+                            conversationState = ContactDetailUiState.UIConversationState.Indecipherable,
+                            color = decryptedNameResult.data?.let { plainColor ->
+                                getColorFromName(plainColor)
+                            },
+                        )
+                    }
+                    is LBResult.Success -> {
+                        _uiState.value = ContactDetailUiState.Data(
+                            id = encryptedContacts.id,
+                            nameProvider = decryptedNameResult.getNameProvider(),
+                            isDeeplinkActivated = decryptedIsUsingDeeplink.data ?: false,
+                            conversationState = ContactDetailUiState.UIConversationState.fromConversationState(
+                                conversationState.successData,
+                            ),
+                            color = decryptedNameResult.data?.let { plainColor ->
+                                getColorFromName(plainColor)
+                            },
+                        )
+                    }
                 }
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
     private suspend fun getColorFromName(name: String): Color? {
@@ -99,7 +130,8 @@ class ContactDetailViewModel @Inject constructor(
 
     fun updateIsUsingDeeplink(value: Boolean) {
         viewModelScope.launch {
-            updateIsUsingDeeplinkContactUseCase(contactId, value)
+            val result = updateIsUsingDeeplinkContactUseCase(contactId, value)
+            if (result is LBResult.Failure) showError(result.throwable)
         }
     }
 
@@ -112,6 +144,16 @@ class ContactDetailViewModel @Inject constructor(
                     _uiState.value = ContactDetailUiState.Exit
                 }
             },
+        )
+    }
+
+    private fun showError(error: Throwable?) {
+        _dialogState.value = ErrorDialogState(
+            error = error,
+            actions = listOf(
+                DialogAction.commonOk { _dialogState.value = null },
+            ),
+            dismiss = { _dialogState.value = null },
         )
     }
 }

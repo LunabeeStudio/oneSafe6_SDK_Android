@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 8/30/2023 - for the oneSafe6 SDK.
- * Last modified 30/08/2023 15:26
+ * Created by Lunabee Studio / Date - 6/14/2023 - for the oneSafe6 SDK.
+ * Last modified 6/14/23, 1:24 PM
  */
 
-package studio.lunabee.onesafe.bubbles.ui.model
+package studio.lunabee.onesafe.messaging.domain.model
 
 import com.lunabee.lbcore.model.LBResult
-import studio.lunabee.onesafe.messaging.domain.model.ConversationState
-import java.time.Instant
-import java.util.UUID
 
-data class BubbleContactInfo(
-    val id: UUID,
-    val conversationState: ConversationState,
-    val isConvReady: Boolean,
-    val rawName: LBResult<String>,
-    val updatedAt: Instant,
-)
+sealed interface PlainMessageContentData {
+    class Default(
+        val content: LBResult<String>,
+    ) : PlainMessageContentData {
+        val isCorrupted: Boolean
+            get() = content is LBResult.Failure
+    }
+
+    data object AcceptedInvitation : PlainMessageContentData
+}

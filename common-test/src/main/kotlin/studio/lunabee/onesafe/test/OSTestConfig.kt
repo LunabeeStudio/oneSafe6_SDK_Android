@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.test
 
 import kotlinx.serialization.Serializable
+import org.threeten.extra.MutableClock
 import studio.lunabee.onesafe.domain.model.camera.CameraSystem
 import studio.lunabee.onesafe.domain.model.safeitem.ItemsLayoutSettings
 import kotlin.random.Random
@@ -34,6 +35,7 @@ object OSTestConfig {
         get() = config.itemsLayoutSettings
     val cameraSystem: CameraSystem
         get() = config.cameraSystem
+    val clock: MutableClock = MutableClock.epochUTC()
 
     @Serializable
     internal class Config {

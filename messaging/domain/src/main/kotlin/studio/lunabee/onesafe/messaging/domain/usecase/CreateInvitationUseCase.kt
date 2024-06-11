@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.messaging.domain.usecase
 
+// TODO move logic to KMM lib
 import studio.lunabee.doubleratchet.DoubleRatchetEngine
 import studio.lunabee.doubleratchet.crypto.DoubleRatchetKeyRepository
 import studio.lunabee.doubleratchet.model.AsymmetricKeyPair
@@ -28,31 +29,26 @@ import studio.lunabee.onesafe.bubbles.domain.model.PlainContact
 import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.onesafe.bubbles.domain.usecase.CreateContactUseCase
 import studio.lunabee.onesafe.domain.common.ItemIdProvider
-
-// TODO move logic to KMM lib
 import studio.lunabee.onesafe.messaging.domain.model.HandShakeData
-import studio.lunabee.onesafe.messaging.domain.repository.HandShakeDataRepository
 import java.util.UUID
 import javax.inject.Inject
-import kotlin.io.encoding.ExperimentalEncodingApi
 
 class CreateInvitationUseCase @Inject constructor(
     private val doubleRatchetEngine: DoubleRatchetEngine,
     private val doubleRatchetKeyRepository: DoubleRatchetKeyRepository,
     private val createContactUseCase: CreateContactUseCase,
     private val randomIdProvider: ItemIdProvider,
-    private val handShakeDataRepository: HandShakeDataRepository,
     private val bubblesCryptoRepository: BubblesCryptoRepository,
+    private val insertHandShakeDataUseCase: InsertHandShakeDataUseCase,
 ) {
 
     /**
      * Create a conversation for double ratchet message exchange
      * Create and save handShakeData required to establish the symmetric encryption
-     * Create a bubble contact with id corresponding to the conversation
+     * Create a bubbles contact with id corresponding to the conversation
      *
      * @return the message string to send
      */
-    @OptIn(ExperimentalEncodingApi::class)
     suspend operator fun invoke(contactName: String, isUsingDeepLink: Boolean): UUID {
         val keyPair: AsymmetricKeyPair = doubleRatchetKeyRepository.generateKeyPair()
         val contactId = randomIdProvider.invoke()
@@ -81,7 +77,8 @@ class CreateInvitationUseCase @Inject constructor(
             oneSafePrivateKey = keyPair.privateKey.value,
             oneSafePublicKey = keyPair.publicKey.value,
         )
-        handShakeDataRepository.insert(handShakeData)
+
+        insertHandShakeDataUseCase(handShakeData)
         return contactId
     }
 }

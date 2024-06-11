@@ -29,11 +29,31 @@ sealed interface ContactDetailUiState {
         val id: UUID,
         val nameProvider: OSNameProvider,
         val isDeeplinkActivated: Boolean,
-        val conversationState: ConversationState,
+        val conversationState: UIConversationState,
         val color: Color?,
     ) : ContactDetailUiState
 
-    object Idle : ContactDetailUiState
+    data object Idle : ContactDetailUiState
 
-    object Exit : ContactDetailUiState
+    data object Exit : ContactDetailUiState
+
+    enum class UIConversationState {
+        Running,
+        FullySetup,
+        WaitingForReply,
+        WaitingForFirstMessage,
+        Indecipherable,
+        ;
+
+        companion object {
+            fun fromConversationState(state: ConversationState): UIConversationState {
+                return when (state) {
+                    ConversationState.Running -> Running
+                    ConversationState.FullySetup -> FullySetup
+                    ConversationState.WaitingForReply -> WaitingForReply
+                    ConversationState.WaitingForFirstMessage -> WaitingForFirstMessage
+                }
+            }
+        }
+    }
 }

@@ -25,11 +25,11 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
-import kotlin.test.Test
 import studio.lunabee.onesafe.storage.extension.insert
 import studio.lunabee.onesafe.test.testUUIDs
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
@@ -65,12 +65,13 @@ class MessageDaoTest {
         dao.insert(id = testUUIDs[3], contactId = contactId2, order = expectedOrder[1])
         dao.insert(id = testUUIDs[4], contactId = contactId, order = expectedOrder[2])
         dao.insert(id = testUUIDs[5], contactId = contactId, order = expectedOrder[1])
+        dao.insert(id = testUUIDs[6], contactId = contactId, order = 2f) // excluded
 
         val actualOrder = Array<Float?>(4) { null }
-        actualOrder[0] = dao.getMessageOrderAtByContact(0, contactId)?.order
-        actualOrder[1] = dao.getMessageOrderAtByContact(1, contactId)?.order
-        actualOrder[2] = dao.getMessageOrderAtByContact(2, contactId)?.order
-        actualOrder[3] = dao.getMessageOrderAtByContact(3, contactId)?.order
+        actualOrder[0] = dao.getMessageOrderAtByContact(0, contactId, listOf(testUUIDs[6]))?.order
+        actualOrder[1] = dao.getMessageOrderAtByContact(1, contactId, listOf(testUUIDs[6]))?.order
+        actualOrder[2] = dao.getMessageOrderAtByContact(2, contactId, listOf(testUUIDs[6]))?.order
+        actualOrder[3] = dao.getMessageOrderAtByContact(3, contactId, listOf(testUUIDs[6]))?.order
 
         expectedOrder.indices.forEach {
             assertEquals(actualOrder[it], expectedOrder[it])

@@ -22,12 +22,12 @@ package studio.lunabee.onesafe.bubbles.ui.invitation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lunabee.lbcore.model.LBResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.OSAppSettings
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
@@ -35,7 +35,6 @@ import studio.lunabee.onesafe.bubbles.domain.usecase.GetContactUseCase
 import studio.lunabee.onesafe.commonui.dialog.DialogAction
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.dialog.ErrorDialogState
-import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.messaging.domain.usecase.GetInvitationMessageUseCase
 import java.util.UUID
 import javax.inject.Inject
@@ -61,23 +60,28 @@ class InvitationViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            try {
-                getContactUseCase(contactId).first()?.encName?.let { name ->
-                    val decryptedNameResult = contactLocalDecryptUseCase(
-                        name,
-                        contactId,
-                        String::class,
-                    )
-                    _uiState.value = InvitationUiState.Data(
-                        invitationString = getInvitationMessageUseCase(contactId),
-                        contactName = decryptedNameResult.data.orEmpty(),
-                    )
-                }
-            } catch (error: OSError) {
-                _dialogState.value = ErrorDialogState(
-                    error = error,
-                    actions = listOf(DialogAction.commonOk(::exitScreen)),
+            // TODO <bubbles> what if null?
+            getContactUseCase(contactId)?.encName?.let { name ->
+                val decryptedNameResult = contactLocalDecryptUseCase(
+                    name,
+                    contactId,
+                    String::class,
                 )
+                val invitationStringRes = getInvitationMessageUseCase(contactId)
+                when (invitationStringRes) {
+                    is LBResult.Failure -> {
+                        _dialogState.value = ErrorDialogState(
+                            error = invitationStringRes.throwable,
+                            actions = listOf(DialogAction.commonOk(::exitScreen)),
+                        )
+                    }
+                    is LBResult.Success -> {
+                        _uiState.value = InvitationUiState.Data(
+                            invitationString = invitationStringRes.successData,
+                            contactName = decryptedNameResult.data.orEmpty(), // TODO <bubbles> is null expected? -> handle result?
+                        )
+                    }
+                }
             }
         }
     }

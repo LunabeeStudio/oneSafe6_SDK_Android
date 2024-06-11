@@ -37,7 +37,6 @@ import studio.lunabee.onesafe.commonui.DefaultNameProvider
 import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.ime.ui.OSImeScreen
-import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.model.TopAppBarOptionNav
 import studio.lunabee.onesafe.molecule.ElevatedTopAppBar
@@ -111,8 +110,8 @@ private fun ImeContactFilledScreenPreview() {
     OSPreviewBackgroundTheme {
         ImeContactFilledScreen(
             uiState = ImeContactUiState.Data(
-                ConversationState.entries.map {
-                    UIBubblesContactInfo(UUID.randomUUID(), DefaultNameProvider(it.name), it)
+                listOf(true, false).map {
+                    UIBubblesContactInfo(UUID.randomUUID(), DefaultNameProvider(it.toString()), it)
                 },
             ),
             navigateBack = { },

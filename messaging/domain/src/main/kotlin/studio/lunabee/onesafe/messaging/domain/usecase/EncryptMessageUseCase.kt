@@ -36,7 +36,6 @@ import studio.lunabee.onesafe.messagecompanion.messageData
 import studio.lunabee.onesafe.messagecompanion.messageHeader
 import studio.lunabee.onesafe.messaging.domain.extension.withInstant
 import studio.lunabee.onesafe.messaging.domain.model.HandShakeData
-import studio.lunabee.onesafe.messaging.domain.repository.HandShakeDataRepository
 import studio.lunabee.onesafe.messaging.domain.repository.MessagingCryptoRepository
 import java.io.ByteArrayOutputStream
 import java.time.Instant
@@ -46,16 +45,15 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 /**
- * Encrypt a message for a contact
+ * Encrypt a message for a contact and encode it on base64
  */
 class EncryptMessageUseCase @Inject constructor(
     private val bubblesCryptoRepository: BubblesCryptoRepository,
     private val messagingCryptoRepository: MessagingCryptoRepository,
-    private val handShakeDataRepository: HandShakeDataRepository,
     private val contactKeyRepository: ContactKeyRepository,
     private val contactRepository: ContactRepository,
+    private val getHandShakeDataUseCase: GetHandShakeDataUseCase,
 ) {
-    @OptIn(ExperimentalEncodingApi::class)
     suspend operator fun invoke(
         plainMessage: String,
         contactId: UUID,
@@ -73,20 +71,26 @@ class EncryptMessageUseCase @Inject constructor(
             }
             byteArrayOutputStream.toByteArray()
         }
-        val handShakeData = handShakeDataRepository.getById(contactId)
-        if (handShakeData != null) {
-            createHandShakeMessage(
-                encryptedMessageBody = encryptedMessageBody,
-                messageHeader = sendMessageData.messageHeader,
-                contactId = contactId,
-                handShakeData = handShakeData,
-            )
-        } else {
-            createEncryptedMessage(
-                encryptedMessageBody = encryptedMessageBody,
-                messageHeader = sendMessageData.messageHeader,
-                contactId = contactId,
-            )
+        val handShakeDataRes = getHandShakeDataUseCase(contactId)
+        when (handShakeDataRes) {
+            is LBResult.Failure -> return LBResult.Failure(handShakeDataRes.throwable)
+            is LBResult.Success -> {
+                val handShakeData = handShakeDataRes.successData
+                if (handShakeData != null) {
+                    createHandShakeMessage(
+                        encryptedMessageBody = encryptedMessageBody,
+                        messageHeader = sendMessageData.messageHeader,
+                        contactId = contactId,
+                        handShakeData = handShakeData,
+                    )
+                } else {
+                    createEncryptedMessage(
+                        encryptedMessageBody = encryptedMessageBody,
+                        messageHeader = sendMessageData.messageHeader,
+                        contactId = contactId,
+                    )
+                }
+            }
         }
     }
 

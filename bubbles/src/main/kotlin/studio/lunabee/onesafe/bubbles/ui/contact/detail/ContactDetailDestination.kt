@@ -27,12 +27,12 @@ import studio.lunabee.onesafe.commonui.OSDestination
 import java.util.UUID
 
 object ContactDetailDestination : OSDestination {
-    const val ContactIdArgs: String = "contactId"
-    override val route: String = "contact_detail/{$ContactIdArgs}"
+    const val ContactIdArg: String = "contactId"
+    override val route: String = "contact_detail/{$ContactIdArg}"
 
     fun getRoute(
         contactId: UUID,
-    ): String = route.replace("{$ContactIdArgs}", contactId.toString())
+    ): String = route.replace("{$ContactIdArg}", contactId.toString())
 }
 
 context(ContactDetailNavScope)
@@ -40,7 +40,7 @@ fun NavGraphBuilder.contactDetailScreen() {
     composable(
         route = ContactDetailDestination.route,
         arguments = listOf(
-            navArgument(ContactDetailDestination.ContactIdArgs) {
+            navArgument(ContactDetailDestination.ContactIdArg) {
                 type = NavType.StringType
             },
         ),

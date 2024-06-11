@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2023-2024 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 6/21/2023 - for the oneSafe6 SDK.
- * Last modified 6/21/23, 8:39 AM
+ * Created by Lunabee Studio / Date - 6/3/2024 - for the oneSafe6 SDK.
+ * Last modified 5/30/24, 5:11 PM
  */
 
 package studio.lunabee.onesafe.messaging.domain
@@ -25,14 +25,15 @@ import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import kotlin.test.Test
 import studio.lunabee.onesafe.bubbles.domain.model.ContactLocalKey
 import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.messaging.domain.model.MessageOrder
 import studio.lunabee.onesafe.messaging.domain.repository.MessageOrderRepository
+import studio.lunabee.onesafe.test.testUUIDs
 import java.time.Instant
 import java.util.UUID
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
@@ -45,14 +46,15 @@ class MessageOrderCalculatorTest {
         MessageOrder(
             encSentAt = byteArrayOf(idx.toByte()),
             order = idx.toFloat(),
+            id = testUUIDs[idx],
         )
     }.sortedByDescending { it.order }
 
     private val messageOrderRepository: MessageOrderRepository = mockk {
-        coEvery { getMostRecent(contactId) } returns messageOrders.first()
-        coEvery { getLeastRecent(contactId) } returns messageOrders.last()
-        coEvery { count(contactId) } returns messageCount
-        coEvery { getAt(contactId, any()) } answers {
+        coEvery { getMostRecent(contactId, any()) } returns messageOrders.first()
+        coEvery { getLeastRecent(contactId, any()) } returns messageOrders.last()
+        coEvery { count(contactId, any()) } returns messageCount
+        coEvery { getAt(contactId, any(), any()) } answers {
             val position = secondArg() as Int
             messageOrders.getOrNull(position)
         }
@@ -68,7 +70,7 @@ class MessageOrderCalculatorTest {
 
     @Test
     fun messageOrderCalculator_noMessage_test(): TestResult = runTest {
-        coEvery { messageOrderRepository.getMostRecent(contactId) } returns null
+        coEvery { messageOrderRepository.getMostRecent(contactId, any()) } returns null
 
         val expected = 0f
         val result = messageOrderCalculator.invoke(Instant.MAX, contactId, contactLocalKey)
@@ -152,12 +154,12 @@ class MessageOrderCalculatorTest {
      */
     @Test
     fun messageOrderCalculator_afterBeforeRounding_test(): TestResult = runTest {
-        val currentMessageOrder = MessageOrder(byteArrayOf(10), 1.3f)
+        val currentMessageOrder = MessageOrder(testUUIDs[0], byteArrayOf(10), 1.3f)
 
-        coEvery { messageOrderRepository.getMostRecent(contactId) } returns currentMessageOrder
-        coEvery { messageOrderRepository.getLeastRecent(contactId) } returns currentMessageOrder
-        coEvery { messageOrderRepository.count(contactId) } returns 1
-        coEvery { messageOrderRepository.getAt(contactId, any()) } answers {
+        coEvery { messageOrderRepository.getMostRecent(contactId, any()) } returns currentMessageOrder
+        coEvery { messageOrderRepository.getLeastRecent(contactId, any()) } returns currentMessageOrder
+        coEvery { messageOrderRepository.count(contactId, any()) } returns 1
+        coEvery { messageOrderRepository.getAt(contactId, any(), any()) } answers {
             val position = secondArg() as Int
             if (position == 0) currentMessageOrder else null
         }

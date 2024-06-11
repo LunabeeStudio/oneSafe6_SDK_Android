@@ -86,7 +86,7 @@ interface SafeItemDao {
     WHERE SafeItem.id IN ItemWithChildren
     """,
     )
-    suspend fun setDeletedAndRemoveFromFavorite(itemId: UUID?, deletedAt: Instant = Instant.now())
+    suspend fun setDeletedAndRemoveFromFavorite(itemId: UUID?, deletedAt: Instant)
 
     @Query("SELECT * FROM SafeItem WHERE id = :id")
     suspend fun findById(id: UUID): RoomSafeItem?

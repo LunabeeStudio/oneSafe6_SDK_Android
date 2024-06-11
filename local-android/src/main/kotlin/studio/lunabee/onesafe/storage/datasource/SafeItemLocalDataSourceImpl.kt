@@ -252,8 +252,8 @@ class SafeItemLocalDataSourceImpl @Inject constructor(
         safeItemDao.removeByIds(ids)
     }
 
-    override suspend fun setDeletedAndRemoveFromFavorite(id: UUID?) {
-        safeItemDao.setDeletedAndRemoveFromFavorite(id)
+    override suspend fun setDeletedAndRemoveFromFavorite(id: UUID?, deletedAt: Instant) {
+        safeItemDao.setDeletedAndRemoveFromFavorite(id, deletedAt)
     }
 
     override suspend fun restoreItemToParentWithDescendants(id: UUID?) {

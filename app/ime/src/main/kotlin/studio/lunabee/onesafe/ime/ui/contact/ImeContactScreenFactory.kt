@@ -30,7 +30,6 @@ import studio.lunabee.onesafe.bubbles.ui.composables.ContactItemCardContent
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.commonui.OSString
-import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.model.OSLazyCardContent
 import studio.lunabee.onesafe.organism.card.OSMessageCard
 import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
@@ -79,7 +78,7 @@ object ImeContactScreenFactory {
                 onClick = {
                     onClick(
                         contact.id,
-                        contact.conversationState != ConversationState.WaitingForReply,
+                        contact.isConversationReady,
                     )
                 },
             )

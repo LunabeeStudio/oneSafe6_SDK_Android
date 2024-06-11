@@ -21,6 +21,7 @@ package studio.lunabee.onesafe.ime.ui.contact
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lunabee.lbcore.model.LBResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -30,6 +31,7 @@ import studio.lunabee.onesafe.bubbles.domain.usecase.GetAllContactsUseCase
 import studio.lunabee.onesafe.bubbles.ui.extension.getNameProvider
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.CommonUiConstants
+import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCase
 import javax.inject.Inject
 
@@ -46,11 +48,22 @@ class ImeContactViewModel @Inject constructor(
         } else {
             val plainContacts = encryptedContacts.map { contact ->
                 val decryptedNameResult = contactLocalDecryptUseCase(contact.encName, contact.id, String::class)
-                UIBubblesContactInfo(
-                    id = contact.id,
-                    nameProvider = decryptedNameResult.getNameProvider(),
-                    conversationState = getConversationStateUseCase(contact.id),
-                )
+                val conversationState = getConversationStateUseCase(contact.id)
+
+                when (conversationState) {
+                    is LBResult.Failure -> UIBubblesContactInfo(
+                        id = contact.id,
+                        nameProvider = decryptedNameResult.getNameProvider(),
+                        isConversationReady = true, // default to true to not display specific info
+                    )
+                    is LBResult.Success -> {
+                        UIBubblesContactInfo(
+                            id = contact.id,
+                            nameProvider = decryptedNameResult.getNameProvider(),
+                            isConversationReady = conversationState.successData != ConversationState.WaitingForReply,
+                        )
+                    }
+                }
             }
             ImeContactUiState.Data(plainContacts)
         }

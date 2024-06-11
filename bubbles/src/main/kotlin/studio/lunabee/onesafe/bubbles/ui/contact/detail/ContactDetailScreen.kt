@@ -40,16 +40,20 @@ import studio.lunabee.onesafe.animation.rememberOSTopBarVisibilityNestedScrollCo
 import studio.lunabee.onesafe.atom.OSScreen
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
 import studio.lunabee.onesafe.bubbles.ui.contact.composables.DeeplinkSwitchRow
+import studio.lunabee.onesafe.bubbles.ui.contact.detail.ContactDetailUiState.UIConversationState
+import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.OSString
-import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.commonui.action.topAppBarOptionEdit
+import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
-import studio.lunabee.onesafe.messaging.domain.model.ConversationState
+import studio.lunabee.onesafe.extension.loremIpsum
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
+import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
 import studio.lunabee.onesafe.ui.theme.OSUserTheme
+import studio.lunabee.onesafe.utils.OsDefaultPreview
 import java.util.UUID
 
 context(ContactDetailNavScope)
@@ -100,7 +104,7 @@ fun ContactDetailScreen(
     uiState: ContactDetailUiState.Data,
     onIsUsingDeepLinkChange: (Boolean) -> Unit,
     onScanResponseClick: () -> Unit,
-    conversationState: ConversationState,
+    conversationState: UIConversationState,
 ) {
     val lazyListState: LazyListState = rememberLazyListState()
     val nestedScrollConnection = rememberOSTopBarVisibilityNestedScrollConnection(lazyListState)
@@ -142,18 +146,21 @@ fun ContactDetailScreen(
                 ContactDetailScreenFactory.removeContactCard(onClick = onRemoveClick, lazyListScope = this)
             }
             OSTopBarAnimatedVisibility(visible = nestedScrollConnection.isTopBarVisible) {
+                val appBarOptions = buildList {
+                    this += topAppBarOptionNavBack(onBackClick)
+                    if (conversationState != UIConversationState.Indecipherable) {
+                        this += topAppBarOptionEdit(
+                            description = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_editAction),
+                            onEditItemClick = onEditClick,
+                        )
+                    }
+                }
                 OSTopAppBar(
                     modifier = Modifier
                         .testTag(UiConstants.TestTag.Item.ItemDetailsTopBar)
                         .statusBarsPadding()
                         .align(Alignment.TopCenter),
-                    options = listOfNotNull(
-                        topAppBarOptionNavBack(onBackClick),
-                        topAppBarOptionEdit(
-                            description = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_editAction),
-                            onEditItemClick = onEditClick,
-                        ),
-                    ),
+                    options = appBarOptions,
                 )
             }
         }
@@ -168,4 +175,54 @@ interface ContactDetailNavScope {
     val navigateToScanBarcode: () -> Unit
     val navigateToContactEdition: (UUID) -> Unit
     val navigateBackToBubbles: () -> Unit
+}
+
+@Composable
+@OsDefaultPreview
+fun ContactDetailScreenDataPreview() {
+    OSPreviewBackgroundTheme {
+        ContactDetailScreen(
+            onBackClick = {},
+            onConversationClick = {},
+            onResendInvitationClick = {},
+            onResendResponseClick = {},
+            onRemoveClick = {},
+            onEditClick = {},
+            uiState = ContactDetailUiState.Data(
+                id = UUID.randomUUID(),
+                nameProvider = OSNameProvider.fromName(loremIpsum(1), false),
+                isDeeplinkActivated = true,
+                conversationState = UIConversationState.Running,
+                color = null,
+            ),
+            onIsUsingDeepLinkChange = {},
+            onScanResponseClick = {},
+            conversationState = UIConversationState.Running,
+        )
+    }
+}
+
+@Composable
+@OsDefaultPreview
+fun ContactDetailScreenCorruptedPreview() {
+    OSPreviewBackgroundTheme {
+        ContactDetailScreen(
+            onBackClick = {},
+            onConversationClick = {},
+            onResendInvitationClick = {},
+            onResendResponseClick = {},
+            onRemoveClick = {},
+            onEditClick = {},
+            uiState = ContactDetailUiState.Data(
+                id = UUID.randomUUID(),
+                nameProvider = OSNameProvider.fromName(loremIpsum(1), false),
+                isDeeplinkActivated = true,
+                conversationState = UIConversationState.Running,
+                color = null,
+            ),
+            onIsUsingDeepLinkChange = {},
+            onScanResponseClick = {},
+            conversationState = UIConversationState.Indecipherable,
+        )
+    }
 }

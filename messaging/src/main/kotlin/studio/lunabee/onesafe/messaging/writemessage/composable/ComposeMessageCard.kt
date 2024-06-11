@@ -23,6 +23,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -71,10 +72,11 @@ fun ComposeMessageCard(
     plainMessage: TextFieldValue,
     encryptedMessage: String,
     onPlainMessageChange: (TextFieldValue) -> Unit,
-    onClickOnSend: () -> Unit,
+    onClickOnSend: () -> Unit, // TODO <bubbles> block multi clicks
     onPreviewClick: () -> Unit,
     sendIcon: OSImageSpec,
     focusRequester: FocusRequester,
+    canSend: Boolean,
 ) {
     val isKeyboardVisible: Boolean = LocalIsKeyBoardVisible.current
     Box(
@@ -161,7 +163,11 @@ fun ComposeMessageCard(
                     buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
                     contentDescription = LbcTextSpec.StringResource(OSString.accessibility_oneSafeK_sendAction),
                     colors = OSIconButtonDefaults.primaryIconButtonColors(),
-                    state = if (plainMessage.text.isEmpty()) OSActionState.Disabled else OSActionState.Enabled,
+                    state = when {
+                        plainMessage.text.isEmpty() -> OSActionState.Disabled
+                        canSend -> OSActionState.Enabled
+                        else -> OSActionState.DisabledWithAction
+                    },
                 )
             }
         }
@@ -175,14 +181,19 @@ private val LockIconSize = 18.dp
 @Composable
 fun ComposeMessageCardPreview() {
     OSPreviewBackgroundTheme {
-        ComposeMessageCard(
-            plainMessage = TextFieldValue(loremIpsum(10), TextRange(10)),
-            encryptedMessage = UUID.randomUUID().toString(),
-            onPlainMessageChange = {},
-            onClickOnSend = {},
-            onPreviewClick = {},
-            sendIcon = OSImageSpec.Drawable(OSDrawable.ic_send),
-            focusRequester = remember { FocusRequester() },
-        )
+        Column(verticalArrangement = Arrangement.spacedBy(32.dp)) {
+            listOf(true, false).forEach { canSend ->
+                ComposeMessageCard(
+                    plainMessage = TextFieldValue(loremIpsum(10), TextRange(10)),
+                    encryptedMessage = UUID.randomUUID().toString(),
+                    onPlainMessageChange = {},
+                    onClickOnSend = {},
+                    onPreviewClick = {},
+                    sendIcon = OSImageSpec.Drawable(OSDrawable.ic_send),
+                    focusRequester = remember { FocusRequester() },
+                    canSend = canSend,
+                )
+            }
+        }
     }
 }

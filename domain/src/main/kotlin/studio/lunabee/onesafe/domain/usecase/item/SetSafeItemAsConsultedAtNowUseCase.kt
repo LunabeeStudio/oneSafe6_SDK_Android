@@ -20,14 +20,16 @@
 package studio.lunabee.onesafe.domain.usecase.item
 
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import java.time.Clock
 import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
 
 class SetSafeItemAsConsultedAtNowUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
+    private val clock: Clock,
 ) {
     suspend operator fun invoke(itemId: UUID) {
-        safeItemRepository.updateConsultedAt(itemId, Instant.now())
+        safeItemRepository.updateConsultedAt(itemId, Instant.now(clock))
     }
 }

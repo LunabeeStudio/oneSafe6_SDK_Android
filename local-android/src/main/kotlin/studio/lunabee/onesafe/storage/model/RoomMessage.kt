@@ -24,8 +24,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import studio.lunabee.onesafe.messaging.domain.model.Message
 import studio.lunabee.onesafe.messaging.domain.model.MessageDirection
+import studio.lunabee.onesafe.messaging.domain.model.SafeMessage
 import java.util.UUID
 
 @Entity(
@@ -35,7 +35,7 @@ import java.util.UUID
             entity = RoomContact::class,
             parentColumns = arrayOf("id"),
             childColumns = arrayOf("contact_id"),
-            onDelete = ForeignKey.CASCADE, // TODO to validate
+            onDelete = ForeignKey.CASCADE, // TODO <bubbles> to validate
         ),
     ],
     indices = [
@@ -52,7 +52,7 @@ class RoomMessage(
     @ColumnInfo(name = "enc_channel") val encChannel: ByteArray?,
     @ColumnInfo(name = "is_read", defaultValue = "true") val isRead: Boolean,
 ) {
-    fun toMessage(): Message = Message(
+    fun toMessage(): SafeMessage = SafeMessage(
         id = id,
         fromContactId = contactId,
         encSentAt = encSentAt,
@@ -63,7 +63,7 @@ class RoomMessage(
     )
 
     companion object {
-        fun fromMessage(message: Message, order: Float): RoomMessage = RoomMessage(
+        fun fromMessage(message: SafeMessage, order: Float): RoomMessage = RoomMessage(
             id = message.id,
             contactId = message.fromContactId,
             encSentAt = message.encSentAt,

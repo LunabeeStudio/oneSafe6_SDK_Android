@@ -21,7 +21,6 @@ package studio.lunabee.onesafe.messaging.writemessage.composable
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -90,33 +89,33 @@ fun MessageRow(
                 .padding(horizontal = OSDimens.SystemSpacing.Regular, vertical = OSDimens.SystemSpacing.Small),
             verticalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.ExtraSmall),
         ) {
-            Box {
-                OSText(
-                    text = messageData.text,
-                    textAlign = style.textAlign,
-                    color = style.textColor,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                messageLongPress.Content(messageData)
-            }
+            OSText(
+                text = messageData.text,
+                textAlign = style.textAlign,
+                color = style.textColor,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            messageLongPress.Content(messageData)
             val channelText = if (messageData.channelName != null) {
                 LbcTextSpec.Raw(messageData.channelName)
             } else {
                 LbcTextSpec.StringResource(OSString.oneSafeK_channel_unknown)
             }
-            OSText(
-                text = LbcTextSpec.StringResource(
-                    OSString.oneSafeK_messageRow_timeChannelLabel,
-                    messageData.sendAt.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)),
-                    channelText,
-                ),
-                textAlign = style.textAlign,
-                color = style.textColor,
-                style = MaterialTheme.typography.labelXSmall,
-                fontWeight = FontWeight.Light,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            messageData.sendAt?.let {
+                OSText(
+                    text = LbcTextSpec.StringResource(
+                        OSString.oneSafeK_messageRow_timeChannelLabel,
+                        messageData.sendAt.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)),
+                        channelText,
+                    ),
+                    textAlign = style.textAlign,
+                    color = style.textColor,
+                    style = MaterialTheme.typography.labelXSmall,
+                    fontWeight = FontWeight.Light,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
         }
     }
 }
@@ -190,6 +189,7 @@ fun OneSafeKMessageRowPreview() {
                     sendAt = Instant.now(),
                     channelName = "Telegram",
                     type = ConversationUiData.MessageType.Message,
+                    hasCorruptedData = false,
                 ),
                 contactName = DefaultNameProvider("Flo"),
                 messageLongPress = messageRowLongPress,
@@ -202,6 +202,20 @@ fun OneSafeKMessageRowPreview() {
                     sendAt = Instant.now(),
                     channelName = "Telegram",
                     type = ConversationUiData.MessageType.Message,
+                    hasCorruptedData = false,
+                ),
+                contactName = DefaultNameProvider("Flo"),
+                messageLongPress = messageRowLongPress,
+            )
+            MessageRow(
+                messageData = ConversationUiData.Message(
+                    id = UUID.randomUUID(),
+                    text = LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_corruptedMessage),
+                    direction = MessageDirection.SENT,
+                    sendAt = null,
+                    channelName = null,
+                    type = ConversationUiData.MessageType.Message,
+                    hasCorruptedData = true,
                 ),
                 contactName = DefaultNameProvider("Flo"),
                 messageLongPress = messageRowLongPress,

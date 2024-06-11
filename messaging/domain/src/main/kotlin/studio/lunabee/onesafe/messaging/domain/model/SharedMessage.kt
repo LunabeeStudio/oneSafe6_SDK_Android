@@ -22,7 +22,10 @@ package studio.lunabee.onesafe.messaging.domain.model
 import java.time.Instant
 import java.util.UUID
 
-data class OSPlainMessage(
+/**
+ * Plain message for sending and receiving messages
+ */
+data class SharedMessage(
     val content: String,
     val recipientId: UUID,
     val sentAt: Instant,

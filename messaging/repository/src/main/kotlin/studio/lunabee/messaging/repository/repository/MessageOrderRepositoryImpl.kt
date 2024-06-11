@@ -28,8 +28,17 @@ import javax.inject.Inject
 class MessageOrderRepositoryImpl @Inject constructor(
     private val datasource: MessageLocalDataSource,
 ) : MessageOrderRepository {
-    override suspend fun getMostRecent(contactId: UUID): MessageOrder? = datasource.getLastByContact(contactId)
-    override suspend fun getLeastRecent(contactId: UUID): MessageOrder? = datasource.getFirstByContact(contactId)
-    override suspend fun count(contactId: UUID): Int = datasource.countByContact(contactId)
-    override suspend fun getAt(contactId: UUID, position: Int): MessageOrder? = datasource.getAtByContact(position, contactId)
+    override suspend fun getMostRecent(contactId: UUID, exceptIds: List<UUID>): MessageOrder? = datasource.getLastByContact(
+        contactId,
+        exceptIds,
+    )
+
+    override suspend fun getLeastRecent(contactId: UUID, exceptIds: List<UUID>): MessageOrder? = datasource.getFirstByContact(
+        contactId,
+        exceptIds,
+    )
+
+    override suspend fun count(contactId: UUID, exceptIds: List<UUID>): Int = datasource.countByContact(contactId, exceptIds)
+    override suspend fun getAt(contactId: UUID, position: Int, exceptIds: List<UUID>): MessageOrder? =
+        datasource.getAtByContact(position, contactId, exceptIds)
 }

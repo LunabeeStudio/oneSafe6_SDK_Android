@@ -28,6 +28,8 @@ import java.util.UUID
 import javax.inject.Inject
 import kotlin.reflect.KClass
 
+// TODO <bubbles> invoke overload to decrypt an array of data without retrieving the key for each data (see EncryptFieldsUseCase)
+
 /**
  * Decrypt any contact or message data
  */

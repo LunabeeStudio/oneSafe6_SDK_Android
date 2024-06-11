@@ -26,15 +26,15 @@ import studio.lunabee.onesafe.bubbles.domain.model.PlainContact
 import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
+import java.time.Clock
 import java.time.Instant
 import javax.inject.Inject
-import kotlin.io.encoding.ExperimentalEncodingApi
 
 class CreateContactUseCase @Inject constructor(
     private val contactRepository: ContactRepository,
     private val bubblesCryptoRepository: BubblesCryptoRepository,
+    private val clock: Clock,
 ) {
-    @OptIn(ExperimentalEncodingApi::class)
     suspend operator fun invoke(plainContact: PlainContact) {
         val localKey: ContactLocalKey = bubblesCryptoRepository.generateLocalKeyForContact()
         val encSharedKey = plainContact.sharedKey?.let {
@@ -44,10 +44,10 @@ class CreateContactUseCase @Inject constructor(
             id = plainContact.id,
             encName = bubblesCryptoRepository.localEncrypt(localKey, EncryptEntry(plainContact.name)),
             encSharedKey = encSharedKey,
-            updatedAt = Instant.now(),
+            updatedAt = Instant.now(clock),
             sharedConversationId = plainContact.sharedConversationId,
             encIsUsingDeeplink = bubblesCryptoRepository.localEncrypt(localKey, EncryptEntry(plainContact.isUsingDeepLink)),
-            consultedAt = Instant.now(),
+            consultedAt = Instant.now(clock),
         )
         contactRepository.save(contact, localKey)
     }

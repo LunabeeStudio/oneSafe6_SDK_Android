@@ -49,26 +49,30 @@ class DropDownMenuMessageLongPress(
                 val messageText = message.text.string
                 val context = LocalContext.current
 
-                val actions: List<MessageAction> = when (message.direction) {
-                    MessageDirection.SENT -> listOf(
-                        MessageAction.Resend { message.id.let(onResendClick) },
-                        MessageAction.Copy {
-                            context.copyToClipBoard(
-                                messageText,
-                                LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_copyLabel),
-                            )
-                        },
-                        MessageAction.Delete { message.id.let(onDeleteMessageClick) },
-                    )
-                    MessageDirection.RECEIVED -> listOf(
-                        MessageAction.Copy {
-                            context.copyToClipBoard(
-                                messageText,
-                                LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_copyLabel),
-                            )
-                        },
-                        MessageAction.Delete { message.id.let(onDeleteMessageClick) },
-                    )
+                val actions: List<MessageAction> = if (message.hasCorruptedData) {
+                    listOf(MessageAction.Delete { message.id.let(onDeleteMessageClick) })
+                } else {
+                    when (message.direction) {
+                        MessageDirection.SENT -> listOf(
+                            MessageAction.Resend { message.id.let(onResendClick) },
+                            MessageAction.Copy {
+                                context.copyToClipBoard(
+                                    messageText,
+                                    LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_copyLabel),
+                                )
+                            },
+                            MessageAction.Delete { message.id.let(onDeleteMessageClick) },
+                        )
+                        MessageDirection.RECEIVED -> listOf(
+                            MessageAction.Copy {
+                                context.copyToClipBoard(
+                                    messageText,
+                                    LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_copyLabel),
+                                )
+                            },
+                            MessageAction.Delete { message.id.let(onDeleteMessageClick) },
+                        )
+                    }
                 }
 
                 MessageActionMenu(

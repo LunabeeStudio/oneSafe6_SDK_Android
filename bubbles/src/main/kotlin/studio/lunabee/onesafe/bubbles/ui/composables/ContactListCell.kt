@@ -36,7 +36,6 @@ import studio.lunabee.onesafe.atom.OSRegularSpacer
 import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.EmojiNameProvider
-import studio.lunabee.onesafe.messaging.domain.model.ConversationState
 import studio.lunabee.onesafe.model.OSHapticEffect
 import studio.lunabee.onesafe.model.OSItemIllustration
 import studio.lunabee.onesafe.model.OSSafeItemStyle
@@ -73,7 +72,7 @@ fun ContactListCell(
             modifier = Modifier.weight(1.0f),
             color = if (isSystemInDarkTheme()) LocalColorPalette.current.Neutral10 else Color.Unspecified,
         )
-        if (uiBubblesContactInfo.conversationState == ConversationState.WaitingForReply) {
+        if (!uiBubblesContactInfo.isConversationReady) {
             OSRegularSpacer()
             PendingInputChip()
         }

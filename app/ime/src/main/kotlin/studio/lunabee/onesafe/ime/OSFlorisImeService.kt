@@ -206,7 +206,7 @@ class OSFlorisImeService : FlorisImeService() {
         refreshBlockInput()
         navController?.currentBackStackEntry?.let { entry ->
             val isOneSafeUiVisible = isOneSafeUiVisibleFlow.value
-            val forceDark = entry.destination.route == WriteMessageDestination.Route && isOneSafeUiVisible
+            val forceDark = entry.destination.route == WriteMessageDestination.route && isOneSafeUiVisible
             themeManager.updateActiveTheme(forceNight = forceDark)
         }
     }
@@ -325,7 +325,7 @@ class OSFlorisImeService : FlorisImeService() {
             val entry = navController?.currentBackStackEntryAsState()
             val isDatabaseAccessible by isDatabaseAccessible.collectAsStateWithLifecycle()
             val forceDark =
-                entry?.value?.destination?.route == WriteMessageDestination.Route && isOneSafeUiVisible
+                entry?.value?.destination?.route == WriteMessageDestination.route && isOneSafeUiVisible
             LaunchedEffect(key1 = forceDark) {
                 themeManager.updateActiveTheme(forceNight = forceDark)
             }

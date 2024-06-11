@@ -31,12 +31,13 @@ sealed interface ConversationUiData {
         val id: UUID,
         val text: LbcTextSpec,
         val direction: MessageDirection,
-        val sendAt: Instant,
+        val sendAt: Instant?,
         val channelName: String?,
         val type: MessageType,
+        val hasCorruptedData: Boolean,
     ) : ConversationUiData {
         fun wereSentOnSameDay(other: Message?): Boolean =
-            other?.let { sendAt.isSameDayAs(it.sendAt) } ?: false
+            other?.sendAt?.let { sendAt?.isSameDayAs(it) } ?: false
     }
 
     data class DateHeader(

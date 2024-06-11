@@ -19,42 +19,37 @@
 
 package studio.lunabee.onesafe.messaging.domain.usecase
 
-import com.lunabee.lblogger.LBLogger
-import com.lunabee.lblogger.e
+import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.doubleratchet.model.Conversation
+import studio.lunabee.onesafe.error.OSDomainError
+import studio.lunabee.onesafe.error.OSError
+import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.error.OSMessagingError
+import studio.lunabee.onesafe.getOrThrow
 import studio.lunabee.onesafe.messaging.domain.model.ConversationState
-import studio.lunabee.onesafe.messaging.domain.model.HandShakeData
 import studio.lunabee.onesafe.messaging.domain.repository.ConversationRepository
-import studio.lunabee.onesafe.messaging.domain.repository.HandShakeDataRepository
 import java.util.UUID
 import javax.inject.Inject
 
-private val log = LBLogger.get<GetConversationStateUseCase>()
-
 class GetConversationStateUseCase @Inject constructor(
-    private val handShakeDataRepository: HandShakeDataRepository,
     private val conversationRepository: ConversationRepository,
+    private val getHandShakeDataUseCase: GetHandShakeDataUseCase,
 ) {
-    suspend operator fun invoke(contactId: UUID): ConversationState {
-        val handShakeData: HandShakeData? = handShakeDataRepository.getById(contactId)
+    suspend operator fun invoke(contactId: UUID): LBResult<ConversationState> = OSError.runCatching {
         val conversation: Conversation? = conversationRepository.getConversation(contactId)
-        val nextMessageNumber = conversation?.nextMessageNumber
-        val hasSendingKey = conversation?.sendingChainKey != null
-        return when {
+        when {
             // Conversation does not exist
-            conversation == null -> ConversationState.Error
+            conversation == null -> throw OSMessagingError.Code.CONVERSATION_NOT_FOUND.get()
             // Conversation does not have a sending key
-            !hasSendingKey -> ConversationState.WaitingForReply
+            conversation.sendingChainKey == null -> ConversationState.WaitingForReply
             // Conversation has a sending key but still have handshake data
-            hasSendingKey && handShakeData != null -> ConversationState.WaitingForFirstMessage
+            getHandShakeDataUseCase(contactId)
+                .getOrThrow("Unable to get handshake data") != null -> ConversationState.WaitingForFirstMessage
             // Conversation is setup but you never sent a message
-            nextMessageNumber == 0 -> ConversationState.FullySetup
+            conversation.nextMessageNumber == 0 -> ConversationState.FullySetup
             // Conversation has sent at least one message
-            nextMessageNumber!! > 0 -> ConversationState.Running
-            else -> {
-                log.e("Unexpected conversation error state")
-                ConversationState.Error
-            }
+            conversation.nextMessageNumber > 0 -> ConversationState.Running
+            else -> throw OSDomainError.Code.UNKNOWN_ERROR.get("Unexpected conversation error state")
         }
     }
 }

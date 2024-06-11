@@ -22,6 +22,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -42,13 +43,6 @@ android {
         resources.pickFirsts.add("META-INF/LICENSE-notice.md")
         resources.pickFirsts.add("META-INF/DEPENDENCIES")
     }
-
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
-    }
 }
 
 dependencies {
@@ -56,10 +50,12 @@ dependencies {
     ksp(libs.dagger.hilt.compiler)
     kspAndroidTest(libs.dagger.hilt.compiler)
 
+    implementation(libs.lbccore)
+    implementation(libs.lbchaptic)
+
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbextensions)
     implementation(libs.lbcore)
-    implementation(libs.lbccore)
     implementation(libs.lbloading.compose)
 
     implementation(libs.android.material)

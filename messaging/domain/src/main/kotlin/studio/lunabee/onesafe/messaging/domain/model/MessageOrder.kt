@@ -19,7 +19,10 @@
 
 package studio.lunabee.onesafe.messaging.domain.model
 
+import java.util.UUID
+
 class MessageOrder(
+    val id: UUID,
     val encSentAt: ByteArray,
     val order: Float,
 )

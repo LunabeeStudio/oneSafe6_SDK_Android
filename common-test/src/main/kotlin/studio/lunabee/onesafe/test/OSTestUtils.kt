@@ -37,14 +37,14 @@ object OSTestUtils {
         encName: ByteArray? = byteArrayOf(),
         parentId: UUID? = null,
         isFavorite: Boolean = false,
-        updatedAt: Instant = Instant.now(),
+        updatedAt: Instant = Instant.now(OSTestConfig.clock),
         position: Double = 0.0,
         iconId: UUID? = null,
         encColor: ByteArray? = byteArrayOf(),
         deletedAt: Instant? = null,
         deletedParentId: UUID? = null,
         indexAlpha: Double = 0.0,
-        createdAt: Instant = Instant.now(),
+        createdAt: Instant = Instant.now(OSTestConfig.clock),
     ): SafeItem {
         return SafeItem(
             id = id,
@@ -92,14 +92,14 @@ object OSTestUtils {
         encName: (idx: Int) -> ByteArray? = { byteArrayOf() },
         parentId: (idx: Int) -> UUID? = { null },
         isFavorite: (idx: Int) -> Boolean = { false },
-        updatedAt: (idx: Int) -> Instant = { Instant.now() },
+        updatedAt: (idx: Int) -> Instant = { Instant.now(OSTestConfig.clock) },
         position: (idx: Int) -> Double = { 0.0 },
         iconId: (idx: Int) -> UUID? = { null },
         encColor: (idx: Int) -> ByteArray? = { byteArrayOf() },
         deletedAt: (idx: Int) -> Instant? = { null },
         deletedParentId: (idx: Int) -> UUID? = { null },
         indexAlpha: (idx: Int) -> Double = { 0.0 },
-        createdAt: (idx: Int) -> Instant = { Instant.now() },
+        createdAt: (idx: Int) -> Instant = { Instant.now(OSTestConfig.clock) },
     ): List<SafeItem> {
         return (0 until size).map { idx ->
             SafeItem(
@@ -129,7 +129,7 @@ object OSTestUtils {
         encValue: ByteArray? = byteArrayOf(),
         showPrediction: Boolean = false,
         encKind: ByteArray? = byteArrayOf(),
-        updatedAt: Instant = Instant.now(),
+        updatedAt: Instant = Instant.now(OSTestConfig.clock),
         isItemIdentifier: Boolean = false,
         formattingMask: ByteArray? = null,
         secureDisplayMask: ByteArray? = null,

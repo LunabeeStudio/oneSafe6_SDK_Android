@@ -26,11 +26,12 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
-import kotlin.test.Test
 import studio.lunabee.onesafe.storage.OSStorageTestUtils
+import studio.lunabee.onesafe.test.OSTestConfig
 import studio.lunabee.onesafe.test.testUUIDs
 import java.time.Instant
 import javax.inject.Inject
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -57,7 +58,7 @@ class SafeItemDaoTest {
 
         safeItemDao.insert(listOf(grandParent, parent, child, secondChild, grandChild))
 
-        val now = Instant.now()
+        val now = Instant.now(OSTestConfig.clock)
         safeItemDao.setDeletedAndRemoveFromFavorite(parent.id, now)
 
         val expectedGrandParent = grandParent.copy()
@@ -87,7 +88,7 @@ class SafeItemDaoTest {
 
         safeItemDao.insert(listOf(siblingRoot, parent, child))
 
-        val now = Instant.now()
+        val now = Instant.now(OSTestConfig.clock)
         safeItemDao.setDeletedAndRemoveFromFavorite(null, now)
 
         val actual = safeItemDao.getAllSafeItems().filter { it.deletedAt == null }

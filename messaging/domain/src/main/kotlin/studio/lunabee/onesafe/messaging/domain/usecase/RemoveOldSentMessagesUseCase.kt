@@ -19,39 +19,50 @@
 
 package studio.lunabee.onesafe.messaging.domain.usecase
 
+import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.first
 import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
 import studio.lunabee.onesafe.messaging.domain.model.SentMessage
 import studio.lunabee.onesafe.messaging.domain.repository.SentMessageRepository
+import java.time.Clock
 import java.time.Instant
 import javax.inject.Inject
 import kotlin.time.Duration
+import kotlin.time.toKotlinDuration
 
 class RemoveOldSentMessagesUseCase @Inject constructor(
     private val sentMessageRepository: SentMessageRepository,
     private val localContactLocalDecryptUseCase: ContactLocalDecryptUseCase,
     private val securityOptionRepository: SecurityOptionRepository,
+    private val clock: Clock,
 ) {
 
     suspend operator fun invoke() {
-        var actualSentMessage: SentMessage? = sentMessageRepository.getOldestSentMessage()
+        var oldestSentMessage: SentMessage? = sentMessageRepository.getOldestSentMessage()
         val sentMessageTimeToLive: Duration = securityOptionRepository.bubblesResendMessageDelayFlow.first()
-        while (actualSentMessage != null) {
-            val createdAt: Instant? = localContactLocalDecryptUseCase(
-                data = actualSentMessage.encCreatedAt,
-                actualSentMessage.contactId,
-                Instant::class,
-            ).data
-            if (createdAt != null) {
-                val messageAge = Instant.now().minusMillis(createdAt.toEpochMilli())
-                if (messageAge.toEpochMilli() > sentMessageTimeToLive.inWholeMilliseconds) {
-                    sentMessageRepository.deleteSentMessage(actualSentMessage.id)
-                    actualSentMessage = sentMessageRepository.getOldestSentMessage()
-                } else {
-                    break
+        while (oldestSentMessage != null) {
+            val createdAtRes: LBResult<Instant> = localContactLocalDecryptUseCase(
+                data = oldestSentMessage.encCreatedAt,
+                contactId = oldestSentMessage.contactId,
+                clazz = Instant::class,
+            )
+            oldestSentMessage = when (createdAtRes) {
+                is LBResult.Failure -> delete(oldestSentMessage)
+                is LBResult.Success -> {
+                    val messageAge = java.time.Duration.between(createdAtRes.successData, Instant.now(clock)).toKotlinDuration()
+                    if (messageAge > sentMessageTimeToLive) {
+                        delete(oldestSentMessage)
+                    } else {
+                        null
+                    }
                 }
             }
         }
+    }
+
+    private suspend fun delete(actualSentMessage: SentMessage): SentMessage? {
+        sentMessageRepository.deleteSentMessage(actualSentMessage.id)
+        return sentMessageRepository.getOldestSentMessage()
     }
 }

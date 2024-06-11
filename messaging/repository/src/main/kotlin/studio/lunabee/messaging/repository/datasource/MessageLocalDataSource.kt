@@ -22,20 +22,20 @@ package studio.lunabee.messaging.repository.datasource
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
-import studio.lunabee.onesafe.messaging.domain.model.Message
 import studio.lunabee.onesafe.messaging.domain.model.MessageOrder
+import studio.lunabee.onesafe.messaging.domain.model.SafeMessage
 import java.util.UUID
 
 interface MessageLocalDataSource {
-    suspend fun save(message: Message, order: Float)
-    suspend fun getAllByContact(contactId: UUID): List<Message>
-    suspend fun getLastMessage(contactId: UUID): Flow<Message?>
-    suspend fun getLastByContact(contactId: UUID): MessageOrder?
-    suspend fun getFirstByContact(contactId: UUID): MessageOrder?
-    suspend fun countByContact(contactId: UUID): Int
-    suspend fun getAtByContact(position: Int, contactId: UUID): MessageOrder?
-    suspend fun getByContactByOrder(contactId: UUID, order: Float): Message
-    fun getAllPaged(config: PagingConfig, contactId: UUID): Flow<PagingData<Message>>
+    suspend fun save(message: SafeMessage, order: Float)
+    suspend fun getAllByContact(contactId: UUID): List<SafeMessage>
+    suspend fun getLastMessage(contactId: UUID): Flow<SafeMessage?>
+    suspend fun getLastByContact(contactId: UUID, exceptIds: List<UUID>): MessageOrder?
+    suspend fun getFirstByContact(contactId: UUID, exceptIds: List<UUID>): MessageOrder?
+    suspend fun countByContact(contactId: UUID, exceptIds: List<UUID>): Int
+    suspend fun getAtByContact(position: Int, contactId: UUID, exceptIds: List<UUID>): MessageOrder?
+    suspend fun getByContactByOrder(contactId: UUID, order: Float): SafeMessage
+    fun getAllPaged(config: PagingConfig, contactId: UUID): Flow<PagingData<SafeMessage>>
     suspend fun deleteAllMessages(contactId: UUID)
     suspend fun deleteMessage(messageId: UUID)
     suspend fun markMessagesAsRead(contactId: UUID)

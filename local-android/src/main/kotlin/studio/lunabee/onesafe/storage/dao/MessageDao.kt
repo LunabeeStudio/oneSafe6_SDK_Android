@@ -36,25 +36,40 @@ interface MessageDao {
     @Query("SELECT * FROM Message WHERE contact_id IS :contactId ORDER BY `order` DESC")
     suspend fun getAllByContact(contactId: UUID): List<RoomMessage>
 
-    @Query("SELECT enc_sent_at as encSentAt, `order` FROM Message WHERE contact_id IS :contactId ORDER BY `order` DESC LIMIT 1")
-    suspend fun getLastMessageOrderByContact(contactId: UUID): MessageOrder?
-
-    @Query("SELECT enc_sent_at as encSentAt, `order` FROM Message WHERE contact_id IS :contactId ORDER BY `order` ASC LIMIT 1")
-    suspend fun getFirstMessageOrderByContact(contactId: UUID): MessageOrder?
-
-    @Query("SELECT COUNT(*) FROM Message WHERE contact_id IS :contactId")
-    suspend fun countByContact(contactId: UUID): Int
+    @Query(
+        """
+        SELECT id, enc_sent_at as encSentAt, `order` 
+        FROM Message 
+        WHERE contact_id IS :contactId AND id NOT IN (:exceptIds)
+        ORDER BY `order` DESC
+        LIMIT 1""",
+    )
+    suspend fun getLastMessageOrderByContact(contactId: UUID, exceptIds: List<UUID>): MessageOrder?
 
     @Query(
         """
-        SELECT enc_sent_at as encSentAt, `order` 
+        SELECT id, enc_sent_at as encSentAt, `order` 
         FROM Message
-        WHERE contact_id IS :contactId 
+        WHERE contact_id IS :contactId AND id NOT IN (:exceptIds)
+        ORDER BY `order` ASC
+        LIMIT 1""",
+    )
+    suspend fun getFirstMessageOrderByContact(contactId: UUID, exceptIds: List<UUID>): MessageOrder?
+
+    @Query("SELECT COUNT(*) FROM Message WHERE contact_id IS :contactId AND id NOT IN (:exceptIds)")
+    suspend fun countByContact(contactId: UUID, exceptIds: List<UUID>): Int
+
+    @Query(
+        """
+        SELECT id, enc_sent_at as encSentAt, `order` 
+        FROM Message
+        WHERE contact_id IS :contactId AND id NOT IN (:exceptIds)
         ORDER BY `order` DESC
-        LIMIT 1 OFFSET :position
+        LIMIT 1
+        OFFSET :position
         """,
     )
-    suspend fun getMessageOrderAtByContact(position: Int, contactId: UUID): MessageOrder?
+    suspend fun getMessageOrderAtByContact(position: Int, contactId: UUID, exceptIds: List<UUID>): MessageOrder?
 
     @Query("SELECT * FROM Message WHERE contact_id IS :contactId AND `order` = :order")
     suspend fun getByContactByOrder(contactId: UUID, order: Float): RoomMessage

@@ -20,7 +20,6 @@
 package studio.lunabee.onesafe.messaging.domain.usecase
 
 import com.lunabee.lbcore.model.LBResult
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
@@ -32,10 +31,11 @@ import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.messaging.domain.MessageOrderCalculator
-import studio.lunabee.onesafe.messaging.domain.model.Message
 import studio.lunabee.onesafe.messaging.domain.model.MessageDirection
-import studio.lunabee.onesafe.messaging.domain.model.OSPlainMessage
+import studio.lunabee.onesafe.messaging.domain.model.SafeMessage
+import studio.lunabee.onesafe.messaging.domain.model.SharedMessage
 import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
+import java.time.Clock
 import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
@@ -50,15 +50,16 @@ class SaveMessageUseCase @Inject constructor(
     private val getContactUseCase: GetContactUseCase,
     private val contactRepository: ContactRepository,
     private val messageOrderCalculator: MessageOrderCalculator,
+    private val clock: Clock,
 ) {
     suspend operator fun invoke(
-        plainMessage: OSPlainMessage,
+        plainMessage: SharedMessage,
         contactId: UUID,
         channel: String?,
         id: UUID,
     ): LBResult<Float> = OSError.runCatching {
         mutex.withLock {
-            val recipient = getContactUseCase(plainMessage.recipientId).first()
+            val recipient = getContactUseCase(plainMessage.recipientId)
             val key = contactKeyRepository.getContactLocalKey(contactId)
             val encContent = bubblesCryptoRepository.localEncrypt(key, EncryptEntry(plainMessage.content))
             val encSentAt = bubblesCryptoRepository.localEncrypt(key, EncryptEntry(plainMessage.sentAt))
@@ -71,7 +72,7 @@ class SaveMessageUseCase @Inject constructor(
                 MessageDirection.RECEIVED
             }
 
-            val message = Message(
+            val message = SafeMessage(
                 id = id,
                 fromContactId = contactId,
                 encSentAt = encSentAt,
@@ -86,7 +87,7 @@ class SaveMessageUseCase @Inject constructor(
             return@withLock when (orderResult) {
                 is MessageOrderCalculator.OrderResult.Found -> {
                     messageRepository.save(message, orderResult.order)
-                    contactRepository.updateUpdatedAt(contactId, Instant.now())
+                    contactRepository.updateUpdatedAt(contactId, Instant.now(clock))
                     orderResult.order
                 }
                 is MessageOrderCalculator.OrderResult.Duplicated -> {
