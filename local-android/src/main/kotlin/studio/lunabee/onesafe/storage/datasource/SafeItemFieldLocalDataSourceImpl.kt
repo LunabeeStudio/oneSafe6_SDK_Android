@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.storage.datasource
 import com.lunabee.lbextensions.mapValues
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.repository.datasource.SafeItemFieldLocalDataSource
@@ -72,14 +73,14 @@ class SafeItemFieldLocalDataSourceImpl @Inject constructor(
             .mapValues(RoomSafeItemField::toSafeItemField)
     }
 
-    override suspend fun deleteByItemId(itemId: UUID) = safeItemFieldDao.deleteByItemId(itemId)
+    override suspend fun deleteByItemId(itemId: UUID): Unit = safeItemFieldDao.deleteByItemId(itemId)
 
-    override suspend fun getAllSafeItemFieldIds(): List<UUID> {
-        return safeItemFieldDao.getAllSafeItemFieldIds()
+    override suspend fun getAllSafeItemFieldIds(safeId: SafeId): List<UUID> {
+        return safeItemFieldDao.getAllSafeItemFieldIds(safeId)
     }
 
-    override suspend fun getAllSafeItemFields(): List<SafeItemField> {
-        return safeItemFieldDao.getAllSafeItemFields().map { it.toSafeItemField() }
+    override suspend fun getAllSafeItemFields(safeId: SafeId): List<SafeItemField> {
+        return safeItemFieldDao.getAllSafeItemFields(safeId).map { it.toSafeItemField() }
     }
 
     override suspend fun saveThumbnailFileName(fieldId: UUID, encThumbnailFileName: ByteArray?) {

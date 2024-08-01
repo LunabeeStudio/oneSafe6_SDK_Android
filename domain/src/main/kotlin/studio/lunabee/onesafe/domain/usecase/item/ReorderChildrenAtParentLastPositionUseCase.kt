@@ -21,6 +21,7 @@ package studio.lunabee.onesafe.domain.usecase.item
 
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemDeletedRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import javax.inject.Inject
@@ -31,16 +32,18 @@ import javax.inject.Inject
 class ReorderChildrenAtParentLastPositionUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
     private val safeItemDeletedRepository: SafeItemDeletedRepository,
+    private val safeRepository: SafeRepository,
 ) {
     suspend operator fun invoke(safeItem: SafeItem) {
+        val safeId = safeRepository.currentSafeId()
         val items = if (safeItem.isDeleted) {
-            safeItemDeletedRepository.getDeletedItemsByDeletedParent(safeItem.id, ItemOrder.Position)
+            safeItemDeletedRepository.getDeletedItemsByDeletedParent(safeItem.id, ItemOrder.Position, safeId)
         } else {
-            safeItemRepository.getChildren(safeItem.id, ItemOrder.Position)
+            safeItemRepository.getChildren(safeItem.id, ItemOrder.Position, safeId)
         }
         val minPos = items.firstOrNull()?.position
         minPos?.let {
-            val highestPosition = safeItemRepository.getHighestChildPosition(safeItem.parentId) ?: 0.0
+            val highestPosition = safeItemRepository.getHighestChildPosition(safeItem.parentId, safeId) ?: 0.0
             if (highestPosition >= minPos) {
                 items.forEachIndexed { idx, item ->
                     safeItemRepository.updateSafeItem(

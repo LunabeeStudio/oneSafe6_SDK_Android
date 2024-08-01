@@ -29,18 +29,23 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import studio.lunabee.compose.core.LbcTextSpec
+import studio.lunabee.doubleratchet.model.createRandomUUID
 import studio.lunabee.onesafe.animation.OSTopBarAnimatedVisibility
 import studio.lunabee.onesafe.animation.rememberOSTopBarVisibilityNestedScrollConnection
 import studio.lunabee.onesafe.atom.OSScreen
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
-import studio.lunabee.onesafe.bubbles.ui.contact.composables.DeeplinkSwitchRow
+import studio.lunabee.onesafe.bubbles.ui.contact.composables.ModeMessageShared
 import studio.lunabee.onesafe.bubbles.ui.contact.detail.ContactDetailUiState.UIConversationState
+import studio.lunabee.onesafe.bubbles.ui.contact.model.MessageSharingModeUi
 import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.action.topAppBarOptionEdit
@@ -50,7 +55,6 @@ import studio.lunabee.onesafe.extension.loremIpsum
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
-import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
 import studio.lunabee.onesafe.ui.theme.OSUserTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
@@ -64,31 +68,31 @@ fun ContactDetailRoute(
     val dialogState by viewModel.dialogState.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     dialogState?.DefaultAlertDialog()
+
     when (val safeUiState = uiState) {
         is ContactDetailUiState.Data -> {
             ContactDetailScreen(
                 onBackClick = navigateBack,
-                onConversationClick = { navigateToConversation(viewModel.contactId) },
+                onConversationClick = { navigateToConversation(viewModel.contactId.uuid) },
                 uiState = safeUiState,
                 onRemoveClick = viewModel::deleteContact,
-                onIsUsingDeepLinkChange = viewModel::updateIsUsingDeeplink,
+                onMessageSharingModeChange = viewModel::updateSharingModeUi,
                 conversationState = safeUiState.conversationState,
-                onResendInvitationClick = { navigateToInvitation(viewModel.contactId) },
-                onResendResponseClick = { navigateToResponse(viewModel.contactId) },
+                onResendInvitationClick = { navigateToInvitation(viewModel.contactId.uuid) },
+                onResendResponseClick = { navigateToResponse(viewModel.contactId.uuid) },
                 onScanResponseClick = navigateToScanBarcode,
-                onEditClick = { navigateToContactEdition(viewModel.contactId) },
+                onEditClick = { navigateToContactEdition(viewModel.contactId.uuid) },
             )
         }
-        is ContactDetailUiState.Idle -> OSScreen(
-            testTag = "",
-            background = LocalDesignSystem.current.bubblesBackGround(),
-        ) { Box(modifier = Modifier.fillMaxSize()) }
+        is ContactDetailUiState.Idle -> OSScreen(testTag = "") {
+            Box(modifier = Modifier.fillMaxSize())
+        }
+
         is ContactDetailUiState.Exit -> {
             LaunchedEffect(Unit) { navigateBackToBubbles() }
-            OSScreen(
-                testTag = "",
-                background = LocalDesignSystem.current.bubblesBackGround(),
-            ) { Box(modifier = Modifier.fillMaxSize()) }
+            OSScreen(testTag = "") {
+                Box(modifier = Modifier.fillMaxSize())
+            }
         }
     }
 }
@@ -102,17 +106,16 @@ fun ContactDetailScreen(
     onRemoveClick: () -> Unit,
     onEditClick: () -> Unit,
     uiState: ContactDetailUiState.Data,
-    onIsUsingDeepLinkChange: (Boolean) -> Unit,
+    onMessageSharingModeChange: (MessageSharingModeUi) -> Unit,
     onScanResponseClick: () -> Unit,
     conversationState: UIConversationState,
 ) {
     val lazyListState: LazyListState = rememberLazyListState()
     val nestedScrollConnection = rememberOSTopBarVisibilityNestedScrollConnection(lazyListState)
+    var bottomSheetMessageSharingIsVisible by rememberSaveable { mutableStateOf(false) }
+
     OSUserTheme(customPrimaryColor = uiState.color) {
-        OSScreen(
-            testTag = UiConstants.TestTag.Screen.ContactDetailScreen,
-            background = LocalDesignSystem.current.bubblesBackGround(),
-        ) {
+        OSScreen(testTag = UiConstants.TestTag.Screen.ContactDetailScreen) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize(),
@@ -140,7 +143,12 @@ fun ContactDetailScreen(
                 )
                 lazyVerticalOSRegularSpacer()
                 item {
-                    DeeplinkSwitchRow(onValueChange = onIsUsingDeepLinkChange, isChecked = uiState.isDeeplinkActivated)
+                    ModeMessageShared(
+                        sharingModeUi = uiState.messageSharingModeUi,
+                        onSharingMessageModeChange = onMessageSharingModeChange,
+                        isVisible = bottomSheetMessageSharingIsVisible,
+                        onVisibleChange = { bottomSheetMessageSharingIsVisible = !bottomSheetMessageSharingIsVisible },
+                    )
                 }
                 lazyVerticalOSRegularSpacer()
                 ContactDetailScreenFactory.removeContactCard(onClick = onRemoveClick, lazyListScope = this)
@@ -189,13 +197,13 @@ fun ContactDetailScreenDataPreview() {
             onRemoveClick = {},
             onEditClick = {},
             uiState = ContactDetailUiState.Data(
-                id = UUID.randomUUID(),
+                id = createRandomUUID(),
                 nameProvider = OSNameProvider.fromName(loremIpsum(1), false),
-                isDeeplinkActivated = true,
+                messageSharingModeUi = MessageSharingModeUi.Deeplinks,
                 conversationState = UIConversationState.Running,
                 color = null,
             ),
-            onIsUsingDeepLinkChange = {},
+            onMessageSharingModeChange = {},
             onScanResponseClick = {},
             conversationState = UIConversationState.Running,
         )
@@ -214,13 +222,13 @@ fun ContactDetailScreenCorruptedPreview() {
             onRemoveClick = {},
             onEditClick = {},
             uiState = ContactDetailUiState.Data(
-                id = UUID.randomUUID(),
+                id = createRandomUUID(),
                 nameProvider = OSNameProvider.fromName(loremIpsum(1), false),
-                isDeeplinkActivated = true,
+                messageSharingModeUi = MessageSharingModeUi.Deeplinks,
                 conversationState = UIConversationState.Running,
                 color = null,
             ),
-            onIsUsingDeepLinkChange = {},
+            onMessageSharingModeChange = {},
             onScanResponseClick = {},
             conversationState = UIConversationState.Indecipherable,
         )

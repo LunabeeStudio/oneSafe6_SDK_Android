@@ -20,9 +20,10 @@
 package studio.lunabee.onesafe.messaging.writemessage.screen
 
 import androidx.compose.runtime.Stable
+import studio.lunabee.bubbles.domain.model.MessageSharingMode
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.messaging.writemessage.model.BubblesWritingMessage
-import java.util.UUID
 
 // TODO <bubbles> error state (no contact found on deeplink for example)
 
@@ -30,10 +31,10 @@ import java.util.UUID
 sealed interface WriteMessageUiState {
     data object Initializing : WriteMessageUiState
     data class Data(
-        val contactId: UUID,
+        val contactId: DoubleRatchetUUID,
         val nameProvider: OSNameProvider,
         val message: BubblesWritingMessage,
-        val isUsingDeepLink: Boolean,
+        val messageSharingMode: MessageSharingMode,
         val isConversationReady: Boolean,
         val isCorrupted: Boolean,
     ) : WriteMessageUiState

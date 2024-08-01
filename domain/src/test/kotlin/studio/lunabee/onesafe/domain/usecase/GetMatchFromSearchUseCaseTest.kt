@@ -26,23 +26,25 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import kotlin.test.Test
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
 import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.repository.ItemSettingsRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.usecase.search.GetMatchFromSearchUseCase
+import studio.lunabee.onesafe.test.DummySafeRepository
 import studio.lunabee.onesafe.test.OSTestConfig
 import studio.lunabee.onesafe.test.OSTestUtils
+import studio.lunabee.onesafe.test.firstSafeId
 import studio.lunabee.onesafe.test.testUUIDs
 import java.util.UUID
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 
 class GetMatchFromSearchUseCaseTest {
 
     private val itemSettingsRepository: ItemSettingsRepository = mockk {
-        every { itemOrdering } returns flowOf(ItemOrder.Position)
+        every { itemOrdering(firstSafeId) } returns flowOf(ItemOrder.Position)
     }
     private val itemRepository: SafeItemRepository = mockk {
         coEvery { getSafeItemWithIdentifier(any(), any()) } answers {
@@ -53,6 +55,7 @@ class GetMatchFromSearchUseCaseTest {
     val getMatchFromSearchUseCase: GetMatchFromSearchUseCase = GetMatchFromSearchUseCase(
         safeItemRepository = itemRepository,
         itemSettingsRepository = itemSettingsRepository,
+        safeRepository = DummySafeRepository(),
     )
 
     private val itemMap: Map<UUID, SafeItemWithIdentifier> = List(20) { idx ->

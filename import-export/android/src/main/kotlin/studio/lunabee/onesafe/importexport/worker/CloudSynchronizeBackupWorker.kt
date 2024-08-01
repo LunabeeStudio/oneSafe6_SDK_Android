@@ -23,21 +23,25 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
+import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkerParameters
 import com.lunabee.lbcore.model.LBFlowResult
 import com.lunabee.lbcore.model.LBResult
+import com.lunabee.lblogger.LBLogger
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
-import studio.lunabee.onesafe.importexport.usecase.SynchronizeCloudBackupsUseCase
-import com.lunabee.lblogger.LBLogger
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
+import studio.lunabee.onesafe.importexport.usecase.SynchronizeCloudBackupsUseCase
+import studio.lunabee.onesafe.toByteArray
+import studio.lunabee.onesafe.toUUID
 
 private val logger = LBLogger.get<CloudSynchronizeBackupWorker>()
 
@@ -52,7 +56,8 @@ class CloudSynchronizeBackupWorker @AssistedInject constructor(
     private val autoBackupWorkersHelper: AutoBackupWorkersHelper,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
-        val flowResult = synchronizeCloudBackupsUseCase()
+        val safeId = SafeId(inputData.getByteArray(EXPORT_WORKER_SAFE_ID_DATA)!!.toUUID())
+        val flowResult = synchronizeCloudBackupsUseCase(safeId)
             .catch { error ->
                 emit(LBFlowResult.Failure(error))
             }.onEach { result ->
@@ -68,15 +73,23 @@ class CloudSynchronizeBackupWorker @AssistedInject constructor(
                 error = result.throwable,
                 runAttemptCount = runAttemptCount,
                 errorSource = AutoBackupMode.Synchronized,
+                safeId = safeId,
             )
-            is LBResult.Success -> autoBackupWorkersHelper.onBackupWorkerSucceed(AutoBackupMode.Synchronized)
+            is LBResult.Success -> autoBackupWorkersHelper.onBackupWorkerSucceed(AutoBackupMode.Synchronized, safeId)
         }
     }
 
     companion object {
-        fun getWorkRequest(): OneTimeWorkRequest {
+        private const val EXPORT_WORKER_SAFE_ID_DATA = "4090613a-696e-4aaa-a13e-67ba0c272301"
+
+        fun getWorkRequest(safeId: SafeId): OneTimeWorkRequest {
+            val data = Data
+                .Builder()
+                .putByteArray(EXPORT_WORKER_SAFE_ID_DATA, safeId.id.toByteArray())
+                .build()
             return OneTimeWorkRequestBuilder<CloudSynchronizeBackupWorker>()
-                .addTag(ImportExportAndroidConstants.AUTO_BACKUP_WORKER_TAG)
+                .addTag(ImportExportAndroidConstants.autoBackupWorkerTag(safeId))
+                .setInputData(data)
                 .setConstraints(
                     Constraints.Builder().setRequiredNetworkType(NetworkType.UNMETERED).build(),
                 )

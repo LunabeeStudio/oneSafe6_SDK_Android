@@ -19,28 +19,26 @@
 
 package studio.lunabee.onesafe.bubbles.crypto
 
-import kotlin.test.Test
+import studio.lunabee.bubbles.domain.crypto.BubblesDataHashEngine
 import studio.lunabee.onesafe.test.testUUIDs
 import studio.lunabee.onesafe.toByteArray
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 
 class HKDFHashEngineTest {
 
     @Test
     fun deriveKeyTest() {
-        val hashEngine1: DataHashEngine = HKDFHashEngine()
-        val hashEngine2: DataHashEngine = HKDFHashEngine()
+        val hashEngine1: BubblesDataHashEngine = HKDFHashEngine()
+        val hashEngine2: BubblesDataHashEngine = HKDFHashEngine()
 
         val key1 = testUUIDs[0].toByteArray()
         val key2 = key1.copyOf()
 
         val salt1 = testUUIDs[1].toByteArray()
         val salt2 = salt1.copyOf()
-
-        val out1 = ByteArray(32)
-        val out2 = ByteArray(32)
-        val result1 = hashEngine1.deriveKey(key1, salt1, out1)
-        val result2 = hashEngine2.deriveKey(key2, salt2, out2)
+        val result1 = hashEngine1.deriveKey(key1, salt1, 32)
+        val result2 = hashEngine2.deriveKey(key2, salt2, 32)
         assertContentEquals(result1, result2)
     }
 }

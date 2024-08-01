@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2023-2024 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,154 +13,273 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:24 AM
+ * Created by Lunabee Studio / Date - 6/19/2024 - for the oneSafe6 SDK.
+ * Last modified 6/19/24, 11:06 AM
  */
 
 package studio.lunabee.onesafe.repository.repository
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.repository.MessagingSettingsRepository
 import studio.lunabee.onesafe.domain.common.CtaState
+import studio.lunabee.onesafe.domain.model.camera.CameraSystem
+import studio.lunabee.onesafe.domain.model.safe.SafeId
+import studio.lunabee.onesafe.domain.model.safeitem.ItemLayout
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
-import studio.lunabee.onesafe.domain.model.safeitem.ItemsLayoutSettings
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
+import studio.lunabee.onesafe.domain.repository.AppVisitRepository
 import studio.lunabee.onesafe.domain.repository.ItemSettingsRepository
-import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
-import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
-import studio.lunabee.onesafe.repository.datasource.SettingsDataSource
+import studio.lunabee.onesafe.domain.repository.SafeSettingsRepository
+import studio.lunabee.onesafe.domain.repository.SecuritySettingsRepository
+import studio.lunabee.onesafe.repository.datasource.GlobalSettingsLocalDataSource
+import studio.lunabee.onesafe.repository.datasource.SafeSettingsLocalDataSource
 import java.time.Instant
 import javax.inject.Inject
 import kotlin.time.Duration
 
 class SettingsRepository @Inject constructor(
-    private val settingsDataSource: SettingsDataSource,
-) : SecurityOptionRepository, AutoBackupSettingsRepository, ItemSettingsRepository {
-    override val autoLockInactivityDelay: Duration
-        get() = settingsDataSource.autoLockInactivityDelay
+    private val safeDataSource: SafeSettingsLocalDataSource,
+    private val globalDataSource: GlobalSettingsLocalDataSource,
+) : SafeSettingsRepository, SecuritySettingsRepository, ItemSettingsRepository, AppVisitRepository, MessagingSettingsRepository {
 
-    override val autoLockInactivityDelayFlow: Flow<Duration>
-        get() = settingsDataSource.autoLockInactivityDelayFlow
+    override fun materialYou(safeId: SafeId): Flow<Boolean> =
+        safeDataSource.materialYou(safeId).filterNotNull()
 
-    override fun setAutoLockInactivityDelay(delay: Duration) {
-        settingsDataSource.autoLockInactivityDelay = delay
+    override fun automationFlow(safeId: SafeId): Flow<Boolean> =
+        safeDataSource.automationFlow(safeId).filterNotNull()
+
+    override fun displayShareWarningFlow(safeId: SafeId): Flow<Boolean> =
+        safeDataSource.displayShareWarningFlow(safeId).filterNotNull()
+
+    override fun allowScreenshotFlow(safeId: SafeId): Flow<Boolean> =
+        safeDataSource.allowScreenshotFlow(safeId).filterNotNull()
+
+    override fun shakeToLockFlow(safeId: SafeId): Flow<Boolean> =
+        safeDataSource.shakeToLockFlow(safeId).filterNotNull()
+
+    override fun bubblesPreview(safeId: SafeId): Flow<Boolean> =
+        safeDataSource.bubblesPreview(safeId).filterNotNull()
+
+    override fun bubblesHomeCardCtaState(safeId: SafeId): Flow<CtaState> =
+        safeDataSource.bubblesHomeCardCtaState(safeId).filterNotNull()
+
+    override fun independentSafeInfoCtaState(safeId: SafeId): Flow<CtaState> =
+        safeDataSource.independentSafeInfoCtaState(safeId).filterNotNull()
+
+    override fun cameraSystemFlow(safeId: SafeId): Flow<CameraSystem> =
+        safeDataSource.cameraSystemFlow(safeId).filterNotNull()
+
+    override fun autoLockInactivityDelayFlow(safeId: SafeId): Flow<Duration> =
+        safeDataSource.autoLockInactivityDelayFlow(safeId).filterNotNull()
+
+    override fun autoLockAppChangeDelayFlow(safeId: SafeId): Flow<Duration> =
+        safeDataSource.autoLockAppChangeDelayFlow(safeId).filterNotNull()
+
+    override fun clipboardDelayFlow(safeId: SafeId): Flow<Duration> =
+        safeDataSource.clipboardDelayFlow(safeId).filterNotNull()
+
+    override fun verifyPasswordIntervalFlow(safeId: SafeId): Flow<VerifyPasswordInterval> =
+        safeDataSource.verifyPasswordIntervalFlow(safeId).filterNotNull()
+
+    override fun bubblesResendMessageDelayFlow(safeId: SafeId): Flow<Duration> =
+        safeDataSource.bubblesResendMessageDelayFlow(safeId).filterNotNull()
+
+    override fun autoLockOSKInactivityDelayFlow(safeId: SafeId): Flow<Duration> =
+        safeDataSource.autoLockOSKInactivityDelayFlow(safeId).filterNotNull()
+
+    override fun autoLockOSKHiddenDelayFlow(safeId: SafeId): Flow<Duration> =
+        safeDataSource.autoLockOSKHiddenDelayFlow(safeId).filterNotNull()
+
+    override fun itemOrdering(safeId: SafeId): Flow<ItemOrder> =
+        safeDataSource.itemOrdering(safeId).filterNotNull()
+
+    override fun itemLayout(safeId: SafeId): Flow<ItemLayout> =
+        safeDataSource.itemLayout(safeId).filterNotNull()
+
+    override suspend fun cameraSystem(safeId: SafeId): CameraSystem =
+        safeDataSource.getCameraSystem(safeId)
+
+    override suspend fun allowScreenshot(safeId: SafeId): Boolean =
+        safeDataSource.allowScreenshot(safeId)
+
+    override suspend fun automation(safeId: SafeId): Boolean {
+        return safeDataSource.automation(safeId)
     }
 
-    override val autoLockAppChangeDelay: Duration
-        get() = settingsDataSource.autoLockAppChangeDelay
+    override suspend fun setBubblesPreview(safeId: SafeId, value: Boolean): Unit =
+        safeDataSource.setBubblesPreview(safeId, value)
 
-    override val autoLockAppChangeDelayFlow: Flow<Duration>
-        get() = settingsDataSource.autoLockAppChangeDelayFlow
+    override suspend fun setCameraSystem(safeId: SafeId, value: CameraSystem): Unit =
+        safeDataSource.setCameraSystem(safeId, value)
 
-    override fun setAutoLockAppChangeDelay(delay: Duration) {
-        settingsDataSource.autoLockAppChangeDelay = delay
+    override suspend fun setBubblesHomeCardCtaState(safeId: SafeId, ctaState: CtaState): Unit =
+        safeDataSource.setBubblesHomeCardCtaState(safeId, ctaState)
+
+    override suspend fun displayShareWarning(safeId: SafeId): Boolean =
+        safeDataSource.displayShareWarning(safeId)
+
+    override suspend fun setIndependentSafeInfoCtaState(safeId: SafeId, ctaState: CtaState): Unit =
+        safeDataSource.setIndependentSafeInfoCtaState(safeId, ctaState)
+
+    override suspend fun toggleAllowScreenshot(safeId: SafeId): Unit =
+        safeDataSource.toggleAllowScreenshot(safeId)
+
+    override suspend fun toggleShakeToLock(safeId: SafeId): Unit =
+        safeDataSource.toggleShakeToLock(safeId)
+
+    override suspend fun toggleAutomation(safeId: SafeId): Unit =
+        safeDataSource.toggleAutomation(safeId)
+
+    override suspend fun disableShareWarningDisplay(safeId: SafeId): Unit =
+        safeDataSource.disableShareWarningDisplay(safeId)
+
+    override suspend fun toggleMaterialYou(safeId: SafeId): Unit =
+        safeDataSource.toggleMaterialYou(safeId)
+
+    override suspend fun autoLockInactivityDelay(safeId: SafeId): Duration =
+        safeDataSource.autoLockInactivityDelay(safeId)
+
+    override suspend fun setAutoLockInactivityDelay(safeId: SafeId, delay: Duration) {
+        safeDataSource.setAutoLockInactivityDelay(safeId, delay)
     }
 
-    override val clipboardDelay: Duration
-        get() = settingsDataSource.clipboardDelay
+    override suspend fun autoLockAppChangeDelay(safeId: SafeId): Duration =
+        safeDataSource.autoLockAppChangeDelay(safeId)
 
-    override val clipboardDelayFlow: Flow<Duration>
-        get() = settingsDataSource.clipboardDelayFlow
-
-    override fun setClipboardClearDelay(delay: Duration) {
-        settingsDataSource.clipboardDelay = delay
+    override suspend fun setAutoLockAppChangeDelay(safeId: SafeId, delay: Duration) {
+        safeDataSource.setAutoLockAppChangeDelay(safeId, delay)
     }
 
-    override val verifyPasswordInterval: VerifyPasswordInterval
-        get() = settingsDataSource.passwordVerificationInterval
+    override suspend fun clipboardClearDelay(safeId: SafeId): Duration =
+        safeDataSource.clipboardDelay(safeId)
 
-    override val verifyPasswordIntervalFlow: Flow<VerifyPasswordInterval>
-        get() = settingsDataSource.passwordVerificationIntervalFlow
-
-    override fun setPasswordInterval(passwordInterval: VerifyPasswordInterval) {
-        settingsDataSource.passwordVerificationInterval = passwordInterval
+    override suspend fun setClipboardClearDelay(safeId: SafeId, delay: Duration) {
+        safeDataSource.setClipboardClearDelay(safeId, delay)
     }
 
-    override val lastPasswordVerificationInstant: Instant?
-        get() = settingsDataSource.lastPasswordVerificationInstant
+    override suspend fun verifyPasswordInterval(safeId: SafeId): VerifyPasswordInterval =
+        safeDataSource.verifyPasswordInterval(safeId)
 
-    override fun setLastPasswordVerification(instant: Instant) {
-        settingsDataSource.setLastPasswordVerificationInstant(instant)
+    override suspend fun setPasswordInterval(safeId: SafeId, passwordInterval: VerifyPasswordInterval) {
+        safeDataSource.setPasswordInterval(safeId, passwordInterval)
     }
 
-    override val bubblesResendMessageDelayFlow: Flow<Duration>
-        get() = settingsDataSource.bubblesResendMessageDelayFlow
+    override suspend fun lastPasswordVerificationInstant(safeId: SafeId): Instant =
+        safeDataSource.lastPasswordVerification(safeId)
 
-    override fun setBubblesResendMessageDelay(delay: Duration) {
-        settingsDataSource.setBubblesResendMessageDelay(delay)
+    override suspend fun setLastPasswordVerification(safeId: SafeId, instant: Instant) {
+        safeDataSource.setLastPasswordVerification(safeId, instant)
     }
 
-    override val autoLockOSKInactivityDelay: Duration
-        get() = settingsDataSource.autoLockOSKInactivityDelay
-
-    override val autoLockOSKInactivityDelayFlow: Flow<Duration>
-        get() = settingsDataSource.autoLockOSKInactivityDelayFlow
-
-    override fun setAutoLockOSKInactivityDelay(delay: Duration) {
-        settingsDataSource.autoLockOSKInactivityDelay = delay
+    override suspend fun setBubblesResendMessageDelay(safeId: SafeId, delay: Duration) {
+        safeDataSource.setBubblesResendMessageDelay(safeId, delay)
     }
 
-    override val autoLockOSKHiddenDelay: Duration
-        get() = settingsDataSource.autoLockOSKHiddenDelay
+    override suspend fun autoLockOSKInactivityDelay(safeId: SafeId): Duration =
+        safeDataSource.autoLockOSKInactivityDelay(safeId)
 
-    override val autoLockOSKHiddenDelayFlow: Flow<Duration>
-        get() = settingsDataSource.autoLockOSKHiddenFlow
-
-    override fun setAutoLockOSKHiddenDelay(delay: Duration) {
-        settingsDataSource.autoLockOSKHiddenDelay = delay
+    override suspend fun setAutoLockOSKInactivityDelay(safeId: SafeId, delay: Duration) {
+        safeDataSource.setAutoLockOSKInactivityDelay(safeId, delay)
     }
 
-    override val autoBackupEnabled: Flow<Boolean>
-        get() = settingsDataSource.autoBackupEnabled
+    override suspend fun autoLockOSKHiddenDelay(safeId: SafeId): Duration =
+        safeDataSource.autoLockOSKHiddenDelay(safeId)
 
-    override val autoBackupFrequency: Duration
-        get() = settingsDataSource.autoBackupFrequency
-    override val autoBackupMaxNumber: Int
-        get() = settingsDataSource.autoBackupMaxNumber
-    override val autoBackupFrequencyFlow: Flow<Duration>
-        get() = settingsDataSource.autoBackupFrequencyFlow
-    override val autoBackupMaxNumberFlow: Flow<Int>
-        get() = settingsDataSource.autoBackupMaxNumberFlow
-
-    override fun toggleAutoBackupSettings(): Boolean =
-        settingsDataSource.toggleAutoBackupSettings()
-
-    override fun setAutoBackupFrequency(delay: Duration) {
-        settingsDataSource.autoBackupFrequency = delay
+    override suspend fun setAutoLockOSKHiddenDelay(safeId: SafeId, delay: Duration) {
+        safeDataSource.setAutoLockOSKHiddenDelay(safeId, delay)
     }
 
-    override fun updateAutoBackupMaxNumber(updatedValue: Int) {
-        settingsDataSource.updateAutoBackupMaxNumber(updatedValue)
+    override suspend fun setItemOrdering(safeId: SafeId, order: ItemOrder) {
+        safeDataSource.setItemOrdering(safeId, order)
     }
 
-    override val cloudBackupEnabled: Flow<Boolean>
-        get() = settingsDataSource.cloudBackupEnabled
-
-    override suspend fun setCloudBackupSettings(enabled: Boolean): Unit =
-        settingsDataSource.setCloudBackupSettings(enabled)
-
-    override val keepLocalBackupEnabled: Flow<Boolean>
-        get() = settingsDataSource.keepLocalBackupEnabled
-
-    override suspend fun setKeepLocalBackupSettings(enabled: Boolean): Unit =
-        settingsDataSource.setKeepLocalBackupSettings(enabled)
-
-    override val itemOrdering: Flow<ItemOrder>
-        get() = settingsDataSource.itemOrdering
-
-    override suspend fun setItemOrdering(order: ItemOrder): Unit =
-        settingsDataSource.setItemOrdering(order)
-
-    override val itemsLayoutSetting: Flow<ItemsLayoutSettings>
-        get() = settingsDataSource.itemsLayoutSetting
-
-    override suspend fun setItemsLayoutSetting(style: ItemsLayoutSettings) {
-        settingsDataSource.setItemsLayoutSetting(style)
+    override suspend fun setItemsLayout(safeId: SafeId, style: ItemLayout) {
+        safeDataSource.setItemLayout(safeId, style)
     }
 
-    override val enableAutoBackupCtaState: Flow<CtaState>
-        get() = settingsDataSource.enableAutoBackupCtaState
+    override fun hasVisitedLogin(): Flow<Boolean> {
+        return globalDataSource.hasVisitedLogin()
+    }
 
-    override suspend fun setEnableAutoBackupCtaState(ctaState: CtaState) {
-        settingsDataSource.setEnableAutoBackupCtaState(ctaState)
+    override fun hasDoneTutorialOpenOsk(): Flow<Boolean> {
+        return globalDataSource.hasDoneTutorialOpenOsk()
+    }
+
+    override fun hasDoneTutorialLockOsk(): Flow<Boolean> {
+        return globalDataSource.hasDoneTutorialLockOsk()
+    }
+
+    override fun hasFinishOneSafeKOnBoardingFlow(safeId: SafeId): Flow<Boolean> {
+        return safeDataSource.hasFinishOneSafeKOnBoardingFlow(safeId).filterNotNull()
+    }
+
+    override fun hasDoneOnBoardingBubblesFlow(safeId: SafeId): Flow<Boolean> {
+        return safeDataSource.hasDoneOnBoardingBubblesFlow(safeId).filterNotNull()
+    }
+
+    override fun hasHiddenCameraTipsFlow(safeId: SafeId): Flow<Boolean> {
+        return safeDataSource.hasHiddenCameraTipsFlow(safeId).filterNotNull()
+    }
+
+    override fun hasSeenItemEditionUrlToolTipFlow(safeId: SafeId): Flow<Boolean> {
+        return safeDataSource.hasSeenItemEditionUrlToolTipFlow(safeId).filterNotNull()
+    }
+
+    override fun hasSeenItemEditionEmojiToolTipFlow(safeId: SafeId): Flow<Boolean> {
+        return safeDataSource.hasSeenItemEditionEmojiToolTipFlow(safeId).filterNotNull()
+    }
+
+    override fun hasSeenItemReadEditToolTipFlow(safeId: SafeId): Flow<Boolean> {
+        return safeDataSource.hasSeenItemReadEditToolTipFlow(safeId).filterNotNull()
+    }
+
+    override suspend fun hasSeenItemEditionUrlToolTip(safeId: SafeId): Boolean {
+        return safeDataSource.hasSeenItemEditionUrlToolTip(safeId)
+    }
+
+    override suspend fun hasSeenItemEditionEmojiToolTip(safeId: SafeId): Boolean {
+        return safeDataSource.hasSeenItemEditionEmojiToolTip(safeId)
+    }
+
+    override suspend fun setHasVisitedLogin(value: Boolean) {
+        return globalDataSource.setHasVisitedLogin(value)
+    }
+
+    override suspend fun setHasDoneTutorialOpenOsk(value: Boolean) {
+        return globalDataSource.setHasDoneTutorialOpenOsk(value)
+    }
+
+    override suspend fun setHasDoneTutorialLockOsk(value: Boolean) {
+        return globalDataSource.setHasDoneTutorialLockOsk(value)
+    }
+
+    override suspend fun setHasFinishOneSafeKOnBoarding(safeId: SafeId, value: Boolean) {
+        return safeDataSource.setHasFinishOneSafeKOnBoarding(safeId, value)
+    }
+
+    override suspend fun setHasDoneOnBoardingBubbles(safeId: SafeId, value: Boolean) {
+        return safeDataSource.setHasDoneOnBoardingBubbles(safeId, value)
+    }
+
+    override suspend fun setHasHiddenCameraTips(safeId: SafeId, value: Boolean) {
+        return safeDataSource.setHasHiddenCameraTips(safeId, value)
+    }
+
+    override suspend fun setHasSeenItemEditionUrlToolTip(safeId: SafeId, value: Boolean) {
+        return safeDataSource.setHasSeenItemEditionUrlToolTip(safeId, value)
+    }
+
+    override suspend fun setHasSeenItemEditionEmojiToolTip(safeId: SafeId, value: Boolean) {
+        return safeDataSource.setHasSeenItemEditionEmojiToolTip(safeId, value)
+    }
+
+    override suspend fun setHasSeenItemReadEditToolTip(safeId: SafeId, value: Boolean) {
+        return safeDataSource.setHasSeenItemReadEditToolTip(safeId, value)
+    }
+
+    override suspend fun bubblesResendMessageDelayInMillis(safeId: DoubleRatchetUUID): Long {
+        return safeDataSource.bubblesResendMessageDelay(SafeId(safeId.uuid)).inWholeMilliseconds
     }
 }

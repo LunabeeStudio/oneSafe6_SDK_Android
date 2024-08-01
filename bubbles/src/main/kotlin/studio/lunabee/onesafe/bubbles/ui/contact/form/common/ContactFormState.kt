@@ -19,7 +19,9 @@
 
 package studio.lunabee.onesafe.bubbles.ui.contact.form.common
 
+import studio.lunabee.onesafe.bubbles.ui.contact.model.MessageSharingModeUi
+
 data class ContactFormState(
     val name: String = "",
-    val isUsingDeepLink: Boolean = true,
+    val sharingMessageMode: MessageSharingModeUi = MessageSharingModeUi.Deeplinks,
 )

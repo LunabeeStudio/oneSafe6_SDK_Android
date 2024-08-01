@@ -31,16 +31,6 @@ sealed class OSPreferenceTips<T>(
         defaultValue = AppVisitConstants.hasVisitedLoginDefault,
     )
 
-    data object HasFinishOneSafeKOnBoarding : OSPreferenceTips<Boolean>(
-        preferencesKey = hasFinishOneSafeKOnBoardingKey,
-        defaultValue = AppVisitConstants.hasFinishOneSafeKOnBoardingDefault,
-    )
-
-    data object HasDoneOnBoardingBubbles : OSPreferenceTips<Boolean>(
-        preferencesKey = hasDoneOnBoardingBubblesKey,
-        defaultValue = AppVisitConstants.hasDoneOnBoardingBubblesDefault,
-    )
-
     data object HasDoneTutorialOpenOsk : OSPreferenceTips<Boolean>(
         preferencesKey = hasDoneTutorialOpenOskKey,
         defaultValue = AppVisitConstants.hasDoneTutorialOpenOskDefault,
@@ -50,34 +40,8 @@ sealed class OSPreferenceTips<T>(
         preferencesKey = hasDoneTutorialLockOskKey,
         defaultValue = AppVisitConstants.hasDoneTutorialLockOskDefault,
     )
-
-    data object HasHiddenCameraTips : OSPreferenceTips<Boolean>(
-        preferencesKey = hasHiddenCameraTipsKey,
-        defaultValue = AppVisitConstants.hasHiddenCameraTipsDefault,
-    )
-
-    data object HasSeenItemEditionUrlToolTip : OSPreferenceTips<Boolean>(
-        preferencesKey = hasSeenItemEditionUrlToolTipKey,
-        defaultValue = AppVisitConstants.hasSeenItemEditionUrlToolTipDefault,
-    )
-
-    data object HasSeenItemEditionEmojiToolTip : OSPreferenceTips<Boolean>(
-        preferencesKey = hasSeenItemEditionEmojiToolTipKey,
-        defaultValue = AppVisitConstants.hasSeenItemEditionEmojiToolTipDefault,
-    )
-
-    data object HasSeenItemReadEditToolTip : OSPreferenceTips<Boolean>(
-        preferencesKey = hasSeenItemReadEditToolTipKey,
-        defaultValue = AppVisitConstants.hasSeenItemReadEditToolTipDefault,
-    )
 }
 
 private val hasVisitedLoginKey = booleanPreferencesKey(AppVisitConstants.hasVisitedLoginKey)
-private val hasFinishOneSafeKOnBoardingKey = booleanPreferencesKey(AppVisitConstants.hasFinishOneSafeKOnBoarding)
-private val hasDoneOnBoardingBubblesKey = booleanPreferencesKey(AppVisitConstants.hasDoneOnBoardingBubbles)
 private val hasDoneTutorialOpenOskKey = booleanPreferencesKey(AppVisitConstants.hasDoneTutorialOpenOsk)
 private val hasDoneTutorialLockOskKey = booleanPreferencesKey(AppVisitConstants.hasDoneTutorialLockOsk)
-private val hasHiddenCameraTipsKey = booleanPreferencesKey(AppVisitConstants.hasHiddenCameraTips)
-private val hasSeenItemEditionUrlToolTipKey = booleanPreferencesKey(AppVisitConstants.hasSeenItemEditionUrlToolTip)
-private val hasSeenItemEditionEmojiToolTipKey = booleanPreferencesKey(AppVisitConstants.hasSeenItemEditionEmojiToolTip)
-private val hasSeenItemReadEditToolTipKey = booleanPreferencesKey(AppVisitConstants.hasSeenItemReadEditToolTip)

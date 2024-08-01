@@ -22,7 +22,8 @@ package studio.lunabee.onesafe.storage.datasource
 import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lbextensions.mapValues
 import kotlinx.coroutines.flow.Flow
-import studio.lunabee.importexport.repository.datasource.LocalBackupLocalDataSource
+import studio.lunabee.importexport.datasource.LocalBackupLocalDataSource
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.qualifier.InternalDir
 import studio.lunabee.onesafe.error.OSError.Companion.get
 import studio.lunabee.onesafe.error.OSImportExportError
@@ -61,14 +62,14 @@ class LocalBackupLocalDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun getBackups(): List<LBResult<LocalBackup>> =
-        backupDao.getAllLocal().map(::transformBackup)
+    override suspend fun getBackups(safeId: SafeId): List<LBResult<LocalBackup>> =
+        backupDao.getAllLocal(safeId).map(::transformBackup)
 
-    override suspend fun getBackupsToUpload(): List<LBResult<LocalBackup>> =
-        backupDao.getAllLocalWithoutRemote().map(::transformBackup)
+    override suspend fun getBackupsToUpload(safeId: SafeId): List<LBResult<LocalBackup>> =
+        backupDao.getAllLocalWithoutRemote(safeId).map(::transformBackup)
 
-    override fun getBackupsFlow(): Flow<List<LBResult<LocalBackup>>> =
-        backupDao.getAllLocalAsFlow().mapValues(::transformBackup)
+    override fun getBackupsFlow(safeId: SafeId): Flow<List<LBResult<LocalBackup>>> =
+        backupDao.getAllLocalAsFlow(safeId).mapValues(::transformBackup)
 
     private fun transformBackup(roomBackup: RoomLocalBackup): LBResult<LocalBackup> {
         val backup = roomBackup.toBackup()
@@ -91,9 +92,9 @@ class LocalBackupLocalDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteAll() {
+    override suspend fun deleteAll(safeId: SafeId) {
         transactionProvider.runAsTransaction {
-            val backups = backupDao.getAllLocal()
+            val backups = backupDao.getAllLocal(safeId)
             backups.forEach { localBackup ->
                 if (localBackup.localFile.delete()) {
                     backupDao.deleteLocalBackup(localBackup.id)
@@ -107,6 +108,6 @@ class LocalBackupLocalDataSourceImpl @Inject constructor(
     override suspend fun getFile(backupId: String): File? =
         backupDao.getFile(backupId)?.takeIf { it.exists() }
 
-    override fun hasBackup(): Flow<Boolean> =
-        backupDao.hasLocalBackup()
+    override fun hasBackup(safeId: SafeId): Flow<Boolean> =
+        backupDao.hasLocalBackup(safeId)
 }

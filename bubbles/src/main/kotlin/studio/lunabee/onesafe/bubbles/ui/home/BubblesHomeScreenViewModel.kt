@@ -30,19 +30,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
-import studio.lunabee.onesafe.bubbles.domain.usecase.GetAllContactsUseCase
+import kotlinx.datetime.toJavaInstant
+import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
+import studio.lunabee.bubbles.domain.usecase.GetAllContactsUseCase
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.model.ConversationState
+import studio.lunabee.messaging.domain.repository.MessageRepository
+import studio.lunabee.messaging.domain.usecase.GetConversationStateUseCase
 import studio.lunabee.onesafe.bubbles.ui.conversation.ConversationSubtitleFromMessageDelegate
 import studio.lunabee.onesafe.bubbles.ui.extension.getNameProvider
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
 import studio.lunabee.onesafe.bubbles.ui.model.ConversationSubtitle
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.domain.common.FeatureFlags
-import studio.lunabee.onesafe.messaging.domain.model.ConversationState
-import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
-import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCase
 import java.time.Instant
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -76,7 +77,7 @@ class BubblesHomeScreenViewModel @Inject constructor(
                         conversationState = conversationState,
                         isConversationReady = contact.encSharedKey != null,
                         plainName = decryptedNameResult,
-                        updatedAt = contact.updatedAt,
+                        updatedAt = contact.updatedAt.toJavaInstant(),
                     )
                 }
                 _contacts.value = contactLists.sortedBy { it.plainName.data }.map {
@@ -105,7 +106,7 @@ class BubblesHomeScreenViewModel @Inject constructor(
     }
 
     private data class BubbleContactInfo(
-        val id: UUID,
+        val id: DoubleRatchetUUID,
         val conversationState: LBResult<ConversationState>,
         val isConversationReady: Boolean,
         val plainName: LBResult<String>,

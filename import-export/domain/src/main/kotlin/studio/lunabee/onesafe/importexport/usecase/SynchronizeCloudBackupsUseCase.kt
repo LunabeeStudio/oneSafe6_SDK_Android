@@ -24,6 +24,7 @@ import com.lunabee.lbcore.model.LBFlowResult.Companion.transformResult
 import com.lunabee.lblogger.LBLogger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
@@ -44,13 +45,13 @@ class SynchronizeCloudBackupsUseCase @Inject constructor(
     private val deleteOldCloudBackupsUseCase: DeleteOldCloudBackupsUseCase,
     private val autoBackupSettingsRepository: AutoBackupSettingsRepository,
 ) {
-    operator fun invoke(): Flow<LBFlowResult<Unit>> {
+    operator fun invoke(safeId: SafeId): Flow<LBFlowResult<Unit>> {
         // 1. Refresh cloud backup list
-        return cloudBackupRepository.refreshBackupList()
+        return cloudBackupRepository.refreshBackupList(safeId)
             .transformResult { backupsResult ->
-                val backupsToUpload = (backupsResult.successData + getAllLocalBackupsUseCase(true))
+                val backupsToUpload = (backupsResult.successData + getAllLocalBackupsUseCase(safeId, true))
                     .sortedDescending()
-                    .take(autoBackupSettingsRepository.autoBackupMaxNumber)
+                    .take(autoBackupSettingsRepository.autoBackupMaxNumber(safeId))
                     .filterIsInstance<LocalBackup>()
                 log.v("Found ${backupsToUpload.size} to upload")
 
@@ -58,7 +59,7 @@ class SynchronizeCloudBackupsUseCase @Inject constructor(
                 val uploadAndDeleteFlow = cloudBackupRepository.uploadBackup(backupsToUpload)
                     .transformResult {
                         // 3. Delete oldest cloud backups
-                        emitAll(deleteOldCloudBackupsUseCase(cloudBackupRepository.getBackups()))
+                        emitAll(deleteOldCloudBackupsUseCase(safeId, cloudBackupRepository.getBackups(safeId)))
                     }
 
                 emitAll(uploadAndDeleteFlow)

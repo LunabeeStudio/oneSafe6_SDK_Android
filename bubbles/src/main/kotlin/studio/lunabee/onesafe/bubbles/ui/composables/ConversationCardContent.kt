@@ -52,7 +52,7 @@ import studio.lunabee.onesafe.ui.theme.LocalColorPalette
 class ConversationCardContent(
     private val conversationInfo: BubblesConversationInfo,
     private val onClick: () -> Unit,
-    override val key: Any = conversationInfo.id,
+    override val key: Any = conversationInfo.id.uuid,
 ) : OSLazyCardContent.Item {
     override val contentType: Any = "ContactItem"
 

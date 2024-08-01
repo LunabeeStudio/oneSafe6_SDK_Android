@@ -24,6 +24,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.storage.DaoUtils.FIELD_ORDER_BY_POSITION
 import studio.lunabee.onesafe.storage.model.RoomSafeItemField
 import java.util.UUID
@@ -48,11 +49,25 @@ interface SafeItemFieldDao {
     @Query("DELETE FROM SafeItemField WHERE item_id = :itemId")
     suspend fun deleteByItemId(itemId: UUID)
 
-    @Query("SELECT SafeItemField.id FROM SafeItemField")
-    suspend fun getAllSafeItemFieldIds(): List<UUID>
+    @Query(
+        """
+        SELECT SafeItemField.id
+        FROM SafeItemField
+        LEFT JOIN SafeItem ON SafeItemField.item_id = SafeItem.id
+        WHERE SafeItem.safe_id = :safeId
+        """,
+    )
+    suspend fun getAllSafeItemFieldIds(safeId: SafeId): List<UUID>
 
-    @Query("SELECT * FROM SafeItemField")
-    suspend fun getAllSafeItemFields(): List<RoomSafeItemField>
+    @Query(
+        """
+        SELECT *
+        FROM SafeItemField
+        LEFT JOIN SafeItem ON SafeItemField.item_id = SafeItem.id
+        WHERE SafeItem.safe_id = :safeId
+        """,
+    )
+    suspend fun getAllSafeItemFields(safeId: SafeId): List<RoomSafeItemField>
 
     @Query("SELECT * FROM SafeItemField WHERE item_id IN (:items)")
     suspend fun getAllSafeItemFieldsOfItems(items: List<UUID>): List<RoomSafeItemField>

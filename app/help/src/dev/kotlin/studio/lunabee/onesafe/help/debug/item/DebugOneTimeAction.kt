@@ -35,28 +35,8 @@ internal fun DebugOneTimeAction(
                 isExpanded = false
                 data.closeDrawer()
             }
-            OSDropdownMenuItem(text = LbcTextSpec.Raw("Show enable backup CTA"), null) {
-                data.resetBackupCta()
-                isExpanded = false
-                data.closeDrawer()
-            }
-            OSDropdownMenuItem(text = LbcTextSpec.Raw("Reset oSK onboarding"), null) {
-                data.resetOSKOnboarding()
-                isExpanded = false
-                data.closeDrawer()
-            }
             OSDropdownMenuItem(text = LbcTextSpec.Raw("Reset oSK tutorial"), null) {
                 data.resetOSKTutorial()
-                isExpanded = false
-                data.closeDrawer()
-            }
-            OSDropdownMenuItem(text = LbcTextSpec.Raw("Reset Tips camera"), null) {
-                data.resetCameraTips()
-                isExpanded = false
-                data.closeDrawer()
-            }
-            OSDropdownMenuItem(text = LbcTextSpec.Raw("Reset ToolTips"), null) {
-                data.resetTips()
                 isExpanded = false
                 data.closeDrawer()
             }

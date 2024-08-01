@@ -21,7 +21,7 @@ package studio.lunabee.onesafe.storage.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import studio.lunabee.onesafe.messaging.domain.model.EncDoubleRatchetKey
+import studio.lunabee.messaging.domain.model.EncDoubleRatchetKey
 
 @Entity(tableName = "DoubleRatchetKey")
 class RoomDoubleRatchetKey(

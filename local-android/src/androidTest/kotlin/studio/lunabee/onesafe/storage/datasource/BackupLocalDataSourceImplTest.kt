@@ -28,22 +28,27 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
-import kotlin.test.Test
-import studio.lunabee.onesafe.test.assertThrows
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.qualifier.InternalDir
 import studio.lunabee.onesafe.error.OSError.Companion.get
 import studio.lunabee.onesafe.error.OSStorageError
 import studio.lunabee.onesafe.importexport.model.LocalBackup
+import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.dao.BackupDao
+import studio.lunabee.onesafe.test.assertThrows
+import studio.lunabee.onesafe.test.firstSafeId
 import studio.lunabee.onesafe.test.testUUIDs
 import java.io.File
 import java.time.Clock
 import java.time.Instant
 import javax.inject.Inject
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+
+// TODO <multisafe> safeId testing
 
 @HiltAndroidTest
 class BackupLocalDataSourceImplTest {
@@ -52,6 +57,8 @@ class BackupLocalDataSourceImplTest {
     @Inject internal lateinit var backupLocalDataSource: LocalBackupLocalDataSourceImpl
 
     @Inject internal lateinit var backupDao: BackupDao
+
+    @Inject internal lateinit var mainDatabase: MainDatabase
 
     @Inject lateinit var clock: Clock
 
@@ -82,7 +89,7 @@ class BackupLocalDataSourceImplTest {
     fun addBackup_getBackups_test(): TestResult = runTest {
         val backupFile = File(tempDir, testUUIDs[0].toString())
         backupFile.createNewFile()
-        val localBackup = LocalBackup(Instant.now(clock), backupFile)
+        val localBackup = LocalBackup(Instant.now(clock), backupFile, SafeId(testUUIDs[0]))
         val expected = listOf(
             LBResult.Success(
                 localBackup.copy(file = File(backupDir, backupFile.name)),
@@ -90,7 +97,7 @@ class BackupLocalDataSourceImplTest {
         )
 
         backupLocalDataSource.addBackup(localBackup)
-        val actual = backupLocalDataSource.getBackups()
+        val actual = backupLocalDataSource.getBackups(firstSafeId)
         assertContentEquals(expected, actual)
     }
 
@@ -101,11 +108,13 @@ class BackupLocalDataSourceImplTest {
     fun addBackup_error_test(): TestResult = runTest {
         val error = assertThrows<OSStorageError> {
             val backupFile = File(tempDir, testUUIDs[0].toString())
-            val localBackup = LocalBackup(Instant.now(clock), backupFile)
+            val localBackup = LocalBackup(Instant.now(clock), backupFile, SafeId(testUUIDs[0]))
             backupLocalDataSource.addBackup(localBackup)
         }
         assertEquals(OSStorageError.Code.UNKNOWN_FILE_ERROR, error.code)
-        assertEquals(emptyList(), backupDao.getAll())
+
+        val count = mainDatabase.query("SELECT * FROM Backup", null).count
+        assertEquals(0, count)
     }
 
     /**
@@ -113,10 +122,11 @@ class BackupLocalDataSourceImplTest {
      */
     @Test
     fun getBackups_error_test(): TestResult = runTest {
-        val id = testUUIDs[0].toString()
-        val backupFile = File(tempDir, id)
+        val safeId = SafeId(testUUIDs[0])
+        val filename = testUUIDs[0].toString()
+        val backupFile = File(tempDir, filename)
         backupFile.createNewFile()
-        val localBackup = LocalBackup(Instant.now(clock), backupFile)
+        val localBackup = LocalBackup(Instant.now(clock), backupFile, safeId)
         val expected = listOf(
             LBResult.Failure(
                 throwable = OSStorageError.Code.MISSING_BACKUP_FILE.get(),
@@ -125,8 +135,8 @@ class BackupLocalDataSourceImplTest {
         )
 
         backupLocalDataSource.addBackup(localBackup)
-        backupDao.getLocalById(id)!!.localFile.delete()
-        val actual = backupLocalDataSource.getBackups()
+        backupDao.getLocalById(localBackup.id)!!.localFile.delete()
+        val actual = backupLocalDataSource.getBackups(firstSafeId)
         assertContentEquals(expected, actual)
     }
 
@@ -137,12 +147,12 @@ class BackupLocalDataSourceImplTest {
     fun delete_test(): TestResult = runTest {
         val backupFile = File(tempDir, testUUIDs[0].toString())
         backupFile.createNewFile()
-        val localBackup = backupLocalDataSource.addBackup(LocalBackup(Instant.now(clock), backupFile))
+        val localBackup = backupLocalDataSource.addBackup(LocalBackup(Instant.now(clock), backupFile, SafeId(testUUIDs[0])))
 
-        assertTrue(backupLocalDataSource.getBackups().isNotEmpty())
+        assertTrue(backupLocalDataSource.getBackups(firstSafeId).isNotEmpty())
         assertTrue(localBackup.file.exists())
         backupLocalDataSource.delete(listOf(localBackup))
-        assertTrue(backupLocalDataSource.getBackups().isEmpty())
+        assertTrue(backupLocalDataSource.getBackups(firstSafeId).isEmpty())
         assertFalse(localBackup.file.exists())
     }
 }

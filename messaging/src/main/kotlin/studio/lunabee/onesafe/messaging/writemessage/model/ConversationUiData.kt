@@ -20,15 +20,15 @@
 package studio.lunabee.onesafe.messaging.writemessage.model
 
 import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.messaging.domain.model.MessageDirection
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.model.MessageDirection
 import studio.lunabee.onesafe.messaging.extension.isSameDayAs
 import java.time.Instant
-import java.util.UUID
 
 sealed interface ConversationUiData {
 
     data class Message(
-        val id: UUID,
+        val id: DoubleRatchetUUID,
         val text: LbcTextSpec,
         val direction: MessageDirection,
         val sendAt: Instant?,

@@ -28,7 +28,7 @@ import studio.lunabee.onesafe.model.OSLazyCardContent
 class ContactItemCardContent(
     private val contactInfo: UIBubblesContactInfo,
     private val onClick: () -> Unit,
-    override val key: Any = contactInfo.id,
+    override val key: Any = contactInfo.id.uuid,
 ) : OSLazyCardContent.Item {
     override val contentType: Any = "ContactItem"
 

@@ -19,18 +19,27 @@
 
 package studio.lunabee.onesafe.domain.usecase.item
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
-import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
+import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
 import javax.inject.Inject
 
 class SecureGetRecentItemUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
-    private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
+    private val isSafeReadyUseCase: IsSafeReadyUseCase,
+    private val safeRepository: SafeRepository,
 ) {
     private val itemDisplayedLimit: Int = 12
-    operator fun invoke(): Flow<List<SafeItem>> = isCryptoDataReadyInMemoryUseCase.withCrypto(
-        safeItemRepository.getLastConsultedNotDeletedSafeItem(itemDisplayedLimit),
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    operator fun invoke(): Flow<List<SafeItem>> = isSafeReadyUseCase.withCrypto(
+        safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+            safeId?.let { safeItemRepository.getLastConsultedNotDeletedSafeItem(itemDisplayedLimit, safeId) } ?: flowOf(emptyList())
+        },
     )
 }

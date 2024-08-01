@@ -19,11 +19,15 @@
 
 package studio.lunabee.onesafe.importexport.model
 
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import java.time.ZonedDateTime
+import java.util.UUID
 
 data class AutoBackupError(
+    val id: UUID,
     val date: ZonedDateTime,
     val code: String,
     val message: String?,
     val source: AutoBackupMode,
+    val safeId: SafeId,
 )

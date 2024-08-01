@@ -28,11 +28,13 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.AfterClass
 import org.junit.BeforeClass
-import kotlin.test.Test
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
 import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
+import studio.lunabee.onesafe.test.DummySafeRepository
+import studio.lunabee.onesafe.test.firstSafeId
 import java.io.File
 import java.io.InputStream
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
@@ -46,14 +48,15 @@ class GetAutoBackupStreamUseCaseTest {
         coEvery { getFile("cloud") } returns null
     }
     private val cloudBackupRepository: CloudBackupRepository = mockk {
-        coEvery { getInputStream("cloud") } returns flowOf(LBFlowResult.Success(cloudFile.inputStream()))
-        coEvery { getInputStream("not_exist") } returns flowOf(LBFlowResult.Failure())
-        coEvery { getInputStream("local") } returns flowOf(LBFlowResult.Failure())
+        coEvery { getInputStream("cloud", firstSafeId) } returns flowOf(LBFlowResult.Success(cloudFile.inputStream()))
+        coEvery { getInputStream("not_exist", firstSafeId) } returns flowOf(LBFlowResult.Failure())
+        coEvery { getInputStream("local", firstSafeId) } returns flowOf(LBFlowResult.Failure())
     }
 
     private val useCase = GetAutoBackupStreamUseCase(
         localBackupRepository,
         cloudBackupRepository,
+        DummySafeRepository(),
     )
 
     companion object {

@@ -66,7 +66,7 @@ fun ContactFormRoute(
 
     LaunchedEffect(createResult) {
         when (val result = createResult) {
-            is LBResult.Success -> navigateToNextScreen(result.successData)
+            is LBResult.Success -> navigateToNextScreen(result.successData.uuid)
             is LBResult.Failure -> {
                 errorDialogState = ErrorDialogState(result.throwable, listOf(DialogAction.commonOk(navigateBack)), navigateBack)
             }
@@ -79,10 +79,10 @@ fun ContactFormRoute(
         onBackClick = navigateBack,
         icon = icon,
         onInviteClick = {
-            viewModel.saveContact(state.name, state.isUsingDeepLink)
+            viewModel.saveContact(state.name, state.sharingMessageMode.mode)
         },
-        onDeeplinkChange = viewModel::setIsUsingDeepLink,
-        isDeeplinkChecked = state.isUsingDeepLink,
+        onSharingMessageModeChange = viewModel::setModeSharingMessage,
+        sharingMessageMode = state.sharingMessageMode,
         onContactNameChange = viewModel::setName,
         contactName = state.name,
     )

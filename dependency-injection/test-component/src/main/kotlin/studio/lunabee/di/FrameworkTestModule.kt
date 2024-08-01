@@ -28,8 +28,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import studio.lunabee.onesafe.SettingsDefaults
 import studio.lunabee.onesafe.commonui.usecase.AndroidResizeIconUseCaseFactory
 import studio.lunabee.onesafe.domain.LoadFileCancelAllUseCase
+import studio.lunabee.onesafe.domain.model.safe.SafeSettings
 import studio.lunabee.onesafe.domain.qualifier.ArchiveCacheDir
 import studio.lunabee.onesafe.domain.qualifier.BuildNumber
 import studio.lunabee.onesafe.domain.qualifier.InternalBackupMimetype
@@ -39,9 +41,13 @@ import studio.lunabee.onesafe.domain.qualifier.VersionName
 import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.usecase.ResizeIconUseCase
 import studio.lunabee.onesafe.domain.usecase.clipboard.ClipboardClearUseCase
+import studio.lunabee.onesafe.domain.usecase.settings.DefaultSafeSettingsProvider
+import studio.lunabee.onesafe.test.OSTestConfig
+import studio.lunabee.onesafe.test.OSTestConfig.clock
 import java.io.File
 import java.util.UUID
 import javax.inject.Singleton
+import kotlin.time.Duration.Companion.milliseconds
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -76,6 +82,12 @@ object FrameworkTestModule {
     @ArchiveCacheDir(type = ArchiveCacheDir.Type.AutoBackup)
     fun provideArchiveAutoBackupDirectory(@ApplicationContext context: Context): File {
         return File(context.cacheDir, "keep_archiveAutoBackup")
+    }
+
+    @Provides
+    @ArchiveCacheDir(type = ArchiveCacheDir.Type.Message)
+    fun provideArchiveMessageDirectory(@ApplicationContext context: Context): File {
+        return File(context.cacheDir, "keep_archivemessage")
     }
 
     @Provides
@@ -120,9 +132,42 @@ object FrameworkTestModule {
     @Provides
     fun provideClipboardClearUseCase(): ClipboardClearUseCase {
         return object : ClipboardClearUseCase {
-            override fun invoke() {
+            override suspend fun invoke() {
                 /* no-op */
             }
         }
+    }
+
+    @Provides
+    fun provideDefaultSafeSettingsProvider(): DefaultSafeSettingsProvider = object : DefaultSafeSettingsProvider {
+        override fun invoke(): SafeSettings =
+            SafeSettings(
+                version = Int.MAX_VALUE,
+                materialYou = SettingsDefaults.MaterialYouSettingDefault,
+                automation = SettingsDefaults.AutomationSettingDefault,
+                displayShareWarning = SettingsDefaults.DisplayShareWarningDefault,
+                allowScreenshot = SettingsDefaults.AllowScreenshotSettingDefault,
+                shakeToLock = SettingsDefaults.ShakeToLockSettingDefault,
+                bubblesPreview = SettingsDefaults.BubblesPreviewDefault,
+                cameraSystem = OSTestConfig.cameraSystem,
+                autoLockOSKHiddenDelay = SettingsDefaults.AutoLockInactivityDelayMsDefault.milliseconds,
+                verifyPasswordInterval = SettingsDefaults.VerifyPasswordIntervalDefault,
+                bubblesHomeCardCtaState = SettingsDefaults.BubblesPreviewCardDefault,
+                autoLockInactivityDelay = SettingsDefaults.AutoLockInactivityDelayMsDefault.milliseconds,
+                autoLockAppChangeDelay = SettingsDefaults.AutoLockAppChangeDelayMsDefault.milliseconds,
+                clipboardDelay = SettingsDefaults.ClipboardClearDelayMsDefault.milliseconds,
+                bubblesResendMessageDelay = SettingsDefaults.BubblesResendMessageDelayMsDefault.milliseconds,
+                autoLockOSKInactivityDelay = SettingsDefaults.AutoLockInactivityDelayMsDefault.milliseconds,
+                autoBackupEnabled = SettingsDefaults.AutoBackupEnabledDefault,
+                autoBackupFrequency = SettingsDefaults.AutoBackupFrequencyMsDefault.milliseconds,
+                autoBackupMaxNumber = SettingsDefaults.AutoBackupMaxNumberDefault,
+                cloudBackupEnabled = SettingsDefaults.CloudBackupEnabledDefault,
+                keepLocalBackupEnabled = SettingsDefaults.KeepLocalBackupEnabledDefault,
+                itemOrdering = SettingsDefaults.ItemOrderingDefault,
+                itemLayout = SettingsDefaults.ItemLayoutDefault,
+                enableAutoBackupCtaState = SettingsDefaults.EnableAutoBackupCtaState,
+                lastPasswordVerification = SettingsDefaults.lastPasswordVerificationDefault(clock),
+                independentSafeInfoCtaState = SettingsDefaults.independentSafeInfoCtaState(clock),
+            )
     }
 }

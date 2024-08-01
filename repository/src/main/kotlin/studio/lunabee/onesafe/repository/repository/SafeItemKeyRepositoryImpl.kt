@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.repository.repository
 
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.repository.datasource.SafeItemKeyLocalDataSource
@@ -32,5 +33,5 @@ class SafeItemKeyRepositoryImpl @Inject constructor(
     override suspend fun update(itemKeys: List<SafeItemKey>) = safeItemKeyLocalDataSource.update(itemKeys)
     override suspend fun getSafeItemKey(id: UUID): SafeItemKey = safeItemKeyLocalDataSource.getSafeItemKey(id)
     override suspend fun getSafeItemKeys(ids: List<UUID>): List<SafeItemKey> = safeItemKeyLocalDataSource.getSafeItemKeys(ids)
-    override suspend fun getAllSafeItemKeys(): List<SafeItemKey> = safeItemKeyLocalDataSource.getAllSafeItemKeys()
+    override suspend fun getAllSafeItemKeys(safeId: SafeId): List<SafeItemKey> = safeItemKeyLocalDataSource.getAllSafeItemKeys(safeId)
 }

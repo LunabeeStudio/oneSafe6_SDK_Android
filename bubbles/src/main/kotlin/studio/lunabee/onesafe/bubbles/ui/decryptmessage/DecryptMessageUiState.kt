@@ -19,8 +19,8 @@
 
 package studio.lunabee.onesafe.bubbles.ui.decryptmessage
 
+import studio.lunabee.messaging.domain.model.DecryptResult
 import studio.lunabee.onesafe.error.OSError
-import studio.lunabee.onesafe.messaging.domain.model.DecryptResult
 
 sealed interface DecryptMessageUiState {
     data object Idle : DecryptMessageUiState

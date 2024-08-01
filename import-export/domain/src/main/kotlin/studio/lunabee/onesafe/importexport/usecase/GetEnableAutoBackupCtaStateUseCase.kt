@@ -24,10 +24,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.transformLatest
 import studio.lunabee.onesafe.domain.common.CtaState
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import java.time.Clock
 import java.time.Instant
@@ -44,34 +47,41 @@ class GetEnableAutoBackupCtaStateUseCase @Inject constructor(
     private val autoBackupSettingsRepository: AutoBackupSettingsRepository,
     private val itemRepository: SafeItemRepository,
     private val clock: Clock,
+    private val safeRepository: SafeRepository,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(): Flow<CtaState> {
-        return autoBackupSettingsRepository.enableAutoBackupCtaState.transformLatest { currentState ->
-            emit(currentState)
-            when (currentState) {
-                is CtaState.DismissedAt -> {} // keep dismiss
-                CtaState.Hidden,
-                is CtaState.VisibleSince,
-                -> { // observe new value and update on value change
-                    val hasItemFlow = itemRepository.getSafeItemsCountFlow()
-                        .map { count -> count >= MinItemBeforeCta }
-                        .distinctUntilChanged()
-                    combine(
-                        autoBackupSettingsRepository.autoBackupEnabled,
-                        hasItemFlow,
-                    ) { isBackupEnabled, hasItem ->
-                        val newState = if (!isBackupEnabled && hasItem) {
-                            CtaState.VisibleSince(Instant.now(clock).plus(DelayBeforeCtaDays, ChronoUnit.DAYS))
-                        } else {
-                            CtaState.Hidden
+        return safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+            safeId?.let {
+                autoBackupSettingsRepository.enableAutoBackupCtaState(safeId).flatMapLatest { currentState ->
+                    flow {
+                        emit(currentState)
+                        when (currentState) {
+                            is CtaState.DismissedAt -> {} // keep dismiss
+                            CtaState.Hidden,
+                            is CtaState.VisibleSince,
+                            -> { // observe new value and update on value change
+                                val hasItemFlow = itemRepository.getSafeItemsCountFlow(safeId)
+                                    .map { count -> count >= MinItemBeforeCta }
+                                    .distinctUntilChanged()
+                                combine(
+                                    autoBackupSettingsRepository.autoBackupEnabledFlow(safeId),
+                                    hasItemFlow,
+                                ) { isBackupEnabled, hasItem ->
+                                    val newState = if (!isBackupEnabled && hasItem) {
+                                        CtaState.VisibleSince(Instant.now(clock).plus(DelayBeforeCtaDays, ChronoUnit.DAYS))
+                                    } else {
+                                        CtaState.Hidden
+                                    }
+                                    if (newState::class != currentState::class) {
+                                        autoBackupSettingsRepository.setEnableAutoBackupCtaState(safeId, newState)
+                                    }
+                                }.collect()
+                            }
                         }
-                        if (newState::class != currentState::class) {
-                            autoBackupSettingsRepository.setEnableAutoBackupCtaState(newState)
-                        }
-                    }.collect()
+                    }
                 }
-            }
+            } ?: flowOf()
         }
     }
 

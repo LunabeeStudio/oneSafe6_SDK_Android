@@ -40,12 +40,15 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.qualifier.ArchiveCacheDir
 import studio.lunabee.onesafe.domain.qualifier.BackupType
 import studio.lunabee.onesafe.error.OSAppError
 import studio.lunabee.onesafe.importexport.engine.BackupExportEngine
 import studio.lunabee.onesafe.importexport.usecase.ExportBackupUseCase
 import studio.lunabee.onesafe.importexport.utils.ForegroundInfoCompat
+import studio.lunabee.onesafe.toByteArray
+import studio.lunabee.onesafe.toUUID
 import java.io.File
 
 private val logger = LBLogger.get<ExportWorker>()
@@ -64,8 +67,13 @@ class ExportWorker @AssistedInject constructor(
     @ArchiveCacheDir(type = ArchiveCacheDir.Type.Export) private val archiveDir: File,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
+        val safeId = SafeId(inputData.getByteArray(EXPORT_WORKER_SAFE_ID_DATA)!!.toUUID())
         var workerResult = Result.success()
-        exportBackupUseCase(exportEngine, archiveDir)
+        exportBackupUseCase(
+            exportEngine = exportEngine,
+            archiveExtractedDirectory = archiveDir,
+            safeId = safeId,
+        )
             .onStart {
                 updateProgress(0f)
             }
@@ -129,11 +137,18 @@ class ExportWorker @AssistedInject constructor(
         private const val PROGRESS_DATA_KEY = "375f2850-9884-4ef7-a50b-6e58be73a483"
         private const val ERROR_OUTPUT_KEY: String = "ab2c1e17-2b69-4839-b954-bf2b8a3fab73"
 
-        fun start(context: Context, setExpedited: Boolean): Flow<LBFlowResult<File>> {
+        private const val EXPORT_WORKER_SAFE_ID_DATA = "cffdf5f4-2e63-4a36-8e72-32557f1cb4a8"
+
+        fun start(context: Context, setExpedited: Boolean, safeId: SafeId): Flow<LBFlowResult<File>> {
             val workRequestBuilder = OneTimeWorkRequestBuilder<ExportWorker>()
             if (setExpedited) {
                 workRequestBuilder.setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             }
+            val data = Data
+                .Builder()
+                .putByteArray(EXPORT_WORKER_SAFE_ID_DATA, safeId.id.toByteArray())
+                .build()
+            workRequestBuilder.setInputData(data)
             val workRequest = workRequestBuilder.build()
             val workManager = WorkManager.getInstance(context)
             workManager.enqueueUniqueWork(EXPORT_WORKER_NAME, ExistingWorkPolicy.APPEND_OR_REPLACE, workRequest)

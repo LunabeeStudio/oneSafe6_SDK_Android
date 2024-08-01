@@ -28,6 +28,7 @@ android {
 
     defaultConfig {
         testInstrumentationRunner = "studio.lunabee.onesafe.benchmark.HiltBenchmarkRunner"
+        missingDimensionStrategy(OSDimensions.Environment.value, OSDimensions.Environment.Store)
     }
 
     testBuildType = "release"
@@ -98,12 +99,12 @@ dependencies {
     androidTestImplementation(project(":local-android"))
     androidTestImplementation(project(":app:core-ui"))
     androidTestImplementation(project(":app:settings"))
-    androidTestImplementation(project(":bubbles-repository"))
+    androidTestImplementation(libs.bubbles.repository)
+    androidTestImplementation(libs.bubbles.domain)
+    androidTestImplementation(libs.bubbles.shared)
+    androidTestImplementation(libs.bubbles.messaging.domain)
+    androidTestImplementation(libs.bubbles.messaging.repository)
     androidTestImplementation(project(":bubbles-crypto-android"))
-    androidTestImplementation(project(":bubbles-domain"))
-    androidTestImplementation(project(":messaging-domain"))
-    androidTestImplementation(project(":messaging-repository"))
-    androidTestImplementation(project(":messaging-crypto-android"))
     androidTestImplementation(project(":import-export-core"))
     androidTestImplementation(project(":import-export-domain"))
     androidTestImplementation(project(":import-export-repository"))

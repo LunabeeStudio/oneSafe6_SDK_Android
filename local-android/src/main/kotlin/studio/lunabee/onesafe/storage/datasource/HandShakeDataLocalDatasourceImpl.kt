@@ -19,11 +19,11 @@
 
 package studio.lunabee.onesafe.storage.datasource
 
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.model.EncHandShakeData
 import studio.lunabee.messaging.repository.datasource.HandShakeDataLocalDatasource
-import studio.lunabee.onesafe.messaging.domain.model.EncHandShakeData
 import studio.lunabee.onesafe.storage.dao.HandShakeDataDao
 import studio.lunabee.onesafe.storage.model.RoomHandShakeData
-import java.util.UUID
 import javax.inject.Inject
 
 class HandShakeDataLocalDatasourceImpl @Inject constructor(
@@ -33,11 +33,11 @@ class HandShakeDataLocalDatasourceImpl @Inject constructor(
         handShakeDataDao.insert(RoomHandShakeData.fromHandShakeData(handShakeData))
     }
 
-    override suspend fun delete(conversationLocalId: UUID) {
-        handShakeDataDao.deleteById(conversationLocalId)
+    override suspend fun delete(conversationLocalId: DoubleRatchetUUID) {
+        handShakeDataDao.deleteById(conversationLocalId.uuid)
     }
 
-    override suspend fun getById(conversationLocalId: UUID): EncHandShakeData? {
-        return handShakeDataDao.getById(conversationLocalId)?.toHandShakeData()
+    override suspend fun getById(conversationLocalId: DoubleRatchetUUID): EncHandShakeData? {
+        return handShakeDataDao.getById(conversationLocalId.uuid)?.toHandShakeData()
     }
 }

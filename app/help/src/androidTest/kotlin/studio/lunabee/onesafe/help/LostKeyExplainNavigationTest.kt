@@ -20,7 +20,7 @@ import javax.inject.Inject
 class LostKeyExplainNavigationTest @Inject constructor() : OSHelpActivityTest() {
 
     @get:Rule override val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
-    override val initialTestState: InitialTestState = InitialTestState.SignedUp()
+    override val initialTestState: InitialTestState = InitialTestState.Home()
 
     @Test
     fun navigate_to_lostKey_test() {

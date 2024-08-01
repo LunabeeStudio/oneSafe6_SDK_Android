@@ -29,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import studio.lunabee.compose.core.LbcTextSpec
+import studio.lunabee.doubleratchet.model.createRandomUUID
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
@@ -111,7 +112,7 @@ private fun ImeContactFilledScreenPreview() {
         ImeContactFilledScreen(
             uiState = ImeContactUiState.Data(
                 listOf(true, false).map {
-                    UIBubblesContactInfo(UUID.randomUUID(), DefaultNameProvider(it.toString()), it)
+                    UIBubblesContactInfo(createRandomUUID(), DefaultNameProvider(it.toString()), it)
                 },
             ),
             navigateBack = { },

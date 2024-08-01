@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.importexport.repository
 
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemIdName
@@ -35,6 +36,6 @@ interface ImportExportItemRepository {
         updateItemsAlphaIndices: MutableMap<UUID, Double>,
     )
 
-    suspend fun getAllSafeItemIds(): List<UUID>
-    suspend fun getAllSafeItemIdName(): List<SafeItemIdName>
+    suspend fun getAllSafeItemIds(safeId: SafeId): List<UUID>
+    suspend fun getAllSafeItemIdName(safeId: SafeId): List<SafeItemIdName>
 }

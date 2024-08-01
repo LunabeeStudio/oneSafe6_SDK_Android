@@ -22,5 +22,5 @@ package studio.lunabee.onesafe.ime
 import studio.lunabee.onesafe.ime.model.OSKImeState
 
 interface OSKImeStateObserver {
-    fun onStateChange(state: OSKImeState)
+    suspend fun onStateChange(state: OSKImeState)
 }

@@ -19,13 +19,21 @@
 
 package studio.lunabee.onesafe.domain.usecase.item
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import javax.inject.Inject
 
 class GetItemCountUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
+    private val safeRepository: SafeRepository,
 ) {
 
-    operator fun invoke(): Flow<Int> = safeItemRepository.getSafeItemsCountFlow()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    operator fun invoke(): Flow<Int> = safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+        safeId?.let { safeItemRepository.getSafeItemsCountFlow(safeId) } ?: flowOf(0)
+    }
 }

@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.repository.datasource
 
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import java.io.File
 import java.io.InputStream
 import java.util.UUID
@@ -26,15 +27,16 @@ import java.util.UUID
 interface FileLocalDatasource {
     fun getPlainFile(itemId: UUID, fieldId: UUID, filename: String): File
     fun getFile(filename: String): File
+    suspend fun createFile(fileId: String, safeId: SafeId): File
     fun createTempFile(fileId: String): File
-    suspend fun addFile(filename: String, file: ByteArray): File
-    fun removeAllFiles()
-    fun deleteFile(filename: String): Boolean
-    fun getAllFiles(): List<File>
-    suspend fun copyAndDeleteFile(newFile: File, fileId: UUID)
+    suspend fun addFile(filename: String, file: ByteArray, safeId: SafeId): File
+    suspend fun deleteFile(filename: String): Boolean
+    suspend fun getAllFiles(safeId: SafeId): List<File>
+    suspend fun copyAndDeleteFile(newFile: File, fileId: UUID, safeId: SafeId)
     fun getFiles(filesId: List<String>): List<File>
     suspend fun deleteItemDir(itemId: UUID)
     suspend fun deletePlainFilesCacheDir()
     fun getThumbnailFile(thumbnailFileName: String, isFullWidth: Boolean): File
     suspend fun savePlainFile(inputStream: InputStream, filename: String, itemId: UUID, fieldId: UUID): File
+    suspend fun deleteAll(safeId: SafeId)
 }

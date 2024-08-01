@@ -23,21 +23,25 @@ import com.lunabee.lbcore.model.LBFlowResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.error.osCatch
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import javax.inject.Inject
 
 class UpdateAutoBackUpsMaxNumberUseCase @Inject constructor(
     private val settings: AutoBackupSettingsRepository,
     private val deleteOldBackupsUseCase: DeleteOldBackupsUseCase,
+    private val safeRepository: SafeRepository,
 ) {
     operator fun invoke(maxNumber: Int): Flow<LBFlowResult<Unit>> = flow {
-        val previousAutoBackupMaxNumber = settings.autoBackupMaxNumber
-        settings.updateAutoBackupMaxNumber(maxNumber)
+        val safeId = safeRepository.currentSafeId()
+        val previousAutoBackupMaxNumber = settings.autoBackupMaxNumber(safeId)
+        settings.updateAutoBackupMaxNumber(safeId, maxNumber)
 
         if (previousAutoBackupMaxNumber > maxNumber) {
-            emitAll(deleteOldBackupsUseCase())
+            emitAll(deleteOldBackupsUseCase(safeId))
         } else {
             emit(LBFlowResult.Success(Unit))
         }
-    }
+    }.osCatch()
 }

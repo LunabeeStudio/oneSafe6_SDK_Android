@@ -19,10 +19,12 @@
 
 package studio.lunabee.onesafe.domain.model.search
 
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import java.util.UUID
 
 class IndexWordEntry(
     val encWord: ByteArray,
     val itemMatch: UUID,
     val fieldMatch: UUID?,
+    val safeId: SafeId,
 )

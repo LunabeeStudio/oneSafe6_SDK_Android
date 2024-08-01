@@ -19,14 +19,12 @@
 
 package studio.lunabee.onesafe.domain.repository
 
-import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.error.OSCryptoError
 import javax.crypto.Cipher
 
 interface BiometricCipherRepository {
     @Throws(OSCryptoError::class)
-    fun getCipherBiometricForDecrypt(): Cipher
+    fun getCipherBiometricForDecrypt(iv: ByteArray): Cipher
     fun createCipherBiometricForEncrypt(): Cipher
-    fun hasEncryptedMasterKeyStored(): Flow<Boolean>
-    fun disableBiometric()
+    fun clear()
 }

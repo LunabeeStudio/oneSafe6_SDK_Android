@@ -29,12 +29,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import studio.lunabee.messaging.domain.usecase.ManageIncomingMessageUseCase
+import studio.lunabee.messaging.domain.usecase.ManagingIncomingMessageResultData
 import studio.lunabee.onesafe.bubbles.ui.extension.getBase64FromMessage
 import studio.lunabee.onesafe.commonui.dialog.DialogAction
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.dialog.ErrorDialogState
-import studio.lunabee.onesafe.messaging.domain.usecase.ManageIncomingMessageUseCase
-import studio.lunabee.onesafe.messaging.domain.usecase.ManagingIncomingMessageResultData
 import javax.inject.Inject
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi

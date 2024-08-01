@@ -39,6 +39,7 @@ import studio.lunabee.onesafe.domain.usecase.item.AddAndRemoveFileUseCase
 import studio.lunabee.onesafe.domain.usecase.item.AddFieldUseCase
 import studio.lunabee.onesafe.domain.usecase.item.CreateItemUseCase
 import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
+import studio.lunabee.onesafe.migration.migration.MigrationFromV9ToV10
 import studio.lunabee.onesafe.test.CommonTestUtils.createItemFieldData
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltTest
@@ -46,6 +47,7 @@ import studio.lunabee.onesafe.test.OSTestConfig
 import studio.lunabee.onesafe.test.assertFailure
 import studio.lunabee.onesafe.test.assertSuccess
 import studio.lunabee.onesafe.test.colorInt
+import studio.lunabee.onesafe.test.firstSafeId
 import studio.lunabee.onesafe.test.test
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -58,7 +60,7 @@ import kotlin.test.assertTrue
 @HiltAndroidTest
 class MigrationFromV9ToV10Test : OSHiltTest() {
     @get:Rule override val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
-    override val initialTestState: InitialTestState = InitialTestState.LoggedIn
+    override val initialTestState: InitialTestState = InitialTestState.Home()
 
     private val salt: ByteArray = OSTestConfig.random.nextBytes(32)
 
@@ -103,7 +105,7 @@ class MigrationFromV9ToV10Test : OSHiltTest() {
         assertEquals("image/png", beforeMimetype)
 
         val filedId = UUID.randomUUID()
-        addAndRemoveFileUseCase(item.id, listOf(FileSavingData.ToSave(filedId) { pngFile.inputStream() }))
+        addAndRemoveFileUseCase(item, listOf(FileSavingData.ToSave(filedId) { pngFile.inputStream() }))
 
         val fieldId = UUID.randomUUID()
         val itemFieldData = createItemFieldData(
@@ -113,7 +115,7 @@ class MigrationFromV9ToV10Test : OSHiltTest() {
         )
         addFieldUseCase(item.id, itemFieldData)
 
-        val result = migrationFromV9ToV10(masterKey())
+        val result = migrationFromV9ToV10(masterKey(), firstSafeId)
         assertSuccess(result)
 
         val encFile = File(context.filesDir, "files/$filedId")
@@ -141,7 +143,7 @@ class MigrationFromV9ToV10Test : OSHiltTest() {
         assertEquals("image/png", beforeMimetype)
 
         val filedId = UUID.randomUUID()
-        addAndRemoveFileUseCase(item.id, listOf(FileSavingData.ToSave(filedId) { pngFile.inputStream() }))
+        addAndRemoveFileUseCase(item, listOf(FileSavingData.ToSave(filedId) { pngFile.inputStream() }))
 
         val fieldId = UUID.randomUUID()
         val itemFieldData = createItemFieldData(
@@ -151,7 +153,7 @@ class MigrationFromV9ToV10Test : OSHiltTest() {
         )
         addFieldUseCase(item.id, itemFieldData)
 
-        val result = migrationFromV9ToV10(masterKey())
+        val result = migrationFromV9ToV10(masterKey(), firstSafeId)
         assertSuccess(result)
 
         val encFile = File(context.filesDir, "files/$filedId")
@@ -177,7 +179,7 @@ class MigrationFromV9ToV10Test : OSHiltTest() {
 
         val filedId = UUID.randomUUID()
         val encFile = File(context.filesDir, "files/$filedId")
-        addAndRemoveFileUseCase(item.id, listOf(FileSavingData.ToSave(filedId) { pngFile.inputStream() }))
+        addAndRemoveFileUseCase(item, listOf(FileSavingData.ToSave(filedId) { pngFile.inputStream() }))
 
         val fieldId = UUID.randomUUID()
         val itemFieldData = createItemFieldData(
@@ -188,7 +190,7 @@ class MigrationFromV9ToV10Test : OSHiltTest() {
         addFieldUseCase(item.id, itemFieldData)
 
         // Makes the crypto fail with wrong key
-        val resultWrongKey = migrationFromV9ToV10(OSTestConfig.random.nextBytes(32))
+        val resultWrongKey = migrationFromV9ToV10(OSTestConfig.random.nextBytes(32), firstSafeId)
         assertSuccess(resultWrongKey)
 
         val plainFileData = decryptUseCase(encFile.readBytes(), item.id, ByteArray::class).data!!
@@ -214,7 +216,7 @@ class MigrationFromV9ToV10Test : OSHiltTest() {
 
         val filedId = UUID.randomUUID()
         val encFile = File(context.filesDir, "files/$filedId")
-        addAndRemoveFileUseCase(item.id, listOf(FileSavingData.ToSave(filedId) { pngFile.inputStream() }))
+        addAndRemoveFileUseCase(item, listOf(FileSavingData.ToSave(filedId) { pngFile.inputStream() }))
 
         val fieldId = UUID.randomUUID()
         val itemFieldData = createItemFieldData(
@@ -229,7 +231,7 @@ class MigrationFromV9ToV10Test : OSHiltTest() {
         val corruptedData = pngData.copyOfRange(0, 12) + OSTestConfig.random.nextBytes(50)
 
         encFile.writeBytes(corruptedData)
-        val resultBadFile = migrationFromV9ToV10(masterKey())
+        val resultBadFile = migrationFromV9ToV10(masterKey(), firstSafeId)
         assertSuccess(resultBadFile)
         val decryptResult = decryptUseCase(encFile.readBytes(), item.id, ByteArray::class)
         assertFailure(decryptResult)

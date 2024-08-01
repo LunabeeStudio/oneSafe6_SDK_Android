@@ -42,5 +42,7 @@ data class OSStorageError(
         DATABASE_CANNOT_ACCESS_DIR("Cannot access the database parent directory"),
         DATABASE_CANNOT_ACCESS_FILES("Cannot access files in database directory"),
         DATABASE_CORRUPTED("The database is corrupted"),
+        NO_SALT_FOUND("No salt found for the provided safe id"),
+        SAFE_ID_ALREADY_LOADED("A SafeId is already loaded"),
     }
 }

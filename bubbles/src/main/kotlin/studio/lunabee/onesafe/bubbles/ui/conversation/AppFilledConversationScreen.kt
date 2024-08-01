@@ -57,7 +57,7 @@ fun AppFilledConversationScreen(
     ) {
         ContactScreenFactory.addConversations(
             conversations = contacts,
-            onClick = onConversationClick,
+            onClick = { onConversationClick(it.uuid) },
         )
         lazyVerticalOSRegularSpacer()
         item {

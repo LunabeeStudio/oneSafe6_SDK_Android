@@ -180,19 +180,14 @@ class SqlCipherDBManager @Inject constructor(
     }
 
     private fun backupDatabase(dbFile: File, key: DatabaseKey?) {
-        val parentFile = dbFile.parentFile
-            ?: throw OSStorageError.Code.DATABASE_CANNOT_ACCESS_DIR.get()
-        val databaseFiles = parentFile.listFiles { _, name ->
-            name.startsWith(dbFile.nameWithoutExtension)
-        } ?: throw OSStorageError.Code.DATABASE_CANNOT_ACCESS_FILES.get()
-
-        val backupMap = databaseFiles.associateWith { originalFile ->
-            File(parentFile, originalFile.name + ".backup").also { backupFile ->
-                originalFile.renameTo(backupFile)
-            }
+        val backupFile = File(dbFile.absolutePath + ".backup")
+        dbFile.takeIf { it.exists() }?.renameTo(backupFile)
+        File(dbFile.absolutePath + "-shm").takeIf { it.exists() }?.let {
+            it.renameTo(File(it.absolutePath.replace("-shm", ".backup-shm")))
         }
-        val backupFile = backupMap[dbFile]
-            ?: throw OSStorageError.Code.DATABASE_BACKUP_ERROR.get(message = "Cannot find the database main backup file")
+        File(dbFile.absolutePath + "-wal").takeIf { it.exists() }?.let {
+            it.renameTo(File(it.absolutePath.replace("-wal", ".backup-wal")))
+        }
 
         checkDatabaseAccess(key, backupFile)
     }

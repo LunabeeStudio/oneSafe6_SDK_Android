@@ -22,8 +22,8 @@ package studio.lunabee.onesafe.importexport.model
 import java.net.URI
 
 /**
- * @param folderURI The url of the cloud folder. Null if the folder has not been set yet.
- * @param driveAccount The account used to access cloud storage
+ * @property folderURI The url of the cloud folder. Null if the folder has not been set yet.
+ * @property driveAccount The account used to access cloud storage
  */
 data class CloudInfo(
     val folderURI: URI?,

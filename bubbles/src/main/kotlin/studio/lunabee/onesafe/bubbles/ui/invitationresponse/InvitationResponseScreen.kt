@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSScreen
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
@@ -49,7 +50,6 @@ import studio.lunabee.onesafe.commonui.extension.getTextSharingIntent
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
-import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import java.util.UUID
 
 context(InvitationResponseNavScope)
@@ -60,11 +60,8 @@ fun InvitationResponseRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val dialogState by viewModel.dialogState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val isMaterialYouEnabled by viewModel.isMaterialYouEnabled.collectAsStateWithLifecycle(initialValue = false)
 
-    OSForcedLightScreen(
-        isMaterialYouEnabled = isMaterialYouEnabled,
-    ) {
+    OSForcedLightScreen {
         dialogState?.DefaultAlertDialog()
         when (val safeState = uiState) {
             InvitationUiState.Exit -> {
@@ -73,7 +70,7 @@ fun InvitationResponseRoute(
             }
             null -> OSScreen(testTag = "") { Box(modifier = Modifier.fillMaxSize()) }
             is InvitationUiState.Data -> {
-                val invitationLink = safeState.invitationString.getDeepLinkFromMessage(true)
+                val invitationLink = safeState.invitationString.getDeepLinkFromMessage(MessageSharingMode.Deeplink)
                 InvitationResponseScreen(
                     onBackClick = navigateBack,
                     invitationLink = invitationLink,
@@ -82,7 +79,7 @@ fun InvitationResponseRoute(
                         context.startActivity(intent)
                     },
                     contactName = safeState.contactName,
-                    onFinishClick = { navigateToConversation(viewModel.contactId) },
+                    onFinishClick = { navigateToConversation(viewModel.contactId.uuid) },
                 )
             }
         }
@@ -98,10 +95,7 @@ fun InvitationResponseScreen(
     onFinishClick: () -> Unit,
 ) {
     val invitationQr = remember(invitationLink) { invitationLink.toBarcodeBitmap() }
-    OSScreen(
-        testTag = UiConstants.TestTag.Screen.InvitationResponseScreen,
-        background = LocalDesignSystem.current.bubblesBackGround(),
-    ) {
+    OSScreen(testTag = UiConstants.TestTag.Screen.InvitationResponseScreen) {
         Column(
             modifier = Modifier
                 .fillMaxSize()

@@ -20,9 +20,12 @@
 package studio.lunabee.onesafe.importexport.repository
 
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.importexport.model.AutoBackupError
+import java.util.UUID
 
 interface AutoBackupErrorRepository {
-    fun getError(): Flow<AutoBackupError?>
-    suspend fun setError(error: AutoBackupError?)
+    fun getError(safeId: SafeId): Flow<AutoBackupError?>
+    suspend fun addError(error: AutoBackupError)
+    suspend fun removeError(errorId: UUID)
 }

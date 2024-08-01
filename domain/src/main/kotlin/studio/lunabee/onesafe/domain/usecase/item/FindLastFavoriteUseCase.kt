@@ -22,22 +22,30 @@ package studio.lunabee.onesafe.domain.usecase.item
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.repository.ItemSettingsRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import javax.inject.Inject
 
 class FindLastFavoriteUseCase @Inject constructor(
     private val itemSettingsRepository: ItemSettingsRepository,
     private val safeItemRepository: SafeItemRepository,
+    private val safeRepository: SafeRepository,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(limit: Int): Flow<List<SafeItem>> {
-        return itemSettingsRepository.itemOrdering.flatMapLatest { itemOrder ->
-            safeItemRepository.findLastFavorite(
-                limit,
-                itemOrder,
-            )
+        return safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+            safeId?.let {
+                itemSettingsRepository.itemOrdering(safeId).flatMapLatest { itemOrder ->
+                    safeItemRepository.findLastFavorite(
+                        limit,
+                        itemOrder,
+                        safeId,
+                    )
+                }
+            } ?: flowOf(emptyList())
         }
     }
 }

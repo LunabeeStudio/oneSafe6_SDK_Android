@@ -22,19 +22,17 @@ package studio.lunabee.onesafe.bubbles.crypto
 import org.bouncycastle.crypto.digests.SHA512Digest
 import org.bouncycastle.crypto.generators.HKDFBytesGenerator
 import org.bouncycastle.crypto.params.HKDFParameters
+import studio.lunabee.bubbles.domain.crypto.BubblesDataHashEngine
 import javax.inject.Inject
 
-class HKDFHashEngine @Inject constructor() : DataHashEngine {
+class HKDFHashEngine @Inject constructor() : BubblesDataHashEngine {
     private val hkdf = HKDFBytesGenerator(SHA512Digest())
 
-    override fun deriveKey(
-        key: ByteArray,
-        salt: ByteArray,
-        out: ByteArray,
-    ): ByteArray {
+    override fun deriveKey(key: ByteArray, salt: ByteArray, size: Int): ByteArray {
+        val out = ByteArray(size)
         val hkdfParams = HKDFParameters(key, salt, null)
         hkdf.init(hkdfParams)
-        hkdf.generateBytes(out, 0, out.size)
+        hkdf.generateBytes(out, 0, size)
         return out
     }
 }

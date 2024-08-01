@@ -24,8 +24,9 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import studio.lunabee.onesafe.messaging.domain.model.MessageDirection
-import studio.lunabee.onesafe.messaging.domain.model.SafeMessage
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.model.MessageDirection
+import studio.lunabee.messaging.domain.model.SafeMessage
 import java.util.UUID
 
 @Entity(
@@ -53,8 +54,8 @@ class RoomMessage(
     @ColumnInfo(name = "is_read", defaultValue = "true") val isRead: Boolean,
 ) {
     fun toMessage(): SafeMessage = SafeMessage(
-        id = id,
-        fromContactId = contactId,
+        id = DoubleRatchetUUID(id),
+        fromContactId = DoubleRatchetUUID(contactId),
         encSentAt = encSentAt,
         encContent = encContent,
         direction = direction,
@@ -64,8 +65,8 @@ class RoomMessage(
 
     companion object {
         fun fromMessage(message: SafeMessage, order: Float): RoomMessage = RoomMessage(
-            id = message.id,
-            contactId = message.fromContactId,
+            id = message.id.uuid,
+            contactId = message.fromContactId.uuid,
             encSentAt = message.encSentAt,
             encContent = message.encContent,
             direction = message.direction,

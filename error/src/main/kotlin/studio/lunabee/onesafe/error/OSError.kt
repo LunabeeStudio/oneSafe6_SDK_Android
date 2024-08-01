@@ -42,6 +42,7 @@ sealed class OSError(
         inline fun <R> runCatching(
             logger: Logger? = null,
             noinline mapErr: ((OSError) -> OSError)? = null,
+            noinline failureData: ((OSError) -> R?)? = null,
             block: () -> R,
         ): LBResult<R> {
             return try {
@@ -49,7 +50,7 @@ sealed class OSError(
             } catch (e: OSError) {
                 val error = mapErr?.invoke(e) ?: e
                 logger?.e(error)
-                LBResult.Failure(error)
+                LBResult.Failure(throwable = error, failureData = failureData?.invoke(error))
             }
         }
 

@@ -19,12 +19,16 @@
 
 package studio.lunabee.onesafe.importexport.usecase
 
+import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import studio.lunabee.onesafe.domain.model.safe.SafeId
+import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.model.LatestBackups
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
@@ -37,20 +41,22 @@ class GetLatestBackupUseCase @Inject constructor(
     private val getLatestLocalBackupUseCase: GetLatestLocalBackupUseCase,
     private val cloudBackupRepository: CloudBackupRepository,
     private val getAutoBackupModeUseCase: GetAutoBackupModeUseCase,
+    private val safeRepository: SafeRepository,
 ) {
     /**
      * Get all distinct & sorted backups
      */
-    suspend operator fun invoke(): LatestBackups? {
-        val mode = getAutoBackupModeUseCase()
-        return when (mode) {
+    suspend operator fun invoke(): LBResult<LatestBackups?> = OSError.runCatching {
+        val safeId = safeRepository.currentSafeId()
+        val mode = getAutoBackupModeUseCase(safeId)
+        when (mode) {
             AutoBackupMode.Disabled -> null
             AutoBackupMode.LocalOnly -> getLatestLocalBackupUseCase()?.let { LatestBackups(it, null) }
-            AutoBackupMode.CloudOnly -> cloudBackupRepository.getLatestBackup()?.let { LatestBackups(null, it) }
+            AutoBackupMode.CloudOnly -> cloudBackupRepository.getLatestBackup(safeId)?.let { LatestBackups(null, it) }
             AutoBackupMode.Synchronized -> {
                 val localBackup = getLatestLocalBackupUseCase()
-                val cloudBackup = cloudBackupRepository.getLatestBackup()
-                return LatestBackups(localBackup, cloudBackup)
+                val cloudBackup = cloudBackupRepository.getLatestBackup(safeId)
+                LatestBackups(localBackup, cloudBackup)
             }
         }
     }
@@ -59,18 +65,24 @@ class GetLatestBackupUseCase @Inject constructor(
      * Get a flow of all all distinct & sorted backups
      */
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun flow(): Flow<LatestBackups?> {
-        return getAutoBackupModeUseCase.flow().flatMapLatest { mode ->
-            when (mode) {
-                AutoBackupMode.Disabled -> flowOf(null)
-                AutoBackupMode.LocalOnly -> getLatestLocalBackupUseCase.flow().map { LatestBackups(it, null) }
-                AutoBackupMode.CloudOnly -> cloudBackupRepository.getLatestBackupFlow().map { LatestBackups(null, it) }
-                AutoBackupMode.Synchronized -> combine(
-                    getLatestLocalBackupUseCase.flow(),
-                    cloudBackupRepository.getLatestBackupFlow(),
-                ) { localBackup, cloudBackup ->
-                    LatestBackups(localBackup, cloudBackup)
-                }
+    fun flow(currentSafeId: SafeId? = null): Flow<LatestBackups?> {
+        return currentSafeId?.let { safeId -> latestBackupsFlow(safeId) }
+            ?: safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+                safeId?.let { latestBackupsFlow(safeId) } ?: flowOf(null)
+            }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun latestBackupsFlow(safeId: SafeId) = getAutoBackupModeUseCase.flow(safeId).flatMapLatest { mode ->
+        when (mode) {
+            AutoBackupMode.Disabled -> flowOf(null)
+            AutoBackupMode.LocalOnly -> getLatestLocalBackupUseCase.flow().map { LatestBackups(it, null) }
+            AutoBackupMode.CloudOnly -> cloudBackupRepository.getLatestBackupFlow(safeId).map { LatestBackups(null, it) }
+            AutoBackupMode.Synchronized -> combine(
+                getLatestLocalBackupUseCase.flow(),
+                cloudBackupRepository.getLatestBackupFlow(safeId),
+            ) { localBackup, cloudBackup ->
+                LatestBackups(localBackup, cloudBackup)
             }
         }
     }

@@ -6,6 +6,7 @@
 
 [plugins]
 
+aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutlibraries" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 androidx-benchmark = { id = "androidx.benchmark", version.ref = "benchmark" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
@@ -17,41 +18,46 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 
 [versions]
 
+aboutlibraries = "11.2.2"
+
 benchmark = "1.2.3"
 
-android-gradle-plugin = "8.4.1"
-##                 ⬆ = "8.5.0-alpha01"
-##                 ⬆ = "8.5.0-alpha02"
-##                 ⬆ = "8.5.0-alpha03"
-##                 ⬆ = "8.5.0-alpha04"
-##                 ⬆ = "8.5.0-alpha05"
-##                 ⬆ = "8.5.0-alpha06"
-##                 ⬆ = "8.5.0-alpha07"
-##                 ⬆ = "8.5.0-alpha08"
-##                 ⬆ = "8.5.0-beta01"
-##                 ⬆ = "8.5.0-beta02"
-##                 ⬆ = "8.5.0-rc01"
+android-gradle-plugin = "8.5.1"
 ##                 ⬆ = "8.6.0-alpha01"
 ##                 ⬆ = "8.6.0-alpha02"
 ##                 ⬆ = "8.6.0-alpha03"
 ##                 ⬆ = "8.6.0-alpha04"
+##                 ⬆ = "8.6.0-alpha05"
+##                 ⬆ = "8.6.0-alpha06"
+##                 ⬆ = "8.6.0-alpha07"
+##                 ⬆ = "8.6.0-alpha08"
+##                 ⬆ = "8.6.0-beta01"
+##                 ⬆ = "8.6.0-beta02"
+##                 ⬆ = "8.7.0-alpha01"
+##                 ⬆ = "8.7.0-alpha02"
 
 kotlin = "2.0.0"
+##  ⬆ = "2.0.10-RC"
+##  ⬆ = "2.0.20-Beta1"
+##  ⬆ = "2.0.20-Beta2"
 
-ksp = "2.0.0-1.0.22"
+ksp = "2.0.0-1.0.23"
+##⬆= "2.0.10-RC-1.0.23"
+##⬆= "2.0.20-Beta1-1.0.22"
+##⬆= "2.0.20-Beta2-1.0.23"
 
 google-dagger = "2.51.1"
 
 florisboard-library = "0.4.0-beta02-1.0.0"
 
-doubleratchet-jvm = "0.1.4"
+doubleratchet-jvm = "0.1.4-data-class-SNAPSHOT"
 
 logback-classic = "1.5.6"
 
 play-services-base = "18.5.0"
 play-services-auth-base = "18.0.13"
 google-api-client = "2.6.0"
-google-api-services-drive = "v3-rev20240521-2.0.0"
+google-api-services-drive = "v3-rev20240628-2.0.0"
 
 threeten-extra = "1.8.0"
 
@@ -64,18 +70,20 @@ junit4 = "4.13.2"
 kotlinx-coroutines = "1.8.1"
 ##              ⬆ = "1.9.0-RC"
 
-androidx-test-core = "1.6.0-rc01"
+androidx-test-core = "1.6.1"
 
-androidx-test-runner = "1.6.0-rc01"
+androidx-test-runner = "1.6.1"
 
-androidx-test-rules = "1.6.0-rc01"
+androidx-test-rules = "1.6.1"
 
 androidx-room = "2.6.1"
 ##         ⬆ = "2.7.0-alpha01"
 ##         ⬆ = "2.7.0-alpha02"
 ##         ⬆ = "2.7.0-alpha03"
+##         ⬆ = "2.7.0-alpha04"
+##         ⬆ = "2.7.0-alpha05"
 
-mockk = "1.13.11"
+mockk = "1.13.12"
 
 android-tools-desugar_jdk_libs = "2.0.4"
 
@@ -85,31 +93,24 @@ androidx-tracing = "1.2.0"
 
 androidx-security-crypto = "1.1.0-alpha06"
 
-kotlinx-serialization = "1.6.3"
-##                 ⬆ = "1.7.0-RC"
+kotlinx-serialization = "1.7.1"
 
 androidx-appcompat = "1.7.0"
 
 androidx-core = "1.13.1"
 ##         ⬆ = "1.14.0-alpha01"
+##         ⬆ = "1.15.0-alpha01"
 
-# FIXME lifecycle 2.8.0 requires Compose 1.7.0 https://issuetracker.google.com/issues/336842920
-androidx-lifecycle = "2.7.0"
-##              ⬆ = "2.8.0-alpha01"
-##              ⬆ = "2.8.0-alpha02"
-##              ⬆ = "2.8.0-alpha03"
-##              ⬆ = "2.8.0-alpha04"
-##              ⬆ = "2.8.0-beta01"
-##              ⬆ = "2.8.0-rc01"
-##              ⬆ = "2.8.0"
-##              ⬆ = "2.8.1"
+androidx-lifecycle = "2.8.4"
 
-compose-bom-stable = "2024.05.00"
+compose-bom-stable = "2024.06.00"
 compose-bom-alpha = "2024.02.00-alpha01"
 
 google-android-material = "1.12.0"
 ##                   ⬆ = "1.13.0-alpha01"
 ##                   ⬆ = "1.13.0-alpha02"
+##                   ⬆ = "1.13.0-alpha03"
+##                   ⬆ = "1.13.0-alpha04"
 
 androidx-biometric = "1.1.0"
 ##              ⬆ = "1.2.0-alpha01"
@@ -119,7 +120,7 @@ androidx-biometric = "1.1.0"
 ##              ⬆ = "1.2.0-alpha05"
 ##              ⬆ = "1.4.0-alpha01"
 
-androidx-paging = "3.3.0"
+androidx-paging = "3.3.1"
 
 androidx-core-splashscreen = "1.0.1"
 ##                      ⬆ = "1.1.0-alpha01"
@@ -134,6 +135,7 @@ androidx-work = "2.9.0"
 androidx-autofill = "1.1.0"
 ##             ⬆ = "1.2.0-alpha01"
 ##             ⬆ = "1.2.0-alpha02"
+##             ⬆ = "1.2.0-alpha02"
 ##             ⬆ = "1.2.0-beta01"
 ##             ⬆ = "1.3.0-alpha01"
 
@@ -141,10 +143,14 @@ androidx-slice-builders-ktx = "1.0.0-alpha08"
 
 androidx-emoji2 = "1.4.0"
 ##           ⬆ = "1.5.0-alpha01"
+##           ⬆ = "1.5.0-beta01"
 
 androidx-paging-compose = "3.3.0"
+##                   ⬆ = "3.3.1"
 
 androidx-activity = "1.9.0"
+##             ⬆ = "1.9.1"
+##             ⬆ = "1.10.0-alpha01"
 
 androidx-hilt-navigation-compose = "1.2.0"
 
@@ -156,20 +162,15 @@ google-accompanist = "0.34.0"
 
 androidx-palette = "1.0.0"
 
-firebase-bom = "33.1.0"
+firebase-bom = "33.1.2"
 
 # FIXME 3.0.0+ Requires play services to be applied
 firebase-crashlytics-gradle = "2.9.9"
 ##                       ⬆ = "3.0.0"
 ##                       ⬆ = "3.0.1"
+##                       ⬆ = "3.0.2"
 
-androidx-test-ext-junit = "1.1.5"
-##                   ⬆ = "1.2.0-alpha01"
-##                   ⬆ = "1.2.0-alpha02"
-##                   ⬆ = "1.2.0-alpha03"
-##                   ⬆ = "1.2.0-alpha04"
-##                   ⬆ = "1.2.0-beta01"
-##                   ⬆ = "1.2.0-rc01"
+androidx-test-ext-junit = "1.2.1"
 
 androidx-benchmark = "1.2.4"
 ##              ⬆ = "1.3.0-alpha01"
@@ -177,8 +178,11 @@ androidx-benchmark = "1.2.4"
 ##              ⬆ = "1.3.0-alpha03"
 ##              ⬆ = "1.3.0-alpha04"
 ##              ⬆ = "1.3.0-alpha05"
+##              ⬆ = "1.3.0-beta01"
+##              ⬆ = "1.3.0-beta02"
 
-androidx-annotation = "1.8.0"
+androidx-annotation = "1.8.1"
+##               ⬆ = "1.9.0-alpha01"
 
 # FIXME 1.1.0 have some issue when cleaning and re-reading data (see export_engine_not_signed_up_test). To investigate
 androidx-datastore = "1.0.0"
@@ -198,14 +202,16 @@ androidx-datastore = "1.0.0"
 
 androidx-preference = "1.2.1"
 
-ktor = "2.3.11"
+ktor = "2.3.12"
 ##⬆ = "3.0.0-beta-1"
+##⬆ = "3.0.0-beta-2"
 
 androidx-test-espresso = "3.6.0-beta01"
 
 androidx-test-uiautomator = "2.3.0"
+##                     ⬆ = "2.4.0-alpha01"
 
-coil-kt = "2.6.0"
+coil-kt = "2.7.0"
 
 androidx-startup = "1.1.1"
 ##            ⬆ = "1.2.0-alpha01"
@@ -222,56 +228,69 @@ navigation-compose = "2.7.7"
 ##              ⬆ = "2.8.0-alpha08"
 ##              ⬆ = "2.8.0-beta01"
 ##              ⬆ = "2.8.0-beta02"
+##              ⬆ = "2.8.0-beta03"
+##              ⬆ = "2.8.0-beta04"
+##              ⬆ = "2.8.0-beta05"
+##              ⬆ = "2.8.0-beta06"
 
 detekt = "1.23.6"
 
-protobuf = "4.27.0"
+protobuf = "4.27.2"
+##    ⬆ = "4.28.0-RC1"
 
 protobuf-plugin = "0.9.4"
 
-lunabee-library = "4.2.0-187-develop-SNAPSHOT"
+lunabee-library = "4.2.0-188-develop-SNAPSHOT"
 
 compose-shimmer = "1.3.0"
 
 lbcaccessibility = "1.6.0"
+##            ⬆ = "1.7.0-257-SNAPSHOT"
 
 lbcandroidtest = "1.3.0"
 
 lbctheme = "1.2.0"
+##    ⬆ = "1.3.0-257-SNAPSHOT"
 
 lbccore = "1.2.0"
 ##   ⬆ = "1.3.0-251-SNAPSHOT"
+##   ⬆ = "1.3.0-252-SNAPSHOT"
+##   ⬆ = "1.3.0-253-SNAPSHOT"
+##   ⬆ = "1.3.0-254-SNAPSHOT"
+##   ⬆ = "1.3.0-255-SNAPSHOT"
+##   ⬆ = "1.3.0-256-SNAPSHOT"
+##   ⬆ = "1.4.0-257-SNAPSHOT"
 
 lbcfoundation = "1.1.0"
 
 lbchaptic = "1.0.0"
+##     ⬆ = "1.1.0-257-SNAPSHOT"
 
-tink-android = "1.13.0"
+tink-android = "1.14.0"
 
-conscrypt-android = "2.5.2"
+conscrypt = "2.5.2"
 
 bouncycastle = "1.78.1"
 
 nbvcxz = "1.5.1"
 
-lint = "31.4.1"
-##⬆ = "31.5.0-alpha01"
-##⬆ = "31.5.0-alpha02"
-##⬆ = "31.5.0-alpha03"
-##⬆ = "31.5.0-alpha04"
-##⬆ = "31.5.0-alpha05"
-##⬆ = "31.5.0-alpha06"
-##⬆ = "31.5.0-alpha07"
-##⬆ = "31.5.0-alpha08"
-##⬆ = "31.5.0-beta01"
-##⬆ = "31.5.0-beta02"
-##⬆ = "31.5.0-rc01"
+lint = "31.5.1"
 ##⬆ = "31.6.0-alpha01"
 ##⬆ = "31.6.0-alpha02"
 ##⬆ = "31.6.0-alpha03"
 ##⬆ = "31.6.0-alpha04"
+##⬆ = "31.6.0-alpha05"
+##⬆ = "31.6.0-alpha06"
+##⬆ = "31.6.0-alpha07"
+##⬆ = "31.6.0-alpha08"
+##⬆ = "31.6.0-beta01"
+##⬆ = "31.6.0-beta02"
+##⬆ = "31.7.0-alpha01"
+##⬆ = "31.7.0-alpha02"
 
 javapoet = "1.13.0"
+
+seismic = "1.0.3"
 
 bouquet = "1.1.3"
 
@@ -287,37 +306,39 @@ exifinterface = "1.3.7"
 
 androidx-media3 = "1.3.1"
 ##           ⬆ = "1.4.0-alpha01"
+##           ⬆ = "1.4.0-alpha02"
+##           ⬆ = "1.4.0-beta01"
+##           ⬆ = "1.4.0-rc01"
 
-camerax = "1.3.3"
+camerax = "1.3.4"
 ##   ⬆ = "1.4.0-alpha01"
 ##   ⬆ = "1.4.0-alpha02"
 ##   ⬆ = "1.4.0-alpha03"
 ##   ⬆ = "1.4.0-alpha04"
 ##   ⬆ = "1.4.0-alpha05"
 ##   ⬆ = "1.4.0-beta01"
+##   ⬆ = "1.4.0-beta02"
 
-espresso-core = "3.5.1"
-##         ⬆ = "3.6.0-alpha01"
-##         ⬆ = "3.6.0-alpha02"
-##         ⬆ = "3.6.0-alpha03"
-##         ⬆ = "3.6.0-alpha04"
-##         ⬆ = "3.6.0-beta01"
-##         ⬆ = "3.6.0-rc01"
+espresso-core = "3.6.1"
 
-skydoves-colorpicker = "1.0.8"
+skydoves-colorpicker = "1.1.2"
 sqlcipher-android = "4.6.0"
 
 process-phoenix = "3.0.0"
 
 lottie = "6.4.1"
-robolectric = "4.12.2"
+robolectric = "4.13"
 slf4j-simple = "2.0.13"
 ##        ⬆ = "2.1.0-alpha0"
 ##        ⬆ = "2.1.0-alpha1"
 
+kotlinx-datetime = "0.5.0"
+
 review = "2.0.1"
 
 [libraries]
+
+aboutlibraries-compose = { group = "com.mikepenz", name = "aboutlibraries-compose", version.ref = "aboutlibraries" }
 
 androidx-exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "exifinterface" }
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "android-tools-desugar_jdk_libs" }
@@ -462,7 +483,8 @@ google-api-services-drive = { group = "com.google.apis", name = "google-api-serv
 
 compose-shimmer = { group = "com.valentinilk.shimmer", name = "compose-shimmer", version.ref = "compose-shimmer" }
 tink-android = { group = "com.google.crypto.tink", name = "tink-android", version.ref = "tink-android" }
-conscrypt-android = { group = "org.conscrypt", name = "conscrypt-android", version.ref = "conscrypt-android" }
+conscrypt-android = { group = "org.conscrypt", name = "conscrypt-android", version.ref = "conscrypt" }
+conscrypt-openjdk-uber = { group = "org.conscrypt", name = "conscrypt-openjdk-uber", version.ref = "conscrypt" }
 bouncycastle = { group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncycastle" }
 nbvcxz = { group = "me.gosimple", name = "nbvcxz", version.ref = "nbvcxz" }
 journeyappszxing = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxing-android-embedded" }
@@ -470,6 +492,7 @@ android-material = { group = "com.google.android.material", name = "material", v
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "google-accompanist" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil-kt" }
 javapoet = { group = "com.squareup", name = "javapoet", version.ref = "javapoet" }
+seismic = { group = "com.squareup", name = "seismic", version.ref = "seismic" }
 bouquet = { group = "io.github.grizzi91", name = "bouquet", version.ref = "bouquet" }
 zoomable = { group = "net.engawapg.lib", name = "zoomable", version.ref = "zoomable" }
 androidx-media3 = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "androidx-media3" }
@@ -488,3 +511,12 @@ review = { group = "com.google.android.play", name = "review", version.ref = "re
 review-ktx = { group = "com.google.android.play", name = "review-ktx", version.ref = "review" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 slf4j-simple = { group = "org.slf4j", name = "slf4j-simple", version.ref = "slf4j-simple" }
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
+
+# Bubbles
+bubbles-shared = { group = "studio.lunabee.bubbles", name = "shared", version = "" }
+bubbles-messaging-domain = { group = "studio.lunabee.messaging", name = "messaging-domain", version = "" }
+bubbles-messaging-repository = { group = "studio.lunabee.messaging", name = "messaging-repository", version = "" }
+bubbles-domain = { group = "studio.lunabee.bubbles", name = "bubbles-domain", version = "" }
+bubbles-error = { group = "studio.lunabee.bubbles", name = "error", version = "" }
+bubbles-repository = { group = "studio.lunabee.bubbles", name = "bubbles-repository", version = "" }

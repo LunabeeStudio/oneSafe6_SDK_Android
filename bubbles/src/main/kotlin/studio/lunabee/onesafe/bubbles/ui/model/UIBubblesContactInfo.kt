@@ -19,11 +19,11 @@
 
 package studio.lunabee.onesafe.bubbles.ui.model
 
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.onesafe.commonui.OSNameProvider
-import java.util.UUID
 
 data class UIBubblesContactInfo(
-    val id: UUID,
+    val id: DoubleRatchetUUID,
     val nameProvider: OSNameProvider,
     val isConversationReady: Boolean,
 )

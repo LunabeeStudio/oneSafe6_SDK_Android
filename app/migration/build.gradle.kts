@@ -21,13 +21,13 @@ plugins {
     `android-library`
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
     namespace = "studio.lunabee.onesafe.migration"
 
     defaultConfig {
-        minSdk = AndroidConfig.MIN_APP_SDK
         missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
     }
@@ -56,10 +56,15 @@ dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.datastore.preferences)
     implementation(libs.hilt.android)
+    implementation(libs.protobuf.kotlinlite)
+    implementation(libs.kotlinx.serialization.protobuf)
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)
     implementation(libs.lblogger)
+    implementation(libs.lbextensions)
+    implementation(libs.doubleratchet)
+    implementation(libs.kotlinx.datetime)
 
     implementation(project(":domain"))
     implementation(project(":repository"))
@@ -70,9 +75,18 @@ dependencies {
     implementation(project(":app:settings"))
     implementation(project(":import-export-domain"))
     implementation(project(":import-export-android"))
+    implementation(project(":bubbles"))
+    implementation(project(":local-android"))
 
     kspAndroidTest(libs.dagger.hilt.compiler)
     androidTestImplementation(project(":dependency-injection:test-component"))
+    androidTestImplementation(libs.bubbles.shared)
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(libs.junit4)
+
+    testImplementation(project(":dependency-injection:test-component"))
+    testImplementation(libs.bubbles.shared)
+    testImplementation(project(":common-test-robolectric"))
+    testImplementation(libs.hilt.android.testing)
+    kspTest(libs.dagger.hilt.compiler)
 }

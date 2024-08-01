@@ -19,29 +19,37 @@
 
 package studio.lunabee.onesafe.storage.extension
 
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.storage.dao.BackupDao
 import studio.lunabee.onesafe.storage.model.RoomCloudBackup
 import studio.lunabee.onesafe.storage.model.RoomLocalBackup
+import studio.lunabee.onesafe.test.firstSafeId
 import studio.lunabee.onesafe.test.testUUIDs
 import java.io.File
 import java.time.Instant
 
 suspend fun BackupDao.testInsertCloud(
     id: String = testUUIDs[0].toString(),
+    name: String = id,
     remoteId: String = id,
     date: Instant = Instant.EPOCH,
+    safeId: SafeId? = firstSafeId,
 ): RoomCloudBackup = RoomCloudBackup(
     id = id,
     remoteId = remoteId,
     date = date,
+    safeId = safeId,
+    name = name,
 ).also { insert(it) }
 
 suspend fun BackupDao.testInsertLocal(
     id: String = testUUIDs[0].toString(),
     localFile: File = File(id),
     date: Instant = Instant.EPOCH,
+    safeId: SafeId = firstSafeId,
 ): RoomLocalBackup = RoomLocalBackup(
     id = id,
     localFile = localFile,
     date = date,
+    safeId = safeId,
 ).also { insert(it) }

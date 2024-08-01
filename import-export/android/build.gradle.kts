@@ -55,6 +55,7 @@ android {
     }
 
     buildFeatures {
+        compose = true
         buildConfig = true
     }
 }
@@ -100,7 +101,23 @@ dependencies {
     implementation(project(":app:core-ui"))
     implementation(project(":app:settings"))
 
+    testImplementation(libs.hilt.android.testing)
+    kspTest(libs.dagger.hilt.compiler)
+    testImplementation(project(":dependency-injection"))
+    testImplementation(project(":dependency-injection:test-component"))
+    testImplementation(project(":common-test-robolectric"))
+    testImplementation(project(":app:settings"))
+    testImplementation(project(":crypto-android"))
+    testImplementation(project(":common-test-android"))
+    testImplementation(libs.room.testing)
+    testImplementation(libs.lblogger)
+    testImplementation(libs.work.testing)
+    testImplementation(libs.compose.ui.test.junit4)
+    testImplementation(libs.androidx.test.rules)
+    testImplementation(libs.bubbles.shared)
+
     kspAndroidTest(libs.dagger.hilt.compiler)
+    androidTestImplementation(libs.bubbles.shared)
     androidTestImplementation(project(":dependency-injection"))
     androidTestImplementation(project(":dependency-injection:test-component"))
     androidTestImplementation(project(":common-test-android"))

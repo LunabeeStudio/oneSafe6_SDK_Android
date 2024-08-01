@@ -67,7 +67,7 @@ class DeleteIconUseCase @Inject constructor(
     /**
      * @param iconId The icon id to delete
      */
-    internal operator fun invoke(
+    internal suspend operator fun invoke(
         iconId: UUID,
     ): LBResult<Unit> {
         return OSError.runCatching(log) {

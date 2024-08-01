@@ -31,12 +31,16 @@ android {
         minSdk = AndroidConfig.MIN_APP_SDK
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
         missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
+        missingDimensionStrategy(OSDimensions.Environment.value, OSDimensions.Environment.Store)
     }
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
     }
 
+    buildFeatures {
+        compose = true
+    }
     packaging {
         resources.pickFirsts += "META-INF/LICENSE.md"
         resources.pickFirsts += "META-INF/LICENSE-notice.md"
@@ -49,6 +53,7 @@ dependencies {
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)
     implementation(libs.lbccore)
+    implementation(libs.lbloading.compose)
 
     implementation(libs.hilt.android)
     ksp(libs.dagger.hilt.compiler)
@@ -67,6 +72,7 @@ dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     implementation(libs.doubleratchet)
+    implementation(libs.kotlinx.datetime)
 
     implementation(project(":app:core-ui"))
     implementation(project(":app:common-ui"))
@@ -74,9 +80,12 @@ dependencies {
     implementation(project(":error"))
     implementation(project(":domain"))
     implementation(project(":bubbles"))
-    implementation(project(":messaging-domain"))
+    implementation(libs.bubbles.messaging.domain)
+    implementation(libs.bubbles.domain)
+    implementation(libs.bubbles.error)
 
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(project(":crypto-android"))
     androidTestImplementation(project(":dependency-injection:test-component"))
+    androidTestImplementation(libs.bubbles.shared)
 }

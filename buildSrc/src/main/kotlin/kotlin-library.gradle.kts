@@ -38,8 +38,8 @@ dependencies {
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
-    kotlinOptions {
-        jvmTarget = ProjectConfig.JDK_VERSION.toString()
+    compilerOptions {
+        jvmTarget.set(ProjectConfig.JVM_TARGET)
     }
 }
 

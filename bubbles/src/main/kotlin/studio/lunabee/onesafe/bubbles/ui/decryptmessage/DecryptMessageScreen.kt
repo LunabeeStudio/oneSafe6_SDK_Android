@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import studio.lunabee.compose.core.LbcTextSpec
+import studio.lunabee.messaging.domain.model.DecryptResult
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.OSRegularSpacer
 import studio.lunabee.onesafe.atom.OSScreen
@@ -52,13 +53,11 @@ import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.commonui.error.description
 import studio.lunabee.onesafe.error.OSError
-import studio.lunabee.onesafe.messaging.domain.model.DecryptResult
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.LocalColorPalette
-import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 
 context(DecryptMessageNavScope)
 @Composable
@@ -93,10 +92,7 @@ fun DecryptMessageScreen(
     onMessageChange: (String) -> Unit,
     onDecryptClick: () -> Unit,
 ) {
-    OSScreen(
-        testTag = UiConstants.TestTag.Screen.DecryptMessageScreen,
-        background = LocalDesignSystem.current.bubblesBackGround(),
-    ) {
+    OSScreen(testTag = UiConstants.TestTag.Screen.DecryptMessageScreen) {
         Column(
             modifier = Modifier
                 .fillMaxSize()

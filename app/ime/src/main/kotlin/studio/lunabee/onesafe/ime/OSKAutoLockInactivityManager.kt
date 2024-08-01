@@ -24,9 +24,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
 import studio.lunabee.onesafe.domain.usecase.autolock.AutoLockInactivityUseCase
 import studio.lunabee.onesafe.domain.usecase.autolock.RefreshLastUserInteractionUseCase
+import studio.lunabee.onesafe.domain.usecase.settings.GetSecuritySettingUseCase
 import studio.lunabee.onesafe.ime.model.OSKImeState
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -35,15 +35,16 @@ import kotlin.time.Duration
 @Singleton
 class OSKAutoLockInactivityManager @Inject constructor(
     private val autoLockInactivityUseCase: AutoLockInactivityUseCase,
-    private val securityOptionRepository: SecurityOptionRepository,
+    private val getSecuritySettingUseCase: GetSecuritySettingUseCase,
     private val refreshLastUserInteractionUseCase: RefreshLastUserInteractionUseCase,
 ) : OSKImeStateObserver {
     val coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     private var inactivityJob: Job? = null
 
-    override fun onStateChange(state: OSKImeState) {
-        if (securityOptionRepository.autoLockOSKInactivityDelay != Duration.INFINITE) {
+    override suspend fun onStateChange(state: OSKImeState) {
+        val autoLockOSKInactivityDelay = getSecuritySettingUseCase.autoLockOSKInactivityDelay()
+        if (autoLockOSKInactivityDelay.data != Duration.INFINITE) {
             when (state) {
                 OSKImeState.Hidden,
                 OSKImeState.Keyboard,

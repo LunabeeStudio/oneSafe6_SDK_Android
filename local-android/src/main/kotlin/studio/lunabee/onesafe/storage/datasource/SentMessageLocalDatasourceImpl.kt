@@ -19,11 +19,11 @@
 
 package studio.lunabee.onesafe.storage.datasource
 
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.model.SentMessage
 import studio.lunabee.messaging.repository.datasource.SentMessageLocalDatasource
-import studio.lunabee.onesafe.messaging.domain.model.SentMessage
 import studio.lunabee.onesafe.storage.dao.SentMessageDao
 import studio.lunabee.onesafe.storage.model.RoomSentMessage
-import java.util.UUID
 import javax.inject.Inject
 
 class SentMessageLocalDatasourceImpl @Inject constructor(
@@ -33,15 +33,15 @@ class SentMessageLocalDatasourceImpl @Inject constructor(
         sentMessageDao.insert(RoomSentMessage.fromSentMessage(sentMessage))
     }
 
-    override suspend fun getSentMessage(id: UUID): SentMessage? {
-        return sentMessageDao.getById(id)?.toSentMessage()
+    override suspend fun getSentMessage(id: DoubleRatchetUUID): SentMessage? {
+        return sentMessageDao.getById(id.uuid)?.toSentMessage()
     }
 
-    override suspend fun getOldestSentMessage(): SentMessage? {
-        return sentMessageDao.getOldestSentMessage()?.toSentMessage()
+    override suspend fun getOldestSentMessage(safeId: DoubleRatchetUUID): SentMessage? {
+        return sentMessageDao.getOldestSentMessage(safeId = safeId.uuid)?.toSentMessage()
     }
 
-    override suspend fun deleteSentMessage(id: UUID) {
-        sentMessageDao.deleteSentMessage(id)
+    override suspend fun deleteSentMessage(id: DoubleRatchetUUID) {
+        sentMessageDao.deleteSentMessage(id.uuid)
     }
 }

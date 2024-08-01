@@ -20,27 +20,27 @@
 package studio.lunabee.onesafe.bubbles.ui.contact
 
 import androidx.compose.foundation.lazy.LazyListScope
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.onesafe.atom.osLazyCard
 import studio.lunabee.onesafe.bubbles.ui.composables.ContactItemCardContent
 import studio.lunabee.onesafe.bubbles.ui.composables.ConversationCardContent
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.model.OSLazyCardContent
-import java.util.UUID
 
 object ContactScreenFactory {
 
     context(LazyListScope)
     fun addContacts(
         contacts: List<UIBubblesContactInfo>,
-        onClick: (UUID) -> Unit,
+        onClick: (DoubleRatchetUUID) -> Unit,
     ) {
         val cardContents = mutableListOf<OSLazyCardContent>()
 
         cardContents += contacts.map { contact ->
             ContactItemCardContent(
                 contactInfo = contact,
-                key = contact.id,
+                key = contact.id.uuid,
                 onClick = { onClick(contact.id) },
             )
         }
@@ -51,13 +51,13 @@ object ContactScreenFactory {
     context(LazyListScope)
     fun addConversations(
         conversations: List<BubblesConversationInfo>,
-        onClick: (UUID) -> Unit,
+        onClick: (DoubleRatchetUUID) -> Unit,
     ) {
         val cardContents = mutableListOf<OSLazyCardContent>()
         cardContents += conversations.map { contact ->
             ConversationCardContent(
                 conversationInfo = contact,
-                key = contact.id,
+                key = contact.id.uuid,
                 onClick = { onClick(contact.id) },
             )
         }

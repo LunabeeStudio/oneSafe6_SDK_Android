@@ -23,5 +23,5 @@ package studio.lunabee.onesafe.domain.usecase.clipboard
  * Clear the system clipboard
  */
 interface ClipboardClearUseCase {
-    operator fun invoke()
+    suspend operator fun invoke()
 }

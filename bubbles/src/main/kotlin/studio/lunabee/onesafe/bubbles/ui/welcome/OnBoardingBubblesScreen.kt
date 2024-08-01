@@ -54,7 +54,6 @@ import studio.lunabee.onesafe.commonui.extension.rtl
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
-import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
 
@@ -79,7 +78,6 @@ fun OnBoardingBubblesScreen(
 ) {
     OSScreen(
         testTag = UiConstants.TestTag.Screen.OnBoardingBubblesScreen,
-        background = LocalDesignSystem.current.bubblesBackGround(),
         modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Bottom)),
     ) {
         Column(

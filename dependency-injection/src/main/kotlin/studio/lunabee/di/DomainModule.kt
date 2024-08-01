@@ -20,6 +20,7 @@
 package studio.lunabee.di
 
 import android.content.Context
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,16 +31,20 @@ import kotlinx.coroutines.Dispatchers
 import studio.lunabee.doubleratchet.DoubleRatchetEngine
 import studio.lunabee.doubleratchet.crypto.DoubleRatchetKeyRepository
 import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
-import studio.lunabee.onesafe.domain.common.FieldIdProvider
-import studio.lunabee.onesafe.domain.common.FileIdProvider
-import studio.lunabee.onesafe.domain.common.IconIdProvider
-import studio.lunabee.onesafe.domain.common.ItemIdProvider
-import studio.lunabee.onesafe.domain.common.MessageIdProvider
+import studio.lunabee.onesafe.domain.common.RandomUuidProvider
 import studio.lunabee.onesafe.domain.common.UuidProvider
 import studio.lunabee.onesafe.domain.qualifier.DefaultDispatcher
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.domain.qualifier.InternalDir
 import studio.lunabee.onesafe.domain.qualifier.RemoteDispatcher
+import studio.lunabee.onesafe.domain.usecase.authentication.DeleteBackupsUseCase
+import studio.lunabee.onesafe.domain.usecase.authentication.LoginUseCase
+import studio.lunabee.onesafe.domain.usecase.autolock.AutoLockInactivityGetRemainingTimeUseCase
+import studio.lunabee.onesafe.domain.usecase.autolock.AutoLockInactivityGetRemainingTimeUseCaseImpl
+import studio.lunabee.onesafe.importexport.usecase.DeleteBackupsUseCaseImpl
+import studio.lunabee.onesafe.migration.LoginAndMigrateUseCase
+import studio.lunabee.onesafe.migration.utils.AndroidSafeMigrationProvider
+import studio.lunabee.onesafe.storage.migration.RoomMigration12to13
 import java.io.File
 import java.time.Clock
 
@@ -56,19 +61,7 @@ object DomainModule {
     )
 
     @Provides
-    fun provideItemIdProvider(): ItemIdProvider = UuidProvider()
-
-    @Provides
-    fun provideFieldIdProvider(): FieldIdProvider = UuidProvider()
-
-    @Provides
-    fun provideIconIdProvider(): IconIdProvider = UuidProvider()
-
-    @Provides
-    fun provideMessageIdProvider(): MessageIdProvider = UuidProvider()
-
-    @Provides
-    fun provideFileIdProvider(): FileIdProvider = UuidProvider()
+    fun provideUuidProvider(): UuidProvider = RandomUuidProvider()
 
     @Provides
     @FileDispatcher
@@ -86,6 +79,9 @@ object DomainModule {
     fun providesClock(): Clock = Clock.systemDefaultZone()
 
     @Provides
+    fun providesKotlinClock(): kotlinx.datetime.Clock = kotlinx.datetime.Clock.System
+
+    @Provides
     @InternalDir(InternalDir.Type.Backups)
     fun providesInternalDirBackups(
         @ApplicationContext context: Context,
@@ -96,4 +92,29 @@ object DomainModule {
     fun providesInternalDirCache(
         @ApplicationContext context: Context,
     ): File = context.cacheDir
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class DomainModuleBinds {
+
+    @Binds
+    internal abstract fun bindsSafeMigrationProvider(
+        safeMigrationProviderUseCase: AndroidSafeMigrationProvider,
+    ): RoomMigration12to13.SafeMigrationProvider
+
+    @Binds
+    internal abstract fun bindsAutoLockInactivityGetRemainingTimeUseCase(
+        autoLockInactivityGetRemainingTimeUseCaseImpl: AutoLockInactivityGetRemainingTimeUseCaseImpl,
+    ): AutoLockInactivityGetRemainingTimeUseCase
+
+    @Binds
+    internal abstract fun bindsLoginUseCase(
+        loginUseCase: LoginAndMigrateUseCase,
+    ): LoginUseCase
+
+    @Binds
+    internal abstract fun bindsDeleteBackupsUseCase(
+        deleteBackupsUseCase: DeleteBackupsUseCaseImpl,
+    ): DeleteBackupsUseCase
 }

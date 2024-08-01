@@ -61,6 +61,7 @@ import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.localprovider.LocalIsKeyBoardVisible
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
 import studio.lunabee.onesafe.extension.loremIpsum
+import studio.lunabee.onesafe.messaging.MessagingConstants
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.LocalColorPalette
@@ -123,6 +124,7 @@ fun ComposeMessageCard(
                 keyboardActions = KeyboardActions {
                     if (plainMessage.text.isNotEmpty()) onClickOnSend()
                 },
+                maxLines = MessagingConstants.MessageTextFieldMaxLines,
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically,

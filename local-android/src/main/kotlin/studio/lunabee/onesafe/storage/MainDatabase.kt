@@ -20,7 +20,6 @@
 package studio.lunabee.onesafe.storage
 
 import android.content.Context
-import androidx.core.database.getBlobOrNull
 import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
@@ -29,10 +28,12 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
-import studio.lunabee.onesafe.domain.common.MessageIdProvider
 import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
+import studio.lunabee.onesafe.storage.converter.DurationConverter
 import studio.lunabee.onesafe.storage.converter.FileConverter
 import studio.lunabee.onesafe.storage.converter.InstantConverter
+import studio.lunabee.onesafe.storage.converter.ZonedDateTimeConverter
+import studio.lunabee.onesafe.storage.dao.AutoBackupErrorDao
 import studio.lunabee.onesafe.storage.dao.BackupDao
 import studio.lunabee.onesafe.storage.dao.ContactDao
 import studio.lunabee.onesafe.storage.dao.ContactKeyDao
@@ -42,11 +43,16 @@ import studio.lunabee.onesafe.storage.dao.EnqueuedMessageDao
 import studio.lunabee.onesafe.storage.dao.HandShakeDataDao
 import studio.lunabee.onesafe.storage.dao.IndexWordEntryDao
 import studio.lunabee.onesafe.storage.dao.MessageDao
+import studio.lunabee.onesafe.storage.dao.SafeDao
+import studio.lunabee.onesafe.storage.dao.SafeFileDao
 import studio.lunabee.onesafe.storage.dao.SafeItemDao
 import studio.lunabee.onesafe.storage.dao.SafeItemFieldDao
 import studio.lunabee.onesafe.storage.dao.SafeItemKeyDao
 import studio.lunabee.onesafe.storage.dao.SafeItemRawDao
 import studio.lunabee.onesafe.storage.dao.SentMessageDao
+import studio.lunabee.onesafe.storage.dao.SettingsDao
+import studio.lunabee.onesafe.storage.migration.RoomMigrationSpec11to12
+import studio.lunabee.onesafe.storage.model.RoomAutoBackupError
 import studio.lunabee.onesafe.storage.model.RoomBackup
 import studio.lunabee.onesafe.storage.model.RoomContact
 import studio.lunabee.onesafe.storage.model.RoomContactKey
@@ -56,16 +62,18 @@ import studio.lunabee.onesafe.storage.model.RoomEnqueuedMessage
 import studio.lunabee.onesafe.storage.model.RoomHandShakeData
 import studio.lunabee.onesafe.storage.model.RoomIndexWordEntry
 import studio.lunabee.onesafe.storage.model.RoomMessage
+import studio.lunabee.onesafe.storage.model.RoomSafe
+import studio.lunabee.onesafe.storage.model.RoomSafeFile
 import studio.lunabee.onesafe.storage.model.RoomSafeItem
 import studio.lunabee.onesafe.storage.model.RoomSafeItemField
 import studio.lunabee.onesafe.storage.model.RoomSafeItemKey
 import studio.lunabee.onesafe.storage.model.RoomSentMessage
-import studio.lunabee.onesafe.toByteArray
-import javax.inject.Inject
+import studio.lunabee.onesafe.storage.utils.addRecursiveCheckTriggers
+import studio.lunabee.onesafe.storage.utils.addUniqueBiometricKeyTrigger
 
-@TypeConverters(InstantConverter::class, FileConverter::class)
+@TypeConverters(InstantConverter::class, FileConverter::class, DurationConverter::class, ZonedDateTimeConverter::class)
 @Database(
-    version = 11,
+    version = 14,
     entities = [
         RoomSafeItem::class,
         RoomSafeItemField::class,
@@ -80,6 +88,9 @@ import javax.inject.Inject
         RoomHandShakeData::class,
         RoomSentMessage::class,
         RoomBackup::class,
+        RoomSafe::class,
+        RoomAutoBackupError::class,
+        RoomSafeFile::class,
     ],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -89,6 +100,7 @@ import javax.inject.Inject
         AutoMigration(from = 6, to = 7),
         AutoMigration(from = 7, to = 8),
         AutoMigration(from = 10, to = 11),
+        AutoMigration(from = 11, to = 12, spec = RoomMigrationSpec11to12::class),
     ],
 )
 abstract class MainDatabase : RoomDatabase() {
@@ -106,6 +118,10 @@ abstract class MainDatabase : RoomDatabase() {
     abstract fun handShakeDataDao(): HandShakeDataDao
     abstract fun sentMessageDao(): SentMessageDao
     abstract fun backupDao(): BackupDao
+    abstract fun safeDao(): SafeDao
+    abstract fun settingsDao(): SettingsDao
+    abstract fun autoBackupErrorDao(): AutoBackupErrorDao
+    abstract fun safeFileDao(): SafeFileDao
 
     companion object {
         fun build(
@@ -128,86 +144,10 @@ abstract class MainDatabase : RoomDatabase() {
     }
 }
 
-private fun SupportSQLiteDatabase.addRecursiveCheckTriggers() {
-    execSQL(
-        """
-             CREATE TRIGGER IF NOT EXISTS recursive_item_insert
-             BEFORE INSERT
-             ON SafeItem
-             WHEN NEW.id = NEW.parent_id OR NEW.id = NEW.deleted_parent_id
-             BEGIN
-                 SELECT RAISE(ABORT, 'Recursive item forbidden');
-             END;
-             """,
-    )
-    execSQL(
-        """
-             CREATE TRIGGER IF NOT EXISTS recursive_item_update
-             BEFORE UPDATE OF parent_id, deleted_parent_id
-             ON SafeItem
-             WHEN NEW.id = NEW.parent_id OR NEW.id = NEW.deleted_parent_id
-             BEGIN
-                 SELECT RAISE(ABORT, 'Recursive item forbidden');
-             END;
-             """,
-    )
-}
-
 class MainDatabaseCallback : RoomDatabase.Callback() {
     override fun onCreate(db: SupportSQLiteDatabase) {
         super.onCreate(db)
         db.addRecursiveCheckTriggers()
+        db.addUniqueBiometricKeyTrigger()
     }
 }
-
-class Migration3to4 @Inject constructor(private val idProvider: MessageIdProvider) : Migration(3, 4) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL(
-            "CREATE TABLE `TEMP_Message` (`id` BLOB NOT NULL, `contact_id` BLOB NOT NULL, `enc_sent_at` BLOB NOT NULL, " +
-                "`enc_content` BLOB NOT NULL, `direction` TEXT NOT NULL, `order` REAL NOT NULL, `enc_channel` BLOB, " +
-                "PRIMARY KEY(`id`), FOREIGN KEY(`contact_id`) REFERENCES `Contact`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE)",
-        )
-
-        val cursor = db.query("SELECT * FROM Message")
-        while (cursor.moveToNext()) {
-            val id = idProvider().toByteArray()
-            db.execSQL(
-                "INSERT INTO TEMP_Message (id,contact_id,enc_sent_at,enc_content,direction,`order`,enc_channel) " +
-                    "VALUES (" +
-                    "${id.toSqlBlobString()}," +
-                    "${cursor.getBlob(1).toSqlBlobString()}," +
-                    "${cursor.getBlob(2).toSqlBlobString()}," +
-                    "${cursor.getBlob(3).toSqlBlobString()}," +
-                    "'${cursor.getString(4)}'," +
-                    "${cursor.getFloat(5)}," +
-                    "${cursor.getBlobOrNull(6)?.toSqlBlobString()}" +
-                    ")",
-            )
-        }
-
-        db.execSQL("DROP TABLE `Message`")
-        db.execSQL("DROP INDEX IF EXISTS `index_Message_order_contact_id`")
-        db.execSQL("DROP INDEX IF EXISTS `index_Message_contact_id`")
-        db.execSQL("ALTER TABLE TEMP_Message RENAME TO Message")
-        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_Message_order_contact_id` ON Message (`order` DESC, `contact_id` DESC)")
-        db.execSQL("CREATE INDEX IF NOT EXISTS `index_Message_contact_id` ON Message (`contact_id`)")
-    }
-}
-
-class Migration8to9 @Inject constructor() : Migration(8, 9) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("ALTER TABLE SafeItem ADD created_at INTEGER NOT NULL DEFAULT 0")
-        db.execSQL("CREATE INDEX IF NOT EXISTS `index_SafeItem_created_at` ON `SafeItem` (`created_at`)")
-        db.execSQL("UPDATE SafeItem SET created_at = updated_at")
-    }
-}
-
-class Migration9to10 @Inject constructor() : Migration(9, 10) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("UPDATE SafeItem SET parent_id = NULL WHERE id = parent_id")
-        db.execSQL("UPDATE SafeItem SET deleted_parent_id = NULL WHERE id = deleted_parent_id")
-        db.addRecursiveCheckTriggers()
-    }
-}
-
-private fun ByteArray.toSqlBlobString() = "X'${joinToString(separator = "") { byte -> "%02x".format(byte) }}'"

@@ -21,6 +21,7 @@ package studio.lunabee.onesafe.domain.usecase.item
 
 import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemDeletedRepository
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
@@ -29,13 +30,15 @@ import javax.inject.Inject
 class RemoveAllDeletedItemUseCase @Inject constructor(
     private val safeItemDeletedRepository: SafeItemDeletedRepository,
     private val removeDeletedItemUseCase: RemoveDeletedItemUseCase,
+    private val safeRepository: SafeRepository,
 ) {
 
     suspend operator fun invoke(): LBResult<Unit> {
         return OSError.runCatching(
             mapErr = { e -> OSDomainError(OSDomainError.Code.SAFE_ITEM_REMOVE_FAILURE, cause = e) },
         ) {
-            safeItemDeletedRepository.getDeletedItemsByDeletedParent(null, ItemOrder.Position).forEach { item ->
+            val safeId = safeRepository.currentSafeId()
+            safeItemDeletedRepository.getDeletedItemsByDeletedParent(null, ItemOrder.Position, safeId).forEach { item ->
                 removeDeletedItemUseCase(item)
             }
         }

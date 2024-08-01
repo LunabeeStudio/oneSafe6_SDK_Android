@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSSmallSpacer
 import studio.lunabee.onesafe.commonui.OSString
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.importexport.model.LatestBackups
 import studio.lunabee.onesafe.importexport.model.LocalBackup
@@ -41,6 +42,7 @@ import studio.lunabee.onesafe.utils.OsDefaultPreview
 import java.io.File
 import java.time.Instant
 import java.util.Locale
+import java.util.UUID
 
 @Composable
 fun AutoBackupSettingsInformationCard(
@@ -102,13 +104,13 @@ fun AutoBackupSettingsInformationCardPreview() {
         Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
             AutoBackupSettingsInformationCard(
                 LatestBackups(
-                    LocalBackup(date = Instant.now(), file = File("")),
-                    CloudBackup(remoteId = "", name = "", date = Instant.now()),
+                    LocalBackup(date = Instant.now(), file = File(""), safeId = SafeId(UUID.randomUUID())),
+                    CloudBackup(remoteId = "", name = "", date = Instant.now(), safeId = SafeId(UUID.randomUUID())),
                 ),
             )
             AutoBackupSettingsInformationCard(
                 LatestBackups(
-                    LocalBackup(date = Instant.now(), file = File("")),
+                    LocalBackup(date = Instant.now(), file = File(""), safeId = SafeId(UUID.randomUUID())),
                     null,
                 ),
             )

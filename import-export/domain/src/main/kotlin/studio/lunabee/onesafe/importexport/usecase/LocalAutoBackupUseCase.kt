@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.importexport.usecase
 import com.lunabee.lbcore.model.LBFlowResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.qualifier.ArchiveCacheDir
 import studio.lunabee.onesafe.domain.qualifier.BackupType
 import studio.lunabee.onesafe.error.OSError
@@ -39,8 +40,12 @@ class LocalAutoBackupUseCase @Inject constructor(
     @BackupType(BackupType.Type.Auto) private val exportEngine: BackupExportEngine,
     @ArchiveCacheDir(type = ArchiveCacheDir.Type.AutoBackup) private val archiveDir: File,
 ) {
-    operator fun invoke(): Flow<LBFlowResult<Unit>> {
-        return exportBackupUseCase(exportEngine, archiveDir).map { result ->
+    operator fun invoke(safeId: SafeId): Flow<LBFlowResult<Unit>> {
+        return exportBackupUseCase(
+            exportEngine = exportEngine,
+            archiveExtractedDirectory = archiveDir,
+            safeId = safeId,
+        ).map { result ->
             when (result) {
                 is LBFlowResult.Failure -> LBFlowResult.Failure(throwable = result.throwable)
                 is LBFlowResult.Loading -> LBFlowResult.Loading(progress = result.progress)

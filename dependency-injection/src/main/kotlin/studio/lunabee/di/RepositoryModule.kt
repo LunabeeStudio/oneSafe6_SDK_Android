@@ -23,20 +23,13 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import studio.lunabee.bubbles.repository.repository.ContactKeyRepositoryImpl
-import studio.lunabee.bubbles.repository.repository.ContactRepositoryImpl
-import studio.lunabee.importexport.repository.repository.AutoBackupErrorRepositoryImpl
-import studio.lunabee.importexport.repository.repository.ImportExportItemRepositoryImpl
-import studio.lunabee.importexport.repository.repository.LocalBackupRepositoryImpl
-import studio.lunabee.messaging.repository.repository.ConversationRepositoryImpl
-import studio.lunabee.messaging.repository.repository.EnqueuedMessageRepositoryImpl
-import studio.lunabee.messaging.repository.repository.HandShakeDataRepositoryImpl
-import studio.lunabee.messaging.repository.repository.MessageChannelRepositoryImpl
-import studio.lunabee.messaging.repository.repository.MessageOrderRepositoryImpl
-import studio.lunabee.messaging.repository.repository.MessageRepositoryImpl
-import studio.lunabee.messaging.repository.repository.SentMessageRepositoryImpl
-import studio.lunabee.onesafe.bubbles.domain.repository.ContactKeyRepository
-import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
+import studio.lunabee.bubbles.domain.repository.BubblesSafeRepository
+import studio.lunabee.importexport.repository.AutoBackupErrorRepositoryImpl
+import studio.lunabee.importexport.repository.AutoBackupSettingsRepositoryImpl
+import studio.lunabee.importexport.repository.ImportExportItemRepositoryImpl
+import studio.lunabee.importexport.repository.LocalBackupRepositoryImpl
+import studio.lunabee.messaging.domain.repository.MessagingSettingsRepository
+import studio.lunabee.onesafe.domain.repository.AppVisitRepository
 import studio.lunabee.onesafe.domain.repository.AutoLockRepository
 import studio.lunabee.onesafe.domain.repository.ClipboardRepository
 import studio.lunabee.onesafe.domain.repository.FileRepository
@@ -50,21 +43,17 @@ import studio.lunabee.onesafe.domain.repository.SafeItemDeletedRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
-import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.domain.repository.SafeSettingsRepository
+import studio.lunabee.onesafe.domain.repository.SecuritySettingsRepository
 import studio.lunabee.onesafe.domain.repository.SupportOSRepository
 import studio.lunabee.onesafe.domain.repository.UrlMetadataRepository
 import studio.lunabee.onesafe.importexport.repository.AutoBackupErrorRepository
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.repository.ImportExportItemRepository
 import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
-import studio.lunabee.onesafe.messaging.domain.repository.ConversationRepository
-import studio.lunabee.onesafe.messaging.domain.repository.EnqueuedMessageRepository
-import studio.lunabee.onesafe.messaging.domain.repository.HandShakeDataRepository
-import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
-import studio.lunabee.onesafe.messaging.domain.repository.MessageOrderRepository
-import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
-import studio.lunabee.onesafe.messaging.domain.repository.SentMessageRepository
 import studio.lunabee.onesafe.repository.repository.AutoLockRepositoryImpl
+import studio.lunabee.onesafe.repository.repository.BubblesSafeRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.ClipboardRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.FileRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.ForceUpgradeRepositoryImpl
@@ -76,6 +65,7 @@ import studio.lunabee.onesafe.repository.repository.SafeItemDeletedRepositoryImp
 import studio.lunabee.onesafe.repository.repository.SafeItemFieldRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.SafeItemKeyRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.SafeItemRepositoryImpl
+import studio.lunabee.onesafe.repository.repository.SafeRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.SettingsRepository
 import studio.lunabee.onesafe.repository.repository.SupportOSRepositoryImpl
 import studio.lunabee.onesafe.repository.repository.UrlMetadataRepositoryImpl
@@ -97,17 +87,6 @@ interface RepositoryModule {
     fun bindsPasswordGeneratorConfigRepository(
         passwordGeneratorConfigRepositoryImpl: PasswordGeneratorConfigRepositoryImpl,
     ): PasswordGeneratorConfigRepository
-
-    @Binds
-    fun bindsMessageChannelRepository(
-        messageChannelRepositoryImpl: MessageChannelRepositoryImpl,
-    ): MessageChannelRepository
-
-    @Binds
-    fun bindsHandShakeDataRepository(handShakeDataRepositoryImpl: HandShakeDataRepositoryImpl): HandShakeDataRepository
-
-    @Binds
-    fun bindsConversationRepository(conversationRepositoryImpl: ConversationRepositoryImpl): ConversationRepository
 
     @Binds
     fun bindUrlMetadataRepository(urlMetadataRepository: UrlMetadataRepositoryImpl): UrlMetadataRepository
@@ -140,28 +119,10 @@ interface RepositoryModule {
     fun bindSupportOSRepository(supportOSRepository: SupportOSRepositoryImpl): SupportOSRepository
 
     @Binds
-    fun bindsContactRepository(bubblesContactRepositoryImpl: ContactRepositoryImpl): ContactRepository
-
-    @Binds
-    fun bindsContactKeyRepository(bubblesContactKeyRepositoryImpl: ContactKeyRepositoryImpl): ContactKeyRepository
-
-    @Binds
-    fun bindsMessageRepository(bubblesMessageRepositoryImpl: MessageRepositoryImpl): MessageRepository
-
-    @Binds
-    fun bindsSentMessageRepository(bubblesSentMessageRepositoryImpl: SentMessageRepositoryImpl): SentMessageRepository
-
-    @Binds
-    fun bindsMessageOrderRepository(bubblesMessageOrderRepositoryImpl: MessageOrderRepositoryImpl): MessageOrderRepository
-
-    @Binds
-    fun bindsEnqueuedMessageRepository(enqueuedMessageRepositoryImpl: EnqueuedMessageRepositoryImpl): EnqueuedMessageRepository
-
-    @Binds
     fun bindsBackupRepository(backupRepositoryImpl: LocalBackupRepositoryImpl): LocalBackupRepository
 
     @Binds
-    fun bindsAutoBackupSettingsRepository(settingsRepository: SettingsRepository): AutoBackupSettingsRepository
+    fun bindsAutoBackupSettingsRepository(autoBackupSettingsRepository: AutoBackupSettingsRepositoryImpl): AutoBackupSettingsRepository
 
     @Binds
     fun bindsAutoBackupErrorRepository(autoBackupErrorRepository: AutoBackupErrorRepositoryImpl): AutoBackupErrorRepository
@@ -171,11 +132,26 @@ interface RepositoryModule {
 
     @Binds
     fun bindsItemSettingsRepository(settingsRepository: SettingsRepository): ItemSettingsRepository
+
+    @Binds
+    fun bindsSafeRepository(safeRepository: SafeRepositoryImpl): SafeRepository
+
+    @Binds
+    fun bindsAppSettingsRepository(settingsRepository: SettingsRepository): SafeSettingsRepository
+
+    @Binds
+    fun bindsAppVisitRepository(settingsRepository: SettingsRepository): AppVisitRepository
+
+    @Binds
+    fun bindsMessagingSettingsRepository(settingsRepository: SettingsRepository): MessagingSettingsRepository
+
+    @Binds
+    fun bindsBubblesSafeRepository(bubblesSafeRepositoryImpl: BubblesSafeRepositoryImpl): BubblesSafeRepository
 }
 
 @Module
 @InstallIn(SingletonComponent::class)
 interface SecurityOptionModule {
     @Binds
-    fun bindSecurityOptionRepository(settingsRepository: SettingsRepository): SecurityOptionRepository
+    fun bindSecuritySettingsRepository(settingsRepository: SettingsRepository): SecuritySettingsRepository
 }

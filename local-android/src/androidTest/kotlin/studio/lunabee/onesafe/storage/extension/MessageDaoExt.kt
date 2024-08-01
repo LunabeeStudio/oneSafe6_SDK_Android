@@ -19,7 +19,7 @@
 
 package studio.lunabee.onesafe.storage.extension
 
-import studio.lunabee.onesafe.messaging.domain.model.MessageDirection
+import studio.lunabee.messaging.domain.model.MessageDirection
 import studio.lunabee.onesafe.storage.dao.MessageDao
 import studio.lunabee.onesafe.storage.model.RoomMessage
 import studio.lunabee.onesafe.test.testUUIDs

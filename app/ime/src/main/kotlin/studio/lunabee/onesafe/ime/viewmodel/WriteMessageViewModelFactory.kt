@@ -22,19 +22,23 @@ package studio.lunabee.onesafe.ime.viewmodel
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import studio.lunabee.onesafe.OSAppSettings
-import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
-import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
-import studio.lunabee.onesafe.bubbles.domain.usecase.GetContactUseCase
-import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
-import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
-import studio.lunabee.onesafe.messaging.domain.repository.MessageRepository
-import studio.lunabee.onesafe.messaging.domain.repository.SentMessageRepository
-import studio.lunabee.onesafe.messaging.domain.usecase.DecryptSafeMessageUseCase
-import studio.lunabee.onesafe.messaging.domain.usecase.EncryptMessageUseCase
-import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCase
-import studio.lunabee.onesafe.messaging.domain.usecase.GetSendMessageDataUseCase
-import studio.lunabee.onesafe.messaging.domain.usecase.SaveSentMessageUseCase
+import com.lunabee.lbloading.LoadingManager
+import studio.lunabee.bubbles.domain.repository.ContactRepository
+import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
+import studio.lunabee.bubbles.domain.usecase.GetContactUseCase
+import studio.lunabee.messaging.domain.repository.MessageChannelRepository
+import studio.lunabee.messaging.domain.repository.MessagePagingRepository
+import studio.lunabee.messaging.domain.repository.MessageRepository
+import studio.lunabee.messaging.domain.repository.SentMessageRepository
+import studio.lunabee.messaging.domain.usecase.DecryptSafeMessageUseCase
+import studio.lunabee.messaging.domain.usecase.EncryptMessageUseCase
+import studio.lunabee.messaging.domain.usecase.GetConversationStateUseCase
+import studio.lunabee.messaging.domain.usecase.GetSendMessageDataUseCase
+import studio.lunabee.messaging.domain.usecase.SaveSentMessageUseCase
+import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
+import studio.lunabee.onesafe.domain.usecase.settings.GetAppSettingUseCase
+import studio.lunabee.onesafe.messaging.usecase.CreateSingleEntryArchiveUseCase
+import studio.lunabee.onesafe.messaging.usecase.DeleteBubblesArchiveUseCase
 import studio.lunabee.onesafe.messaging.writemessage.viewmodel.WriteMessageViewModel
 import java.time.Clock
 import javax.inject.Inject
@@ -46,14 +50,18 @@ class WriteMessageViewModelFactory @Inject constructor(
     private val messageRepository: MessageRepository,
     private val channelRepository: MessageChannelRepository,
     private val getSendMessageDataUseCase: GetSendMessageDataUseCase,
-    private val osAppSettings: OSAppSettings,
     private val getConversationStateUseCase: GetConversationStateUseCase,
     private val saveSentMessageUseCase: SaveSentMessageUseCase,
     private val sentMessageRepository: SentMessageRepository,
     private val contactRepository: ContactRepository,
     private val clock: Clock,
     private val decryptSafeMessageUseCase: DecryptSafeMessageUseCase,
-    private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
+    private val isSafeReadyUseCase: IsSafeReadyUseCase,
+    private val getAppSettingUseCase: GetAppSettingUseCase,
+    private val messagePagingRepository: MessagePagingRepository,
+    private val loadingManager: LoadingManager,
+    private val createSingleEntryArchiveUseCase: CreateSingleEntryArchiveUseCase,
+    private val deleteBubblesArchiveUseCase: DeleteBubblesArchiveUseCase,
 ) : AbstractSavedStateViewModelFactory() {
     override fun <T : ViewModel> create(key: String, modelClass: Class<T>, handle: SavedStateHandle): T {
         @Suppress("UNCHECKED_CAST")
@@ -65,14 +73,18 @@ class WriteMessageViewModelFactory @Inject constructor(
             messageRepository = messageRepository,
             channelRepository = channelRepository,
             getSendMessageDataUseCase = getSendMessageDataUseCase,
-            osAppSettings = osAppSettings,
             getConversationStateUseCase = getConversationStateUseCase,
             saveSentMessageUseCase = saveSentMessageUseCase,
             sentMessageRepository = sentMessageRepository,
             contactRepository = contactRepository,
             clock = clock,
             decryptSafeMessageUseCase = decryptSafeMessageUseCase,
-            isCryptoDataReadyInMemoryUseCase = isCryptoDataReadyInMemoryUseCase,
+            isSafeReadyUseCase = isSafeReadyUseCase,
+            getAppSettingUseCase = getAppSettingUseCase,
+            messagePagingRepository = messagePagingRepository,
+            loadingManager = loadingManager,
+            createSingleEntryArchiveUseCase = createSingleEntryArchiveUseCase,
+            deleteBubblesArchiveUseCase = deleteBubblesArchiveUseCase,
         ) as T
     }
 }

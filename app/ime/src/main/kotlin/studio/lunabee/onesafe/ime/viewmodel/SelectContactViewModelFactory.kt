@@ -22,10 +22,10 @@ package studio.lunabee.onesafe.ime.viewmodel
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
-import studio.lunabee.onesafe.bubbles.domain.usecase.GetAllContactsUseCase
+import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
+import studio.lunabee.bubbles.domain.usecase.GetAllContactsUseCase
+import studio.lunabee.messaging.domain.usecase.GetConversationStateUseCase
 import studio.lunabee.onesafe.ime.ui.contact.ImeContactViewModel
-import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCase
 import javax.inject.Inject
 
 class SelectContactViewModelFactory @Inject constructor(

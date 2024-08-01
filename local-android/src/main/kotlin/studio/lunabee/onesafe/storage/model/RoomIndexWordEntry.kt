@@ -23,6 +23,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import java.util.UUID
 
@@ -41,20 +42,20 @@ import java.util.UUID
             childColumns = arrayOf("field_match"),
             onDelete = ForeignKey.CASCADE,
         ),
+        ForeignKey(
+            entity = RoomSafe::class,
+            parentColumns = arrayOf("id"),
+            childColumns = arrayOf("safe_id"),
+            onDelete = ForeignKey.CASCADE,
+        ),
     ],
 )
 class RoomIndexWordEntry(
-    @PrimaryKey(autoGenerate = true)
-    var id: Int = 0,
-
-    @ColumnInfo(name = "word")
-    val encWord: ByteArray,
-
-    @ColumnInfo(name = "item_match", index = true)
-    val itemMatch: UUID,
-
-    @ColumnInfo(name = "field_match", index = true)
-    val fieldMatch: UUID?,
+    @PrimaryKey(autoGenerate = true) var id: Int = 0,
+    @ColumnInfo(name = "word") val encWord: ByteArray,
+    @ColumnInfo(name = "item_match", index = true) val itemMatch: UUID,
+    @ColumnInfo(name = "field_match", index = true) val fieldMatch: UUID?,
+    @ColumnInfo(name = "safe_id", index = true) val safeId: SafeId, // TODO <multisafe> should we use multi-column index?
 ) {
 
     fun toIndexWordEntry(): IndexWordEntry =
@@ -62,6 +63,7 @@ class RoomIndexWordEntry(
             encWord = encWord,
             itemMatch = itemMatch,
             fieldMatch = fieldMatch,
+            safeId = safeId,
         )
 
     override fun equals(other: Any?): Boolean {
@@ -74,6 +76,7 @@ class RoomIndexWordEntry(
         if (!encWord.contentEquals(other.encWord)) return false
         if (itemMatch != other.itemMatch) return false
         if (fieldMatch != other.fieldMatch) return false
+        if (safeId != other.safeId) return false
 
         return true
     }
@@ -83,6 +86,7 @@ class RoomIndexWordEntry(
         result = 31 * result + encWord.contentHashCode()
         result = 31 * result + itemMatch.hashCode()
         result = 31 * result + (fieldMatch?.hashCode() ?: 0)
+        result = 31 * result + safeId.hashCode()
         return result
     }
 
@@ -92,6 +96,7 @@ class RoomIndexWordEntry(
                 itemMatch = indexWordEntry.itemMatch,
                 encWord = indexWordEntry.encWord,
                 fieldMatch = indexWordEntry.fieldMatch,
+                safeId = indexWordEntry.safeId,
             )
         }
     }

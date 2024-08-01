@@ -24,11 +24,13 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
 import studio.lunabee.onesafe.domain.repository.ItemSettingsRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemDeletedRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import java.util.UUID
 import javax.inject.Inject
 
@@ -36,6 +38,7 @@ class GetPagerItemByParentsUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
     private val safeItemDeletedRepository: SafeItemDeletedRepository,
     private val itemSettingsRepository: ItemSettingsRepository,
+    private val safeRepository: SafeRepository,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(
@@ -43,22 +46,26 @@ class GetPagerItemByParentsUseCase @Inject constructor(
         parentId: UUID?,
         isDeleted: Boolean,
     ): Flow<PagingData<SafeItem>> {
-        return if (isDeleted) {
-            itemSettingsRepository.itemOrdering.flatMapLatest { itemOrder ->
-                safeItemDeletedRepository.getPagerItemByParentIdDeleted(
-                    config = pagingConfig,
-                    parentId = parentId,
-                    order = itemOrder,
-                )
-            }
-        } else {
-            itemSettingsRepository.itemOrdering.flatMapLatest { itemOrder ->
-                safeItemRepository.getPagerItemByParents(
-                    config = pagingConfig,
-                    parentId = parentId,
-                    order = itemOrder,
-                )
-            }
+        return safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+            safeId?.let {
+                itemSettingsRepository.itemOrdering(safeId).flatMapLatest { itemOrder ->
+                    if (isDeleted) {
+                        safeItemDeletedRepository.getPagerItemByParentIdDeleted(
+                            config = pagingConfig,
+                            parentId = parentId,
+                            order = itemOrder,
+                            safeId = safeId,
+                        )
+                    } else {
+                        safeItemRepository.getPagerItemByParents(
+                            config = pagingConfig,
+                            parentId = parentId,
+                            order = itemOrder,
+                            safeId = safeId,
+                        )
+                    }
+                }
+            } ?: flowOf(PagingData.empty())
         }
     }
 
@@ -68,22 +75,26 @@ class GetPagerItemByParentsUseCase @Inject constructor(
         parentId: UUID?,
         isDeleted: Boolean,
     ): Flow<PagingData<SafeItemWithIdentifier>> {
-        return if (isDeleted) {
-            itemSettingsRepository.itemOrdering.flatMapLatest { itemOrder ->
-                safeItemDeletedRepository.getPagerItemByParentIdDeletedWithIdentifier(
-                    config = pagingConfig,
-                    parentId = parentId,
-                    order = itemOrder,
-                )
-            }
-        } else {
-            itemSettingsRepository.itemOrdering.flatMapLatest { itemOrder ->
-                safeItemRepository.getPagerItemByParentsWithIdentifier(
-                    config = pagingConfig,
-                    parentId = parentId,
-                    order = itemOrder,
-                )
-            }
+        return safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+            safeId?.let {
+                itemSettingsRepository.itemOrdering(safeId).flatMapLatest { itemOrder ->
+                    if (isDeleted) {
+                        safeItemDeletedRepository.getPagerItemByParentIdDeletedWithIdentifier(
+                            config = pagingConfig,
+                            parentId = parentId,
+                            order = itemOrder,
+                            safeId = safeId,
+                        )
+                    } else {
+                        safeItemRepository.getPagerItemByParentsWithIdentifier(
+                            config = pagingConfig,
+                            parentId = parentId,
+                            order = itemOrder,
+                            safeId = safeId,
+                        )
+                    }
+                }
+            } ?: flowOf(PagingData.empty())
         }
     }
 }

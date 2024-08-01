@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.domain.repository
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
@@ -29,25 +30,25 @@ import java.time.Instant
 import java.util.UUID
 
 interface SafeItemDeletedRepository {
-    suspend fun getDeletedItemsByDeletedParent(deletedParentId: UUID?, order: ItemOrder): List<SafeItem>
+    suspend fun getDeletedItemsByDeletedParent(deletedParentId: UUID?, order: ItemOrder, safeId: SafeId): List<SafeItem>
     suspend fun getSiblingOriginalChildren(parentId: UUID, order: ItemOrder): List<SafeItem>
     suspend fun updateSiblingOriginalChildrenParentId(parentId: UUID, newParentId: UUID?)
-    fun countSafeItemByParentIdDeletedFlow(parentId: UUID?): Flow<Int>
-    suspend fun countSafeItemByParentIdDeleted(parentId: UUID?): Int
-    fun getPagerItemByParentIdDeleted(config: PagingConfig, parentId: UUID?, order: ItemOrder): Flow<PagingData<SafeItem>>
-    fun countAllDeletedWithNonDeletedParent(): Flow<Int>
-    suspend fun getHighestDeletedPosition(parentId: UUID?): Double?
+    fun countSafeItemByParentIdDeletedFlow(parentId: UUID?, safeId: SafeId): Flow<Int>
+    suspend fun countSafeItemByParentIdDeleted(parentId: UUID?, safeId: SafeId): Int
+    fun getPagerItemByParentIdDeleted(config: PagingConfig, parentId: UUID?, order: ItemOrder, safeId: SafeId): Flow<PagingData<SafeItem>>
+    suspend fun getHighestDeletedPosition(parentId: UUID?, safeId: SafeId): Double?
     suspend fun removeItem(id: UUID)
     suspend fun removeItems(ids: List<UUID>)
     suspend fun findDeletedByIdWithDeletedDescendants(id: UUID): List<SafeItem>
     suspend fun findByIdWithDeletedAncestors(id: UUID): List<SafeItem>
-    suspend fun restoreItemToParentWithDescendants(id: UUID?)
+    suspend fun restoreItemToParentWithDescendants(id: UUID?, safeId: SafeId)
     suspend fun updateParentToNonDeletedAncestor(id: UUID)
     suspend fun removeOldItems(threshold: Instant)
-    fun getAllDeletedItemsCount(): Flow<Int>
+    fun getAllDeletedItemsCount(safeId: SafeId): Flow<Int>
     fun getPagerItemByParentIdDeletedWithIdentifier(
         config: PagingConfig,
         parentId: UUID?,
         order: ItemOrder,
+        safeId: SafeId,
     ): Flow<PagingData<SafeItemWithIdentifier>>
 }

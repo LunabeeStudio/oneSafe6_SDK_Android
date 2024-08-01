@@ -19,14 +19,16 @@
 
 package studio.lunabee.onesafe.domain.usecase.authentication
 
-import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import javax.inject.Inject
+
+// TODO <multisafe> is it ok to check in at least one safe exist? -> no, on last safe deletion, we should nav to login
 
 /**
  * Check if cryptographic stuff has already been generated
  */
 class IsSignUpUseCase @Inject constructor(
-    private val cryptoRepository: MainCryptoRepository,
+    private val safeRepository: SafeRepository,
 ) {
-    suspend operator fun invoke(): Boolean = cryptoRepository.hasMasterSalt()
+    suspend operator fun invoke(): Boolean = safeRepository.hasSafe()
 }

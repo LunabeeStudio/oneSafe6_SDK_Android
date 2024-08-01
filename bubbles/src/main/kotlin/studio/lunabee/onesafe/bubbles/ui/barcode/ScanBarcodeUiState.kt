@@ -19,7 +19,7 @@
 
 package studio.lunabee.onesafe.bubbles.ui.barcode
 
-import studio.lunabee.onesafe.messaging.domain.model.DecryptResult
+import studio.lunabee.messaging.domain.model.DecryptResult
 
 sealed interface ScanBarcodeUiState {
     data object Idle : ScanBarcodeUiState

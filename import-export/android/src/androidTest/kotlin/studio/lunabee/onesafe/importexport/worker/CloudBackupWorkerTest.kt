@@ -46,7 +46,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.BeforeClass
 import org.junit.Rule
-import kotlin.test.Test
 import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
 import studio.lunabee.onesafe.error.OSDriveError
 import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
@@ -56,10 +55,12 @@ import studio.lunabee.onesafe.importexport.usecase.CloudAutoBackupUseCase
 import studio.lunabee.onesafe.importexport.usecase.DeleteOldCloudBackupsUseCase
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltTest
+import studio.lunabee.onesafe.test.firstSafeId
 import java.time.Instant
 import java.time.ZonedDateTime
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -68,7 +69,7 @@ import kotlin.test.assertNotNull
 class CloudBackupWorkerTest : OSHiltTest() {
     @get:Rule
     override val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
-    override val initialTestState: InitialTestState = InitialTestState.SignedUp()
+    override val initialTestState: InitialTestState = InitialTestState.Home()
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
@@ -90,16 +91,17 @@ class CloudBackupWorkerTest : OSHiltTest() {
         remoteId = "remoteId",
         name = "name",
         date = Instant.EPOCH,
+        safeId = firstSafeId,
     )
 
     @BindValue
     val cloudAutoBackupUseCase: CloudAutoBackupUseCase = mockk {
-        every { this@mockk.invoke() } returns flowOf(LBFlowResult.Success(successCloudBackup))
+        every { this@mockk.invoke(firstSafeId) } returns flowOf(LBFlowResult.Success(successCloudBackup))
     }
 
     @BindValue
     val deleteOldCloudBackupsUseCase: DeleteOldCloudBackupsUseCase = mockk {
-        every { this@mockk.invoke() } returns flowOf(LBFlowResult.Success(Unit))
+        every { this@mockk.invoke(firstSafeId) } returns flowOf(LBFlowResult.Success(Unit))
         every { this@mockk.invoke(any()) } returns flowOf(LBFlowResult.Success(Unit))
     }
 
@@ -110,7 +112,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
     @Inject lateinit var autoBackupWorkersHelper: AutoBackupWorkersHelper
 
     @After
-    fun tearsDown() {
+    fun tearsDown(): TestResult = runTest {
         osNotificationManager.manager.cancel(OSNotificationManager.AUTO_BACKUP_ERROR_WORKER_NOTIFICATION_ID)
         autoBackupWorkersHelper.cancel()
     }
@@ -121,7 +123,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
         val workManager = WorkManager.getInstance(context)
         val testDriver = WorkManagerTestInitHelper.getTestDriver(context)!!
 
-        CloudBackupWorker.start(context, false)
+        CloudBackupWorker.start(context, false, firstSafeId)
         val workId = getWorkId(workManager)
         val actual = mutableListOf<WorkInfo.State>()
         val collectJob = launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -145,7 +147,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun retry_test(): TestResult = runTest {
-        every { cloudAutoBackupUseCase.invoke() } returns
+        every { cloudAutoBackupUseCase.invoke(firstSafeId) } returns
             flowOf(LBFlowResult.Failure(OSDriveError(OSDriveError.Code.DRIVE_REQUEST_EXECUTION_FAILED)))
 
         val workManager = WorkManager.getInstance(context)
@@ -157,7 +159,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
             WorkInfo.State.ENQUEUED, // retry
         )
 
-        CloudBackupWorker.start(context, false)
+        CloudBackupWorker.start(context, false, firstSafeId)
         val workId = getWorkId(workManager)
         launch(UnconfinedTestDispatcher(testScheduler)) {
             val actual = workManager.getWorkInfoByIdFlow(workId).take(3).map { it.state }.toList()
@@ -170,13 +172,13 @@ class CloudBackupWorkerTest : OSHiltTest() {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun unrecoverable_failure_test(): TestResult = runTest {
-        every { cloudAutoBackupUseCase.invoke() } returns
+        every { cloudAutoBackupUseCase.invoke(firstSafeId) } returns
             flowOf(LBFlowResult.Failure(OSDriveError(OSDriveError.Code.DRIVE_AUTHENTICATION_REQUIRED)))
 
         val workManager = WorkManager.getInstance(context)
         val testDriver = WorkManagerTestInitHelper.getTestDriver(context)!!
 
-        CloudBackupWorker.start(context, false)
+        CloudBackupWorker.start(context, false, firstSafeId)
         val workId = getWorkId(workManager)
         val actual = mutableListOf<WorkInfo.State>()
         val collectJob = launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -196,7 +198,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
         assertContentEquals(expected, actual)
         collectJob.cancel()
 
-        val actualError = autoBackupErrorRepository.getError().first()
+        val actualError = autoBackupErrorRepository.getError(firstSafeId).first()
         assertNotNull(actualError)
         assertEquals(OSDriveError.Code.DRIVE_AUTHENTICATION_REQUIRED.name, actualError.code)
         assertEquals(ZonedDateTime.now(testClock), actualError.date)
@@ -204,7 +206,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
 
     @Test
     fun error_notification_test(): TestResult = runTest {
-        every { cloudAutoBackupUseCase.invoke() } returns
+        every { cloudAutoBackupUseCase.invoke(firstSafeId) } returns
             flowOf(LBFlowResult.Failure(OSDriveError(OSDriveError.Code.DRIVE_AUTHENTICATION_REQUIRED)))
 
         val workManager = WorkManager.getInstance(context)
@@ -217,7 +219,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
         }
         assertNotNull(notificationOnFailure)
 
-        every { cloudAutoBackupUseCase.invoke() } returns flowOf(LBFlowResult.Success(successCloudBackup))
+        every { cloudAutoBackupUseCase.invoke(firstSafeId) } returns flowOf(LBFlowResult.Success(successCloudBackup))
         runWorker(workManager, testDriver)
 
         val notificationAfterSuccess = osNotificationManager.manager.activeNotifications.firstOrNull {
@@ -230,14 +232,14 @@ class CloudBackupWorkerTest : OSHiltTest() {
         workManager: WorkManager,
         testDriver: TestDriver,
     ) {
-        CloudBackupWorker.start(context, false)
+        CloudBackupWorker.start(context, false, firstSafeId)
         val workId = getWorkId(workManager)
         testDriver.setAllConstraintsMet(workId)
         workManager.getWorkInfoByIdFlow(workId).first { it.state.isFinished }
     }
 
     private suspend fun getWorkId(workManager: WorkManager): UUID {
-        val workInfo: WorkInfo = workManager.getWorkInfosForUniqueWorkFlow(ImportExportAndroidConstants.AUTO_BACKUP_WORKER_NAME)
+        val workInfo: WorkInfo = workManager.getWorkInfosForUniqueWorkFlow(ImportExportAndroidConstants.autoBackupWorkerName(firstSafeId))
             .first()
             .first()
         return workInfo.id

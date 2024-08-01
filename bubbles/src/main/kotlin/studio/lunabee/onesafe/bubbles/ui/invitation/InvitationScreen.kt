@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSScreen
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
@@ -50,7 +51,8 @@ import studio.lunabee.onesafe.commonui.extension.getTextSharingIntent
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
-import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
+import studio.lunabee.onesafe.ui.theme.OSTheme
+import studio.lunabee.onesafe.utils.OsDefaultPreview
 
 context(InvitationNavScope)
 @Composable
@@ -61,11 +63,8 @@ fun InvitationRoute(
     val dialogState by viewModel.dialogState.collectAsStateWithLifecycle()
     val hasClickedShare = rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
-    val isMaterialYouEnabled by viewModel.isMaterialYouEnabled.collectAsStateWithLifecycle(initialValue = false)
 
-    OSForcedLightScreen(
-        isMaterialYouEnabled = isMaterialYouEnabled,
-    ) {
+    OSForcedLightScreen {
         dialogState?.DefaultAlertDialog()
         when (val safeState = uiState) {
             InvitationUiState.Exit -> {
@@ -74,7 +73,7 @@ fun InvitationRoute(
             }
             null -> OSScreen(testTag = "") { Box(modifier = Modifier.fillMaxSize()) }
             is InvitationUiState.Data -> {
-                val invitationLink = safeState.invitationString.getDeepLinkFromMessage(true)
+                val invitationLink = safeState.invitationString.getDeepLinkFromMessage(MessageSharingMode.Deeplink)
                 InvitationScreen(
                     onBackClick = navigateBack,
                     invitationLink = invitationLink,
@@ -106,10 +105,7 @@ fun InvitationScreen(
     onFinishClick: () -> Unit,
 ) {
     val invitationQr = remember(invitationLink) { invitationLink.toBarcodeBitmap() }
-    OSScreen(
-        testTag = UiConstants.TestTag.Screen.InvitationScreen,
-        background = LocalDesignSystem.current.bubblesBackGround(),
-    ) {
+    OSScreen(testTag = UiConstants.TestTag.Screen.InvitationScreen) {
         Column(
             modifier = Modifier.fillMaxSize(),
         ) {
@@ -142,4 +138,18 @@ interface InvitationNavScope {
     val navigateBack: () -> Unit
     val navigateToScanBarcode: () -> Unit
     val navigateToBubblesHome: () -> Unit
+}
+
+@OsDefaultPreview
+@Composable
+fun InvitationScreenPreview() {
+    OSTheme {
+        InvitationScreen(
+            onBackClick = {},
+            onShareInvitationClick = {},
+            contactName = "John Doe",
+            invitationLink = "https://onesafe.com/invitation/123456",
+            onFinishClick = {},
+        )
+    }
 }

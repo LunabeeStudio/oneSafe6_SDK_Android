@@ -24,7 +24,7 @@ import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
-import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
+import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
 import studio.lunabee.onesafe.error.OSError
 import java.util.UUID
 import javax.inject.Inject
@@ -37,7 +37,7 @@ import kotlin.time.Duration.Companion.milliseconds
 class ItemDecryptUseCase @Inject constructor(
     private val cryptoRepository: MainCryptoRepository,
     private val safeItemKeyRepository: SafeItemKeyRepository,
-    private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
+    private val isSafeReadyUseCase: IsSafeReadyUseCase,
 ) {
 
     /**
@@ -72,7 +72,7 @@ class ItemDecryptUseCase @Inject constructor(
     }
 
     private suspend fun <Data : Any> decrypt(data: ByteArray, clazz: KClass<Data>, key: SafeItemKey): Data {
-        isCryptoDataReadyInMemoryUseCase.wait(500.milliseconds)
+        isSafeReadyUseCase.wait(500.milliseconds)
         return cryptoRepository.decrypt(key, DecryptEntry(data, clazz))
     }
 }

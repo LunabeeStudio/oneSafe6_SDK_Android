@@ -25,6 +25,7 @@ import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
+import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ForegroundInfo
 import androidx.work.NetworkType
@@ -47,11 +48,14 @@ import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
 import studio.lunabee.onesafe.commonui.utils.setForegroundSafe
 import studio.lunabee.onesafe.domain.common.FeatureFlags
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.usecase.CloudAutoBackupUseCase
 import studio.lunabee.onesafe.importexport.usecase.DeleteOldCloudBackupsUseCase
 import studio.lunabee.onesafe.importexport.utils.ForegroundInfoCompat
+import studio.lunabee.onesafe.toByteArray
+import studio.lunabee.onesafe.toUUID
 
 // TODO <AutoBackup> split cloudAutoBackupUseCase with zip and upload part so the worker can chain them to have finer control over the flow
 
@@ -71,12 +75,14 @@ class CloudBackupWorker @AssistedInject constructor(
     private val featureFlags: FeatureFlags,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
+        val safeId = SafeId(inputData.getByteArray(EXPORT_WORKER_SAFE_ID_DATA)!!.toUUID())
+
         if (featureFlags.backupWorkerExpedited()) {
             setForegroundSafe(getForegroundInfo())
         }
 
-        val flowResult = cloudAutoBackupUseCase().transformResult {
-            emitAll(deleteOldBackupsUseCase())
+        val flowResult = cloudAutoBackupUseCase(safeId).transformResult {
+            emitAll(deleteOldBackupsUseCase.invoke(safeId))
         }.catch { error ->
             emit(LBFlowResult.Failure(error))
         }.onEach { result ->
@@ -92,8 +98,9 @@ class CloudBackupWorker @AssistedInject constructor(
                 error = result.throwable,
                 runAttemptCount = runAttemptCount,
                 errorSource = AutoBackupMode.CloudOnly,
+                safeId = safeId,
             )
-            is LBResult.Success -> autoBackupWorkersHelper.onBackupWorkerSucceed(AutoBackupMode.CloudOnly)
+            is LBResult.Success -> autoBackupWorkersHelper.onBackupWorkerSucceed(AutoBackupMode.CloudOnly, safeId)
         }
     }
 
@@ -115,9 +122,16 @@ class CloudBackupWorker @AssistedInject constructor(
     }
 
     companion object {
-        private fun getWorkRequest(setExpedited: Boolean): OneTimeWorkRequest {
+        private const val EXPORT_WORKER_SAFE_ID_DATA = "ef8b01f3-15c0-4d64-af7a-03fd8d00fb2c"
+
+        private fun getWorkRequest(setExpedited: Boolean, safeId: SafeId): OneTimeWorkRequest {
+            val data = Data
+                .Builder()
+                .putByteArray(EXPORT_WORKER_SAFE_ID_DATA, safeId.id.toByteArray())
+                .build()
             val workRequestBuilder = OneTimeWorkRequestBuilder<CloudBackupWorker>()
-                .addTag(ImportExportAndroidConstants.AUTO_BACKUP_WORKER_TAG)
+                .addTag(ImportExportAndroidConstants.autoBackupWorkerTag(safeId))
+                .setInputData(data)
                 .setConstraints(
                     Constraints.Builder().setRequiredNetworkType(NetworkType.UNMETERED).build(),
                 )
@@ -127,12 +141,12 @@ class CloudBackupWorker @AssistedInject constructor(
             return workRequestBuilder.build()
         }
 
-        internal fun start(context: Context, setExpedited: Boolean) {
+        internal fun start(context: Context, setExpedited: Boolean, safeId: SafeId) {
             WorkManager.getInstance(context)
                 .enqueueUniqueWork(
-                    ImportExportAndroidConstants.AUTO_BACKUP_WORKER_NAME,
+                    ImportExportAndroidConstants.autoBackupWorkerName(safeId),
                     ExistingWorkPolicy.APPEND_OR_REPLACE,
-                    getWorkRequest(setExpedited),
+                    getWorkRequest(setExpedited, safeId),
                 )
         }
     }

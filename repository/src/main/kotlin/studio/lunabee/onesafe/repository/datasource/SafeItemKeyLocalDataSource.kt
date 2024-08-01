@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.repository.datasource
 
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import java.util.UUID
 
@@ -27,5 +28,5 @@ interface SafeItemKeyLocalDataSource {
     suspend fun getSafeItemKeys(ids: List<UUID>): List<SafeItemKey>
     suspend fun save(itemKey: SafeItemKey)
     suspend fun update(itemKeys: List<SafeItemKey>)
-    suspend fun getAllSafeItemKeys(): List<SafeItemKey>
+    suspend fun getAllSafeItemKeys(safeId: SafeId): List<SafeItemKey>
 }

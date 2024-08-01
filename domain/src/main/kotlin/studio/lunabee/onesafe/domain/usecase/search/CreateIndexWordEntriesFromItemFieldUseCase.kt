@@ -19,29 +19,32 @@
 
 package studio.lunabee.onesafe.domain.usecase.search
 
-import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.ItemFieldDataToIndex
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import javax.inject.Inject
 
 class CreateIndexWordEntriesFromItemFieldUseCase @Inject constructor(
     private val cryptoRepository: MainCryptoRepository,
+    private val safeRepository: SafeRepository,
 ) {
     suspend operator fun invoke(
         data: List<ItemFieldDataToIndex>,
     ): List<IndexWordEntry> {
-        val plainIndexWordEntry = data.filter {
+        val safeId = safeRepository.currentSafeId()
+        return data.filter {
             !it.isSecured && it.value.isNotEmpty()
-        }.flatMap {
-            SearchStringUtils.getListStringSearch(it.value).map { word ->
-                PlainIndexWordEntry(
-                    word = word,
-                    itemMatch = it.itemId,
-                    fieldMatch = it.fieldId,
+        }.flatMap { dataToIndex ->
+            val words = SearchStringUtils.getListStringSearch(dataToIndex.value)
+            cryptoRepository.encryptIndexWord(words).map { encWord ->
+                IndexWordEntry(
+                    encWord = encWord,
+                    itemMatch = dataToIndex.itemId,
+                    fieldMatch = dataToIndex.fieldId,
+                    safeId = safeId,
                 )
             }
         }
-        return cryptoRepository.encryptIndexWord(plainIndexWordEntry)
     }
 }

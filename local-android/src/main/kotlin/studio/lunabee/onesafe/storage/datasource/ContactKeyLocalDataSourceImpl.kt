@@ -19,16 +19,17 @@
 
 package studio.lunabee.onesafe.storage.datasource
 
+import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
 import studio.lunabee.bubbles.repository.datasource.ContactKeyLocalDataSource
-import studio.lunabee.onesafe.bubbles.domain.model.ContactLocalKey
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.onesafe.error.OSStorageError
 import studio.lunabee.onesafe.storage.dao.ContactKeyDao
-import java.util.UUID
 import javax.inject.Inject
 
 class ContactKeyLocalDataSourceImpl @Inject constructor(
     private val dao: ContactKeyDao,
 ) : ContactKeyLocalDataSource {
-    override suspend fun getContactLocalKey(contactId: UUID): ContactLocalKey = dao.getById(contactId)
+    override suspend fun getContactLocalKey(contactId: DoubleRatchetUUID): ContactLocalKey = dao.getById(contactId.uuid)
+        ?.let(::ContactLocalKey)
         ?: throw OSStorageError(OSStorageError.Code.CONTACT_KEY_NOT_FOUND)
 }

@@ -29,13 +29,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
-import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
-import studio.lunabee.onesafe.bubbles.domain.usecase.UpdateContactUseCase
+import studio.lunabee.bubbles.domain.model.MessageSharingMode
+import studio.lunabee.bubbles.domain.repository.ContactRepository
+import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
+import studio.lunabee.bubbles.domain.usecase.UpdateContactUseCase
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormState
 import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormViewModel
 import studio.lunabee.onesafe.bubbles.ui.contact.form.common.DefaultContactFormDelegate
-import java.util.UUID
+import studio.lunabee.onesafe.bubbles.ui.contact.model.MessageSharingModeUi
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,7 +47,8 @@ class EditContactViewModel @Inject constructor(
     contactLocalDecryptUseCase: ContactLocalDecryptUseCase,
     savedStateHandle: SavedStateHandle,
 ) : ContactFormViewModel(editContactDelegate) {
-    private val contactId: UUID = savedStateHandle.get<String>(EditContactDestination.ContactIdArgs)?.let(UUID::fromString)
+    private val contactId: DoubleRatchetUUID = savedStateHandle.get<String>(EditContactDestination.ContactIdArgs)
+        ?.let { DoubleRatchetUUID(it) }
         ?: error("Missing contact id in args")
 
     init {
@@ -57,14 +60,14 @@ class EditContactViewModel @Inject constructor(
                     contact.id,
                     String::class,
                 ).data
-                val decryptedIsUsingDeeplink = contactLocalDecryptUseCase(
-                    contact.encIsUsingDeeplink,
+                val decryptedSharingMode = contactLocalDecryptUseCase(
+                    contact.encSharingMode,
                     contact.id,
-                    Boolean::class,
-                ).data
+                    MessageSharingMode::class,
+                ).data?.let { MessageSharingModeUi.fromMode(it) }
                 mFormState.value = ContactFormState(
                     name = decryptedNameResult.orEmpty(),
-                    isUsingDeepLink = decryptedIsUsingDeeplink ?: true,
+                    sharingMessageMode = decryptedSharingMode ?: MessageSharingModeUi.Deeplinks,
                 )
             }
         }
@@ -76,13 +79,14 @@ class EditContactDelegate @Inject constructor(
     savedStateHandle: SavedStateHandle,
     loadingManager: LoadingManager,
 ) : DefaultContactFormDelegate(loadingManager) {
-    private val contactId: UUID = savedStateHandle.get<String>(EditContactDestination.ContactIdArgs)?.let(UUID::fromString)
+    private val contactId: DoubleRatchetUUID = savedStateHandle.get<String>(EditContactDestination.ContactIdArgs)
+        ?.let { DoubleRatchetUUID(it) }
         ?: error("Missing contact id in args")
 
-    private val _createInvitationResult: MutableStateFlow<LBResult<UUID>?> = MutableStateFlow(null)
-    override val createInvitationResult: StateFlow<LBResult<UUID>?> = _createInvitationResult.asStateFlow()
-    override suspend fun doSaveContact(contactName: String, isUsingDeeplink: Boolean) {
-        val updateRes = updateContactUseCase(contactId, isUsingDeeplink, contactName)
+    private val _createInvitationResult: MutableStateFlow<LBResult<DoubleRatchetUUID>?> = MutableStateFlow(null)
+    override val createInvitationResult: StateFlow<LBResult<DoubleRatchetUUID>?> = _createInvitationResult.asStateFlow()
+    override suspend fun doSaveContact(contactName: String, sharingMode: MessageSharingMode) {
+        val updateRes = updateContactUseCase(contactId, sharingMode, contactName)
         when (updateRes) {
             is LBResult.Failure -> _createInvitationResult.value = LBResult.Failure(updateRes.throwable, contactId)
             is LBResult.Success -> _createInvitationResult.value = LBResult.Success(contactId)

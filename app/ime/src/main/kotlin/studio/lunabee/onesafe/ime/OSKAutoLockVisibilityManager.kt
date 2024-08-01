@@ -25,9 +25,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
-import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
+import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
 import studio.lunabee.onesafe.domain.usecase.autolock.AutoLockBackgroundUseCase
+import studio.lunabee.onesafe.domain.usecase.settings.GetSecuritySettingUseCase
 import studio.lunabee.onesafe.ime.model.OSKImeState
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -36,15 +36,15 @@ import kotlin.time.Duration
 @Singleton
 class OSKAutoLockVisibilityManager @Inject constructor(
     private val autoLockBackgroundUseCase: AutoLockBackgroundUseCase,
-    private val securityOptionRepository: SecurityOptionRepository,
-    private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
+    private val getSecuritySettingUseCase: GetSecuritySettingUseCase,
+    private val isSafeReadyUseCase: IsSafeReadyUseCase,
 ) : OSKImeStateObserver {
     val coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     private var oskVisibilityChangeJob: Job? = null
 
-    override fun onStateChange(state: OSKImeState) {
-        if (securityOptionRepository.autoLockOSKHiddenDelay != Duration.INFINITE) {
+    override suspend fun onStateChange(state: OSKImeState) {
+        if (getSecuritySettingUseCase.autoLockOSKHiddenDelay().data != Duration.INFINITE) {
             when (state) {
                 OSKImeState.Hidden,
                 OSKImeState.Keyboard,
@@ -58,7 +58,7 @@ class OSKAutoLockVisibilityManager @Inject constructor(
 
     private fun launchLock() {
         coroutineScope.launch {
-            if (isCryptoDataReadyInMemoryUseCase.flow().first() &&
+            if (isSafeReadyUseCase.flow().first() &&
                 oskVisibilityChangeJob == null || oskVisibilityChangeJob?.isActive == false
             ) {
                 oskVisibilityChangeJob = coroutineScope.launch {

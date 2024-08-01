@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.domain.usecase
 import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.domain.common.IconIdProvider
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.repository.IconRepository
@@ -59,7 +60,7 @@ class SetIconUseCase @Inject constructor(
                 deleteIconUseCase(safeItem)
             }
 
-            val iconId = invoke(itemKey, icon)
+            val iconId = invoke(itemKey, icon, safeItem.safeId)
             safeItemRepository.updateIcon(safeItem.id, iconId)
         }
     }
@@ -71,11 +72,12 @@ class SetIconUseCase @Inject constructor(
     internal suspend operator fun invoke(
         itemKey: SafeItemKey,
         icon: ByteArray,
+        safeId: SafeId,
     ): UUID {
         val iconId = idProvider()
         val resizedIcon = resizeIconUseCase(icon)
         val encData: ByteArray = cryptoRepository.encrypt(itemKey, EncryptEntry(resizedIcon))
-        iconRepository.addIcon(iconId, encData)
+        iconRepository.addIcon(iconId, encData, safeId)
         return iconId
     }
 }

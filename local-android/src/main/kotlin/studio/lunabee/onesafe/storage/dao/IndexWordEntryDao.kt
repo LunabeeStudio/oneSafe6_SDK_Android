@@ -24,14 +24,15 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.storage.model.RoomIndexWordEntry
 import java.util.UUID
 
 @Dao
 interface IndexWordEntryDao {
 
-    @Query("SELECT * FROM IndexWordEntry")
-    fun getAll(): Flow<List<RoomIndexWordEntry>>
+    @Query("SELECT * FROM IndexWordEntry WHERE safe_id IS :safeId")
+    fun getAll(safeId: SafeId): Flow<List<RoomIndexWordEntry>>
 
     @Query("DELETE FROM IndexWordEntry WHERE field_match IS NULL AND item_match = :itemId")
     suspend fun deleteNameIndexFromItemId(itemId: UUID)

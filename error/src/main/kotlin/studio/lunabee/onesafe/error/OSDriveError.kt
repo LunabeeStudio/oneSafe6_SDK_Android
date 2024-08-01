@@ -35,5 +35,6 @@ data class OSDriveError(
         DRIVE_NETWORK_FAILURE(message = "The request failed due to network"),
         DRIVE_BACKUP_REMOTE_ID_NOT_FOUND(message = "No remote backup found for provided remote id"),
         DRIVE_UNKNOWN_ERROR(message = "Unknown error happened"),
+        DRIVE_CANNOT_DELETE_BACKUP_WITHOUT_SAFE_ID(message = "Backups not associated cannot be delete"),
     }
 }

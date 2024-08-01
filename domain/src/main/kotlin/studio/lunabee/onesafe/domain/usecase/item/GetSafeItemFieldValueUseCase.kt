@@ -28,7 +28,7 @@ import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldValue
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
-import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
+import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
 import studio.lunabee.onesafe.error.OSError
 import java.util.UUID
 import javax.inject.Inject
@@ -40,13 +40,13 @@ class GetSafeItemFieldValueUseCase @Inject constructor(
     private val safeItemFieldRepository: SafeItemFieldRepository,
     private val safeItemRepository: SafeItemRepository,
     private val decryptUseCase: ItemDecryptUseCase,
-    private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
+    private val isSafeReadyUseCase: IsSafeReadyUseCase,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend operator fun invoke(
         itemId: UUID,
         fieldId: UUID,
-    ): Flow<LBResult<SafeItemFieldValue>> = isCryptoDataReadyInMemoryUseCase.flow().flatMapLatest { isCryptoLoaded ->
+    ): Flow<LBResult<SafeItemFieldValue>> = isSafeReadyUseCase.flow().flatMapLatest { isCryptoLoaded ->
         if (isCryptoLoaded) {
             flowOf(
                 OSError.runCatching {

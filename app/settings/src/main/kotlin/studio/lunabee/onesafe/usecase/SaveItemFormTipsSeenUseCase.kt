@@ -19,8 +19,7 @@
 
 package studio.lunabee.onesafe.usecase
 
-import studio.lunabee.onesafe.visits.OSAppVisit
-import studio.lunabee.onesafe.visits.OSPreferenceTips
+import studio.lunabee.onesafe.domain.usecase.settings.SetAppVisitUseCase
 import javax.inject.Inject
 
 /**
@@ -29,15 +28,12 @@ import javax.inject.Inject
  * Display url tips first, then emoji tips on the next launch.
  */
 class SaveItemFormTipsSeenUseCase @Inject constructor(
-    private val osAppVisit: OSAppVisit,
+    private val setAppVisitUseCase: SetAppVisitUseCase,
 ) {
     suspend operator fun invoke(itemFormTips: ItemFormTips) {
-        osAppVisit.store(
-            value = true,
-            preferencesTips = when (itemFormTips) {
-                ItemFormTips.Url -> OSPreferenceTips.HasSeenItemEditionUrlToolTip
-                ItemFormTips.Emoji -> OSPreferenceTips.HasSeenItemEditionEmojiToolTip
-            },
-        )
+        when (itemFormTips) {
+            ItemFormTips.Url -> setAppVisitUseCase.setHasSeenItemEditionUrlToolTip()
+            ItemFormTips.Emoji -> setAppVisitUseCase.setHasSeenItemEditionEmojiToolTip()
+        }
     }
 }

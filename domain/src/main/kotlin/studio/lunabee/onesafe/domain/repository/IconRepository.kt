@@ -19,6 +19,8 @@
 
 package studio.lunabee.onesafe.domain.repository
 
+import studio.lunabee.onesafe.domain.model.safe.SafeId
+import studio.lunabee.onesafe.domain.utils.CrossSafeData
 import java.io.File
 import java.util.UUID
 
@@ -26,9 +28,12 @@ import java.util.UUID
 interface IconRepository {
     fun getIcon(iconId: String): File
     fun getIcons(iconsId: List<String>): List<File>
-    fun addIcon(iconId: UUID, icon: ByteArray): File
-    fun deleteIcon(iconId: UUID): Boolean
-    fun getIcons(): List<File>
-    fun copyAndDeleteIconFile(iconFile: File, iconId: UUID)
-    fun deleteAll()
+    suspend fun addIcon(iconId: UUID, icon: ByteArray, safeId: SafeId): File
+    suspend fun deleteIcon(iconId: UUID): Boolean
+
+    @CrossSafeData
+    fun getAllIcons(): List<File>
+    suspend fun getIcons(safeId: SafeId): List<File>
+    suspend fun copyAndDeleteIconFile(iconFile: File, iconId: UUID, safeId: SafeId)
+    suspend fun deleteAll(safeId: SafeId)
 }

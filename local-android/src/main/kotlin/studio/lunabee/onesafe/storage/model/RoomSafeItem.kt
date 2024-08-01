@@ -23,6 +23,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import java.time.Instant
 import java.util.UUID
@@ -42,6 +43,12 @@ import java.util.UUID
             childColumns = arrayOf("deleted_parent_id"),
             onDelete = ForeignKey.SET_NULL,
         ),
+        ForeignKey(
+            entity = RoomSafe::class,
+            parentColumns = arrayOf("id"),
+            childColumns = arrayOf("safe_id"),
+            onDelete = ForeignKey.CASCADE,
+        ),
     ],
 )
 data class RoomSafeItem(
@@ -51,7 +58,7 @@ data class RoomSafeItem(
     @ColumnInfo(name = "enc_name") val encName: ByteArray?,
     @ColumnInfo(name = "parent_id", index = true) val parentId: UUID?,
     @ColumnInfo(name = "is_favorite") val isFavorite: Boolean,
-    @ColumnInfo(name = "created_at", index = true, defaultValue = "0") val createdAt: Instant,
+    @ColumnInfo(name = "created_at", index = true) val createdAt: Instant,
     @ColumnInfo(name = "updated_at") val updatedAt: Instant,
     @ColumnInfo(name = "position") val position: Double,
     @ColumnInfo(name = "icon_id") val iconId: UUID?,
@@ -59,7 +66,8 @@ data class RoomSafeItem(
     @ColumnInfo(name = "deleted_at") val deletedAt: Instant?,
     @ColumnInfo(name = "deleted_parent_id", index = true) val deletedParentId: UUID?,
     @ColumnInfo(name = "consulted_at", index = true) val consultedAt: Instant?,
-    @ColumnInfo(name = "index_alpha", index = true, defaultValue = "0") val indexAlpha: Double,
+    @ColumnInfo(name = "index_alpha", index = true) val indexAlpha: Double,
+    @ColumnInfo(name = "safe_id", index = true) val safeId: SafeId,
 ) {
     fun toSafeItem(): SafeItem =
         SafeItem(
@@ -75,6 +83,7 @@ data class RoomSafeItem(
             deletedParentId = deletedParentId,
             indexAlpha = indexAlpha,
             createdAt = createdAt,
+            safeId = safeId,
         )
 
     override fun equals(other: Any?): Boolean {
@@ -101,7 +110,10 @@ data class RoomSafeItem(
         if (deletedAt != other.deletedAt) return false
         if (deletedParentId != other.deletedParentId) return false
         if (consultedAt != other.consultedAt) return false
-        return indexAlpha == other.indexAlpha
+        if (indexAlpha != other.indexAlpha) return false
+        if (safeId != other.safeId) return false
+
+        return true
     }
 
     override fun hashCode(): Int {
@@ -118,6 +130,7 @@ data class RoomSafeItem(
         result = 31 * result + (deletedParentId?.hashCode() ?: 0)
         result = 31 * result + (consultedAt?.hashCode() ?: 0)
         result = 31 * result + indexAlpha.hashCode()
+        result = 31 * result + safeId.hashCode()
         return result
     }
 
@@ -137,6 +150,7 @@ data class RoomSafeItem(
                 consultedAt = null,
                 indexAlpha = safeItem.indexAlpha,
                 createdAt = safeItem.createdAt,
+                safeId = safeItem.safeId,
             )
         }
     }

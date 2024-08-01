@@ -27,6 +27,6 @@ class StoreAutoBackupErrorUseCase @Inject constructor(
     private val autoBackupErrorRepository: AutoBackupErrorRepository,
 ) {
     suspend operator fun invoke(autoBackupError: AutoBackupError) {
-        autoBackupErrorRepository.setError(autoBackupError)
+        autoBackupErrorRepository.addError(autoBackupError)
     }
 }

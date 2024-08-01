@@ -17,6 +17,8 @@
  * Last modified 4/7/23, 12:45 AM
  */
 
+// TODO <multisafe> try remove module after all migration
+
 plugins {
     `android-library`
     alias(libs.plugins.kotlin.serialization)
@@ -40,8 +42,10 @@ dependencies {
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbextensions)
     implementation(libs.lblogger)
+    implementation(libs.lbcore)
 
     implementation(project(":domain"))
+    implementation(project(":error"))
     implementation(project(":repository"))
     implementation(project(":common"))
 }

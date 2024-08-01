@@ -24,18 +24,20 @@ import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOf
-import studio.lunabee.onesafe.importexport.usecase.CreateBackupInfoUseCase
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import studio.lunabee.onesafe.domain.model.importexport.OSArchiveKind
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.qualifier.DateFormatterType
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.error.OSImportExportError
 import studio.lunabee.onesafe.importexport.engine.BackupExportEngine
 import studio.lunabee.onesafe.importexport.engine.ExportEngine
 import studio.lunabee.onesafe.importexport.model.ExportData
 import studio.lunabee.onesafe.importexport.model.ExportInfo
-import studio.lunabee.onesafe.importexport.repository.ImportExportCryptoRepository
+import studio.lunabee.onesafe.importexport.usecase.CreateBackupInfoUseCase
 import java.io.File
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -46,8 +48,8 @@ import javax.inject.Inject
 class BackupExportEngineImpl @Inject constructor(
     @FileDispatcher fileDispatcher: CoroutineDispatcher,
     @DateFormatterType(type = DateFormatterType.Type.IsoInstant) dateTimeFormatter: DateTimeFormatter,
-    private val cryptoRepository: ImportExportCryptoRepository,
     private val backupInfoProvider: CreateBackupInfoUseCase,
+    private val safeRepository: SafeRepository,
 ) : AbstractExportEngine(
     fileDispatcher = fileDispatcher,
     dateTimeFormatter = dateTimeFormatter,
@@ -57,22 +59,28 @@ class BackupExportEngineImpl @Inject constructor(
         dataHolderFolder: File,
         data: ExportData,
         archiveKind: OSArchiveKind,
+        safeId: SafeId,
     ): Flow<LBFlowResult<Unit>> {
-        val exportInfoResult = OSError.runCatching {
-            ExportInfo(
-                archiveMasterKey = null,
-                fromPlatformVersion = backupInfoProvider(),
-                exportSalt = cryptoRepository.getMasterSalt(),
-            )
-        }
-        return when (exportInfoResult) {
-            is LBResult.Failure -> flowOf(LBFlowResult.Failure(exportInfoResult.throwable))
-            is LBResult.Success -> super.createExportArchiveContent(
-                dataHolderFolder = dataHolderFolder,
-                data = data,
-                archiveKind = archiveKind,
-                exportInfo = exportInfoResult.successData,
-            )
+        return flow {
+            val exportInfoResult = OSError.runCatching {
+                ExportInfo(
+                    archiveMasterKey = null,
+                    fromPlatformVersion = backupInfoProvider(),
+                    exportSalt = safeRepository.getSalt(safeId),
+                )
+            }
+            when (exportInfoResult) {
+                is LBResult.Failure -> emit(LBFlowResult.Failure(exportInfoResult.throwable))
+                is LBResult.Success -> {
+                    val exportArchiveContentFlow = super.createExportArchiveContent(
+                        dataHolderFolder = dataHolderFolder,
+                        data = data,
+                        archiveKind = archiveKind,
+                        exportInfo = exportInfoResult.successData,
+                    )
+                    emitAll(exportArchiveContentFlow)
+                }
+            }
         }.catch {
             emit(LBFlowResult.Failure(OSImportExportError(OSImportExportError.Code.UNEXPECTED_ERROR, cause = it)))
         }

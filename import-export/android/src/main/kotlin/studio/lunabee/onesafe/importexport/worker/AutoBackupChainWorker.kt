@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.importexport.worker
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
+import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
@@ -29,6 +30,7 @@ import com.lunabee.lblogger.LBLogger
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import studio.lunabee.onesafe.domain.common.FeatureFlags
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.usecase.GetAutoBackupModeUseCase
@@ -50,45 +52,68 @@ class AutoBackupChainWorker @AssistedInject constructor(
     private val featureFlags: FeatureFlags,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
-        var backupMode: AutoBackupMode? = null
-        try {
-            backupMode = getAutoBackupModeUseCase()
-            if (itemRepository.getSafeItemsCount() != 0) {
-                when (backupMode) {
-                    AutoBackupMode.Disabled -> {
-                        // Unexpected, log and cancel workers
-                        logger.e("${AutoBackupChainWorker::class.simpleName} run but ${AutoBackupMode::class.simpleName} is $backupMode")
-                        autoBackupWorkersHelper.cancel()
-                    }
-                    AutoBackupMode.LocalOnly -> LocalBackupWorker.start(applicationContext, featureFlags.backupWorkerExpedited())
-                    AutoBackupMode.CloudOnly -> CloudBackupWorker.start(applicationContext, featureFlags.backupWorkerExpedited())
-                    AutoBackupMode.Synchronized -> {
-                        val localWorkRequest = LocalBackupWorker.getWorkRequest(featureFlags.backupWorkerExpedited())
-                        val cloudSyncWorkRequest = CloudSynchronizeBackupWorker.getWorkRequest()
+        val safeId = inputData.getByteArray(AUTO_BACKUP_CHAIN_WORKER_SAFE_ID_DATA)?.let { SafeId(it) }
 
-                        WorkManager.getInstance(applicationContext)
-                            .beginUniqueWork(
-                                AUTO_BACKUP_UNIQUE_CHAIN_WORK_NAME,
-                                ExistingWorkPolicy.APPEND_OR_REPLACE,
-                                localWorkRequest,
+        return if (safeId == null) {
+            logger.e("Missing SafeId param")
+            val data = Data.Builder()
+                .putString(AUTO_BACKUP_CHAIN_WORKER_SAFE_ID_ERROR_DATA, "Missing SafeId param")
+                .build()
+            Result.failure(data)
+        } else {
+            var backupMode: AutoBackupMode? = null
+            try {
+                backupMode = getAutoBackupModeUseCase(safeId)
+                if (itemRepository.getSafeItemsCount(safeId) != 0) {
+                    when (backupMode) {
+                        AutoBackupMode.Disabled -> {
+                            // Unexpected, log and cancel workers
+                            logger.e(
+                                "${AutoBackupChainWorker::class.simpleName} run but ${AutoBackupMode::class.simpleName} is $backupMode",
                             )
-                            .then(cloudSyncWorkRequest)
-                            .enqueue()
+                            autoBackupWorkersHelper.cancel()
+                        }
+                        AutoBackupMode.LocalOnly -> LocalBackupWorker.start(
+                            applicationContext,
+                            featureFlags.backupWorkerExpedited(),
+                            safeId,
+                        )
+                        AutoBackupMode.CloudOnly -> CloudBackupWorker.start(
+                            applicationContext,
+                            featureFlags.backupWorkerExpedited(),
+                            safeId,
+                        )
+                        AutoBackupMode.Synchronized -> {
+                            val localWorkRequest = LocalBackupWorker.getWorkRequest(featureFlags.backupWorkerExpedited(), safeId)
+                            val cloudSyncWorkRequest = CloudSynchronizeBackupWorker.getWorkRequest(safeId)
+
+                            WorkManager.getInstance(applicationContext)
+                                .beginUniqueWork(
+                                    autoBackupUniqueChainWorkName(safeId),
+                                    ExistingWorkPolicy.APPEND_OR_REPLACE,
+                                    localWorkRequest,
+                                )
+                                .then(cloudSyncWorkRequest)
+                                .enqueue()
+                        }
                     }
                 }
+            } catch (e: Throwable) {
+                return autoBackupWorkersHelper.onBackupWorkerFails(
+                    error = e,
+                    runAttemptCount = runAttemptCount,
+                    errorSource = backupMode ?: AutoBackupMode.Disabled,
+                    safeId = safeId,
+                )
             }
-        } catch (e: Throwable) {
-            return autoBackupWorkersHelper.onBackupWorkerFails(
-                error = e,
-                runAttemptCount = runAttemptCount,
-                errorSource = backupMode ?: AutoBackupMode.Disabled,
-            )
-        }
 
-        return Result.success()
+            Result.success()
+        }
     }
 
     companion object {
-        const val AUTO_BACKUP_UNIQUE_CHAIN_WORK_NAME: String = "d725ac85-8742-46db-930d-7903470d05a6"
+        fun autoBackupUniqueChainWorkName(safeId: SafeId): String = "d725ac85-8742-46db-930d-7903470d05a6_$safeId"
+        const val AUTO_BACKUP_CHAIN_WORKER_SAFE_ID_DATA: String = "7f9b8871-ba76-4563-91d9-7a5aacd169e9"
+        internal const val AUTO_BACKUP_CHAIN_WORKER_SAFE_ID_ERROR_DATA = "14e547b1-1e07-42c8-b8cf-dc9aac5c30d6"
     }
 }

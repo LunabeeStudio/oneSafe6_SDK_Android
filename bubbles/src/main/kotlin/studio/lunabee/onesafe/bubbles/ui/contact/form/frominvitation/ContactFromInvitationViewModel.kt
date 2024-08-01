@@ -26,12 +26,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import studio.lunabee.onesafe.bubbles.ui.contact.form.common.DefaultContactFormDelegate
+import studio.lunabee.bubbles.domain.model.MessageSharingMode
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.usecase.AcceptInvitationUseCase
 import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormViewModel
+import studio.lunabee.onesafe.bubbles.ui.contact.form.common.DefaultContactFormDelegate
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
-import studio.lunabee.onesafe.messaging.domain.usecase.AcceptInvitationUseCase
-import java.util.UUID
 import javax.inject.Inject
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -49,14 +50,15 @@ class CreateContactFromInvitationDelegate @Inject constructor(
     private val messageString: String = savedStateHandle.get<String>(CreateContactFromInvitationDestination.MessageString)
         ?: error("Missing message string in args")
 
-    private val _createInvitationResult: MutableStateFlow<LBResult<UUID>?> = MutableStateFlow(null)
-    override val createInvitationResult: StateFlow<LBResult<UUID>?> = _createInvitationResult.asStateFlow()
+    private val _createInvitationResult: MutableStateFlow<LBResult<DoubleRatchetUUID>?> = MutableStateFlow(null)
+    override val createInvitationResult: StateFlow<LBResult<DoubleRatchetUUID>?> = _createInvitationResult.asStateFlow()
 
     @OptIn(ExperimentalEncodingApi::class)
-    override suspend fun doSaveContact(contactName: String, isUsingDeeplink: Boolean) {
+    override suspend fun doSaveContact(contactName: String, sharingMode: MessageSharingMode) {
         _createInvitationResult.value = OSError.runCatching {
             try {
-                acceptInvitationUseCase(contactName, isUsingDeeplink, Base64.decode(messageString))
+                val message = Base64.decode(messageString)
+                acceptInvitationUseCase(contactName, sharingMode, message)
             } catch (e: IllegalArgumentException) {
                 throw OSDomainError(OSDomainError.Code.DECRYPT_MESSAGE_NOT_BASE64)
             }

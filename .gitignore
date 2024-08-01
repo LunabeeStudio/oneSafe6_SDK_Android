@@ -105,3 +105,6 @@ versions.properties
 
 .DS_Store
 /.kotlin/sessions/*.salive
+.kotlin/metadata/kotlinTransformedCInteropMetadataLibraries
+.kotlin/metadata/kotlinTransformedMetadataLibraries
+.idea/artifacts

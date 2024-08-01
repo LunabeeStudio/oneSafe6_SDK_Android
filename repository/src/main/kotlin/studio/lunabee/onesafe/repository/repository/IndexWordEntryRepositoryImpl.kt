@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.repository.repository
 
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.domain.repository.IndexWordEntryRepository
 import studio.lunabee.onesafe.repository.datasource.IndexWordEntryLocalDataSource
@@ -29,7 +30,7 @@ import javax.inject.Inject
 class IndexWordEntryRepositoryImpl @Inject constructor(
     private val searchIndexLocalDataSource: IndexWordEntryLocalDataSource,
 ) : IndexWordEntryRepository {
-    override fun getAll(): Flow<List<IndexWordEntry>> = searchIndexLocalDataSource.getAll()
+    override fun getAll(safeId: SafeId): Flow<List<IndexWordEntry>> = searchIndexLocalDataSource.getAll(safeId)
 
     override suspend fun deleteNameIndexFromItemId(itemId: UUID): Unit = searchIndexLocalDataSource.deleteNameIndexFromItemId(itemId)
 }

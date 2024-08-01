@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import studio.lunabee.onesafe.domain.model.importexport.OSArchiveKind
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.repository.IconRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
@@ -59,16 +60,17 @@ class ExportBackupUseCase @Inject constructor(
     operator fun invoke(
         exportEngine: BackupExportEngine,
         archiveExtractedDirectory: File,
+        safeId: SafeId,
     ): Flow<LBFlowResult<LocalBackup>> {
         return flow {
-            val safeItemsWithKeys = safeItemRepository.getAllSafeItems().associate { safeItem ->
+            val safeItemsWithKeys = safeItemRepository.getAllSafeItems(safeId).associate { safeItem ->
                 ExportItem(safeItem) to safeItemKeyRepository.getSafeItemKey(safeItem.id)
             }
             val data = ExportData(
                 safeItemsWithKeys = safeItemsWithKeys,
-                safeItemFields = safeItemFieldRepository.getAllSafeItemFields(),
-                icons = iconRepository.getIcons(),
-                files = fileRepository.getFiles(),
+                safeItemFields = safeItemFieldRepository.getAllSafeItemFields(safeId),
+                icons = iconRepository.getIcons(safeId),
+                files = fileRepository.getFiles(safeId),
             )
 
             val now = Instant.now(clock)
@@ -77,6 +79,7 @@ class ExportBackupUseCase @Inject constructor(
                     dataHolderFolder = archiveExtractedDirectory,
                     data = data,
                     archiveKind = OSArchiveKind.Backup,
+                    safeId = safeId,
                 ).flatMapLatest { result ->
                     when (result) {
                         is LBFlowResult.Failure -> flowOf(LBFlowResult.Failure(throwable = result.throwable))
@@ -90,7 +93,7 @@ class ExportBackupUseCase @Inject constructor(
                                 is LBFlowResult.Failure -> LBFlowResult.Failure(throwable = zipResult.throwable)
                                 is LBFlowResult.Loading -> LBFlowResult.Loading(progress = zipResult.progress)
                                 is LBFlowResult.Success -> {
-                                    val localBackup = LocalBackup(now, zipResult.successData)
+                                    val localBackup = LocalBackup(now, zipResult.successData, safeId)
                                     LBFlowResult.Success(localBackup)
                                 }
                             }

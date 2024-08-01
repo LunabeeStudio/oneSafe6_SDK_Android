@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.storage.datasource
 
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.error.OSStorageError
 import studio.lunabee.onesafe.repository.datasource.SafeItemKeyLocalDataSource
@@ -47,7 +48,7 @@ class SafeItemKeyLocalDataSourceImpl @Inject constructor(
         safeItemKeyDao.update(itemKeys.map(RoomSafeItemKey::fromSafeItemKey))
     }
 
-    override suspend fun getAllSafeItemKeys(): List<SafeItemKey> {
-        return safeItemKeyDao.getAllSafeItemKeys().map { it.toSafeItemKey() }
+    override suspend fun getAllSafeItemKeys(safeId: SafeId): List<SafeItemKey> {
+        return safeItemKeyDao.getAllSafeItemKeys(safeId).map { it.toSafeItemKey() }
     }
 }

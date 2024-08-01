@@ -30,15 +30,17 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 import org.junit.After
-import kotlin.test.Test
-import studio.lunabee.onesafe.test.assertThrows
 import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
 import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
 import studio.lunabee.onesafe.error.OSStorageError
 import studio.lunabee.onesafe.test.OSTestConfig
 import studio.lunabee.onesafe.test.assertDoesNotThrow
 import studio.lunabee.onesafe.test.assertSuccess
+import studio.lunabee.onesafe.test.assertThrows
+import studio.lunabee.onesafe.test.firstSafeId
+import studio.lunabee.onesafe.test.insertDummySafe
 import kotlin.random.Random
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
@@ -79,7 +81,7 @@ class SqlCipherDBManagerTest {
 
     @Test
     fun migrateToEncrypted_test(): TestResult = runTest {
-        val plainDb: MainDatabase = plainDbBuilder.build()
+        val plainDb: MainDatabase = plainDbBuilder.build().insertDummySafe()
         val expectedItem = OSStorageTestUtils.createRoomSafeItem(encName = byteArrayOf(1, 2, 3, 4))
         plainDb.safeItemDao().insert(expectedItem)
 
@@ -93,14 +95,14 @@ class SqlCipherDBManagerTest {
         assertEquals(DatabaseEncryptionManager.MigrationState.Done, data)
 
         val cipherDb = cipherDbBuilder.build()
-        val actualItem = cipherDb.safeItemDao().getAllSafeItems().first()
+        val actualItem = cipherDb.safeItemDao().getAllSafeItems(firstSafeId).first()
 
         assertEquals(expectedItem, actualItem)
     }
 
     @Test
     fun migrateToPlain_test(): TestResult = runTest {
-        val cipherDb: MainDatabase = cipherDbBuilder.build()
+        val cipherDb: MainDatabase = cipherDbBuilder.build().insertDummySafe()
         val expectedItem = OSStorageTestUtils.createRoomSafeItem(encName = byteArrayOf(1, 2, 3, 4))
         cipherDb.safeItemDao().insert(expectedItem)
 
@@ -114,14 +116,14 @@ class SqlCipherDBManagerTest {
         assertEquals(DatabaseEncryptionManager.MigrationState.Done, data)
 
         val plainDb = plainDbBuilder.build()
-        val actualItem = plainDb.safeItemDao().getAllSafeItems().first()
+        val actualItem = plainDb.safeItemDao().getAllSafeItems(firstSafeId).first()
 
         assertEquals(expectedItem, actualItem)
     }
 
     @Test
     fun migrateToPlain_rollback_test(): TestResult = runTest {
-        val cipherDb: MainDatabase = cipherDbBuilder.build()
+        val cipherDb: MainDatabase = cipherDbBuilder.build().insertDummySafe()
         val expectedItem = OSStorageTestUtils.createRoomSafeItem(encName = byteArrayOf(1, 2, 3, 4))
         cipherDb.safeItemDao().insert(expectedItem)
 
@@ -146,7 +148,7 @@ class SqlCipherDBManagerTest {
         }.orEmpty()
         assertTrue(tempDbFiles.isEmpty())
 
-        val actualItem = cipherDb.safeItemDao().getAllSafeItems().first()
+        val actualItem = cipherDb.safeItemDao().getAllSafeItems(firstSafeId).first()
         assertEquals(expectedItem, actualItem)
     }
 

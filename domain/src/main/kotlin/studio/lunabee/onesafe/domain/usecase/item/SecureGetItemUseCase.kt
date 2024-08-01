@@ -22,7 +22,7 @@ package studio.lunabee.onesafe.domain.usecase.item
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
-import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
+import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
 import java.util.UUID
 import javax.inject.Inject
 
@@ -31,14 +31,14 @@ import javax.inject.Inject
  */
 class SecureGetItemUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
-    private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
+    private val isSafeReadyUseCase: IsSafeReadyUseCase,
 ) {
     /**
      * @param id the item id
      *
      * @return a flow of nullable [SafeItem] (null if item with [id] does not exist) or an empty flow if the master key is not loaded
      */
-    operator fun invoke(id: UUID): Flow<SafeItem?> = isCryptoDataReadyInMemoryUseCase.withCrypto(
+    operator fun invoke(id: UUID): Flow<SafeItem?> = isSafeReadyUseCase.withCrypto(
         safeItemRepository.getSafeItemFlow(id),
     )
 }

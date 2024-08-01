@@ -19,31 +19,37 @@
 
 package studio.lunabee.onesafe.domain.usecase.verifypassword
 
+import com.lunabee.lbcore.model.LBResult
+import com.lunabee.lblogger.LBLogger
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
-import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.domain.repository.SecuritySettingsRepository
+import studio.lunabee.onesafe.error.OSError
 import java.time.Clock
 import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
 
+private val logger = LBLogger.get<ShouldVerifyPasswordUseCase>()
+
 class ShouldVerifyPasswordUseCase @Inject constructor(
-    private val securityOptionRepository: SecurityOptionRepository,
+    private val securitySettingsRepository: SecuritySettingsRepository,
     private val clock: Clock,
+    private val safeRepository: SafeRepository,
 ) {
-    @Suppress("ReturnCount")
-    operator fun invoke(): Boolean {
-        securityOptionRepository.lastPasswordVerificationInstant?.let { lastPasswordVerification ->
-            val verificationInterval = securityOptionRepository.verifyPasswordInterval
-            var shouldVerifyDateTime = LocalDateTime.ofInstant(lastPasswordVerification, ZoneId.systemDefault())
-            shouldVerifyDateTime = when (verificationInterval) {
-                VerifyPasswordInterval.EVERY_TWO_WEEKS -> shouldVerifyDateTime.plusWeeks(2)
-                VerifyPasswordInterval.EVERY_MONTH -> shouldVerifyDateTime.plusMonths(1)
-                VerifyPasswordInterval.EVERY_TWO_MONTHS -> shouldVerifyDateTime.plusMonths(2)
-                VerifyPasswordInterval.EVERY_SIX_MONTHS -> shouldVerifyDateTime.plusMonths(6)
-                VerifyPasswordInterval.NEVER -> return false
-            }
-            return shouldVerifyDateTime.isBefore(LocalDateTime.now(clock))
+    suspend operator fun invoke(): LBResult<Boolean> = OSError.runCatching(logger) {
+        val safeId = safeRepository.currentSafeId()
+        val lastPasswordVerification = securitySettingsRepository.lastPasswordVerificationInstant(safeId)
+        val verificationInterval = securitySettingsRepository.verifyPasswordInterval(safeId)
+        var shouldVerifyDateTime = LocalDateTime.ofInstant(lastPasswordVerification, ZoneId.systemDefault())
+        shouldVerifyDateTime = when (verificationInterval) {
+            VerifyPasswordInterval.EVERY_WEEK -> shouldVerifyDateTime.plusWeeks(1)
+            VerifyPasswordInterval.EVERY_TWO_WEEKS -> shouldVerifyDateTime.plusWeeks(2)
+            VerifyPasswordInterval.EVERY_MONTH -> shouldVerifyDateTime.plusMonths(1)
+            VerifyPasswordInterval.EVERY_TWO_MONTHS -> shouldVerifyDateTime.plusMonths(2)
+            VerifyPasswordInterval.EVERY_SIX_MONTHS -> shouldVerifyDateTime.plusMonths(6)
+            VerifyPasswordInterval.NEVER -> LocalDateTime.MAX
         }
-        return false
+        shouldVerifyDateTime.isBefore(LocalDateTime.now(clock))
     }
 }

@@ -29,3 +29,7 @@ complexity:
 style:
   UnusedPrivateMember:
     ignoreAnnotated: [ 'Preview', 'OsDefaultPreview' ]
+
+performance:
+  SpreadOperator:
+    ignoreAnnotated: [ 'Preview', 'OsDefaultPreview' ]

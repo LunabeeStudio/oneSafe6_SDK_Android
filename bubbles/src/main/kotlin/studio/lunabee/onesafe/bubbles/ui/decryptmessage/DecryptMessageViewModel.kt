@@ -27,11 +27,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import studio.lunabee.messaging.domain.usecase.ManageIncomingMessageUseCase
+import studio.lunabee.messaging.domain.usecase.ManagingIncomingMessageResultData
 import studio.lunabee.onesafe.bubbles.ui.extension.getBase64FromMessage
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
-import studio.lunabee.onesafe.messaging.domain.usecase.ManageIncomingMessageUseCase
-import studio.lunabee.onesafe.messaging.domain.usecase.ManagingIncomingMessageResultData
 import javax.inject.Inject
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi

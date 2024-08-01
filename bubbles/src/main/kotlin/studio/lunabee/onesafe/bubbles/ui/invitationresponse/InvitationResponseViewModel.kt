@@ -24,37 +24,33 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lunabee.lbcore.model.LBResult
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import studio.lunabee.onesafe.OSAppSettings
-import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
-import studio.lunabee.onesafe.bubbles.domain.usecase.GetContactUseCase
+import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
+import studio.lunabee.bubbles.domain.usecase.GetContactUseCase
+import studio.lunabee.bubbles.error.BubblesMessagingError
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.usecase.GetInvitationResponseMessageUseCase
 import studio.lunabee.onesafe.bubbles.ui.invitation.InvitationUiState
 import studio.lunabee.onesafe.commonui.dialog.DialogAction
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.dialog.ErrorDialogState
-import studio.lunabee.onesafe.error.OSError.Companion.get
-import studio.lunabee.onesafe.error.OSMessagingError
-import studio.lunabee.onesafe.messaging.domain.usecase.GetInvitationResponseMessageUseCase
-import java.util.UUID
 import javax.inject.Inject
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 @HiltViewModel
 class InvitationResponseViewModel @Inject constructor(
     private val getContactUseCase: GetContactUseCase,
     private val contactLocalDecryptUseCase: ContactLocalDecryptUseCase,
-    settings: OSAppSettings,
     savedStateHandle: SavedStateHandle,
     private val getInvitationResponseMessageUseCase: GetInvitationResponseMessageUseCase,
 ) : ViewModel() {
-    val contactId: UUID = savedStateHandle.get<String>(InvitationResponseDestination.ContactIdArgs)?.let {
-        UUID.fromString(it)
+    val contactId: DoubleRatchetUUID = savedStateHandle.get<String>(InvitationResponseDestination.ContactIdArgs)?.let {
+        DoubleRatchetUUID(it)
     } ?: error("Missing contact id in args")
-
-    val isMaterialYouEnabled: Flow<Boolean> = settings.materialYouSetting
 
     private val _uiState: MutableStateFlow<InvitationUiState?> = MutableStateFlow(null)
     val uiState: StateFlow<InvitationUiState?> = _uiState.asStateFlow()
@@ -66,6 +62,7 @@ class InvitationResponseViewModel @Inject constructor(
         initializeWithMessage()
     }
 
+    @OptIn(ExperimentalEncodingApi::class)
     private fun initializeWithMessage() {
         viewModelScope.launch {
             val messageResult = getInvitationResponseMessageUseCase(contactId)
@@ -74,7 +71,7 @@ class InvitationResponseViewModel @Inject constructor(
                 is LBResult.Success -> {
                     val contact = getContactUseCase(contactId)
                     if (contact == null) {
-                        exitWithError(OSMessagingError.Code.CONTACT_NOT_FOUND.get())
+                        exitWithError(BubblesMessagingError(BubblesMessagingError.Code.CONTACT_NOT_FOUND))
                     } else {
                         val nameResult = contactLocalDecryptUseCase(
                             contact.encName,
@@ -85,7 +82,7 @@ class InvitationResponseViewModel @Inject constructor(
                             is LBResult.Failure -> exitWithError(nameResult.throwable)
                             is LBResult.Success -> {
                                 _uiState.value = InvitationUiState.Data(
-                                    invitationString = messageResult.successData,
+                                    invitationString = Base64.encode(messageResult.successData),
                                     contactName = nameResult.successData,
                                 )
                             }

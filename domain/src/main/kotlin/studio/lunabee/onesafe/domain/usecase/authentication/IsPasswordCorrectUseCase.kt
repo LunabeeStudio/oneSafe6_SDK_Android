@@ -27,10 +27,13 @@ import javax.inject.Inject
 
 private val log = LBLogger.get<IsPasswordCorrectUseCase>()
 
+/**
+ * Test a password against the current loaded safe
+ */
 class IsPasswordCorrectUseCase @Inject constructor(
     private val cryptoRepository: MainCryptoRepository,
 ) {
     suspend operator fun invoke(password: CharArray): LBResult<Unit> = OSError.runCatching(log) {
-        cryptoRepository.testPassword(password)
+        cryptoRepository.testCurrentPassword(password)
     }
 }

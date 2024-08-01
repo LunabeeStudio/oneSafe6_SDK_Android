@@ -20,15 +20,24 @@
 package studio.lunabee.onesafe.cryptography
 
 import androidx.core.util.AtomicFile
+import studio.lunabee.bubbles.domain.crypto.BubblesCryptoEngine
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 
-interface CryptoEngine {
+interface CryptoEngine : BubblesCryptoEngine {
     fun encrypt(plainData: ByteArray, key: ByteArray, associatedData: ByteArray?): Result<ByteArray>
     fun decrypt(cipherData: ByteArray, key: ByteArray, associatedData: ByteArray?): Result<ByteArray>
     fun decrypt(cipherFile: AtomicFile, key: ByteArray, associatedData: ByteArray?): Result<ByteArray>
     fun getEncryptStream(file: File, key: ByteArray, associatedData: ByteArray?): OutputStream
     fun getDecryptStream(cipherFile: AtomicFile, key: ByteArray, associatedData: ByteArray?): InputStream
     fun getCipherOutputStream(outputStream: OutputStream, key: ByteArray, associatedData: ByteArray?): OutputStream
+
+    override fun bubblesEncrypt(plainData: ByteArray, key: ByteArray, associatedData: ByteArray?): ByteArray? {
+        return encrypt(plainData, key, associatedData).getOrNull()
+    }
+
+    override fun bubblesDecrypt(cipherData: ByteArray, key: ByteArray, associatedData: ByteArray?): ByteArray? {
+        return decrypt(cipherData, key, associatedData).getOrNull()
+    }
 }

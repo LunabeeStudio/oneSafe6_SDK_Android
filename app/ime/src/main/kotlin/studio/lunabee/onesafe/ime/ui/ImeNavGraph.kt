@@ -138,11 +138,13 @@ fun ImeNavGraph(
 
                 WriteMessageRoute(
                     onChangeRecipient = { navController.navigate(ChangeContactDestination.route) },
-                    sendMessage = { sentMessageData, messageToSend ->
+                    sendMessage = { sentMessageData, messageToSend, _ ->
                         viewModel.saveEncryptedMessage(sentMessageData)
                         sendMessage(messageToSend)
                     },
-                    resendMessage = sendMessage,
+                    resendMessage = { messageToSend, _ ->
+                        sendMessage(messageToSend)
+                    },
                     viewModel = viewModel,
                     contactIdFlow = backStackEntry.savedStateHandle.getStateFlow(WriteMessageDestination.ContactIdArg, null),
                     sendIcon = OSImageSpec.Drawable(OSDrawable.ic_send),

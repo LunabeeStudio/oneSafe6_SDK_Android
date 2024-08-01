@@ -46,7 +46,7 @@ fun ImeLoginRoute(
     when (val uiState = loginUiState) {
         LoginUiState.Bypass -> onSuccess()
         is LoginUiState.Data -> {
-            val isSuccess = uiState.loginResult == LoginUiState.LoginResult.Success
+            val isSuccess = uiState.loginResult is LoginUiState.LoginResult.Success
             if (isSuccess) {
                 LaunchedEffect(isSuccess) {
                     onSuccess()

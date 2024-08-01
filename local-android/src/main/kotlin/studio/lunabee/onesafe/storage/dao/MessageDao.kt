@@ -24,8 +24,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
-import studio.lunabee.onesafe.messaging.domain.model.MessageOrder
 import studio.lunabee.onesafe.storage.model.RoomMessage
+import studio.lunabee.onesafe.storage.model.RoomMessageOrder
 import java.util.UUID
 
 @Dao
@@ -44,7 +44,7 @@ interface MessageDao {
         ORDER BY `order` DESC
         LIMIT 1""",
     )
-    suspend fun getLastMessageOrderByContact(contactId: UUID, exceptIds: List<UUID>): MessageOrder?
+    suspend fun getLastMessageOrderByContact(contactId: UUID, exceptIds: List<UUID>): RoomMessageOrder?
 
     @Query(
         """
@@ -54,7 +54,7 @@ interface MessageDao {
         ORDER BY `order` ASC
         LIMIT 1""",
     )
-    suspend fun getFirstMessageOrderByContact(contactId: UUID, exceptIds: List<UUID>): MessageOrder?
+    suspend fun getFirstMessageOrderByContact(contactId: UUID, exceptIds: List<UUID>): RoomMessageOrder?
 
     @Query("SELECT COUNT(*) FROM Message WHERE contact_id IS :contactId AND id NOT IN (:exceptIds)")
     suspend fun countByContact(contactId: UUID, exceptIds: List<UUID>): Int
@@ -69,7 +69,7 @@ interface MessageDao {
         OFFSET :position
         """,
     )
-    suspend fun getMessageOrderAtByContact(position: Int, contactId: UUID, exceptIds: List<UUID>): MessageOrder?
+    suspend fun getMessageOrderAtByContact(position: Int, contactId: UUID, exceptIds: List<UUID>): RoomMessageOrder?
 
     @Query("SELECT * FROM Message WHERE contact_id IS :contactId AND `order` = :order")
     suspend fun getByContactByOrder(contactId: UUID, order: Float): RoomMessage

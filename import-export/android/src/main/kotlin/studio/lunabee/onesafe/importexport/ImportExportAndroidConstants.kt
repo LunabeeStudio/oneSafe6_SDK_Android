@@ -19,9 +19,11 @@
 
 package studio.lunabee.onesafe.importexport
 
+import studio.lunabee.onesafe.domain.model.safe.SafeId
+
 object ImportExportAndroidConstants {
-    const val AUTO_BACKUP_WORKER_NAME: String = "bdacea8b-714e-4053-b3a7-add07dbe1c50"
-    const val AUTO_BACKUP_WORKER_TAG: String = "fac62754-ddfe-4777-aeb6-e59591bbfc5c"
+    fun autoBackupWorkerName(safeId: SafeId): String = "bdacea8b-714e-4053-b3a7-add07dbe1c50_${safeId.id}"
+    fun autoBackupWorkerTag(safeId: SafeId): String = "fac62754-ddfe-4777-aeb6-e59591bbfc5c_${safeId.id}"
     const val AUTO_BACKUP_SCHEME: String = "autobackup"
     const val MimeTypeOs6lsb: String = "*/*"
 }

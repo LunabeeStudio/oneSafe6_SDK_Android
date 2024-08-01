@@ -14,6 +14,9 @@
                   <Item>
                     <option name="path" value="Commons_Android/lunabee-detekt-config.yml" />
                   </Item>
+                  <Item>
+                    <option name="path" value="onesafe-detekt-config.yml" />
+                  </Item>
                 </list>
               </option>
             </SchemaInfo>

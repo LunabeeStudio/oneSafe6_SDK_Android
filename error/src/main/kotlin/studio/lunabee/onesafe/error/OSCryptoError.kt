@@ -35,7 +35,7 @@ data class OSCryptoError(
         ILLEGAL_VALUE("Unexpected value"),
         MISSING_MAPPER("No ByteArray mapper found"),
         DECRYPTION_UNKNOWN_FAILURE("Unable to decrypt the data"),
-        MASTER_KEY_WRONG_PASSWORD("Unable to load the master key with the provided password"),
+        MASTER_KEY_WRONG_PASSWORD("Unable to load a master key matching a safe with the provided password"),
         MASTER_KEY_NOT_GENERATED("No master key found"),
         MASTER_SALT_ALREADY_LOADED("Master salt already loaded in memory"),
         BIOMETRIC_KEY_NOT_GENERATED("No biometric key found"),
@@ -91,5 +91,8 @@ data class OSCryptoError(
         RECENT_SEARCH_ENCRYPTION_FAIL("Fail to encrypt a recent search"),
         RECENT_SEARCH_DECRYPTION_FAIL("Fail to decrypt a recent search"),
         DATASTORE_ENTRY_KEY_ALREADY_EXIST("The key already exist in the datastore and override is false."),
+        SEARCH_INDEX_KEY_DOES_NOT_EXIST("Search index key not found"),
+        NO_SAFE_MATCH_KEY("No safe matching the provided master key found"),
+        BUBBLES_MASTER_KEY_NOT_FOUND("Bubbles encrypted master key not found"),
     }
 }

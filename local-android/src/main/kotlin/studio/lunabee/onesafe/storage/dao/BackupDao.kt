@@ -25,6 +25,7 @@ import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.storage.model.RoomBackup
 import studio.lunabee.onesafe.storage.model.RoomCloudBackup
@@ -34,9 +35,6 @@ import java.io.File
 @RewriteQueriesToDropUnusedColumns
 @Dao
 interface BackupDao {
-    @Query("SELECT * FROM Backup ORDER BY `date` DESC")
-    suspend fun getAll(): List<RoomBackup>
-
     @Upsert(entity = RoomBackup::class)
     suspend fun insert(backup: RoomLocalBackup)
 
@@ -49,38 +47,29 @@ interface BackupDao {
     @Upsert(entity = RoomBackup::class)
     suspend fun upsertCloudBackups(backup: List<RoomCloudBackup>)
 
-    @Query("SELECT * FROM Backup WHERE local_file IS NOT NULL ORDER BY `date` DESC")
-    suspend fun getAllLocal(): List<RoomLocalBackup>
+    @Query("SELECT * FROM Backup WHERE local_file IS NOT NULL AND safe_id IS :safeId ORDER BY `date` DESC")
+    suspend fun getAllLocal(safeId: SafeId): List<RoomLocalBackup>
 
-    @Query("SELECT * FROM Backup WHERE local_file IS NOT NULL AND remote_id IS NULL ORDER BY `date` DESC")
-    suspend fun getAllLocalWithoutRemote(): List<RoomLocalBackup>
+    @Query("SELECT * FROM Backup WHERE local_file IS NOT NULL AND remote_id IS NULL AND safe_id IS :safeId ORDER BY `date` DESC")
+    suspend fun getAllLocalWithoutRemote(safeId: SafeId): List<RoomLocalBackup>
 
-    @Query("SELECT * FROM Backup WHERE remote_id IS NOT NULL ORDER BY `date` DESC")
-    suspend fun getAllCloud(): List<RoomCloudBackup>
+    @Query("SELECT * FROM Backup WHERE remote_id IS NOT NULL AND (safe_id IS :safeId OR safe_id IS NULL) ORDER BY `date` DESC")
+    suspend fun getAllCloud(safeId: SafeId): List<RoomCloudBackup>
 
-    @Query("SELECT * FROM Backup WHERE remote_id IS NOT NULL ORDER BY `date` DESC")
-    fun getCloudBackupsFlow(): Flow<List<RoomCloudBackup>>
+    @Query("SELECT * FROM Backup WHERE remote_id IS NOT NULL AND (safe_id IS :safeId OR safe_id IS NULL) ORDER BY `date` DESC")
+    fun getCloudBackupsFlow(safeId: SafeId): Flow<List<RoomCloudBackup>>
 
-    @Query("SELECT * FROM Backup WHERE local_file IS NOT NULL ORDER BY `date` DESC")
-    fun getAllLocalAsFlow(): Flow<List<RoomLocalBackup>>
+    @Query("SELECT * FROM Backup WHERE local_file IS NOT NULL AND safe_id IS :safeId ORDER BY `date` DESC")
+    fun getAllLocalAsFlow(safeId: SafeId): Flow<List<RoomLocalBackup>>
 
     @Query("SELECT * FROM Backup WHERE id = :id AND local_file IS NOT NULL")
     suspend fun getLocalById(id: String): RoomLocalBackup?
 
-    @Query("SELECT * FROM Backup WHERE id = :id AND remote_id IS NOT NULL")
-    suspend fun getCloudById(id: String): RoomCloudBackup?
-
-    @Query("DELETE FROM Backup WHERE id = :id")
-    suspend fun deleteById(id: String)
-
     @Query("UPDATE Backup SET local_file = NULL WHERE id = :id")
     suspend fun nullifyLocalIdById(id: String)
 
-    @Query("UPDATE Backup SET local_file = NULL")
-    suspend fun nullifyAllLocalId()
-
-    @Query("UPDATE Backup SET remote_id = NULL")
-    suspend fun nullifyAllRemoteId()
+    @Query("UPDATE Backup SET remote_id = NULL WHERE safe_id IS :safeId")
+    suspend fun nullifyAllRemoteId(safeId: SafeId)
 
     @Query("UPDATE Backup SET remote_id = NULL WHERE id = :id")
     suspend fun nullifyRemoteIdById(id: String)
@@ -116,18 +105,18 @@ interface BackupDao {
     @Query("SELECT local_file FROM Backup WHERE id = :backupId")
     suspend fun getFile(backupId: String): File?
 
-    @Query("SELECT * FROM Backup WHERE remote_id IS NOT NULL ORDER BY `date` DESC LIMIT 1")
-    suspend fun getLatestCloudBackup(): RoomCloudBackup?
+    @Query("SELECT * FROM Backup WHERE remote_id IS NOT NULL AND (safe_id IS :safeId OR safe_id IS NULL) ORDER BY `date` DESC LIMIT 1")
+    suspend fun getLatestCloudBackup(safeId: SafeId): RoomCloudBackup?
 
-    @Query("SELECT * FROM Backup WHERE remote_id IS NOT NULL ORDER BY `date` DESC LIMIT 1")
-    fun getLatestCloudBackupFlow(): Flow<RoomCloudBackup?>
+    @Query("SELECT * FROM Backup WHERE remote_id IS NOT NULL AND (safe_id IS :safeId OR safe_id IS NULL) ORDER BY `date` DESC LIMIT 1")
+    fun getLatestCloudBackupFlow(safeId: SafeId): Flow<RoomCloudBackup?>
 
-    @Query("SELECT EXISTS(SELECT 1 FROM Backup WHERE local_file IS NOT NULL LIMIT 1)")
-    fun hasLocalBackup(): Flow<Boolean>
+    @Query("SELECT EXISTS(SELECT 1 FROM Backup WHERE local_file IS NOT NULL AND safe_id IS :safeId LIMIT 1)")
+    fun hasLocalBackup(safeId: SafeId): Flow<Boolean>
 
     @Transaction
-    suspend fun deleteAllCloudBackup() {
-        nullifyAllRemoteId()
+    suspend fun deleteAllCloudBackup(safeId: SafeId) {
+        nullifyAllRemoteId(safeId)
         deleteOrphans()
     }
 }

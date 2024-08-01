@@ -22,7 +22,6 @@ package studio.lunabee.onesafe.importexport.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lunabee.lbcore.model.LBFlowResult
-import com.lunabee.lbcore.model.LBFlowResult.Companion.transformResult
 import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
 import com.lunabee.lblogger.e
@@ -32,7 +31,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
@@ -49,12 +47,15 @@ import studio.lunabee.onesafe.importexport.GoogleDriveHelper
 import studio.lunabee.onesafe.importexport.dialog.ConfirmDeleteLocalBackupsDialogState
 import studio.lunabee.onesafe.importexport.model.CloudInfo
 import studio.lunabee.onesafe.importexport.model.LatestBackups
-import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
-import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
-import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
 import studio.lunabee.onesafe.importexport.settings.backupnumber.AutoBackupMaxNumber
+import studio.lunabee.onesafe.importexport.usecase.DeleteCloudBackupsLocallyUseCase
+import studio.lunabee.onesafe.importexport.usecase.GetAutoBackupSettingUseCase
+import studio.lunabee.onesafe.importexport.usecase.GetCloudInfoUseCase
 import studio.lunabee.onesafe.importexport.usecase.GetLatestBackupUseCase
+import studio.lunabee.onesafe.importexport.usecase.HasBackupUseCase
+import studio.lunabee.onesafe.importexport.usecase.SetAutoBackupSettingUseCase
 import studio.lunabee.onesafe.importexport.usecase.SetKeepLocalBackupUseCase
+import studio.lunabee.onesafe.importexport.usecase.SetupAndSyncCloudBackupUseCase
 import studio.lunabee.onesafe.importexport.usecase.UpdateAutoBackUpsMaxNumberUseCase
 import studio.lunabee.onesafe.importexport.worker.AutoBackupWorkersHelper
 import studio.lunabee.onesafe.model.OSSwitchState
@@ -65,20 +66,26 @@ private val logger = LBLogger.get<AutoBackupSettingsViewModel>()
 
 @HiltViewModel
 class AutoBackupSettingsViewModel @Inject constructor(
-    private val settings: AutoBackupSettingsRepository,
+    private val getSettings: GetAutoBackupSettingUseCase,
+    private val setSettings: SetAutoBackupSettingUseCase,
     private val getLatestBackupUseCase: GetLatestBackupUseCase,
-    private val cloudBackupRepository: CloudBackupRepository,
+    private val getCloudInfoUseCase: GetCloudInfoUseCase,
     private val autoBackupWorkersHelper: AutoBackupWorkersHelper,
     featureFlags: FeatureFlags,
-    private val localBackupRepository: LocalBackupRepository,
+    hasBackupUseCase: HasBackupUseCase,
     private val setKeepLocalBackupUseCase: SetKeepLocalBackupUseCase,
     private val updateAutoBackUpsMaxNumberUseCase: UpdateAutoBackUpsMaxNumberUseCase,
+    private val deleteCloudBackupsLocallyUseCase: DeleteCloudBackupsLocallyUseCase,
+    private val setupCloudBackupUseCase: SetupAndSyncCloudBackupUseCase,
 ) : ViewModel() {
     val featureFlagCloudBackup: Boolean = featureFlags.cloudBackup()
 
     private val cloudLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
-    private val cloudBackupEnabledState = settings.cloudBackupEnabled.combine(cloudLoading) { cloudBackupEnabled, cloudLoading ->
+    private val cloudBackupEnabledState = combine(
+        getSettings.cloudBackupEnabled(),
+        cloudLoading,
+    ) { cloudBackupEnabled, cloudLoading ->
         when {
             cloudLoading -> OSSwitchState.Loading
             cloudBackupEnabled -> OSSwitchState.True
@@ -87,26 +94,26 @@ class AutoBackupSettingsViewModel @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<AutoBackupSettingsUiState?> = settings.autoBackupEnabled.flatMapLatest { enabled ->
+    val uiState: StateFlow<AutoBackupSettingsUiState?> = getSettings.autoBackupEnabled().flatMapLatest { enabled ->
         if (enabled) {
             combine(
-                settings.autoBackupFrequencyFlow,
+                getSettings.autoBackupFrequencyFlow(),
                 getLatestBackupUseCase.flow(),
                 cloudBackupEnabledState,
-                settings.keepLocalBackupEnabled,
-                cloudBackupRepository.getCloudInfo(),
-                localBackupRepository.hasBackupFlow(),
-                settings.autoBackupMaxNumberFlow,
+                getSettings.keepLocalBackupEnabled(),
+                getCloudInfoUseCase.current(),
+                hasBackupUseCase(),
+                getSettings.autoBackupMaxNumberFlow(),
             ) { values ->
                 val frequency = values[0] as Duration
-                val latestBackups = values[1] as LatestBackups
+                val latestBackups = values[1] as LatestBackups?
                 val cloudBackupEnabledState = values[2] as OSSwitchState
                 val isKeepLocalBackupEnabled = values[3] as Boolean
                 val cloudInfo = values[4] as CloudInfo
                 val hasBackup = values[5] as Boolean
                 val autoBackupMaxNumber = values[6] as Int
                 AutoBackupSettingsUiState(
-                    isBackupEnabled = true,
+                    isAutoBackupEnabled = true,
                     autoBackupFrequency = AutoBackupFrequency.valueForDuration(frequency),
                     autoBackupMaxNumber = AutoBackupMaxNumber.valueForInt(autoBackupMaxNumber),
                     latestBackups = latestBackups,
@@ -135,19 +142,29 @@ class AutoBackupSettingsViewModel @Inject constructor(
     private val _authorizeDrive: MutableStateFlow<AutoBackupSettingsDriveAuth?> = MutableStateFlow(null)
     val authorizeDrive: StateFlow<AutoBackupSettingsDriveAuth?> = _authorizeDrive.asStateFlow()
 
-    fun toggleAutoBackupSetting(): Boolean {
-        val isAutoBackupEnabled = settings.toggleAutoBackupSettings()
-        if (isAutoBackupEnabled) {
-            autoBackupWorkersHelper.start(synchronizeCloudFirst = false)
-        } else {
-            autoBackupWorkersHelper.cancel()
+    fun toggleAutoBackupSetting() {
+        viewModelScope.launch {
+            val isAutoBackupEnabled = setSettings.toggleAutoBackupSettings()
+            when (isAutoBackupEnabled) {
+                is LBResult.Failure -> {
+                    _snackbarState.value = ErrorSnackbarState(isAutoBackupEnabled.throwable, ::dismissSnackbar)
+                }
+                is LBResult.Success -> {
+                    if (isAutoBackupEnabled.successData) {
+                        autoBackupWorkersHelper.start(synchronizeCloudFirst = false)
+                    } else {
+                        autoBackupWorkersHelper.cancel()
+                    }
+                }
+            }
         }
-        return isAutoBackupEnabled
     }
 
     fun setAutoBackupFrequency(frequency: AutoBackupFrequency) {
-        settings.setAutoBackupFrequency(frequency.repeat)
-        autoBackupWorkersHelper.start(synchronizeCloudFirst = false)
+        viewModelScope.launch {
+            setSettings.setAutoBackupFrequency(frequency.repeat)
+            autoBackupWorkersHelper.start(synchronizeCloudFirst = false)
+        }
     }
 
     fun setAutoBackupMaxNumber(frequency: AutoBackupMaxNumber) {
@@ -157,9 +174,7 @@ class AutoBackupSettingsViewModel @Inject constructor(
 
     fun setupCloudBackupAndSync(accountName: String) {
         viewModelScope.launch {
-            cloudBackupRepository.setupAccount(accountName).transformResult {
-                emitAll(cloudBackupRepository.refreshBackupList())
-            }.collect { result ->
+            setupCloudBackupUseCase(accountName).collect { result ->
                 when (result) {
                     is LBFlowResult.Loading -> {
                         cloudLoading.value = true
@@ -218,14 +233,14 @@ class AutoBackupSettingsViewModel @Inject constructor(
 
     private suspend fun finalizeCloudBackupEnable() {
         cloudLoading.value = false
-        settings.setCloudBackupSettings(true)
+        setSettings.setCloudBackupEnabled(true)
         autoBackupWorkersHelper.start(synchronizeCloudFirst = true)
     }
 
     fun disableCloudBackupSettings() {
         viewModelScope.launch {
-            settings.setCloudBackupSettings(false)
-            cloudBackupRepository.clearBackupsLocally()
+            setSettings.setCloudBackupEnabled(false)
+            deleteCloudBackupsLocallyUseCase()
         }
     }
 

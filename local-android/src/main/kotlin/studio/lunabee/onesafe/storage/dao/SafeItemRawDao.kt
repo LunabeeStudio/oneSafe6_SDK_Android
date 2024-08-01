@@ -25,10 +25,11 @@ import androidx.room.RawQuery
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
-import studio.lunabee.onesafe.storage.DaoUtils.IS_FAVORITE
 import studio.lunabee.onesafe.storage.DaoUtils.IS_DELETED
+import studio.lunabee.onesafe.storage.DaoUtils.IS_FAVORITE
 import studio.lunabee.onesafe.storage.DaoUtils.IS_NOT_DELETED
 import studio.lunabee.onesafe.storage.DaoUtils.ITEM_ORDER_BY_CONSULTED_AT
 import studio.lunabee.onesafe.storage.DaoUtils.ITEM_ORDER_BY_CREATED_AT
@@ -48,10 +49,13 @@ import java.util.UUID
 interface SafeItemRawDao {
 
     companion object {
-        internal fun findByParentIdQuery(parentId: UUID?, order: ItemOrder): SimpleSQLiteQuery =
+        internal fun findByParentIdQuery(parentId: UUID?, order: ItemOrder, safeId: SafeId): SimpleSQLiteQuery =
             SimpleSQLiteQuery(
-                query = "SELECT * FROM SafeItem WHERE parent_id IS ? AND $IS_NOT_DELETED ${order.orderBy}",
-                bindArgs = arrayOf(parentId?.toByteArray()),
+                query = "SELECT * FROM SafeItem WHERE parent_id IS ? AND $IS_NOT_DELETED AND safe_id IS ? ${order.orderBy}",
+                bindArgs = arrayOf(
+                    parentId?.toByteArray(),
+                    safeId.toByteArray(),
+                ),
             )
 
         internal fun findDeletedByParentIdNotEqualDeletedParentIdQuery(parentId: UUID, order: ItemOrder): SimpleSQLiteQuery =
@@ -64,9 +68,9 @@ interface SafeItemRawDao {
                 bindArgs = arrayOf(parentId.toByteArray(), parentId.toByteArray()),
             )
 
-        internal fun getAllSafeItemsWithIdentifierQuery(idsToExclude: List<UUID>, order: ItemOrder): SimpleSQLiteQuery {
+        internal fun getAllSafeItemsWithIdentifierQuery(idsToExclude: List<UUID>, order: ItemOrder, safeId: SafeId): SimpleSQLiteQuery {
             val placeHolder = idsToExclude.joinToString(",") { "?" }
-            val idsArray = idsToExclude.map { it.toByteArray() }.toTypedArray()
+            val args = idsToExclude.map { it.toByteArray() }.toTypedArray() + safeId.toByteArray()
             return SimpleSQLiteQuery(
                 query = """
                             SELECT
@@ -82,32 +86,32 @@ interface SafeItemRawDao {
                                 SafeItem.updated_at as updatedAt
                             FROM SafeItem
                             LEFT JOIN SafeItemField ON SafeItemField.item_id = SafeItem.id AND SafeItemField.is_item_identifier = 1 
-                            WHERE SafeItem.id NOT IN ($placeHolder) AND encIdentifier IS NOT NULL
+                            WHERE SafeItem.id NOT IN ($placeHolder) AND encIdentifier IS NOT NULL AND safe_id IS ?
                             ${order.orderBy}
                         """,
-                bindArgs = idsArray,
+                bindArgs = args,
             )
         }
 
-        internal fun findByParentIdWithIdentifierQuery(parentId: UUID?, order: ItemOrder): SimpleSQLiteQuery =
+        internal fun findByParentIdWithIdentifierQuery(parentId: UUID?, order: ItemOrder, safeId: SafeId): SimpleSQLiteQuery =
             internalWithIdentifierQuery(
-                "SafeItem.parent_id IS ? AND $IS_NOT_DELETED",
+                "SafeItem.parent_id IS ? AND $IS_NOT_DELETED AND safe_id IS ?",
                 order,
-                arrayOf(parentId?.toByteArray()),
+                arrayOf(parentId?.toByteArray(), safeId.toByteArray()),
             )
 
-        internal fun findByDeletedParentIdWithIdentifierQuery(deletedParentId: UUID?, order: ItemOrder): SimpleSQLiteQuery =
+        internal fun findByDeletedParentIdWithIdentifierQuery(deletedParentId: UUID?, order: ItemOrder, safeId: SafeId): SimpleSQLiteQuery =
             internalWithIdentifierQuery(
-                "SafeItem.deleted_parent_id IS ? AND $IS_DELETED",
+                "SafeItem.deleted_parent_id IS ? AND $IS_DELETED AND safe_id IS ?",
                 order,
-                arrayOf(deletedParentId?.toByteArray()),
+                arrayOf(deletedParentId?.toByteArray(), safeId.toByteArray()),
             )
 
-        fun findFavoriteWithIdentifierQuery(order: ItemOrder): SupportSQLiteQuery =
+        fun findFavoriteWithIdentifierQuery(order: ItemOrder, safeId: SafeId): SupportSQLiteQuery =
             internalWithIdentifierQuery(
-                IS_FAVORITE,
+                "$IS_FAVORITE AND safe_id IS ?",
                 order,
-                null,
+                arrayOf(safeId.toByteArray()),
             )
 
         private fun internalWithIdentifierQuery(
@@ -137,23 +141,24 @@ interface SafeItemRawDao {
             )
         }
 
-        fun findByDeletedParentIdQuery(deletedParentId: UUID?, order: ItemOrder): SupportSQLiteQuery {
+        fun findByDeletedParentIdQuery(deletedParentId: UUID?, order: ItemOrder, safeId: SafeId): SupportSQLiteQuery {
             return SimpleSQLiteQuery(
-                query = "SELECT * FROM SafeItem WHERE deleted_parent_id IS ? AND $IS_DELETED ${order.orderBy}",
-                bindArgs = arrayOf(deletedParentId?.toByteArray()),
+                query = "SELECT * FROM SafeItem WHERE deleted_parent_id IS ? AND $IS_DELETED AND safe_id IS ? ${order.orderBy}",
+                bindArgs = arrayOf(deletedParentId?.toByteArray(), safeId.toByteArray()),
             )
         }
 
-        fun findFavoriteQuery(order: ItemOrder): SupportSQLiteQuery {
+        fun findFavoriteQuery(order: ItemOrder, safeId: SafeId): SupportSQLiteQuery {
             return SimpleSQLiteQuery(
-                query = "SELECT * FROM SafeItem WHERE $IS_FAVORITE ${order.orderBy}",
+                query = "SELECT * FROM SafeItem WHERE $IS_FAVORITE AND safe_id IS ? ${order.orderBy}",
+                bindArgs = arrayOf(safeId.toByteArray()),
             )
         }
 
-        fun findLastFavoriteQuery(limit: Int, order: ItemOrder): SupportSQLiteQuery {
+        fun findLastFavoriteQuery(limit: Int, order: ItemOrder, safeId: SafeId): SupportSQLiteQuery {
             return SimpleSQLiteQuery(
-                query = "SELECT * FROM SafeItem WHERE $IS_FAVORITE ${order.orderBy} LIMIT ?",
-                bindArgs = arrayOf(limit),
+                query = "SELECT * FROM SafeItem WHERE $IS_FAVORITE AND safe_id IS ? ${order.orderBy} LIMIT ?",
+                bindArgs = arrayOf(safeId.toByteArray(), limit),
             )
         }
 

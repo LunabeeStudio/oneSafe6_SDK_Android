@@ -38,7 +38,7 @@ class OSKEditorInfoManager @Inject constructor(
     private val editorInstance: EditorInstance = context.editorInstance().value
     private var previousFlorisEditorInfo: FlorisEditorInfo? = null
 
-    override fun onStateChange(state: OSKImeState) {
+    override suspend fun onStateChange(state: OSKImeState) {
         if (state.isOneSafeUiVisible) {
             previousFlorisEditorInfo = editorInstance.activeInfo
         } else {

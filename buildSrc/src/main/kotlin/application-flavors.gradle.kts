@@ -37,8 +37,6 @@ android {
             applicationIdSuffix = ".dev"
             versionNameSuffix = "#${AndroidConfig.envVersionCode} dev"
 
-            manifestPlaceholders["customBackupMimetype"] = customBackupMimetype
-
             buildConfigField("Boolean", "IS_DEV", "true")
             buildConfigField("String", "CUSTOM_BACKUP_MIMETYPE", "\"$customBackupMimetype\"")
         }
@@ -50,8 +48,6 @@ android {
             // TODO prod backup mimetype inverted with _dev
             //  Verify if a migration (or something else) is needed to update cloud backups
             val customBackupMimetypeDev = "${customBackupMimetype}_dev"
-            manifestPlaceholders["customBackupMimetype"] = customBackupMimetypeDev
-
             buildConfigField("Boolean", "IS_DEV", "false")
             buildConfigField("String", "CUSTOM_BACKUP_MIMETYPE", "\"$customBackupMimetypeDev\"")
         }
@@ -90,14 +86,8 @@ androidComponents {
     }
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
-    kotlinOptions {
-        jvmTarget = ProjectConfig.JDK_VERSION.toString()
-    }
-}
-
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(ProjectConfig.JDK_VERSION.toString()))
+kotlin {
+    compilerOptions {
+        jvmTarget.set(ProjectConfig.JVM_TARGET)
     }
 }

@@ -21,6 +21,9 @@ package studio.lunabee.onesafe.bubbles.crypto
 
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
+import studio.lunabee.bubbles.domain.crypto.BubblesDataHashEngine
+import studio.lunabee.bubbles.domain.crypto.BubblesKeyExchangeEngine
+import studio.lunabee.bubbles.repository.DoubleRatchetKeyRepositoryImpl
 import kotlin.test.Test
 import studio.lunabee.doubleratchet.model.DRChainKey
 import studio.lunabee.doubleratchet.model.DRRootKey
@@ -31,15 +34,15 @@ import kotlin.test.assertContentEquals
 
 class AndroidDoubleRatchetKeyRepositoryTest {
 
-    private val hashEngine: DataHashEngine = HKDFHashEngine()
-    private val keyExchangeEngine: KeyExchangeEngine = DiffieHellmanKeyExchangeEngine()
+    private val hashEngine: BubblesDataHashEngine = HKDFHashEngine()
+    private val keyExchangeEngine: BubblesKeyExchangeEngine = DiffieHellmanKeyExchangeEngine()
 
     @Test
     fun hkdfRootAlgorithmTest(): TestResult = runTest {
         val sharedSecret = DRSharedSecret(testUUIDs[0].toByteArray())
         val rootKey = DRRootKey(testUUIDs[1].toByteArray())
-        val cryptoRepository1 = AndroidDoubleRatchetKeyRepository(hashEngine, keyExchangeEngine)
-        val cryptoRepository2 = AndroidDoubleRatchetKeyRepository(hashEngine, keyExchangeEngine)
+        val cryptoRepository1 = DoubleRatchetKeyRepositoryImpl(hashEngine, keyExchangeEngine)
+        val cryptoRepository2 = DoubleRatchetKeyRepositoryImpl(hashEngine, keyExchangeEngine)
         val rootKey2 = DRRootKey(rootKey.value.copyOf())
         val value1 = cryptoRepository1.deriveRootKeys(rootKey, sharedSecret)
         val value2 = cryptoRepository2.deriveRootKeys(rootKey2, sharedSecret)
@@ -50,8 +53,8 @@ class AndroidDoubleRatchetKeyRepositoryTest {
 
     @Test
     fun dhSharedSecretAlgorithmTest(): TestResult = runTest {
-        val cryptoRepositoryA = AndroidDoubleRatchetKeyRepository(hashEngine, keyExchangeEngine)
-        val cryptoRepositoryB = AndroidDoubleRatchetKeyRepository(hashEngine, keyExchangeEngine)
+        val cryptoRepositoryA = DoubleRatchetKeyRepositoryImpl(hashEngine, keyExchangeEngine)
+        val cryptoRepositoryB = DoubleRatchetKeyRepositoryImpl(hashEngine, keyExchangeEngine)
         val keyPairAlice = cryptoRepositoryA.generateKeyPair()
         val keyPairBob = cryptoRepositoryB.generateKeyPair()
         val sharedSecretAlice = DRSharedSecret(ByteArray(cryptoRepositoryA.sharedSecretByteSize) { -1 })
@@ -67,8 +70,8 @@ class AndroidDoubleRatchetKeyRepositoryTest {
     fun kdfChainAlgorithmTest(): TestResult = runTest {
         val chainKey = DRChainKey(testUUIDs[0].toByteArray())
         val chainKey2 = DRChainKey(chainKey.value.copyOf())
-        val cryptoRepository1 = AndroidDoubleRatchetKeyRepository(hashEngine, keyExchangeEngine)
-        val cryptoRepository2 = AndroidDoubleRatchetKeyRepository(hashEngine, keyExchangeEngine)
+        val cryptoRepository1 = DoubleRatchetKeyRepositoryImpl(hashEngine, keyExchangeEngine)
+        val cryptoRepository2 = DoubleRatchetKeyRepositoryImpl(hashEngine, keyExchangeEngine)
         val value1 = cryptoRepository1.deriveChainKeys(chainKey)
         val value2 = cryptoRepository2.deriveChainKeys(chainKey2)
 

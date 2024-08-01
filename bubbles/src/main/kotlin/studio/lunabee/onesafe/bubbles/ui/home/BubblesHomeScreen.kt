@@ -54,7 +54,6 @@ import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.molecule.tabs.OSTabs
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
-import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import studio.lunabee.onesafe.ui.theme.OSPreviewOnSurfaceTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
 import java.util.UUID
@@ -103,10 +102,7 @@ private fun BubblesHomeScreen(
         currentPage = pagerState.currentPage
     }
 
-    OSScreen(
-        testTag = UiConstants.TestTag.Screen.BubblesHomeScreen,
-        background = LocalDesignSystem.current.bubblesBackGround(),
-    ) {
+    OSScreen(testTag = UiConstants.TestTag.Screen.BubblesHomeScreen) {
         Column(
             modifier = Modifier.fillMaxSize(),
         ) {
@@ -173,7 +169,7 @@ private fun BubblesHomeScreen(
                                 onAddContactClick = navigateToCreateContact,
                                 onScanClick = navigateToScanBarcode,
                                 contacts = contacts ?: listOf(),
-                                onContactClick = navigateToContactDetail,
+                                onContactClick = { navigateToContactDetail(it.uuid) },
                             )
                         }
                     }

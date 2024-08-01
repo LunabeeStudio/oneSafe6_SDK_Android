@@ -74,10 +74,10 @@ object ImeContactScreenFactory {
         cardContents += contacts.map { contact ->
             ContactItemCardContent(
                 contactInfo = contact,
-                key = contact.id,
+                key = contact.id.uuid,
                 onClick = {
                     onClick(
-                        contact.id,
+                        contact.id.uuid,
                         contact.isConversationReady,
                     )
                 },

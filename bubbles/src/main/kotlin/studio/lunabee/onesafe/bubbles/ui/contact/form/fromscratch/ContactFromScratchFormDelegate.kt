@@ -25,11 +25,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import studio.lunabee.bubbles.domain.model.MessageSharingMode
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.usecase.CreateInvitationUseCase
 import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormViewModel
 import studio.lunabee.onesafe.bubbles.ui.contact.form.common.DefaultContactFormDelegate
 import studio.lunabee.onesafe.error.OSError
-import studio.lunabee.onesafe.messaging.domain.usecase.CreateInvitationUseCase
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -42,13 +43,13 @@ class ContactCreationFromScratchDelegate @Inject constructor(
     loadingManager: LoadingManager,
 ) : DefaultContactFormDelegate(loadingManager) {
 
-    private val _createInvitationResult: MutableStateFlow<LBResult<UUID>?> = MutableStateFlow(null)
-    override val createInvitationResult: StateFlow<LBResult<UUID>?> = _createInvitationResult.asStateFlow()
+    private val _createInvitationResult: MutableStateFlow<LBResult<DoubleRatchetUUID>?> = MutableStateFlow(null)
+    override val createInvitationResult: StateFlow<LBResult<DoubleRatchetUUID>?> = _createInvitationResult.asStateFlow()
 
-    override suspend fun doSaveContact(contactName: String, isUsingDeeplink: Boolean) {
+    override suspend fun doSaveContact(contactName: String, sharingMode: MessageSharingMode) {
         // TODO <bubbles> why runCatching here and not in createInvitationUseCase?
         _createInvitationResult.value = OSError.runCatching {
-            createInvitationUseCase(contactName, isUsingDeeplink)
+            createInvitationUseCase(contactName, sharingMode)
         }
     }
 }

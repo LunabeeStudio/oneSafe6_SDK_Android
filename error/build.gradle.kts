@@ -26,6 +26,7 @@ description = "Typed errors for oneSafe modules"
 
 dependencies {
     implementation(libs.kotlin.stdlib)
+    implementation(libs.kotlinx.coroutines.core)
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)

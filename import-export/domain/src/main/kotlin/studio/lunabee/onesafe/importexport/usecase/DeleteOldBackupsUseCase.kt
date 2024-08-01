@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import javax.inject.Inject
 
@@ -32,16 +33,16 @@ class DeleteOldBackupsUseCase @Inject constructor(
     private val deleteOldCloudBackupsUseCase: DeleteOldCloudBackupsUseCase,
     private val deleteOldLocalBackupsUseCase: DeleteOldLocalBackupsUseCase,
 ) {
-    operator fun invoke(): Flow<LBFlowResult<Unit>> = flow {
-        val keepLocalBackupEnabled = settings.keepLocalBackupEnabled.first()
-        val cloudBackupEnabled = settings.cloudBackupEnabled.first()
+    operator fun invoke(safeId: SafeId): Flow<LBFlowResult<Unit>> = flow {
+        val keepLocalBackupEnabled = settings.keepLocalBackupEnabled(safeId).first()
+        val cloudBackupEnabled = settings.cloudBackupEnabled(safeId).first()
 
         if (keepLocalBackupEnabled) {
-            deleteOldLocalBackupsUseCase()
+            deleteOldLocalBackupsUseCase(safeId)
         }
 
         if (cloudBackupEnabled) {
-            emitAll(deleteOldCloudBackupsUseCase())
+            emitAll(deleteOldCloudBackupsUseCase.invoke(safeId))
         } else {
             emit(LBFlowResult.Success(Unit))
         }

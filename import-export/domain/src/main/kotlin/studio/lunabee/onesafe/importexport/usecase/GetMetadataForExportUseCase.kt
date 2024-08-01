@@ -22,14 +22,16 @@ package studio.lunabee.onesafe.importexport.usecase
 import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.first
 import studio.lunabee.onesafe.domain.model.importexport.ExportMetadata
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import javax.inject.Inject
 
 class GetMetadataForExportUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
+    private val safeRepository: SafeRepository,
 ) {
     suspend operator fun invoke(): LBResult<ExportMetadata> {
-        val itemCount = safeItemRepository.getSafeItemsCountFlow().first()
+        val itemCount = safeItemRepository.getSafeItemsCountFlow(safeRepository.currentSafeId()).first()
         val metadata = ExportMetadata(
             itemCount = itemCount,
         )

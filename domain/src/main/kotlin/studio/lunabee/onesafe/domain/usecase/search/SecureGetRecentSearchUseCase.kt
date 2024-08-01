@@ -19,12 +19,18 @@
 
 package studio.lunabee.onesafe.domain.usecase.search
 
+import com.lunabee.lbcore.model.LBFlowResult
+import com.lunabee.lblogger.LBLogger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.RecentSearchRepository
-import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
+import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
+import studio.lunabee.onesafe.error.OSError
 import javax.inject.Inject
+
+private val logger = LBLogger.get<SecureGetRecentSearchUseCase>()
 
 /**
  * Retrieve the recent searches only if the master key is loaded
@@ -32,11 +38,13 @@ import javax.inject.Inject
 class SecureGetRecentSearchUseCase @Inject constructor(
     private val recentSearchRepository: RecentSearchRepository,
     private val cryptoRepository: MainCryptoRepository,
-    private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
+    private val isSafeReadyUseCase: IsSafeReadyUseCase,
 ) {
-    operator fun invoke(): Flow<List<String>> = isCryptoDataReadyInMemoryUseCase.withCrypto(
+    operator fun invoke(): Flow<LBFlowResult<List<String>>> = isSafeReadyUseCase.withCrypto(
         recentSearchRepository.getRecentSearch().map { encRecentSearch ->
-            cryptoRepository.decryptRecentSearch(encRecentSearch.toList())
+            OSError.runCatching(logger) {
+                cryptoRepository.decryptRecentSearch(encRecentSearch.toList())
+            }.asFlowResult()
         },
-    )
+    ).onStart { emit(LBFlowResult.Loading()) }
 }

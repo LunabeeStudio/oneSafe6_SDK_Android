@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.cryptography
 
+import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.onesafe.domain.model.common.IdentifiableObject
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.error.OSCryptoError
@@ -26,6 +27,8 @@ import studio.lunabee.onesafe.error.OSCryptoError
 internal fun IdentifiableObject.toByteArray(): ByteArray = id.encodeToByteArray()
 
 internal fun ByteArray.toSafeItemFieldKind(): SafeItemFieldKind = SafeItemFieldKind.fromString(decodeToString())
+
+internal fun ByteArray.toMessageSharingMode(): MessageSharingMode = MessageSharingMode.fromString(decodeToString())
 
 // https://stackoverflow.com/a/67229929/10935947
 internal fun ByteArray.toInt(): Int {

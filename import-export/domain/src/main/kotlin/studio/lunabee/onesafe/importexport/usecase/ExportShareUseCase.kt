@@ -32,6 +32,7 @@ import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.repository.IconRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
@@ -57,6 +58,7 @@ class ExportShareUseCase @Inject constructor(
     private val archiveZipUseCase: ArchiveZipUseCase,
     private val mainCryptoRepository: MainCryptoRepository,
     private val clock: Clock,
+    private val safeRepository: SafeRepository,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(
@@ -99,6 +101,7 @@ class ExportShareUseCase @Inject constructor(
                     dataHolderFolder = archiveExtractedDirectory,
                     data = data,
                     archiveKind = OSArchiveKind.Sharing,
+                    safeId = safeRepository.currentSafeId(),
                 ).flatMapLatest { result ->
                     when (result) {
                         is LBFlowResult.Failure -> flowOf(LBFlowResult.Failure(throwable = result.throwable))

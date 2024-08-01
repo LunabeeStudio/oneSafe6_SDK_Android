@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.domain.usecase.authentication
 import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.error.OSError
 import javax.crypto.Cipher
 import javax.inject.Inject
@@ -29,14 +30,16 @@ import javax.inject.Inject
 private val log = LBLogger.get<EnableBiometricUseCase>()
 
 /**
- * Enable biometric for current crypto
+ * Enable biometric for current safe with key loaded in [MainCryptoRepository]
  */
 class EnableBiometricUseCase @Inject constructor(
     private val cryptoRepository: MainCryptoRepository,
+    private val safeRepository: SafeRepository,
 ) {
     suspend operator fun invoke(cipher: Cipher): LBResult<Unit> {
         return OSError.runCatching(log) {
-            cryptoRepository.enableBiometric(cipher)
+            val biometricCryptoMaterial = cryptoRepository.enableBiometric(cipher)
+            safeRepository.setBiometricMaterial(safeRepository.currentSafeId(), biometricCryptoMaterial)
         }
     }
 }

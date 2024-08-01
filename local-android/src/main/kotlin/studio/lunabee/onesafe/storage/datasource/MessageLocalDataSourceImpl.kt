@@ -24,66 +24,75 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.model.MessageOrder
+import studio.lunabee.messaging.domain.model.SafeMessage
 import studio.lunabee.messaging.repository.datasource.MessageLocalDataSource
+import studio.lunabee.messaging.repository.datasource.MessagePagingLocalDataSource
 import studio.lunabee.onesafe.mapPagingValues
-import studio.lunabee.onesafe.messaging.domain.model.MessageOrder
-import studio.lunabee.onesafe.messaging.domain.model.SafeMessage
 import studio.lunabee.onesafe.storage.dao.MessageDao
 import studio.lunabee.onesafe.storage.model.RoomMessage
-import java.util.UUID
 import javax.inject.Inject
 
 class MessageLocalDataSourceImpl @Inject constructor(
     private val messageDao: MessageDao,
-) : MessageLocalDataSource {
+) : MessageLocalDataSource, MessagePagingLocalDataSource {
     override suspend fun save(message: SafeMessage, order: Float): Unit = messageDao.insert(RoomMessage.fromMessage(message, order))
-    override suspend fun getAllByContact(contactId: UUID): List<SafeMessage> = messageDao.getAllByContact(contactId).map {
-        it.toMessage()
+    override suspend fun getAllByContact(contactId: DoubleRatchetUUID): List<SafeMessage> = messageDao.getAllByContact(contactId.uuid)
+        .map { it.toMessage() }
+
+    override suspend fun getLastMessage(contactId: DoubleRatchetUUID): Flow<SafeMessage?> {
+        return messageDao.getLastMessage(contactId.uuid).map { it?.toMessage() }
     }
 
-    override suspend fun getLastMessage(contactId: UUID): Flow<SafeMessage?> {
-        return messageDao.getLastMessage(contactId).map { it?.toMessage() }
-    }
-
-    override suspend fun getLastByContact(contactId: UUID, exceptIds: List<UUID>): MessageOrder? = messageDao.getLastMessageOrderByContact(
-        contactId,
-        exceptIds,
-    )
+    override suspend fun getLastByContact(
+        contactId: DoubleRatchetUUID,
+        exceptIds: List<DoubleRatchetUUID>,
+    ): MessageOrder? = messageDao.getLastMessageOrderByContact(
+        contactId.uuid,
+        exceptIds.map { it.uuid },
+    )?.toMessageOrder()
 
     override suspend fun getFirstByContact(
-        contactId: UUID,
-        exceptIds: List<UUID>,
-    ): MessageOrder? = messageDao.getFirstMessageOrderByContact(contactId, exceptIds)
+        contactId: DoubleRatchetUUID,
+        exceptIds: List<DoubleRatchetUUID>,
+    ): MessageOrder? = messageDao.getFirstMessageOrderByContact(contactId.uuid, exceptIds.map { it.uuid })?.toMessageOrder()
 
-    override suspend fun countByContact(contactId: UUID, exceptIds: List<UUID>): Int = messageDao.countByContact(contactId, exceptIds)
+    override suspend fun countByContact(
+        contactId: DoubleRatchetUUID,
+        exceptIds: List<DoubleRatchetUUID>,
+    ): Int = messageDao.countByContact(contactId.uuid, exceptIds.map { it.uuid })
+
     override suspend fun getAtByContact(
         position: Int,
-        contactId: UUID,
-        exceptIds: List<UUID>,
+        contactId: DoubleRatchetUUID,
+        exceptIds: List<DoubleRatchetUUID>,
     ): MessageOrder? = messageDao.getMessageOrderAtByContact(
         position,
-        contactId,
-        exceptIds,
-    )
+        contactId.uuid,
+        exceptIds.map { it.uuid },
+    )?.toMessageOrder()
 
-    override suspend fun getByContactByOrder(contactId: UUID, order: Float): SafeMessage = messageDao.getByContactByOrder(contactId, order)
-        .toMessage()
+    override suspend fun getByContactByOrder(
+        contactId: DoubleRatchetUUID,
+        order: Float,
+    ): SafeMessage = messageDao.getByContactByOrder(contactId.uuid, order).toMessage()
 
-    override fun getAllPaged(config: PagingConfig, contactId: UUID): Flow<PagingData<SafeMessage>> {
+    override fun getAllPaged(config: PagingConfig, contactId: DoubleRatchetUUID): Flow<PagingData<SafeMessage>> {
         return Pager(config = config) {
-            messageDao.getAllAsPagingSource(contactId)
+            messageDao.getAllAsPagingSource(contactId.uuid)
         }.flow.mapPagingValues(RoomMessage::toMessage)
     }
 
-    override suspend fun deleteAllMessages(contactId: UUID) {
-        messageDao.deleteAllMessages(contactId)
+    override suspend fun deleteAllMessages(contactId: DoubleRatchetUUID) {
+        messageDao.deleteAllMessages(contactId.uuid)
     }
 
-    override suspend fun deleteMessage(messageId: UUID) {
-        messageDao.deleteMessage(messageId)
+    override suspend fun deleteMessage(messageId: DoubleRatchetUUID) {
+        messageDao.deleteMessage(messageId.uuid)
     }
 
-    override suspend fun markMessagesAsRead(contactId: UUID) {
-        messageDao.markMessagesAsRead(contactId)
+    override suspend fun markMessagesAsRead(contactId: DoubleRatchetUUID) {
+        messageDao.markMessagesAsRead(contactId.uuid)
     }
 }

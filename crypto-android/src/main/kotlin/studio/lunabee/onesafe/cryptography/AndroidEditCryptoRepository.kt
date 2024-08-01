@@ -19,9 +19,12 @@
 
 package studio.lunabee.onesafe.cryptography
 
+import studio.lunabee.onesafe.domain.model.crypto.NewSafeCrypto
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.repository.EditCryptoRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.randomize
 import studio.lunabee.onesafe.use
@@ -34,17 +37,17 @@ class AndroidEditCryptoRepository @Inject constructor(
     private val saltProvider: SaltProvider,
     private val hashEngine: PasswordHashEngine,
     private val mainCryptoRepository: MainCryptoRepository,
+    private val safeRepository: SafeRepository,
+    private val cryptoEngine: CryptoEngine,
 ) : EditCryptoRepository {
     private var salt: ByteArray? = null
     private var key: ByteArray? = null
     private var biometricCipher: Cipher? = null
 
     override suspend fun generateCryptographicData(password: CharArray) {
-        password.use {
-            val salt = saltProvider()
-            this.salt = salt
-            this.key = hashEngine.deriveKey(password, salt)
-        }
+        val salt = saltProvider()
+        this.salt = salt
+        this.key = hashEngine.deriveKey(password, salt)
     }
 
     override suspend fun checkCryptographicData(password: CharArray): Boolean {
@@ -60,23 +63,22 @@ class AndroidEditCryptoRepository @Inject constructor(
         biometricCipher = cipher
     }
 
-    override suspend fun setMainCryptographicData(): Unit = persistMainCryptographicData(false)
+    override suspend fun setMainCryptographicData(): NewSafeCrypto = loadMainCryptographicData(null)
 
-    override suspend fun overrideMainCryptographicData(): Unit = persistMainCryptographicData(true)
+    override suspend fun overrideMainCryptographicData(safeId: SafeId): NewSafeCrypto = loadMainCryptographicData(safeId)
 
-    private suspend fun persistMainCryptographicData(allowOverride: Boolean = false) {
-        try {
+    private suspend fun loadMainCryptographicData(overrideSafeId: SafeId?): NewSafeCrypto {
+        return try {
             val salt = this.salt ?: throw OSCryptoError(OSCryptoError.Code.ONBOARDING_SALT_NOT_LOADED)
             val key = this.key ?: throw OSCryptoError(OSCryptoError.Code.ONBOARDING_KEY_NOT_LOADED)
-            if (allowOverride) {
-                mainCryptoRepository.overrideMasterKeyAndSalt(key, salt)
+
+            if (overrideSafeId != null) {
+                mainCryptoRepository.regenerateAndOverrideLoadedCrypto(key, salt, biometricCipher)
             } else {
-                mainCryptoRepository.storeMasterKeyAndSalt(key, salt)
+                mainCryptoRepository.generateCrypto(key, salt, biometricCipher)
             }
-            biometricCipher?.let { mainCryptoRepository.enableBiometric(it) }
         } finally {
             this.key?.randomize()
-            this.salt?.randomize()
             reset()
         }
     }
@@ -91,6 +93,19 @@ class AndroidEditCryptoRepository @Inject constructor(
         val key = this.key ?: throw OSCryptoError(OSCryptoError.Code.ONBOARDING_KEY_NOT_LOADED)
         itemKeys.forEach { itemKey ->
             mainCryptoRepository.reEncryptItemKey(itemKey, key)
+        }
+    }
+
+    override suspend fun checkPasswordUniqueness(password: CharArray): Boolean {
+        val safes = safeRepository.getAllSafe()
+        return safes.none { safe ->
+            hashEngine.deriveKey(password, safe.salt).use { key ->
+                cryptoEngine.decrypt(
+                    cipherData = safe.encTest,
+                    key = key,
+                    associatedData = null,
+                ).getOrNull()?.decodeToString() == MainCryptoRepository.MASTER_KEY_TEST_VALUE
+            }
         }
     }
 }

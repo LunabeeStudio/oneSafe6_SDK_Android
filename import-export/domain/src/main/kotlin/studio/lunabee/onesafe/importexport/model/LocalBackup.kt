@@ -19,13 +19,15 @@
 
 package studio.lunabee.onesafe.importexport.model
 
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import java.io.File
 import java.time.Instant
 
 data class LocalBackup(
     override val date: Instant,
     val file: File,
+    override val safeId: SafeId,
 ) : Backup() {
     override val id: String
-        get() = file.name
+        get() = file.name + safeId
 }

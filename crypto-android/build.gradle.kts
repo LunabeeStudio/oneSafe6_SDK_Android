@@ -35,6 +35,7 @@ android {
 
     defaultConfig {
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
+        missingDimensionStrategy(OSDimensions.Environment.value, OSDimensions.Environment.Store)
     }
 
     buildTypes {
@@ -112,6 +113,7 @@ dependencies {
     implementation(libs.bouncycastle)
     implementation(libs.tink.android) // Used for HKDF
     implementation(libs.conscrypt.android) // Used for chachapoly in Jce flavor & as fallback for Rsa
+    implementation(libs.doubleratchet)
 
     implementation(libs.preference.ktx) {
         exclude("androidx.lifecycle", "lifecycle-viewmodel-ktx")
@@ -123,7 +125,11 @@ dependencies {
     implementation(libs.kotlin.reflect)
 
     implementation(project(":domain"))
-    implementation(project(":bubbles-domain"))
+    implementation(libs.bubbles.domain)
+    implementation(libs.bubbles.messaging.domain)
+    implementation(libs.bubbles.shared)
+    implementation(libs.kotlinx.datetime)
+    implementation(libs.bubbles.repository)
     implementation(project(":error"))
     implementation(project(":common"))
     implementation(project(":import-export-domain"))
@@ -132,6 +138,8 @@ dependencies {
 
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(project(":dependency-injection:test-component"))
+    androidTestImplementation(libs.bubbles.domain)
+    androidTestImplementation(libs.bubbles.shared)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.biometric) // used to check if device has biometric
 

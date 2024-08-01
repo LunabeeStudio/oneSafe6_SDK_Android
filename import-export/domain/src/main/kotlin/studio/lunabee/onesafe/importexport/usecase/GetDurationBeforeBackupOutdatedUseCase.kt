@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.importexport.usecase
 
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
@@ -42,28 +43,28 @@ class GetDurationBeforeBackupOutdatedUseCase @Inject constructor(
     private val getAutoBackupModeUseCase: GetAutoBackupModeUseCase,
     private val cloudBackupRepository: CloudBackupRepository,
 ) {
-    suspend operator fun invoke(): Duration {
-        val backupMode = getAutoBackupModeUseCase()
+    suspend operator fun invoke(safeId: SafeId): Duration {
+        val backupMode = getAutoBackupModeUseCase(safeId)
         return when (backupMode) {
             AutoBackupMode.Disabled -> Duration.INFINITE
             AutoBackupMode.LocalOnly -> {
-                getAllLocalBackupsUseCase().firstOrNull()?.let { latestBackup ->
+                getAllLocalBackupsUseCase(safeId).maxOrNull()?.let { latestBackup ->
                     val durationSinceLatest = latestBackup.date.until(Instant.now(clock), ChronoUnit.SECONDS).seconds
-                    settingsRepository.autoBackupFrequency - durationSinceLatest
+                    settingsRepository.autoBackupFrequency(safeId) - durationSinceLatest
                 }
             }
             AutoBackupMode.CloudOnly -> {
-                cloudBackupRepository.getBackups().firstOrNull()?.let { latestBackup ->
+                cloudBackupRepository.getBackups(safeId).maxOrNull()?.let { latestBackup ->
                     val durationSinceLatest = latestBackup.date.until(Instant.now(clock), ChronoUnit.SECONDS).seconds
-                    settingsRepository.autoBackupFrequency - durationSinceLatest
+                    settingsRepository.autoBackupFrequency(safeId) - durationSinceLatest
                 }
             }
             AutoBackupMode.Synchronized -> {
-                cloudBackupRepository.getBackups().firstOrNull()?.date?.let { latestCloud ->
-                    getAllLocalBackupsUseCase().maxOrNull()?.date?.let { latestLocal ->
+                cloudBackupRepository.getBackups(safeId).maxOrNull()?.date?.let { latestCloud ->
+                    getAllLocalBackupsUseCase(safeId).maxOrNull()?.date?.let { latestLocal ->
                         val durationSinceLatest = minOf(latestCloud, latestLocal)
                             .until(Instant.now(clock), ChronoUnit.SECONDS).seconds
-                        settingsRepository.autoBackupFrequency - durationSinceLatest
+                        settingsRepository.autoBackupFrequency(safeId) - durationSinceLatest
                     }
                 }
             }

@@ -21,32 +21,29 @@ package studio.lunabee.onesafe.storage.datasource
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import studio.lunabee.importexport.repository.datasource.LocalBackupCacheDataSource
+import studio.lunabee.importexport.datasource.LocalBackupCacheDataSource
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.domain.qualifier.InternalDir
 import studio.lunabee.onesafe.importexport.model.ImportExportConstant
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import java.io.File
 import java.io.InputStream
-import java.time.Clock
 import java.time.Instant
 import javax.inject.Inject
 
 class LocalBackupFileCacheDataSource @Inject constructor(
     @InternalDir(InternalDir.Type.Cache) private val cacheDir: File,
     @FileDispatcher private val dispatcher: CoroutineDispatcher,
-    private val clock: Clock,
 ) : LocalBackupCacheDataSource {
-    override suspend fun addBackup(inputStream: InputStream): LocalBackup {
-        val now = Instant.now(clock)
+    override suspend fun addBackup(inputStream: InputStream, date: Instant): File {
         val file = withContext(dispatcher) {
-            val file = File.createTempFile("$prefix${now.toEpochMilli()}", ".${ImportExportConstant.ExtensionOs6Backup}", cacheDir)
+            val file = File.createTempFile("$prefix${date.toEpochMilli()}", ".${ImportExportConstant.ExtensionOs6Backup}", cacheDir)
             file.outputStream().use { outputStream ->
                 inputStream.copyTo(outputStream)
             }
             file
         }
-        return LocalBackup(now, file)
+        return file
     }
 
     override suspend fun removeBackup(localBackup: LocalBackup): Boolean {

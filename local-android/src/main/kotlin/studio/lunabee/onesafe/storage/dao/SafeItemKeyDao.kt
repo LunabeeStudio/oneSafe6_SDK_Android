@@ -24,6 +24,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.storage.model.RoomSafeItemKey
 import java.util.UUID
 
@@ -36,8 +37,15 @@ interface SafeItemKeyDao {
     @Query("SELECT * FROM SafeItemKey WHERE id IN (:ids)")
     suspend fun findByIds(ids: List<UUID>): List<RoomSafeItemKey>
 
-    @Query("SELECT * FROM SafeItemKey")
-    suspend fun getAllSafeItemKeys(): List<RoomSafeItemKey>
+    @Query(
+        """
+            SELECT SafeItemKey.*
+            FROM SafeItemKey
+            LEFT JOIN SafeItem ON SafeItemKey.id = SafeItem.id
+            WHERE SafeItem.safe_id = :safeId
+        """,
+    )
+    suspend fun getAllSafeItemKeys(safeId: SafeId): List<RoomSafeItemKey>
 
     @Upsert
     suspend fun insert(safeItemKey: RoomSafeItemKey)

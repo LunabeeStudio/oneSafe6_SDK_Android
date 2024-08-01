@@ -31,5 +31,6 @@ data class OSMigrationError(
         ENCRYPT_FAIL("Fail to encrypt data"),
         GET_DECRYPT_STREAM_FAIL("Fail to get the decrypt stream"),
         GET_ENCRYPT_STREAM_FAIL("Fail to get the encrypt stream"),
+        MISSING_LEGACY_USERNAME("Missing username for migration from V0"),
     }
 }

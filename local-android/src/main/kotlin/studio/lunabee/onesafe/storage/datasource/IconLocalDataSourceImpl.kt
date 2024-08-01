@@ -21,13 +21,21 @@ package studio.lunabee.onesafe.storage.datasource
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
+import studio.lunabee.onesafe.domain.model.safe.SafeId
+import studio.lunabee.onesafe.domain.utils.CrossSafeData
 import studio.lunabee.onesafe.repository.datasource.IconLocalDataSource
+import studio.lunabee.onesafe.storage.MainDatabase
+import studio.lunabee.onesafe.storage.dao.SafeFileDao
+import studio.lunabee.onesafe.storage.model.RoomSafeFile
+import studio.lunabee.onesafe.storage.utils.TransactionProvider
 import java.io.File
 import java.util.UUID
 import javax.inject.Inject
 
 class IconLocalDataSourceImpl @Inject constructor(
     @ApplicationContext appContext: Context,
+    private val dao: SafeFileDao,
+    private val transactionProvider: TransactionProvider<MainDatabase>,
 ) : IconLocalDataSource {
     private val iconDir: File = File(appContext.filesDir, ICON_DIR)
 
@@ -35,36 +43,50 @@ class IconLocalDataSourceImpl @Inject constructor(
         return File(iconDir, filename)
     }
 
-    override fun addIcon(filename: String, icon: ByteArray): File {
+    override suspend fun addIcon(filename: String, icon: ByteArray, safeId: SafeId): File {
         if (!iconDir.exists()) {
             iconDir.mkdir()
         }
 
+        return transactionProvider.runAsTransaction {
+            val file = File(iconDir, filename)
+            dao.insertFile(RoomSafeFile(file, safeId))
+            file.writeBytes(icon)
+            file
+        }
+    }
+
+    override suspend fun deleteIcon(filename: String): Boolean {
         val file = File(iconDir, filename)
-        file.writeBytes(icon)
-        return file
+        return transactionProvider.runAsTransaction {
+            dao.removeFile(file)
+            file.delete()
+        }
     }
 
-    override fun removeIcon(filename: String): Boolean {
-        val file = File(iconDir, filename)
-        return file.delete()
-    }
-
-    override fun removeAllIcons(): Boolean {
-        return iconDir.deleteRecursively()
-    }
-
-    override fun deleteIcon(filename: String): Boolean {
-        return File(iconDir, filename).delete()
-    }
-
+    @CrossSafeData
     override fun getAllIcons(): List<File> {
         return iconDir.listFiles()?.toList().orEmpty()
     }
 
-    override fun copyAndDeleteIconFile(newIconFile: File, iconId: UUID) {
-        newIconFile.copyTo(target = File(iconDir, iconId.toString()))
-        newIconFile.delete()
+    override suspend fun getIcons(safeId: SafeId): List<File> {
+        return dao.getAllFiles(safeId, iconDir.path)
+    }
+
+    override suspend fun copyAndDeleteIconFile(newIconFile: File, iconId: UUID, safeId: SafeId) {
+        val target = File(iconDir, iconId.toString())
+        transactionProvider.runAsTransaction {
+            dao.insertFile(RoomSafeFile(target, safeId))
+            newIconFile.copyTo(target = target)
+            newIconFile.delete()
+        }
+    }
+
+    override suspend fun deleteAll(safeId: SafeId) {
+        transactionProvider.runAsTransaction {
+            dao.getAllFiles(safeId, iconDir.path).forEach { it.delete() }
+            dao.deleteAll(safeId, iconDir.path)
+        }
     }
 
     override fun getIcons(iconsId: List<String>): List<File> {

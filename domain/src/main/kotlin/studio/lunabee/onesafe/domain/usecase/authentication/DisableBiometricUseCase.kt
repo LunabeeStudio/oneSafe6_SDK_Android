@@ -20,12 +20,15 @@
 package studio.lunabee.onesafe.domain.usecase.authentication
 
 import studio.lunabee.onesafe.domain.repository.BiometricCipherRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import javax.inject.Inject
 
 class DisableBiometricUseCase @Inject constructor(
     private val biometricCipherRepository: BiometricCipherRepository,
+    private val safeRepository: SafeRepository,
 ) {
-    operator fun invoke() {
-        biometricCipherRepository.disableBiometric()
+    suspend operator fun invoke() {
+        safeRepository.removeBiometricKey()
+        biometricCipherRepository.clear()
     }
 }

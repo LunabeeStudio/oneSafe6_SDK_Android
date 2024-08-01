@@ -40,6 +40,7 @@ android {
     defaultConfig {
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
         missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
+        missingDimensionStrategy(OSDimensions.Environment.value, OSDimensions.Environment.Store)
     }
 
     compileOptions {
@@ -99,6 +100,7 @@ dependencies {
     implementation(libs.paging.runtime)
     implementation(libs.androidx.core.ktx)
     implementation(libs.sqlcipher.android)
+    implementation(libs.kotlinx.datetime)
 
     implementation(libs.kotlinx.serialization.protobuf)
     implementation(libs.datastore)
@@ -116,15 +118,16 @@ dependencies {
     implementation(project(":repository"))
     implementation(project(":error"))
     implementation(project(":common"))
+    implementation(project(":crypto-android"))
 
-    implementation(project(":bubbles-domain"))
-    implementation(project(":bubbles-repository"))
-
-    implementation(project(":messaging-domain"))
-    implementation(project(":messaging-repository"))
+    implementation(libs.bubbles.domain)
+    implementation(libs.bubbles.repository)
+    implementation(libs.bubbles.messaging.repository)
+    implementation(libs.bubbles.messaging.domain)
 
     implementation(project(":import-export-domain"))
     implementation(project(":import-export-repository"))
+    implementation(project(":import-export-drive"))
 
     implementation(libs.doubleratchet)
 
@@ -132,6 +135,7 @@ dependencies {
 
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(project(":dependency-injection:test-component"))
+    androidTestImplementation(libs.bubbles.shared)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.room.testing)
 }

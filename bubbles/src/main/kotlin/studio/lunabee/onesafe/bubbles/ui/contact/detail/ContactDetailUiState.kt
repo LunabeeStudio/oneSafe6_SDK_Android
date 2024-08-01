@@ -20,15 +20,16 @@
 package studio.lunabee.onesafe.bubbles.ui.contact.detail
 
 import androidx.compose.ui.graphics.Color
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.model.ConversationState
+import studio.lunabee.onesafe.bubbles.ui.contact.model.MessageSharingModeUi
 import studio.lunabee.onesafe.commonui.OSNameProvider
-import studio.lunabee.onesafe.messaging.domain.model.ConversationState
-import java.util.UUID
 
 sealed interface ContactDetailUiState {
     data class Data(
-        val id: UUID,
+        val id: DoubleRatchetUUID,
         val nameProvider: OSNameProvider,
-        val isDeeplinkActivated: Boolean,
+        val messageSharingModeUi: MessageSharingModeUi,
         val conversationState: UIConversationState,
         val color: Color?,
     ) : ContactDetailUiState

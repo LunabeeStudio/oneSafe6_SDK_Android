@@ -19,28 +19,50 @@
 
 package studio.lunabee.onesafe.domain.common
 
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import java.util.UUID
+import javax.inject.Inject
 
-fun interface ItemIdProvider {
+class ItemIdProvider @Inject constructor(
+    private val provider: UuidProvider,
+) {
+    operator fun invoke(): UUID = provider()
+}
+
+class FieldIdProvider @Inject constructor(
+    private val provider: UuidProvider,
+) {
+    operator fun invoke(): UUID = provider()
+}
+
+class IconIdProvider @Inject constructor(
+    private val provider: UuidProvider,
+) {
+    operator fun invoke(): UUID = provider()
+}
+
+class FileIdProvider @Inject constructor(
+    private val provider: UuidProvider,
+) {
+    operator fun invoke(): UUID = provider()
+}
+
+class MessageIdProvider @Inject constructor(
+    private val provider: UuidProvider,
+) {
+    operator fun invoke(): UUID = provider()
+}
+
+class SafeIdProvider @Inject constructor(
+    private val provider: UuidProvider,
+) {
+    operator fun invoke(): SafeId = SafeId(provider())
+}
+
+fun interface UuidProvider {
     operator fun invoke(): UUID
 }
 
-fun interface FieldIdProvider {
-    operator fun invoke(): UUID
-}
-
-fun interface IconIdProvider {
-    operator fun invoke(): UUID
-}
-
-fun interface FileIdProvider {
-    operator fun invoke(): UUID
-}
-
-fun interface MessageIdProvider {
-    operator fun invoke(): UUID
-}
-
-class UuidProvider : ItemIdProvider, FieldIdProvider, IconIdProvider, MessageIdProvider, FileIdProvider {
-    override fun invoke(): UUID = UUID.randomUUID()
+class RandomUuidProvider @Inject constructor() : UuidProvider {
+    override operator fun invoke(): UUID = UUID.randomUUID()
 }
