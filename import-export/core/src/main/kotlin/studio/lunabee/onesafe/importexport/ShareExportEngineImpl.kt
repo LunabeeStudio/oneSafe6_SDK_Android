@@ -25,8 +25,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import studio.lunabee.onesafe.importexport.usecase.CreateBackupInfoUseCase
 import studio.lunabee.onesafe.domain.model.importexport.OSArchiveKind
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.qualifier.DateFormatterType
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.error.OSImportExportError
@@ -35,6 +35,7 @@ import studio.lunabee.onesafe.importexport.engine.ShareExportEngine
 import studio.lunabee.onesafe.importexport.model.ExportData
 import studio.lunabee.onesafe.importexport.model.ExportInfo
 import studio.lunabee.onesafe.importexport.repository.ImportExportCryptoRepository
+import studio.lunabee.onesafe.importexport.usecase.CreateBackupInfoUseCase
 import java.io.File
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -75,6 +76,7 @@ class ShareExportEngineImpl @Inject constructor(
         dataHolderFolder: File,
         data: ExportData,
         archiveKind: OSArchiveKind,
+        safeId: SafeId, // TODO <multisafe> unused? (unneeded?)
     ): Flow<LBFlowResult<Unit>> {
         val exportInfo = exportInfo
             ?: return flowOf(LBFlowResult.Failure(OSImportExportError(OSImportExportError.Code.ENGINE_NOT_PREPARED)))

@@ -29,5 +29,6 @@ annotation class ArchiveCacheDir(val type: Type) {
         Import,
         Migration,
         AutoBackup,
+        Message,
     }
 }

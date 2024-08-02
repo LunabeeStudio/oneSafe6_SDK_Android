@@ -25,37 +25,34 @@ import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.domain.qualifier.StoreBetaTrack
 import studio.lunabee.onesafe.domain.qualifier.VersionName
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
-import studio.lunabee.onesafe.domain.usecase.authentication.IsBiometricEnabledUseCase
-import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
-import studio.lunabee.onesafe.domain.usecase.authentication.LocalSignInUseCase
+import studio.lunabee.onesafe.domain.usecase.authentication.HasBiometricSafeUseCase
+import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
+import studio.lunabee.onesafe.domain.usecase.authentication.LoginUseCase
+import studio.lunabee.onesafe.domain.usecase.settings.GetAppVisitUseCase
 import studio.lunabee.onesafe.ime.ui.biometric.ImeBiometricResultRepository
 import studio.lunabee.onesafe.login.viewmodel.LoginFromPasswordDelegateImpl
 import studio.lunabee.onesafe.login.viewmodel.LoginUiStateHolder
-import studio.lunabee.onesafe.migration.MigrateAndSignInUseCase
-import studio.lunabee.onesafe.visits.OSAppVisit
 import javax.inject.Inject
 
 class ImeLoginViewModelFactory @Inject constructor(
-    private val isBiometricEnabledUseCase: IsBiometricEnabledUseCase,
-    private val osAppVisit: OSAppVisit,
-    private val migrateAndSignInUseCase: MigrateAndSignInUseCase,
+    private val hasBiometricSafeUseCase: HasBiometricSafeUseCase,
+    private val getAppVisitUseCase: GetAppVisitUseCase,
+    private val loginUseCase: LoginUseCase,
     @VersionName val versionName: String,
-    private val localSignInUseCase: LocalSignInUseCase,
     private val featureFlags: FeatureFlags,
     private val imeBiometricResultRepository: ImeBiometricResultRepository,
     private val mainCryptoRepository: MainCryptoRepository,
-    private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
+    private val isSafeReadyUseCase: IsSafeReadyUseCase,
     @StoreBetaTrack private val isBetaVersion: Boolean,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        val loginUiStateHolder = LoginUiStateHolder(isCryptoDataReadyInMemoryUseCase, osAppVisit, isBetaVersion)
+        val loginUiStateHolder = LoginUiStateHolder(isSafeReadyUseCase, getAppVisitUseCase, isBetaVersion)
         @Suppress("UNCHECKED_CAST")
         return ImeLoginViewModel(
-            isBiometricEnabledUseCase = isBiometricEnabledUseCase,
+            hasBiometricSafeUseCase = hasBiometricSafeUseCase,
             loginUiStateHolder = loginUiStateHolder,
             loginFromPasswordDelegate = LoginFromPasswordDelegateImpl(
-                localSignInUseCase = localSignInUseCase,
-                migrateAndSignInUseCase = migrateAndSignInUseCase,
+                loginUseCase = loginUseCase,
                 featureFlags = featureFlags,
                 loginUiStateHolder = loginUiStateHolder,
             ),

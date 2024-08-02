@@ -32,6 +32,7 @@ android {
 
     defaultConfig {
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
+        missingDimensionStrategy(OSDimensions.Environment.value, OSDimensions.Environment.Store)
     }
 
     flavorDimensions += AndroidConfig.CRYPTO_BACKEND_FLAVOR_DIMENSION
@@ -71,6 +72,7 @@ dependencies {
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lblogger)
+    implementation(libs.kotlinx.datetime)
 
     implementation(project(":crypto-android"))
     implementation(project(":domain"))
@@ -82,12 +84,12 @@ dependencies {
     implementation(project(":local-android"))
     implementation(project(":remote"))
     implementation(project(":app:settings"))
-    implementation(project(":bubbles-domain"))
-    implementation(project(":bubbles-repository"))
+    implementation(project(":app:migration"))
+    implementation(libs.bubbles.domain)
+    implementation(libs.bubbles.repository)
+    implementation(libs.bubbles.messaging.repository)
+    implementation(libs.bubbles.messaging.domain)
     implementation(project(":bubbles-crypto-android"))
-    implementation(project(":messaging-domain"))
-    implementation(project(":messaging-repository"))
-    implementation(project(":messaging-crypto-android"))
 
     androidTestImplementation(project(":common-test-android"))
 }

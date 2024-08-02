@@ -36,6 +36,8 @@ import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.error.codeText
 import studio.lunabee.onesafe.commonui.notification.OSNotificationChannelId
 import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
+import studio.lunabee.onesafe.domain.model.safe.SafeId
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.error.OSDriveError
 import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
 import studio.lunabee.onesafe.importexport.model.AutoBackupError
@@ -43,6 +45,8 @@ import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.usecase.ClearAutoBackupErrorUseCase
 import studio.lunabee.onesafe.importexport.usecase.StoreAutoBackupErrorUseCase
+import studio.lunabee.onesafe.importexport.utils.AutoBackupErrorIdProvider
+import studio.lunabee.onesafe.toByteArray
 import java.time.Clock
 import java.time.ZonedDateTime
 import javax.inject.Inject
@@ -56,16 +60,21 @@ class AutoBackupWorkersHelper @Inject constructor(
     private val clock: Clock,
     private val storeAutoBackupErrorUseCase: StoreAutoBackupErrorUseCase,
     private val clearAutoBackupErrorUseCase: ClearAutoBackupErrorUseCase,
+    private val autoBackupErrorIdProvider: AutoBackupErrorIdProvider,
+    private val safeRepository: SafeRepository,
 ) {
-    fun start(
+    suspend fun start(
         synchronizeCloudFirst: Boolean,
+        safeId: SafeId? = null,
     ) {
+        val backupSafeId = safeId ?: safeRepository.currentSafeId()
         val data = Data.Builder()
             .putBoolean(AutoBackupSchedulerWorker.SYNCHRONIZE_CLOUD_FIRST_DATA, synchronizeCloudFirst)
+            .putByteArray(AutoBackupSchedulerWorker.EXPORT_WORKER_SAFE_ID_DATA, backupSafeId.id.toByteArray())
             .build()
 
         val workRequest = OneTimeWorkRequestBuilder<AutoBackupSchedulerWorker>()
-            .addTag(ImportExportAndroidConstants.AUTO_BACKUP_WORKER_TAG)
+            .addTag(ImportExportAndroidConstants.autoBackupWorkerTag(backupSafeId))
             .setInputData(data)
             .build()
 
@@ -73,24 +82,29 @@ class AutoBackupWorkersHelper @Inject constructor(
             .enqueueUniqueWork(AUTO_BACKUP_SCHEDULER_WORK_NAME, ExistingWorkPolicy.APPEND_OR_REPLACE, workRequest)
     }
 
-    fun cancel() {
+    suspend fun cancel(
+        safeId: SafeId? = null,
+    ) {
+        val backupSafeId = safeId ?: safeRepository.currentSafeId()
         val workManager = WorkManager.getInstance(context)
-        workManager.cancelAllWorkByTag(ImportExportAndroidConstants.AUTO_BACKUP_WORKER_TAG)
+        workManager.cancelAllWorkByTag(ImportExportAndroidConstants.autoBackupWorkerTag(backupSafeId))
     }
 
-    private suspend fun isScheduled(): Boolean {
+    private suspend fun isScheduled(safeId: SafeId): Boolean {
         val workManager = WorkManager.getInstance(context)
         return workManager
-            .getWorkInfosForUniqueWorkFlow(AutoBackupSchedulerWorker.AUTO_BACKUP_CHAIN_WORK_NAME)
+            .getWorkInfosForUniqueWorkFlow(AutoBackupSchedulerWorker.autoBackupChainWorkName(safeId))
             .first()
             .firstOrNull()
             ?.state in listOf(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING)
     }
 
     suspend fun ensureAutoBackupScheduled() {
-        if (autoBackupSettingsRepository.autoBackupEnabled.first() && !isScheduled()) {
-            logger.w("Re-scheduled auto backup worker")
-            start(autoBackupSettingsRepository.cloudBackupEnabled.first())
+        autoBackupSettingsRepository.getSafeAutoBackupEnabled().forEach { backupEnabledStatus ->
+            if (!isScheduled(backupEnabledStatus.safeId)) {
+                logger.w("Re-scheduled auto backup worker")
+                start(backupEnabledStatus.cloudAutoBackupEnabled, backupEnabledStatus.safeId)
+            }
         }
     }
 
@@ -105,17 +119,19 @@ class AutoBackupWorkersHelper @Inject constructor(
      */
     // TODO permission should be add by the module if it needs it
     @SuppressLint("MissingPermission")
-    suspend fun onBackupWorkerFails(error: Throwable?, runAttemptCount: Int, errorSource: AutoBackupMode): Result {
+    suspend fun onBackupWorkerFails(error: Throwable?, runAttemptCount: Int, errorSource: AutoBackupMode, safeId: SafeId): Result {
         logger.e("fail #$runAttemptCount", error)
         val canRetry = canRetry(error)
 
         if (runAttemptCount == RETRIES_BEFORE_SHOW_ERROR || !canRetry) {
             // Store error
             val autoBackupError = AutoBackupError(
+                id = autoBackupErrorIdProvider(),
                 date = ZonedDateTime.now(clock),
                 code = error.codeText().string(context),
                 message = error?.stackTraceToString(),
                 source = errorSource,
+                safeId = safeId,
             )
             storeAutoBackupErrorUseCase(autoBackupError)
             // Notify
@@ -165,6 +181,7 @@ class AutoBackupWorkersHelper @Inject constructor(
             OSDriveError.Code.DRIVE_ENGINE_NOT_INITIALIZED,
             OSDriveError.Code.DRIVE_UNEXPECTED_NULL_AUTH_INTENT,
             OSDriveError.Code.DRIVE_UNKNOWN_ERROR,
+            OSDriveError.Code.DRIVE_CANNOT_DELETE_BACKUP_WITHOUT_SAFE_ID,
             null, // Retry by default
             -> true
             OSDriveError.Code.DRIVE_WRONG_ACCOUNT_TYPE,
@@ -175,9 +192,9 @@ class AutoBackupWorkersHelper @Inject constructor(
         return canRetry
     }
 
-    suspend fun onBackupWorkerSucceed(backupMode: AutoBackupMode): Result {
+    suspend fun onBackupWorkerSucceed(backupMode: AutoBackupMode, safeId: SafeId): Result {
         osNotificationManager.manager.cancel(OSNotificationManager.AUTO_BACKUP_ERROR_WORKER_NOTIFICATION_ID)
-        clearAutoBackupErrorUseCase.ifNeeded(backupMode)
+        clearAutoBackupErrorUseCase.ifNeeded(safeId, backupMode)
         return Result.success()
     }
 

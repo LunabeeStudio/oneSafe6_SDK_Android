@@ -24,7 +24,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.error.OSDriveError
+import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.error.OSImportExportError
+import studio.lunabee.onesafe.error.OSRepositoryError
+import studio.lunabee.onesafe.error.osCatch
 import studio.lunabee.onesafe.error.osCode
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
 import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
@@ -34,11 +39,13 @@ import javax.inject.Inject
 
 /**
  * Get an [InputStream] on a local or cloud backup. Gives priority to local backup if the backup exist in both cloud and local storage.
+ * When using cloud backup, the safe id must be loaded in memory in order to create the stream from Drive.
  * It is the caller responsibility to close the [InputStream]
  */
 class GetAutoBackupStreamUseCase @Inject constructor(
     private val localBackupRepository: LocalBackupRepository,
     private val cloudBackupRepository: CloudBackupRepository,
+    private val safeRepository: SafeRepository,
 ) {
     /**
      * @return A success with the input stream or a failure if no backup found for the given ID in both storages
@@ -48,13 +55,20 @@ class GetAutoBackupStreamUseCase @Inject constructor(
         if (localBackupFile != null) {
             emit(LBFlowResult.Success(localBackupFile.inputStream()))
         } else {
-            val flow = cloudBackupRepository.getInputStream(backupId)
+            val safeId = safeRepository.currentSafeId()
+            val flow = cloudBackupRepository.getInputStream(backupId, safeId)
                 .onFailure {
                     if (it.throwable.osCode() == OSDriveError.Code.DRIVE_BACKUP_REMOTE_ID_NOT_FOUND) {
-                        cloudBackupRepository.refreshBackupList().collect()
+                        cloudBackupRepository.refreshBackupList(safeId).collect()
                     }
                 }
             emitAll(flow)
+        }
+    }.osCatch { osError ->
+        if (osError.code == OSRepositoryError.Code.SAFE_ID_NOT_LOADED) {
+            OSImportExportError.Code.CANNOT_OPEN_STREAM_WITHOUT_SAFE_ID.get()
+        } else {
+            osError
         }
     }
 }

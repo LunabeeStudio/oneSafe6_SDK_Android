@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.domain.repository
 
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import java.util.UUID
@@ -35,7 +36,7 @@ interface SafeItemFieldRepository {
     suspend fun saveThumbnailFileName(fieldId: UUID, encThumbnailFileName: ByteArray?)
 
     suspend fun deleteByItemId(itemId: UUID)
-    suspend fun getAllSafeItemFieldIds(): List<UUID>
-    suspend fun getAllSafeItemFields(): List<SafeItemField>
+    suspend fun getAllSafeItemFieldIds(safeId: SafeId): List<UUID>
+    suspend fun getAllSafeItemFields(safeId: SafeId): List<SafeItemField>
     suspend fun getAllSafeItemFieldsOfItems(items: List<UUID>): List<SafeItemField>
 }

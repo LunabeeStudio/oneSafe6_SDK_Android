@@ -27,12 +27,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import studio.lunabee.onesafe.commonui.utils.FileDetails
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.error.OSError.Companion.get
 import studio.lunabee.onesafe.error.OSImportExportError
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
 import studio.lunabee.onesafe.importexport.utils.isOsFile
 import java.io.FileNotFoundException
+import java.time.Clock
+import java.time.Instant
 import javax.inject.Inject
 
 /**
@@ -41,6 +44,8 @@ import javax.inject.Inject
 class StoreExternalBackupUseCase @Inject constructor(
     private val backupRepository: LocalBackupRepository,
     @ApplicationContext private val context: Context,
+    private val clock: Clock,
+    private val safeRepository: SafeRepository,
 ) {
     suspend operator fun invoke(backupUri: Uri): Flow<LBFlowResult<LocalBackup>> = flow {
         val isOsFile = FileDetails.fromUri(backupUri, context).isOsFile()
@@ -56,7 +61,12 @@ class StoreExternalBackupUseCase @Inject constructor(
                 emit(LBFlowResult.Failure(OSImportExportError.Code.CANNOT_OPEN_URI.get()))
             } else {
                 val backup = inputStream.use {
-                    backupRepository.cacheBackup(it)
+                    val now = Instant.now(clock)
+                    LocalBackup(
+                        date = now,
+                        file = backupRepository.cacheBackup(it, now),
+                        safeId = safeRepository.currentSafeId(),
+                    )
                 }
                 emit(LBFlowResult.Success(backup))
             }

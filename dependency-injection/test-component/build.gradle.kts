@@ -26,6 +26,10 @@ plugins {
 android {
     namespace = "studio.lunabee.onesafe.dependencyinjection.test"
 
+    defaultConfig {
+        missingDimensionStrategy(OSDimensions.Environment.value, OSDimensions.Environment.Store)
+    }
+
     flavorDimensions += AndroidConfig.CRYPTO_BACKEND_FLAVOR_DIMENSION
     productFlavors {
         create(AndroidConfig.CRYPTO_BACKEND_FLAVOR_JCE) {
@@ -75,6 +79,7 @@ dependencies {
     implementation(libs.lblogger)
     implementation(libs.lbcore)
     implementation(libs.lbloading.compose)
+    implementation(libs.kotlinx.datetime)
 
     implementation(libs.doubleratchet)
 
@@ -87,13 +92,15 @@ dependencies {
     implementation(project(":remote"))
     implementation(project(":dependency-injection"))
     implementation(project(":app:settings"))
+    implementation(project(":app:migration"))
     implementation(project(":app:common-ui"))
-    implementation(project(":bubbles-domain"))
-    implementation(project(":bubbles-repository"))
+
+    implementation(libs.bubbles.domain)
+    implementation(libs.bubbles.repository)
+    implementation(libs.bubbles.messaging.repository)
+    implementation(libs.bubbles.messaging.domain)
     implementation(project(":bubbles-crypto-android"))
-    implementation(project(":messaging-domain"))
-    implementation(project(":messaging-repository"))
-    implementation(project(":messaging-crypto-android"))
     implementation(project(":error"))
+    implementation(project(":common-test-android"))
     api(project(":common-test"))
 }

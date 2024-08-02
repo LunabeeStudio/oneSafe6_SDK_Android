@@ -30,10 +30,6 @@ internal fun DebugSafeItem(
             expanded = isExpanded,
             onDismissRequest = { isExpanded = false },
         ) {
-            OSDropdownMenuItem(text = LbcTextSpec.Raw("Create recursive item"), null) {
-                data.createRecursiveItem()
-                isExpanded = false
-            }
             OSDropdownMenuItem(text = LbcTextSpec.Raw("Remove all items ☢️"), null) {
                 data.removeAllItems()
                 isExpanded = false

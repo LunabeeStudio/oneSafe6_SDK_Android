@@ -21,8 +21,8 @@ package studio.lunabee.onesafe.domain.usecase.search
 
 import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
-import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
+import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.error.OSError
 import javax.inject.Inject
@@ -33,6 +33,14 @@ class DecryptIndexWordUseCase @Inject constructor(
     private val cryptoRepository: MainCryptoRepository,
 ) {
     suspend operator fun invoke(encIndexWordEntry: List<IndexWordEntry>): LBResult<List<PlainIndexWordEntry>> = OSError.runCatching(log) {
-        cryptoRepository.decryptIndexWord(encIndexWordEntry)
+        val encWords = encIndexWordEntry.map { it.encWord }
+        val plainWords = cryptoRepository.decryptIndexWord(encWords)
+        encIndexWordEntry.zip(plainWords) { indexWordEntry, plainWord ->
+            PlainIndexWordEntry(
+                word = plainWord,
+                itemMatch = indexWordEntry.itemMatch,
+                fieldMatch = indexWordEntry.fieldMatch,
+            )
+        }
     }
 }

@@ -32,6 +32,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import studio.lunabee.compose.androidtest.LbcComposeTest
 import studio.lunabee.compose.androidtest.extension.waitUntilExactlyOneExists
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
 import studio.lunabee.onesafe.commonui.OSDrawable
@@ -61,12 +62,12 @@ class ImeContactScreenTest : LbcComposeTest() {
         val contact1Name = "toto"
         val contact2Name = "tata"
         val contact1 = UIBubblesContactInfo(
-            id = UUID.randomUUID(),
+            id = DoubleRatchetUUID(UUID.randomUUID()),
             nameProvider = DefaultNameProvider(contact1Name),
             isConversationReady = true,
         )
         val contact2 = UIBubblesContactInfo(
-            id = UUID.randomUUID(),
+            id = DoubleRatchetUUID(UUID.randomUUID()),
             nameProvider = DefaultNameProvider(contact2Name),
             isConversationReady = true,
         )
@@ -75,10 +76,10 @@ class ImeContactScreenTest : LbcComposeTest() {
         setScreen(mockkVM) {
             onNodeWithTag(UiConstants.TestTag.Item.BubblesNoContactCard).assertDoesNotExist()
             hasText(contact1Name).waitUntilExactlyOneExists().performClick()
-            verify(exactly = 1) { onClickOnContact.invoke(contact1.id) }
+            verify(exactly = 1) { onClickOnContact.invoke(contact1.id.uuid) }
 
             hasText(contact2Name).waitUntilExactlyOneExists().performClick()
-            verify(exactly = 1) { onClickOnContact.invoke(contact2.id) }
+            verify(exactly = 1) { onClickOnContact.invoke(contact2.id.uuid) }
         }
     }
 

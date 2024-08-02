@@ -24,18 +24,21 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlin.test.Test
 import org.threeten.extra.MutableClock
 import studio.lunabee.onesafe.domain.common.CtaState
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
+import studio.lunabee.onesafe.test.firstSafeId
 import java.time.Instant
 import java.time.temporal.ChronoUnit
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -47,23 +50,29 @@ class GetEnableAutoBackupCtaStateUseCaseTest {
     private val safeItemsCountFlow = MutableStateFlow(0)
 
     private val autoBackupSettingsRepository = mockk<AutoBackupSettingsRepository> {
-        every { enableAutoBackupCtaState } returns ctaStateFlow
-        every { autoBackupEnabled } returns autoBackupEnabledFlow
+        coEvery { enableAutoBackupCtaState(firstSafeId) } returns ctaStateFlow
+        every { autoBackupEnabledFlow(firstSafeId) } returns autoBackupEnabledFlow
 
         // any() matcher does not work for value class. Maybe https://github.com/mockk/mockk/issues/859
-        coEvery { setEnableAutoBackupCtaState(CtaState.Hidden) } coAnswers { ctaStateFlow.value = firstArg() }
-        coEvery { setEnableAutoBackupCtaState(CtaState.VisibleSince(any())) } coAnswers { ctaStateFlow.value = firstArg() }
-        coEvery { setEnableAutoBackupCtaState(CtaState.DismissedAt(any())) } coAnswers { ctaStateFlow.value = firstArg() }
+        coEvery { setEnableAutoBackupCtaState(firstSafeId, CtaState.Hidden) } coAnswers { ctaStateFlow.value = secondArg() }
+        coEvery { setEnableAutoBackupCtaState(firstSafeId, CtaState.VisibleSince(any())) } coAnswers { ctaStateFlow.value = secondArg() }
+        coEvery { setEnableAutoBackupCtaState(firstSafeId, CtaState.DismissedAt(any())) } coAnswers { ctaStateFlow.value = secondArg() }
     }
 
     private val itemRepository = mockk<SafeItemRepository> {
-        every { getSafeItemsCountFlow() } returns safeItemsCountFlow
+        every { getSafeItemsCountFlow(firstSafeId) } returns safeItemsCountFlow
+    }
+
+    private val safeRepository = mockk<SafeRepository> {
+        coEvery { currentSafeId() } returns firstSafeId
+        every { currentSafeIdFlow() } returns flowOf(firstSafeId)
     }
 
     private val getEnableBackupCtaState: GetEnableAutoBackupCtaStateUseCase = GetEnableAutoBackupCtaStateUseCase(
         autoBackupSettingsRepository,
         itemRepository,
         clock,
+        safeRepository,
     )
 
     @Test

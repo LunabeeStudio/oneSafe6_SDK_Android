@@ -19,8 +19,12 @@
 
 package studio.lunabee.onesafe.importexport.usecase
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import javax.inject.Inject
 
@@ -31,14 +35,23 @@ import javax.inject.Inject
  */
 class GetLatestLocalBackupUseCase @Inject constructor(
     private val getAllLocalBackupsUseCase: GetAllLocalBackupsUseCase,
+    private val safeRepository: SafeRepository,
 ) {
     /**
      * @see GetAllLocalBackupsUseCase.invoke
      */
-    suspend operator fun invoke(): LocalBackup? = getAllLocalBackupsUseCase().firstOrNull()
+    suspend operator fun invoke(): LocalBackup? {
+        val safeId = safeRepository.currentSafeId()
+        return getAllLocalBackupsUseCase(safeId).firstOrNull()
+    }
 
     /**
      * @see GetAllLocalBackupsUseCase.flow
      */
-    fun flow(): Flow<LocalBackup?> = getAllLocalBackupsUseCase.flow().map { it.firstOrNull() }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun flow(): Flow<LocalBackup?> = safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+        safeId?.let {
+            getAllLocalBackupsUseCase.flow(safeId).map { it.firstOrNull() }
+        } ?: flowOf(null)
+    }
 }

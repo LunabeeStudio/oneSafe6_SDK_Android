@@ -24,10 +24,13 @@ import androidx.lifecycle.viewModelScope
 import com.lunabee.lbcore.model.LBResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.GetBiometricCipherUseCase
 import studio.lunabee.onesafe.error.OSAppError
 import studio.lunabee.onesafe.error.OSError
+import studio.lunabee.onesafe.error.OSError.Companion.get
 import javax.crypto.Cipher
 import javax.inject.Inject
 
@@ -36,16 +39,20 @@ class ImeBiometricViewModel @Inject constructor(
     private val getBiometricCipherUseCase: GetBiometricCipherUseCase,
     private val imeBiometricResultRepository: ImeBiometricResultRepository,
     private val cryptoRepository: MainCryptoRepository,
+    private val safeRepository: SafeRepository,
 ) : ViewModel() {
 
     fun getCipher(): Cipher? {
-        return getBiometricCipherUseCase.forVerify().data
+        return runBlocking { getBiometricCipherUseCase.forVerify().data } // TODO <multisafe> clean runBlocking + handle result
     }
 
     fun biometricLogin(cipher: Cipher) {
         viewModelScope.launch {
+            // TODO <multisafe> move to usecase
             val result = OSError.runCatching {
-                cryptoRepository.retrieveMasterKeyFromBiometric(cipher)
+                safeRepository.getBiometricSafe().biometricCryptoMaterial?.let { encKey ->
+                    cryptoRepository.decryptMasterKeyWithBiometric(encKey, cipher)
+                } ?: throw OSAppError.Code.BIOMETRIC_LOGIN_ERROR.get("Unexpected null encBiometricMasterKey")
             }
             imeBiometricResultRepository.setResult(result)
         }

@@ -26,6 +26,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -34,14 +35,16 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
-import kotlin.test.Test
 import studio.lunabee.onesafe.domain.manager.SearchIndexManager
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.repository.IndexWordEntryRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.usecase.search.DecryptIndexWordUseCase
 import studio.lunabee.onesafe.test.assertSuccess
+import studio.lunabee.onesafe.test.firstSafeId
 import studio.lunabee.onesafe.test.testUUIDs
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
@@ -49,22 +52,27 @@ import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchIndexManagerTest {
+
+    private val safeRepository: SafeRepository = mockk {
+        every { currentSafeIdFlow() } returns flowOf(firstSafeId)
+    }
+
     private val indexManager: SearchIndexManager by lazyFast {
-        SearchIndexManager(indexWordEntryRepository, decryptIndexWordUseCase)
+        SearchIndexManager(indexWordEntryRepository, decryptIndexWordUseCase, safeRepository)
     }
 
     @MockK lateinit var indexWordEntryRepository: IndexWordEntryRepository
 
     @MockK lateinit var decryptIndexWordUseCase: DecryptIndexWordUseCase
 
-    private val indexList: List<IndexWordEntry> = listOf(IndexWordEntry(byteArrayOf(), testUUIDs[0], null))
+    private val indexList: List<IndexWordEntry> = listOf(IndexWordEntry(byteArrayOf(), testUUIDs[0], null, firstSafeId))
     private val clearIndexWordEntries = listOf(PlainIndexWordEntry("word", testUUIDs[0], null))
 
     @Before
     fun setup() {
         MockKAnnotations.init(this)
 
-        every { indexWordEntryRepository.getAll() } returns flowOf(indexList)
+        every { indexWordEntryRepository.getAll(firstSafeId) } returns flowOf(indexList)
         coEvery { decryptIndexWordUseCase.invoke(indexList) } returns LBResult.Success(clearIndexWordEntries)
     }
 
@@ -102,12 +110,12 @@ class SearchIndexManagerTest {
         )
 
         val indexList2 = listOf(
-            IndexWordEntry(byteArrayOf(), testUUIDs[0], null),
-            IndexWordEntry(byteArrayOf(), testUUIDs[1], null),
+            IndexWordEntry(byteArrayOf(), testUUIDs[0], null, firstSafeId),
+            IndexWordEntry(byteArrayOf(), testUUIDs[1], null, firstSafeId),
         )
         val indexFlow = MutableStateFlow(indexList)
 
-        every { indexWordEntryRepository.getAll() } returns indexFlow
+        every { indexWordEntryRepository.getAll(firstSafeId) } returns indexFlow
         coEvery { decryptIndexWordUseCase.invoke(indexList2) } returns LBResult.Success(expectedIndex)
 
         indexManager.initStoreIndex(this)

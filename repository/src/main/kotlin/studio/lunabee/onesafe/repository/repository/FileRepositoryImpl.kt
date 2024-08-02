@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.repository.repository
 
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.repository.datasource.FileLocalDatasource
 import java.io.File
@@ -30,6 +31,7 @@ class FileRepositoryImpl @Inject constructor(
     private val fileLocalDatasource: FileLocalDatasource,
 ) : FileRepository {
     override fun getFile(fileId: String): File = fileLocalDatasource.getFile(fileId)
+    override suspend fun createFile(fileId: String, safeId: SafeId): File = fileLocalDatasource.createFile(fileId, safeId)
     override fun createTempFile(fileId: String): File = fileLocalDatasource.createTempFile(fileId)
     override fun getPlainFile(itemId: UUID, fieldId: UUID, filename: String): File {
         return fileLocalDatasource.getPlainFile(itemId = itemId, fieldId = fieldId, filename = filename)
@@ -37,14 +39,18 @@ class FileRepositoryImpl @Inject constructor(
 
     override fun getFiles(filesId: List<String>): List<File> = fileLocalDatasource.getFiles(filesId)
 
-    override fun getFiles(): List<File> = fileLocalDatasource.getAllFiles()
+    override suspend fun getFiles(safeId: SafeId): List<File> = fileLocalDatasource.getAllFiles(safeId)
 
-    override suspend fun addFile(fileId: UUID, file: ByteArray): File = fileLocalDatasource.addFile(fileId.toString(), file)
+    override suspend fun addFile(fileId: UUID, file: ByteArray, safeId: SafeId): File = fileLocalDatasource.addFile(
+        filename = fileId.toString(),
+        file = file,
+        safeId = safeId,
+    )
 
-    override fun deleteFile(fileId: UUID): Boolean = fileLocalDatasource.deleteFile(fileId.toString())
+    override suspend fun deleteFile(fileId: UUID): Boolean = fileLocalDatasource.deleteFile(fileId.toString())
 
-    override suspend fun copyAndDeleteFile(file: File, fileId: UUID) {
-        fileLocalDatasource.copyAndDeleteFile(newFile = file, fileId = fileId)
+    override suspend fun copyAndDeleteFile(file: File, fileId: UUID, safeId: SafeId) {
+        fileLocalDatasource.copyAndDeleteFile(newFile = file, fileId = fileId, safeId = safeId)
     }
 
     override suspend fun deleteItemDir(itemId: UUID) {
@@ -55,13 +61,12 @@ class FileRepositoryImpl @Inject constructor(
         return fileLocalDatasource.savePlainFile(inputStream, filename, itemId, fieldId)
     }
 
-    // TODO <debug> move to debug only code (only used by debug menu)
-    override fun deleteAll() {
-        fileLocalDatasource.removeAllFiles()
-    }
-
     override fun getThumbnailFile(thumbnailFileName: String, isFullWidth: Boolean): File {
         return fileLocalDatasource.getThumbnailFile(thumbnailFileName, isFullWidth)
+    }
+
+    override suspend fun deleteAll(safeId: SafeId) {
+        return fileLocalDatasource.deleteAll(safeId)
     }
 
     override suspend fun deletePlainFilesCacheDir() {

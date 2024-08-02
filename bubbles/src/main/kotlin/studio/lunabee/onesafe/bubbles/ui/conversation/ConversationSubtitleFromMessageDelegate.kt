@@ -21,11 +21,11 @@ package studio.lunabee.onesafe.bubbles.ui.conversation
 
 import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.compose.core.LbcTextSpec
+import studio.lunabee.messaging.domain.model.PlainMessageContentData
+import studio.lunabee.messaging.domain.model.SafeMessage
+import studio.lunabee.messaging.domain.usecase.DecryptSafeMessageUseCase
 import studio.lunabee.onesafe.bubbles.ui.model.ConversationSubtitle
 import studio.lunabee.onesafe.commonui.OSString
-import studio.lunabee.onesafe.messaging.domain.model.PlainMessageContentData
-import studio.lunabee.onesafe.messaging.domain.model.SafeMessage
-import studio.lunabee.onesafe.messaging.domain.usecase.DecryptSafeMessageUseCase
 import javax.inject.Inject
 
 class ConversationSubtitleFromMessageDelegate @Inject constructor(

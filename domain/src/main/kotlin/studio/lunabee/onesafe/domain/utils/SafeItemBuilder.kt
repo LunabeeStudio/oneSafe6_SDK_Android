@@ -23,20 +23,26 @@ import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.usecase.SetIconUseCase
 import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
 
+/**
+ * Helper from creating a new [SafeItem] for the current loaded safe
+ */
 class SafeItemBuilder @Inject constructor(
     private val cryptoRepository: MainCryptoRepository,
     private val setIconUseCase: SetIconUseCase,
+    private val safeRepository: SafeRepository,
 ) {
     suspend fun build(data: Data): Pair<SafeItemKey, SafeItem> {
         val itemKey = cryptoRepository.generateKeyForItemId(data.id)
+        val safeId = safeRepository.currentSafeId()
 
         val iconId: UUID? = data.icon?.let {
-            setIconUseCase(itemKey, data.icon)
+            setIconUseCase(itemKey, data.icon, safeId)
         }
 
         val item = SafeItem(
@@ -52,6 +58,7 @@ class SafeItemBuilder @Inject constructor(
             deletedParentId = null,
             indexAlpha = data.indexAlpha,
             createdAt = data.createdAt,
+            safeId = safeId,
         )
 
         return itemKey to item
@@ -87,7 +94,9 @@ class SafeItemBuilder @Inject constructor(
             if (position != other.position) return false
             if (updatedAt != other.updatedAt) return false
             if (indexAlpha != other.indexAlpha) return false
-            return createdAt == other.createdAt
+            if (createdAt != other.createdAt) return false
+
+            return true
         }
 
         override fun hashCode(): Int {

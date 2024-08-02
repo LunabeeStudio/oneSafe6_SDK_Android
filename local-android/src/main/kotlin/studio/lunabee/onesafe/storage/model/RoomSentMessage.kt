@@ -23,7 +23,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import studio.lunabee.onesafe.messaging.domain.model.SentMessage
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.model.SentMessage
 import java.util.UUID
 
 @Entity(
@@ -35,6 +36,12 @@ import java.util.UUID
             childColumns = arrayOf("id"),
             onDelete = ForeignKey.CASCADE,
         ),
+        ForeignKey(
+            entity = RoomSafe::class,
+            parentColumns = arrayOf("id"),
+            childColumns = arrayOf("safe_id"),
+            onDelete = ForeignKey.CASCADE,
+        ),
     ],
 )
 class RoomSentMessage(
@@ -42,23 +49,26 @@ class RoomSentMessage(
     @ColumnInfo("enc_content") val encContent: ByteArray,
     @ColumnInfo("enc_created_at") val encCreatedAt: ByteArray,
     @ColumnInfo("contact_id") val contactId: UUID,
+    @ColumnInfo("safe_id", index = true) val safeId: UUID,
     val order: Float,
 ) {
     fun toSentMessage(): SentMessage = SentMessage(
-        id = id,
+        id = DoubleRatchetUUID(id),
         encContent = encContent,
         encCreatedAt = encCreatedAt,
-        contactId = contactId,
+        contactId = DoubleRatchetUUID(contactId),
         order = order,
+        safeId = DoubleRatchetUUID(id),
     )
 
     companion object {
         fun fromSentMessage(sentMessage: SentMessage): RoomSentMessage = RoomSentMessage(
-            id = sentMessage.id,
+            id = sentMessage.id.uuid,
             encContent = sentMessage.encContent,
             encCreatedAt = sentMessage.encCreatedAt,
-            contactId = sentMessage.contactId,
+            contactId = sentMessage.contactId.uuid,
             order = sentMessage.order,
+            safeId = sentMessage.safeId.uuid,
         )
     }
 }

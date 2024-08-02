@@ -25,16 +25,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSScreen
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
-import studio.lunabee.onesafe.bubbles.ui.contact.composables.DeeplinkSwitchRow
+import studio.lunabee.onesafe.bubbles.ui.contact.composables.ModeMessageShared
+import studio.lunabee.onesafe.bubbles.ui.contact.model.MessageSharingModeUi
 import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.model.OSItemIllustration
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
-import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
+import studio.lunabee.onesafe.ui.theme.OSTheme
+import studio.lunabee.onesafe.utils.OsDefaultPreview
 
 @Composable
 fun ContactFormScreen(
@@ -42,15 +49,14 @@ fun ContactFormScreen(
     onBackClick: () -> Unit,
     icon: OSItemIllustration,
     onInviteClick: () -> Unit,
-    onDeeplinkChange: (Boolean) -> Unit,
-    isDeeplinkChecked: Boolean,
+    onSharingMessageModeChange: (MessageSharingModeUi) -> Unit,
+    sharingMessageMode: MessageSharingModeUi,
     contactName: String,
     onContactNameChange: (String) -> Unit,
 ) {
-    OSScreen(
-        testTag = UiConstants.TestTag.Screen.CreateContactScreen,
-        background = LocalDesignSystem.current.bubblesBackGround(),
-    ) {
+    var bottomSheetMessageSharingIsVisible by rememberSaveable { mutableStateOf(false) }
+
+    OSScreen(testTag = UiConstants.TestTag.Screen.CreateContactScreen) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -74,7 +80,12 @@ fun ContactFormScreen(
                 )
                 lazyVerticalOSRegularSpacer()
                 item {
-                    DeeplinkSwitchRow(onValueChange = onDeeplinkChange, isChecked = isDeeplinkChecked)
+                    ModeMessageShared(
+                        sharingModeUi = sharingMessageMode,
+                        onSharingMessageModeChange = onSharingMessageModeChange,
+                        isVisible = bottomSheetMessageSharingIsVisible,
+                        onVisibleChange = { bottomSheetMessageSharingIsVisible = !bottomSheetMessageSharingIsVisible },
+                    )
                 }
                 lazyVerticalOSRegularSpacer()
                 CreateContactScreenFactory.inviteButton(
@@ -85,5 +96,22 @@ fun ContactFormScreen(
                 )
             }
         }
+    }
+}
+
+@OsDefaultPreview
+@Composable
+fun ContactFormScreenPreview() {
+    OSTheme {
+        ContactFormScreen(
+            type = ContactFormType.FromScratch,
+            onBackClick = {},
+            icon = OSItemIllustration.Text(LbcTextSpec.Raw("Toto"), color = null),
+            onInviteClick = {},
+            onSharingMessageModeChange = {},
+            sharingMessageMode = MessageSharingModeUi.Deeplinks,
+            contactName = "",
+            onContactNameChange = {},
+        )
     }
 }

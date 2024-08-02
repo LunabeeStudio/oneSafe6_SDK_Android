@@ -23,7 +23,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import studio.lunabee.onesafe.messaging.domain.model.EncHandShakeData
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.model.EncHandShakeData
 import java.util.UUID
 
 @Entity(
@@ -50,14 +51,14 @@ class RoomHandShakeData(
             encConversationSharedId = encConversationSharedId,
             encOneSafePrivateKey = encOneSafePrivateKey,
             encOneSafePublicKey = encOneSafePublicKey,
-            conversationLocalId = conversationLocalId,
+            conversationLocalId = DoubleRatchetUUID(conversationLocalId),
         )
     }
 
     companion object {
         fun fromHandShakeData(handShakeData: EncHandShakeData): RoomHandShakeData {
             return RoomHandShakeData(
-                conversationLocalId = handShakeData.conversationLocalId,
+                conversationLocalId = handShakeData.conversationLocalId.uuid,
                 encConversationSharedId = handShakeData.encConversationSharedId,
                 encOneSafePrivateKey = handShakeData.encOneSafePrivateKey,
                 encOneSafePublicKey = handShakeData.encOneSafePublicKey,

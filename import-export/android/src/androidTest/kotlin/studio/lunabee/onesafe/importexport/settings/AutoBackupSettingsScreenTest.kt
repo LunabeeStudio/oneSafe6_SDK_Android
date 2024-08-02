@@ -37,7 +37,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlin.test.Test
 import org.threeten.extra.MutableClock
 import studio.lunabee.compose.androidtest.LbcComposeTest
 import studio.lunabee.compose.androidtest.extension.waitUntilAtLeastOneExists
@@ -52,9 +51,11 @@ import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.importexport.model.LatestBackups
 import studio.lunabee.onesafe.importexport.settings.backupnumber.AutoBackupMaxNumber
 import studio.lunabee.onesafe.model.OSSwitchState
+import studio.lunabee.onesafe.test.firstSafeId
 import studio.lunabee.onesafe.ui.UiConstants
 import java.net.URI
 import java.time.Instant
+import kotlin.test.Test
 
 @OptIn(androidx.compose.ui.test.ExperimentalTestApi::class)
 class AutoBackupSettingsScreenTest : LbcComposeTest() {
@@ -138,7 +139,7 @@ class AutoBackupSettingsScreenTest : LbcComposeTest() {
         errorSnackbarState: ErrorSnackbarState? = null,
         driveUri: StateFlow<URI?> = MutableStateFlow(URI.create("")),
         dialogState: StateFlow<DialogState?> = MutableStateFlow(null),
-        latestBackup: CloudBackup? = CloudBackup("", "", Instant.now(testClock)),
+        latestBackup: CloudBackup? = CloudBackup("", "", Instant.now(testClock), firstSafeId),
         block: ComposeUiTest.() -> Unit,
     ) {
         val viewModel = mockk<AutoBackupSettingsViewModel> {
@@ -172,7 +173,7 @@ class AutoBackupSettingsScreenTest : LbcComposeTest() {
         cloudBackupEnabledState: OSSwitchState,
         driveUri: URI?,
     ) = AutoBackupSettingsUiState(
-        isBackupEnabled = true,
+        isAutoBackupEnabled = true,
         autoBackupFrequency = AutoBackupFrequency.DAILY,
         autoBackupMaxNumber = AutoBackupMaxNumber.FIVE,
         latestBackups = LatestBackups(local = null, cloud = backup),

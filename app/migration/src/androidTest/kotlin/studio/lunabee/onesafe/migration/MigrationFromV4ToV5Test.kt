@@ -27,15 +27,17 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
-import kotlin.test.Test
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.usecase.GetAllLocalBackupsUseCase
 import studio.lunabee.onesafe.importexport.usecase.LocalAutoBackupUseCase
+import studio.lunabee.onesafe.migration.migration.MigrationFromV4ToV5
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltTest
+import studio.lunabee.onesafe.test.firstSafeId
 import java.io.File
 import java.time.Instant
 import javax.inject.Inject
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 
 @HiltAndroidTest
@@ -45,7 +47,7 @@ class MigrationFromV4ToV5Test : OSHiltTest() {
         get() = File(context.filesDir, "backups").also { it.mkdirs() }
 
     @get:Rule override val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
-    override val initialTestState: InitialTestState = InitialTestState.LoggedIn
+    override val initialTestState: InitialTestState = InitialTestState.Home()
 
     @Inject lateinit var migrationFromV4ToV5: MigrationFromV4ToV5
 
@@ -61,35 +63,35 @@ class MigrationFromV4ToV5Test : OSHiltTest() {
     @Test
     fun migrate_backups_test(): TestResult = runTest {
         val expected = listOf(
-            LocalBackup(Instant.EPOCH.plusSeconds(2), File(backupsDir, "oneSafe-19700101-000002.os6lsb")),
-            LocalBackup(Instant.EPOCH.plusSeconds(1), File(backupsDir, "oneSafe-19700101-000001.os6lsb")),
-            LocalBackup(Instant.EPOCH, File(backupsDir, "oneSafe-19700101-000000.os6lsb")),
+            LocalBackup(Instant.EPOCH.plusSeconds(2), File(backupsDir, "oneSafe-19700101-000002.os6lsb"), firstSafeId),
+            LocalBackup(Instant.EPOCH.plusSeconds(1), File(backupsDir, "oneSafe-19700101-000001.os6lsb"), firstSafeId),
+            LocalBackup(Instant.EPOCH, File(backupsDir, "oneSafe-19700101-000000.os6lsb"), firstSafeId),
         ).onEach { it.file.createNewFile() }
 
-        assertContentEquals(emptyList(), getAllLocalBackupsUseCase())
+        assertContentEquals(emptyList(), getAllLocalBackupsUseCase(firstSafeId))
         migrationFromV4ToV5()
-        val actual = getAllLocalBackupsUseCase()
+        val actual = getAllLocalBackupsUseCase(firstSafeId)
         assertContentEquals(expected, actual)
     }
 
     @Test
     fun migrate_backups_above_limit_test(): TestResult = runTest {
         testClock.setInstant(Instant.EPOCH.plusSeconds(3))
-        autoBackupUseCase().last()
+        autoBackupUseCase(firstSafeId).last()
         testClock.setInstant(Instant.EPOCH.plusSeconds(6))
-        autoBackupUseCase().last()
+        autoBackupUseCase(firstSafeId).last()
 
         val oldBackups = listOf(
-            LocalBackup(Instant.EPOCH.plusSeconds(5), File(backupsDir, "oneSafe-19700101-000005.os6lsb")),
-            LocalBackup(Instant.EPOCH.plusSeconds(4), File(backupsDir, "oneSafe-19700101-000004.os6lsb")),
-            LocalBackup(Instant.EPOCH.plusSeconds(2), File(backupsDir, "oneSafe-19700101-000002.os6lsb")),
-            LocalBackup(Instant.EPOCH.plusSeconds(1), File(backupsDir, "oneSafe-19700101-000001.os6lsb")),
-            LocalBackup(Instant.EPOCH, File(backupsDir, "oneSafe-19700101-000000.os6lsb")),
+            LocalBackup(Instant.EPOCH.plusSeconds(5), File(backupsDir, "oneSafe-19700101-000005.os6lsb"), firstSafeId),
+            LocalBackup(Instant.EPOCH.plusSeconds(4), File(backupsDir, "oneSafe-19700101-000004.os6lsb"), firstSafeId),
+            LocalBackup(Instant.EPOCH.plusSeconds(2), File(backupsDir, "oneSafe-19700101-000002.os6lsb"), firstSafeId),
+            LocalBackup(Instant.EPOCH.plusSeconds(1), File(backupsDir, "oneSafe-19700101-000001.os6lsb"), firstSafeId),
+            LocalBackup(Instant.EPOCH, File(backupsDir, "oneSafe-19700101-000000.os6lsb"), firstSafeId),
         ).onEach { it.file.createNewFile() }
 
-        val expected = (getAllLocalBackupsUseCase() + oldBackups).sortedDescending().take(5)
+        val expected = (getAllLocalBackupsUseCase(firstSafeId) + oldBackups).sortedDescending().take(5)
         migrationFromV4ToV5()
-        val actual = getAllLocalBackupsUseCase()
+        val actual = getAllLocalBackupsUseCase(firstSafeId)
         assertContentEquals(expected, actual)
     }
 }

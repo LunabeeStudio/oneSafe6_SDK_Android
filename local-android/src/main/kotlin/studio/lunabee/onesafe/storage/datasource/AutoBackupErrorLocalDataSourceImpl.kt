@@ -19,33 +19,22 @@
 
 package studio.lunabee.onesafe.storage.datasource
 
-import androidx.datastore.core.DataStore
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import studio.lunabee.importexport.repository.datasource.AutoBackupErrorLocalDataSource
-import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
+import studio.lunabee.importexport.datasource.AutoBackupErrorLocalDataSource
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.importexport.model.AutoBackupError
-import studio.lunabee.onesafe.storage.model.LocalAutoBackupError
+import studio.lunabee.onesafe.storage.dao.AutoBackupErrorDao
+import studio.lunabee.onesafe.storage.model.RoomAutoBackupError
+import java.util.UUID
 import javax.inject.Inject
 
-class AutoBackupErrorLocalDataSourceImpl @Inject constructor(
-    private val dataStore: DataStore<LocalAutoBackupError>,
-    @FileDispatcher private val fileDispatcher: CoroutineDispatcher,
-) : AutoBackupErrorLocalDataSource {
-    override fun getError(): Flow<AutoBackupError?> =
-        dataStore.data.map { localAutoBackupError ->
-            localAutoBackupError.takeUnless { it == LocalAutoBackupError.default }?.toAutoBackupError()
-        }.flowOn(fileDispatcher)
+// TODO <multisafe> migrate backup errors to database with SafeId foreign key
 
-    override suspend fun setError(error: AutoBackupError?) {
-        dataStore.updateData {
-            if (error == null) {
-                LocalAutoBackupError.default
-            } else {
-                LocalAutoBackupError.fromAutoBackupError(error)
-            }
-        }
-    }
+class AutoBackupErrorLocalDataSourceImpl @Inject constructor(
+    private val dao: AutoBackupErrorDao,
+) : AutoBackupErrorLocalDataSource {
+    override fun getLastError(safeId: SafeId): Flow<AutoBackupError?> = dao.getLastError(safeId).map { it?.toAutoBackupError() }
+    override suspend fun addError(error: AutoBackupError): Unit = dao.setError(RoomAutoBackupError.from(error))
+    override suspend fun removeError(errorId: UUID): Unit = dao.removeError(errorId)
 }

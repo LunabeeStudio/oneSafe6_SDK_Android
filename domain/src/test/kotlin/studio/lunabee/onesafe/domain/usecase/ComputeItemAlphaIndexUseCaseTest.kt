@@ -24,7 +24,6 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import kotlin.test.Test
 import studio.lunabee.onesafe.domain.model.safeitem.ItemNameWithIndex
 import studio.lunabee.onesafe.domain.usecase.item.CleanForAlphaIndexingUseCase
 import studio.lunabee.onesafe.domain.usecase.item.ComputeItemAlphaIndexUseCase
@@ -34,10 +33,14 @@ import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError.Companion.get
 import studio.lunabee.onesafe.error.osCode
 import studio.lunabee.onesafe.test.assertFailure
+import studio.lunabee.onesafe.test.firstSafeId
 import studio.lunabee.onesafe.test.testUUIDs
 import java.util.UUID
 import kotlin.reflect.KClass
+import kotlin.test.Test
 import kotlin.test.assertEquals
+
+// TODO <multisafe> test with 2 safes
 
 class ComputeItemAlphaIndexUseCaseTest {
 
@@ -52,20 +55,23 @@ class ComputeItemAlphaIndexUseCaseTest {
     val useCase: ComputeItemAlphaIndexUseCase by lazy {
         ComputeItemAlphaIndexUseCase(
             safeItemRepository = mockk {
-                coEvery { getItemNameWithIndexAt(any()) } answers {
+                coEvery { getItemNameWithIndexAt(any(), firstSafeId) } answers {
                     val idx = firstArg() as Int
                     items[idx]
                 }
-                coEvery { getAlphaIndexRange() } answers {
+                coEvery { getAlphaIndexRange(firstSafeId) } answers {
                     items.sortBy { it.indexAlpha }
                     (items.firstOrNull()?.indexAlpha ?: 0.0) to (items.lastOrNull()?.indexAlpha ?: 0.0)
                 }
-                coEvery { getSafeItemsCount() } answers {
+                coEvery { getSafeItemsCount(firstSafeId) } answers {
                     items.size
                 }
             },
             itemDecryptUseCase = itemDecryptUseCase,
             cleanForAlphaIndexingUseCase = CleanForAlphaIndexingUseCase(),
+            safeRepository = mockk {
+                coEvery { currentSafeId() } returns firstSafeId
+            },
         )
     }
 

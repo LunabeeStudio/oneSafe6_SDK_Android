@@ -19,8 +19,8 @@
 
 package studio.lunabee.onesafe.messaging.ui
 
+import studio.lunabee.messaging.domain.usecase.ProcessMessageQueueUseCase
 import studio.lunabee.onesafe.domain.common.FeatureFlags
-import studio.lunabee.onesafe.messaging.domain.usecase.ProcessMessageQueueUseCase
 import javax.inject.Inject
 
 class ProcessQueueDelegate @Inject constructor(

@@ -19,12 +19,6 @@
 
 package studio.lunabee.onesafe.cryptography
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.runBlocking
-import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
-import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.importexport.repository.ImportExportCryptoRepository
@@ -37,7 +31,6 @@ class AndroidImportExportCryptoRepository @Inject constructor(
     private val crypto: CryptoEngine,
     private val hashEngine: PasswordHashEngine,
     private val saltProvider: SaltProvider,
-    @DatastoreEngineProvider(DataStoreType.Plain) private val dataStoreEngine: DatastoreEngine,
 ) : ImportExportCryptoRepository {
 
     override suspend fun deriveKey(password: CharArray, salt: ByteArray): ByteArray {
@@ -88,12 +81,5 @@ class AndroidImportExportCryptoRepository @Inject constructor(
             throw OSCryptoError(OSCryptoError.Code.ITEM_KEY_ENCRYPTION_FAIL, cause = it)
         }
         return SafeItemKey(itemId, itemKey)
-    }
-
-    @Suppress("ObsoleteSdkInt")
-    @RequiresApi(Build.VERSION_CODES.M)
-    override fun getMasterSalt(): ByteArray {
-        return runBlocking { dataStoreEngine.retrieveValue(AndroidMainCryptoRepository.DATASTORE_MASTER_SALT).firstOrNull() }
-            ?: throw OSCryptoError(OSCryptoError.Code.MASTER_SALT_NOT_GENERATED)
     }
 }

@@ -21,22 +21,26 @@ package studio.lunabee.onesafe.importexport.repository
 
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.common.CtaState
+import studio.lunabee.onesafe.domain.model.safe.SafeId
+import studio.lunabee.onesafe.importexport.model.SafeAutoBackupEnabled
 import kotlin.time.Duration
 
 interface AutoBackupSettingsRepository {
-    val autoBackupEnabled: Flow<Boolean>
-    val autoBackupFrequency: Duration
-    val autoBackupFrequencyFlow: Flow<Duration>
-    val autoBackupMaxNumber: Int
-    val autoBackupMaxNumberFlow: Flow<Int>
-    val cloudBackupEnabled: Flow<Boolean>
-    val keepLocalBackupEnabled: Flow<Boolean>
-    val enableAutoBackupCtaState: Flow<CtaState>
+    fun autoBackupEnabledFlow(safeId: SafeId): Flow<Boolean>
+    fun autoBackupFrequencyFlow(safeId: SafeId): Flow<Duration>
+    fun autoBackupMaxNumberFlow(safeId: SafeId): Flow<Int>
+    fun cloudBackupEnabled(safeId: SafeId): Flow<Boolean>
+    fun keepLocalBackupEnabled(safeId: SafeId): Flow<Boolean>
+    fun enableAutoBackupCtaState(safeId: SafeId): Flow<CtaState>
 
-    fun toggleAutoBackupSettings(): Boolean
-    fun setAutoBackupFrequency(delay: Duration)
-    fun updateAutoBackupMaxNumber(updatedValue: Int)
-    suspend fun setCloudBackupSettings(enabled: Boolean)
-    suspend fun setKeepLocalBackupSettings(enabled: Boolean)
-    suspend fun setEnableAutoBackupCtaState(ctaState: CtaState)
+    suspend fun getSafeAutoBackupEnabled(): List<SafeAutoBackupEnabled>
+    suspend fun autoBackupFrequency(safeId: SafeId): Duration
+    suspend fun autoBackupMaxNumber(safeId: SafeId): Int
+
+    suspend fun toggleAutoBackupSettings(safeId: SafeId): Boolean
+    suspend fun setAutoBackupFrequency(safeId: SafeId, delay: Duration)
+    suspend fun updateAutoBackupMaxNumber(safeId: SafeId, updatedValue: Int)
+    suspend fun setCloudBackupEnabled(safeId: SafeId, enabled: Boolean)
+    suspend fun setKeepLocalBackupSettings(safeId: SafeId, enabled: Boolean)
+    suspend fun setEnableAutoBackupCtaState(safeId: SafeId, ctaState: CtaState)
 }

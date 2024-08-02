@@ -19,10 +19,13 @@
 
 package studio.lunabee.onesafe
 
+import studio.lunabee.onesafe.domain.common.CtaState
 import studio.lunabee.onesafe.domain.model.camera.CameraSystem
+import studio.lunabee.onesafe.domain.model.safeitem.ItemLayout
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
-import studio.lunabee.onesafe.domain.model.safeitem.ItemsLayoutSettings
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
+import java.time.Clock
+import java.time.Instant
 import kotlin.time.Duration.Companion.days
 
 object SettingsDefaults {
@@ -31,18 +34,22 @@ object SettingsDefaults {
     const val MaterialYouSettingDefault: Boolean = true
     const val AutomationSettingDefault: Boolean = true
     const val AllowScreenshotSettingDefault: Boolean = false
+    const val ShakeToLockSettingDefault: Boolean = false
     const val ClipboardClearDelayMsDefault: Long = 30_000
     const val DisplayShareWarningDefault: Boolean = true
-    val VerifyPasswordIntervalDefault: VerifyPasswordInterval = VerifyPasswordInterval.EVERY_TWO_MONTHS
+    val VerifyPasswordIntervalDefault: VerifyPasswordInterval = VerifyPasswordInterval.EVERY_WEEK
     val BubblesResendMessageDelayMsDefault: Long = 1.days.inWholeMilliseconds
     const val BubblesPreviewDefault: Boolean = false
-    const val BubblesPreviewCardDefault: Boolean = true
-    const val autoBackupEnabledDefault: Boolean = false
-    val autoBackupFrequencyMsDefault: Long = 1.days.inWholeMilliseconds
-    const val autoBackupMaxNumberDefault: Int = 5
+    val BubblesPreviewCardDefault: CtaState = CtaState.Hidden
+    const val AutoBackupEnabledDefault: Boolean = false
+    val AutoBackupFrequencyMsDefault: Long = 1.days.inWholeMilliseconds
+    const val AutoBackupMaxNumberDefault: Int = 5
     val CameraSystemDefault: CameraSystem = CameraSystem.InApp
-    const val cloudBackupEnabledDefault: Boolean = false
-    const val keepLocalBackupEnabledDefault: Boolean = false
-    val itemOrderingDefault: ItemOrder = ItemOrder.Alphabetic
-    val ItemsLayoutSettingDefault: ItemsLayoutSettings = ItemsLayoutSettings.Grid
+    const val CloudBackupEnabledDefault: Boolean = false
+    const val KeepLocalBackupEnabledDefault: Boolean = false
+    val ItemOrderingDefault: ItemOrder = ItemOrder.Alphabetic
+    val ItemLayoutDefault: ItemLayout = ItemLayout.Grid
+    val EnableAutoBackupCtaState: CtaState = CtaState.Hidden
+    fun lastPasswordVerificationDefault(clock: Clock): Instant = Instant.now(clock)
+    fun independentSafeInfoCtaState(clock: Clock): CtaState = CtaState.VisibleSince(Instant.now(clock))
 }

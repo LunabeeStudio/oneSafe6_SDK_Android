@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.repository.repository
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
@@ -34,8 +35,8 @@ import javax.inject.Inject
 class SafeItemDeletedRepositoryImpl @Inject constructor(
     private val localDataSource: SafeItemLocalDataSource,
 ) : SafeItemDeletedRepository {
-    override suspend fun getDeletedItemsByDeletedParent(deletedParentId: UUID?, order: ItemOrder): List<SafeItem> =
-        localDataSource.findByDeletedParentId(deletedParentId, order)
+    override suspend fun getDeletedItemsByDeletedParent(deletedParentId: UUID?, order: ItemOrder, safeId: SafeId): List<SafeItem> =
+        localDataSource.findByDeletedParentId(deletedParentId, order, safeId)
 
     override suspend fun getSiblingOriginalChildren(parentId: UUID, order: ItemOrder): List<SafeItem> =
         localDataSource.getSiblingOriginalChildren(parentId, order)
@@ -45,31 +46,31 @@ class SafeItemDeletedRepositoryImpl @Inject constructor(
 
     override fun countSafeItemByParentIdDeletedFlow(
         parentId: UUID?,
-    ): Flow<Int> = localDataSource.countSafeItemByParentIdDeletedFlow(parentId)
+        safeId: SafeId,
+    ): Flow<Int> = localDataSource.countSafeItemByParentIdDeletedFlow(parentId, safeId)
 
-    override suspend fun countSafeItemByParentIdDeleted(parentId: UUID?): Int =
-        localDataSource.countSafeItemByParentIdDeleted(parentId)
+    override suspend fun countSafeItemByParentIdDeleted(parentId: UUID?, safeId: SafeId): Int =
+        localDataSource.countSafeItemByParentIdDeleted(parentId, safeId)
 
     override fun getPagerItemByParentIdDeleted(
         config: PagingConfig,
         parentId: UUID?,
         order: ItemOrder,
-    ): Flow<PagingData<SafeItem>> = localDataSource.getPagerItemByParentIdDeleted(config, parentId, order)
+        safeId: SafeId,
+    ): Flow<PagingData<SafeItem>> = localDataSource.getPagerItemByParentIdDeleted(config, parentId, order, safeId)
 
-    override fun countAllDeletedWithNonDeletedParent(): Flow<Int> {
-        return localDataSource.countAllDeletedWithNonDeletedParent()
-    }
-
-    override suspend fun getHighestDeletedPosition(parentId: UUID?): Double? = localDataSource.getHighestDeletedPosition(
+    override suspend fun getHighestDeletedPosition(parentId: UUID?, safeId: SafeId): Double? = localDataSource.getHighestDeletedPosition(
         parentId,
+        safeId,
     )
 
     override suspend fun removeItem(id: UUID) = localDataSource.removeItem(id)
 
     override suspend fun removeItems(ids: List<UUID>) = localDataSource.removeItems(ids)
 
-    override suspend fun restoreItemToParentWithDescendants(id: UUID?) = localDataSource.restoreItemToParentWithDescendants(
+    override suspend fun restoreItemToParentWithDescendants(id: UUID?, safeId: SafeId) = localDataSource.restoreItemToParentWithDescendants(
         id,
+        safeId,
     )
 
     override suspend fun updateParentToNonDeletedAncestor(id: UUID) = localDataSource.updateParentToNonDeletedAncestor(
@@ -84,15 +85,16 @@ class SafeItemDeletedRepositoryImpl @Inject constructor(
         return localDataSource.findByIdWithDeletedAncestors(id)
     }
 
-    override suspend fun removeOldItems(threshold: Instant) = localDataSource.removeOldItems(threshold)
+    override suspend fun removeOldItems(threshold: Instant): Unit = localDataSource.removeOldItems(threshold)
 
-    override fun getAllDeletedItemsCount(): Flow<Int> = localDataSource.getAllDeletedItemsCount()
+    override fun getAllDeletedItemsCount(safeId: SafeId): Flow<Int> = localDataSource.getAllDeletedItemsCount(safeId)
 
     override fun getPagerItemByParentIdDeletedWithIdentifier(
         config: PagingConfig,
         parentId: UUID?,
         order: ItemOrder,
+        safeId: SafeId,
     ): Flow<PagingData<SafeItemWithIdentifier>> {
-        return localDataSource.getPagerItemByParentIdDeletedWithIdentifier(config, parentId, order)
+        return localDataSource.getPagerItemByParentIdDeletedWithIdentifier(config, parentId, order, safeId)
     }
 }

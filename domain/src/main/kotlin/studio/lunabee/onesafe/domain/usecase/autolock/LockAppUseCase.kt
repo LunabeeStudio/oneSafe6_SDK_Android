@@ -19,16 +19,23 @@
 
 package studio.lunabee.onesafe.domain.usecase.autolock
 
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 import studio.lunabee.onesafe.domain.LoadFileCancelAllUseCase
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import javax.inject.Inject
 
 class LockAppUseCase @Inject constructor(
     private val mainCryptoRepository: MainCryptoRepository,
     private val loadFileCancelAllUseCase: LoadFileCancelAllUseCase,
+    private val safeRepository: SafeRepository,
 ) {
     suspend operator fun invoke() {
-        loadFileCancelAllUseCase.invoke()
-        mainCryptoRepository.unloadMasterKeys()
+        withContext(NonCancellable) {
+            loadFileCancelAllUseCase.invoke()
+            mainCryptoRepository.unloadMasterKeys()
+            safeRepository.clearSafeId()
+        }
     }
 }

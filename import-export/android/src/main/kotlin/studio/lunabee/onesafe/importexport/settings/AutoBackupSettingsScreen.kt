@@ -77,6 +77,7 @@ import studio.lunabee.onesafe.commonui.dialog.rememberDialogState
 import studio.lunabee.onesafe.commonui.extension.findFragmentActivity
 import studio.lunabee.onesafe.commonui.notification.NotificationPermissionRationaleDialogState
 import studio.lunabee.onesafe.commonui.snackbar.SnackbarState
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.importexport.model.LatestBackups
 import studio.lunabee.onesafe.importexport.model.LocalBackup
@@ -94,6 +95,7 @@ import studio.lunabee.onesafe.utils.OsDefaultPreview
 import java.io.File
 import java.net.URI
 import java.time.Instant
+import java.util.UUID
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -124,6 +126,15 @@ fun AutoBackupSettingsRoute(
         setPermissionDialogState = { permissionDialogState = it },
     )
 
+    // TODO <multisafe> verify it works as expected (i.e it shows the notification permission only on enabling auto backup)
+    val autoBackupState = uiState?.isAutoBackupEnabled
+    val initialAutoBackupState = remember { autoBackupState }
+    if (initialAutoBackupState != autoBackupState && autoBackupState == true) {
+        LaunchedEffect(key1 = autoBackupState) {
+            requestNotificationPermission(notificationPermissionState) { permissionDialogState = it }
+        }
+    }
+
     val authorizeDrive: AutoBackupSettingsDriveAuth? by viewModel.authorizeDrive.collectAsStateWithLifecycle()
     authorizeDrive?.let { DriveAuthorize(it) }
 
@@ -151,12 +162,7 @@ fun AutoBackupSettingsRoute(
             AutoBackupSettingsScreen(
                 uiState = state,
                 navigateBack = navigateBack,
-                toggleAutoBackup = {
-                    val isAutoBackupEnabled = viewModel.toggleAutoBackupSetting()
-                    if (isAutoBackupEnabled) {
-                        requestNotificationPermission(notificationPermissionState) { permissionDialogState = it }
-                    }
-                },
+                toggleAutoBackup = viewModel::toggleAutoBackupSetting,
                 toggleCloudBackup = when (state.cloudBackupEnabledState) {
                     OSSwitchState.True -> {
                         { viewModel.disableCloudBackupSettings() }
@@ -273,7 +279,7 @@ private fun AutoBackupSettingsScreen(
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val mainCardUiState = if (uiState.isBackupEnabled) {
+    val mainCardUiState = if (uiState.isAutoBackupEnabled) {
         var isAutoBackupFrequencyBottomSheetVisible by rememberSaveable { mutableStateOf(value = false) }
         var isAutoBackupMaxNumberBottomSheetVisible by rememberSaveable { mutableStateOf(value = false) }
 
@@ -327,7 +333,7 @@ private fun AutoBackupSettingsScreen(
             modifier = Modifier
                 .padding(top = OSDimens.ItemTopBar.Height)
                 .fillMaxSize()
-                .testTag(UiConstants.TestTag.ScrollableContent.SettingsLazyColumn),
+                .testTag(UiConstants.TestTag.ScrollableContent.AutoBackupSettingsLazyColumn),
             contentPadding = PaddingValues(
                 horizontal = OSDimens.SystemSpacing.Regular,
                 vertical = OSDimens.SystemSpacing.ExtraLarge,
@@ -342,7 +348,7 @@ private fun AutoBackupSettingsScreen(
                 )
             }
 
-            if (uiState.isBackupEnabled) {
+            if (uiState.isAutoBackupEnabled) {
                 item {
                     AutoBackupSettingsAccessBackupCard(
                         onAccessLocalClick = openFileManager,
@@ -470,12 +476,12 @@ private fun AutoBackupSettingsScreenOnPreview() {
     OSPreviewOnSurfaceTheme {
         AutoBackupSettingsScreen(
             uiState = AutoBackupSettingsUiState(
-                isBackupEnabled = true,
+                isAutoBackupEnabled = true,
                 autoBackupFrequency = AutoBackupFrequency.WEEKLY,
                 autoBackupMaxNumber = AutoBackupMaxNumber.FIVE,
                 latestBackups = LatestBackups(
-                    LocalBackup(date = Instant.now(), file = File("")),
-                    CloudBackup(remoteId = "", name = "", date = Instant.now()),
+                    LocalBackup(date = Instant.now(), file = File(""), safeId = SafeId(UUID.randomUUID())),
+                    CloudBackup(remoteId = "", name = "", date = Instant.now(), safeId = SafeId(UUID.randomUUID())),
                 ),
                 cloudBackupEnabledState = OSSwitchState.True,
                 isKeepLocalBackupEnabled = true,

@@ -23,6 +23,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import studio.lunabee.bubbles.domain.crypto.BubblesCryptoEngine
 import studio.lunabee.onesafe.cryptography.ChachaPolyJCECryptoEngine
 import studio.lunabee.onesafe.cryptography.CryptoEngine
 
@@ -32,4 +33,7 @@ abstract class JCEModule {
 
     @Binds
     internal abstract fun bindCrypto(crypto: ChachaPolyJCECryptoEngine): CryptoEngine
+
+    @Binds
+    internal abstract fun bindBubblesCrypto(crypto: ChachaPolyJCECryptoEngine): BubblesCryptoEngine
 }

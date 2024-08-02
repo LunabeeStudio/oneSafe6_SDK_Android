@@ -38,7 +38,7 @@ class CreateItemUseCaseBenchmark : OSHiltTest() {
     @get:Rule(order = 0)
     override val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
 
-    override val initialTestState: InitialTestState = InitialTestState.LoggedIn
+    override val initialTestState: InitialTestState = InitialTestState.Home()
 
     @get:Rule
     val benchmarkRule: BenchmarkRule = BenchmarkRule()

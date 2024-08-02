@@ -24,6 +24,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.safeitem.FileSavingData
+import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
@@ -41,10 +42,10 @@ class AddAndRemoveFileUseCase @Inject constructor(
     @FileDispatcher private val dispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
-        itemId: UUID,
+        item: SafeItem,
         fileSavingData: List<FileSavingData>,
     ): LBResult<Unit> = OSError.runCatching {
-        val key = safeItemKeyRepository.getSafeItemKey(itemId)
+        val key = safeItemKeyRepository.getSafeItemKey(item.id)
         fileSavingData.forEach { data ->
             when (data) {
                 is FileSavingData.ToRemove -> {
@@ -57,8 +58,7 @@ class AddAndRemoveFileUseCase @Inject constructor(
                 }
                 is FileSavingData.ToSave -> {
                     withContext(dispatcher) {
-                        val file = fileRepository.getFile(data.fileId.toString())
-                        file.parentFile.mkdirs()
+                        val file = fileRepository.createFile(data.fileId.toString(), item.safeId)
                         cryptoRepository.getEncryptStream(file, key).use { outputStream ->
                             try {
                                 val stream = data.getStream()

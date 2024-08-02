@@ -33,39 +33,44 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import studio.lunabee.bubbles.repository.datasource.ContactKeyLocalDataSource
 import studio.lunabee.bubbles.repository.datasource.ContactLocalDataSource
-import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
-import studio.lunabee.importexport.repository.datasource.AutoBackupErrorLocalDataSource
-import studio.lunabee.importexport.repository.datasource.CloudBackupLocalDataSource
-import studio.lunabee.importexport.repository.datasource.ImportExportSafeItemLocalDataSource
-import studio.lunabee.importexport.repository.datasource.LocalBackupCacheDataSource
-import studio.lunabee.importexport.repository.datasource.LocalBackupLocalDataSource
+import studio.lunabee.importexport.datasource.AutoBackupErrorLocalDataSource
+import studio.lunabee.importexport.datasource.AutoBackupSettingsDataSource
+import studio.lunabee.importexport.datasource.CloudBackupLocalDataSource
+import studio.lunabee.importexport.datasource.ImportExportSafeItemLocalDataSource
+import studio.lunabee.importexport.datasource.LocalBackupCacheDataSource
+import studio.lunabee.importexport.datasource.LocalBackupLocalDataSource
+import studio.lunabee.messaging.repository.datasource.ConversationLocalDatasource
+import studio.lunabee.messaging.repository.datasource.DoubleRatchetKeyLocalDatasource
 import studio.lunabee.messaging.repository.datasource.EnqueuedMessageLocalDataSource
 import studio.lunabee.messaging.repository.datasource.HandShakeDataLocalDatasource
 import studio.lunabee.messaging.repository.datasource.MessageLocalDataSource
+import studio.lunabee.messaging.repository.datasource.MessagePagingLocalDataSource
+import studio.lunabee.messaging.repository.datasource.MessageQueueLocalDatasource
 import studio.lunabee.messaging.repository.datasource.SentMessageLocalDatasource
 import studio.lunabee.onesafe.domain.qualifier.DatabaseName
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
 import studio.lunabee.onesafe.domain.repository.DatabaseKeyRepository
 import studio.lunabee.onesafe.domain.repository.StorageManager
+import studio.lunabee.onesafe.importexport.data.GoogleDriveEnginePreferencesDatasource
 import studio.lunabee.onesafe.repository.datasource.FileLocalDatasource
 import studio.lunabee.onesafe.repository.datasource.ForceUpgradeLocalDatasource
 import studio.lunabee.onesafe.repository.datasource.IconLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.IndexWordEntryLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.PasswordGeneratorConfigLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.RecentSearchLocalDatasource
+import studio.lunabee.onesafe.repository.datasource.SafeIdCacheDataSource
 import studio.lunabee.onesafe.repository.datasource.SafeItemFieldLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.SafeItemKeyLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.SafeItemLocalDataSource
+import studio.lunabee.onesafe.repository.datasource.SafeLocalDataSource
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.MainDatabaseTransactionManager
-import studio.lunabee.onesafe.storage.Migration3to4
-import studio.lunabee.onesafe.storage.Migration8to9
-import studio.lunabee.onesafe.storage.Migration9to10
 import studio.lunabee.onesafe.storage.OSForceUpgradeProto.ForceUpgradeProtoData
 import studio.lunabee.onesafe.storage.OSPasswordGeneratorConfigProto.PasswordGeneratorConfigProto
 import studio.lunabee.onesafe.storage.OSRecentSearchProto.RecentSearchProto
 import studio.lunabee.onesafe.storage.SqlCipherDBManager
+import studio.lunabee.onesafe.storage.dao.AutoBackupErrorDao
 import studio.lunabee.onesafe.storage.dao.BackupDao
 import studio.lunabee.onesafe.storage.dao.ContactDao
 import studio.lunabee.onesafe.storage.dao.ContactKeyDao
@@ -75,16 +80,20 @@ import studio.lunabee.onesafe.storage.dao.EnqueuedMessageDao
 import studio.lunabee.onesafe.storage.dao.HandShakeDataDao
 import studio.lunabee.onesafe.storage.dao.IndexWordEntryDao
 import studio.lunabee.onesafe.storage.dao.MessageDao
+import studio.lunabee.onesafe.storage.dao.SafeDao
+import studio.lunabee.onesafe.storage.dao.SafeFileDao
 import studio.lunabee.onesafe.storage.dao.SafeItemDao
 import studio.lunabee.onesafe.storage.dao.SafeItemFieldDao
 import studio.lunabee.onesafe.storage.dao.SafeItemKeyDao
 import studio.lunabee.onesafe.storage.dao.SafeItemRawDao
 import studio.lunabee.onesafe.storage.dao.SentMessageDao
+import studio.lunabee.onesafe.storage.dao.SettingsDao
 import studio.lunabee.onesafe.storage.datasource.AutoBackupErrorLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.CloudBackupLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.ContactKeyLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.ContactLocalDataSourceImpl
-import studio.lunabee.onesafe.storage.datasource.DoubleRatchetDatasourceImpl
+import studio.lunabee.onesafe.storage.datasource.ConversationLocalDatasourceImpl
+import studio.lunabee.onesafe.storage.datasource.DoubleRatchetKeyLocalDatasourceImpl
 import studio.lunabee.onesafe.storage.datasource.EnqueuedMessageLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.FileLocalDatasourceImpl
 import studio.lunabee.onesafe.storage.datasource.ForceUpgradeLocalDatasourceImpl
@@ -94,17 +103,24 @@ import studio.lunabee.onesafe.storage.datasource.IndexWordEntryLocalDataSourceIm
 import studio.lunabee.onesafe.storage.datasource.LocalBackupFileCacheDataSource
 import studio.lunabee.onesafe.storage.datasource.LocalBackupLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.MessageLocalDataSourceImpl
+import studio.lunabee.onesafe.storage.datasource.MessageQueueLocalDatasourceImpl
 import studio.lunabee.onesafe.storage.datasource.PasswordGeneratorConfigLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.RecentSearchLocalDataSourceImpl
+import studio.lunabee.onesafe.storage.datasource.SafeIdMemoryDataSource
 import studio.lunabee.onesafe.storage.datasource.SafeItemFieldLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.SafeItemKeyLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.SafeItemLocalDataSourceImpl
+import studio.lunabee.onesafe.storage.datasource.SafeLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.SentMessageLocalDatasourceImpl
+import studio.lunabee.onesafe.storage.datasource.SettingsLocalDataSource
 import studio.lunabee.onesafe.storage.datastore.ForceUpgradeDataSerializer
 import studio.lunabee.onesafe.storage.datastore.PasswordGeneratorConfigSerializer
-import studio.lunabee.onesafe.storage.datastore.ProtoSerializer
 import studio.lunabee.onesafe.storage.datastore.RecentSearchSerializer
-import studio.lunabee.onesafe.storage.model.LocalAutoBackupError
+import studio.lunabee.onesafe.storage.migration.RoomMigration12to13
+import studio.lunabee.onesafe.storage.migration.RoomMigration13to14
+import studio.lunabee.onesafe.storage.migration.RoomMigration3to4
+import studio.lunabee.onesafe.storage.migration.RoomMigration8to9
+import studio.lunabee.onesafe.storage.migration.RoomMigration9to10
 import javax.inject.Singleton
 
 @Module
@@ -163,6 +179,11 @@ interface StorageModule {
     ): MessageLocalDataSource
 
     @Binds
+    fun bindMessagePagingLocalDataSource(
+        bindBubblesMessagePagingLocalDataSourceImpl: MessageLocalDataSourceImpl,
+    ): MessagePagingLocalDataSource
+
+    @Binds
     fun bindSentMessageLocalDataSource(
         bindSentBubblesMessageLocalDataSourceImpl: SentMessageLocalDatasourceImpl,
     ): SentMessageLocalDatasource
@@ -188,12 +209,15 @@ interface StorageModule {
     ): CloudBackupLocalDataSource
 
     @Binds
-    fun bindDoubleRatchetDatasource(
-        doubleRatchetDatasource: DoubleRatchetDatasourceImpl,
-    ): DoubleRatchetLocalDatasource
+    fun bindsHandShakeDataLocalDatasource(handShakeDataLocalDatasourceImpl: HandShakeDataLocalDatasourceImpl): HandShakeDataLocalDatasource
 
     @Binds
-    fun bindsHandShakeDataLocalDatasource(handShakeDataLocalDatasourceImpl: HandShakeDataLocalDatasourceImpl): HandShakeDataLocalDatasource
+    fun bindsConversationLocalDatasource(conversationLocalDatasourceImpl: ConversationLocalDatasourceImpl): ConversationLocalDatasource
+
+    @Binds
+    fun bindsDoubleRatchetKeyLocalDatasource(
+        doubleRatchetKeyLocalDatasourceImpl: DoubleRatchetKeyLocalDatasourceImpl,
+    ): DoubleRatchetKeyLocalDatasource
 
     @Binds
     fun bindAutoBackupErrorDataSource(
@@ -204,6 +228,31 @@ interface StorageModule {
     fun bindImportExportSafeItemLocalDataSource(
         importExportSafeItemLocalDataSource: SafeItemLocalDataSourceImpl,
     ): ImportExportSafeItemLocalDataSource
+
+    @Binds
+    fun bindSafeLocalDataSource(
+        safeDatabaseDataSource: SafeLocalDataSourceImpl,
+    ): SafeLocalDataSource
+
+    @Binds
+    fun bindSafeCacheDataSource(
+        safeMemoryDataSource: SafeIdMemoryDataSource,
+    ): SafeIdCacheDataSource
+
+    @Binds
+    fun bindAutoBackupSettingsDataSource(
+        settingsLocalDataSource: SettingsLocalDataSource,
+    ): AutoBackupSettingsDataSource
+
+    @Binds
+    fun bindGoogleDriveEnginePreferencesDatasource(
+        settingsLocalDataSource: SettingsLocalDataSource,
+    ): GoogleDriveEnginePreferencesDatasource
+
+    @Binds
+    fun bindsMessageQueueLocalDatasource(
+        messageQueueLocalDatasourceImpl: MessageQueueLocalDatasourceImpl,
+    ): MessageQueueLocalDatasource
 }
 
 @Module
@@ -222,9 +271,11 @@ object DatabaseModule {
     @Suppress("LongParameterList")
     fun provideMainDatabase(
         @ApplicationContext appContext: Context,
-        migration3to4: Migration3to4,
-        migration8to9: Migration8to9,
-        migration9to10: Migration9to10,
+        migration3to4: RoomMigration3to4,
+        migration8to9: RoomMigration8to9,
+        migration9to10: RoomMigration9to10,
+        migration12to13: RoomMigration12to13,
+        migration13to14: RoomMigration13to14,
         databaseKeyRepository: DatabaseKeyRepository,
         @DatabaseName(DatabaseName.Type.Main) dbName: String,
     ): MainDatabase {
@@ -237,6 +288,8 @@ object DatabaseModule {
                 migration3to4,
                 migration8to9,
                 migration9to10,
+                migration12to13,
+                migration13to14,
             )
         }
     }
@@ -337,6 +390,26 @@ object MainDatabaseModule {
     fun provideBackupDao(mainDatabase: MainDatabase): BackupDao {
         return mainDatabase.backupDao()
     }
+
+    @Provides
+    fun provideSafeDao(mainDatabase: MainDatabase): SafeDao {
+        return mainDatabase.safeDao()
+    }
+
+    @Provides
+    fun provideSettingsDao(mainDatabase: MainDatabase): SettingsDao {
+        return mainDatabase.settingsDao()
+    }
+
+    @Provides
+    fun provideAutoBackupErrorDao(mainDatabase: MainDatabase): AutoBackupErrorDao {
+        return mainDatabase.autoBackupErrorDao()
+    }
+
+    @Provides
+    fun provideSafeFileDao(mainDatabase: MainDatabase): SafeFileDao {
+        return mainDatabase.safeFileDao()
+    }
 }
 
 @Module
@@ -385,16 +458,4 @@ object PasswordGeneratorConfigDatastoreModule {
         fileName = datastoreFile,
         serializer = PasswordGeneratorConfigSerializer,
     )
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-object AutoBackupErrorDatastoreModule {
-
-    private const val datastoreFile: String = "14e3ca9b-b9e9-4c2e-a836-cad49db25952"
-
-    @Provides
-    @Singleton
-    fun provideDatastore(@ApplicationContext context: Context): DataStore<LocalAutoBackupError> =
-        ProtoSerializer.dataStore(context, LocalAutoBackupError.default, datastoreFile)
 }

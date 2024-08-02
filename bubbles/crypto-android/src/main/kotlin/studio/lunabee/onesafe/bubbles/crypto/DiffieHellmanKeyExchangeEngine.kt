@@ -19,7 +19,8 @@
 
 package studio.lunabee.onesafe.bubbles.crypto
 
-import studio.lunabee.onesafe.bubbles.crypto.model.KeyPair
+import studio.lunabee.bubbles.domain.crypto.BubblesKeyExchangeEngine
+import studio.lunabee.bubbles.domain.model.BubblesKeyPair
 import java.security.KeyFactory
 import java.security.KeyPairGenerator
 import java.security.spec.ECGenParameterSpec
@@ -28,16 +29,17 @@ import java.security.spec.X509EncodedKeySpec
 import javax.crypto.KeyAgreement
 import javax.inject.Inject
 
-class DiffieHellmanKeyExchangeEngine @Inject constructor() : KeyExchangeEngine {
-    override fun generateKeyPair(): KeyPair {
+class DiffieHellmanKeyExchangeEngine @Inject constructor() : BubblesKeyExchangeEngine {
+    override fun generateKeyPair(): BubblesKeyPair {
         val ecSpec = ECGenParameterSpec(NAMED_CURVE_SPEC)
         val keyPairGenerator = KeyPairGenerator.getInstance(ALGORITHM_EC)
         keyPairGenerator.initialize(ecSpec)
         val javaKeyPair = keyPairGenerator.generateKeyPair()
-        return KeyPair(publicKey = javaKeyPair.public.encoded, privateKey = javaKeyPair.private.encoded)
+        return BubblesKeyPair(publicKey = javaKeyPair.public.encoded, privateKey = javaKeyPair.private.encoded)
     }
 
-    override fun createSharedSecret(publicKey: ByteArray, privateKey: ByteArray, out: ByteArray): ByteArray {
+    override fun createSharedSecret(publicKey: ByteArray, privateKey: ByteArray, size: Int): ByteArray {
+        val out = ByteArray(size)
         val keyFactory = KeyFactory.getInstance(ALGORITHM_EC)
         val contactPublicKey = keyFactory.generatePublic(X509EncodedKeySpec(publicKey))
         val localPrivateKey = keyFactory.generatePrivate(PKCS8EncodedKeySpec(privateKey))

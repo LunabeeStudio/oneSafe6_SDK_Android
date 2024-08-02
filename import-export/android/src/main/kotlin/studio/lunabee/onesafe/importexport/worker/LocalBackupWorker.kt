@@ -45,11 +45,14 @@ import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
 import studio.lunabee.onesafe.commonui.utils.setForegroundSafe
 import studio.lunabee.onesafe.domain.common.FeatureFlags
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.usecase.DeleteOldLocalBackupsUseCase
 import studio.lunabee.onesafe.importexport.usecase.LocalAutoBackupUseCase
 import studio.lunabee.onesafe.importexport.utils.ForegroundInfoCompat
+import studio.lunabee.onesafe.toByteArray
+import studio.lunabee.onesafe.toUUID
 
 private val logger = LBLogger.get<LocalBackupWorker>()
 
@@ -67,7 +70,8 @@ class LocalBackupWorker @AssistedInject constructor(
     private val featureFlags: FeatureFlags,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
-        val flowResult = localAutoBackupUseCase()
+        val safeId = SafeId(inputData.getByteArray(EXPORT_WORKER_SAFE_ID_DATA)!!.toUUID())
+        val flowResult = localAutoBackupUseCase(safeId)
             .catch { error ->
                 emit(LBFlowResult.Failure(error))
             }.onStart {
@@ -85,10 +89,11 @@ class LocalBackupWorker @AssistedInject constructor(
                 error = result.throwable,
                 runAttemptCount = runAttemptCount,
                 errorSource = AutoBackupMode.LocalOnly,
+                safeId = safeId,
             )
             is LBResult.Success -> {
-                deleteOldBackupsUseCase()
-                autoBackupWorkersHelper.onBackupWorkerSucceed(AutoBackupMode.LocalOnly)
+                deleteOldBackupsUseCase(safeId)
+                autoBackupWorkersHelper.onBackupWorkerSucceed(AutoBackupMode.LocalOnly, safeId)
             }
         }
     }
@@ -127,23 +132,29 @@ class LocalBackupWorker @AssistedInject constructor(
 
     companion object {
         private const val PROGRESS_DATA_KEY: String = "375f2850-9884-4ef7-a50b-6e58be73a483"
+        private const val EXPORT_WORKER_SAFE_ID_DATA = "c403bc67-67ea-42b9-b6df-e3ee6bf47a7f"
 
-        internal fun getWorkRequest(setExpedited: Boolean): OneTimeWorkRequest {
+        internal fun getWorkRequest(setExpedited: Boolean, safeId: SafeId): OneTimeWorkRequest {
+            val data = Data
+                .Builder()
+                .putByteArray(EXPORT_WORKER_SAFE_ID_DATA, safeId.id.toByteArray())
+                .build()
             val workRequestBuilder = OneTimeWorkRequestBuilder<LocalBackupWorker>()
             workRequestBuilder
-                .addTag(ImportExportAndroidConstants.AUTO_BACKUP_WORKER_TAG)
+                .setInputData(data)
+                .addTag(ImportExportAndroidConstants.autoBackupWorkerTag(safeId))
             if (setExpedited) {
                 workRequestBuilder.setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             }
             return workRequestBuilder.build()
         }
 
-        internal fun start(context: Context, setExpedited: Boolean) {
+        internal fun start(context: Context, setExpedited: Boolean, safeId: SafeId) {
             WorkManager.getInstance(context)
                 .enqueueUniqueWork(
-                    ImportExportAndroidConstants.AUTO_BACKUP_WORKER_NAME,
+                    ImportExportAndroidConstants.autoBackupWorkerName(safeId),
                     ExistingWorkPolicy.APPEND_OR_REPLACE,
-                    getWorkRequest(setExpedited),
+                    getWorkRequest(setExpedited, safeId),
                 )
         }
     }

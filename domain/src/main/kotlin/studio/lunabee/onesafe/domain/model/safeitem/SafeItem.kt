@@ -20,8 +20,8 @@
 package studio.lunabee.onesafe.domain.model.safeitem
 
 import com.lunabee.lblogger.LBLogger
-import com.lunabee.lblogger.e
 import studio.lunabee.onesafe.domain.Constant
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.UUID
@@ -41,6 +41,7 @@ data class SafeItem(
     val deletedParentId: UUID?,
     val indexAlpha: Double,
     val createdAt: Instant,
+    val safeId: SafeId,
 ) {
     init {
         check(!(deletedParentId != null && deletedAt == null))
@@ -88,7 +89,10 @@ data class SafeItem(
         if (deletedAt != other.deletedAt) return false
         if (deletedParentId != other.deletedParentId) return false
         if (indexAlpha != other.indexAlpha) return false
-        return createdAt == other.createdAt
+        if (createdAt != other.createdAt) return false
+        if (safeId != other.safeId) return false
+
+        return true
     }
 
     override fun hashCode(): Int {
@@ -104,6 +108,7 @@ data class SafeItem(
         result = 31 * result + (deletedParentId?.hashCode() ?: 0)
         result = 31 * result + indexAlpha.hashCode()
         result = 31 * result + createdAt.hashCode()
+        result = 31 * result + safeId.hashCode()
         return result
     }
 }

@@ -48,12 +48,13 @@ dependencies {
     implementation(libs.bouncycastle)
     implementation(libs.doubleratchet)
 
-    implementation(project(":bubbles-domain"))
+    implementation(libs.bubbles.domain)
     implementation(project(":domain"))
     implementation(project(":crypto-android"))
     implementation(project(":error"))
     implementation(project(":common"))
 
+    androidTestImplementation(libs.bubbles.repository)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(project(":common-test"))
 }

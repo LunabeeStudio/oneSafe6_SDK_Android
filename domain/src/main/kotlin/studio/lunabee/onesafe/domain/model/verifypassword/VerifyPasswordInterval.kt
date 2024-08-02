@@ -21,6 +21,7 @@ package studio.lunabee.onesafe.domain.model.verifypassword
 
 enum class VerifyPasswordInterval {
     NEVER,
+    EVERY_WEEK,
     EVERY_TWO_WEEKS,
     EVERY_MONTH,
     EVERY_TWO_MONTHS,

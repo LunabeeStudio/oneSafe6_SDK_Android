@@ -24,23 +24,31 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
 import studio.lunabee.onesafe.domain.repository.ItemSettingsRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import javax.inject.Inject
 
 class GetAllSafeItemsWithIdentifierUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
     private val itemSettingsRepository: ItemSettingsRepository,
+    private val safeRepository: SafeRepository,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(pagingConfig: PagingConfig, suggestions: List<SafeItemWithIdentifier>): Flow<PagingData<SafeItemWithIdentifier>> {
-        return itemSettingsRepository.itemOrdering.flatMapLatest { itemOrder ->
-            safeItemRepository.getAllSafeItemsWithIdentifier(
-                config = pagingConfig,
-                idsToExclude = suggestions.map { it.id },
-                order = itemOrder,
-            )
+        return safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+            safeId?.let {
+                itemSettingsRepository.itemOrdering(safeId).flatMapLatest { itemOrder ->
+                    safeItemRepository.getAllSafeItemsWithIdentifier(
+                        config = pagingConfig,
+                        idsToExclude = suggestions.map { it.id },
+                        order = itemOrder,
+                        safeId = safeId,
+                    )
+                }
+            } ?: flowOf(PagingData.empty())
         }
     }
 }

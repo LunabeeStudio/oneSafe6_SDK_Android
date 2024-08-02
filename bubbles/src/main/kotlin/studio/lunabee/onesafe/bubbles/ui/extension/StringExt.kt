@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
+import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.onesafe.bubbles.ui.BubblesUiConstants
 import studio.lunabee.onesafe.commonui.CommonUiConstants
 
@@ -42,8 +43,8 @@ fun String.toBarcodeBitmap(): ImageBitmap? {
     }
 }
 
-fun String.getDeepLinkFromMessage(isUsingDeppLink: Boolean): String {
-    return if (isUsingDeppLink) {
+fun String.getDeepLinkFromMessage(messageSharingMode: MessageSharingMode): String {
+    return if (messageSharingMode == MessageSharingMode.Deeplink) {
         CommonUiConstants.Deeplink.BubblesDeeplinkUrl.buildUpon()
             .fragment(this)
             .build()

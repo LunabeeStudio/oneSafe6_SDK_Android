@@ -24,67 +24,31 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
 import androidx.annotation.RequiresApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
-import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
-import studio.lunabee.onesafe.cryptography.utils.dataStoreValueDelegate
+import studio.lunabee.onesafe.domain.model.safe.BiometricCryptoMaterial
 import studio.lunabee.onesafe.domain.repository.BiometricCipherRepository
 import studio.lunabee.onesafe.error.OSCryptoError
-import studio.lunabee.onesafe.use
 import javax.crypto.Cipher
 import javax.crypto.IllegalBlockSizeException
 import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
 import javax.inject.Inject
 
+// TODO <multisafe> unit test stuff related to androidKeyStoreEngine
+
 @Suppress("ObsoleteSdkInt")
 @RequiresApi(Build.VERSION_CODES.M)
 class BiometricEngine @Inject constructor(
     private val androidKeyStoreEngine: AndroidKeyStoreEngine,
-    @DatastoreEngineProvider(DataStoreType.Encrypted) private val dataStoreEngine: DatastoreEngine,
 ) : BiometricCipherRepository {
-
-    private var encryptedMasterKey: ByteArray? by dataStoreValueDelegate(
-        key = ENC_MASTER_KEY_KEY,
-        datastoreEngine = dataStoreEngine,
-        errorCodeIfOverrideExistingValue = OSCryptoError.Code.BIOMETRIC_MASTER_KEY_ALREADY_GENERATED,
-    )
-
-    private var biometricIV: ByteArray? by dataStoreValueDelegate(
-        key = PREF_IV,
-        datastoreEngine = dataStoreEngine,
-        errorCodeIfOverrideExistingValue = OSCryptoError.Code.BIOMETRIC_IV_ALREADY_GENERATED,
-    )
-
-    private fun getCipher(): Cipher {
-        return Cipher.getInstance(
-            KeyProperties.KEY_ALGORITHM_AES + "/"
-                + KeyProperties.BLOCK_MODE_CBC + "/"
-                + KeyProperties.ENCRYPTION_PADDING_PKCS7,
-        )
-    }
-
     @Throws(OSCryptoError::class)
-    private fun getSecretKey(): SecretKey {
-        try {
-            return androidKeyStoreEngine.retrieveSecretKeyFromKeyStore(KEY_ALIAS)
-        } catch (e: OSCryptoError) {
-            throw OSCryptoError(OSCryptoError.Code.BIOMETRIC_KEY_NOT_GENERATED)
-        }
-    }
-
-    @Throws(OSCryptoError::class)
-    override fun getCipherBiometricForDecrypt(): Cipher {
+    override fun getCipherBiometricForDecrypt(iv: ByteArray): Cipher {
         val cipher = getCipher()
         val secretKey = getSecretKey()
-        biometricIV?.use { iv ->
-            val ivSpec = IvParameterSpec(iv)
-            try {
-                cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec)
-            } catch (e: KeyPermanentlyInvalidatedException) {
-                throw OSCryptoError(OSCryptoError.Code.BIOMETRIC_KEY_INVALIDATE, cause = e)
-            }
+        val ivSpec = IvParameterSpec(iv)
+        try {
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec)
+        } catch (e: KeyPermanentlyInvalidatedException) {
+            throw OSCryptoError(OSCryptoError.Code.BIOMETRIC_KEY_INVALIDATE, cause = e)
         }
         return cipher
     }
@@ -93,28 +57,28 @@ class BiometricEngine @Inject constructor(
         val cipher = getCipher()
         val secretKey = generateKeyBiometric()
         cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-        cipher.iv.use {
-            biometricIV = it
-        }
         return cipher
     }
 
-    @Throws(OSCryptoError::class)
-    fun storeKey(key: ByteArray, cipher: Cipher) {
-        try {
-            val encodedKey: ByteArray = cipher.doFinal(key)
-            encryptedMasterKey = encodedKey
-        } catch (e: IllegalStateException) {
-            throw OSCryptoError(OSCryptoError.Code.IV_ALREADY_USED)
-        }
+    override fun clear() {
+        androidKeyStoreEngine.removeSecretKey(KEY_ALIAS)
     }
 
     @Throws(OSCryptoError::class)
-    fun retrieveKey(cipher: Cipher): ByteArray {
+    fun encryptKey(key: ByteArray, cipher: Cipher): BiometricCryptoMaterial {
+        val iv = cipher.iv
+        val encKey = try {
+            cipher.doFinal(key)
+        } catch (e: IllegalStateException) {
+            throw OSCryptoError(OSCryptoError.Code.IV_ALREADY_USED, cause = e)
+        }
+        return BiometricCryptoMaterial(iv, encKey)
+    }
+
+    @Throws(OSCryptoError::class)
+    fun decryptKey(cryptoMaterial: BiometricCryptoMaterial, cipher: Cipher): ByteArray {
         return try {
-            encryptedMasterKey?.let { key ->
-                cipher.doFinal(key)
-            } ?: throw OSCryptoError(OSCryptoError.Code.BIOMETRIC_DECRYPTION_FAIL)
+            cipher.doFinal(cryptoMaterial.encKey)
         } catch (e: IllegalBlockSizeException) {
             throw OSCryptoError(OSCryptoError.Code.BIOMETRIC_DECRYPTION_NOT_AUTHENTICATED, cause = e)
         }
@@ -137,19 +101,24 @@ class BiometricEngine @Inject constructor(
         }
     }
 
-    override fun hasEncryptedMasterKeyStored(): Flow<Boolean> = dataStoreEngine.retrieveValue(ENC_MASTER_KEY_KEY).map {
-        it != null
+    private fun getCipher(): Cipher {
+        return Cipher.getInstance(
+            KeyProperties.KEY_ALGORITHM_AES + "/"
+                + KeyProperties.BLOCK_MODE_CBC + "/"
+                + KeyProperties.ENCRYPTION_PADDING_PKCS7,
+        )
     }
 
-    override fun disableBiometric() {
-        encryptedMasterKey = null
-        biometricIV = null
-        androidKeyStoreEngine.removeSecretKey(KEY_ALIAS)
+    @Throws(OSCryptoError::class)
+    private fun getSecretKey(): SecretKey {
+        try {
+            return androidKeyStoreEngine.retrieveSecretKeyFromKeyStore(KEY_ALIAS)
+        } catch (e: OSCryptoError) {
+            throw OSCryptoError(OSCryptoError.Code.BIOMETRIC_KEY_NOT_GENERATED, cause = e)
+        }
     }
 
     companion object {
         const val KEY_ALIAS: String = "2bebec3e-4029-469b-a054-725689254611"
-        private const val PREF_IV = "56819b7d-e14a-4952-bb1d-5b8d5a06568a"
-        private const val ENC_MASTER_KEY_KEY = "d548d24f-8ea4-4457-8698-63622cb91db9"
     }
 }

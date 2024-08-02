@@ -20,10 +20,11 @@
 package studio.lunabee.onesafe.domain.repository
 
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import java.util.UUID
 
 interface IndexWordEntryRepository {
-    fun getAll(): Flow<List<IndexWordEntry>>
+    fun getAll(safeId: SafeId): Flow<List<IndexWordEntry>>
     suspend fun deleteNameIndexFromItemId(itemId: UUID)
 }

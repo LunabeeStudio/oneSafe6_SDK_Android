@@ -39,9 +39,16 @@ android {
     }
 
     packaging {
-        resources.pickFirsts.add("META-INF/LICENSE.md")
-        resources.pickFirsts.add("META-INF/LICENSE-notice.md")
-        resources.pickFirsts.add("META-INF/DEPENDENCIES")
+        resources {
+            pickFirsts += "META-INF/LICENSE.md"
+            pickFirsts += "META-INF/LICENSE-notice.md"
+            pickFirsts += "META-INF/DEPENDENCIES"
+            pickFirsts += "META-INF/INDEX.LIST"
+        }
+    }
+
+    buildFeatures {
+        compose = true
     }
 }
 
@@ -78,17 +85,18 @@ dependencies {
 
     implementation(libs.journeyappszxing)
     implementation(libs.doubleratchet)
+    implementation(libs.bubbles.error)
+    implementation(libs.kotlinx.datetime)
 
     implementation(project(":crypto-android"))
-    implementation(project(":messaging-domain"))
+    implementation(libs.bubbles.messaging.domain)
+    api(libs.bubbles.domain)
     implementation(project(":domain"))
     implementation(project(":common"))
     implementation(project(":error"))
     implementation(project(":app:core-ui"))
     implementation(project(":app:common-ui"))
     implementation(project(":app:settings"))
-    api(project(":bubbles-domain"))
-    implementation(project(":messaging-domain"))
     implementation(project(":app:settings"))
 
     androidTestImplementation(project(":common-test-android"))

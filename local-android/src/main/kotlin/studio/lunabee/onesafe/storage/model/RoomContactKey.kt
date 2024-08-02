@@ -23,7 +23,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import studio.lunabee.onesafe.bubbles.domain.model.ContactLocalKey
 import java.util.UUID
 
 @Entity(
@@ -41,5 +40,5 @@ class RoomContactKey(
     @PrimaryKey
     @ColumnInfo(name = "contact_id")
     val contactId: UUID,
-    @ColumnInfo(name = "enc_value") val encLocalKey: ContactLocalKey,
+    @ColumnInfo(name = "enc_value") val encLocalKey: ByteArray,
 )

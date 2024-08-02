@@ -32,6 +32,7 @@ android {
     }
 
     buildFeatures {
+        compose = true
         buildConfig = true
     }
 
@@ -69,11 +70,13 @@ dependencies {
     ksp(libs.dagger.hilt.compiler)
 
     api(libs.florisboard)
+    implementation(libs.protobuf.kotlinlite)
 
+    implementation(libs.lbccore)
+    implementation(platform(libs.lunabee.bom))
     implementation(libs.lbextensions)
     implementation(libs.lbcore)
-    implementation(libs.lbccore)
-    implementation(libs.protobuf.kotlinlite)
+    implementation(libs.lbloading.compose)
 
     implementation(platform(libs.compose.bom))
     implementation(libs.hilt.navigation.compose)
@@ -90,6 +93,7 @@ dependencies {
     implementation(libs.activity.ktx)
     implementation(libs.biometric)
     implementation(libs.startup.runtime)
+    implementation(libs.doubleratchet)
 
     implementation(project(":app:core-ui"))
     implementation(project(":app:common-ui"))
@@ -99,7 +103,7 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":domain"))
     implementation(project(":messaging"))
-    implementation(project(":messaging-domain"))
+    implementation(libs.bubbles.messaging.domain)
     implementation(project(":app:settings"))
     implementation(project(":app:migration"))
     implementation(project(":error"))

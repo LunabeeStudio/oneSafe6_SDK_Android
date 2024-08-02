@@ -35,10 +35,12 @@ import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.domain.usecase.item.AddFieldUseCase
 import studio.lunabee.onesafe.domain.usecase.item.CreateItemUseCase
+import studio.lunabee.onesafe.migration.migration.MigrationFromV11ToV12
 import studio.lunabee.onesafe.test.CommonTestUtils
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltTest
 import studio.lunabee.onesafe.test.OSTestConfig
+import studio.lunabee.onesafe.test.firstSafeId
 import studio.lunabee.onesafe.test.test
 import java.util.UUID
 import javax.inject.Inject
@@ -50,7 +52,7 @@ import kotlin.test.assertNull
 class MigrationFromV11ToV12Test : OSHiltTest() {
 
     @get:Rule override val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
-    override val initialTestState: InitialTestState = InitialTestState.LoggedIn
+    override val initialTestState: InitialTestState = InitialTestState.Home()
 
     @Inject lateinit var migrationFromV11ToV12: MigrationFromV11ToV12
 
@@ -83,7 +85,7 @@ class MigrationFromV11ToV12Test : OSHiltTest() {
         fieldRepository.saveThumbnailFileName(field.id, null)
         val updatedField = fieldRepository.getSafeItemField(field.id)
         assertNull(updatedField.encThumbnailFileName)
-        migrationFromV11ToV12(masterKey())
+        migrationFromV11ToV12(masterKey(), firstSafeId)
         val updatedMigrationField = fieldRepository.getSafeItemField(field.id)
         val encThumbnailFileName = updatedMigrationField.encThumbnailFileName
         assertNotNull(encThumbnailFileName)

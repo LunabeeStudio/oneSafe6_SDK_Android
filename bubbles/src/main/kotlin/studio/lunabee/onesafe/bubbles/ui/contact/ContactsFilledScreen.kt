@@ -27,6 +27,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import studio.lunabee.compose.core.LbcTextSpec
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.doubleratchet.model.createRandomUUID
 import studio.lunabee.onesafe.atom.OSCard
 import studio.lunabee.onesafe.atom.OSClickableRow
 import studio.lunabee.onesafe.atom.OSIconDecorationButton
@@ -43,14 +45,13 @@ import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
-import java.util.UUID
 
 @Composable
 fun FilledContactsScreen(
     onAddContactClick: () -> Unit,
     onScanClick: () -> Unit,
     contacts: List<UIBubblesContactInfo>,
-    onContactClick: (UUID) -> Unit,
+    onContactClick: (DoubleRatchetUUID) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -99,7 +100,7 @@ private fun FilledContactsScreenPreview() {
             onAddContactClick = {},
             onScanClick = {},
             contacts = listOf(true, false).map { state ->
-                UIBubblesContactInfo(UUID.randomUUID(), OSNameProvider.fromName(state.toString(), false), state)
+                UIBubblesContactInfo(createRandomUUID(), OSNameProvider.fromName(state.toString(), false), state)
             },
             onContactClick = {},
             modifier = Modifier.Companion.testTag(UiConstants.TestTag.Screen.BubblesHomeScreenContactTab),

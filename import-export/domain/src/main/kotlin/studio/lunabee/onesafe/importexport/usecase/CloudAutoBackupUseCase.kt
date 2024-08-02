@@ -24,6 +24,7 @@ import com.lunabee.lbcore.model.LBFlowResult.Companion.transformResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.onCompletion
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.qualifier.ArchiveCacheDir
 import studio.lunabee.onesafe.domain.qualifier.BackupType
 import studio.lunabee.onesafe.importexport.engine.BackupExportEngine
@@ -43,8 +44,12 @@ class CloudAutoBackupUseCase @Inject constructor(
     @BackupType(BackupType.Type.Auto) private val exportEngine: BackupExportEngine,
     @ArchiveCacheDir(type = ArchiveCacheDir.Type.AutoBackup) private val archiveDir: File,
 ) {
-    operator fun invoke(): Flow<LBFlowResult<CloudBackup>> {
-        return exportBackupUseCase(exportEngine, archiveDir).transformResult { result ->
+    operator fun invoke(safeId: SafeId): Flow<LBFlowResult<CloudBackup>> {
+        return exportBackupUseCase(
+            exportEngine = exportEngine,
+            archiveExtractedDirectory = archiveDir,
+            safeId = safeId,
+        ).transformResult { result ->
             val backup = result.successData
             val uploadFlow = cloudBackupRepository.uploadBackup(backup)
                 .onCompletion {

@@ -25,12 +25,14 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.ItemNameWithIndex
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemIdName
 import studio.lunabee.onesafe.storage.DaoUtils.IS_DELETED
 import studio.lunabee.onesafe.storage.DaoUtils.IS_FAVORITE
 import studio.lunabee.onesafe.storage.DaoUtils.IS_NOT_DELETED
 import studio.lunabee.onesafe.storage.DaoUtils.ITEM_ORDER_BY_INDEX_ALPHA
+import studio.lunabee.onesafe.storage.DaoUtils.SAFE_ID_IS_PARAM
 import studio.lunabee.onesafe.storage.model.ItemIdWithAlphaIndex
 import studio.lunabee.onesafe.storage.model.RoomDoubleRange
 import studio.lunabee.onesafe.storage.model.RoomSafeItem
@@ -73,7 +75,7 @@ interface SafeItemDao {
             UNION
                 SELECT SafeItem.id
                 FROM SafeItem JOIN ItemWithChildren ON SafeItem.parent_id IS ItemWithChildren.id
-                WHERE SafeItem.deleted_at IS NULL
+                WHERE SafeItem.deleted_at IS NULL AND $SAFE_ID_IS_PARAM
         )
     UPDATE SafeItem 
     SET 
@@ -86,7 +88,7 @@ interface SafeItemDao {
     WHERE SafeItem.id IN ItemWithChildren
     """,
     )
-    suspend fun setDeletedAndRemoveFromFavorite(itemId: UUID?, deletedAt: Instant)
+    suspend fun setDeletedAndRemoveFromFavorite(itemId: UUID?, deletedAt: Instant, safeId: SafeId)
 
     @Query("SELECT * FROM SafeItem WHERE id = :id")
     suspend fun findById(id: UUID): RoomSafeItem?
@@ -106,11 +108,11 @@ interface SafeItemDao {
     )
     suspend fun updateParentIdOfDeletedByParentIdNotEqualDeletedParentId(parentId: UUID, newParentId: UUID?)
 
-    @Query("SELECT MAX(position) FROM SafeItem WHERE parent_id IS :parentId")
-    suspend fun getHighestPosition(parentId: UUID?): Double?
+    @Query("SELECT MAX(position) FROM SafeItem WHERE parent_id IS :parentId AND $SAFE_ID_IS_PARAM")
+    suspend fun getHighestPosition(parentId: UUID?, safeId: SafeId): Double?
 
-    @Query("SELECT MAX(position) FROM SafeItem WHERE deleted_parent_id IS :deletedParentId")
-    suspend fun getHighestDeletedPosition(deletedParentId: UUID?): Double?
+    @Query("SELECT MAX(position) FROM SafeItem WHERE deleted_parent_id IS :deletedParentId AND $SAFE_ID_IS_PARAM")
+    suspend fun getHighestDeletedPosition(deletedParentId: UUID?, safeId: SafeId): Double?
 
     /**
      * Return the next closest superior position of sibling item, or null if there is no next sibling item
@@ -135,32 +137,23 @@ interface SafeItemDao {
     )
     suspend fun updateParentIdAndDeletedParentId(oldParentId: UUID, newParentId: UUID?, newDeletedParentId: UUID?)
 
-    @Query(
-        """
-            SELECT COUNT(*)
-            FROM SafeItem
-            WHERE $IS_DELETED AND deleted_parent_id IS NULL
-        """,
-    )
-    fun countAllDeletedWithNonDeletedParent(): Flow<Int>
+    @Query("SELECT COUNT(*) FROM SafeItem WHERE parent_id IS :parentId AND $IS_NOT_DELETED AND $SAFE_ID_IS_PARAM")
+    fun countSafeItemByParentIdNotDeletedFlow(parentId: UUID?, safeId: SafeId): Flow<Int>
 
-    @Query("SELECT COUNT(*) FROM SafeItem WHERE parent_id IS :parentId AND $IS_NOT_DELETED")
-    fun countSafeItemByParentIdNotDeletedFlow(parentId: UUID?): Flow<Int>
+    @Query("SELECT COUNT(*) FROM SafeItem WHERE parent_id IS :parentId AND $IS_NOT_DELETED AND $SAFE_ID_IS_PARAM")
+    suspend fun countSafeItemByParentIdNotDeleted(parentId: UUID?, safeId: SafeId): Int
 
-    @Query("SELECT COUNT(*) FROM SafeItem WHERE parent_id IS :parentId AND $IS_NOT_DELETED")
-    suspend fun countSafeItemByParentIdNotDeleted(parentId: UUID?): Int
+    @Query("SELECT COUNT(*) FROM SafeItem WHERE deleted_parent_id IS :parentId AND $IS_DELETED AND $SAFE_ID_IS_PARAM")
+    fun countSafeItemByParentIdDeletedFlow(parentId: UUID?, safeId: SafeId): Flow<Int>
 
-    @Query("SELECT COUNT(*) FROM SafeItem WHERE deleted_parent_id IS :parentId AND $IS_DELETED")
-    fun countSafeItemByParentIdDeletedFlow(parentId: UUID?): Flow<Int>
+    @Query("SELECT COUNT(*) FROM SafeItem WHERE deleted_parent_id IS :parentId AND $IS_DELETED AND $SAFE_ID_IS_PARAM")
+    suspend fun countSafeItemByParentIdDeleted(parentId: UUID?, safeId: SafeId): Int
 
-    @Query("SELECT COUNT(*) FROM SafeItem WHERE deleted_parent_id IS :parentId AND $IS_DELETED")
-    suspend fun countSafeItemByParentIdDeleted(parentId: UUID?): Int
+    @Query("SELECT COUNT(*) FROM SafeItem WHERE $IS_FAVORITE AND $SAFE_ID_IS_PARAM")
+    fun countAllFavoriteFlow(safeId: SafeId): Flow<Int>
 
-    @Query("SELECT COUNT(*) FROM SafeItem WHERE $IS_FAVORITE")
-    fun countAllFavoriteFlow(): Flow<Int>
-
-    @Query("SELECT COUNT(*) FROM SafeItem WHERE $IS_FAVORITE")
-    suspend fun countAllFavorite(): Int
+    @Query("SELECT COUNT(*) FROM SafeItem WHERE $IS_FAVORITE AND $SAFE_ID_IS_PARAM")
+    suspend fun countAllFavorite(safeId: SafeId): Int
 
     @Query(
         """
@@ -237,6 +230,7 @@ interface SafeItemDao {
             UNION
                 SELECT SafeItem.id
                 FROM SafeItem JOIN ItemWithDescendants ON SafeItem.deleted_parent_id IS ItemWithDescendants.id
+                WHERE $SAFE_ID_IS_PARAM
         )
     UPDATE SafeItem
     SET deleted_at = NULL, deleted_parent_id = NULL
@@ -244,7 +238,7 @@ interface SafeItemDao {
     IN ItemWithDescendants
     """,
     )
-    suspend fun unsetDeletedAtAndDeletedParentIdForItemAndDescendants(itemId: UUID?)
+    suspend fun unsetDeletedAtAndDeletedParentIdForItemAndDescendants(itemId: UUID?, safeId: SafeId)
 
     /**
      * First check if the item has a deleted parent. If not, nothing to update.
@@ -274,31 +268,31 @@ interface SafeItemDao {
     @Query("DELETE FROM SafeItem WHERE SafeItem.deleted_at < :threshold")
     suspend fun removeOldItems(threshold: Instant)
 
-    @Query("SELECT COUNT(*) FROM SafeItem")
-    fun getSafeItemsCountFlow(): Flow<Int>
+    @Query("SELECT COUNT(*) FROM SafeItem WHERE $SAFE_ID_IS_PARAM")
+    fun getSafeItemsCountFlow(safeId: SafeId): Flow<Int>
 
-    @Query("SELECT COUNT(*) FROM SafeItem")
-    suspend fun getSafeItemsCount(): Int
+    @Query("SELECT COUNT(*) FROM SafeItem WHERE $SAFE_ID_IS_PARAM")
+    suspend fun getSafeItemsCount(safeId: SafeId): Int
 
     @Query(
         """
        SELECT COUNT(*)
        FROM SafeItem
        LEFT JOIN SafeItemField ON SafeItemField.item_id = SafeItem.id AND SafeItemField.is_item_identifier = 1 
-       WHERE SafeItemField.enc_value IS NOT NULL
+       WHERE SafeItemField.enc_value IS NOT NULL AND $SAFE_ID_IS_PARAM
        """,
     )
-    fun getSafeItemsWithIdentifierCount(): Flow<Int>
+    fun getSafeItemsWithIdentifierCount(safeId: SafeId): Flow<Int>
 
-    @Query("SELECT SafeItem.id FROM SafeItem")
-    suspend fun getAllSafeItemIds(): List<UUID>
+    @Query("SELECT SafeItem.id FROM SafeItem WHERE $SAFE_ID_IS_PARAM")
+    suspend fun getAllSafeItemIds(safeId: SafeId): List<UUID>
 
     @Transaction
-    @Query("SELECT * FROM SafeItem")
-    suspend fun getAllSafeItems(): List<RoomSafeItem>
+    @Query("SELECT * FROM SafeItem WHERE $SAFE_ID_IS_PARAM")
+    suspend fun getAllSafeItems(safeId: SafeId): List<RoomSafeItem>
 
-    @Query("SELECT id, enc_name as encName FROM SafeItem")
-    suspend fun getAllSafeItemsIdName(): List<SafeItemIdName>
+    @Query("SELECT id, enc_name as encName FROM SafeItem WHERE $SAFE_ID_IS_PARAM")
+    suspend fun getAllSafeItemsIdName(safeId: SafeId): List<SafeItemIdName>
 
     @Query(
         "UPDATE SafeItem SET parent_id = :parentId WHERE id = :itemId",
@@ -310,20 +304,26 @@ interface SafeItemDao {
     )
     suspend fun updateConsultedAt(itemId: UUID, consultedAt: Instant)
 
-    @Query("SELECT * FROM SafeItem WHERE deleted_at IS NULL AND consulted_at IS NOT NULL ORDER BY consulted_at DESC LIMIT :limit")
-    fun getSafeItemsOrderByConsultedAtNotDeleted(limit: Int): Flow<List<RoomSafeItem>>
+    @Query(
+        """
+            SELECT * FROM SafeItem
+            WHERE deleted_at IS NULL
+            AND consulted_at IS NOT NULL
+            AND $SAFE_ID_IS_PARAM
+            ORDER BY consulted_at DESC LIMIT :limit
+        """,
+    )
+    fun getSafeItemsOrderByConsultedAtNotDeleted(limit: Int, safeId: SafeId): Flow<List<RoomSafeItem>>
 
     @Query(
         """
             SELECT COUNT(*)
             FROM SafeItem
             WHERE $IS_DELETED
+            AND $SAFE_ID_IS_PARAM
         """,
     )
-    fun getAllDeletedItemsCount(): Flow<Int>
-
-    @Query("DELETE FROM SafeItem")
-    suspend fun clearTable()
+    fun getAllDeletedItemsCount(safeId: SafeId): Flow<Int>
 
     @Update(RoomSafeItem::class)
     suspend fun updateAlphaIndices(idWithIndex: List<ItemIdWithAlphaIndex>)
@@ -336,14 +336,16 @@ interface SafeItemDao {
     @Query(
         """
             SELECT id, enc_name as encName, index_alpha as indexAlpha
-            FROM SafeItem $ITEM_ORDER_BY_INDEX_ALPHA
+            FROM SafeItem
+             WHERE $SAFE_ID_IS_PARAM
+            $ITEM_ORDER_BY_INDEX_ALPHA
             LIMIT 1 OFFSET :index
         """,
     )
-    suspend fun getItemNameWithIndexAt(index: Int): ItemNameWithIndex?
+    suspend fun getItemNameWithIndexAt(index: Int, safeId: SafeId): ItemNameWithIndex?
 
     @Query(
-        "SELECT MIN(index_alpha) AS first, MAX(index_alpha) AS last FROM SafeItem",
+        "SELECT MIN(index_alpha) AS first, MAX(index_alpha) AS last FROM SafeItem WHERE $SAFE_ID_IS_PARAM",
     )
-    suspend fun getAlphaIndexRange(): RoomDoubleRange
+    suspend fun getAlphaIndexRange(safeId: SafeId): RoomDoubleRange
 }

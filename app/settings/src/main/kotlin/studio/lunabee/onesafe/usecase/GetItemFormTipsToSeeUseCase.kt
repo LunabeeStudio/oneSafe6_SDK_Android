@@ -19,10 +19,11 @@
 
 package studio.lunabee.onesafe.usecase
 
-import kotlinx.coroutines.flow.first
-import studio.lunabee.onesafe.OSAppSettings
-import studio.lunabee.onesafe.visits.OSAppVisit
-import studio.lunabee.onesafe.visits.OSPreferenceTips
+import com.lunabee.lbcore.model.LBResult
+import studio.lunabee.onesafe.domain.repository.SafeSettingsRepository
+import studio.lunabee.onesafe.domain.repository.AppVisitRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.error.OSError
 import javax.inject.Inject
 
 /**
@@ -31,14 +32,16 @@ import javax.inject.Inject
  * Display url tips first, then emoji tips on the next launch.
  */
 class GetItemFormTipsToSeeUseCase @Inject constructor(
-    private val osAppVisit: OSAppVisit,
-    private val osAppSettings: OSAppSettings,
+    private val appVisitRepository: AppVisitRepository,
+    private val appSettingsRepository: SafeSettingsRepository,
+    private val safeRepository: SafeRepository,
 ) {
-    suspend operator fun invoke(): ItemFormTips? {
-        val hasSeenUrlTips: Boolean by osAppVisit.get(OSPreferenceTips.HasSeenItemEditionUrlToolTip)
-        val hasSeenEmojiTips: Boolean by osAppVisit.get(OSPreferenceTips.HasSeenItemEditionEmojiToolTip)
-        val shouldSeenUrlTips: Boolean = osAppSettings.automationSetting.first() && !hasSeenUrlTips
-        return when {
+    suspend operator fun invoke(): LBResult<ItemFormTips?> = OSError.runCatching {
+        val safeId = safeRepository.currentSafeId()
+        val hasSeenUrlTips: Boolean = appVisitRepository.hasSeenItemEditionUrlToolTip(safeId)
+        val hasSeenEmojiTips: Boolean = appVisitRepository.hasSeenItemEditionEmojiToolTip(safeId)
+        val shouldSeenUrlTips: Boolean = appSettingsRepository.automation(safeId) && !hasSeenUrlTips
+        when {
             shouldSeenUrlTips -> ItemFormTips.Url
             !hasSeenEmojiTips -> ItemFormTips.Emoji
             else -> null

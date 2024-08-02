@@ -33,9 +33,10 @@ import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
+import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.compose.androidtest.LbcComposeTest
 import studio.lunabee.compose.androidtest.extension.waitUntilExactlyOneExists
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
 import studio.lunabee.onesafe.commonui.OSDrawable
@@ -59,17 +60,16 @@ class WriteMessageScreenTest : LbcComposeTest() {
     private val mockkVm: WriteMessageViewModel = mockk {
         every { uiState } returns MutableStateFlow(
             WriteMessageUiState.Data(
-                contactId = testUUIDs.random(OSTestConfig.random),
+                contactId = DoubleRatchetUUID(testUUIDs.random(OSTestConfig.random)),
                 nameProvider = DefaultNameProvider("Florian"),
                 message = BubblesWritingMessage(TextFieldValue(plainMessage), preview),
-                isUsingDeepLink = false,
+                messageSharingMode = MessageSharingMode.CypherText,
                 isConversationReady = true,
                 isCorrupted = false,
             ),
         )
         every { conversation } returns emptyFlow()
         every { dialogState } returns MutableStateFlow(null)
-        every { isMaterialYouSettingsEnabled } returns flowOf(false)
         every { snackbarState } returns MutableStateFlow(null)
         every { onPlainMessageChange(any()) } returns Unit
     }
@@ -95,10 +95,10 @@ class WriteMessageScreenTest : LbcComposeTest() {
     fun corrupted_test() {
         every { mockkVm.uiState } returns MutableStateFlow(
             WriteMessageUiState.Data(
-                contactId = testUUIDs.random(OSTestConfig.random),
+                contactId = DoubleRatchetUUID(testUUIDs.random(OSTestConfig.random)),
                 nameProvider = DefaultNameProvider("Florian"),
                 message = BubblesWritingMessage(TextFieldValue(""), ""),
-                isUsingDeepLink = false,
+                messageSharingMode = MessageSharingMode.CypherText,
                 isConversationReady = true,
                 isCorrupted = true,
             ),
@@ -130,12 +130,12 @@ class WriteMessageScreenTest : LbcComposeTest() {
                 }) {
                     WriteMessageRoute(
                         onChangeRecipient = onClickOnChangeContact,
-                        sendMessage = { _, _ -> },
+                        sendMessage = { _, _, _ -> },
                         contactIdFlow = MutableStateFlow(null),
                         sendIcon = OSImageSpec.Drawable(OSDrawable.ic_share),
                         viewModel = mockkVm,
                         hideKeyboard = null,
-                        resendMessage = {},
+                        resendMessage = { _, _ -> },
                     )
                 }
             }

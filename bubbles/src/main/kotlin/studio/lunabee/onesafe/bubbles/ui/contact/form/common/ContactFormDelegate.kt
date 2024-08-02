@@ -23,16 +23,17 @@ import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lbloading.LoadingManager
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import studio.lunabee.bubbles.domain.model.MessageSharingMode
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.onesafe.commonui.utils.CloseableCoroutineScope
 import studio.lunabee.onesafe.commonui.utils.CloseableMainCoroutineScope
 import java.io.Closeable
-import java.util.UUID
 
 interface ContactFormDelegate : Closeable {
-    val createInvitationResult: StateFlow<LBResult<UUID>?>
+    val createInvitationResult: StateFlow<LBResult<DoubleRatchetUUID>?>
     fun saveContact(
         contactName: String,
-        isUsingDeeplink: Boolean,
+        sharingMode: MessageSharingMode,
     )
 }
 
@@ -42,16 +43,16 @@ abstract class DefaultContactFormDelegate(
 
     final override fun saveContact(
         contactName: String,
-        isUsingDeeplink: Boolean,
+        sharingMode: MessageSharingMode,
     ) {
         if (createInvitationResult.value !is LBResult.Success) {
             coroutineScope.launch {
                 loadingManager.withLoading {
-                    doSaveContact(contactName, isUsingDeeplink)
+                    doSaveContact(contactName, sharingMode)
                 }
             }
         }
     }
 
-    protected abstract suspend fun doSaveContact(contactName: String, isUsingDeeplink: Boolean)
+    protected abstract suspend fun doSaveContact(contactName: String, sharingMode: MessageSharingMode)
 }

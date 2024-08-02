@@ -23,27 +23,9 @@ object AppVisitConstants {
     const val hasVisitedLoginKey: String = "8e2386e8-d876-11ed-afa1-0242ac120002"
     const val hasVisitedLoginDefault: Boolean = false
 
-    const val hasFinishOneSafeKOnBoarding: String = "dbc410db-e7a9-4bbc-b94f-fb552572243a"
-    const val hasFinishOneSafeKOnBoardingDefault: Boolean = false
-
-    const val hasDoneOnBoardingBubbles: String = "93d456b2-c8b5-4e35-a244-1b5a0752ed36"
-    const val hasDoneOnBoardingBubblesDefault: Boolean = false
-
     const val hasDoneTutorialOpenOsk: String = "db2675cd-522f-494a-a459-af355a8bc330"
     const val hasDoneTutorialOpenOskDefault: Boolean = false
 
     const val hasDoneTutorialLockOsk: String = "ef1d7a93-b1fd-45f3-aa55-e39e32ddf201"
     const val hasDoneTutorialLockOskDefault: Boolean = false
-
-    const val hasHiddenCameraTips: String = "a34333b3-e332-4d8d-aa2f-c8316aa52ecc"
-    const val hasHiddenCameraTipsDefault: Boolean = false
-
-    const val hasSeenItemEditionUrlToolTip: String = "6f3deb8b-c235-43ba-9fc2-6b933d5b48e2"
-    const val hasSeenItemEditionUrlToolTipDefault: Boolean = false
-
-    const val hasSeenItemEditionEmojiToolTip: String = "a12678b2-7c5a-4b6c-9c4e-e78d9e7f9be1"
-    const val hasSeenItemEditionEmojiToolTipDefault: Boolean = false
-
-    const val hasSeenItemReadEditToolTip: String = "1ef71667-3b5f-414d-a3ba-7973b248e939"
-    const val hasSeenItemReadEditToolTipDefault: Boolean = false
 }

@@ -23,6 +23,7 @@ import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.domain.common.ItemIdProvider
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemUseCase
 import studio.lunabee.onesafe.domain.utils.SafeItemBuilder
@@ -44,6 +45,7 @@ class CreateItemUseCase @Inject constructor(
     private val itemIdProvider: ItemIdProvider,
     private val computeItemAlphaIndexUseCase: ComputeItemAlphaIndexUseCase,
     private val clock: Clock,
+    private val safeRepository: SafeRepository,
 ) {
     suspend operator fun invoke(
         name: String?,
@@ -54,7 +56,8 @@ class CreateItemUseCase @Inject constructor(
         position: Double? = null,
     ): LBResult<SafeItem> {
         return OSError.runCatching {
-            val itemPosition = position ?: safeItemRepository.getHighestChildPosition(parentId)?.let { pos ->
+            val safeId = safeRepository.currentSafeId()
+            val itemPosition = position ?: safeItemRepository.getHighestChildPosition(parentId, safeId)?.let { pos ->
                 floor(pos + 1)
             } ?: 0.0
 

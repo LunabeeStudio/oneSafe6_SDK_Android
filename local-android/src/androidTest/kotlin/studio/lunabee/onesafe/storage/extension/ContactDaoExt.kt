@@ -19,9 +19,11 @@
 
 package studio.lunabee.onesafe.storage.extension
 
-import studio.lunabee.onesafe.bubbles.domain.model.ContactSharedKey
+import studio.lunabee.bubbles.domain.model.contactkey.ContactSharedKey
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.storage.dao.ContactDao
 import studio.lunabee.onesafe.storage.model.RoomContact
+import studio.lunabee.onesafe.test.firstSafeId
 import studio.lunabee.onesafe.test.testUUIDs
 import java.time.Instant
 import java.util.UUID
@@ -32,16 +34,18 @@ suspend fun ContactDao.insert(
     encSharedKey: ContactSharedKey = ContactSharedKey(byteArrayOf()),
     updatedAt: Instant = Instant.EPOCH,
     consultedAt: Instant? = null,
+    safeId: SafeId = firstSafeId,
 ) {
     insert(
         RoomContact(
             id = id,
             encName = encName,
-            encSharedKey = encSharedKey,
+            encSharedKey = encSharedKey.encKey,
             updatedAt = updatedAt,
             sharedConversationId = UUID.randomUUID(),
-            encIsUsingDeeplink = byteArrayOf(),
+            encSharingMode = byteArrayOf(),
             consultedAt = consultedAt,
+            safeId = safeId,
         ),
     )
 }

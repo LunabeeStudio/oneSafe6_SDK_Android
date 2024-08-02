@@ -25,8 +25,10 @@ import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
-import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
+import studio.lunabee.onesafe.domain.repository.SecuritySettingsRepository
+import studio.lunabee.onesafe.test.OSTestConfig
 import java.time.Instant
 import javax.inject.Singleton
 import kotlin.time.Duration
@@ -41,87 +43,116 @@ import kotlin.time.Duration.Companion.seconds
 internal object RepositoryTestModule {
 
     /**
-     * [SecurityOptionRepository] implementation with fixed value
+     * [SecuritySettingsRepository] implementation with fixed value
      */
     @Singleton
     @Provides
-    fun provideSecurityOptionRepository(): SecurityOptionRepository {
-        return object : SecurityOptionRepository {
-            private var internalClipboardDelay: Duration = 10.seconds
-            private var internalAutoLockInactivityDelay = 30.seconds
-            private var internalAutoLockAppChangeDelay = 10.seconds
-            private var internalAutoLockOSKInactivityDelay = 30.seconds
-            private var internalAutoLockOSKHiddenDelay = 10.seconds
-            private var lastPasswordVerif: Instant? = null
+    fun provideSecuritySettingsRepository(): SecuritySettingsRepository {
+        return object : SecuritySettingsRepository {
+            private var clipboardDelay: Duration = 10.seconds
+            private var autoLockInactivityDelay = 30.seconds
+            private var autoLockAppChangeDelay = 10.seconds
+            private var autoLockOSKInactivityDelay = 30.seconds
+            private var autoLockOSKHiddenDelay = 10.seconds
+            private var lastPasswordVerif: Instant = Instant.now(OSTestConfig.clock)
             private var verifInterval = VerifyPasswordInterval.EVERY_MONTH
+            private var bubblesResendMessageDelay = 1.days
+            private var shakeToLock: Boolean = false
 
-            override val autoLockInactivityDelay: Duration
-                get() = internalAutoLockInactivityDelay
-
-            override val autoLockInactivityDelayFlow: Flow<Duration>
-                get() = flowOf(internalAutoLockInactivityDelay)
-
-            override fun setAutoLockInactivityDelay(delay: Duration) {
-                internalAutoLockInactivityDelay = delay
+            override suspend fun autoLockInactivityDelay(safeId: SafeId): Duration {
+                return autoLockInactivityDelay
             }
 
-            override val autoLockAppChangeDelay: Duration
-                get() = internalAutoLockAppChangeDelay
-
-            override val autoLockAppChangeDelayFlow: Flow<Duration>
-                get() = flowOf(internalAutoLockAppChangeDelay)
-
-            override fun setAutoLockAppChangeDelay(delay: Duration) {
-                internalAutoLockAppChangeDelay = delay
+            override suspend fun autoLockAppChangeDelay(safeId: SafeId): Duration {
+                return autoLockAppChangeDelay
             }
 
-            override val clipboardDelay
-                get() = internalClipboardDelay
-            override val clipboardDelayFlow: Flow<Duration>
-                get() = flowOf(clipboardDelay)
-
-            override fun setClipboardClearDelay(delay: Duration) {
-                internalClipboardDelay = delay
+            override suspend fun clipboardClearDelay(safeId: SafeId): Duration {
+                return clipboardDelay
             }
 
-            override val verifyPasswordInterval: VerifyPasswordInterval
-                get() = verifInterval
+            override suspend fun verifyPasswordInterval(safeId: SafeId): VerifyPasswordInterval {
+                return verifInterval
+            }
 
-            override val lastPasswordVerificationInstant: Instant?
-                get() = lastPasswordVerif
+            override suspend fun lastPasswordVerificationInstant(safeId: SafeId): Instant {
+                return lastPasswordVerif
+            }
 
-            override fun setLastPasswordVerification(instant: Instant) {
+            override suspend fun autoLockOSKInactivityDelay(safeId: SafeId): Duration {
+                return autoLockOSKInactivityDelay
+            }
+
+            override suspend fun autoLockOSKHiddenDelay(safeId: SafeId): Duration {
+                return autoLockOSKHiddenDelay
+            }
+
+            override fun autoLockInactivityDelayFlow(safeId: SafeId): Flow<Duration> {
+                return flowOf(autoLockOSKInactivityDelay)
+            }
+
+            override fun autoLockAppChangeDelayFlow(safeId: SafeId): Flow<Duration> {
+                return flowOf(autoLockAppChangeDelay)
+            }
+
+            override fun clipboardDelayFlow(safeId: SafeId): Flow<Duration> {
+                return flowOf(clipboardDelay)
+            }
+
+            override fun verifyPasswordIntervalFlow(safeId: SafeId): Flow<VerifyPasswordInterval> {
+                return flowOf(verifInterval)
+            }
+
+            override fun bubblesResendMessageDelayFlow(safeId: SafeId): Flow<Duration> {
+                return flowOf(bubblesResendMessageDelay)
+            }
+
+            override fun autoLockOSKInactivityDelayFlow(safeId: SafeId): Flow<Duration> {
+                return flowOf(autoLockOSKInactivityDelay)
+            }
+
+            override fun autoLockOSKHiddenDelayFlow(safeId: SafeId): Flow<Duration> {
+                return flowOf(autoLockOSKHiddenDelay)
+            }
+
+            override fun shakeToLockFlow(safeId: SafeId): Flow<Boolean> {
+                return flowOf(shakeToLock)
+            }
+
+            override suspend fun setAutoLockInactivityDelay(safeId: SafeId, delay: Duration) {
+                autoLockInactivityDelay = delay
+            }
+
+            override suspend fun setAutoLockAppChangeDelay(safeId: SafeId, delay: Duration) {
+                autoLockAppChangeDelay = delay
+            }
+
+            override suspend fun setClipboardClearDelay(safeId: SafeId, delay: Duration) {
+                clipboardDelay = delay
+            }
+
+            override suspend fun setPasswordInterval(safeId: SafeId, passwordInterval: VerifyPasswordInterval) {
+                verifInterval = passwordInterval
+            }
+
+            override suspend fun setLastPasswordVerification(safeId: SafeId, instant: Instant) {
                 lastPasswordVerif = instant
             }
 
-            override val verifyPasswordIntervalFlow: Flow<VerifyPasswordInterval>
-                get() = flowOf(verifInterval)
-
-            override val bubblesResendMessageDelayFlow: Flow<Duration>
-                get() = flowOf(1.days)
-
-            override fun setBubblesResendMessageDelay(delay: Duration) {}
-            override val autoLockOSKInactivityDelay: Duration
-                get() = internalAutoLockOSKInactivityDelay
-            override val autoLockOSKInactivityDelayFlow: Flow<Duration>
-                get() = flowOf(internalAutoLockOSKInactivityDelay)
-
-            override fun setAutoLockOSKInactivityDelay(delay: Duration) {
-                internalAutoLockOSKInactivityDelay = delay
+            override suspend fun setBubblesResendMessageDelay(safeId: SafeId, delay: Duration) {
+                bubblesResendMessageDelay = delay
             }
 
-            override val autoLockOSKHiddenDelay: Duration
-                get() = internalAutoLockOSKHiddenDelay
-
-            override val autoLockOSKHiddenDelayFlow: Flow<Duration>
-                get() = flowOf(internalAutoLockOSKHiddenDelay)
-
-            override fun setAutoLockOSKHiddenDelay(delay: Duration) {
-                internalAutoLockOSKHiddenDelay = delay
+            override suspend fun setAutoLockOSKInactivityDelay(safeId: SafeId, delay: Duration) {
+                autoLockOSKInactivityDelay = delay
             }
 
-            override fun setPasswordInterval(passwordInterval: VerifyPasswordInterval) {
-                verifInterval = passwordInterval
+            override suspend fun setAutoLockOSKHiddenDelay(safeId: SafeId, delay: Duration) {
+                autoLockOSKHiddenDelay = delay
+            }
+
+            override suspend fun toggleShakeToLock(safeId: SafeId) {
+                shakeToLock = !shakeToLock
             }
         }
     }

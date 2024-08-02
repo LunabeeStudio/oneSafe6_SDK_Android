@@ -24,8 +24,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import studio.lunabee.importexport.repository.datasource.CloudBackupEngine
-import studio.lunabee.importexport.repository.repository.DefaultBackupRepository
+import studio.lunabee.importexport.datasource.CloudBackupEngine
+import studio.lunabee.importexport.repository.DefaultBackupRepository
 import studio.lunabee.onesafe.domain.qualifier.BackupType
 import studio.lunabee.onesafe.domain.qualifier.DateFormatterType
 import studio.lunabee.onesafe.importexport.BackupExportEngineImpl

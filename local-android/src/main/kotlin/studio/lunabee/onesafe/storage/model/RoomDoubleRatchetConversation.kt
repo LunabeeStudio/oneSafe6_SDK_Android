@@ -22,7 +22,8 @@ package studio.lunabee.onesafe.storage.model
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import studio.lunabee.onesafe.messaging.domain.model.EncConversation
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.model.EncConversation
 import java.util.UUID
 
 @Entity(
@@ -51,7 +52,7 @@ class RoomDoubleRatchetConversation(
 ) {
     fun toEncConversation(): EncConversation {
         return EncConversation(
-            id = id,
+            id = DoubleRatchetUUID(id),
             encPersonalPublicKey = encPersonalPublicKey,
             encPersonalPrivateKey = encPersonalPrivateKey,
             encMessageNumber = encMessageNumber,
@@ -67,7 +68,7 @@ class RoomDoubleRatchetConversation(
     companion object {
         fun fromEncConversation(conversation: EncConversation): RoomDoubleRatchetConversation {
             return RoomDoubleRatchetConversation(
-                id = conversation.id,
+                id = conversation.id.uuid,
                 encPersonalPublicKey = conversation.encPersonalPublicKey,
                 encPersonalPrivateKey = conversation.encPersonalPrivateKey,
                 encMessageNumber = conversation.encMessageNumber,

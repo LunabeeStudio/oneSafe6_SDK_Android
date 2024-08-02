@@ -214,6 +214,7 @@ class BackupsProvider : DocumentsProvider() {
         parent.listFiles { _, name ->
             name.endsWith(ImportExportConstant.ExtensionOs6Backup)
         }?.forEach { file ->
+            // TODO <multisafe> filter backups depending on current loaded safe id (compare list of backup files vs backup in DB)
             cursor = includeFile(cursor, null, file)
         }
 

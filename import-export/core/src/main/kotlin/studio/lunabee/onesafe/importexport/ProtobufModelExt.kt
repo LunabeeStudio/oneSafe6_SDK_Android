@@ -24,6 +24,7 @@ import com.google.protobuf.kotlin.toByteString
 import studio.lunabee.onesafe.domain.model.importexport.OSArchiveKind
 import studio.lunabee.onesafe.proto.OSExportProto.ArchiveMetadata.ArchiveKind
 
+// TODO <multisafe> share with other module proto
 fun ByteString?.toByteArrayOrNull(): ByteArray? {
     return this?.takeUnless { it.isEmpty }?.toByteArray()
 }

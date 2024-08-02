@@ -19,9 +19,15 @@
 
 package studio.lunabee.onesafe.importexport.usecase
 
+import com.lunabee.lbcore.model.LBResult
+import com.lunabee.lblogger.LBLogger
+import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
 import javax.inject.Inject
+
+private val logger = LBLogger.get<SetKeepLocalBackupUseCase>()
 
 /**
  * Set KeepLocalBackupSettings option and remove locals backups if needed
@@ -29,11 +35,13 @@ import javax.inject.Inject
 class SetKeepLocalBackupUseCase @Inject constructor(
     private val settings: AutoBackupSettingsRepository,
     private val localBackupRepository: LocalBackupRepository,
+    private val safeRepository: SafeRepository,
 ) {
-    suspend operator fun invoke(enabled: Boolean) {
-        settings.setKeepLocalBackupSettings(enabled)
+    suspend operator fun invoke(enabled: Boolean): LBResult<Unit> = OSError.runCatching(logger) {
+        val safeId = safeRepository.currentSafeId()
+        settings.setKeepLocalBackupSettings(safeId, enabled)
         if (!enabled) {
-            localBackupRepository.deleteAll()
+            localBackupRepository.deleteAll(safeId)
         }
     }
 }

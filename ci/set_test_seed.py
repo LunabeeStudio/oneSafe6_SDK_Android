@@ -30,7 +30,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 test_seed = args.seed
-os_test_config_path = "common-test/src/main/kotlin/studio/lunabee/onesafe/test/OSTestConfig.kt"
+os_test_config_path = "test/common-test/src/main/kotlin/studio/lunabee/onesafe/test/OSTestConfig.kt"
 
 with open(os_test_config_path, "r") as f:
     content = f.read()

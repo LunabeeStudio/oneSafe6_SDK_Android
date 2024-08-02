@@ -20,13 +20,14 @@
 package studio.lunabee.onesafe.domain.repository
 
 import kotlinx.coroutines.flow.Flow
-import studio.lunabee.onesafe.domain.model.safeitem.ItemsLayoutSettings
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
+import studio.lunabee.onesafe.domain.model.safeitem.ItemLayout
 
 interface ItemSettingsRepository {
-    val itemOrdering: Flow<ItemOrder>
-    suspend fun setItemOrdering(order: ItemOrder)
+    fun itemOrdering(safeId: SafeId): Flow<ItemOrder>
+    fun itemLayout(safeId: SafeId): Flow<ItemLayout>
 
-    val itemsLayoutSetting: Flow<ItemsLayoutSettings>
-    suspend fun setItemsLayoutSetting(style: ItemsLayoutSettings)
+    suspend fun setItemOrdering(safeId: SafeId, order: ItemOrder)
+    suspend fun setItemsLayout(safeId: SafeId, style: ItemLayout)
 }

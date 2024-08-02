@@ -21,35 +21,50 @@ package studio.lunabee.onesafe.storage.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import studio.lunabee.onesafe.bubbles.domain.model.Contact
-import studio.lunabee.onesafe.bubbles.domain.model.ContactSharedKey
+import kotlinx.datetime.toJavaInstant
+import kotlinx.datetime.toKotlinInstant
+import studio.lunabee.bubbles.domain.model.contact.Contact
+import studio.lunabee.bubbles.domain.model.contactkey.ContactSharedKey
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import java.time.Instant
 import java.util.UUID
 
 @Entity(
     tableName = "Contact",
+    foreignKeys = [
+        ForeignKey(
+            entity = RoomSafe::class,
+            parentColumns = arrayOf("id"),
+            childColumns = arrayOf("safe_id"),
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
 )
 data class RoomContact(
     @PrimaryKey
     @ColumnInfo(name = "id")
     val id: UUID,
     @ColumnInfo(name = "enc_name") val encName: ByteArray,
-    @ColumnInfo(name = "enc_shared_key") val encSharedKey: ContactSharedKey?,
+    @ColumnInfo(name = "enc_shared_key") val encSharedKey: ByteArray?,
     @ColumnInfo(name = "updated_at") val updatedAt: Instant,
     @ColumnInfo(name = "shared_conversation_id") val sharedConversationId: UUID,
-    @ColumnInfo(name = "enc_is_using_deeplink") val encIsUsingDeeplink: ByteArray,
+    @ColumnInfo(name = "enc_sharing_mode") val encSharingMode: ByteArray,
     @ColumnInfo(name = "consulted_at", defaultValue = "null") val consultedAt: Instant?,
+    @ColumnInfo(name = "safe_id", index = true) val safeId: SafeId,
 ) {
     fun toContact(): Contact =
         Contact(
-            id = id,
+            id = DoubleRatchetUUID(id),
             encName = encName,
-            encSharedKey = encSharedKey,
-            updatedAt = updatedAt,
-            sharedConversationId = sharedConversationId,
-            encIsUsingDeeplink = encIsUsingDeeplink,
-            consultedAt = consultedAt,
+            encSharedKey = encSharedKey?.let { ContactSharedKey(it) },
+            updatedAt = updatedAt.toKotlinInstant(),
+            sharedConversationId = DoubleRatchetUUID(sharedConversationId),
+            encSharingMode = encSharingMode,
+            consultedAt = consultedAt?.toKotlinInstant(),
+            safeId = DoubleRatchetUUID(safeId.id),
         )
 
     override fun equals(other: Any?): Boolean {
@@ -60,8 +75,12 @@ data class RoomContact(
 
         if (id != other.id) return false
         if (!encName.contentEquals(other.encName)) return false
-        if (!encSharedKey?.encKey.contentEquals(other.encSharedKey?.encKey)) return false
+        if (encSharedKey != other.encSharedKey) return false
         if (updatedAt != other.updatedAt) return false
+        if (sharedConversationId != other.sharedConversationId) return false
+        if (!encSharingMode.contentEquals(other.encSharingMode)) return false
+        if (consultedAt != other.consultedAt) return false
+        if (safeId != other.safeId) return false
 
         return true
     }
@@ -69,21 +88,26 @@ data class RoomContact(
     override fun hashCode(): Int {
         var result = id.hashCode()
         result = 31 * result + encName.contentHashCode()
-        result = 31 * result + encSharedKey?.encKey.contentHashCode()
+        result = 31 * result + (encSharedKey?.hashCode() ?: 0)
         result = 31 * result + updatedAt.hashCode()
+        result = 31 * result + sharedConversationId.hashCode()
+        result = 31 * result + encSharingMode.contentHashCode()
+        result = 31 * result + (consultedAt?.hashCode() ?: 0)
+        result = 31 * result + safeId.hashCode()
         return result
     }
 
     companion object {
         fun fromBubblesContact(bubblesContact: Contact): RoomContact =
             RoomContact(
-                id = bubblesContact.id,
+                id = bubblesContact.id.uuid,
                 encName = bubblesContact.encName,
-                encSharedKey = bubblesContact.encSharedKey,
-                updatedAt = bubblesContact.updatedAt,
-                sharedConversationId = bubblesContact.sharedConversationId,
-                encIsUsingDeeplink = bubblesContact.encIsUsingDeeplink,
-                consultedAt = bubblesContact.consultedAt,
+                encSharedKey = bubblesContact.encSharedKey?.encKey,
+                updatedAt = bubblesContact.updatedAt.toJavaInstant(),
+                sharedConversationId = bubblesContact.sharedConversationId.uuid,
+                encSharingMode = bubblesContact.encSharingMode,
+                consultedAt = bubblesContact.consultedAt?.toJavaInstant(),
+                safeId = SafeId(bubblesContact.safeId.uuid),
             )
     }
 }

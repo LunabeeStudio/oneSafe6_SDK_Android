@@ -55,6 +55,7 @@ import com.google.accompanist.permissions.shouldShowRationale
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.BarcodeView
 import studio.lunabee.compose.core.LbcTextSpec
+import studio.lunabee.messaging.domain.model.DecryptResult
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.commonui.OSDrawable
@@ -62,7 +63,6 @@ import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
 import studio.lunabee.onesafe.commonui.dialog.rememberDialogState
 import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
-import studio.lunabee.onesafe.messaging.domain.model.DecryptResult
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.model.TopAppBarOptionNav
 import studio.lunabee.onesafe.molecule.OSTopAppBar

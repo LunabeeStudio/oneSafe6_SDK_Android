@@ -19,13 +19,17 @@
 
 package studio.lunabee.onesafe.importexport.usecase
 
+import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.firstOrNull
+import studio.lunabee.onesafe.domain.model.safe.SafeId
+import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.repository.AutoBackupErrorRepository
 import javax.inject.Inject
 
 /**
- * Clear the auto-backup stored error according to the current backup settings and the source of the error.
+ * Clear the auto-backup latest stored error according to the current backup settings and the source of the error.
  *   • Do not clear the error if a different type of backup succeed. For example if cloud backup has stored an error, do not clear it if
  *   local backup succeed.
  *   • Always clear the error if the backup mode has changed. For example if cloud backup has stored an error, then user switch has switched
@@ -34,28 +38,34 @@ import javax.inject.Inject
 class ClearAutoBackupErrorUseCase @Inject constructor(
     private val autoBackupErrorRepository: AutoBackupErrorRepository,
     private val getAutoBackupModeUseCase: GetAutoBackupModeUseCase,
+    private val safeRepository: SafeRepository,
 ) {
     /**
-     * Clear the error if needed
+     * Clear the last error if needed
      *
      * @see ClearAutoBackupErrorUseCase
      */
-    suspend fun ifNeeded(backupMode: AutoBackupMode) {
-        val currentBackupMode = getAutoBackupModeUseCase()
-        val shouldClear =
-            // Error match the current setting
-            backupMode == currentBackupMode ||
-                // Backup are disabled
-                currentBackupMode == AutoBackupMode.Disabled ||
-                // Error match the current error
-                backupMode == autoBackupErrorRepository.getError().firstOrNull()?.source
-        if (shouldClear) autoBackupErrorRepository.setError(null)
+    suspend fun ifNeeded(safeId: SafeId, backupMode: AutoBackupMode) {
+        autoBackupErrorRepository.getError(safeId).firstOrNull()?.let { error ->
+            val currentBackupMode = getAutoBackupModeUseCase(safeId)
+            val shouldClear =
+                // Error match the current setting
+                backupMode == currentBackupMode ||
+                    // Backup are disabled
+                    currentBackupMode == AutoBackupMode.Disabled ||
+                    // Error match the current error
+                    backupMode == error.source
+            if (shouldClear) autoBackupErrorRepository.removeError(error.id)
+        }
     }
 
     /**
-     * Force clear the error
+     * Force clear the last error
      */
-    suspend fun force() {
-        autoBackupErrorRepository.setError(null)
+    suspend fun force(): LBResult<Unit> = OSError.runCatching {
+        val safeId = safeRepository.currentSafeId()
+        autoBackupErrorRepository.getError(safeId).firstOrNull()?.let { error ->
+            autoBackupErrorRepository.removeError(error.id)
+        }
     }
 }

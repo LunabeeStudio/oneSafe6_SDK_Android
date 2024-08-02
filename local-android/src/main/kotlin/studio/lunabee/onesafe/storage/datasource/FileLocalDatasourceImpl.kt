@@ -23,8 +23,13 @@ import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.repository.datasource.FileLocalDatasource
+import studio.lunabee.onesafe.storage.MainDatabase
+import studio.lunabee.onesafe.storage.dao.SafeFileDao
+import studio.lunabee.onesafe.storage.model.RoomSafeFile
+import studio.lunabee.onesafe.storage.utils.TransactionProvider
 import studio.lunabee.onesafe.storage.utils.cancelableCopyTo
 import java.io.File
 import java.io.InputStream
@@ -34,7 +39,9 @@ import javax.inject.Inject
 // TODO rework/align cache directories injection to avoid using the app context directly (also see @ImageCacheDirectory)
 class FileLocalDatasourceImpl @Inject constructor(
     @ApplicationContext private val appContext: Context,
-    @FileDispatcher private val dispatcher: CoroutineDispatcher,
+    @FileDispatcher private val fileDispatcher: CoroutineDispatcher,
+    private val dao: SafeFileDao,
+    private val transactionProvider: TransactionProvider<MainDatabase>,
 ) : FileLocalDatasource {
     private val encFilesDir: File = File(appContext.filesDir, FILE_DIR)
     private val encThumbnailsCacheDir: File = File(appContext.cacheDir, THUMBNAIL_DIR)
@@ -57,6 +64,15 @@ class FileLocalDatasourceImpl @Inject constructor(
         return File(encFilesDir, filename)
     }
 
+    override suspend fun createFile(fileId: String, safeId: SafeId): File {
+        val file = File(encFilesDir, fileId)
+        transactionProvider.runAsTransaction {
+            file.parentFile?.mkdirs()
+            dao.insertFile(RoomSafeFile(file, safeId))
+        }
+        return file
+    }
+
     override fun createTempFile(fileId: String): File {
         if (!plainFilesCacheDir.exists()) {
             plainFilesCacheDir.mkdir()
@@ -66,33 +82,40 @@ class FileLocalDatasourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun addFile(filename: String, file: ByteArray): File = withContext(dispatcher) {
+    override suspend fun addFile(filename: String, file: ByteArray, safeId: SafeId): File = withContext(fileDispatcher) {
         if (!encFilesDir.exists()) {
             encFilesDir.mkdir()
         }
 
         val localFile = File(encFilesDir, filename)
-        localFile.writeBytes(file)
+        transactionProvider.runAsTransaction {
+            dao.insertFile(RoomSafeFile(localFile, safeId))
+            localFile.writeBytes(file)
+        }
+
         localFile
     }
 
-    override fun removeAllFiles() {
-        encFilesDir.deleteRecursively()
-        encThumbnailsCacheDir.deleteRecursively()
+    override suspend fun deleteFile(filename: String): Boolean = withContext(fileDispatcher) {
+        val file = File(encFilesDir, filename)
+        transactionProvider.runAsTransaction {
+            dao.removeFile(file)
+            file.delete()
+        }
     }
 
-    override fun deleteFile(filename: String): Boolean {
-        return File(encFilesDir, filename).delete()
+    override suspend fun getAllFiles(safeId: SafeId): List<File> {
+        return dao.getAllFiles(safeId, encFilesDir.path)
     }
 
-    override fun getAllFiles(): List<File> {
-        return encFilesDir.listFiles()?.toList().orEmpty()
-    }
-
-    override suspend fun copyAndDeleteFile(newFile: File, fileId: UUID) {
-        withContext(dispatcher) {
-            newFile.copyTo(target = File(encFilesDir, fileId.toString()))
-            newFile.delete()
+    override suspend fun copyAndDeleteFile(newFile: File, fileId: UUID, safeId: SafeId) {
+        val target = File(encFilesDir, fileId.toString())
+        withContext(fileDispatcher) {
+            transactionProvider.runAsTransaction {
+                dao.insertFile(RoomSafeFile(target, safeId))
+                newFile.copyTo(target = target)
+                newFile.delete()
+            }
         }
     }
 
@@ -108,7 +131,7 @@ class FileLocalDatasourceImpl @Inject constructor(
         filename: String,
         itemId: UUID,
         fieldId: UUID,
-    ): File = withContext(dispatcher) {
+    ): File = withContext(fileDispatcher) {
         val file = File(plainFilesCacheDir, "$itemId/$fieldId/$filename")
         file.parentFile?.mkdirs()
         file.deleteOnExit()
@@ -120,14 +143,21 @@ class FileLocalDatasourceImpl @Inject constructor(
         file
     }
 
+    override suspend fun deleteAll(safeId: SafeId) {
+        transactionProvider.runAsTransaction {
+            dao.getAllFiles(safeId, encFilesDir.path).forEach { it.delete() }
+            dao.deleteAll(safeId, encFilesDir.path)
+        }
+    }
+
     override suspend fun deleteItemDir(itemId: UUID) {
-        withContext(dispatcher) {
+        withContext(fileDispatcher) {
             File(plainFilesCacheDir, itemId.toString()).deleteRecursively()
         }
     }
 
     override suspend fun deletePlainFilesCacheDir() {
-        withContext(dispatcher) {
+        withContext(fileDispatcher) {
             plainFilesCacheDir.deleteRecursively()
         }
     }

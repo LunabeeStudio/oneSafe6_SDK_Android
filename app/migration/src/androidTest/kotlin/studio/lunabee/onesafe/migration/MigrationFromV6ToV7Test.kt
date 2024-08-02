@@ -32,10 +32,12 @@ import studio.lunabee.onesafe.cryptography.PasswordHashEngine
 import studio.lunabee.onesafe.cryptography.SaltProvider
 import studio.lunabee.onesafe.domain.usecase.item.CreateItemUseCase
 import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
+import studio.lunabee.onesafe.migration.migration.MigrationFromV6ToV7
 import studio.lunabee.onesafe.storage.dao.SafeItemDao
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltTest
 import studio.lunabee.onesafe.test.OSTestConfig
+import studio.lunabee.onesafe.test.firstSafeId
 import studio.lunabee.onesafe.test.test
 import javax.inject.Inject
 import kotlin.test.assertEquals
@@ -43,7 +45,7 @@ import kotlin.test.assertEquals
 @HiltAndroidTest
 class MigrationFromV6ToV7Test : OSHiltTest() {
     @get:Rule override val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
-    override val initialTestState: InitialTestState = InitialTestState.LoggedIn
+    override val initialTestState: InitialTestState = InitialTestState.Home()
 
     private val salt: ByteArray = OSTestConfig.random.nextBytes(32)
 
@@ -91,9 +93,9 @@ class MigrationFromV6ToV7Test : OSHiltTest() {
             idName[it.first]!! to it.second
         }
 
-        migrationFromV6ToV7(masterKey())
+        migrationFromV6ToV7(masterKey(), firstSafeId)
 
-        val actualList = safeItemDao.getAllSafeItems()
+        val actualList = safeItemDao.getAllSafeItems(firstSafeId)
         expectedList.forEach { expected ->
             val actual = actualList.first { it.id == expected.first }
             assertEquals(

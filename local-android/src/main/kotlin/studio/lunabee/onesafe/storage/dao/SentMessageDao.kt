@@ -36,6 +36,6 @@ interface SentMessageDao {
     @Query("DELETE FROM SentMessage WHERE id IS :id")
     suspend fun deleteSentMessage(id: UUID)
 
-    @Query("SELECT * FROM SentMessage ORDER BY `order` LIMIT 1")
-    suspend fun getOldestSentMessage(): RoomSentMessage?
+    @Query("SELECT * FROM SentMessage WHERE safe_id IS :safeId ORDER BY `order` LIMIT 1")
+    suspend fun getOldestSentMessage(safeId: UUID): RoomSentMessage?
 }

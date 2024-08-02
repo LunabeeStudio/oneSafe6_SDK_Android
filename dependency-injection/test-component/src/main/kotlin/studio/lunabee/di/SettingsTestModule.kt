@@ -29,9 +29,6 @@ import dagger.Provides
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
-import studio.lunabee.onesafe.model.LocalCtaStateMap
-import studio.lunabee.onesafe.storage.datastore.ProtoSerializer
-import java.io.File
 import javax.inject.Singleton
 
 @Module
@@ -57,15 +54,5 @@ object SettingsTestModule {
                 it.delete()
             }
         }
-    }
-
-    @Provides
-    @Singleton
-    fun provideBubbleCtaStateDatastore(
-        @ApplicationContext context: Context,
-    ): DataStore<LocalCtaStateMap> {
-        val dataStoreName = "CtaDataStore_${datastoreIncSuffix++}"
-        File(context.filesDir, "datastore/$dataStoreName").delete()
-        return ProtoSerializer.dataStore(context, LocalCtaStateMap(emptyMap()), dataStoreName)
     }
 }

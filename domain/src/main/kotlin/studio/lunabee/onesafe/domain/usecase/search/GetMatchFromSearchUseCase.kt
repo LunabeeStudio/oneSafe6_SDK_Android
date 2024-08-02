@@ -22,12 +22,14 @@ package studio.lunabee.onesafe.domain.usecase.search
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
 import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.repository.ItemSettingsRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import javax.inject.Inject
 
 /**
@@ -36,6 +38,7 @@ import javax.inject.Inject
 class GetMatchFromSearchUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
     private val itemSettingsRepository: ItemSettingsRepository,
+    private val safeRepository: SafeRepository,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(searchValue: String, indexWordEntries: List<PlainIndexWordEntry>): Flow<List<SafeItemWithIdentifier>> {
@@ -60,10 +63,14 @@ class GetMatchFromSearchUseCase @Inject constructor(
                 )
             }
 
-        return itemSettingsRepository.itemOrdering.flatMapLatest { itemOrder ->
-            safeItemRepository.getSafeItemWithIdentifier(scoredMatches.keys, itemOrder).map { items ->
-                items.sortedByDescending { scoredMatches[it.id] }
-            }
+        return safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+            safeId?.let {
+                itemSettingsRepository.itemOrdering(safeId).flatMapLatest { itemOrder ->
+                    safeItemRepository.getSafeItemWithIdentifier(scoredMatches.keys, itemOrder).map { items ->
+                        items.sortedByDescending { scoredMatches[it.id] }
+                    }
+                }
+            } ?: flowOf()
         }
     }
 

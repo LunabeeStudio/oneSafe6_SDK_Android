@@ -20,31 +20,36 @@
 package studio.lunabee.onesafe.importexport.usecase
 
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import kotlin.test.Test
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.model.LocalBackup
-import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
+import studio.lunabee.onesafe.test.MockAutoBackupSettingsRepository
+import studio.lunabee.onesafe.test.firstSafeId
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 
 class GetDurationBeforeBackupOutdatedUseCaseTest {
-    private val settingsRepository: AutoBackupSettingsRepository = mockk {
-        every { autoBackupFrequency } returns 1.days
+    private val settingsRepository = object : MockAutoBackupSettingsRepository() {
+        override suspend fun autoBackupFrequency(safeId: SafeId): Duration {
+            check(safeId == firstSafeId)
+            return 1.days
+        }
     }
+
     private val getAllLocalBackupsUseCase: GetAllLocalBackupsUseCase = mockk()
     private val getAutoBackupModeUseCase: GetAutoBackupModeUseCase = mockk {
-        coEvery { this@mockk.invoke() } returns AutoBackupMode.LocalOnly // TODO <AutoBackup> update test with other cases
+        coEvery { this@mockk.invoke(firstSafeId) } returns AutoBackupMode.LocalOnly // TODO <AutoBackup> update test with other cases
     }
     private val cloudBackupRepository: CloudBackupRepository = mockk()
     private val nowClock = Clock.fixed(Instant.EPOCH, ZoneOffset.UTC)
@@ -58,32 +63,34 @@ class GetDurationBeforeBackupOutdatedUseCaseTest {
 
     @Test
     fun outdated_backup_test(): TestResult = runTest {
-        coEvery { getAllLocalBackupsUseCase.invoke() } returns listOf(
+        coEvery { getAllLocalBackupsUseCase.invoke(firstSafeId) } returns listOf(
             LocalBackup(
                 date = LocalDateTime.now(nowClock).minusDays(6).toInstant(ZoneOffset.UTC),
                 file = mockk(),
+                safeId = firstSafeId,
             ),
         )
-        val actual = getDurationBeforeBackupOutdatedUseCase()
+        val actual = getDurationBeforeBackupOutdatedUseCase(firstSafeId)
         assertEquals((1 - 6).days, actual)
     }
 
     @Test
     fun not_outdated_backup_test(): TestResult = runTest {
-        coEvery { getAllLocalBackupsUseCase.invoke() } returns listOf(
+        coEvery { getAllLocalBackupsUseCase.invoke(firstSafeId) } returns listOf(
             LocalBackup(
                 date = LocalDateTime.now(nowClock).minusHours(6).toInstant(ZoneOffset.UTC),
                 file = mockk(),
+                safeId = firstSafeId,
             ),
         )
-        val actual = getDurationBeforeBackupOutdatedUseCase()
+        val actual = getDurationBeforeBackupOutdatedUseCase(firstSafeId)
         assertEquals((24 - 6).hours, actual)
     }
 
     @Test
     fun no_backup_test(): TestResult = runTest {
-        coEvery { getAllLocalBackupsUseCase.invoke() } returns emptyList()
-        val actual = getDurationBeforeBackupOutdatedUseCase()
+        coEvery { getAllLocalBackupsUseCase.invoke(firstSafeId) } returns emptyList()
+        val actual = getDurationBeforeBackupOutdatedUseCase(firstSafeId)
         assertEquals(Duration.ZERO, actual)
     }
 }

@@ -8,6 +8,9 @@ plugins {
 android {
     namespace = "studio.lunabee.onesafe.help"
 
+    buildFeatures {
+        compose = true
+    }
     defaultConfig {
         minSdk = AndroidConfig.MIN_APP_SDK
         missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
@@ -61,6 +64,7 @@ dependencies {
     implementation(libs.lbloading.compose)
 
     implementation(libs.lbccore)
+    implementation(libs.doubleratchet)
 
     implementation(project(":app:core-ui"))
     implementation(project(":app:common-ui"))
@@ -75,9 +79,9 @@ dependencies {
     devImplementation(libs.datastore.preferences)
     devImplementation(libs.room.ktx)
     devImplementation(project(":import-export-drive"))
-    devImplementation(project(":messaging-domain"))
+    devImplementation(libs.bubbles.messaging.domain)
+    devImplementation(libs.bubbles.domain)
     devImplementation(project(":local-android"))
-    devImplementation(project(":bubbles-domain"))
     devImplementation(project(":error"))
     devImplementation(project(":app:settings"))
 
@@ -85,6 +89,7 @@ dependencies {
     androidTestImplementation(project(":dependency-injection:test-component"))
     androidTestImplementation(project(":app:settings"))
     androidTestImplementation(project(":local-android"))
+    androidTestImplementation(libs.bubbles.shared)
     androidTestImplementation(libs.datastore.preferences)
     androidTestImplementation(libs.hilt.android.testing)
     androidTestImplementation(libs.espresso.core)

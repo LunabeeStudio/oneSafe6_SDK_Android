@@ -25,9 +25,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.MutableStateFlow
 import studio.lunabee.compose.core.LbcTextSpec
+import studio.lunabee.messaging.domain.model.MessageDirection
 import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.extension.copyToClipBoard
-import studio.lunabee.onesafe.messaging.domain.model.MessageDirection
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
 import studio.lunabee.onesafe.messaging.writemessage.model.MessageAction
 import java.util.UUID
@@ -50,18 +50,18 @@ class DropDownMenuMessageLongPress(
                 val context = LocalContext.current
 
                 val actions: List<MessageAction> = if (message.hasCorruptedData) {
-                    listOf(MessageAction.Delete { message.id.let(onDeleteMessageClick) })
+                    listOf(MessageAction.Delete { message.id.uuid.let(onDeleteMessageClick) })
                 } else {
                     when (message.direction) {
                         MessageDirection.SENT -> listOf(
-                            MessageAction.Resend { message.id.let(onResendClick) },
+                            MessageAction.Resend { message.id.uuid.let(onResendClick) },
                             MessageAction.Copy {
                                 context.copyToClipBoard(
                                     messageText,
                                     LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_copyLabel),
                                 )
                             },
-                            MessageAction.Delete { message.id.let(onDeleteMessageClick) },
+                            MessageAction.Delete { message.id.uuid.let(onDeleteMessageClick) },
                         )
                         MessageDirection.RECEIVED -> listOf(
                             MessageAction.Copy {
@@ -70,13 +70,13 @@ class DropDownMenuMessageLongPress(
                                     LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_copyLabel),
                                 )
                             },
-                            MessageAction.Delete { message.id.let(onDeleteMessageClick) },
+                            MessageAction.Delete { message.id.uuid.let(onDeleteMessageClick) },
                         )
                     }
                 }
 
                 MessageActionMenu(
-                    isMenuExpended = menuExpandedMessageId == message.id,
+                    isMenuExpended = menuExpandedMessageId == message.id.uuid,
                     onDismiss = { menuExpandedMessageIdFlow.value = null },
                     actions = actions,
                 )

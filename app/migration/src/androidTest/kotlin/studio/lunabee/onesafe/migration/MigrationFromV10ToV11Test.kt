@@ -26,21 +26,25 @@ import junit.framework.TestCase.assertFalse
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
-import kotlin.test.Test
 import studio.lunabee.onesafe.domain.usecase.item.CreateItemUseCase
+import studio.lunabee.onesafe.domain.utils.CrossSafeData
+import studio.lunabee.onesafe.migration.migration.MigrationFromV10ToV11
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltTest
+import studio.lunabee.onesafe.test.firstSafeId
 import studio.lunabee.onesafe.test.test
 import studio.lunabee.onesafe.test.testUUIDs
 import java.io.File
 import javax.inject.Inject
+import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @HiltAndroidTest
 class MigrationFromV10ToV11Test : OSHiltTest() {
 
     @get:Rule override val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
-    override val initialTestState: InitialTestState = InitialTestState.LoggedIn
+    override val initialTestState: InitialTestState = InitialTestState.Home()
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private val iconDir: File = File(context.filesDir, "icons")
@@ -49,6 +53,7 @@ class MigrationFromV10ToV11Test : OSHiltTest() {
 
     @Inject lateinit var migrationFromV10ToV11: MigrationFromV10ToV11
 
+    @OptIn(CrossSafeData::class)
     @Test
     fun run_migrationFromV10ToV11_test(): TestResult = runTest {
         iconDir.mkdirs()
@@ -57,9 +62,11 @@ class MigrationFromV10ToV11Test : OSHiltTest() {
         val item = createItemUseCase.test(icon = byteArrayOf(1))
         val itemIconFile = File(iconDir, item.iconId!!.toString())
 
-        migrationFromV10ToV11()
+        migrationFromV10ToV11(firstSafeId)
 
         assertFalse(wrongIconFile.exists())
         assertTrue(itemIconFile.exists())
+        assertEquals(1, iconRepository.getAllIcons().count())
+        assertEquals(1, iconRepository.getIcons(firstSafeId).count())
     }
 }

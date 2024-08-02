@@ -22,7 +22,6 @@ package studio.lunabee.onesafe.storage.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import studio.lunabee.onesafe.bubbles.domain.model.ContactLocalKey
 import studio.lunabee.onesafe.storage.model.RoomContactKey
 import java.util.UUID
 
@@ -32,5 +31,5 @@ interface ContactKeyDao {
     suspend fun insert(key: RoomContactKey)
 
     @Query("SELECT enc_value FROM ContactLocalKey WHERE contact_id = :contactId")
-    suspend fun getById(contactId: UUID): ContactLocalKey?
+    suspend fun getById(contactId: UUID): ByteArray?
 }

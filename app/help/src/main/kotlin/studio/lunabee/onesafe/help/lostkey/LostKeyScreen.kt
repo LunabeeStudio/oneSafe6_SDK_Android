@@ -83,7 +83,7 @@ fun LostKeyRoute(
         }
     }
 
-    val cloudInfo by viewModel.cloudInfo.collectAsStateWithLifecycle()
+    val folderUri by viewModel.folderUri.collectAsStateWithLifecycle()
 
     val pickFileLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
         uri?.let { // uri can be null if user cancel the file selection (not an error)
@@ -95,7 +95,7 @@ fun LostKeyRoute(
         navigateBack = navigateBack,
         openDiscord = { uriHandler.openUri(CommonUiConstants.ExternalLink.Discord) },
         openFileManager = openFileManager,
-        openDrive = cloudInfo.folderURI?.let { { context.startActivity(Intent.parseUri(it.toString(), 0)) } },
+        openDrive = folderUri?.let { { context.startActivity(Intent.parseUri(it.toString(), 0)) } },
         launchFilePicker = { BackupFileManagerHelper.launchFilePicker(pickFileLauncher) },
         snackbarHostState = snackbarHostState,
     )

@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.repository.repository
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.ItemNameWithIndex
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
@@ -44,14 +45,19 @@ class SafeItemRepositoryImpl @Inject constructor(
         localDataSource.getSafeItemWithIdentifier(ids, order)
 
     override fun getSafeItemFlow(id: UUID): Flow<SafeItem?> = localDataSource.getSafeItemFlow(id)
-    override suspend fun getChildren(parentId: UUID, order: ItemOrder): List<SafeItem> = localDataSource.findByParentId(parentId, order)
+    override suspend fun getChildren(parentId: UUID, order: ItemOrder, safeId: SafeId): List<SafeItem> = localDataSource.findByParentId(
+        parentId,
+        order,
+        safeId,
+    )
 
     override fun countSafeItemByParentIdFlow(
         parentId: UUID?,
-    ): Flow<Int> = localDataSource.countSafeItemByParentIdFlow(parentId)
+        safeId: SafeId,
+    ): Flow<Int> = localDataSource.countSafeItemByParentIdFlow(parentId, safeId)
 
-    override suspend fun countSafeItemByParentId(parentId: UUID?): Int =
-        localDataSource.countSafeItemByParentId(parentId)
+    override suspend fun countSafeItemByParentId(parentId: UUID?, safeId: SafeId): Int =
+        localDataSource.countSafeItemByParentId(parentId, safeId)
 
     override suspend fun save(item: SafeItem, safeItemKey: SafeItemKey, indexWordEntries: List<IndexWordEntry>?) =
         localDataSource.save(item, safeItemKey, null, indexWordEntries)
@@ -67,49 +73,55 @@ class SafeItemRepositoryImpl @Inject constructor(
         config: PagingConfig,
         parentId: UUID?,
         order: ItemOrder,
-    ): Flow<PagingData<SafeItem>> = localDataSource.getPagerItemByParentId(config, parentId, order)
+        safeId: SafeId,
+    ): Flow<PagingData<SafeItem>> = localDataSource.getPagerItemByParentId(config, parentId, order, safeId)
 
     override fun getPagerItemByParentsWithIdentifier(
         config: PagingConfig,
         parentId: UUID?,
         order: ItemOrder,
+        safeId: SafeId,
     ): Flow<PagingData<SafeItemWithIdentifier>> =
-        localDataSource.getPagerItemByParentIdWithIdentifier(config, parentId, order)
+        localDataSource.getPagerItemByParentIdWithIdentifier(config, parentId, order, safeId)
 
     override fun getPagerItemFavorite(
         config: PagingConfig,
         order: ItemOrder,
-    ): Flow<PagingData<SafeItem>> = localDataSource.getPagerItemFavorite(config, order)
+        safeId: SafeId,
+    ): Flow<PagingData<SafeItem>> = localDataSource.getPagerItemFavorite(config, order, safeId)
 
     override fun getPagerItemFavoriteWithIdentifier(
         pagingConfig: PagingConfig,
         itemOrder: ItemOrder,
+        safeId: SafeId,
     ): Flow<PagingData<SafeItemWithIdentifier>> =
-        localDataSource.getPagerItemFavoriteWithIdentifier(pagingConfig, itemOrder)
+        localDataSource.getPagerItemFavoriteWithIdentifier(pagingConfig, itemOrder, safeId)
 
-    override fun findLastFavorite(limit: Int, order: ItemOrder): Flow<List<SafeItem>> {
-        return localDataSource.findLastFavorite(limit, order)
+    override fun findLastFavorite(limit: Int, order: ItemOrder, safeId: SafeId): Flow<List<SafeItem>> {
+        return localDataSource.findLastFavorite(limit, order, safeId)
     }
 
-    override fun countAllFavoriteFlow(): Flow<Int> {
-        return localDataSource.countAllFavoriteFlow()
+    override fun countAllFavoriteFlow(safeId: SafeId): Flow<Int> {
+        return localDataSource.countAllFavoriteFlow(safeId)
     }
 
-    override suspend fun countAllFavorite(): Int {
-        return localDataSource.countAllFavorite()
+    override suspend fun countAllFavorite(safeId: SafeId): Int {
+        return localDataSource.countAllFavorite(safeId)
     }
 
     override suspend fun updateIcon(id: UUID, iconId: UUID?) = localDataSource.updateIcon(id, iconId)
     override suspend fun toggleFavorite(id: UUID) = localDataSource.toggleFavorite(id)
-    override suspend fun getHighestChildPosition(parentId: UUID?): Double? = localDataSource.getHighestPosition(
+    override suspend fun getHighestChildPosition(parentId: UUID?, safeId: SafeId): Double? = localDataSource.getHighestPosition(
         parentId,
+        safeId,
     )
 
     override suspend fun getNextSiblingPosition(id: UUID): Double? = localDataSource.getNextSiblingPosition(id)
     override suspend fun setDeletedAndRemoveFromFavorite(
         id: UUID?,
         deletedAt: Instant,
-    ): Unit = localDataSource.setDeletedAndRemoveFromFavorite(id, deletedAt)
+        safeId: SafeId,
+    ): Unit = localDataSource.setDeletedAndRemoveFromFavorite(id, deletedAt, safeId)
 
     override suspend fun updateParentIds(
         oldParentId: UUID,
@@ -136,25 +148,26 @@ class SafeItemRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getSafeItemName(id: UUID): ByteArray? = localDataSource.getSafeItemName(id)
-    override suspend fun getAllSafeItems(): List<SafeItem> {
-        return localDataSource.getAllSafeItems()
+    override suspend fun getAllSafeItems(safeId: SafeId): List<SafeItem> {
+        return localDataSource.getAllSafeItems(safeId)
     }
 
     override fun getAllSafeItemsWithIdentifier(
         config: PagingConfig,
         idsToExclude: List<UUID>,
         order: ItemOrder,
+        safeId: SafeId,
     ): Flow<PagingData<SafeItemWithIdentifier>> {
-        return localDataSource.getAllSafeItemsWithIdentifier(config, idsToExclude, order)
+        return localDataSource.getAllSafeItemsWithIdentifier(config, idsToExclude, order, safeId)
     }
 
-    override fun getSafeItemsCountFlow(): Flow<Int> = localDataSource.getSafeItemsCountFlow()
-    override suspend fun getSafeItemsCount(): Int = localDataSource.getSafeItemsCount()
+    override fun getSafeItemsCountFlow(safeId: SafeId): Flow<Int> = localDataSource.getSafeItemsCountFlow(safeId)
+    override suspend fun getSafeItemsCount(safeId: SafeId): Int = localDataSource.getSafeItemsCount(safeId)
 
-    override fun getSafeItemsWithIdentifierCount(): Flow<Int> = localDataSource.getSafeItemsWithIdentifierCount()
+    override fun getSafeItemsWithIdentifierCount(safeId: SafeId): Flow<Int> = localDataSource.getSafeItemsWithIdentifierCount(safeId)
 
-    override suspend fun getAllSafeItemIds(): List<UUID> {
-        return localDataSource.getAllSafeItemIds()
+    override suspend fun getAllSafeItemIds(safeId: SafeId): List<UUID> {
+        return localDataSource.getAllSafeItemIds(safeId)
     }
 
     override suspend fun updateSafeItemParentId(itemId: UUID, parentId: UUID?) {
@@ -165,8 +178,8 @@ class SafeItemRepositoryImpl @Inject constructor(
         localDataSource.updateConsultedAt(itemId, consultedAt)
     }
 
-    override fun getLastConsultedNotDeletedSafeItem(limit: Int): Flow<List<SafeItem>> {
-        return localDataSource.getLastConsultedNotDeletedSafeItem(limit)
+    override fun getLastConsultedNotDeletedSafeItem(limit: Int, safeId: SafeId): Flow<List<SafeItem>> {
+        return localDataSource.getLastConsultedNotDeletedSafeItem(limit, safeId)
     }
 
     override suspend fun getSafeItemsAndChildren(itemId: UUID, includeChildren: Boolean): List<SafeItem> {
@@ -183,15 +196,15 @@ class SafeItemRepositoryImpl @Inject constructor(
         localDataSource.setAlphaIndices(indices)
     }
 
-    override suspend fun getItemNameWithIndexAt(index: Int): ItemNameWithIndex? {
-        return localDataSource.getItemNameWithIndexAt(index)
+    override suspend fun getItemNameWithIndexAt(index: Int, safeId: SafeId): ItemNameWithIndex? {
+        return localDataSource.getItemNameWithIndexAt(index, safeId)
     }
 
-    override suspend fun getAlphaIndexRange(): Pair<Double, Double> {
-        return localDataSource.getAlphaIndexRange()
+    override suspend fun getAlphaIndexRange(safeId: SafeId): Pair<Double, Double> {
+        return localDataSource.getAlphaIndexRange(safeId)
     }
 
-    override suspend fun getAllSafeItemIdName(): List<SafeItemIdName> {
-        return localDataSource.getAllSafeItemIdName()
+    override suspend fun getAllSafeItemIdName(safeId: SafeId): List<SafeItemIdName> {
+        return localDataSource.getAllSafeItemIdName(safeId)
     }
 }

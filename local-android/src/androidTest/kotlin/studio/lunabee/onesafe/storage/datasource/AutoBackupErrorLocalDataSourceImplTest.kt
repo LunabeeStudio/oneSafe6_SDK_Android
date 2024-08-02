@@ -29,13 +29,15 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.yield
 import org.junit.Before
 import org.junit.Rule
-import kotlin.test.Test
 import studio.lunabee.onesafe.importexport.model.AutoBackupError
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
+import studio.lunabee.onesafe.test.firstSafeId
+import studio.lunabee.onesafe.test.testUUIDs
 import java.io.File
 import java.time.Clock
 import java.time.ZonedDateTime
 import javax.inject.Inject
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 
 @HiltAndroidTest
@@ -58,29 +60,31 @@ class AutoBackupErrorLocalDataSourceImplTest {
     fun read_write_test(): TestResult = runTest {
         val actual = mutableListOf<AutoBackupError?>()
         val job = launch(testScheduler) {
-            autoBackupErrorDataStore.getError().toList(actual)
+            autoBackupErrorDataStore.getLastError(firstSafeId).toList(actual)
         }
 
         val expected = listOf(
-            null,
             AutoBackupError(
+                id = testUUIDs[0],
                 date = ZonedDateTime.now(clock),
                 code = "error_code_0",
                 message = null,
                 source = AutoBackupMode.Synchronized,
+                safeId = firstSafeId,
             ),
             AutoBackupError(
+                id = testUUIDs[1],
                 date = ZonedDateTime.now(clock).plusDays(1),
                 code = "error_code_1",
                 message = "error_message_1",
                 source = AutoBackupMode.Synchronized,
+                safeId = firstSafeId,
             ),
-            null,
         )
 
         expected.forEach {
             val size = actual.size
-            autoBackupErrorDataStore.setError(it)
+            autoBackupErrorDataStore.addError(it)
             // Force sync between set and get
             while (actual.size == size) {
                 yield()

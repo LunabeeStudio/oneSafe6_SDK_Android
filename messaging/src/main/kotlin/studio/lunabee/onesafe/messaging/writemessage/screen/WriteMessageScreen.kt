@@ -60,7 +60,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.compose.core.LbcTextSpec
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.doubleratchet.model.createRandomUUID
+import studio.lunabee.messaging.domain.model.MessageDirection
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.OSScreen
 import studio.lunabee.onesafe.atom.button.OSIconButton
@@ -76,7 +80,6 @@ import studio.lunabee.onesafe.commonui.localprovider.LocalIsOneSafeK
 import studio.lunabee.onesafe.commonui.snackbar.SnackbarState
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
 import studio.lunabee.onesafe.extension.loremIpsum
-import studio.lunabee.onesafe.messaging.domain.model.MessageDirection
 import studio.lunabee.onesafe.messaging.writemessage.composable.ComposeMessageCard
 import studio.lunabee.onesafe.messaging.writemessage.composable.ConversationDayHeader
 import studio.lunabee.onesafe.messaging.writemessage.composable.ConversationNotReadyCard
@@ -105,8 +108,8 @@ context(WriteMessageNavScope)
 @Composable
 fun WriteMessageRoute(
     onChangeRecipient: (() -> Unit)?,
-    sendMessage: (data: SentMessageData, messageToSend: String) -> Unit,
-    resendMessage: (String) -> Unit,
+    sendMessage: (data: SentMessageData, messageToSend: String, sharingMode: MessageSharingMode) -> Unit,
+    resendMessage: (String, MessageSharingMode) -> Unit,
     contactIdFlow: StateFlow<String?>,
     sendIcon: OSImageSpec,
     viewModel: WriteMessageViewModel = hiltViewModel(),
@@ -120,7 +123,6 @@ fun WriteMessageRoute(
     val dialogState by viewModel.dialogState.collectAsStateWithLifecycle()
     val conversation: LazyPagingItems<ConversationUiData> = viewModel.conversation.collectAsLazyPagingItems()
     val coroutineScope = rememberCoroutineScope()
-    val isMaterialYouEnabled by viewModel.isMaterialYouSettingsEnabled.collectAsStateWithLifecycle(initialValue = false)
     val isOneSafeK = LocalIsOneSafeK.current
     val oneSafeKSnackbarHostState = remember { SnackbarHostState() }
     val viewModelSnackBarHostState = remember { SnackbarHostState() }
@@ -139,7 +141,34 @@ fun WriteMessageRoute(
     when (val state = uiState) {
         WriteMessageUiState.Initializing -> Box(modifier = Modifier.fillMaxSize())
         is WriteMessageUiState.Data -> {
-            val messageLongPress: MessageLongPress
+            val messageLongPress: MessageLongPress by remember(isOneSafeK) {
+                mutableStateOf(
+                    if (isOneSafeK) {
+                        object : MessageLongPress() {
+                            override fun onLongClick(id: UUID) {
+                                deeplinkBubblesWriteMessage?.let { deeplink ->
+                                    snackbarState = ConversationMoreOptionsSnackbarState {
+                                        deeplink(viewModel.contactId.value!!.uuid)
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        DropDownMenuMessageLongPress(
+                            onResendClick = { sentMessageId ->
+                                coroutineScope.launch {
+                                    viewModel.getSentMessage(DoubleRatchetUUID(sentMessageId))?.let {
+                                        resendMessage(it, state.messageSharingMode)
+                                    }
+                                }
+                            },
+                            onDeleteMessageClick = {
+                                viewModel.deleteMessage(DoubleRatchetUUID(it))
+                            },
+                        )
+                    },
+                )
+            }
             if (isOneSafeK) {
                 dialogState?.let { dialog ->
                     dialog.ImeDialog {
@@ -150,27 +179,8 @@ fun WriteMessageRoute(
                     }
                 }
                 snackbarState?.SnackBar(oneSafeKSnackbarHostState)
-                messageLongPress = object : MessageLongPress() {
-                    override fun onLongClick(id: UUID) {
-                        deeplinkBubblesWriteMessage?.let { deeplink ->
-                            snackbarState = ConversationMoreOptionsSnackbarState {
-                                deeplink(viewModel.contactId.value!!)
-                            }
-                        }
-                    }
-                }
             } else {
                 dialogState?.DefaultAlertDialog()
-                messageLongPress = DropDownMenuMessageLongPress(
-                    onResendClick = { sentMessageId ->
-                        coroutineScope.launch {
-                            viewModel.getSentMessage(sentMessageId)?.let {
-                                resendMessage(it.getDeepLinkFromMessage(state.isUsingDeepLink))
-                            }
-                        }
-                    },
-                    onDeleteMessageClick = viewModel::deleteMessage,
-                )
             }
 
             Box(
@@ -188,6 +198,7 @@ fun WriteMessageRoute(
                 SnackbarHost(
                     hostState = viewModelSnackBarHostState,
                     modifier = Modifier
+                        .imePadding()
                         .zIndex(UiConstants.SnackBar.ZIndex)
                         .align(Alignment.BottomCenter)
                         .navigationBarsPadding(),
@@ -196,9 +207,9 @@ fun WriteMessageRoute(
                 WriteMessageScreen(
                     nameProvider = state.nameProvider,
                     message = state.message,
-                    onContactNameClick = onChangeRecipient ?: { navigateToContactDetail(state.contactId) },
+                    onContactNameClick = onChangeRecipient ?: { navigateToContactDetail(state.contactId.uuid) },
                     onResendInvitationClick = {
-                        navigationToInvitation(viewModel.contactId.value!!)
+                        navigationToInvitation(viewModel.contactId.value!!.uuid)
                     },
                     onPlainMessageChange = viewModel::onPlainMessageChange,
                     sendMessage = { // TODO <bubbles> fix flooding send button trigger many share sheets
@@ -207,7 +218,8 @@ fun WriteMessageRoute(
                             sentMessageData?.let {
                                 sendMessage(
                                     sentMessageData,
-                                    sentMessageData.encMessage.getDeepLinkFromMessage(state.isUsingDeepLink),
+                                    sentMessageData.encMessage.getDeepLinkFromMessage(state.messageSharingMode),
+                                    state.messageSharingMode,
                                 )
                             }
                         }
@@ -215,7 +227,6 @@ fun WriteMessageRoute(
                     conversation = conversation,
                     onBackClick = navigateBack,
                     sendIcon = sendIcon,
-                    isMaterialYouEnabled = isMaterialYouEnabled,
                     isConversationReady = state.isConversationReady,
                     onPreviewClick = {
                         viewModel.displayPreviewInfo()
@@ -242,7 +253,6 @@ fun WriteMessageScreen(
     conversation: LazyPagingItems<ConversationUiData>,
     onBackClick: () -> Unit,
     sendIcon: OSImageSpec,
-    isMaterialYouEnabled: Boolean,
     isConversationReady: Boolean,
     onPreviewClick: () -> Unit,
     onDeleteAllMessagesClick: () -> Unit,
@@ -254,9 +264,14 @@ fun WriteMessageScreen(
     val focusManager = LocalFocusManager.current
     val lazyListState = rememberLazyListState()
     var isConversationHidden: Boolean by rememberSaveable { mutableStateOf(false) }
+
     OSScreen(
         testTag = UiConstants.TestTag.Screen.WriteMessageScreen,
-        background = LocalDesignSystem.current.bubblesBackGround(),
+        background = if (isOneSafeK) {
+            LocalDesignSystem.current.bubblesBackGround()
+        } else {
+            LocalDesignSystem.current.backgroundGradient()
+        },
         applySystemBarPadding = !LocalIsOneSafeK.current,
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -353,7 +368,7 @@ fun WriteMessageScreen(
             if (isConversationReady) {
                 OSTheme(
                     isSystemInDarkTheme = true,
-                    isMaterialYouSettingsEnabled = isMaterialYouEnabled,
+                    isMaterialYouSettingsEnabled = LocalDesignSystem.current.isMaterialYouEnabled,
                 ) {
                     LaunchedEffect(key1 = Unit) {
                         focusRequester.requestFocus()
@@ -525,7 +540,7 @@ fun WriteMessageScreenPreview() {
             PagingData.from(
                 listOf<ConversationUiData>(
                     ConversationUiData.Message(
-                        id = UUID.randomUUID(),
+                        id = createRandomUUID(),
                         text = LbcTextSpec.Raw("hello"),
                         direction = MessageDirection.RECEIVED,
                         sendAt = Instant.ofEpochSecond(0),
@@ -534,7 +549,7 @@ fun WriteMessageScreenPreview() {
                         hasCorruptedData = false,
                     ),
                     ConversationUiData.Message(
-                        id = UUID.randomUUID(),
+                        id = createRandomUUID(),
                         text = LbcTextSpec.Raw("hello hello"),
                         direction = MessageDirection.SENT,
                         sendAt = Instant.ofEpochSecond(0),
@@ -556,7 +571,6 @@ fun WriteMessageScreenPreview() {
             conversation = pagingItems,
             onBackClick = {},
             sendIcon = OSImageSpec.Drawable(OSDrawable.ic_send),
-            isMaterialYouEnabled = false,
             isConversationReady = true,
             onPreviewClick = {},
             onDeleteAllMessagesClick = {},
@@ -578,7 +592,7 @@ fun ImeWriteMessageScreenPreview() {
             PagingData.from(
                 listOf<ConversationUiData>(
                     ConversationUiData.Message(
-                        id = UUID.randomUUID(),
+                        id = createRandomUUID(),
                         text = LbcTextSpec.Raw("hello"),
                         direction = MessageDirection.RECEIVED,
                         sendAt = Instant.ofEpochSecond(0),
@@ -587,7 +601,7 @@ fun ImeWriteMessageScreenPreview() {
                         hasCorruptedData = false,
                     ),
                     ConversationUiData.Message(
-                        id = UUID.randomUUID(),
+                        id = createRandomUUID(),
                         text = LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_corruptedMessage),
                         direction = MessageDirection.SENT,
                         sendAt = null,
@@ -596,7 +610,7 @@ fun ImeWriteMessageScreenPreview() {
                         hasCorruptedData = true,
                     ),
                     ConversationUiData.Message(
-                        id = UUID.randomUUID(),
+                        id = createRandomUUID(),
                         text = LbcTextSpec.Raw("hello hello"),
                         direction = MessageDirection.SENT,
                         sendAt = Instant.ofEpochSecond(0),
@@ -618,7 +632,6 @@ fun ImeWriteMessageScreenPreview() {
             conversation = pagingItems,
             onBackClick = {},
             sendIcon = OSImageSpec.Drawable(OSDrawable.ic_send),
-            isMaterialYouEnabled = false,
             isConversationReady = true,
             onPreviewClick = {},
             onDeleteAllMessagesClick = {},
@@ -647,7 +660,6 @@ fun ImeWriteMessageScreenCorruptedPreview() {
             conversation = pagingItems,
             onBackClick = {},
             sendIcon = OSImageSpec.Drawable(OSDrawable.ic_send),
-            isMaterialYouEnabled = false,
             isConversationReady = true,
             onPreviewClick = {},
             onDeleteAllMessagesClick = {},

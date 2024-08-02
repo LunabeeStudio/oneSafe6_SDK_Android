@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.storage.datasource
 import com.lunabee.lbextensions.mapValues
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.repository.datasource.IndexWordEntryLocalDataSource
 import studio.lunabee.onesafe.storage.dao.IndexWordEntryDao
@@ -32,7 +33,7 @@ import javax.inject.Inject
 class IndexWordEntryLocalDataSourceImpl @Inject constructor(
     private val searchIndexDao: IndexWordEntryDao,
 ) : IndexWordEntryLocalDataSource {
-    override fun getAll(): Flow<List<IndexWordEntry>> = searchIndexDao.getAll()
+    override fun getAll(safeId: SafeId): Flow<List<IndexWordEntry>> = searchIndexDao.getAll(safeId)
         .distinctUntilChanged()
         .mapValues(RoomIndexWordEntry::toIndexWordEntry)
 

@@ -19,8 +19,10 @@
 
 package studio.lunabee.onesafe.domain.usecase.autolock
 
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.repository.AutoLockRepository
-import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.domain.repository.SecuritySettingsRepository
 import java.time.Clock
 import java.time.Instant
 import javax.inject.Inject
@@ -28,18 +30,27 @@ import kotlin.time.Duration
 import kotlin.time.toKotlinDuration
 import java.time.Duration as JavaDuration
 
-class AutoLockInactivityGetRemainingTimeUseCase @Inject constructor(
-    private val securityOptionRepository: SecurityOptionRepository,
+interface AutoLockInactivityGetRemainingTimeUseCase {
+    suspend fun app(currentSafeId: SafeId? = null): Duration
+
+    suspend fun osk(currentSafeId: SafeId? = null): Duration
+}
+
+class AutoLockInactivityGetRemainingTimeUseCaseImpl @Inject constructor(
+    private val securitySettingsRepository: SecuritySettingsRepository,
     private val autoLockRepository: AutoLockRepository,
     private val clock: Clock,
-) {
-    fun app(): Duration {
-        val inactivityDelay = securityOptionRepository.autoLockInactivityDelay
+    private val safeRepository: SafeRepository,
+) : AutoLockInactivityGetRemainingTimeUseCase {
+    override suspend fun app(currentSafeId: SafeId?): Duration {
+        val safeId = currentSafeId ?: safeRepository.currentSafeId()
+        val inactivityDelay = securitySettingsRepository.autoLockInactivityDelay(safeId)
         return computeRemainingTime(inactivityDelay)
     }
 
-    fun osk(): Duration {
-        val inactivityDelay = securityOptionRepository.autoLockOSKInactivityDelay
+    override suspend fun osk(currentSafeId: SafeId?): Duration {
+        val safeId = currentSafeId ?: safeRepository.currentSafeId()
+        val inactivityDelay = securitySettingsRepository.autoLockOSKInactivityDelay(safeId)
         return computeRemainingTime(inactivityDelay)
     }
 

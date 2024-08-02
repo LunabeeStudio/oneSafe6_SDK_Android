@@ -33,6 +33,4 @@ interface ImportExportCryptoRepository {
         rawItemKey: ByteArray,
         cryptoKey: ByteArray,
     ): SafeItemKey
-
-    fun getMasterSalt(): ByteArray
 }

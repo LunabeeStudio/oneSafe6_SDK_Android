@@ -23,6 +23,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
+import studio.lunabee.bubbles.domain.crypto.BubblesCryptoEngine
 import studio.lunabee.di.TinkModule
 import studio.lunabee.onesafe.cryptography.CryptoEngine
 import javax.inject.Singleton
@@ -38,4 +39,8 @@ abstract class TinkTestModule {
     @Binds
     @Singleton
     internal abstract fun bindCrypto(crypto: ChachaPolyTinkCryptoEngine): CryptoEngine
+
+    @Binds
+    @Singleton
+    internal abstract fun bindBubblesCrypto(crypto: ChachaPolyTinkCryptoEngine): BubblesCryptoEngine
 }

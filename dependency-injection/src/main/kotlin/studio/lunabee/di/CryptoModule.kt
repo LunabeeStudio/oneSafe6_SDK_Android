@@ -31,19 +31,18 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import studio.lunabee.doubleratchet.crypto.DoubleRatchetKeyRepository
-import studio.lunabee.onesafe.bubbles.crypto.AndroidBubblesCryptoRepository
-import studio.lunabee.onesafe.bubbles.crypto.AndroidDoubleRatchetKeyRepository
-import studio.lunabee.onesafe.bubbles.crypto.DataHashEngine
+import studio.lunabee.bubbles.domain.crypto.BubblesDataHashEngine
+import studio.lunabee.bubbles.domain.crypto.BubblesKeyExchangeEngine
+import studio.lunabee.bubbles.domain.crypto.BubblesRandomKeyProvider
+import studio.lunabee.bubbles.repository.BubblesMainCryptoRepository
 import studio.lunabee.onesafe.bubbles.crypto.DiffieHellmanKeyExchangeEngine
 import studio.lunabee.onesafe.bubbles.crypto.HKDFHashEngine
-import studio.lunabee.onesafe.bubbles.crypto.KeyExchangeEngine
-import studio.lunabee.onesafe.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.onesafe.cryptography.AndroidEditCryptoRepository
 import studio.lunabee.onesafe.cryptography.AndroidImportExportCryptoRepository
 import studio.lunabee.onesafe.cryptography.AndroidMainCryptoRepository
 import studio.lunabee.onesafe.cryptography.AndroidMigrationCryptoRepository
 import studio.lunabee.onesafe.cryptography.BiometricEngine
+import studio.lunabee.onesafe.cryptography.BubblesRandomKeyProviderImpl
 import studio.lunabee.onesafe.cryptography.CryptoConstants
 import studio.lunabee.onesafe.cryptography.DatabaseKeyRepositoryImpl
 import studio.lunabee.onesafe.cryptography.DatastoreEngine
@@ -66,8 +65,6 @@ import studio.lunabee.onesafe.domain.repository.EditCryptoRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.MigrationCryptoRepository
 import studio.lunabee.onesafe.importexport.repository.ImportExportCryptoRepository
-import studio.lunabee.onesafe.messaging.crypto.AndroidMessagingCryptoRepository
-import studio.lunabee.onesafe.messaging.domain.repository.MessagingCryptoRepository
 import javax.inject.Singleton
 
 @Module
@@ -78,22 +75,17 @@ abstract class CryptoModule {
     internal abstract fun bindMainCryptoRepository(androidMainCryptoRepository: AndroidMainCryptoRepository): MainCryptoRepository
 
     @Binds
+    internal abstract fun bindBubblesMainCryptoRepository(
+        androidMainCryptoRepository: AndroidMainCryptoRepository,
+    ): BubblesMainCryptoRepository
+
+    @Binds
     internal abstract fun bindBiometricCipherRepository(biometricEngine: BiometricEngine): BiometricCipherRepository
 
     @Binds
     internal abstract fun bindEditCryptoRepository(
         androidEditCryptoRepository: AndroidEditCryptoRepository,
     ): EditCryptoRepository
-
-    @Binds
-    internal abstract fun bindBubblesCryptoRepository(
-        androidBubblesCryptoRepository: AndroidBubblesCryptoRepository,
-    ): BubblesCryptoRepository
-
-    @Binds
-    internal abstract fun bindMessagingCryptoRepository(
-        androidMessagingCryptoRepository: AndroidMessagingCryptoRepository,
-    ): MessagingCryptoRepository
 
     @Binds
     internal abstract fun bindDatabaseKeyRepository(
@@ -121,15 +113,15 @@ abstract class CryptoModule {
     internal abstract fun rsaCryptoEngine(rsaCryptoEngine: JceRsaCryptoEngine): RsaCryptoEngine
 
     @Binds
-    internal abstract fun bindDataHashEngine(hkdfHashEngine: HKDFHashEngine): DataHashEngine
+    internal abstract fun bindDataHashEngine(hkdfHashEngine: HKDFHashEngine): BubblesDataHashEngine
 
     @Binds
-    internal abstract fun bindKeyExchangeEngine(diffieHellmanKeyExchangeEngine: DiffieHellmanKeyExchangeEngine): KeyExchangeEngine
+    internal abstract fun bindKeyExchangeEngine(diffieHellmanKeyExchangeEngine: DiffieHellmanKeyExchangeEngine): BubblesKeyExchangeEngine
 
     @Binds
-    internal abstract fun bindDoubleRatchetKeyRepository(
-        doubleRatchetCryptoRepository: AndroidDoubleRatchetKeyRepository,
-    ): DoubleRatchetKeyRepository
+    internal abstract fun bindsBubblesRandomKeyProvider(
+        bubblesRandomKeyProvider: BubblesRandomKeyProviderImpl,
+    ): BubblesRandomKeyProvider
 }
 
 @Module

@@ -36,13 +36,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import studio.lunabee.compose.core.LbcTextSpec
+import studio.lunabee.doubleratchet.model.createRandomUUID
+import studio.lunabee.messaging.domain.model.MessageDirection
 import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.commonui.DefaultNameProvider
 import studio.lunabee.onesafe.commonui.OSItemIllustrationHelper
 import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.extension.loremIpsum
-import studio.lunabee.onesafe.messaging.domain.model.MessageDirection
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
 import studio.lunabee.onesafe.model.OSSafeItemStyle
 import studio.lunabee.onesafe.model.combinedClickableWithHaptic
@@ -81,7 +82,7 @@ fun MessageRow(
                 .fillMaxWidth(style.widthRow)
                 .combinedClickableWithHaptic(
                     enabled = messageLongPress.enabled(messageData.type),
-                    onLongClick = { messageLongPress.onLongClick(messageData.id) },
+                    onLongClick = { messageLongPress.onLongClick(messageData.id.uuid) },
                     onClick = {},
                     onClickLabel = null,
                     onLongClickLabel = null,
@@ -183,7 +184,7 @@ fun OneSafeKMessageRowPreview() {
             }
             MessageRow(
                 messageData = ConversationUiData.Message(
-                    id = UUID.randomUUID(),
+                    id = createRandomUUID(),
                     text = LbcTextSpec.Raw(loremIpsum(10)),
                     direction = MessageDirection.SENT,
                     sendAt = Instant.now(),
@@ -196,7 +197,7 @@ fun OneSafeKMessageRowPreview() {
             )
             MessageRow(
                 messageData = ConversationUiData.Message(
-                    id = UUID.randomUUID(),
+                    id = createRandomUUID(),
                     text = LbcTextSpec.Raw(loremIpsum(10)),
                     direction = MessageDirection.RECEIVED,
                     sendAt = Instant.now(),
@@ -209,7 +210,7 @@ fun OneSafeKMessageRowPreview() {
             )
             MessageRow(
                 messageData = ConversationUiData.Message(
-                    id = UUID.randomUUID(),
+                    id = createRandomUUID(),
                     text = LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_corruptedMessage),
                     direction = MessageDirection.SENT,
                     sendAt = null,

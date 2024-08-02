@@ -69,6 +69,7 @@ class UpdateItemUseCase @Inject constructor(
                     setIconUseCase(
                         itemKey = itemKey,
                         icon = icon,
+                        safeId = safeItem.safeId,
                     ).also {
                         safeItem.iconId?.let { currentIconId -> deleteIconUseCase(currentIconId) }
                     }
@@ -138,7 +139,7 @@ class UpdateItemUseCase @Inject constructor(
 
             // Add files from new fields
             // remove files from removed fields
-            addAndRemoveFileUseCase(itemId = safeItem.id, fileSavingData = fileSavingData)
+            addAndRemoveFileUseCase(item = safeItem, fileSavingData = fileSavingData)
 
             itemWithUpdatedValue
         }

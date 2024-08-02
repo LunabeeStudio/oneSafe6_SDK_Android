@@ -26,12 +26,16 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
-import kotlin.test.Test
-import studio.lunabee.onesafe.test.assertThrows
+import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
+import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.test.assertDoesNotThrow
+import studio.lunabee.onesafe.test.assertThrows
+import studio.lunabee.onesafe.test.firstSafeId
 import javax.crypto.Cipher
 import javax.inject.Inject
+import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -47,12 +51,25 @@ class AndroidEditCryptoRepositoryTest {
     @Inject
     internal lateinit var mainRepository: AndroidMainCryptoRepository
 
+    @Inject
+    internal lateinit var safeRepository: SafeRepository
+
+    @Inject
+    @DatastoreEngineProvider(DataStoreType.Plain)
+    internal lateinit var dataStoreEngine: DatastoreEngine
+
     @Before
     fun setUp() {
         hiltRule.inject()
         runTest {
-            mainRepository.resetCryptography()
+            resetCryptography()
         }
+    }
+
+    private suspend fun resetCryptography() {
+        dataStoreEngine.clearDataStore()
+        mainRepository.unloadMasterKeys()
+        safeRepository.deleteSafe(firstSafeId)
     }
 
     @Test

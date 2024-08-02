@@ -23,7 +23,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
-import studio.lunabee.onesafe.bubbles.domain.model.ContactSharedKey
 import studio.lunabee.onesafe.storage.model.RoomContact
 import java.time.Instant
 import java.util.UUID
@@ -33,14 +32,11 @@ interface ContactDao {
     @Insert
     suspend fun insert(contact: RoomContact)
 
-    @Query("DELETE FROM Contact")
-    suspend fun clearTable()
+    @Query("SELECT * FROM Contact WHERE safe_id is :safeId")
+    fun getAllInFlow(safeId: UUID): Flow<List<RoomContact>>
 
-    @Query("SELECT * FROM Contact")
-    fun getAllInFlow(): Flow<List<RoomContact>>
-
-    @Query("SELECT * FROM Contact ORDER BY updated_at DESC LIMIT :maxNumber")
-    fun getRecentContactsFlow(maxNumber: Int): Flow<List<RoomContact>>
+    @Query("SELECT * FROM Contact WHERE safe_id is :safeId ORDER BY updated_at DESC LIMIT :maxNumber")
+    fun getRecentContactsFlow(maxNumber: Int, safeId: UUID): Flow<List<RoomContact>>
 
     @Query("SELECT * FROM Contact WHERE id = :id")
     fun getByIdFlow(id: UUID): Flow<RoomContact?>
@@ -49,19 +45,19 @@ interface ContactDao {
     suspend fun getById(id: UUID): RoomContact?
 
     @Query("SELECT enc_shared_key FROM Contact WHERE id = :id")
-    suspend fun getContactSharedKey(id: UUID): ContactSharedKey?
+    suspend fun getContactSharedKey(id: UUID): ByteArray?
 
     @Query("UPDATE Contact SET enc_shared_key = :sharedKey WHERE id = :id")
-    suspend fun addContactSharedKey(id: UUID, sharedKey: ContactSharedKey)
+    suspend fun addContactSharedKey(id: UUID, sharedKey: ByteArray)
 
     @Query("DELETE FROM Contact WHERE id = :id")
     suspend fun remote(id: UUID)
 
-    @Query("UPDATE Contact SET enc_is_using_deeplink = :encIsUsingDeeplink, updated_at =:updateAt WHERE id = :id")
-    suspend fun updateIsUsingDeeplink(id: UUID, encIsUsingDeeplink: ByteArray, updateAt: Instant)
+    @Query("UPDATE Contact SET enc_sharing_mode = :encSharingMode, updated_at =:updateAt WHERE id = :id")
+    suspend fun updateMessageSharingMode(id: UUID, encSharingMode: ByteArray, updateAt: Instant)
 
-    @Query("UPDATE Contact SET enc_is_using_deeplink = :encIsUsingDeeplink, updated_at =:updateAt, enc_name = :encName WHERE id = :id")
-    suspend fun updateContact(id: UUID, encIsUsingDeeplink: ByteArray, encName: ByteArray, updateAt: Instant)
+    @Query("UPDATE Contact SET enc_sharing_mode = :encSharingMode, updated_at =:updateAt, enc_name = :encName WHERE id = :id")
+    suspend fun updateContact(id: UUID, encSharingMode: ByteArray, encName: ByteArray, updateAt: Instant)
 
     @Query("UPDATE Contact SET updated_at =:updateAt WHERE id = :id")
     suspend fun updateUpdatedAt(id: UUID, updateAt: Instant)

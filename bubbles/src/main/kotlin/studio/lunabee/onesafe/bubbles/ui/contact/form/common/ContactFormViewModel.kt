@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import studio.lunabee.onesafe.bubbles.ui.contact.model.MessageSharingModeUi
 
 open class ContactFormViewModel(
     private val contactFormDelegate: ContactFormDelegate,
@@ -36,8 +37,8 @@ open class ContactFormViewModel(
         mFormState.value = mFormState.value.copy(name = value)
     }
 
-    fun setIsUsingDeepLink(value: Boolean) {
-        mFormState.value = mFormState.value.copy(isUsingDeepLink = value)
+    fun setModeSharingMessage(value: MessageSharingModeUi) {
+        mFormState.value = mFormState.value.copy(sharingMessageMode = value)
     }
 
     override fun onCleared() {

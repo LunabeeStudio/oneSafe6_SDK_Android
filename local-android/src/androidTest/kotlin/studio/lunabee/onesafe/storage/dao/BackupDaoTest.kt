@@ -19,23 +19,30 @@
 
 package studio.lunabee.onesafe.storage.dao
 
+import androidx.core.database.getStringOrNull
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
-import kotlin.test.Test
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.importexport.model.CloudBackup
+import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.extension.testInsertCloud
 import studio.lunabee.onesafe.storage.extension.testInsertLocal
 import studio.lunabee.onesafe.storage.model.RoomBackup
+import studio.lunabee.onesafe.storage.utils.toSqlBlobString
+import studio.lunabee.onesafe.test.firstSafeId
 import studio.lunabee.onesafe.test.testUUIDs
 import java.io.File
 import java.time.Clock
 import java.time.Instant
 import javax.inject.Inject
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
+
+// TODO <multisafe> safeId testing
 
 @HiltAndroidTest
 class BackupDaoTest {
@@ -45,6 +52,8 @@ class BackupDaoTest {
     @Inject internal lateinit var dao: BackupDao
 
     @Inject lateinit var clock: Clock
+
+    @Inject lateinit var mainDatabase: MainDatabase
 
     @Before
     fun setUp() {
@@ -62,18 +71,18 @@ class BackupDaoTest {
         )
 
         val remoteBackups = listOf(
-            CloudBackup(testUUIDs[1].toString(), testUUIDs[1].toString(), Instant.now(clock).plusMillis(1)),
-            CloudBackup(testUUIDs[0].toString(), testUUIDs[0].toString(), Instant.now(clock)),
+            CloudBackup(testUUIDs[1].toString(), testUUIDs[1].toString(), Instant.now(clock).plusMillis(1), firstSafeId),
+            CloudBackup(testUUIDs[0].toString(), testUUIDs[0].toString(), Instant.now(clock), firstSafeId),
         )
 
         dao.refreshCloudBackups(remoteBackups)
-        val actualLocals = dao.getAllLocal()
-        val actualClouds = dao.getAllCloud()
+        val actualLocals = dao.getAllLocal(firstSafeId)
+        val actualClouds = dao.getAllCloud(firstSafeId)
 
         // assert keep local backups
         assertContentEquals(localBackups, actualLocals)
         // assert cloud backups inserted & cleaned
-        assertContentEquals(remoteBackups, actualClouds.map { CloudBackup(it.remoteId, it.id, it.date) })
+        assertContentEquals(remoteBackups, actualClouds.map { CloudBackup(it.remoteId, it.name, it.date, firstSafeId) })
     }
 
     @Test
@@ -87,11 +96,17 @@ class BackupDaoTest {
 
         dao.deleteCloudBackup("backup_1")
         // Assert backup_1 deleted & backup_2 kept
-        assertContentEquals(localBackups.map { RoomBackup(it.id, "backup_2", it.localFile, it.date) }, dao.getAll())
+        assertContentEquals(
+            localBackups.map { RoomBackup(it.id, "backup_2", it.localFile, it.date, it.safeId, "backup_2") },
+            getAll(firstSafeId),
+        )
 
         // Assert backup_2 kept with remoteId nullified
         dao.deleteCloudBackup("backup_2")
-        assertContentEquals(localBackups.map { RoomBackup(it.id, null, it.localFile, it.date) }, dao.getAll())
+        assertContentEquals(
+            localBackups.map { RoomBackup(it.id, null, it.localFile, it.date, it.safeId, "backup_2") },
+            getAll(firstSafeId),
+        )
     }
 
     @Test
@@ -105,10 +120,34 @@ class BackupDaoTest {
 
         dao.deleteLocalBackup("backup_1")
         // Assert backup_1 deleted & backup_2 kept
-        assertContentEquals(cloudBackups.map { RoomBackup(it.id, it.remoteId, File("backup_2"), it.date) }, dao.getAll())
+        assertContentEquals(
+            cloudBackups.map { RoomBackup(it.id, it.remoteId, File("backup_2"), it.date, firstSafeId, "backup_2") },
+            getAll(firstSafeId),
+        )
 
         // Assert backup_2 kept with localFile nullified
         dao.deleteLocalBackup("backup_2")
-        assertContentEquals(cloudBackups.map { RoomBackup(it.id, it.remoteId, null, it.date) }, dao.getAll())
+        assertContentEquals(
+            cloudBackups.map { RoomBackup(it.id, it.remoteId, null, it.date, firstSafeId, "backup_2") },
+            getAll(firstSafeId),
+        )
+    }
+
+    private fun getAll(safeId: SafeId): List<RoomBackup> {
+        val safeIdBlob = safeId.toByteArray().toSqlBlobString()
+        val cursor = mainDatabase.openHelper.readableDatabase.query(
+            "SELECT * FROM Backup WHERE safe_id IS $safeIdBlob ORDER BY `date` DESC",
+        )
+        return generateSequence { if (cursor.moveToNext()) cursor else null }
+            .map {
+                RoomBackup(
+                    id = cursor.getString(0),
+                    remoteId = cursor.getString(1),
+                    localFile = cursor.getStringOrNull(2)?.let { File(it) },
+                    date = Instant.ofEpochMilli(cursor.getLong(3)),
+                    safeId = SafeId(cursor.getBlob(4)),
+                    name = cursor.getString(5),
+                )
+            }.toList()
     }
 }

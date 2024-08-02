@@ -23,7 +23,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import studio.lunabee.onesafe.messaging.domain.model.EnqueuedMessage
+import studio.lunabee.messaging.domain.model.EnqueuedMessage
 
 @Entity(
     tableName = "EnqueuedMessage",

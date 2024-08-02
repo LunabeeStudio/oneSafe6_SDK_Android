@@ -34,7 +34,7 @@ import studio.lunabee.onesafe.commonui.error.description
 import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.IsBiometricEnabledState
-import studio.lunabee.onesafe.domain.usecase.authentication.IsBiometricEnabledUseCase
+import studio.lunabee.onesafe.domain.usecase.authentication.HasBiometricSafeUseCase
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.ime.ui.biometric.ImeBiometricResultRepository
 import studio.lunabee.onesafe.login.state.LoginUiState
@@ -43,7 +43,7 @@ import studio.lunabee.onesafe.login.viewmodel.LoginFromPasswordDelegateImpl
 import studio.lunabee.onesafe.login.viewmodel.LoginUiStateHolder
 
 class ImeLoginViewModel(
-    isBiometricEnabledUseCase: IsBiometricEnabledUseCase,
+    hasBiometricSafeUseCase: HasBiometricSafeUseCase,
     private val loginUiStateHolder: LoginUiStateHolder,
     private val loginFromPasswordDelegate: LoginFromPasswordDelegateImpl,
     private val imeBiometricResultRepository: ImeBiometricResultRepository,
@@ -53,7 +53,7 @@ class ImeLoginViewModel(
     LoginFromPasswordDelegate by loginFromPasswordDelegate {
     val uiState: StateFlow<LoginUiState> = loginUiStateHolder.uiState
 
-    val isBiometricEnabled: StateFlow<Boolean> = isBiometricEnabledUseCase().map { result ->
+    val isBiometricEnabled: StateFlow<Boolean> = hasBiometricSafeUseCase().map { result ->
         if (result is IsBiometricEnabledState.Error) {
             _biometricError.emit(ErrorSnackbarState(error = result.error, onClick = {}))
         }
@@ -82,7 +82,7 @@ class ImeLoginViewModel(
                     is LBResult.Success -> {
                         mainCryptoRepository.loadMasterKeyExternal(result.successData)
                         loginUiStateHolder.dataState?.copy(
-                            loginResult = LoginUiState.LoginResult.Success,
+                            loginResult = LoginUiState.LoginResult.Success(false),
                         )?.let { dataState ->
                             loginUiStateHolder.setUiState(dataState)
                         }

@@ -26,7 +26,7 @@ import studio.lunabee.onesafe.model.OSSwitchState
 import java.net.URI
 
 data class AutoBackupSettingsUiState(
-    val isBackupEnabled: Boolean,
+    val isAutoBackupEnabled: Boolean,
     val autoBackupFrequency: AutoBackupFrequency,
     val autoBackupMaxNumber: AutoBackupMaxNumber,
     val latestBackups: LatestBackups?,
@@ -38,7 +38,7 @@ data class AutoBackupSettingsUiState(
 ) {
     companion object {
         fun disabled(): AutoBackupSettingsUiState = AutoBackupSettingsUiState(
-            isBackupEnabled = false,
+            isAutoBackupEnabled = false,
             autoBackupFrequency = AutoBackupFrequency.DAILY,
             autoBackupMaxNumber = AutoBackupMaxNumber.FIVE,
             latestBackups = null,

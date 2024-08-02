@@ -49,7 +49,7 @@ object WriteMessageFactory {
             },
             key = { index ->
                 when (val item = conversation.peek(index)) {
-                    is ConversationUiData.Message -> item.id
+                    is ConversationUiData.Message -> item.id.uuid
                     else -> index
                 }
             },

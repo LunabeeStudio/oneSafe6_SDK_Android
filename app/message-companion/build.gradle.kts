@@ -32,6 +32,7 @@ android {
         minSdk = AndroidConfig.MIN_APP_SDK
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
         missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
+        missingDimensionStrategy(OSDimensions.Environment.value, OSDimensions.Environment.Store)
     }
 
     compileOptions {
@@ -57,13 +58,14 @@ dependencies {
     implementation(libs.android.material)
     implementation(libs.androidx.core.ktx)
     implementation(libs.appcompat)
+    implementation(libs.bubbles.domain)
 
-    implementation(project(":bubbles-domain"))
     implementation(project(":domain"))
     implementation(project(":error"))
 
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(project(":dependency-injection:test-component"))
+    androidTestImplementation(libs.bubbles.shared)
     androidTestImplementation(project(":local-android"))
     androidTestImplementation(project(":remote"))
     androidTestImplementation(project(":repository"))

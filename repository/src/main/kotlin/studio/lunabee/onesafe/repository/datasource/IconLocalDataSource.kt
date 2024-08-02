@@ -19,16 +19,20 @@
 
 package studio.lunabee.onesafe.repository.datasource
 
+import studio.lunabee.onesafe.domain.model.safe.SafeId
+import studio.lunabee.onesafe.domain.utils.CrossSafeData
 import java.io.File
 import java.util.UUID
 
 interface IconLocalDataSource {
     fun getIcon(filename: String): File
-    fun addIcon(filename: String, icon: ByteArray): File
-    fun removeIcon(filename: String): Boolean
-    fun removeAllIcons(): Boolean
-    fun deleteIcon(filename: String): Boolean
+    suspend fun addIcon(filename: String, icon: ByteArray, safeId: SafeId): File
+    suspend fun deleteIcon(filename: String): Boolean
+
+    @CrossSafeData
     fun getAllIcons(): List<File>
-    fun copyAndDeleteIconFile(newIconFile: File, iconId: UUID)
+    suspend fun getIcons(safeId: SafeId): List<File>
+    suspend fun copyAndDeleteIconFile(newIconFile: File, iconId: UUID, safeId: SafeId)
     fun getIcons(iconsId: List<String>): List<File>
+    suspend fun deleteAll(safeId: SafeId)
 }

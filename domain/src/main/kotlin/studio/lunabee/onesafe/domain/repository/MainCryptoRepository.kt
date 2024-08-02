@@ -22,9 +22,10 @@ package studio.lunabee.onesafe.domain.repository
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
+import studio.lunabee.onesafe.domain.model.crypto.NewSafeCrypto
+import studio.lunabee.onesafe.domain.model.safe.BiometricCryptoMaterial
+import studio.lunabee.onesafe.domain.model.safe.SafeCrypto
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
-import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
-import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
@@ -50,47 +51,35 @@ interface MainCryptoRepository {
     suspend fun getFileEditionEncryptStream(plainFile: File): OutputStream
     suspend fun getFileEditionDecryptStream(encFile: File): InputStream
     suspend fun encrypt(outputStream: OutputStream, key: ByteArray): OutputStream
-    suspend fun encryptIndexWord(indexWordEntry: List<PlainIndexWordEntry>): List<IndexWordEntry>
-    suspend fun decryptIndexWord(encIndexWordEntry: List<IndexWordEntry>): List<PlainIndexWordEntry>
+    suspend fun encryptIndexWord(words: List<String>): List<ByteArray>
+    suspend fun decryptIndexWord(encWords: List<ByteArray>): List<String>
     suspend fun generateKeyForItemId(itemId: UUID): SafeItemKey
     suspend fun importItemKey(rawKeyValue: ByteArray, keyId: UUID): SafeItemKey
-    suspend fun resetCryptography()
     suspend fun unloadMasterKeys()
-    suspend fun hasMasterSalt(): Boolean
-    suspend fun getCurrentSalt(): ByteArray
-    suspend fun loadMasterKeyFromPassword(password: CharArray)
 
     /**
-     * Set the master key and salt. Fails if already set.
+     * Generate cryptographic keys from a master key. Does not load them.
      */
-    suspend fun storeMasterKeyAndSalt(key: ByteArray, salt: ByteArray)
+    suspend fun generateCrypto(key: ByteArray, salt: ByteArray, biometricCipher: Cipher?): NewSafeCrypto
 
     /**
-     * Same as [storeMasterKeyAndSalt] but allow overrides of the current master key & salt.
+     * Re-generate cryptographic keys from a master key. Override the loaded masker key (loaded master key mandatory)
      */
-    suspend fun overrideMasterKeyAndSalt(key: ByteArray, salt: ByteArray)
-    suspend fun testPassword(password: CharArray): Boolean
+    suspend fun regenerateAndOverrideLoadedCrypto(key: ByteArray, salt: ByteArray, biometricCipher: Cipher?): NewSafeCrypto
 
-    suspend fun loadMasterKeyFromBiometric(cipher: Cipher)
-    suspend fun retrieveMasterKeyFromBiometric(cipher: Cipher): ByteArray
-    suspend fun enableBiometric(biometricCipher: Cipher)
+    /**
+     * Test a password against the current loaded master key and salt
+     */
+    suspend fun testCurrentPassword(password: CharArray)
+
+    suspend fun loadMasterKeyFromBiometric(safeCrypto: SafeCrypto, cipher: Cipher)
+    suspend fun decryptMasterKeyWithBiometric(biometricCryptoMaterial: BiometricCryptoMaterial, cipher: Cipher): ByteArray
+    suspend fun enableBiometric(biometricCipher: Cipher, key: ByteArray? = null): BiometricCryptoMaterial
     suspend fun reEncryptItemKey(itemKey: SafeItemKey, key: ByteArray)
     fun isCryptoDataInMemoryFlow(): Flow<Boolean>
     suspend fun loadMasterKeyExternal(masterKey: ByteArray)
     suspend fun decryptRecentSearch(encRecentSearch: List<ByteArray>): List<String>
     suspend fun encryptRecentSearch(plainRecentSearch: List<String>): List<ByteArray>
-    suspend fun generateBubblesKey()
-    suspend fun deleteBubblesCrypto()
-
-    /**
-     * Encrypt [data] with the bubbles master key
-     */
-    suspend fun encryptBubbles(data: ByteArray): ByteArray
-
-    /**
-     * Decrypt [data] with the bubbles master key
-     */
-    suspend fun decryptBubbles(data: ByteArray): ByteArray
 
     /**
      * Returns true if the cryptographic keys are loaded
@@ -99,4 +88,9 @@ interface MainCryptoRepository {
      * [Duration.INFINITE] to wait indefinitely.
      */
     suspend fun isCryptoDataInMemory(timeout: Duration): Boolean
+
+    companion object {
+        // TODO <multisafe> move somewhere
+        const val MASTER_KEY_TEST_VALUE: String = "44c5dac9-17ba-4690-9275-c7471b2e0582"
+    }
 }

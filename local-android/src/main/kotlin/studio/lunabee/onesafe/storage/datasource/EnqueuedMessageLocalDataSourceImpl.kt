@@ -23,9 +23,9 @@ import android.database.sqlite.SQLiteConstraintException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import studio.lunabee.messaging.domain.model.EnqueuedMessage
 import studio.lunabee.messaging.repository.datasource.EnqueuedMessageLocalDataSource
 import studio.lunabee.onesafe.error.OSStorageError
-import studio.lunabee.onesafe.messaging.domain.model.EnqueuedMessage
 import studio.lunabee.onesafe.storage.dao.EnqueuedMessageDao
 import studio.lunabee.onesafe.storage.model.RoomEnqueuedMessage
 import javax.inject.Inject

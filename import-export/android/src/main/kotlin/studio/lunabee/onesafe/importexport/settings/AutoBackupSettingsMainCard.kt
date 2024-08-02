@@ -47,7 +47,7 @@ internal fun AutoBackupSettingsMainCard(
             modifier = modifier,
             actions = buildList {
                 this += SwitchSettingAction(
-                    label = LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_allowAutoBackup_title),
+                    label = LbcTextSpec.StringResource(OSString.settings_multiSafe_autoBackupScreen_allowAutoBackup_title),
                     onValueChange = { uiState.toggleAutoBackup() },
                     isChecked = uiState is AutoBackupSettingsMainCardUiState.Enabled,
                 )

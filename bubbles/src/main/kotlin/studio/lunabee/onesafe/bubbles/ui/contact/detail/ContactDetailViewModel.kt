@@ -31,20 +31,22 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
-import studio.lunabee.onesafe.bubbles.domain.repository.ContactRepository
-import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
-import studio.lunabee.onesafe.bubbles.domain.usecase.GetContactUseCase
-import studio.lunabee.onesafe.bubbles.domain.usecase.UpdateIsUsingDeeplinkContactUseCase
+import studio.lunabee.bubbles.domain.model.MessageSharingMode
+import studio.lunabee.bubbles.domain.repository.ContactRepository
+import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
+import studio.lunabee.bubbles.domain.usecase.GetContactUseCase
+import studio.lunabee.bubbles.domain.usecase.UpdateMessageSharingModeContactUseCase
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.usecase.GetConversationStateUseCase
+import studio.lunabee.onesafe.bubbles.ui.contact.model.MessageSharingModeUi
 import studio.lunabee.onesafe.bubbles.ui.extension.getNameProvider
 import studio.lunabee.onesafe.commonui.dialog.DialogAction
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.dialog.ErrorDialogState
 import studio.lunabee.onesafe.commonui.extension.startEmojiOrNull
 import studio.lunabee.onesafe.commonui.utils.ImageHelper
-import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
-import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCase
+import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
 import studio.lunabee.onesafe.ui.extensions.getFirstColorGenerated
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -53,12 +55,12 @@ class ContactDetailViewModel @Inject constructor(
     getContactUseCase: GetContactUseCase,
     contactLocalDecryptUseCase: ContactLocalDecryptUseCase,
     private val contactRepository: ContactRepository,
-    private val updateIsUsingDeeplinkContactUseCase: UpdateIsUsingDeeplinkContactUseCase,
+    private val updateMessageSharingModeContactUseCase: UpdateMessageSharingModeContactUseCase,
     private val getConversationStateUseCase: GetConversationStateUseCase,
     private val imageHelper: ImageHelper,
-    isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
+    isSafeReadyUseCase: IsSafeReadyUseCase,
 ) : ViewModel() {
-    val contactId: UUID = savedStateHandle.get<String>(ContactDetailDestination.ContactIdArg)?.let { UUID.fromString(it) }
+    val contactId: DoubleRatchetUUID = savedStateHandle.get<String>(ContactDetailDestination.ContactIdArg)?.let { DoubleRatchetUUID(it) }
         ?: error("Missing contact id in args")
 
     private val _dialogState = MutableStateFlow<DialogState?>(null)
@@ -70,31 +72,30 @@ class ContactDetailViewModel @Inject constructor(
     init {
         combine(
             getContactUseCase.flow(contactId),
-            isCryptoDataReadyInMemoryUseCase.flow(),
+            isSafeReadyUseCase.flow(),
         ) { encryptedContacts, isCryptoDataReadyInMemory ->
+            if (!isCryptoDataReadyInMemory) return@combine
             encryptedContacts?.let {
                 val decryptedNameResult = contactLocalDecryptUseCase(
                     encryptedContacts.encName,
                     encryptedContacts.id,
                     String::class,
                 )
-                val decryptedIsUsingDeeplink = contactLocalDecryptUseCase(
-                    encryptedContacts.encIsUsingDeeplink,
+                val decryptedMessageSharingMode = contactLocalDecryptUseCase(
+                    encryptedContacts.encSharingMode,
                     encryptedContacts.id,
-                    Boolean::class,
-                )
+                    MessageSharingMode::class,
+                ).data?.let { MessageSharingModeUi.fromMode(it) } ?: MessageSharingModeUi.CypherText
+
                 val conversationState = getConversationStateUseCase(contactId)
 
                 when (conversationState) {
                     is LBResult.Failure -> {
-                        if (isCryptoDataReadyInMemory) {
-                            showError(conversationState.throwable)
-                        }
-
+                        showError(conversationState.throwable)
                         _uiState.value = ContactDetailUiState.Data(
                             id = encryptedContacts.id,
                             nameProvider = decryptedNameResult.getNameProvider(),
-                            isDeeplinkActivated = decryptedIsUsingDeeplink.data ?: false,
+                            messageSharingModeUi = decryptedMessageSharingMode,
                             conversationState = ContactDetailUiState.UIConversationState.Indecipherable,
                             color = decryptedNameResult.data?.let { plainColor ->
                                 getColorFromName(plainColor)
@@ -105,7 +106,7 @@ class ContactDetailViewModel @Inject constructor(
                         _uiState.value = ContactDetailUiState.Data(
                             id = encryptedContacts.id,
                             nameProvider = decryptedNameResult.getNameProvider(),
-                            isDeeplinkActivated = decryptedIsUsingDeeplink.data ?: false,
+                            messageSharingModeUi = decryptedMessageSharingMode,
                             conversationState = ContactDetailUiState.UIConversationState.fromConversationState(
                                 conversationState.successData,
                             ),
@@ -128,9 +129,12 @@ class ContactDetailViewModel @Inject constructor(
         }
     }
 
-    fun updateIsUsingDeeplink(value: Boolean) {
+    fun updateSharingModeUi(sharingMode: MessageSharingModeUi) {
+        (_uiState.value as? ContactDetailUiState.Data)?.let {
+            _uiState.value = it.copy(messageSharingModeUi = sharingMode)
+        }
         viewModelScope.launch {
-            val result = updateIsUsingDeeplinkContactUseCase(contactId, value)
+            val result = updateMessageSharingModeContactUseCase(contactId, sharingMode.mode)
             if (result is LBResult.Failure) showError(result.throwable)
         }
     }

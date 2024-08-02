@@ -44,7 +44,7 @@ class BackupsProviderTest : OSHiltTest() {
     @get:Rule
     override val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
 
-    override val initialTestState: InitialTestState = InitialTestState.LoggedIn
+    override val initialTestState: InitialTestState = InitialTestState.Home()
 
     @Inject
     @InternalDir(InternalDir.Type.Backups)

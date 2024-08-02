@@ -19,12 +19,12 @@
 
 package studio.lunabee.onesafe.messaging.writemessage.model
 
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import java.time.Instant
-import java.util.UUID
 
 data class SentMessageData(
     val encMessage: String,
     val plainMessage: String,
-    val contactId: UUID,
+    val contactId: DoubleRatchetUUID,
     val createdAt: Instant,
 )

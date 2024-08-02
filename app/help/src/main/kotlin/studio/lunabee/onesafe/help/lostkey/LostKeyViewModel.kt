@@ -14,20 +14,21 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.commonui.CommonUiConstants
 import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
 import studio.lunabee.onesafe.commonui.snackbar.SnackbarState
-import studio.lunabee.onesafe.importexport.model.CloudInfo
-import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
+import studio.lunabee.onesafe.importexport.usecase.GetCloudInfoUseCase
 import studio.lunabee.onesafe.importexport.usecase.StoreExternalBackupUseCase
+import java.net.URI
 import javax.inject.Inject
 
 @HiltViewModel
 class LostKeyViewModel @Inject constructor(
-    cloudBackupRepository: CloudBackupRepository,
+    getCloudInfoUseCase: GetCloudInfoUseCase,
     private val storeExternalBackupUseCase: StoreExternalBackupUseCase,
     private val loadingManager: LoadingManager,
 ) : ViewModel() {
@@ -38,11 +39,11 @@ class LostKeyViewModel @Inject constructor(
     private val _snackbarState = MutableSharedFlow<SnackbarState?>()
     val snackbarState: SharedFlow<SnackbarState?> = _snackbarState.asSharedFlow()
 
-    val cloudInfo: StateFlow<CloudInfo> = cloudBackupRepository.getCloudInfo()
+    val folderUri: StateFlow<URI?> = flow { emit(getCloudInfoUseCase.getFirstFolderAvailable()) }
         .stateIn(
             viewModelScope,
             CommonUiConstants.Flow.DefaultSharingStarted,
-            CloudInfo(null, null),
+            null,
         )
 
     fun cacheBackupFile(uri: Uri) {

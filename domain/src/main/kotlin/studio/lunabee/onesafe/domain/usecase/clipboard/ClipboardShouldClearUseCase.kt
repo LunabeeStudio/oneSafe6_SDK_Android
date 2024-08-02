@@ -30,5 +30,5 @@ interface ClipboardShouldClearUseCase {
      * @return The user setting delay for clipboard auto-clear (returned by [ClipboardGetClearDelayUseCase]) or null if the clipboard
      * should not be clear
      */
-    operator fun invoke(): Duration?
+    suspend operator fun invoke(): Duration?
 }

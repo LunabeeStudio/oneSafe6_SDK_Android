@@ -21,13 +21,13 @@ package studio.lunabee.onesafe.storage.dao
 
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import studio.lunabee.onesafe.storage.OSStorageTestUtils
 import studio.lunabee.onesafe.test.OSTestConfig
+import studio.lunabee.onesafe.test.firstSafeId
 import studio.lunabee.onesafe.test.testUUIDs
 import java.time.Instant
 import javax.inject.Inject
@@ -59,7 +59,7 @@ class SafeItemDaoTest {
         safeItemDao.insert(listOf(grandParent, parent, child, secondChild, grandChild))
 
         val now = Instant.now(OSTestConfig.clock)
-        safeItemDao.setDeletedAndRemoveFromFavorite(parent.id, now)
+        safeItemDao.setDeletedAndRemoveFromFavorite(parent.id, now, firstSafeId)
 
         val expectedGrandParent = grandParent.copy()
         val expectedParent = parent.copy(deletedAt = now)
@@ -89,9 +89,9 @@ class SafeItemDaoTest {
         safeItemDao.insert(listOf(siblingRoot, parent, child))
 
         val now = Instant.now(OSTestConfig.clock)
-        safeItemDao.setDeletedAndRemoveFromFavorite(null, now)
+        safeItemDao.setDeletedAndRemoveFromFavorite(null, now, firstSafeId)
 
-        val actual = safeItemDao.getAllSafeItems().filter { it.deletedAt == null }
+        val actual = safeItemDao.getAllSafeItems(firstSafeId).filter { it.deletedAt == null }
         assertContentEquals(emptyList(), actual)
     }
 
@@ -111,29 +111,6 @@ class SafeItemDaoTest {
         val expectedItems2 = listOf(parent, child, secondChild, grandChild) // child and secondChild order is not mandatory
         val actualItems2 = safeItemDao.findByIdWithDescendants(parent.id)
         assertContentEquals(expectedItems2, actualItems2)
-    }
-
-    @Test
-    fun countAllDeletedWithNonDeletedParent_test(): TestResult = runTest {
-        val parent = OSStorageTestUtils.createRoomSafeItem(id = testUUIDs[0])
-        val child = OSStorageTestUtils.createRoomSafeItem(
-            id = testUUIDs[1],
-            parentId = parent.id,
-            deletedAt = Instant.ofEpochMilli(3),
-        )
-        val parent2 = OSStorageTestUtils.createRoomSafeItem(id = testUUIDs[4], deletedAt = Instant.ofEpochMilli(2))
-        val child2 = OSStorageTestUtils.createRoomSafeItem(
-            id = testUUIDs[5],
-            parentId = parent2.id,
-            deletedParentId = parent2.id,
-            deletedAt = Instant.ofEpochMilli(1),
-        )
-
-        safeItemDao.insert(listOf(parent, child, parent2, child2))
-
-        val expectedCount = 2
-        val actualCount = safeItemDao.countAllDeletedWithNonDeletedParent().first()
-        assertEquals(expectedCount, actualCount)
     }
 
     @Test
@@ -307,7 +284,7 @@ class SafeItemDaoTest {
         safeItemDao.insert(listOf(parent, child))
 
         val expectedChild = child.copy(deletedAt = null)
-        safeItemDao.unsetDeletedAtAndDeletedParentIdForItemAndDescendants(child.id)
+        safeItemDao.unsetDeletedAtAndDeletedParentIdForItemAndDescendants(child.id, firstSafeId)
         assertEquals(expectedChild, safeItemDao.findById(expectedChild.id))
     }
 
@@ -329,7 +306,7 @@ class SafeItemDaoTest {
         val expectedItemA = itemA.copy(deletedAt = null)
         val expectedItemB = itemB.copy(deletedAt = null, deletedParentId = null)
 
-        safeItemDao.unsetDeletedAtAndDeletedParentIdForItemAndDescendants(itemA.id)
+        safeItemDao.unsetDeletedAtAndDeletedParentIdForItemAndDescendants(itemA.id, firstSafeId)
 
         assertEquals(expectedItemA, safeItemDao.findById(expectedItemA.id))
         assertEquals(expectedItemB, safeItemDao.findById(expectedItemB.id))
@@ -358,7 +335,7 @@ class SafeItemDaoTest {
         val expectedItemB = itemB.copy(deletedAt = null, deletedParentId = null)
         val expectedItemC = itemC.copy(deletedAt = null, deletedParentId = null)
 
-        safeItemDao.unsetDeletedAtAndDeletedParentIdForItemAndDescendants(null)
+        safeItemDao.unsetDeletedAtAndDeletedParentIdForItemAndDescendants(null, firstSafeId)
 
         assertEquals(expectedItemA, safeItemDao.findById(expectedItemA.id))
         assertEquals(expectedItemB, safeItemDao.findById(expectedItemB.id))

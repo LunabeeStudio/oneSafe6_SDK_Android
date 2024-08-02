@@ -20,5 +20,8 @@
 package studio.lunabee.onesafe.migration
 
 object MigrationConstant {
-    const val LastVersion: Int = 13
+    const val LastVersion: Int = 15
+
+    // Copy of AndroidMainCryptoRepository to fix values as of v0
+    const val DATASTORE_USERNAME_V0 = "792bb428-b9bd-45bd-9a10-5d68de628b61"
 }

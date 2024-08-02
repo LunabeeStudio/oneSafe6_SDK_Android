@@ -22,7 +22,8 @@ package studio.lunabee.onesafe.storage.datasource
 import com.lunabee.lbextensions.mapValues
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import studio.lunabee.importexport.repository.datasource.CloudBackupLocalDataSource
+import studio.lunabee.importexport.datasource.CloudBackupLocalDataSource
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.storage.dao.BackupDao
 import studio.lunabee.onesafe.storage.model.RoomCloudBackup
@@ -39,11 +40,11 @@ class CloudBackupLocalDataSourceImpl @Inject constructor(
         dao.refreshCloudBackups(backups)
     }
 
-    override suspend fun getCloudBackups(): List<CloudBackup> =
-        dao.getAllCloud().map(RoomCloudBackup::toBackup)
+    override suspend fun getCloudBackups(safeId: SafeId): List<CloudBackup> =
+        dao.getAllCloud(safeId).map(RoomCloudBackup::toBackup)
 
-    override fun getCloudBackupsFlow(): Flow<List<CloudBackup>> =
-        dao.getCloudBackupsFlow().mapValues(RoomCloudBackup::toBackup)
+    override fun getCloudBackupsFlow(safeId: SafeId): Flow<List<CloudBackup>> =
+        dao.getCloudBackupsFlow(safeId).mapValues(RoomCloudBackup::toBackup)
 
     override suspend fun deleteCloudBackup(id: String) {
         dao.deleteCloudBackup(id)
@@ -52,13 +53,13 @@ class CloudBackupLocalDataSourceImpl @Inject constructor(
     override suspend fun getRemoteId(backupId: String): String? =
         dao.getRemoteId(backupId)
 
-    override suspend fun getLatestBackup(): CloudBackup? =
-        dao.getLatestCloudBackup()?.let(RoomCloudBackup::toBackup)
+    override suspend fun getLatestBackup(safeId: SafeId): CloudBackup? =
+        dao.getLatestCloudBackup(safeId)?.let(RoomCloudBackup::toBackup)
 
-    override fun getLatestBackupFlow(): Flow<CloudBackup?> =
-        dao.getLatestCloudBackupFlow().map { it?.toBackup() }
+    override fun getLatestBackupFlow(safeId: SafeId): Flow<CloudBackup?> =
+        dao.getLatestCloudBackupFlow(safeId).map { it?.toBackup() }
 
-    override suspend fun deleteAll() {
-        dao.deleteAllCloudBackup()
+    override suspend fun deleteAll(safeId: SafeId) {
+        dao.deleteAllCloudBackup(safeId)
     }
 }

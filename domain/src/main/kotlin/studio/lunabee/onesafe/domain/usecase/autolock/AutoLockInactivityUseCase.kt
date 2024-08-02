@@ -19,43 +19,53 @@
 
 package studio.lunabee.onesafe.domain.usecase.autolock
 
+import co.touchlab.kermit.Logger
+import com.lunabee.lbcore.model.LBResult
+import com.lunabee.lblogger.LBLogger
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import studio.lunabee.onesafe.domain.repository.SecurityOptionRepository
-import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
+import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.domain.repository.SecuritySettingsRepository
+import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
+import studio.lunabee.onesafe.error.OSError
 import javax.inject.Inject
 import kotlin.time.Duration
 
+private val logger: Logger = LBLogger.get<AutoLockInactivityUseCase>()
+
 class AutoLockInactivityUseCase @Inject constructor(
-    private val securityOptionRepository: SecurityOptionRepository,
+    private val securitySettingsRepository: SecuritySettingsRepository,
     private val autoLockInactivityGetRemainingTimeUseCase: AutoLockInactivityGetRemainingTimeUseCase,
     private val lockAppUseCase: LockAppUseCase,
-    private val isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase,
+    private val isSafeReadyUseCase: IsSafeReadyUseCase,
+    private val safeRepository: SafeRepository,
 ) {
 
-    suspend fun app() {
+    suspend fun app(): LBResult<Unit> = OSError.runCatching(logger) {
+        val safeId = safeRepository.currentSafeId()
         doAutoLock(
-            securityOptionRepository.autoLockInactivityDelayFlow,
-            autoLockInactivityGetRemainingTimeUseCase::app,
+            inactivityDelayFlow = securitySettingsRepository.autoLockInactivityDelayFlow(safeId),
+            remainingDelay = { autoLockInactivityGetRemainingTimeUseCase.app(safeId) },
         )
     }
 
-    suspend fun osk() {
+    suspend fun osk(): LBResult<Unit> = OSError.runCatching(logger) {
+        val safeId = safeRepository.currentSafeId()
         doAutoLock(
-            securityOptionRepository.autoLockOSKInactivityDelayFlow,
-            autoLockInactivityGetRemainingTimeUseCase::osk,
+            inactivityDelayFlow = securitySettingsRepository.autoLockOSKInactivityDelayFlow(safeId),
+            remainingDelay = { autoLockInactivityGetRemainingTimeUseCase.osk(safeId) },
         )
     }
 
     private suspend fun doAutoLock(
         inactivityDelayFlow: Flow<Duration>,
-        remainingDelay: () -> Duration,
+        remainingDelay: suspend () -> Duration,
     ) {
         combine(
             inactivityDelayFlow,
-            isCryptoDataReadyInMemoryUseCase.flow(),
+            isSafeReadyUseCase.flow(),
         ) { inactivityDelay, isCryptoDataReady ->
             inactivityDelay to isCryptoDataReady
         }.collectLatest { (inactivityDelay, isCryptoDataReady) ->

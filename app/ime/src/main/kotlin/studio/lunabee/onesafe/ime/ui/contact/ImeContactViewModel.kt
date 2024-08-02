@@ -26,13 +26,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
-import studio.lunabee.onesafe.bubbles.domain.usecase.GetAllContactsUseCase
+import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
+import studio.lunabee.bubbles.domain.usecase.GetAllContactsUseCase
+import studio.lunabee.messaging.domain.model.ConversationState
+import studio.lunabee.messaging.domain.usecase.GetConversationStateUseCase
 import studio.lunabee.onesafe.bubbles.ui.extension.getNameProvider
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.CommonUiConstants
-import studio.lunabee.onesafe.messaging.domain.model.ConversationState
-import studio.lunabee.onesafe.messaging.domain.usecase.GetConversationStateUseCase
 import javax.inject.Inject
 
 @HiltViewModel

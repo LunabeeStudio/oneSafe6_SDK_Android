@@ -51,5 +51,7 @@ data class OSDomainError(
         DATABASE_ENCRYPTION_ALREADY_ENABLED("The database encryption is already enabled"),
         DATABASE_KEY_BAD_FORMAT("The string does not represent a 32 bytes database key"),
         DATABASE_ENCRYPTION_KEY_KEYSTORE_LOST("Unable to decrypt the database encryption key using the Android keystore"),
+        SAFE_ID_NOT_READY_TIMEOUT("Time out on waiting for safe id to be loaded in memory"),
+        MISSING_BIOMETRIC_KEY("The safe crypto object does not contain an encrypted biometric key"),
     }
 }

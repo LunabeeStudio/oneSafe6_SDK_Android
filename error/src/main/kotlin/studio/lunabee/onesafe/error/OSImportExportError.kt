@@ -43,5 +43,6 @@ data class OSImportExportError(
         BACKUP_ID_NOT_FOUND_IN_DB("No backup found for the provided id"),
         FILE_NOT_A_BACKUP("The file is not a backup"),
         CANNOT_OPEN_URI("Unable to open a stream on the Uri"),
+        CANNOT_OPEN_STREAM_WITHOUT_SAFE_ID("Unable to open a stream without loaded safe id"),
     }
 }

@@ -24,6 +24,7 @@ import com.lunabee.lbcore.model.LBFlowResult.Companion.transformResult
 import com.lunabee.lblogger.LBLogger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
@@ -41,19 +42,20 @@ class DeleteOldCloudBackupsUseCase @Inject constructor(
     /**
      * Refresh and delete old cloud backups
      */
-    operator fun invoke(): Flow<LBFlowResult<Unit>> {
-        return backupRepository.refreshBackupList().transformResult { success ->
-            emitAll(invoke(success.successData))
+    operator fun invoke(safeId: SafeId): Flow<LBFlowResult<Unit>> {
+        return backupRepository.refreshBackupList(safeId).transformResult { success ->
+            emitAll(invoke(safeId, success.successData))
         }
     }
 
     /**
      * Delete old cloud backups
      */
-    operator fun invoke(allBackups: List<CloudBackup>): Flow<LBFlowResult<Unit>> {
+    suspend operator fun invoke(safeId: SafeId, allBackups: List<CloudBackup>): Flow<LBFlowResult<Unit>> {
         val backupsToDelete = allBackups
+            .filter { it.safeId != null }
             .sortedDescending()
-            .drop(autoBackupSettingsRepository.autoBackupMaxNumber)
+            .drop(autoBackupSettingsRepository.autoBackupMaxNumber(safeId))
         log.v("Found ${backupsToDelete.size} to delete")
         return backupRepository.deleteBackup(backupsToDelete)
     }

@@ -1,10 +1,7 @@
 package studio.lunabee.onesafe.help.debug
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Build
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -59,11 +56,6 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.work.WorkManager
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionStatus
-import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.color.DynamicColors
@@ -76,23 +68,14 @@ import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSRegularDivider
 import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.commonui.OSString
-import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
-import studio.lunabee.onesafe.commonui.dialog.rememberDialogState
-import studio.lunabee.onesafe.commonui.extension.copyToClipBoard
 import studio.lunabee.onesafe.commonui.extension.findFragmentActivity
 import studio.lunabee.onesafe.commonui.extension.markdown
-import studio.lunabee.onesafe.commonui.notification.NotificationPermissionRationaleDialogState
 import studio.lunabee.onesafe.help.debug.extension.resolveArgsToString
-import studio.lunabee.onesafe.help.debug.extension.startLocalBackupWorker
 import studio.lunabee.onesafe.help.debug.item.DbgNavRoute
-import studio.lunabee.onesafe.help.debug.item.DebugAutoBackup
-import studio.lunabee.onesafe.help.debug.item.DebugCloudBackup
-import studio.lunabee.onesafe.help.debug.item.DebugLocalBackup
 import studio.lunabee.onesafe.help.debug.item.DebugOneTimeAction
 import studio.lunabee.onesafe.help.debug.item.DebugOneTimeActionData
 import studio.lunabee.onesafe.help.debug.item.DebugSafeItem
 import studio.lunabee.onesafe.help.debug.item.DebugSafeItemData
-import studio.lunabee.onesafe.help.debug.item.SettingsDebugMenu
 import studio.lunabee.onesafe.help.debug.model.HelpDebugUiState
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.OSPreviewOnSurfaceTheme
@@ -103,7 +86,7 @@ import kotlin.time.Duration.Companion.seconds
 
 private val logger = LBLogger.get("RootDrawer")
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 internal fun HelpRootDrawer(
     navController: NavController,
@@ -116,18 +99,6 @@ internal fun HelpRootDrawer(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
 
-    var permissionDialogState by rememberDialogState()
-    permissionDialogState?.DefaultAlertDialog()
-
-    val notificationPermissionState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS) {
-            // Launch anyway (works w/wo notification)
-            WorkManager.getInstance(context).startLocalBackupWorker()
-        }
-    } else {
-        null // always granted
-    }
-
     val hasGoogleApi = remember {
         GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
     }
@@ -139,48 +110,6 @@ internal fun HelpRootDrawer(
         drawerState = drawerState,
         drawerContent = {
             val closeDrawer: () -> Unit = { coroutineScope.launch { drawerState.close() } }
-            val debugCloudBackup = if (hasGoogleApi) {
-                DebugCloudBackup(
-                    fetchBackups = viewModel::fetchBackupList,
-                    uploadBackup = viewModel::uploadBackup,
-                    deleteBackup = viewModel::deleteBackup,
-                    synchronizeBackups = viewModel::synchronizeBackups,
-                    getOneSafeFolderUri = {
-                        val uri = viewModel.getOneSafeFolderUri()
-                        if (uri != null) {
-                            context.copyToClipBoard(uri.toString(), LbcTextSpec.Raw("debug"))
-                            Toast.makeText(context, "Url copied to clipboard", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(context, "Url not found", Toast.LENGTH_SHORT).show()
-                        }
-                    },
-                )
-            } else {
-                null
-            }
-            val debugLocalBackup = DebugLocalBackup(
-                localBackup = {
-                    when (notificationPermissionState?.status) {
-                        is PermissionStatus.Denied -> {
-                            if (notificationPermissionState.status.shouldShowRationale) {
-                                permissionDialogState = NotificationPermissionRationaleDialogState(
-                                    launchPermissionRequest = {
-                                        notificationPermissionState.launchPermissionRequest()
-                                        permissionDialogState = null
-                                    },
-                                    dismiss = { permissionDialogState = null },
-                                )
-                            } else {
-                                notificationPermissionState.launchPermissionRequest()
-                            }
-                        }
-                        PermissionStatus.Granted,
-                        null,
-                        -> WorkManager.getInstance(context).startLocalBackupWorker()
-                    }
-                },
-                deleteLocalBackups = viewModel::deleteLocalBackups,
-            )
             HelpDebugMenuContent(
                 uiState = uiState,
                 toggleMaterialYouSetting = viewModel::toggleMaterialYouSetting,
@@ -189,36 +118,18 @@ internal fun HelpRootDrawer(
                 clearClipboard = viewModel::clearClipboard,
                 changePassword = viewModel::changePassword,
                 autolock = viewModel::autolock,
-                debugLocalBackup = debugLocalBackup,
-                debugCloudBackup = debugCloudBackup,
                 hasGoogleApi = hasGoogleApi,
-                setSetting = { setting ->
-                    coroutineScope.launch {
-                        drawerState.close()
-                        viewModel.setSetting(setting)
-                    }
-                },
                 createContact = viewModel::createContact,
                 debugOneTimeActionData = DebugOneTimeActionData(
                     closeDrawer = closeDrawer,
-                    resetBackupCta = viewModel::resetAutoBackupEnabled,
                     forceShowSupportOs = viewModel::showSupportOS,
                     resetOSKTutorial = viewModel::resetTutorialOSk,
-                    resetTips = viewModel::resetTips,
-                    resetOSKOnboarding = viewModel::resetOnboardingOSk,
-                    resetCameraTips = viewModel::resetCameraTips,
                 ),
                 debugSafeItemData = DebugSafeItemData(
-                    createRecursiveItem = viewModel::createRecursiveItem,
                     removeAllItems = viewModel::removeAllItems,
                     corruptFile = { viewModel.corruptFile() },
                 ),
                 toggleLoading = viewModel::toggleLoading,
-                debugAutoBackup = DebugAutoBackup(
-                    storeAutoBackupError = viewModel::errorAutoBackup,
-                    autoBackupError = uiState.autoBackupError,
-                    cancelAutoBackup = viewModel::cancelAutoBackup,
-                ),
                 onWipeDatabaseKey = viewModel::wipeDatabaseKey,
             )
         },
@@ -237,15 +148,11 @@ private fun HelpDebugMenuContent(
     clearClipboard: () -> Unit,
     changePassword: () -> Unit,
     autolock: () -> Unit,
-    debugLocalBackup: DebugLocalBackup,
-    debugCloudBackup: DebugCloudBackup?,
     hasGoogleApi: Boolean,
-    setSetting: (Any) -> Unit,
     createContact: () -> Unit,
     debugOneTimeActionData: DebugOneTimeActionData,
     debugSafeItemData: DebugSafeItemData,
     toggleLoading: () -> Unit,
-    debugAutoBackup: DebugAutoBackup,
     onWipeDatabaseKey: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -296,23 +203,6 @@ private fun HelpDebugMenuContent(
 
         AnimatedListTestItem("ℹ️ Global info", defaultModifier) {
             GlobalInfo(defaultModifier, hasGoogleApi, uiState.mainDatabaseSize)
-        }
-
-        AnimatedListTestItem("⚙️ Settings", defaultModifier) {
-            SettingsDebugMenu(
-                modifier = defaultModifier,
-                itemOrder = uiState.itemOrder,
-                itemsLayoutSetting = uiState.itemsLayoutSetting,
-                cameraSystem = uiState.cameraSystem,
-                setSetting = setSetting,
-                databaseEncryptionSettings = uiState.databaseEncryptionSettings,
-            )
-        }
-
-        AnimatedListTestItem("💾 Backups", defaultModifier) {
-            debugAutoBackup.Composable(modifier = defaultModifier)
-            debugLocalBackup.Composable(modifier = defaultModifier)
-            debugCloudBackup?.Composable(modifier = defaultModifier)
         }
 
         if (DynamicColors.isDynamicColorAvailable()) {
@@ -618,15 +508,11 @@ private fun RootDrawerPreview() {
                 clearClipboard = {},
                 changePassword = { LBResult.Success("") },
                 autolock = {},
-                debugLocalBackup = DebugLocalBackup({}, {}),
-                debugCloudBackup = DebugCloudBackup({}, {}, {}, {}, {}),
                 hasGoogleApi = true,
-                setSetting = {},
                 createContact = {},
-                debugOneTimeActionData = DebugOneTimeActionData({}, {}, {}, {}, {}, {}, {}),
-                debugSafeItemData = DebugSafeItemData({}, {}, {}),
+                debugOneTimeActionData = DebugOneTimeActionData({}, {}, {}),
+                debugSafeItemData = DebugSafeItemData({}, {}),
                 toggleLoading = {},
-                debugAutoBackup = DebugAutoBackup({}, null, {}),
                 onWipeDatabaseKey = {},
             )
         }

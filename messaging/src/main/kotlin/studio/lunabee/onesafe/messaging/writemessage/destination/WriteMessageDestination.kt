@@ -19,7 +19,6 @@
 
 package studio.lunabee.onesafe.messaging.writemessage.destination
 
-import android.app.Activity
 import android.app.ActivityManager
 import android.net.Uri
 import android.os.Build
@@ -30,6 +29,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -39,11 +40,15 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import studio.lunabee.bubbles.domain.model.MessageSharingMode
+import studio.lunabee.messaging.domain.model.DecryptResult
 import studio.lunabee.onesafe.atom.OSImageSpec
+import studio.lunabee.onesafe.bubbles.ui.extension.getDeepLinkFromMessage
 import studio.lunabee.onesafe.commonui.OSDestination
 import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.commonui.extension.getTextSharingIntent
-import studio.lunabee.onesafe.messaging.domain.model.DecryptResult
+import studio.lunabee.onesafe.messaging.MessagingConstants
+import studio.lunabee.onesafe.messaging.extension.getFileSharingIntent
 import studio.lunabee.onesafe.messaging.writemessage.model.SentMessageData
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageNavScope
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageRoute
@@ -64,7 +69,7 @@ object WriteMessageDestination : OSDestination {
     ): String {
         return Uri.Builder().apply {
             path(Path)
-            appendQueryParameter(ContactIdArg, decryptResult.contactId.toString())
+            appendQueryParameter(ContactIdArg, decryptResult.contactId.uuidString())
             decryptResult.error?.let { appendQueryParameter(ErrorArg, it.name) }
         }.build().toString()
     }
@@ -98,40 +103,68 @@ fun NavGraphBuilder.writeMessageScreen(
         val context = LocalContext.current
         val viewModel: WriteMessageViewModel = hiltViewModel()
         var sentMessageDataUnderSharing: SentMessageData? by remember { mutableStateOf(null) }
+        var rawMessageSent: String? by remember { mutableStateOf(null) }
+        val clipboardManager: ClipboardManager = LocalClipboardManager.current
 
         // Always save the message when navigating to another activity to share the current message
         LifecycleEventEffect(event = Lifecycle.Event.ON_STOP) {
             if (hasExternalActivityVisible(context.getSystemService(ActivityManager::class.java))) {
                 sentMessageDataUnderSharing?.let(viewModel::saveEncryptedMessage)
                 sentMessageDataUnderSharing = null
+                rawMessageSent = null
             }
         }
 
         val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult(),
-            onResult = { result ->
-                // Handle the case where the user choose to copy the message
-                if (result.resultCode == Activity.RESULT_OK) {
-                    sentMessageDataUnderSharing?.let(viewModel::saveEncryptedMessage)
+            onResult = {
+                val primaryClip = clipboardManager.getText()
+                rawMessageSent?.let { message ->
+                    if (message == primaryClip?.text) {
+                        sentMessageDataUnderSharing?.let(viewModel::saveEncryptedMessage)
+                    }
                 }
                 sentMessageDataUnderSharing = null
+                rawMessageSent = null
+                viewModel.consumeArchive()
             },
         )
 
         createMessagingViewModel(backStackEntry)
+
         WriteMessageRoute(
             onChangeRecipient = null,
-            sendMessage = { sentMessageData, messageToSend ->
+            sendMessage = { sentMessageData, messageToSend, sharingMode ->
                 sentMessageDataUnderSharing = sentMessageData
-                val intent = context.getTextSharingIntent(messageToSend)
-                launcher.launch(intent)
+                rawMessageSent = messageToSend
+                when (sharingMode) {
+                    MessageSharingMode.Deeplink,
+                    MessageSharingMode.CypherText,
+                    -> context.getTextSharingIntent(messageToSend).let(launcher::launch)
+                    MessageSharingMode.Archive -> {
+                        viewModel.createAndShareArchive(messageToSend) { file ->
+                            val intent = context.getFileSharingIntent(file, MessagingConstants.MessageArchiveMimeType)
+                            launcher.launch(intent)
+                        }
+                    }
+                }
             },
             contactIdFlow = backStackEntry.savedStateHandle.getStateFlow(WriteMessageDestination.ContactIdArg, null),
             sendIcon = OSImageSpec.Drawable(OSDrawable.ic_share),
             hideKeyboard = null,
-            resendMessage = { messageToSend ->
-                val intent = context.getTextSharingIntent(messageToSend)
-                context.startActivity(intent)
+            resendMessage = { messageToSend, sharingMode ->
+                when (sharingMode) {
+                    MessageSharingMode.Deeplink ->
+                        messageToSend.getDeepLinkFromMessage(sharingMode).let { context.getTextSharingIntent(it).let(launcher::launch) }
+                    MessageSharingMode.CypherText ->
+                        context.getTextSharingIntent(messageToSend).let(launcher::launch)
+                    MessageSharingMode.Archive -> {
+                        viewModel.createAndShareArchive(messageToSend) { file ->
+                            val intent = context.getFileSharingIntent(file, MessagingConstants.MessageArchiveMimeType)
+                            launcher.launch(intent)
+                        }
+                    }
+                }
             },
             viewModel = viewModel,
         )

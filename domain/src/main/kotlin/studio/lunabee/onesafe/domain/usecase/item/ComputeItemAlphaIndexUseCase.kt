@@ -20,7 +20,9 @@
 package studio.lunabee.onesafe.domain.usecase.item
 
 import com.lunabee.lbcore.model.LBResult
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.ItemNameWithIndex
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
@@ -37,6 +39,7 @@ class ComputeItemAlphaIndexUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
     private val itemDecryptUseCase: ItemDecryptUseCase,
     private val cleanForAlphaIndexingUseCase: CleanForAlphaIndexingUseCase,
+    private val safeRepository: SafeRepository,
 ) {
     /**
      * @param itemName the name to compute the index on
@@ -45,24 +48,26 @@ class ComputeItemAlphaIndexUseCase @Inject constructor(
     suspend operator fun invoke(itemName: String?, currentIndex: Double? = null): LBResult<Double> = OSError.runCatching(
         mapErr = { OSDomainError.Code.ALPHA_INDEX_COMPUTE_FAILED.get(cause = it) },
     ) {
+        val safeId = safeRepository.currentSafeId()
         val cleanName = cleanForAlphaIndexingUseCase(itemName.orEmpty())
-        val count = safeItemRepository.getSafeItemsCount()
-        val range = safeItemRepository.getAlphaIndexRange()
+        val count = safeItemRepository.getSafeItemsCount(safeId)
+        val range = safeItemRepository.getAlphaIndexRange(safeId)
 
         if (cleanName.isEmpty()) {
-            emptyIndex(count - 1)
+            emptyIndex(count - 1, safeId)
         } else {
             binarySearch(
                 initEnd = count - 1,
                 name = cleanName,
                 range = range,
                 currentIndex = currentIndex,
+                safeId = safeId,
             )
         }
     }
 
-    private suspend fun emptyIndex(lastIndex: Int): Double {
-        val lastItem = safeItemRepository.getItemNameWithIndexAt(lastIndex)
+    private suspend fun emptyIndex(lastIndex: Int, safeId: SafeId): Double {
+        val lastItem = safeItemRepository.getItemNameWithIndexAt(lastIndex, safeId)
         val lastItemName = lastItem?.encName
             ?.let { itemDecryptUseCase(it, lastItem.id, String::class).data!! }
             ?.let { cleanForAlphaIndexingUseCase(it) }
@@ -78,6 +83,7 @@ class ComputeItemAlphaIndexUseCase @Inject constructor(
         name: String,
         range: Pair<Double, Double>,
         currentIndex: Double?,
+        safeId: SafeId,
     ): Double {
         var start = 0
         var end = initEnd
@@ -86,7 +92,7 @@ class ComputeItemAlphaIndexUseCase @Inject constructor(
         var next = floor(range.second + 1.0)
         while (start <= end && next != previous) {
             val mid = (start + (end - start) / 2f).toInt()
-            val midItemNameWithIndex = safeItemRepository.getItemNameWithIndexAt(mid)
+            val midItemNameWithIndex = safeItemRepository.getItemNameWithIndexAt(mid, safeId)
             val midItemPlainName = getItemPlainName(midItemNameWithIndex)
 
             when {

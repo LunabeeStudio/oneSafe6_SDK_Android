@@ -75,14 +75,17 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import studio.lunabee.onesafe.OSAppSettings
+import studio.lunabee.messaging.domain.repository.MessageChannelRepository
+import studio.lunabee.messaging.domain.usecase.ProcessMessageQueueUseCase
 import studio.lunabee.onesafe.atom.textfield.LocalTextFieldInteraction
 import studio.lunabee.onesafe.commonui.localprovider.LocalIsKeyBoardVisible
 import studio.lunabee.onesafe.commonui.localprovider.LocalIsOneSafeK
 import studio.lunabee.onesafe.domain.usecase.authentication.CheckDatabaseAccessUseCase
-import studio.lunabee.onesafe.domain.usecase.authentication.IsCryptoDataReadyInMemoryUseCase
+import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSignUpUseCase
 import studio.lunabee.onesafe.domain.usecase.autolock.LockAppUseCase
+import studio.lunabee.onesafe.domain.usecase.settings.GetAppVisitUseCase
+import studio.lunabee.onesafe.domain.usecase.settings.SetAppVisitUseCase
 import studio.lunabee.onesafe.help.main.HelpActivity
 import studio.lunabee.onesafe.ime.model.ImeClient
 import studio.lunabee.onesafe.ime.model.OSKImeState
@@ -97,13 +100,9 @@ import studio.lunabee.onesafe.ime.viewmodel.ImeLoginViewModelFactory
 import studio.lunabee.onesafe.ime.viewmodel.SelectContactViewModelFactory
 import studio.lunabee.onesafe.ime.viewmodel.WriteMessageViewModelFactory
 import studio.lunabee.onesafe.login.screen.LoginDestination
-import studio.lunabee.onesafe.messaging.domain.repository.MessageChannelRepository
-import studio.lunabee.onesafe.messaging.domain.usecase.ProcessMessageQueueUseCase
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.LocalColorPalette
-import studio.lunabee.onesafe.visits.OSAppVisit
-import studio.lunabee.onesafe.visits.OSPreferenceTips
 import javax.inject.Inject
 
 // TODO oSK extract business call to a viewmodel class
@@ -122,11 +121,9 @@ class OSFlorisImeService : FlorisImeService() {
 
     @Inject lateinit var writeMessageViewModelFactory: dagger.Lazy<WriteMessageViewModelFactory>
 
-    @Inject lateinit var settings: OSAppSettings
-
     @Inject lateinit var channelRepository: MessageChannelRepository
 
-    @Inject lateinit var isCryptoDataReadyInMemoryUseCase: IsCryptoDataReadyInMemoryUseCase
+    @Inject lateinit var isSafeReadyUseCase: IsSafeReadyUseCase
 
     @Inject lateinit var decryptClipboardListener: DecryptClipboardListener
 
@@ -138,7 +135,9 @@ class OSFlorisImeService : FlorisImeService() {
 
     @Inject lateinit var isSignUpUseCase: IsSignUpUseCase
 
-    @Inject lateinit var osAppVisit: OSAppVisit
+    @Inject lateinit var getAppVisitUseCase: GetAppVisitUseCase
+
+    @Inject lateinit var setAppVisitUseCase: SetAppVisitUseCase
 
     @Inject lateinit var autolockVisibilityManager: OSKAutoLockVisibilityManager
 
@@ -312,13 +311,11 @@ class OSFlorisImeService : FlorisImeService() {
             super.ThemeImeView()
         } else {
             val coroutineScope = rememberCoroutineScope()
-            val hasDoneOpenTutorial by osAppVisit
-                .getAsFlow(preferencesTips = OSPreferenceTips.HasDoneTutorialOpenOsk)
+            val hasDoneOpenTutorial by getAppVisitUseCase.hasDoneTutorialOpenOsk()
                 .collectAsStateWithLifecycle(initialValue = true)
-            val hasDoneLockTutorial by osAppVisit
-                .getAsFlow(preferencesTips = OSPreferenceTips.HasDoneTutorialLockOsk)
+            val hasDoneLockTutorial by getAppVisitUseCase.hasDoneTutorialLockOsk()
                 .collectAsStateWithLifecycle(initialValue = true)
-            val isCryptoDataReady by isCryptoDataReadyInMemoryUseCase.flow().collectAsStateWithLifecycle(
+            val isCryptoDataReady by isSafeReadyUseCase.flow().collectAsStateWithLifecycle(
                 false,
             )
             val isOneSafeUiVisible by isOneSafeUiVisibleFlow.collectAsStateWithLifecycle()
@@ -357,7 +354,7 @@ class OSFlorisImeService : FlorisImeService() {
                             onLogoClick = {
                                 if (isDatabaseAccessible) {
                                     coroutineScope.launch {
-                                        osAppVisit.store(value = true, preferencesTips = OSPreferenceTips.HasDoneTutorialOpenOsk)
+                                        setAppVisitUseCase.setHasDoneTutorialOpenOsk()
                                         showOneSafeUi()
                                     }
                                 } else {
@@ -369,7 +366,7 @@ class OSFlorisImeService : FlorisImeService() {
                                     when {
                                         !isDatabaseAccessible -> HelpActivity.launch(this@OSFlorisImeService)
                                         isCryptoDataReady -> {
-                                            osAppVisit.store(value = true, OSPreferenceTips.HasDoneTutorialLockOsk)
+                                            setAppVisitUseCase.setHasDoneTutorialLockOsk()
                                             lockUseCase()
                                         }
                                         else -> showOneSafeUi()
@@ -379,12 +376,10 @@ class OSFlorisImeService : FlorisImeService() {
                             displayOpenTutorial = !hasDoneOpenTutorial && !isOneSafeUiVisible,
                             displayLockTutorial = !hasDoneLockTutorial && isCryptoDataReady,
                             closeLockTutorial = {
-                                coroutineScope.launch { osAppVisit.store(value = true, OSPreferenceTips.HasDoneTutorialLockOsk) }
+                                coroutineScope.launch { setAppVisitUseCase.setHasDoneTutorialLockOsk() }
                             },
                             closeOpenTutorial = {
-                                coroutineScope.launch {
-                                    osAppVisit.store(value = true, preferencesTips = OSPreferenceTips.HasDoneTutorialOpenOsk)
-                                }
+                                coroutineScope.launch { setAppVisitUseCase.setHasDoneTutorialOpenOsk() }
                             },
                         )
                     }
@@ -411,7 +406,7 @@ class OSFlorisImeService : FlorisImeService() {
     override fun AboveImeView(ImeUi: @Composable () -> Unit) {
         val imeClient by imeClientFlow.collectAsStateWithLifecycle()
         navController = rememberNavController()
-        val isCryptoDataReady by isCryptoDataReadyInMemoryUseCase.flow().collectAsStateWithLifecycle(
+        val isCryptoDataReady by isSafeReadyUseCase.flow().collectAsStateWithLifecycle(
             initialValue = false,
         )
         val isOneSafeUiVisible by isOneSafeUiVisibleFlow.collectAsStateWithLifecycle()
@@ -539,7 +534,8 @@ class OSFlorisImeService : FlorisImeService() {
     fun OneSafeKUi(
         modifier: Modifier,
     ) {
-        val hasDoneOnBoardingBubbles: Boolean by osAppVisit.get(OSPreferenceTips.HasDoneOnBoardingBubbles)
+        val hasDoneOnBoardingBubbles: Boolean by getAppVisitUseCase.hasDoneOnBoardingBubbles()
+            .collectAsStateWithLifecycle(initialValue = true)
         Surface(
             modifier = modifier,
             color = MaterialTheme.colorScheme.background,

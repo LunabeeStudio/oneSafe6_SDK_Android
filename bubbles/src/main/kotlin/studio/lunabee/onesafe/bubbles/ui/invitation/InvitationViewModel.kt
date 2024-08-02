@@ -24,33 +24,31 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lunabee.lbcore.model.LBResult
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import studio.lunabee.onesafe.OSAppSettings
-import studio.lunabee.onesafe.bubbles.domain.usecase.ContactLocalDecryptUseCase
-import studio.lunabee.onesafe.bubbles.domain.usecase.GetContactUseCase
+import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
+import studio.lunabee.bubbles.domain.usecase.GetContactUseCase
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.usecase.GetInvitationMessageUseCase
 import studio.lunabee.onesafe.commonui.dialog.DialogAction
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.dialog.ErrorDialogState
-import studio.lunabee.onesafe.messaging.domain.usecase.GetInvitationMessageUseCase
-import java.util.UUID
 import javax.inject.Inject
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
+@OptIn(ExperimentalEncodingApi::class)
 @HiltViewModel
 class InvitationViewModel @Inject constructor(
     private val getInvitationMessageUseCase: GetInvitationMessageUseCase,
     private val getContactUseCase: GetContactUseCase,
     private val contactLocalDecryptUseCase: ContactLocalDecryptUseCase,
-    settings: OSAppSettings,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    val contactId: UUID = savedStateHandle.get<String>(InvitationDestination.ContactIdArgs)?.let { UUID.fromString(it) }
+    val contactId: DoubleRatchetUUID = savedStateHandle.get<String>(InvitationDestination.ContactIdArgs)?.let { DoubleRatchetUUID(it) }
         ?: error("Missing contact id in args")
-
-    val isMaterialYouEnabled: Flow<Boolean> = settings.materialYouSetting
 
     private val _uiState: MutableStateFlow<InvitationUiState?> = MutableStateFlow(null)
     val uiState: StateFlow<InvitationUiState?> = _uiState.asStateFlow()
@@ -77,7 +75,7 @@ class InvitationViewModel @Inject constructor(
                     }
                     is LBResult.Success -> {
                         _uiState.value = InvitationUiState.Data(
-                            invitationString = invitationStringRes.successData,
+                            invitationString = Base64.encode(invitationStringRes.successData),
                             contactName = decryptedNameResult.data.orEmpty(), // TODO <bubbles> is null expected? -> handle result?
                         )
                     }

@@ -21,21 +21,28 @@ package studio.lunabee.onesafe.domain.manager
 
 import com.lunabee.lbcore.model.LBFlowResult
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.domain.model.search.PlainIndexWordEntry
 import studio.lunabee.onesafe.domain.repository.IndexWordEntryRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.usecase.search.DecryptIndexWordUseCase
 import javax.inject.Inject
 
 class SearchIndexManager @Inject constructor(
     private val indexWordEntryRepository: IndexWordEntryRepository,
     private val decryptIndexWordUseCase: DecryptIndexWordUseCase,
+    private val safeRepository: SafeRepository,
 ) {
     private val _decryptedIndex: MutableStateFlow<LBFlowResult<List<PlainIndexWordEntry>>> =
         MutableStateFlow(LBFlowResult.Loading())
@@ -51,11 +58,15 @@ class SearchIndexManager @Inject constructor(
         clearIndexAfterDelay(scope)
     }
 
-    private fun readAndStoreIndex(scope: CoroutineScope): Job = scope.launch {
-        indexWordEntryRepository.getAll().collect {
+    private fun readAndStoreIndex(scope: CoroutineScope): Job {
+        @OptIn(ExperimentalCoroutinesApi::class)
+        val flow = safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+            safeId?.let { indexWordEntryRepository.getAll(safeId) } ?: flowOf(emptyList())
+        }.onEach {
             _decryptedIndex.value = LBFlowResult.Loading()
             _decryptedIndex.value = decryptIndexWordUseCase(it).asFlowResult()
         }
+        return flow.launchIn(scope)
     }
 
     private fun clearIndexAfterDelay(execScope: CoroutineScope) {

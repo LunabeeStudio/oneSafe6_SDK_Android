@@ -30,12 +30,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import studio.lunabee.onesafe.DatastoreSettingsDataSource
-import studio.lunabee.onesafe.model.LocalCtaStateMap
-import studio.lunabee.onesafe.repository.datasource.SettingsDataSource
+import studio.lunabee.onesafe.repository.datasource.GlobalSettingsLocalDataSource
+import studio.lunabee.onesafe.repository.datasource.SafeSettingsLocalDataSource
 import studio.lunabee.onesafe.repository.datasource.SupportOSDataSource
-import studio.lunabee.onesafe.storage.datastore.ProtoSerializer
+import studio.lunabee.onesafe.storage.datasource.SettingsLocalDataSource
 import studio.lunabee.onesafe.support.SupportOSDataStore
+import studio.lunabee.onesafe.visits.GlobalSettingsDataStore
 import javax.inject.Singleton
 
 @Module
@@ -43,7 +43,11 @@ import javax.inject.Singleton
 interface SettingsModule {
     @Binds
     @Singleton
-    fun bindsSecurityOptionDataSource(androidSecurityOptionDataSource: DatastoreSettingsDataSource): SettingsDataSource
+    fun bindsSafeSettingsLocalDataSource(settingsLocalDataSourceImpl: SettingsLocalDataSource): SafeSettingsLocalDataSource
+
+    @Binds
+    @Singleton
+    fun bindsGlobalSettingsLocalDataSource(globalSettingsDataStore: GlobalSettingsDataStore): GlobalSettingsLocalDataSource
 
     @Binds
     @Singleton
@@ -65,12 +69,4 @@ object SettingsPreferenceDataStoreModule {
             context.preferencesDataStoreFile(SettingsPrefDataStore)
         }
     }
-
-    private const val CtaMapDataStore: String = "64ed5309-0f38-4dac-8451-473247a6ea41"
-
-    @Provides
-    @Singleton
-    fun provideCtaStateMapDatastore(
-        @ApplicationContext context: Context,
-    ): DataStore<LocalCtaStateMap> = ProtoSerializer.dataStore(context, LocalCtaStateMap(emptyMap()), CtaMapDataStore)
 }

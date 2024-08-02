@@ -29,12 +29,14 @@ import org.junit.Rule
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
+import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.OSStorageTestUtils
 import studio.lunabee.onesafe.storage.extension.data
 import studio.lunabee.onesafe.storage.model.RoomSafeItem
 import studio.lunabee.onesafe.storage.model.RoomSafeItemField
 import studio.lunabee.onesafe.test.OSTestConfig
 import studio.lunabee.onesafe.test.OSTestUtils
+import studio.lunabee.onesafe.test.firstSafeId
 import studio.lunabee.onesafe.test.testUUIDs
 import java.time.Instant
 import javax.inject.Inject
@@ -46,6 +48,8 @@ import kotlin.test.assertEquals
 class SafeItemRawDaoTest {
 
     @get:Rule val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
+
+    @Inject internal lateinit var mainDatabase: MainDatabase
 
     @Inject internal lateinit var safeItemDao: SafeItemDao
 
@@ -98,14 +102,14 @@ class SafeItemRawDaoTest {
     fun findByParentId_test(): TestResult = runTest {
         ItemOrder.entries.forEach { itemOrder ->
             val expectedNull = listOf(itemA, itemB).sortedBy(itemOrder)
-            val actualNull = rawDao.getItems(SafeItemRawDao.findByParentIdQuery(null, itemOrder))
+            val actualNull = rawDao.getItems(SafeItemRawDao.findByParentIdQuery(null, itemOrder, firstSafeId))
 
             assertContentEquals(expectedNull, actualNull, itemOrder)
             val expectedA = listOf(itemA1)
-            val actualA = rawDao.getItems(SafeItemRawDao.findByParentIdQuery(itemA.id, itemOrder))
+            val actualA = rawDao.getItems(SafeItemRawDao.findByParentIdQuery(itemA.id, itemOrder, firstSafeId))
 
             assertContentEquals(expectedA, actualA, itemOrder)
-            val actualB = rawDao.getItems(SafeItemRawDao.findByParentIdQuery(itemB.id, itemOrder))
+            val actualB = rawDao.getItems(SafeItemRawDao.findByParentIdQuery(itemB.id, itemOrder, firstSafeId))
 
             assertContentEquals(emptyList(), actualB, itemOrder)
         }
@@ -138,14 +142,14 @@ class SafeItemRawDaoTest {
     fun findByParentIdAsPagingSource_test(): TestResult = runTest {
         ItemOrder.entries.forEach { itemOrder ->
             val expectedNull = listOf(itemA, itemB).sortedBy(itemOrder)
-            val actualNull = rawDao.getPagedItems(SafeItemRawDao.findByParentIdQuery(null, itemOrder))
+            val actualNull = rawDao.getPagedItems(SafeItemRawDao.findByParentIdQuery(null, itemOrder, firstSafeId))
                 .data()
             assertContentEquals(expectedNull, actualNull, itemOrder)
             val expectedA = listOf(itemA1)
-            val actualA = rawDao.getPagedItems(SafeItemRawDao.findByParentIdQuery(itemA.id, itemOrder))
+            val actualA = rawDao.getPagedItems(SafeItemRawDao.findByParentIdQuery(itemA.id, itemOrder, firstSafeId))
                 .data()
             assertContentEquals(expectedA, actualA, itemOrder)
-            val actualB = rawDao.getPagedItems(SafeItemRawDao.findByParentIdQuery(itemB.id, itemOrder))
+            val actualB = rawDao.getPagedItems(SafeItemRawDao.findByParentIdQuery(itemB.id, itemOrder, firstSafeId))
                 .data()
             assertContentEquals(emptyList(), actualB, itemOrder)
         }
@@ -159,6 +163,7 @@ class SafeItemRawDaoTest {
                 SafeItemRawDao.getAllSafeItemsWithIdentifierQuery(
                     idsToExclude = listOf(itemB.id),
                     order = itemOrder,
+                    safeId = firstSafeId,
                 ),
             ).data()
 
@@ -168,7 +173,7 @@ class SafeItemRawDaoTest {
 
     @Test
     fun findByDeletedParentIdAsPagingSource_delete_child_only_test(): TestResult = runTest {
-        safeItemDao.clearTable()
+        mainDatabase.openHelper.writableDatabase.delete("SafeItem", null, null)
 
         val parent1 = OSStorageTestUtils.createRoomSafeItem(position = 0.0, id = testUUIDs[0])
         val child1 = OSStorageTestUtils.createRoomSafeItem(
@@ -204,12 +209,12 @@ class SafeItemRawDaoTest {
         ItemOrder.entries.forEach { itemOrder ->
             val expectedItems1 = listOf(parent3, child1, child2)
             val actualItems1 = rawDao
-                .getPagedItems(SafeItemRawDao.findByDeletedParentIdQuery(null, itemOrder))
+                .getPagedItems(SafeItemRawDao.findByDeletedParentIdQuery(null, itemOrder, firstSafeId))
                 .data()
             assertContentEquals(expectedItems1, actualItems1, itemOrder)
 
             val actualItems2 = rawDao
-                .getPagedItems(SafeItemRawDao.findByDeletedParentIdQuery(child1.id, itemOrder))
+                .getPagedItems(SafeItemRawDao.findByDeletedParentIdQuery(child1.id, itemOrder, firstSafeId))
                 .data()
             assertContentEquals(emptyList(), actualItems2, itemOrder)
         }
@@ -230,7 +235,7 @@ class SafeItemRawDaoTest {
         ItemOrder.entries.forEach { itemOrder ->
             val expectedRootItems = listOf(parent)
             val actualRootItems = rawDao
-                .getPagedItems(SafeItemRawDao.findByDeletedParentIdQuery(null, itemOrder))
+                .getPagedItems(SafeItemRawDao.findByDeletedParentIdQuery(null, itemOrder, firstSafeId))
                 .data()
             assertContentEquals(expectedRootItems, actualRootItems)
 
@@ -240,6 +245,7 @@ class SafeItemRawDaoTest {
                     SafeItemRawDao.findByDeletedParentIdQuery(
                         parent.id,
                         itemOrder,
+                        firstSafeId,
                     ),
                 ).data()
             assertContentEquals(expectedChildItems, actualChildItems, itemOrder)
@@ -250,7 +256,7 @@ class SafeItemRawDaoTest {
     fun findFavoriteQuery_test(): TestResult = runTest {
         ItemOrder.entries.forEach { itemOrder ->
             val expected = listOf(itemA1, itemB)
-            val actual = rawDao.getItems(SafeItemRawDao.findFavoriteQuery(itemOrder))
+            val actual = rawDao.getItems(SafeItemRawDao.findFavoriteQuery(itemOrder, firstSafeId))
             assertContentEquals(expected, actual, itemOrder)
         }
     }
@@ -259,7 +265,7 @@ class SafeItemRawDaoTest {
     fun findLastFavoriteQuery_test(): TestResult = runTest {
         ItemOrder.entries.forEach { itemOrder ->
             val expected = listOf(itemA1, itemB).sortedBy(itemOrder).first()
-            val actual = rawDao.getItems(SafeItemRawDao.findLastFavoriteQuery(1, itemOrder)).first()
+            val actual = rawDao.getItems(SafeItemRawDao.findLastFavoriteQuery(1, itemOrder, firstSafeId)).first()
             assertEquals(expected, actual, "Fail with order = $itemOrder")
         }
     }
@@ -280,7 +286,7 @@ class SafeItemRawDaoTest {
         ItemOrder.entries.forEach { itemOrder ->
             val expected = listOf(itemA, itemB).sortedBy(itemOrder)
             val actual = rawDao.getSafeItemsWithIdentifierFlow(
-                SafeItemRawDao.findByParentIdWithIdentifierQuery(null, itemOrder),
+                SafeItemRawDao.findByParentIdWithIdentifierQuery(null, itemOrder, firstSafeId),
             ).first()
             assertContentEqualsIdentifier(expected, actual, itemOrder)
         }
@@ -288,12 +294,12 @@ class SafeItemRawDaoTest {
 
     @Test
     fun findByDeletedParentIdWithIdentifierQuery_test(): TestResult = runTest {
-        safeItemDao.setDeletedAndRemoveFromFavorite(itemB.id, Instant.now(OSTestConfig.clock))
-        safeItemDao.setDeletedAndRemoveFromFavorite(itemA.id, Instant.now(OSTestConfig.clock))
+        safeItemDao.setDeletedAndRemoveFromFavorite(itemB.id, Instant.now(OSTestConfig.clock), firstSafeId)
+        safeItemDao.setDeletedAndRemoveFromFavorite(itemA.id, Instant.now(OSTestConfig.clock), firstSafeId)
         ItemOrder.entries.forEach { itemOrder ->
             val expected = listOf(itemA, itemB).sortedBy(itemOrder)
             val actual = rawDao.getSafeItemsWithIdentifierFlow(
-                SafeItemRawDao.findByDeletedParentIdWithIdentifierQuery(null, itemOrder),
+                SafeItemRawDao.findByDeletedParentIdWithIdentifierQuery(null, itemOrder, firstSafeId),
             ).first()
             assertContentEqualsIdentifier(expected, actual, itemOrder)
         }

@@ -27,6 +27,8 @@ import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.lunabee.lbcore.model.LBResult
 import dagger.hilt.android.qualifiers.ApplicationContext
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.usecase.IncomingMessageState
 import studio.lunabee.onesafe.bubbles.ui.home.BubblesHomeDestination
 import studio.lunabee.onesafe.commonui.CommonUiConstants
 import studio.lunabee.onesafe.commonui.OSString
@@ -35,9 +37,7 @@ import studio.lunabee.onesafe.commonui.notification.OSNotificationChannelId
 import studio.lunabee.onesafe.commonui.notification.OSNotificationManager
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.error.OSStorageError
-import studio.lunabee.onesafe.messaging.domain.usecase.IncomingMessageState
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
-import java.util.UUID
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.minutes
 
@@ -60,7 +60,6 @@ class ImeFeedbackManager @Inject constructor(
             is LBResult.Success -> {
                 val messageState = result.successData
                 when (messageState) {
-                    IncomingMessageState.NotBase64 -> return // no feedback
                     IncomingMessageState.Enqueued -> {
                         title = context.getString(OSString.notification_messaging_enqueued_description)
                         pendingIntent = getContactPendingIntent(null)
@@ -98,11 +97,11 @@ class ImeFeedbackManager @Inject constructor(
 
     // TODO oSK improve to send the enqueued message id so we can redirect when the queue is processed
     // TODO oSK update or dismiss notification if the enqueued message has been processed
-    private fun getContactPendingIntent(contactId: UUID?): PendingIntent? {
+    private fun getContactPendingIntent(contactId: DoubleRatchetUUID?): PendingIntent? {
         val packageManager = context.packageManager
         val launchIntent = packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
             val route = if (contactId != null) {
-                WriteMessageDestination.getRouteFromContactId(contactId)
+                WriteMessageDestination.getRouteFromContactId(contactId.uuid)
             } else {
                 BubblesHomeDestination.route
             }

@@ -19,9 +19,12 @@
 
 package studio.lunabee.onesafe.importexport.model
 
-import kotlin.test.Test
+// TODO <multisafe> add test for many safes backup for every use case
+
+import studio.lunabee.onesafe.test.firstSafeId
 import java.io.File
 import java.time.Instant
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
@@ -35,24 +38,29 @@ class BackupTest {
             LocalBackup(
                 date = Instant.ofEpochSecond(1),
                 file = file,
+                safeId = firstSafeId,
             ),
             LocalBackup(
                 date = Instant.ofEpochSecond(3),
                 file = file,
+                safeId = firstSafeId,
             ),
             LocalBackup(
                 date = Instant.ofEpochSecond(4),
                 file = file,
+                safeId = firstSafeId,
             ),
             CloudBackup(
                 remoteId = "",
                 name = "",
                 date = Instant.ofEpochSecond(2),
+                safeId = firstSafeId,
             ),
             CloudBackup(
                 remoteId = "",
                 name = "",
                 date = Instant.ofEpochSecond(3),
+                safeId = firstSafeId,
             ),
         ).shuffled()
 
@@ -60,24 +68,29 @@ class BackupTest {
             LocalBackup(
                 date = Instant.ofEpochSecond(4),
                 file = file,
+                safeId = firstSafeId,
             ),
             LocalBackup(
                 date = Instant.ofEpochSecond(3),
                 file = file,
+                safeId = firstSafeId,
             ),
             CloudBackup(
                 remoteId = "",
                 name = "",
                 date = Instant.ofEpochSecond(3),
+                safeId = firstSafeId,
             ),
             CloudBackup(
                 remoteId = "",
                 name = "",
                 date = Instant.ofEpochSecond(2),
+                safeId = firstSafeId,
             ),
             LocalBackup(
                 date = Instant.ofEpochSecond(1),
                 file = file,
+                safeId = firstSafeId,
             ),
         )
 
@@ -90,10 +103,12 @@ class BackupTest {
         val oldest = LocalBackup(
             date = Instant.ofEpochSecond(0),
             file = file,
+            safeId = firstSafeId,
         )
         val latest = LocalBackup(
             date = Instant.ofEpochSecond(1),
             file = file,
+            safeId = firstSafeId,
         )
 
         val max = maxOf(oldest, latest)
@@ -105,11 +120,13 @@ class BackupTest {
         val local = LocalBackup(
             date = Instant.ofEpochSecond(0),
             file = file,
+            safeId = firstSafeId,
         )
         val cloud = CloudBackup(
             date = Instant.ofEpochSecond(0),
             remoteId = "",
             name = "",
+            safeId = firstSafeId,
         )
 
         val max = maxOf(local, cloud)
@@ -126,10 +143,12 @@ class BackupTest {
         val local = LocalBackup(
             date = Instant.ofEpochSecond(0),
             file = File(""),
+            safeId = firstSafeId,
         )
         val local2 = LocalBackup(
             date = Instant.ofEpochSecond(0),
             file = File("2"),
+            safeId = firstSafeId,
         )
 
         assertEquals(local, maxOf(local, local2))

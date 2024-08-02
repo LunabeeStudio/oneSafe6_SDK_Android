@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.repository.repository
 
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
@@ -51,12 +52,12 @@ class SafeItemFieldRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteByItemId(itemId: UUID): Unit = localDataSource.deleteByItemId(itemId)
-    override suspend fun getAllSafeItemFieldIds(): List<UUID> {
-        return localDataSource.getAllSafeItemFieldIds()
+    override suspend fun getAllSafeItemFieldIds(safeId: SafeId): List<UUID> {
+        return localDataSource.getAllSafeItemFieldIds(safeId)
     }
 
-    override suspend fun getAllSafeItemFields(): List<SafeItemField> {
-        return localDataSource.getAllSafeItemFields()
+    override suspend fun getAllSafeItemFields(safeId: SafeId): List<SafeItemField> {
+        return localDataSource.getAllSafeItemFields(safeId)
     }
 
     override suspend fun getAllSafeItemFieldsOfItems(items: List<UUID>): List<SafeItemField> {

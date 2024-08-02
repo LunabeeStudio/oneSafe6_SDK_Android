@@ -246,7 +246,7 @@ class DuplicateItemUseCase @Inject constructor(
                                 inputStream.copyTo(outputStream)
                             }
                         }
-                        fileRepository.copyAndDeleteFile(tempFile, newFileId)
+                        fileRepository.copyAndDeleteFile(tempFile, newFileId, entry.item.safeId)
                     } catch (e: Throwable) {
                         // If error, remove file, don't save the field
                         fileRepository.deleteFile(newFileId)

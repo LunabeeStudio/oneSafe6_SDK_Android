@@ -30,14 +30,17 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import kotlin.test.Test
 import org.threeten.extra.MutableClock
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
+import studio.lunabee.onesafe.test.firstSafeId
+import studio.lunabee.onesafe.test.testUUIDs
 import java.io.File
 import java.time.Instant
+import kotlin.test.Test
 
 class SynchronizeCloudBackupsUseCaseTest {
     private val keepBackupsNumber: Int = 5
@@ -47,12 +50,12 @@ class SynchronizeCloudBackupsUseCaseTest {
     private val testClock = MutableClock.epochUTC()
 
     private val cloudBackupRepository: CloudBackupRepository = mockk {
-        coEvery { getBackups() } answers { remoteMap.values.toList() }
+        coEvery { getBackups(firstSafeId) } answers { remoteMap.values.toList() }
 
-        every { refreshBackupList() } answers {
+        every { refreshBackupList(firstSafeId) } answers {
             flow {
                 localMap += remoteMap.values.map {
-                    it.id to (LocalBackup(it.date, File(it.name)) to true)
+                    it.id to (LocalBackup(it.date, File(it.name), SafeId(testUUIDs[0])) to true)
                 }
                 emit(LBFlowResult.Success(remoteMap.values.toList()))
             }
@@ -61,7 +64,7 @@ class SynchronizeCloudBackupsUseCaseTest {
         every { uploadBackup(backups = any()) } answers {
             flow {
                 val backups = firstArg<List<LocalBackup>>()
-                val cloudBackups = backups.map { CloudBackup(it.id, it.file.name, it.date) }
+                val cloudBackups = backups.map { CloudBackup(it.id, it.file.name, it.date, SafeId(testUUIDs[0])) }
                 remoteMap += cloudBackups.associateBy { it.remoteId }
                 emit(LBFlowResult.Success(cloudBackups))
             }
@@ -77,13 +80,13 @@ class SynchronizeCloudBackupsUseCaseTest {
         }
     }
     private val getAllLocalBackupsUseCase: GetAllLocalBackupsUseCase = mockk {
-        coEvery { this@mockk.invoke(excludeRemote = true) } answers { localMap.values.filter { !it.second }.map { it.first } }
-        coEvery { this@mockk.invoke(excludeRemote = false) } answers { localMap.values.toList().map { it.first } }
+        coEvery { this@mockk.invoke(firstSafeId, excludeRemote = true) } answers { localMap.values.filter { !it.second }.map { it.first } }
+        coEvery { this@mockk.invoke(firstSafeId, excludeRemote = false) } answers { localMap.values.toList().map { it.first } }
     }
 
     private val settings: AutoBackupSettingsRepository = mockk {
-        every { keepLocalBackupEnabled } returns flowOf(true)
-        every { autoBackupMaxNumber } returns keepBackupsNumber
+        coEvery { keepLocalBackupEnabled(firstSafeId) } returns flowOf(true)
+        coEvery { autoBackupMaxNumber(firstSafeId) } returns keepBackupsNumber
     }
 
     private val deleteOldCloudBackupsUseCase = DeleteOldCloudBackupsUseCase(cloudBackupRepository, settings)
@@ -97,10 +100,10 @@ class SynchronizeCloudBackupsUseCaseTest {
 
     @Test
     fun no_op_test(): TestResult = runTest {
-        useCase.invoke().last()
+        useCase.invoke(firstSafeId).last()
 
-        coVerify(exactly = 1) { cloudBackupRepository.refreshBackupList() }
-        coVerify(exactly = 1) { cloudBackupRepository.getBackups() }
+        coVerify(exactly = 1) { cloudBackupRepository.refreshBackupList(firstSafeId) }
+        coVerify(exactly = 1) { cloudBackupRepository.getBackups(firstSafeId) }
         coVerify(exactly = 1) { cloudBackupRepository.uploadBackup(backups = emptyList()) }
         coVerify(exactly = 1) { cloudBackupRepository.deleteBackup(backups = emptyList()) }
 
@@ -109,13 +112,13 @@ class SynchronizeCloudBackupsUseCaseTest {
 
     @Test
     fun backup_to_upload_test(): TestResult = runTest {
-        localMap += "to_upload_1" to (LocalBackup(Instant.now(testClock), File("to_upload_1")) to false)
-        localMap += "to_upload_2" to (LocalBackup(Instant.now(testClock).plusMillis(1), File("to_upload_2")) to false)
+        localMap += "to_upload_1" to (LocalBackup(Instant.now(testClock), File("to_upload_1"), SafeId(testUUIDs[0])) to false)
+        localMap += "to_upload_2" to (LocalBackup(Instant.now(testClock).plusMillis(1), File("to_upload_2"), SafeId(testUUIDs[0])) to false)
 
-        useCase.invoke().last()
+        useCase.invoke(firstSafeId).last()
 
-        coVerify(exactly = 1) { cloudBackupRepository.refreshBackupList() }
-        coVerify(exactly = 1) { cloudBackupRepository.getBackups() }
+        coVerify(exactly = 1) { cloudBackupRepository.refreshBackupList(firstSafeId) }
+        coVerify(exactly = 1) { cloudBackupRepository.getBackups(firstSafeId) }
         coVerify(exactly = 1) {
             cloudBackupRepository.uploadBackup(
                 backups = localMap.values.map { it.first }.sortedDescending(),
@@ -130,13 +133,13 @@ class SynchronizeCloudBackupsUseCaseTest {
     fun backup_to_upload_over_limit_test(): TestResult = runTest {
         repeat(keepBackupsNumber + 3) {
             val id = "to_upload_$it"
-            localMap += id to (LocalBackup(Instant.now(testClock), File(id)) to false)
+            localMap += id to (LocalBackup(Instant.now(testClock), File(id), SafeId(testUUIDs[0])) to false)
         }
 
-        useCase.invoke().last()
+        useCase.invoke(firstSafeId).last()
 
-        coVerify(exactly = 1) { cloudBackupRepository.refreshBackupList() }
-        coVerify(exactly = 1) { cloudBackupRepository.getBackups() }
+        coVerify(exactly = 1) { cloudBackupRepository.refreshBackupList(firstSafeId) }
+        coVerify(exactly = 1) { cloudBackupRepository.getBackups(firstSafeId) }
         coVerify(exactly = 1) {
             cloudBackupRepository.uploadBackup(
                 backups = localMap.values.map { it.first }.sortedDescending().take(keepBackupsNumber),
@@ -155,16 +158,17 @@ class SynchronizeCloudBackupsUseCaseTest {
                 remoteId = id,
                 name = id,
                 date = Instant.now(testClock).plusMillis(it.toLong()),
+                safeId = firstSafeId,
             )
         }
 
         remoteMap += cloudBackups.map { it.id to it }
 
-        useCase.invoke().last()
+        useCase.invoke(firstSafeId).last()
 
-        coVerify(exactly = 1) { cloudBackupRepository.refreshBackupList() }
+        coVerify(exactly = 1) { cloudBackupRepository.refreshBackupList(firstSafeId) }
         coVerify(exactly = 1) { cloudBackupRepository.uploadBackup(backups = emptyList()) }
-        coVerify(exactly = 1) { cloudBackupRepository.getBackups() }
+        coVerify(exactly = 1) { cloudBackupRepository.getBackups(firstSafeId) }
         coVerify(exactly = 1) {
             cloudBackupRepository.deleteBackup(
                 backups = cloudBackups.sortedDescending().drop(keepBackupsNumber),
@@ -177,26 +181,26 @@ class SynchronizeCloudBackupsUseCaseTest {
     @Test
     fun backup_to_delete_after_upload_test(): TestResult = runTest {
         val now = Instant.now(testClock)
-        val expectDelete = CloudBackup("to_delete", "to_delete", now)
+        val expectDelete = CloudBackup("to_delete", "to_delete", now, SafeId(testUUIDs[0]))
         val expectUpload = buildList {
-            this += LocalBackup(now.plusMillis(11), File("to_upload_0"))
-            this += LocalBackup(now.plusMillis(8), File("to_upload_1"))
-            this += LocalBackup(now.plusMillis(7), File("to_upload_2"))
+            this += LocalBackup(now.plusMillis(11), File("to_upload_0"), SafeId(testUUIDs[0]))
+            this += LocalBackup(now.plusMillis(8), File("to_upload_1"), SafeId(testUUIDs[0]))
+            this += LocalBackup(now.plusMillis(7), File("to_upload_2"), SafeId(testUUIDs[0]))
         }
 
-        remoteMap += "keep_0" to CloudBackup("keep_0", "keep_0", now.plusMillis(10))
-        remoteMap += "keep_1" to CloudBackup("keep_1", "keep_0", now.plusMillis(9))
+        remoteMap += "keep_0" to CloudBackup("keep_0", "keep_0", now.plusMillis(10), SafeId(testUUIDs[0]))
+        remoteMap += "keep_1" to CloudBackup("keep_1", "keep_0", now.plusMillis(9), SafeId(testUUIDs[0]))
         remoteMap += "to_delete" to expectDelete
 
         expectUpload.forEach { localBackup ->
             localMap += localBackup.file.name to (localBackup to false)
         }
-        localMap += "not_to_upload" to (LocalBackup(now.plusMillis(6), File("not_to_upload")) to false)
+        localMap += "not_to_upload" to (LocalBackup(now.plusMillis(6), File("not_to_upload"), SafeId(testUUIDs[0])) to false)
 
-        useCase.invoke().last()
+        useCase.invoke(firstSafeId).last()
 
-        coVerify(exactly = 1) { cloudBackupRepository.refreshBackupList() }
-        coVerify(exactly = 1) { cloudBackupRepository.getBackups() }
+        coVerify(exactly = 1) { cloudBackupRepository.refreshBackupList(firstSafeId) }
+        coVerify(exactly = 1) { cloudBackupRepository.getBackups(firstSafeId) }
         coVerify(exactly = 1) { cloudBackupRepository.uploadBackup(backups = expectUpload) }
         coVerify(exactly = 1) { cloudBackupRepository.deleteBackup(backups = listOf(expectDelete)) }
 
@@ -205,12 +209,12 @@ class SynchronizeCloudBackupsUseCaseTest {
 
     @Test
     fun delete_local_backup_on_success_test(): TestResult = runTest {
-        every { settings.keepLocalBackupEnabled } returns flowOf(false)
+        coEvery { settings.keepLocalBackupEnabled(firstSafeId) } returns flowOf(false)
 
-        useCase.invoke().last()
+        useCase.invoke(firstSafeId).last()
 
-        coVerify(exactly = 1) { cloudBackupRepository.refreshBackupList() }
-        coVerify(exactly = 1) { cloudBackupRepository.getBackups() }
+        coVerify(exactly = 1) { cloudBackupRepository.refreshBackupList(firstSafeId) }
+        coVerify(exactly = 1) { cloudBackupRepository.getBackups(firstSafeId) }
         coVerify(exactly = 1) { cloudBackupRepository.uploadBackup(backups = emptyList()) }
         coVerify(exactly = 1) { cloudBackupRepository.deleteBackup(backups = emptyList()) }
 
@@ -219,12 +223,12 @@ class SynchronizeCloudBackupsUseCaseTest {
 
     @Test
     fun do_not_delete_local_backup_on_failure_test(): TestResult = runTest {
-        every { settings.keepLocalBackupEnabled } returns flowOf(false)
+        coEvery { settings.keepLocalBackupEnabled(firstSafeId) } returns flowOf(false)
         every { cloudBackupRepository.uploadBackup(backups = any()) } returns flowOf(LBFlowResult.Failure())
 
-        useCase.invoke().last()
+        useCase.invoke(firstSafeId).last()
 
-        coVerify(exactly = 1) { cloudBackupRepository.refreshBackupList() }
+        coVerify(exactly = 1) { cloudBackupRepository.refreshBackupList(firstSafeId) }
         coVerify(exactly = 1) { cloudBackupRepository.uploadBackup(backups = emptyList()) }
 
         confirmVerified(cloudBackupRepository)

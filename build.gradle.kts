@@ -62,6 +62,16 @@ allprojects {
                 releasesOnly()
             }
         }
+        maven {
+            url = uri("https://artifactory.lunabee.studio/artifactory/double-ratchet-kmm/")
+            credentials {
+                username = artifactoryUsername
+                password = artifactoryPassword
+            }
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
     }
 }
 
@@ -69,6 +79,7 @@ plugins {
     alias(libs.plugins.detekt)
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.aboutlibraries) apply false
 }
 
 // Detekt config

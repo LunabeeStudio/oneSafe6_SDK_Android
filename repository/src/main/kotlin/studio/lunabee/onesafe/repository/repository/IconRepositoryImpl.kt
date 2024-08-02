@@ -19,7 +19,9 @@
 
 package studio.lunabee.onesafe.repository.repository
 
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.repository.IconRepository
+import studio.lunabee.onesafe.domain.utils.CrossSafeData
 import studio.lunabee.onesafe.repository.datasource.IconLocalDataSource
 import java.io.File
 import java.util.UUID
@@ -30,19 +32,24 @@ class IconRepositoryImpl @Inject constructor(
 ) : IconRepository {
     override fun getIcon(iconId: String): File = iconLocalDataSource.getIcon(iconId)
 
-    override fun addIcon(iconId: UUID, icon: ByteArray): File = iconLocalDataSource.addIcon(iconId.toString(), icon)
+    override suspend fun addIcon(iconId: UUID, icon: ByteArray, safeId: SafeId): File = iconLocalDataSource.addIcon(
+        iconId.toString(),
+        icon,
+        safeId,
+    )
 
-    override fun deleteIcon(iconId: UUID): Boolean = iconLocalDataSource.deleteIcon(iconId.toString())
+    override suspend fun deleteIcon(iconId: UUID): Boolean = iconLocalDataSource.deleteIcon(iconId.toString())
 
-    override fun getIcons(): List<File> = iconLocalDataSource.getAllIcons()
+    @CrossSafeData
+    override fun getAllIcons(): List<File> = iconLocalDataSource.getAllIcons()
 
-    override fun copyAndDeleteIconFile(iconFile: File, iconId: UUID) {
-        iconLocalDataSource.copyAndDeleteIconFile(newIconFile = iconFile, iconId = iconId)
-    }
+    override suspend fun getIcons(safeId: SafeId): List<File> = iconLocalDataSource.getIcons(safeId)
 
-    override fun deleteAll() {
-        iconLocalDataSource.removeAllIcons()
+    override suspend fun copyAndDeleteIconFile(iconFile: File, iconId: UUID, safeId: SafeId) {
+        iconLocalDataSource.copyAndDeleteIconFile(newIconFile = iconFile, iconId = iconId, safeId = safeId)
     }
 
     override fun getIcons(iconsId: List<String>): List<File> = iconLocalDataSource.getIcons(iconsId)
+
+    override suspend fun deleteAll(safeId: SafeId): Unit = iconLocalDataSource.deleteAll(safeId)
 }

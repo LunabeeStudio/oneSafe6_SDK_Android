@@ -19,6 +19,11 @@
 
 package studio.lunabee.onesafe.cryptography
 
+import kotlinx.datetime.toKotlinInstant
+import studio.lunabee.bubbles.domain.model.MessageSharingMode
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.doubleratchet.model.toDoubleRatchetUUID
+import studio.lunabee.onesafe.domain.model.common.IdentifiableObject
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.toByteArray
@@ -33,11 +38,14 @@ class CryptoDataMapper @Inject constructor() {
         mapBlock != null -> mapBlock(data)
         data is String -> data.encodeToByteArray()
         data is Int -> data.toByteArray()
-        data is SafeItemFieldKind -> data.toByteArray()
+        data is IdentifiableObject -> data.toByteArray()
         data is UUID -> data.toByteArray()
         data is ByteArray -> data
         data is Instant -> data.toEpochMilli().toByteArray()
+        data is kotlinx.datetime.Instant -> data.toEpochMilliseconds().toByteArray()
         data is Boolean -> data.toByteArray()
+        data is MessageSharingMode -> data.id.encodeToByteArray()
+        data is DoubleRatchetUUID -> data.toByteArray()
         else -> throw OSCryptoError(
             OSCryptoError.Code.MISSING_MAPPER,
             "No mapper found or provided for type ${data::class.simpleName}",
@@ -58,7 +66,10 @@ class CryptoDataMapper @Inject constructor() {
             clazz == UUID::class -> rawData.toUUID() as Data
             clazz == ByteArray::class -> rawData as Data
             clazz == Instant::class -> Instant.ofEpochMilli(rawData.toLong()) as Data
+            clazz == kotlinx.datetime.Instant::class -> Instant.ofEpochMilli(rawData.toLong()).toKotlinInstant() as Data
             clazz == Boolean::class -> rawData.toBoolean() as Data
+            clazz == MessageSharingMode::class -> rawData.toMessageSharingMode() as Data
+            clazz == DoubleRatchetUUID::class -> rawData.toDoubleRatchetUUID() as Data
             else -> throw OSCryptoError(
                 OSCryptoError.Code.MISSING_MAPPER,
                 "No mapper found for type ${clazz.simpleName}",

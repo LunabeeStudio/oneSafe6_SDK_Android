@@ -19,6 +19,8 @@
 
 package studio.lunabee.onesafe.domain.repository
 
+import studio.lunabee.onesafe.domain.model.crypto.NewSafeCrypto
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import javax.crypto.Cipher
 
@@ -26,8 +28,9 @@ interface EditCryptoRepository {
     suspend fun generateCryptographicData(password: CharArray)
     suspend fun checkCryptographicData(password: CharArray): Boolean
     fun initializeBiometric(cipher: Cipher)
-    suspend fun setMainCryptographicData()
-    suspend fun overrideMainCryptographicData()
+    suspend fun setMainCryptographicData(): NewSafeCrypto
+    suspend fun overrideMainCryptographicData(safeId: SafeId): NewSafeCrypto
     fun reset()
     suspend fun reEncryptItemKeys(itemKeys: List<SafeItemKey>)
+    suspend fun checkPasswordUniqueness(password: CharArray): Boolean
 }

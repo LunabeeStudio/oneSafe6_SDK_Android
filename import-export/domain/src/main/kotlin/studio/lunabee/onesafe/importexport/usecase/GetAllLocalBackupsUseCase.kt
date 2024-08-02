@@ -24,6 +24,7 @@ import com.lunabee.lblogger.LBLogger
 import com.lunabee.lblogger.e
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.error.OSStorageError
 import studio.lunabee.onesafe.error.osCode
 import studio.lunabee.onesafe.importexport.model.LocalBackup
@@ -45,18 +46,22 @@ class GetAllLocalBackupsUseCase @Inject constructor(
      *
      * @param excludeRemote Exclude backups that also exist on remote storage
      */
-    suspend operator fun invoke(excludeRemote: Boolean = false): List<LocalBackup> = if (excludeRemote) {
-        handleResult(backupRepository.getBackupsExcludeRemote())
+    suspend operator fun invoke(safeId: SafeId, excludeRemote: Boolean = false): List<LocalBackup> = if (excludeRemote) {
+        handleResult(backupRepository.getBackupsExcludeRemote(safeId), safeId)
     } else {
-        handleResult(backupRepository.getBackups())
+        handleResult(backupRepository.getBackups(safeId), safeId)
     }
 
     /**
      * Get a flow of all valid local backups and remove (+log) potential broken backups (backup file missing)
      */
-    fun flow(): Flow<List<LocalBackup>> = backupRepository.getBackupsFlow().map(::handleResult)
+    fun flow(safeId: SafeId): Flow<List<LocalBackup>> {
+        return backupRepository.getBackupsFlow(safeId).map {
+            handleResult(it, safeId)
+        }
+    }
 
-    private suspend fun handleResult(backupResults: List<LBResult<LocalBackup>>): List<LocalBackup> {
+    private suspend fun handleResult(backupResults: List<LBResult<LocalBackup>>, safeId: SafeId): List<LocalBackup> {
         val failures = backupResults
             .filterIsInstance<LBResult.Failure<LocalBackup>>()
             .onEach { it.throwable?.let(log::e) }
@@ -64,13 +69,13 @@ class GetAllLocalBackupsUseCase @Inject constructor(
             val brokenBackups = failures.mapNotNull { failure ->
                 if (failure.throwable.osCode() == OSStorageError.Code.MISSING_BACKUP_FILE) {
                     failure.failureData?.also { backup ->
-                        backupRepository.delete(listOf(backup))
+                        backupRepository.delete(listOf(backup), safeId)
                     }
                 } else {
                     null
                 }
             }
-            backupRepository.delete(brokenBackups)
+            backupRepository.delete(brokenBackups, safeId)
         }
 
         return backupResults

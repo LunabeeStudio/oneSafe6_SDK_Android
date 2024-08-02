@@ -29,6 +29,9 @@ dependencies {
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)
 
+    implementation(libs.bubbles.messaging.domain)
+    implementation(libs.bubbles.domain)
+    implementation(libs.doubleratchet)
     implementation(project(":domain"))
     implementation(project(":import-export-domain"))
     implementation(project(":error"))

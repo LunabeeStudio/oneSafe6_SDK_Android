@@ -21,7 +21,7 @@ package studio.lunabee.onesafe.messaging.writemessage.viewmodel
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import studio.lunabee.onesafe.messaging.domain.usecase.ProcessMessageQueueUseCase
+import studio.lunabee.messaging.domain.usecase.ProcessMessageQueueUseCase
 import javax.inject.Inject
 
 @HiltViewModel
