@@ -136,4 +136,6 @@ class GetSecuritySettingUseCase @Inject constructor(
             securitySettingsRepository.shakeToLockFlow(safeId)
         } ?: flowOf()
     }
+
+    suspend fun shakeToLock(): Boolean = securitySettingsRepository.shakeToLock(safeRepository.currentSafeId())
 }

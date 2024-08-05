@@ -42,6 +42,7 @@ interface SecuritySettingsRepository {
     fun autoLockOSKInactivityDelayFlow(safeId: SafeId): Flow<Duration>
     fun autoLockOSKHiddenDelayFlow(safeId: SafeId): Flow<Duration>
     fun shakeToLockFlow(safeId: SafeId): Flow<Boolean>
+    suspend fun shakeToLock(safeId: SafeId): Boolean
 
     suspend fun setAutoLockInactivityDelay(safeId: SafeId, delay: Duration)
     suspend fun setAutoLockAppChangeDelay(safeId: SafeId, delay: Duration)

@@ -25,7 +25,10 @@ import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.launch
@@ -33,8 +36,9 @@ import studio.lunabee.onesafe.commonui.CommonUiConstants
 import studio.lunabee.onesafe.commonui.error.description
 import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
-import studio.lunabee.onesafe.domain.usecase.authentication.IsBiometricEnabledState
 import studio.lunabee.onesafe.domain.usecase.authentication.HasBiometricSafeUseCase
+import studio.lunabee.onesafe.domain.usecase.authentication.IsBiometricEnabledState
+import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.ime.ui.biometric.ImeBiometricResultRepository
 import studio.lunabee.onesafe.login.state.LoginUiState
@@ -48,6 +52,7 @@ class ImeLoginViewModel(
     private val loginFromPasswordDelegate: LoginFromPasswordDelegateImpl,
     private val imeBiometricResultRepository: ImeBiometricResultRepository,
     private val mainCryptoRepository: MainCryptoRepository,
+    private val isSafeReadyUseCase: IsSafeReadyUseCase,
     val versionName: String,
 ) : ViewModel(),
     LoginFromPasswordDelegate by loginFromPasswordDelegate {
@@ -68,6 +73,15 @@ class ImeLoginViewModel(
     val biometricError: StateFlow<ErrorSnackbarState?> = _biometricError.asStateFlow()
 
     init {
+        isSafeReadyUseCase.safeIdFlow()
+            .filterNotNull()
+            .onEach { safeId ->
+                loginUiStateHolder.dataState
+                    ?.copy(loginResult = LoginUiState.LoginResult.Success(false))
+                    ?.let { state -> loginUiStateHolder.setUiState(state) }
+            }
+            .launchIn(viewModelScope)
+
         viewModelScope.launch {
             imeBiometricResultRepository.result.transformWhile {
                 emit(it)

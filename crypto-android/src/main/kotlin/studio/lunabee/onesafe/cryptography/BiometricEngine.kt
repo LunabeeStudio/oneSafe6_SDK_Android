@@ -27,6 +27,7 @@ import androidx.annotation.RequiresApi
 import studio.lunabee.onesafe.domain.model.safe.BiometricCryptoMaterial
 import studio.lunabee.onesafe.domain.repository.BiometricCipherRepository
 import studio.lunabee.onesafe.error.OSCryptoError
+import javax.crypto.BadPaddingException
 import javax.crypto.Cipher
 import javax.crypto.IllegalBlockSizeException
 import javax.crypto.SecretKey
@@ -81,6 +82,8 @@ class BiometricEngine @Inject constructor(
             cipher.doFinal(cryptoMaterial.encKey)
         } catch (e: IllegalBlockSizeException) {
             throw OSCryptoError(OSCryptoError.Code.BIOMETRIC_DECRYPTION_NOT_AUTHENTICATED, cause = e)
+        } catch (e: BadPaddingException) {
+            throw OSCryptoError(OSCryptoError.Code.BIOMETRIC_DECRYPTION_FAIL, cause = e)
         }
     }
 

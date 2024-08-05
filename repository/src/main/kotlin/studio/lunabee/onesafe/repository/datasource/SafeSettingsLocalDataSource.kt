@@ -57,6 +57,7 @@ interface SafeSettingsLocalDataSource {
 
     suspend fun getCameraSystem(safeId: SafeId): CameraSystem
     suspend fun allowScreenshot(safeId: SafeId): Boolean
+    suspend fun shakeToLock(safeId: SafeId): Boolean
     suspend fun toggleMaterialYou(safeId: SafeId)
     suspend fun toggleAutomation(safeId: SafeId)
     suspend fun disableShareWarningDisplay(safeId: SafeId)

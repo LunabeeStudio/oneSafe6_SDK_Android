@@ -61,10 +61,15 @@ class DecryptClipboardListener @Inject constructor(
 
         val primaryClip = clipboard.primaryClip
         primaryClip?.getItemAt(0)?.text?.toString()?.let { clipText ->
+            val message = try {
+                Base64.decode(clipText.getBase64FromMessage())
+            } catch (e: IllegalArgumentException) {
+                return
+            }
             lifecycleScope.launch {
                 _result.emit(
                     handleIncomingMessageUseCase(
-                        Base64.decode(clipText.getBase64FromMessage()),
+                        message,
                         channelRepository.channel,
                         isSafeReadyUseCase(),
                     ),

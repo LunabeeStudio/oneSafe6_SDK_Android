@@ -147,6 +147,9 @@ class SettingsLocalDataSource @Inject constructor(
     override suspend fun allowScreenshot(safeId: SafeId): Boolean =
         dao.getAllowScreenshot(safeId)
 
+    override suspend fun shakeToLock(safeId: SafeId): Boolean =
+        dao.getShakeToLock(safeId)
+
     override suspend fun toggleMaterialYou(safeId: SafeId): Unit =
         dao.toggleMaterialYou(safeId)
 
