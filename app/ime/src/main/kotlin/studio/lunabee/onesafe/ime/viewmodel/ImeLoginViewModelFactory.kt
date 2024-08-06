@@ -59,6 +59,7 @@ class ImeLoginViewModelFactory @Inject constructor(
             imeBiometricResultRepository = imeBiometricResultRepository,
             mainCryptoRepository = mainCryptoRepository,
             versionName = versionName,
+            isSafeReadyUseCase = isSafeReadyUseCase,
         ) as T
     }
 }

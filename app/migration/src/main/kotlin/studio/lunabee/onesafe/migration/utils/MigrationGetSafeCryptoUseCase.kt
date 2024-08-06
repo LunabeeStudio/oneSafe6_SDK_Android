@@ -27,6 +27,7 @@ import studio.lunabee.onesafe.domain.model.safe.SafeCrypto
 import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository.Companion.MASTER_KEY_TEST_VALUE
 import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.domain.usecase.authentication.DisableBiometricUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSignUpUseCase
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSDomainError
@@ -60,6 +61,7 @@ class MigrationGetSafeCryptoUseCase @Inject constructor(
     private val safeRepository: SafeRepository,
     private val migrationCryptoUseCase: MigrationCryptoUseCase,
     private val isSignUpUseCase: IsSignUpUseCase,
+    private val disableBiometricUseCase: DisableBiometricUseCase,
 ) {
     suspend operator fun invoke(password: CharArray): LBResult<MigrationSafeData> = OSError.runCatching {
         val allSafe = safeRepository.getAllSafe()
@@ -76,7 +78,15 @@ class MigrationGetSafeCryptoUseCase @Inject constructor(
     suspend operator fun invoke(cipher: Cipher): LBResult<MigrationSafeData> = OSError.runCatching {
         val biometricSafe = safeRepository.getBiometricSafe()
         val encKey = biometricSafe.biometricCryptoMaterial ?: throw OSDomainError.Code.MISSING_BIOMETRIC_KEY.get()
-        val key = biometricEngine.decryptKey(encKey, cipher)
+        val key = try {
+            biometricEngine.decryptKey(encKey, cipher)
+        } catch (e: OSCryptoError) {
+            // Fix corrupted state where biometric process was started but not completed
+            if (e.code == OSCryptoError.Code.BIOMETRIC_DECRYPTION_FAIL) {
+                disableBiometricUseCase()
+            }
+            throw e
+        }
         safeRepository.getAllSafe().firstNotNullOfOrNull { safeCrypto ->
             testAndGetCrypto(safeCrypto, key)
         } ?: throw OSCryptoError(OSCryptoError.Code.NO_SAFE_MATCH_KEY)

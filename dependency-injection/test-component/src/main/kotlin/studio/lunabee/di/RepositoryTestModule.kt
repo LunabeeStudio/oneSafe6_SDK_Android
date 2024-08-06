@@ -87,6 +87,10 @@ internal object RepositoryTestModule {
                 return autoLockOSKHiddenDelay
             }
 
+            override suspend fun shakeToLock(safeId: SafeId): Boolean {
+                return shakeToLock
+            }
+
             override fun autoLockInactivityDelayFlow(safeId: SafeId): Flow<Duration> {
                 return flowOf(autoLockOSKInactivityDelay)
             }

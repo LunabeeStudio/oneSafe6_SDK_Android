@@ -49,7 +49,7 @@ class GlobalSettingsDataStore @Inject constructor(
     }
 
     override fun hasDoneTutorialOpenOsk(): Flow<Boolean> {
-        return getAsFlow(OSPreferenceTips.HasDoneTutorialLockOsk)
+        return getAsFlow(OSPreferenceTips.HasDoneTutorialOpenOsk)
     }
 
     override fun hasDoneTutorialLockOsk(): Flow<Boolean> {

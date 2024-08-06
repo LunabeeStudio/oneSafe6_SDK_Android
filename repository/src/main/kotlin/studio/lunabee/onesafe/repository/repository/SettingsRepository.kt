@@ -120,6 +120,9 @@ class SettingsRepository @Inject constructor(
     override suspend fun displayShareWarning(safeId: SafeId): Boolean =
         safeDataSource.displayShareWarning(safeId)
 
+    override suspend fun shakeToLock(safeId: SafeId): Boolean =
+        safeDataSource.shakeToLock(safeId)
+
     override suspend fun setIndependentSafeInfoCtaState(safeId: SafeId, ctaState: CtaState): Unit =
         safeDataSource.setIndependentSafeInfoCtaState(safeId, ctaState)
 

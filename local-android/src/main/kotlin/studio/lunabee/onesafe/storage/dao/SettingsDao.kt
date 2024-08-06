@@ -152,6 +152,9 @@ interface SettingsDao {
     @Query("SELECT setting_allow_screenshot FROM Safe WHERE id IS :safeId")
     suspend fun getAllowScreenshot(safeId: SafeId): Boolean
 
+    @Query("SELECT setting_shake_to_lock FROM Safe WHERE id IS :safeId")
+    suspend fun getShakeToLock(safeId: SafeId): Boolean
+
     @Query("SELECT setting_auto_lock_inactivity_delay FROM Safe WHERE id = :safeId")
     suspend fun getAutoLockInactivityDelay(safeId: SafeId): Duration
 
