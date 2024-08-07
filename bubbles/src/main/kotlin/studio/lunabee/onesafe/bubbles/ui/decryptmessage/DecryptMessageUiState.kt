@@ -20,7 +20,6 @@
 package studio.lunabee.onesafe.bubbles.ui.decryptmessage
 
 import studio.lunabee.messaging.domain.model.DecryptResult
-import studio.lunabee.onesafe.error.OSError
 
 sealed interface DecryptMessageUiState {
     data object Idle : DecryptMessageUiState
@@ -34,6 +33,6 @@ sealed interface DecryptMessageUiState {
     ) : DecryptMessageUiState
 
     data class Error(
-        val error: OSError?,
+        val error: Throwable?,
     ) : DecryptMessageUiState
 }

@@ -52,7 +52,6 @@ import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.commonui.error.description
-import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
@@ -87,7 +86,7 @@ fun DecryptMessageRoute(
 @Composable
 fun DecryptMessageScreen(
     onBackClick: () -> Unit,
-    error: OSError?,
+    error: Throwable?,
     message: String,
     onMessageChange: (String) -> Unit,
     onDecryptClick: () -> Unit,

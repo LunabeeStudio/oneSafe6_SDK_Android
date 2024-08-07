@@ -45,6 +45,7 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 import javax.inject.Inject
 
 class ExportBackupUseCase @Inject constructor(
@@ -106,7 +107,7 @@ class ExportBackupUseCase @Inject constructor(
 
     companion object {
         /**
-         * Return final archive name (i.e oneSafe-20221217-134622.os6lsb)
+         * Return final archive name (i.e oneSafe-20221217-134622-234324.os6lsb)
          */
         private fun buildArchiveName(now: Instant): String {
             val localDateTime = LocalDateTime.ofInstant(now, ZoneOffset.UTC)
@@ -114,6 +115,7 @@ class ExportBackupUseCase @Inject constructor(
                 ImportExportConstant.ArchiveFilePrefix,
                 DateTimeFormatter.BASIC_ISO_DATE.format(localDateTime), // i.e 20230113
                 ImportExportConstant.ArchiveTimeFormatter.format(localDateTime), // i.e 134602
+                UUID.randomUUID().toString().take(6), // i.e 234324 random string to avoid backup override with multi-safe
             ).joinToString(ImportExportConstant.ArchiveFileSeparator) + ".${ImportExportConstant.ExtensionOs6Backup}"
         }
     }
