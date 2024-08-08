@@ -373,7 +373,7 @@ class OSFlorisImeService : FlorisImeService() {
                                     }
                                 }
                             },
-                            displayOpenTutorial = !hasDoneOpenTutorial && !isOneSafeUiVisible,
+                            displayOpenTutorial = !hasDoneOpenTutorial && !isOneSafeUiVisible && !isCryptoDataReady,
                             displayLockTutorial = !hasDoneLockTutorial && isCryptoDataReady,
                             closeLockTutorial = {
                                 coroutineScope.launch { setAppVisitUseCase.setHasDoneTutorialLockOsk() }
