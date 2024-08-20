@@ -22,7 +22,6 @@ package studio.lunabee.onesafe.bubbles.ui.home
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lbextensions.enumValueOfOrNull
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,17 +32,16 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.toJavaInstant
 import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.bubbles.domain.usecase.GetAllContactsUseCase
-import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.messaging.domain.model.ConversationState
 import studio.lunabee.messaging.domain.repository.MessageRepository
 import studio.lunabee.messaging.domain.usecase.GetConversationStateUseCase
 import studio.lunabee.onesafe.bubbles.ui.conversation.ConversationSubtitleFromMessageDelegate
 import studio.lunabee.onesafe.bubbles.ui.extension.getNameProvider
+import studio.lunabee.onesafe.bubbles.ui.model.BubbleContactInfo
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
 import studio.lunabee.onesafe.bubbles.ui.model.ConversationSubtitle
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.domain.common.FeatureFlags
-import java.time.Instant
 import javax.inject.Inject
 
 @HiltViewModel
@@ -104,12 +102,4 @@ class BubblesHomeScreenViewModel @Inject constructor(
             }
         }
     }
-
-    private data class BubbleContactInfo(
-        val id: DoubleRatchetUUID,
-        val conversationState: LBResult<ConversationState>,
-        val isConversationReady: Boolean,
-        val plainName: LBResult<String>,
-        val updatedAt: Instant,
-    )
 }

@@ -25,16 +25,19 @@ import androidx.paging.compose.LazyPagingItems
 import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.messaging.utils.MessageSectionDateFormatter
 import studio.lunabee.onesafe.messaging.writemessage.composable.ConversationDayHeader
-import studio.lunabee.onesafe.messaging.writemessage.composable.MessageLongPress
 import studio.lunabee.onesafe.messaging.writemessage.composable.MessageRow
+import studio.lunabee.onesafe.messaging.writemessage.composable.MessageTextLongPress
+import studio.lunabee.onesafe.messaging.writemessage.composable.SafeItemMessageCombinedPress
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
 
 object WriteMessageFactory {
+    @Suppress("LongParameterList")
     fun addPagingConversation(
         lazyListScope: LazyListScope,
         conversation: LazyPagingItems<ConversationUiData>,
         contactNameProvider: OSNameProvider,
-        messageLongPress: MessageLongPress,
+        messageTextLongPress: MessageTextLongPress,
+        safeItemMessageCombinedPress: SafeItemMessageCombinedPress,
         context: Context,
     ) {
         val messageSectionDateFormatter = MessageSectionDateFormatter(context)
@@ -60,7 +63,8 @@ object WriteMessageFactory {
                         MessageRow(
                             messageData = item,
                             contactName = contactNameProvider,
-                            messageLongPress = messageLongPress,
+                            messageTextLongPress = messageTextLongPress,
+                            safeItemMessageCombinedPress = safeItemMessageCombinedPress,
                         )
                     }
                     is ConversationUiData.DateHeader -> ConversationDayHeader(

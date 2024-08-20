@@ -48,9 +48,11 @@ import studio.lunabee.onesafe.bubbles.ui.invitation.InvitationNavScope
 import studio.lunabee.onesafe.bubbles.ui.invitation.invitationScreen
 import studio.lunabee.onesafe.bubbles.ui.invitationresponse.InvitationResponseNavScope
 import studio.lunabee.onesafe.bubbles.ui.invitationresponse.invitationResponseScreen
+import studio.lunabee.onesafe.messaging.senditem.sendItemBubblesSelectContactScreen
 import studio.lunabee.onesafe.bubbles.ui.welcome.OnBoardingBubblesNavScope
 import studio.lunabee.onesafe.bubbles.ui.welcome.onBoardingBubblesScreen
 import studio.lunabee.onesafe.commonui.OSDestination
+import studio.lunabee.onesafe.messaging.senditem.SendItemBubblesSelectContactNavScope
 import studio.lunabee.onesafe.messaging.writemessage.destination.writeMessageScreen
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageNavScope
 import studio.lunabee.onesafe.messaging.writemessage.viewmodel.MessagingViewModel
@@ -66,7 +68,8 @@ interface MessagingGraphNavScope :
     CreateContactFromScratchNavScope,
     OnBoardingBubblesNavScope,
     DecryptMessageNavScope,
-    WriteMessageNavScope
+    WriteMessageNavScope,
+    SendItemBubblesSelectContactNavScope
 
 context(MessagingGraphNavScope)
 fun NavGraphBuilder.messagingNavGraph(
@@ -88,6 +91,7 @@ fun NavGraphBuilder.messagingNavGraph(
         scanBarcodeScreen()
         onBoardingBubblesScreen()
         decryptMessageScreen()
+        sendItemBubblesSelectContactScreen()
     }
 }
 

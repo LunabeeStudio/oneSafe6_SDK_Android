@@ -127,6 +127,7 @@ class WriteMessageScreenTest : LbcComposeTest() {
                     override val navigateToContactDetail: (UUID) -> Unit = {}
                     override val navigateBack: () -> Unit = {}
                     override val deeplinkBubblesWriteMessage: ((contactId: UUID) -> Unit) = { _ -> }
+                    override val navigateToItemDetail: (UUID) -> Unit = {}
                 }) {
                     WriteMessageRoute(
                         onChangeRecipient = onClickOnChangeContact,

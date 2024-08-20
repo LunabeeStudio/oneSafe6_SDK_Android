@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.transformLatest
 import studio.lunabee.onesafe.domain.model.importexport.ImportMode
 import studio.lunabee.onesafe.importexport.engine.ImportEngine
 import java.io.File
+import java.util.UUID
 import javax.inject.Inject
 
 class ImportSaveDataUseCase @Inject constructor(
@@ -36,7 +37,7 @@ class ImportSaveDataUseCase @Inject constructor(
     operator fun invoke(
         archiveExtractedDirectory: File,
         mode: ImportMode,
-    ): Flow<LBFlowResult<Unit>> {
+    ): Flow<LBFlowResult<UUID>> {
         return importEngine.prepareDataForImport(archiveExtractedDirectory = archiveExtractedDirectory, mode = mode)
             .transformLatest { result ->
                 when (result) {

@@ -71,7 +71,7 @@ class ExportShareUseCase @Inject constructor(
             // Get all item and re-encrypt keys with export key
             val items = safeItemRepository.getSafeItemsAndChildren(itemToShare, includeChildren)
             val safeItemsWithKeys = items.associate { safeItem ->
-                ExportItem(safeItem) to
+                ExportItem(safeItem, keepFavorite = false) to
                     safeItemKeyRepository.getSafeItemKey(id = safeItem.id).also { itemKey ->
                         mainCryptoRepository.reEncryptItemKey(itemKey, exportEngine.exportKey)
                     }

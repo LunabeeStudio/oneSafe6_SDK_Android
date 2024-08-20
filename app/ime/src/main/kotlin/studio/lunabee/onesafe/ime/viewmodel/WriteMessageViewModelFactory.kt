@@ -35,9 +35,12 @@ import studio.lunabee.messaging.domain.usecase.EncryptMessageUseCase
 import studio.lunabee.messaging.domain.usecase.GetConversationStateUseCase
 import studio.lunabee.messaging.domain.usecase.GetSendMessageDataUseCase
 import studio.lunabee.messaging.domain.usecase.SaveSentMessageUseCase
+import studio.lunabee.onesafe.domain.usecase.GetIconUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
+import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
+import studio.lunabee.onesafe.domain.usecase.item.SecureGetItemUseCase
 import studio.lunabee.onesafe.domain.usecase.settings.GetAppSettingUseCase
-import studio.lunabee.onesafe.messaging.usecase.CreateSingleEntryArchiveUseCase
+import studio.lunabee.onesafe.messaging.usecase.CreateBubblesMessageArchiveUseCase
 import studio.lunabee.onesafe.messaging.usecase.DeleteBubblesArchiveUseCase
 import studio.lunabee.onesafe.messaging.writemessage.viewmodel.WriteMessageViewModel
 import java.time.Clock
@@ -60,8 +63,11 @@ class WriteMessageViewModelFactory @Inject constructor(
     private val getAppSettingUseCase: GetAppSettingUseCase,
     private val messagePagingRepository: MessagePagingRepository,
     private val loadingManager: LoadingManager,
-    private val createSingleEntryArchiveUseCase: CreateSingleEntryArchiveUseCase,
     private val deleteBubblesArchiveUseCase: DeleteBubblesArchiveUseCase,
+    private val createBubblesMessageArchiveUseCase: CreateBubblesMessageArchiveUseCase,
+    private val secureGetItemUseCase: SecureGetItemUseCase,
+    private val getIconUseCase: GetIconUseCase,
+    private val itemDecryptUseCase: ItemDecryptUseCase,
 ) : AbstractSavedStateViewModelFactory() {
     override fun <T : ViewModel> create(key: String, modelClass: Class<T>, handle: SavedStateHandle): T {
         @Suppress("UNCHECKED_CAST")
@@ -83,8 +89,11 @@ class WriteMessageViewModelFactory @Inject constructor(
             getAppSettingUseCase = getAppSettingUseCase,
             messagePagingRepository = messagePagingRepository,
             loadingManager = loadingManager,
-            createSingleEntryArchiveUseCase = createSingleEntryArchiveUseCase,
+            createBubblesMessageArchiveUseCase = createBubblesMessageArchiveUseCase,
             deleteBubblesArchiveUseCase = deleteBubblesArchiveUseCase,
+            secureGetItemUseCase = secureGetItemUseCase,
+            getIconUseCase = getIconUseCase,
+            itemDecryptUseCase = itemDecryptUseCase,
         ) as T
     }
 }

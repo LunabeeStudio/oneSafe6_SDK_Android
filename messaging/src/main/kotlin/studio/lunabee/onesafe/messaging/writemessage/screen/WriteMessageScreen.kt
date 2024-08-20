@@ -83,9 +83,11 @@ import studio.lunabee.onesafe.extension.loremIpsum
 import studio.lunabee.onesafe.messaging.writemessage.composable.ComposeMessageCard
 import studio.lunabee.onesafe.messaging.writemessage.composable.ConversationDayHeader
 import studio.lunabee.onesafe.messaging.writemessage.composable.ConversationNotReadyCard
-import studio.lunabee.onesafe.messaging.writemessage.composable.DropDownMenuMessageLongPress
-import studio.lunabee.onesafe.messaging.writemessage.composable.MessageLongPress
+import studio.lunabee.onesafe.messaging.writemessage.composable.DropDownMenuMessageTextLongPress
+import studio.lunabee.onesafe.messaging.writemessage.composable.DropDownSafeItemMessageCombinedPress
+import studio.lunabee.onesafe.messaging.writemessage.composable.MessageTextLongPress
 import studio.lunabee.onesafe.messaging.writemessage.composable.NoPreviewComposeMessageCard
+import studio.lunabee.onesafe.messaging.writemessage.composable.SafeItemMessageCombinedPress
 import studio.lunabee.onesafe.messaging.writemessage.composable.topbar.ContactActionMenu
 import studio.lunabee.onesafe.messaging.writemessage.composable.topbar.WriteMessageTopBar
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
@@ -141,10 +143,10 @@ fun WriteMessageRoute(
     when (val state = uiState) {
         WriteMessageUiState.Initializing -> Box(modifier = Modifier.fillMaxSize())
         is WriteMessageUiState.Data -> {
-            val messageLongPress: MessageLongPress by remember(isOneSafeK) {
+            val messageTextLongPress: MessageTextLongPress by remember(isOneSafeK) {
                 mutableStateOf(
                     if (isOneSafeK) {
-                        object : MessageLongPress() {
+                        object : MessageTextLongPress() {
                             override fun onLongClick(id: UUID) {
                                 deeplinkBubblesWriteMessage?.let { deeplink ->
                                     snackbarState = ConversationMoreOptionsSnackbarState {
@@ -154,7 +156,7 @@ fun WriteMessageRoute(
                             }
                         }
                     } else {
-                        DropDownMenuMessageLongPress(
+                        DropDownMenuMessageTextLongPress(
                             onResendClick = { sentMessageId ->
                                 coroutineScope.launch {
                                     viewModel.getSentMessage(DoubleRatchetUUID(sentMessageId))?.let {
@@ -167,6 +169,26 @@ fun WriteMessageRoute(
                             },
                         )
                     },
+                )
+            }
+            val safeItemMessageCombinedPress: SafeItemMessageCombinedPress = if (isOneSafeK) {
+                object : SafeItemMessageCombinedPress {
+                    override fun onLongClick(messageId: UUID) {
+                        deeplinkBubblesWriteMessage?.let { deeplink ->
+                            snackbarState = ConversationMoreOptionsSnackbarState {
+                                deeplink(viewModel.contactId.value!!.uuid)
+                            }
+                        }
+                    }
+
+                    override fun onClick(itemId: UUID) {
+                        // No - op in oneSafeK
+                    }
+                }
+            } else {
+                DropDownSafeItemMessageCombinedPress(
+                    onDeleteMessageClick = viewModel::deleteMessage,
+                    onNavigateToItemClick = navigateToItemDetail,
                 )
             }
             if (isOneSafeK) {
@@ -233,9 +255,10 @@ fun WriteMessageRoute(
                     },
                     onDeleteAllMessagesClick = viewModel::displayRemoveConversationDialog,
                     isOneSafeK = isOneSafeK,
-                    messageLongPress = messageLongPress,
+                    messageTextLongPress = messageTextLongPress,
                     focusRequester = composeMessageFocusRequester,
                     canSend = !state.isCorrupted,
+                    safeItemMessageCombinedPress = safeItemMessageCombinedPress,
                 )
             }
         }
@@ -257,7 +280,8 @@ fun WriteMessageScreen(
     onPreviewClick: () -> Unit,
     onDeleteAllMessagesClick: () -> Unit,
     isOneSafeK: Boolean,
-    messageLongPress: MessageLongPress,
+    messageTextLongPress: MessageTextLongPress,
+    safeItemMessageCombinedPress: SafeItemMessageCombinedPress,
     focusRequester: FocusRequester,
     canSend: Boolean,
 ) {
@@ -359,7 +383,8 @@ fun WriteMessageScreen(
                                 conversation = conversation,
                                 contactNameProvider = nameProvider,
                                 context = context,
-                                messageLongPress = messageLongPress,
+                                messageTextLongPress = messageTextLongPress,
+                                safeItemMessageCombinedPress = safeItemMessageCombinedPress,
                             )
                         }
                     }
@@ -530,6 +555,7 @@ interface WriteMessageNavScope {
     val navigateToContactDetail: (UUID) -> Unit
     val navigateBack: () -> Unit
     val deeplinkBubblesWriteMessage: ((contactId: UUID) -> Unit)?
+    val navigateToItemDetail: (UUID) -> Unit
 }
 
 @OsDefaultPreview
@@ -539,7 +565,7 @@ fun WriteMessageScreenPreview() {
         val pagingItems: LazyPagingItems<ConversationUiData> = MutableStateFlow(
             PagingData.from(
                 listOf<ConversationUiData>(
-                    ConversationUiData.Message(
+                    ConversationUiData.Message.Text(
                         id = createRandomUUID(),
                         text = LbcTextSpec.Raw("hello"),
                         direction = MessageDirection.RECEIVED,
@@ -548,7 +574,7 @@ fun WriteMessageScreenPreview() {
                         type = ConversationUiData.MessageType.Message,
                         hasCorruptedData = false,
                     ),
-                    ConversationUiData.Message(
+                    ConversationUiData.Message.Text(
                         id = createRandomUUID(),
                         text = LbcTextSpec.Raw("hello hello"),
                         direction = MessageDirection.SENT,
@@ -575,11 +601,15 @@ fun WriteMessageScreenPreview() {
             onPreviewClick = {},
             onDeleteAllMessagesClick = {},
             isOneSafeK = false,
-            messageLongPress = object : MessageLongPress() {
+            messageTextLongPress = object : MessageTextLongPress() {
                 override fun onLongClick(id: UUID) {}
             },
             focusRequester = remember { FocusRequester() },
             canSend = true,
+            safeItemMessageCombinedPress = DropDownSafeItemMessageCombinedPress(
+                onDeleteMessageClick = {},
+                onNavigateToItemClick = {},
+            ),
         )
     }
 }
@@ -591,7 +621,7 @@ fun ImeWriteMessageScreenPreview() {
         val pagingItems: LazyPagingItems<ConversationUiData> = MutableStateFlow(
             PagingData.from(
                 listOf<ConversationUiData>(
-                    ConversationUiData.Message(
+                    ConversationUiData.Message.Text(
                         id = createRandomUUID(),
                         text = LbcTextSpec.Raw("hello"),
                         direction = MessageDirection.RECEIVED,
@@ -600,16 +630,16 @@ fun ImeWriteMessageScreenPreview() {
                         type = ConversationUiData.MessageType.Message,
                         hasCorruptedData = false,
                     ),
-                    ConversationUiData.Message(
+                    ConversationUiData.Message.Text(
                         id = createRandomUUID(),
                         text = LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_corruptedMessage),
                         direction = MessageDirection.SENT,
-                        sendAt = null,
+                        sendAt = Instant.now(),
                         channelName = null,
                         type = ConversationUiData.MessageType.Message,
                         hasCorruptedData = true,
                     ),
-                    ConversationUiData.Message(
+                    ConversationUiData.Message.Text(
                         id = createRandomUUID(),
                         text = LbcTextSpec.Raw("hello hello"),
                         direction = MessageDirection.SENT,
@@ -636,11 +666,15 @@ fun ImeWriteMessageScreenPreview() {
             onPreviewClick = {},
             onDeleteAllMessagesClick = {},
             isOneSafeK = false,
-            messageLongPress = object : MessageLongPress() {
+            messageTextLongPress = object : MessageTextLongPress() {
                 override fun onLongClick(id: UUID) {}
             },
             focusRequester = remember { FocusRequester() },
             canSend = true,
+            safeItemMessageCombinedPress = DropDownSafeItemMessageCombinedPress(
+                onDeleteMessageClick = {},
+                onNavigateToItemClick = {},
+            ),
         )
     }
 }
@@ -664,11 +698,15 @@ fun ImeWriteMessageScreenCorruptedPreview() {
             onPreviewClick = {},
             onDeleteAllMessagesClick = {},
             isOneSafeK = false,
-            messageLongPress = object : MessageLongPress() {
+            messageTextLongPress = object : MessageTextLongPress() {
                 override fun onLongClick(id: UUID) {}
             },
             focusRequester = remember { FocusRequester() },
             canSend = false,
+            safeItemMessageCombinedPress = DropDownSafeItemMessageCombinedPress(
+                onDeleteMessageClick = {},
+                onNavigateToItemClick = {},
+            ),
         )
     }
 }

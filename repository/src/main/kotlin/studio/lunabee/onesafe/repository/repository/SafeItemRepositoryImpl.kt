@@ -41,8 +41,11 @@ class SafeItemRepositoryImpl @Inject constructor(
     private val localDataSource: SafeItemLocalDataSource,
 ) : SafeItemRepository {
     override suspend fun getSafeItem(id: UUID): SafeItem = localDataSource.getSafeItem(id)
-    override fun getSafeItemWithIdentifier(ids: Collection<UUID>, order: ItemOrder): Flow<List<SafeItemWithIdentifier>> =
-        localDataSource.getSafeItemWithIdentifier(ids, order)
+    override fun getSafeItemListWithIdentifier(ids: Collection<UUID>, order: ItemOrder): Flow<List<SafeItemWithIdentifier>> =
+        localDataSource.getSafeItemListWithIdentifier(ids, order)
+
+    override fun getSafeItemWithIdentifier(id: UUID): Flow<SafeItemWithIdentifier?> =
+        localDataSource.getSafeItemWithIdentifier(id)
 
     override fun getSafeItemFlow(id: UUID): Flow<SafeItem?> = localDataSource.getSafeItemFlow(id)
     override suspend fun getChildren(parentId: UUID, order: ItemOrder, safeId: SafeId): List<SafeItem> = localDataSource.findByParentId(

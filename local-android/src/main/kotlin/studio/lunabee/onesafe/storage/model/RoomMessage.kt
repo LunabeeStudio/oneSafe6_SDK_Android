@@ -51,6 +51,7 @@ class RoomMessage(
     @ColumnInfo(name = "direction") val direction: MessageDirection,
     @ColumnInfo(name = "order") val order: Float,
     @ColumnInfo(name = "enc_channel") val encChannel: ByteArray?,
+    @ColumnInfo(name = "encSafeId") val encSafeId: ByteArray?,
     @ColumnInfo(name = "is_read", defaultValue = "true") val isRead: Boolean,
 ) {
     fun toMessage(): SafeMessage = SafeMessage(
@@ -61,6 +62,7 @@ class RoomMessage(
         direction = direction,
         encChannel = encChannel,
         isRead = isRead,
+        encSafeItemId = encSafeId,
     )
 
     companion object {
@@ -73,6 +75,7 @@ class RoomMessage(
             order = order,
             encChannel = message.encChannel,
             isRead = message.isRead,
+            encSafeId = message.encSafeItemId,
         )
     }
 }

@@ -20,11 +20,14 @@
 package studio.lunabee.onesafe.messaging.writemessage.composable
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -34,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.doubleratchet.model.createRandomUUID
@@ -49,6 +53,7 @@ import studio.lunabee.onesafe.model.OSSafeItemStyle
 import studio.lunabee.onesafe.model.combinedClickableWithHaptic
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
+import studio.lunabee.onesafe.ui.theme.OSTheme
 import studio.lunabee.onesafe.ui.theme.OSTypography.labelXSmall
 import java.time.Instant
 import java.time.ZoneId
@@ -60,11 +65,28 @@ import java.util.UUID
 fun MessageRow(
     messageData: ConversationUiData.Message,
     contactName: OSNameProvider,
-    messageLongPress: MessageLongPress,
+    messageTextLongPress: MessageTextLongPress,
+    safeItemMessageCombinedPress: SafeItemMessageCombinedPress,
 ) {
     val style: MessageRowStyle = when (messageData.direction) {
         MessageDirection.SENT -> MessageRowDefault.send()
         MessageDirection.RECEIVED -> MessageRowDefault.received()
+    }
+    val longClick: (() -> Unit)? = when (messageData) {
+        is ConversationUiData.Message.SafeItem -> {
+            { safeItemMessageCombinedPress.onLongClick(messageData.id.uuid) }
+        }
+        is ConversationUiData.Message.Text -> if (messageTextLongPress.enabled(messageData.type)) {
+            { messageTextLongPress.onLongClick(messageData.id.uuid) }
+        } else {
+            null
+        }
+    }
+    val onClick: (() -> Unit)? = when (messageData) {
+        is ConversationUiData.Message.SafeItem -> {
+            { messageData.itemId?.let(safeItemMessageCombinedPress::onClick) }
+        }
+        is ConversationUiData.Message.Text -> null
     }
     Row(
         modifier = Modifier
@@ -81,33 +103,70 @@ fun MessageRow(
                 .background(style.backgroundColor)
                 .fillMaxWidth(style.widthRow)
                 .combinedClickableWithHaptic(
-                    enabled = messageLongPress.enabled(messageData.type),
-                    onLongClick = { messageLongPress.onLongClick(messageData.id.uuid) },
-                    onClick = {},
+                    enabled = longClick != null || onClick != null,
+                    onLongClick = { longClick?.invoke() },
+                    onClick = { onClick?.invoke() },
                     onClickLabel = null,
                     onLongClickLabel = null,
                 )
                 .padding(horizontal = OSDimens.SystemSpacing.Regular, vertical = OSDimens.SystemSpacing.Small),
             verticalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.ExtraSmall),
         ) {
-            OSText(
-                text = messageData.text,
-                textAlign = style.textAlign,
-                color = style.textColor,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            messageLongPress.Content(messageData)
-            val channelText = if (messageData.channelName != null) {
-                LbcTextSpec.Raw(messageData.channelName)
-            } else {
-                LbcTextSpec.StringResource(OSString.oneSafeK_channel_unknown)
+            when (messageData) {
+                is ConversationUiData.Message.SafeItem -> {
+                    OSTheme(
+                        isSystemInDarkTheme = true,
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            OSTheme(isSystemInDarkTheme = style.isIconDarkMode) {
+                                messageData.icon.ImageComposable(contentDescription = null, style = OSSafeItemStyle.Small)
+                            }
+                            Spacer(modifier = Modifier.size(OSDimens.SystemSpacing.Small))
+                            Column {
+                                OSText(
+                                    text = messageData.name.name,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = style.textColor,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                                messageData.identifier?.let {
+                                    OSText(
+                                        text = it,
+                                        style = MaterialTheme.typography.labelXSmall,
+                                        color = style.textColor,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        fontWeight = FontWeight.Light,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                is ConversationUiData.Message.Text -> {
+                    OSText(
+                        text = messageData.text,
+                        textAlign = style.textAlign,
+                        color = style.textColor,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
-            messageData.sendAt?.let {
+            when (messageData) {
+                is ConversationUiData.Message.SafeItem -> safeItemMessageCombinedPress.Content(message = messageData)
+                is ConversationUiData.Message.Text -> messageTextLongPress.Content(messageData)
+            }
+            val channelText = messageData.channelName?.let(LbcTextSpec::Raw)
+                ?: LbcTextSpec.StringResource(OSString.oneSafeK_channel_unknown)
+            messageData.sendAt?.let { sendAt ->
                 OSText(
                     text = LbcTextSpec.StringResource(
                         OSString.oneSafeK_messageRow_timeChannelLabel,
-                        messageData.sendAt.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)),
+                        sendAt.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)),
                         channelText,
                     ),
                     textAlign = style.textAlign,
@@ -131,6 +190,7 @@ interface MessageRowStyle {
     val textAlign: TextAlign
     val containerArrangement: Arrangement.Horizontal
     val widthRow: Float
+    val isIconDarkMode: Boolean
 }
 
 object MessageRowDefault {
@@ -148,6 +208,7 @@ object MessageRowDefault {
             override val textAlign: TextAlign = TextAlign.Start
             override val containerArrangement: Arrangement.Horizontal = Arrangement.spacedBy(OSDimens.SystemSpacing.Small)
             override val widthRow: Float = ReceiveMessageRowWidthRatio
+            override val isIconDarkMode: Boolean = isSystemInDarkTheme()
         }
     }
 
@@ -165,6 +226,7 @@ object MessageRowDefault {
             override val textAlign: TextAlign = TextAlign.End
             override val containerArrangement: Arrangement.Horizontal = Arrangement.End
             override val widthRow: Float = SendMessageRowWidthRatio
+            override val isIconDarkMode: Boolean = !isSystemInDarkTheme()
         }
     }
 }
@@ -179,11 +241,11 @@ fun OneSafeKMessageRowPreview() {
                 .padding(OSDimens.SystemSpacing.Regular),
             verticalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.Regular),
         ) {
-            val messageRowLongPress = object : MessageLongPress() {
+            val messageRowLongPress = object : MessageTextLongPress() {
                 override fun onLongClick(id: UUID) {}
             }
             MessageRow(
-                messageData = ConversationUiData.Message(
+                messageData = ConversationUiData.Message.Text(
                     id = createRandomUUID(),
                     text = LbcTextSpec.Raw(loremIpsum(10)),
                     direction = MessageDirection.SENT,
@@ -193,10 +255,14 @@ fun OneSafeKMessageRowPreview() {
                     hasCorruptedData = false,
                 ),
                 contactName = DefaultNameProvider("Flo"),
-                messageLongPress = messageRowLongPress,
+                messageTextLongPress = messageRowLongPress,
+                safeItemMessageCombinedPress = DropDownSafeItemMessageCombinedPress(
+                    onDeleteMessageClick = {},
+                    onNavigateToItemClick = {},
+                ),
             )
             MessageRow(
-                messageData = ConversationUiData.Message(
+                messageData = ConversationUiData.Message.Text(
                     id = createRandomUUID(),
                     text = LbcTextSpec.Raw(loremIpsum(10)),
                     direction = MessageDirection.RECEIVED,
@@ -206,20 +272,28 @@ fun OneSafeKMessageRowPreview() {
                     hasCorruptedData = false,
                 ),
                 contactName = DefaultNameProvider("Flo"),
-                messageLongPress = messageRowLongPress,
+                messageTextLongPress = messageRowLongPress,
+                safeItemMessageCombinedPress = DropDownSafeItemMessageCombinedPress(
+                    onDeleteMessageClick = {},
+                    onNavigateToItemClick = {},
+                ),
             )
             MessageRow(
-                messageData = ConversationUiData.Message(
+                messageData = ConversationUiData.Message.Text(
                     id = createRandomUUID(),
                     text = LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_corruptedMessage),
                     direction = MessageDirection.SENT,
-                    sendAt = null,
+                    sendAt = Instant.now(),
                     channelName = null,
                     type = ConversationUiData.MessageType.Message,
                     hasCorruptedData = true,
                 ),
                 contactName = DefaultNameProvider("Flo"),
-                messageLongPress = messageRowLongPress,
+                messageTextLongPress = messageRowLongPress,
+                safeItemMessageCombinedPress = DropDownSafeItemMessageCombinedPress(
+                    onDeleteMessageClick = {},
+                    onNavigateToItemClick = {},
+                ),
             )
         }
     }

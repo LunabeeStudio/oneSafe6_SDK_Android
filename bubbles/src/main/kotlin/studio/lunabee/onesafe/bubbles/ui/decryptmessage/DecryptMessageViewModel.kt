@@ -59,6 +59,7 @@ class DecryptMessageViewModel @Inject constructor(
                             is ManagingIncomingMessageResultData.Message -> {
                                 DecryptMessageUiState.NavigateToConversation(resultData.decryptResult)
                             }
+                            is ManagingIncomingMessageResultData.SafeItem -> error("should not append")
                         }
                     }
                     is LBResult.Failure -> {

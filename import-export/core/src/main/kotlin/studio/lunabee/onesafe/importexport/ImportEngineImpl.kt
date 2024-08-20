@@ -210,7 +210,7 @@ class ImportEngineImpl @Inject constructor(
         }.onStart { emit(LBFlowResult.Loading()) }
     }
 
-    override fun saveImportData(mode: ImportMode): Flow<LBFlowResult<Unit>> {
+    override fun saveImportData(mode: ImportMode): Flow<LBFlowResult<UUID>> {
         return flow {
             val safeId = safeRepository.currentSafeId()
             try {
@@ -283,7 +283,8 @@ class ImportEngineImpl @Inject constructor(
                     updateItemsAlphaIndices = importCacheDataSource.allItemAlphaIndices,
                 )
                 importCacheDataSource.clearAll()
-                emit(LBFlowResult.Success(Unit))
+                val parentItemId = safeItems.first().let { it.parentId ?: it.id }
+                emit(LBFlowResult.Success(parentItemId))
             } catch (e: Exception) {
                 // Nothing to clean in failure state as retry is possible.
                 emit(LBFlowResult.Failure(e))

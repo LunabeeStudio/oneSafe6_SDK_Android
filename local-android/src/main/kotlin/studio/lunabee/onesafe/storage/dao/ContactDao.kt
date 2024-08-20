@@ -41,8 +41,8 @@ interface ContactDao {
     @Query("SELECT * FROM Contact WHERE id = :id")
     fun getByIdFlow(id: UUID): Flow<RoomContact?>
 
-    @Query("SELECT * FROM Contact WHERE id = :id")
-    suspend fun getById(id: UUID): RoomContact?
+    @Query("SELECT * FROM Contact WHERE id = :id AND safe_id is :safeId")
+    suspend fun getById(id: UUID, safeId: UUID): RoomContact?
 
     @Query("SELECT enc_shared_key FROM Contact WHERE id = :id")
     suspend fun getContactSharedKey(id: UUID): ByteArray?

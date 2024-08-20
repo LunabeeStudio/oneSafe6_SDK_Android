@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.model.importexport.ImportMetadata
 import studio.lunabee.onesafe.domain.model.importexport.ImportMode
 import java.io.File
+import java.util.UUID
 
 interface ImportEngine {
     /**
@@ -55,5 +56,5 @@ interface ImportEngine {
      * Save data depending on the [ImportMode] chosen by user.
      * @param mode [ImportMode]
      */
-    fun saveImportData(mode: ImportMode): Flow<LBFlowResult<Unit>>
+    fun saveImportData(mode: ImportMode): Flow<LBFlowResult<UUID>>
 }

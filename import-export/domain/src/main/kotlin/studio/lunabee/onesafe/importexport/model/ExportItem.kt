@@ -36,11 +36,11 @@ data class ExportItem(
     val deletedParentId: UUID?,
     val createdAt: Instant,
 ) {
-    constructor(safeItem: SafeItem) : this(
+    constructor(safeItem: SafeItem, keepFavorite: Boolean = true) : this(
         id = safeItem.id,
         encName = safeItem.encName,
         parentId = safeItem.parentId,
-        isFavorite = safeItem.isFavorite,
+        isFavorite = keepFavorite && safeItem.isFavorite,
         updatedAt = safeItem.updatedAt,
         position = safeItem.position,
         iconId = safeItem.iconId,

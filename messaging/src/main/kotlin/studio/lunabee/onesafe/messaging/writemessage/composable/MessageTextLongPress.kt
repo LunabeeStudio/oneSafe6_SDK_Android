@@ -23,9 +23,9 @@ import androidx.compose.runtime.Composable
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
 import java.util.UUID
 
-abstract class MessageLongPress {
+abstract class MessageTextLongPress {
     @Composable
-    open fun Content(message: ConversationUiData.Message) {
+    open fun Content(message: ConversationUiData.Message.Text) {
     }
 
     abstract fun onLongClick(id: UUID)

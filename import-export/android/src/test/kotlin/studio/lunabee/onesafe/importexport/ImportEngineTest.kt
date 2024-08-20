@@ -143,7 +143,7 @@ class ImportEngineTest : OSHiltUnitTest() {
             logger.d("[prepareDataForImport] $prepareDataExecTime ms")
             assertSuccess(prepareDataImportResult)
 
-            val saveImportDataResult: LBFlowResult<Unit>
+            val saveImportDataResult: LBFlowResult<UUID>
             val saveExecTime = measureTimeMillis {
                 saveImportDataResult = importEngine.saveImportData(mode = ImportMode.Replace).last()
             }
