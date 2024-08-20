@@ -37,4 +37,5 @@ class ImeWriteMessageNav(dismissUi: () -> Unit, context: Context) : WriteMessage
         ImeDeeplinkHelper.deeplinkBubblesWriteMessage(context, contactId)
         dismissUi()
     }
+    override val navigateToItemDetail: (UUID) -> Unit = {}
 }

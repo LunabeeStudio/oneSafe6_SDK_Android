@@ -68,6 +68,7 @@ class ScanBarcodeViewModel @Inject constructor(
                                     is ManagingIncomingMessageResultData.Message -> {
                                         ScanBarcodeUiState.NavigateToConversation(resultData.decryptResult)
                                     }
+                                    is ManagingIncomingMessageResultData.SafeItem -> error("should not append")
                                 }
                             }
                             is LBResult.Failure -> {

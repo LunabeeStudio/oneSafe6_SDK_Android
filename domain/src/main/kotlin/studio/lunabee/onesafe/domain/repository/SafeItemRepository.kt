@@ -36,7 +36,8 @@ import java.util.UUID
 
 interface SafeItemRepository {
     suspend fun getSafeItem(id: UUID): SafeItem
-    fun getSafeItemWithIdentifier(ids: Collection<UUID>, order: ItemOrder): Flow<List<SafeItemWithIdentifier>>
+    fun getSafeItemListWithIdentifier(ids: Collection<UUID>, order: ItemOrder): Flow<List<SafeItemWithIdentifier>>
+    fun getSafeItemWithIdentifier(id: UUID): Flow<SafeItemWithIdentifier?>
     fun getSafeItemFlow(id: UUID): Flow<SafeItem?>
     suspend fun getChildren(parentId: UUID, order: ItemOrder, safeId: SafeId): List<SafeItem>
     fun countSafeItemByParentIdFlow(parentId: UUID?, safeId: SafeId): Flow<Int>

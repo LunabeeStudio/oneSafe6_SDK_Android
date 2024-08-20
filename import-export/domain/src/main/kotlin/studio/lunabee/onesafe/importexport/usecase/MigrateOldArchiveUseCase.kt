@@ -48,7 +48,11 @@ class MigrateOldArchiveUseCase @Inject constructor(
             if (result is LBFlowResult.Success) {
                 result = importEngine.prepareDataForImport(archiveDir, importMode).last()
                 if (result is LBFlowResult.Success) {
-                    result = importEngine.saveImportData(mode = importMode).last()
+                    result = when (val saveResult = importEngine.saveImportData(mode = importMode).last()) {
+                        is LBFlowResult.Failure -> LBFlowResult.Failure(saveResult.throwable)
+                        is LBFlowResult.Loading -> LBFlowResult.Loading()
+                        is LBFlowResult.Success -> LBFlowResult.Success(Unit)
+                    }
                 }
             }
         }

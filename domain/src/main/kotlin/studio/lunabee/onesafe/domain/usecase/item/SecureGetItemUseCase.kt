@@ -21,6 +21,7 @@ package studio.lunabee.onesafe.domain.usecase.item
 
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
+import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
 import java.util.UUID
@@ -40,5 +41,9 @@ class SecureGetItemUseCase @Inject constructor(
      */
     operator fun invoke(id: UUID): Flow<SafeItem?> = isSafeReadyUseCase.withCrypto(
         safeItemRepository.getSafeItemFlow(id),
+    )
+
+    fun withIdentifier(id: UUID): Flow<SafeItemWithIdentifier?> = isSafeReadyUseCase.withCrypto(
+        safeItemRepository.getSafeItemWithIdentifier(id),
     )
 }

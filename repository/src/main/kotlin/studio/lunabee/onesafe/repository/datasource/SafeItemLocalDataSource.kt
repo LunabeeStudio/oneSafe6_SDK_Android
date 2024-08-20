@@ -46,7 +46,8 @@ interface SafeItemLocalDataSource {
     suspend fun updateIcon(id: UUID, iconId: UUID?)
     suspend fun toggleFavorite(id: UUID)
     suspend fun getSafeItem(id: UUID): SafeItem
-    fun getSafeItemWithIdentifier(ids: Collection<UUID>, order: ItemOrder): Flow<List<SafeItemWithIdentifier>>
+    fun getSafeItemListWithIdentifier(ids: Collection<UUID>, order: ItemOrder): Flow<List<SafeItemWithIdentifier>>
+    fun getSafeItemWithIdentifier(id: UUID): Flow<SafeItemWithIdentifier?>
     suspend fun findByParentId(parentId: UUID, order: ItemOrder, safeId: SafeId): List<SafeItem>
     suspend fun findByDeletedParentId(deletedParentId: UUID?, order: ItemOrder, safeId: SafeId): List<SafeItem>
     suspend fun getSiblingOriginalChildren(parentId: UUID, order: ItemOrder): List<SafeItem>

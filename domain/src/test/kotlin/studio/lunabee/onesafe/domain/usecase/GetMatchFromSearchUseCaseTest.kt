@@ -47,7 +47,7 @@ class GetMatchFromSearchUseCaseTest {
         every { itemOrdering(firstSafeId) } returns flowOf(ItemOrder.Position)
     }
     private val itemRepository: SafeItemRepository = mockk {
-        coEvery { getSafeItemWithIdentifier(any(), any()) } answers {
+        coEvery { getSafeItemListWithIdentifier(any(), any()) } answers {
             flowOf(firstArg<Collection<UUID>>().mapNotNull { itemMap[it] }.sortedBy { it.position })
         }
     }
@@ -159,7 +159,7 @@ class GetMatchFromSearchUseCaseTest {
             )
         }
 
-        coEvery { itemRepository.getSafeItemWithIdentifier(any(), any()) } returns flowOf(expected)
+        coEvery { itemRepository.getSafeItemListWithIdentifier(any(), any()) } returns flowOf(expected)
 
         val actual = getMatchFromSearchUseCase("aaa bbb", equalIndex).first()
 

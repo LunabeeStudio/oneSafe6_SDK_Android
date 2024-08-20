@@ -28,6 +28,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.insertSeparators
 import androidx.paging.map
+import com.lunabee.lbcore.model.LBFlowResult
 import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lbloading.LoadingManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,6 +40,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -56,6 +59,7 @@ import studio.lunabee.doubleratchet.model.SendMessageData
 import studio.lunabee.messaging.domain.model.ConversationState
 import studio.lunabee.messaging.domain.model.DecryptResult
 import studio.lunabee.messaging.domain.model.PlainMessageData
+import studio.lunabee.messaging.domain.model.SentMessage
 import studio.lunabee.messaging.domain.model.SharedMessage
 import studio.lunabee.messaging.domain.repository.MessageChannelRepository
 import studio.lunabee.messaging.domain.repository.MessagePagingRepository
@@ -68,22 +72,28 @@ import studio.lunabee.messaging.domain.usecase.GetSendMessageDataUseCase
 import studio.lunabee.messaging.domain.usecase.SaveSentMessageUseCase
 import studio.lunabee.onesafe.commonui.CommonUiConstants
 import studio.lunabee.onesafe.commonui.ErrorNameProvider
+import studio.lunabee.onesafe.commonui.OSItemIllustrationHelper
 import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.commonui.OSString
+import studio.lunabee.onesafe.commonui.RemovedNameProvider
 import studio.lunabee.onesafe.commonui.dialog.DialogAction
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.dialog.ErrorDialogState
 import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
 import studio.lunabee.onesafe.commonui.snackbar.SnackbarState
+import studio.lunabee.onesafe.domain.usecase.GetIconUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
+import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
+import studio.lunabee.onesafe.domain.usecase.item.SecureGetItemUseCase
 import studio.lunabee.onesafe.domain.usecase.settings.GetAppSettingUseCase
-import studio.lunabee.onesafe.messaging.usecase.CreateSingleEntryArchiveUseCase
+import studio.lunabee.onesafe.messaging.usecase.CreateBubblesMessageArchiveUseCase
 import studio.lunabee.onesafe.messaging.usecase.DeleteBubblesArchiveUseCase
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
 import studio.lunabee.onesafe.messaging.writemessage.model.BubblesWritingMessage
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
 import studio.lunabee.onesafe.messaging.writemessage.model.SentMessageData
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageUiState
+import studio.lunabee.onesafe.ui.extensions.toColor
 import java.io.File
 import java.time.Clock
 import java.time.Instant
@@ -110,8 +120,11 @@ class WriteMessageViewModel @Inject constructor(
     private val clock: Clock,
     private val decryptSafeMessageUseCase: DecryptSafeMessageUseCase,
     private val loadingManager: LoadingManager,
-    private val createSingleEntryArchiveUseCase: CreateSingleEntryArchiveUseCase,
     private val deleteBubblesArchiveUseCase: DeleteBubblesArchiveUseCase,
+    private val createBubblesMessageArchiveUseCase: CreateBubblesMessageArchiveUseCase,
+    private val secureGetItemUseCase: SecureGetItemUseCase,
+    private val itemDecryptUseCase: ItemDecryptUseCase,
+    private val getIconUseCase: GetIconUseCase,
     isSafeReadyUseCase: IsSafeReadyUseCase,
     getAppSettingUseCase: GetAppSettingUseCase,
 ) : ViewModel() {
@@ -164,7 +177,7 @@ class WriteMessageViewModel @Inject constructor(
                     )
                 }
                 val conversationId = encContact.id
-                val conversationState = getConversationStateUseCase(id = conversationId)
+                val conversationState: LBResult<ConversationState> = getConversationStateUseCase(id = conversationId)
                 when (conversationState) {
                     is LBResult.Failure -> WriteContactInfo(
                         id = conversationId,
@@ -255,16 +268,21 @@ class WriteMessageViewModel @Inject constructor(
                     contactRepository.updateContactConsultedAt(contactId, Instant.now(clock).toKotlinInstant())
                 }
                 pagingData.map { message ->
-                    val plainMessageData = decryptSafeMessageUseCase.message(message)
-                    val text: LbcTextSpec
-                    val type: ConversationUiData.MessageType
+                    val plainMessageData: PlainMessageData = decryptSafeMessageUseCase.message(message)
                     when (plainMessageData) {
                         is PlainMessageData.AcceptedInvitation -> {
-                            text = LbcTextSpec.StringResource(OSString.bubbles_acceptedInvitation)
-                            type = ConversationUiData.MessageType.Invitation
+                            ConversationUiData.Message.Text(
+                                id = message.id,
+                                text = LbcTextSpec.StringResource(OSString.bubbles_acceptedInvitation),
+                                direction = message.direction,
+                                sendAt = plainMessageData.sentAt.data?.toJavaInstant(),
+                                channelName = plainMessageData.channel?.data,
+                                type = ConversationUiData.MessageType.Invitation,
+                                hasCorruptedData = plainMessageData.hasCorruptedData,
+                            )
                         }
                         is PlainMessageData.Default -> {
-                            text = when (val plainContent = plainMessageData.content) {
+                            val text = when (val plainContent: LBResult<String> = plainMessageData.content) {
                                 is LBResult.Failure -> {
                                     LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_corruptedMessage)
                                 }
@@ -272,19 +290,40 @@ class WriteMessageViewModel @Inject constructor(
                                     LbcTextSpec.Raw(plainContent.successData)
                                 }
                             }
-                            type = ConversationUiData.MessageType.Message
+                            ConversationUiData.Message.Text(
+                                id = message.id,
+                                text = text,
+                                direction = message.direction,
+                                sendAt = plainMessageData.sentAt.data?.toJavaInstant(),
+                                channelName = plainMessageData.channel?.data,
+                                type = ConversationUiData.MessageType.Message,
+                                hasCorruptedData = plainMessageData.hasCorruptedData,
+                            )
+                        }
+                        is PlainMessageData.SafeItem -> {
+                            val item = secureGetItemUseCase.withIdentifier(plainMessageData.itemId.uuid).firstOrNull()
+                            val name = item?.encName?.let { itemDecryptUseCase(it, item.id, String::class) }
+                            val identifier = item?.encIdentifier?.let { itemDecryptUseCase(it, item.id, String::class) }
+                            val icon = item?.iconId?.let { getIconUseCase(it, item.id) }
+                            val color = item?.encColor?.let { itemDecryptUseCase(it, item.id, String::class) }?.data?.toColor()
+                            val itemNameProvider = when {
+                                item == null -> RemovedNameProvider
+                                name is LBResult.Failure -> ErrorNameProvider
+                                else -> OSNameProvider.fromName(name = name?.data, hasIcon = icon?.data != null)
+                            }
+                            val illustration = OSItemIllustrationHelper.get(itemNameProvider, icon?.data, color)
+                            ConversationUiData.Message.SafeItem(
+                                id = message.id,
+                                direction = message.direction,
+                                sendAt = plainMessageData.sentAt.data?.toJavaInstant(),
+                                channelName = plainMessageData.channel?.data,
+                                icon = illustration,
+                                name = itemNameProvider,
+                                identifier = identifier?.data?.let(LbcTextSpec::Raw),
+                                itemId = item?.id,
+                            )
                         }
                     }
-
-                    ConversationUiData.Message(
-                        id = message.id,
-                        text = text,
-                        direction = message.direction,
-                        sendAt = plainMessageData.sentAt.data?.toJavaInstant(),
-                        channelName = plainMessageData.channel?.data,
-                        type = type,
-                        hasCorruptedData = plainMessageData.hasCorruptedData,
-                    )
                 }.insertSeparators { before, after ->
                     val beforeSendAt = before?.sendAt
                     when {
@@ -300,7 +339,7 @@ class WriteMessageViewModel @Inject constructor(
 
     suspend fun getSentMessageData(content: String): SentMessageData? {
         val contactId = contactId.value!!
-        val messageDataRes = getSendMessageDataUseCase(contactId)
+        val messageDataRes: LBResult<SendMessageData> = getSendMessageDataUseCase(contactId)
         return when (messageDataRes) {
             is LBResult.Success -> {
                 getSentMessageData(content, messageDataRes.successData, contactId)
@@ -319,7 +358,7 @@ class WriteMessageViewModel @Inject constructor(
         contactId: DoubleRatchetUUID,
     ): SentMessageData? {
         lastMessageChange = Instant.now(clock)
-        val encMessageRes = encryptMessageUseCase(
+        val encMessageRes: LBResult<ByteArray> = encryptMessageUseCase(
             plainMessage = content,
             contactId = (uiState.value as WriteMessageUiState.Data).contactId,
             sentAt = lastMessageChange.toKotlinInstant(),
@@ -344,7 +383,7 @@ class WriteMessageViewModel @Inject constructor(
     @OptIn(ExperimentalEncodingApi::class)
     fun saveEncryptedMessage(sentMessageData: SentMessageData) {
         viewModelScope.launch {
-            val result = saveSentMessageUseCase(
+            val result: LBResult<SentMessage?> = saveSentMessageUseCase(
                 plainMessage = SharedMessage(
                     content = sentMessageData.plainMessage,
                     recipientId = sentMessageData.contactId,
@@ -476,9 +515,20 @@ class WriteMessageViewModel @Inject constructor(
     fun createAndShareArchive(messageToSend: String, share: (File) -> Unit) {
         viewModelScope.launch {
             val file = loadingManager.withLoading {
-                createSingleEntryArchiveUseCase(Base64.decode(messageToSend))
+                val archiveResult = createBubblesMessageArchiveUseCase(
+                    messageData = Base64.decode(messageToSend),
+                    attachmentFile = null,
+                ).first { it !is LBFlowResult.Loading }
+                when (archiveResult) {
+                    is LBFlowResult.Loading -> null
+                    is LBFlowResult.Failure -> {
+                        displayErrorDialog(archiveResult.throwable)
+                        null
+                    }
+                    is LBFlowResult.Success -> archiveResult.successData
+                }
             }
-            share(file)
+            file?.let { share(it) }
         }
     }
 

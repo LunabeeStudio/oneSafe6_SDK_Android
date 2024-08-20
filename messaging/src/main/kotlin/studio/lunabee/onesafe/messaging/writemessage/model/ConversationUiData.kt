@@ -22,20 +22,42 @@ package studio.lunabee.onesafe.messaging.writemessage.model
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.messaging.domain.model.MessageDirection
+import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.messaging.extension.isSameDayAs
+import studio.lunabee.onesafe.model.OSItemIllustration
 import java.time.Instant
+import java.util.UUID
 
 sealed interface ConversationUiData {
 
-    data class Message(
-        val id: DoubleRatchetUUID,
-        val text: LbcTextSpec,
-        val direction: MessageDirection,
-        val sendAt: Instant?,
-        val channelName: String?,
-        val type: MessageType,
-        val hasCorruptedData: Boolean,
-    ) : ConversationUiData {
+    sealed interface Message : ConversationUiData {
+
+        val sendAt: Instant?
+        val id: DoubleRatchetUUID
+        val direction: MessageDirection
+        val channelName: String?
+
+        data class Text(
+            override val id: DoubleRatchetUUID,
+            override val direction: MessageDirection,
+            override val sendAt: Instant?,
+            override val channelName: String?,
+            val hasCorruptedData: Boolean,
+            val text: LbcTextSpec,
+            val type: MessageType,
+        ) : Message
+
+        data class SafeItem(
+            override val id: DoubleRatchetUUID,
+            override val direction: MessageDirection,
+            override val sendAt: Instant?,
+            override val channelName: String?,
+            val itemId: UUID?,
+            val name: OSNameProvider,
+            val identifier: LbcTextSpec?,
+            val icon: OSItemIllustration,
+        ) : Message
+
         fun wereSentOnSameDay(other: Message?): Boolean =
             other?.sendAt?.let { sendAt?.isSameDayAs(it) } ?: false
     }

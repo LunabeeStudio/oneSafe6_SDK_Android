@@ -66,7 +66,7 @@ class GetMatchFromSearchUseCase @Inject constructor(
         return safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
             safeId?.let {
                 itemSettingsRepository.itemOrdering(safeId).flatMapLatest { itemOrder ->
-                    safeItemRepository.getSafeItemWithIdentifier(scoredMatches.keys, itemOrder).map { items ->
+                    safeItemRepository.getSafeItemListWithIdentifier(scoredMatches.keys, itemOrder).map { items ->
                         items.sortedByDescending { scoredMatches[it.id] }
                     }
                 }

@@ -32,16 +32,16 @@ import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
 import studio.lunabee.onesafe.messaging.writemessage.model.MessageAction
 import java.util.UUID
 
-class DropDownMenuMessageLongPress(
+class DropDownMenuMessageTextLongPress(
     private val onResendClick: (UUID) -> Unit,
     private val onDeleteMessageClick: (UUID) -> Unit,
-) : MessageLongPress() {
+) : MessageTextLongPress() {
 
     private val menuExpandedMessageIdFlow: MutableStateFlow<UUID?> = MutableStateFlow(null)
 
     @Composable
     override fun Content(
-        message: ConversationUiData.Message,
+        message: ConversationUiData.Message.Text,
     ) {
         when (message.type) {
             ConversationUiData.MessageType.Message -> {

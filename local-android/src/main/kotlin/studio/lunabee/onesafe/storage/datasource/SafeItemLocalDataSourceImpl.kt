@@ -129,8 +129,13 @@ class SafeItemLocalDataSourceImpl @Inject constructor(
     override suspend fun getSafeItem(id: UUID): SafeItem =
         (safeItemDao.findById(id) ?: throw OSStorageError(OSStorageError.Code.ITEM_NOT_FOUND)).toSafeItem()
 
-    override fun getSafeItemWithIdentifier(ids: Collection<UUID>, order: ItemOrder): Flow<List<SafeItemWithIdentifier>> =
+    override fun getSafeItemListWithIdentifier(ids: Collection<UUID>, order: ItemOrder): Flow<List<SafeItemWithIdentifier>> =
         safeItemRawDao.getSafeItemsWithIdentifierFlow(SafeItemRawDao.findByIdWithIdentifierQuery(ids, order))
+
+    override fun getSafeItemWithIdentifier(id: UUID): Flow<SafeItemWithIdentifier?> {
+        return safeItemRawDao.getSafeItemsWithIdentifierFlow(SafeItemRawDao.findByIdWithIdentifierQuery(listOf(id), ItemOrder.Position))
+            .map { it.firstOrNull() }
+    }
 
     override suspend fun findByParentId(parentId: UUID, order: ItemOrder, safeId: SafeId): List<SafeItem> =
         safeItemRawDao.getItems(SafeItemRawDao.findByParentIdQuery(parentId, order, safeId)).map(RoomSafeItem::toSafeItem)
