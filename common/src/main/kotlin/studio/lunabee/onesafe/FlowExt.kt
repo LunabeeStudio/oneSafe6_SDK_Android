@@ -22,35 +22,13 @@ package studio.lunabee.onesafe
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.lunabee.lbcore.model.LBFlowResult
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.conflate
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlin.experimental.ExperimentalTypeInference
 
 fun <T : Any, R : Any> Flow<PagingData<T>>.mapPagingValues(transform: suspend (T) -> R): Flow<PagingData<R>> {
     return map { it.map(transform) }
-}
-
-/**
- * taken from https://github.com/Kotlin/kotlinx.coroutines/issues/1446
- * Allow to avoid collecting to many value from flow.
- * - If no value collected for [periodMillis], the next value will be emitted directly
- * - If values collected into the [periodMillis], only the last value within the period is emitted, the others are dropped
- */
-fun <T> Flow<T>.throttle(periodMillis: Long): Flow<T> {
-    return flow {
-        conflate().collect { value ->
-            emit(value)
-            delay(periodMillis)
-        }
-    }
 }
 
 /**
@@ -89,30 +67,3 @@ fun <T> Flow<LBFlowResult<T>>.onFailure(block: suspend (LBFlowResult.Failure<T>)
             block(it)
         }
     }
-
-// https://github.com/Kotlin/kotlinx.coroutines/issues/1484#issuecomment-699600367
-@ExperimentalCoroutinesApi
-@OptIn(ExperimentalTypeInference::class)
-inline fun <reified T, R> combineFlatMapLatest(
-    vararg flows: Flow<T>,
-    @BuilderInference noinline transform: suspend (Array<T>) -> Flow<R>,
-): Flow<R> {
-    return combine(*flows) { it }
-        .flatMapLatest(transform)
-}
-
-@ExperimentalCoroutinesApi
-@OptIn(ExperimentalTypeInference::class)
-fun <T1, T2, R> combineFlatMapLatest(
-    flow: Flow<T1>,
-    flow2: Flow<T2>,
-    @BuilderInference transform: suspend (T1, T2) -> Flow<R>,
-): Flow<R> {
-    return combineFlatMapLatest(flow, flow2) { args ->
-        @Suppress("UNCHECKED_CAST")
-        transform(
-            args[0] as T1,
-            args[1] as T2,
-        )
-    }
-}

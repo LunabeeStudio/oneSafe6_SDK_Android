@@ -28,7 +28,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onStart
 import studio.lunabee.messaging.domain.MessagingConstant
 import studio.lunabee.messaging.domain.model.DecryptResult
 import studio.lunabee.onesafe.domain.qualifier.ArchiveCacheDir
@@ -50,12 +49,11 @@ class HandleBubblesFileMessageUseCase @Inject constructor(
 ) {
     operator fun invoke(fileUri: Uri): Flow<LBFlowResult<DecryptResult?>> = flow {
         isSafeReadyUseCase.wait()
+        emit(LBFlowResult.Loading())
         messageArchiveDir.mkdirs(override = true)
         context.contentResolver.openInputStream(fileUri)?.use { stream ->
             emitAll(unzip(stream))
         }
-    }.onStart {
-        emit(LBFlowResult.Loading())
     }.catch { e ->
         when (e) {
             is FileNotFoundException -> // ignore non-file URIs

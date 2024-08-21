@@ -28,9 +28,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import studio.lunabee.onesafe.SettingsDefaults
 import studio.lunabee.onesafe.commonui.usecase.AndroidResizeIconUseCaseFactory
 import studio.lunabee.onesafe.domain.LoadFileCancelAllUseCase
+import studio.lunabee.onesafe.domain.manager.IsAppBlockedUseCase
 import studio.lunabee.onesafe.domain.model.safe.SafeSettings
 import studio.lunabee.onesafe.domain.qualifier.ArchiveCacheDir
 import studio.lunabee.onesafe.domain.qualifier.BuildNumber
@@ -128,6 +131,12 @@ object FrameworkTestModule {
     @Provides
     @Singleton
     fun provideLoadingManager(): LoadingManager = DelayedLoadingManager(LBLoadingVisibilityDelayDelegate())
+
+    @Provides
+    fun provideIsAppBlockedUseCase(loadingManager: LoadingManager): IsAppBlockedUseCase = object : IsAppBlockedUseCase {
+        override fun flow(): Flow<Boolean> = loadingManager.loadingState.map { it.isBlocking }
+        override suspend operator fun invoke(): Boolean = loadingManager.loadingState.value.isBlocking
+    }
 
     @Provides
     fun provideClipboardClearUseCase(): ClipboardClearUseCase {
