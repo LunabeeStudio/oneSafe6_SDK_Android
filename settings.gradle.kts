@@ -61,7 +61,6 @@ include("app:core-ui")
 include("app:core-ui:checks")
 include("app:settings")
 include("app:migration")
-include("app:ime")
 include("app:login")
 include("app:help")
 include("domain")
@@ -105,6 +104,11 @@ include(":bubbles-crypto-android")
 project(":bubbles-crypto-android").projectDir = File("bubbles/crypto-android")
 
 include("messaging")
+
+include(":ime-android")
+project(":ime-android").projectDir = File("ime/android")
+include(":ime-domain")
+project(":ime-domain").projectDir = File("ime/domain")
 
 includeBuild("oneSafe_Bubbles_KMP")
 

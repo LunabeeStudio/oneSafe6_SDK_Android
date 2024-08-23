@@ -315,7 +315,7 @@ class OSFlorisImeService : FlorisImeService() {
                 .collectAsStateWithLifecycle(initialValue = true)
             val hasDoneLockTutorial by getAppVisitUseCase.hasDoneTutorialLockOsk()
                 .collectAsStateWithLifecycle(initialValue = true)
-            val isCryptoDataReady by isSafeReadyUseCase.flow().collectAsStateWithLifecycle(
+            val isSafeReady by isSafeReadyUseCase.flow().collectAsStateWithLifecycle(
                 false,
             )
             val isOneSafeUiVisible by isOneSafeUiVisibleFlow.collectAsStateWithLifecycle()
@@ -348,7 +348,7 @@ class OSFlorisImeService : FlorisImeService() {
                             imeClient = imeClient,
                             keyboardStatus = when {
                                 !isDatabaseAccessible -> OSKeyboardStatus.DatabaseError
-                                isCryptoDataReady -> OSKeyboardStatus.LoggedIn
+                                isSafeReady -> OSKeyboardStatus.LoggedIn
                                 else -> OSKeyboardStatus.LoggedOut
                             },
                             onLogoClick = {
@@ -365,7 +365,7 @@ class OSFlorisImeService : FlorisImeService() {
                                 coroutineScope.launch {
                                     when {
                                         !isDatabaseAccessible -> HelpActivity.launch(this@OSFlorisImeService)
-                                        isCryptoDataReady -> {
+                                        isSafeReady -> {
                                             setAppVisitUseCase.setHasDoneTutorialLockOsk()
                                             lockUseCase()
                                         }
@@ -373,8 +373,8 @@ class OSFlorisImeService : FlorisImeService() {
                                     }
                                 }
                             },
-                            displayOpenTutorial = !hasDoneOpenTutorial && !isOneSafeUiVisible && !isCryptoDataReady,
-                            displayLockTutorial = !hasDoneLockTutorial && isCryptoDataReady,
+                            displayOpenTutorial = !hasDoneOpenTutorial && !isOneSafeUiVisible && !isSafeReady,
+                            displayLockTutorial = !hasDoneLockTutorial && isSafeReady,
                             closeLockTutorial = {
                                 coroutineScope.launch { setAppVisitUseCase.setHasDoneTutorialLockOsk() }
                             },

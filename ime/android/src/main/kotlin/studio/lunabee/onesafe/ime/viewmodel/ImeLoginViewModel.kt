@@ -21,7 +21,6 @@ package studio.lunabee.onesafe.ime.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,17 +29,15 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.transformWhile
-import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.commonui.CommonUiConstants
 import studio.lunabee.onesafe.commonui.error.description
 import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
-import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.HasBiometricSafeUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.IsBiometricEnabledState
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
-import studio.lunabee.onesafe.error.OSError
-import studio.lunabee.onesafe.ime.ui.biometric.ImeBiometricResultRepository
+import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.error.OSImeError
+import studio.lunabee.onesafe.ime.repository.ImeBiometricResultRepository
 import studio.lunabee.onesafe.login.state.LoginUiState
 import studio.lunabee.onesafe.login.viewmodel.LoginFromPasswordDelegate
 import studio.lunabee.onesafe.login.viewmodel.LoginFromPasswordDelegateImpl
@@ -50,9 +47,8 @@ class ImeLoginViewModel(
     hasBiometricSafeUseCase: HasBiometricSafeUseCase,
     private val loginUiStateHolder: LoginUiStateHolder,
     private val loginFromPasswordDelegate: LoginFromPasswordDelegateImpl,
-    private val imeBiometricResultRepository: ImeBiometricResultRepository,
-    private val mainCryptoRepository: MainCryptoRepository,
-    private val isSafeReadyUseCase: IsSafeReadyUseCase,
+    imeBiometricResultRepository: ImeBiometricResultRepository,
+    isSafeReadyUseCase: IsSafeReadyUseCase,
     val versionName: String,
 ) : ViewModel(),
     LoginFromPasswordDelegate by loginFromPasswordDelegate {
@@ -60,7 +56,7 @@ class ImeLoginViewModel(
 
     val isBiometricEnabled: StateFlow<Boolean> = hasBiometricSafeUseCase().map { result ->
         if (result is IsBiometricEnabledState.Error) {
-            _biometricError.emit(ErrorSnackbarState(error = result.error, onClick = {}))
+            imeBiometricResultRepository.setError(result.error ?: OSImeError.Code.IME_BIOMETRIC_LOGIN_ERROR.get())
         }
         result.isEnabled
     }.stateIn(
@@ -73,36 +69,27 @@ class ImeLoginViewModel(
     val biometricError: StateFlow<ErrorSnackbarState?> = _biometricError.asStateFlow()
 
     init {
+        // Observe login state
         isSafeReadyUseCase.safeIdFlow()
             .filterNotNull()
-            .onEach { safeId ->
+            .onEach {
                 loginUiStateHolder.dataState
                     ?.copy(loginResult = LoginUiState.LoginResult.Success(false))
                     ?.let { state -> loginUiStateHolder.setUiState(state) }
             }
             .launchIn(viewModelScope)
 
-        viewModelScope.launch {
-            imeBiometricResultRepository.result.transformWhile {
-                emit(it)
-                it is LBResult.Failure
-            }.collect { result ->
-                when (result) {
-                    is LBResult.Failure -> {
-                        _biometricError.value = ErrorSnackbarState(
-                            (result.throwable as? OSError).description(),
-                        ) {}
-                    }
-                    is LBResult.Success -> {
-                        mainCryptoRepository.loadMasterKeyExternal(result.successData)
-                        loginUiStateHolder.dataState?.copy(
-                            loginResult = LoginUiState.LoginResult.Success(false),
-                        )?.let { dataState ->
-                            loginUiStateHolder.setUiState(dataState)
-                        }
+        // Observe error state
+        imeBiometricResultRepository.error
+            .onEach { error ->
+                _biometricError.value = error?.let {
+                    ErrorSnackbarState(
+                        error.description(),
+                    ) {
+                        imeBiometricResultRepository.setError(null)
                     }
                 }
             }
-        }
+            .launchIn(viewModelScope)
     }
 }

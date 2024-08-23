@@ -134,7 +134,7 @@ subprojects {
         val isAndroidLibrary = extensions.findByType<com.android.build.gradle.LibraryExtension>() != null
         val isApp = extensions.findByType<com.android.build.gradle.AppExtension>() != null
         val hasEnvironmentFlavor = project.name == "import-export-android" ||
-            project.name == "ime" ||
+            project.name == "ime-android" ||
             project.name == "migration" ||
             project.name == "login" ||
             project.name == "help"
