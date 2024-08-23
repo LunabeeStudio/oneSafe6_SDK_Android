@@ -25,12 +25,12 @@ import com.lunabee.lbcore.model.LBResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
-import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.GetBiometricCipherUseCase
+import studio.lunabee.onesafe.domain.usecase.authentication.LoginUseCase
 import studio.lunabee.onesafe.error.OSAppError
-import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.error.OSImeError
+import studio.lunabee.onesafe.ime.repository.ImeBiometricResultRepository
 import javax.crypto.Cipher
 import javax.inject.Inject
 
@@ -38,8 +38,7 @@ import javax.inject.Inject
 class ImeBiometricViewModel @Inject constructor(
     private val getBiometricCipherUseCase: GetBiometricCipherUseCase,
     private val imeBiometricResultRepository: ImeBiometricResultRepository,
-    private val cryptoRepository: MainCryptoRepository,
-    private val safeRepository: SafeRepository,
+    private val loginUseCase: LoginUseCase,
 ) : ViewModel() {
 
     fun getCipher(): Cipher? {
@@ -48,19 +47,20 @@ class ImeBiometricViewModel @Inject constructor(
 
     fun biometricLogin(cipher: Cipher) {
         viewModelScope.launch {
-            // TODO <multisafe> move to usecase
-            val result = OSError.runCatching {
-                safeRepository.getBiometricSafe().biometricCryptoMaterial?.let { encKey ->
-                    cryptoRepository.decryptMasterKeyWithBiometric(encKey, cipher)
-                } ?: throw OSAppError.Code.BIOMETRIC_LOGIN_ERROR.get("Unexpected null encBiometricMasterKey")
+            val result: LBResult<Unit> = loginUseCase(cipher)
+            when (result) {
+                is LBResult.Failure -> {
+                    val error = result.throwable ?: OSImeError.Code.IME_BIOMETRIC_LOGIN_ERROR.get()
+                    imeBiometricResultRepository.setError(error)
+                }
+                is LBResult.Success -> {
+                    /* no-op, observe safeReadyUseCase */
+                }
             }
-            imeBiometricResultRepository.setResult(result)
         }
     }
 
     fun setError(error: OSAppError) {
-        viewModelScope.launch {
-            imeBiometricResultRepository.setResult(LBResult.Failure(error))
-        }
+        imeBiometricResultRepository.setError(error)
     }
 }

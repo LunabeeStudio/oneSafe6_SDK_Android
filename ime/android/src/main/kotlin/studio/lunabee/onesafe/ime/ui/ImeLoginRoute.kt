@@ -21,7 +21,6 @@ package studio.lunabee.onesafe.ime.ui
 
 import android.content.Intent
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -64,17 +63,10 @@ fun ImeLoginRoute(
                     Intent.FLAG_ACTIVITY_NO_HISTORY
                 context.startActivity(intent)
             }
-            val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 
-            val showLocalSnackBar: suspend (visuals: SnackbarVisuals) -> Unit = { snackbarVisuals ->
-                snackbarHostState.showSnackbar(snackbarVisuals)
-            }
+            val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
             val errorSnackbarState: ErrorSnackbarState? by viewModel.biometricError.collectAsStateWithLifecycle()
-            errorSnackbarState?.snackbarVisuals?.let {
-                LaunchedEffect(it) {
-                    showLocalSnackBar(it)
-                }
-            }
+            errorSnackbarState?.LaunchedSnackbarEffect(snackbarHostState)
 
             LoginScreenWrapper(
                 exitIcon = exitIcon,

@@ -24,12 +24,11 @@ import androidx.lifecycle.ViewModelProvider
 import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.domain.qualifier.StoreBetaTrack
 import studio.lunabee.onesafe.domain.qualifier.VersionName
-import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.HasBiometricSafeUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.LoginUseCase
 import studio.lunabee.onesafe.domain.usecase.settings.GetAppVisitUseCase
-import studio.lunabee.onesafe.ime.ui.biometric.ImeBiometricResultRepository
+import studio.lunabee.onesafe.ime.repository.ImeBiometricResultRepository
 import studio.lunabee.onesafe.login.viewmodel.LoginFromPasswordDelegateImpl
 import studio.lunabee.onesafe.login.viewmodel.LoginUiStateHolder
 import javax.inject.Inject
@@ -41,7 +40,6 @@ class ImeLoginViewModelFactory @Inject constructor(
     @VersionName val versionName: String,
     private val featureFlags: FeatureFlags,
     private val imeBiometricResultRepository: ImeBiometricResultRepository,
-    private val mainCryptoRepository: MainCryptoRepository,
     private val isSafeReadyUseCase: IsSafeReadyUseCase,
     @StoreBetaTrack private val isBetaVersion: Boolean,
 ) : ViewModelProvider.Factory {
@@ -57,9 +55,8 @@ class ImeLoginViewModelFactory @Inject constructor(
                 loginUiStateHolder = loginUiStateHolder,
             ),
             imeBiometricResultRepository = imeBiometricResultRepository,
-            mainCryptoRepository = mainCryptoRepository,
-            versionName = versionName,
             isSafeReadyUseCase = isSafeReadyUseCase,
+            versionName = versionName,
         ) as T
     }
 }

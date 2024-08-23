@@ -95,6 +95,7 @@ dependencies {
     implementation(libs.startup.runtime)
     implementation(libs.doubleratchet)
 
+    implementation(project(":ime-domain"))
     implementation(project(":app:core-ui"))
     implementation(project(":app:common-ui"))
     implementation(project(":app:login"))
