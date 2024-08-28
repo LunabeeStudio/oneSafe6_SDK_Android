@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.migration.utils
 
 import android.content.Context
+import android.database.DatabaseUtils
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStoreFile
 import androidx.datastore.preferences.core.Preferences
@@ -40,8 +41,8 @@ import studio.lunabee.onesafe.domain.model.safe.BiometricCryptoMaterial
 import studio.lunabee.onesafe.domain.model.safeitem.ItemLayout
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
+import studio.lunabee.onesafe.domain.qualifier.DatabaseName
 import studio.lunabee.onesafe.domain.usecase.settings.DefaultSafeSettingsProvider
-import studio.lunabee.onesafe.importexport.model.AutoBackupError
 import studio.lunabee.onesafe.importexport.model.GoogleDriveSettings
 import studio.lunabee.onesafe.importexport.utils.AutoBackupErrorIdProvider
 import studio.lunabee.onesafe.storage.datastore.ProtoSerializer
@@ -54,19 +55,19 @@ import java.time.ZonedDateTime
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
-private val logger = LBLogger.get<AndroidSafeMigrationProvider>()
+private val logger = LBLogger.get<AndroidMultiSafeMigrationProvider>()
 
-// TODO <multisafe> move? rename?
-class AndroidSafeMigrationProvider @Inject constructor(
-    safeIdProvider: SafeIdProvider,
+// TODO <multisafe> move?
+class AndroidMultiSafeMigrationProvider @Inject constructor(
+    private val safeIdProvider: SafeIdProvider,
     private val encodedDataStore: DataStore<ProtoData>,
     private val preferencesDataStore: DataStore<Preferences>,
     private val defaultSafeSettingsProvider: DefaultSafeSettingsProvider,
     private val autoBackupErrorIdProvider: AutoBackupErrorIdProvider,
     @ApplicationContext private val context: Context,
     @DatastoreEngineProvider(DataStoreType.Encrypted) private val encDataStore: DatastoreEngine,
-) : RoomMigration12to13.SafeMigrationProvider {
-    private val safeId = safeIdProvider()
+    @DatabaseName(DatabaseName.Type.Main) private val dbName: String,
+) : RoomMigration12to13.MultiSafeMigrationProvider {
     private val ctaDataStore = ProtoSerializer.dataStore(
         context = context,
         default = LegacyLocalCtaStateMap(emptyMap()),
@@ -77,11 +78,12 @@ class AndroidSafeMigrationProvider @Inject constructor(
 
     override suspend fun getSafeCrypto(): RoomMigration12to13.SafeCryptoMigration? {
         // TODO <multisafe> verify all condition in fresh install and migration case
-
         // TODO <multisafe> takeUnless -> see TODO ProtobufModelExt.kt
+
         val data = encodedDataStore.data.firstOrNull()?.dataMap
-        return (data?.get(datastoreMasterSalt)?.takeUnless { it.isEmpty }?.toByteArray())?.let { masterSalt ->
-            val testValue = data[datastoreMasterKeyTest]?.takeUnless { it.isEmpty }?.toByteArray()
+        val masterSalt = data?.get(datastoreMasterSalt)?.takeUnless { it.isEmpty }?.toByteArray()
+        return if (masterSalt != null) {
+            val testValue = data[datastoreMasterKeyTest]?.takeUnless { it.isEmpty }?.toByteArray()!!
             val searchIndexKey = data[datastoreSearchIndexKey]?.takeUnless { it.isEmpty }?.toByteArray()
             val itemEditionKey = data[datastoreItemEditionKey]?.takeUnless { it.isEmpty }?.toByteArray()
             val bubblesKey = data[datastoreBubblesContactKey]?.takeUnless { it.isEmpty }?.toByteArray()
@@ -92,14 +94,31 @@ class AndroidSafeMigrationProvider @Inject constructor(
             }
 
             RoomMigration12to13.SafeCryptoMigration(
-                id = safeId,
+                id = safeIdProvider(),
                 salt = masterSalt,
-                encTest = testValue!!,
+                encTest = testValue,
                 encIndexKey = searchIndexKey,
                 encBubblesKey = bubblesKey,
                 encItemEditionKey = itemEditionKey,
                 biometricCryptoMaterial = encBiometricMasterKey,
             )
+        } else {
+            // Make sure the database is really empty because returning null here will cause the migration to not copy back data during
+            // tables migration
+            val dbFile = context.getDatabasePath(dbName)
+            if (dbFile.exists()) {
+                context.openOrCreateDatabase(dbName, Context.MODE_PRIVATE, null, null).use { db ->
+                    val itemCount = DatabaseUtils.queryNumEntries(db, "SafeItem")
+                    check(itemCount == 0L) {
+                        "No master key/salt found but database contains items"
+                    }
+                    val contactCount = DatabaseUtils.queryNumEntries(db, "Contact")
+                    check(contactCount == 0L) {
+                        "No master key/salt found but database contains contacts"
+                    }
+                }
+            }
+            null
         }
     }
 
@@ -196,20 +215,19 @@ class AndroidSafeMigrationProvider @Inject constructor(
         }
     }
 
-    override suspend fun getAutoBackupError(): AutoBackupError? {
+    override suspend fun getAutoBackupError(): RoomMigration12to13.AutoBackupErrorMigration? {
         return try {
             val defaultError = LegacyLocalAutoBackupError()
             val autoBackupErrorDataStore = ProtoSerializer.dataStore(context, defaultError, backupErrorDataStoreFilename)
             val localAutoBackupError = autoBackupErrorDataStore.data.firstOrNull().takeIf { it != defaultError }
 
             localAutoBackupError?.let {
-                AutoBackupError(
+                RoomMigration12to13.AutoBackupErrorMigration(
                     id = autoBackupErrorIdProvider(),
                     date = ZonedDateTime.parse(it.date),
                     code = it.code,
                     message = it.message,
                     source = it.source,
-                    safeId = safeId,
                 )
             }
         } catch (t: Throwable) {

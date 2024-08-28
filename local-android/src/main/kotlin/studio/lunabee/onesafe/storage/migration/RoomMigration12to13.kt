@@ -23,6 +23,8 @@ import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import co.touchlab.kermit.Logger
+import com.lunabee.lblogger.LBLogger
 import kotlinx.coroutines.runBlocking
 import studio.lunabee.onesafe.domain.common.CtaState
 import studio.lunabee.onesafe.domain.model.camera.CameraSystem
@@ -33,31 +35,36 @@ import studio.lunabee.onesafe.domain.model.safe.SafeSettings
 import studio.lunabee.onesafe.domain.model.safeitem.ItemLayout
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
-import studio.lunabee.onesafe.importexport.model.AutoBackupError
+import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.model.GoogleDriveSettings
 import studio.lunabee.onesafe.storage.model.RoomAppVisit
 import studio.lunabee.onesafe.storage.model.RoomCtaState
 import studio.lunabee.onesafe.storage.utils.addUniqueBiometricKeyTrigger
+import studio.lunabee.onesafe.storage.utils.queryNumEntries
 import studio.lunabee.onesafe.storage.utils.toSqlBlobString
 import studio.lunabee.onesafe.toByteArray
 import java.io.File
 import java.time.Instant
+import java.time.ZonedDateTime
+import java.util.UUID
 import javax.inject.Inject
 import kotlin.time.Duration
 
+private val logger: Logger = LBLogger.get<RoomMigration12to13>()
+
 class RoomMigration12to13 @Inject constructor(
-    private val safeMigrationProvider: SafeMigrationProvider,
+    private val safeMigrationProvider: MultiSafeMigrationProvider,
 ) : Migration(12, 13) {
 
     /**
      * Retrieves data to inject in new v13 tables during migration
      */
-    interface SafeMigrationProvider {
+    interface MultiSafeMigrationProvider {
         suspend fun getSafeCrypto(): SafeCryptoMigration?
         suspend fun getSafeSettings(): SafeSettingsMigration
         suspend fun getAppVisit(): RoomAppVisit?
         suspend fun getDriveSettings(): GoogleDriveSettings?
-        suspend fun getAutoBackupError(): AutoBackupError?
+        suspend fun getAutoBackupError(): AutoBackupErrorMigration?
         suspend fun getFilesAndIcons(): List<File>
         suspend fun onMigrationDone()
     }
@@ -70,6 +77,14 @@ class RoomMigration12to13 @Inject constructor(
         val encBubblesKey: ByteArray?,
         val encItemEditionKey: ByteArray?,
         val biometricCryptoMaterial: BiometricCryptoMaterial?,
+    )
+
+    class AutoBackupErrorMigration(
+        val id: UUID,
+        val date: ZonedDateTime,
+        val code: String,
+        val message: String?,
+        val source: AutoBackupMode,
     )
 
     override fun migrate(db: SupportSQLiteDatabase) {
@@ -115,7 +130,7 @@ class RoomMigration12to13 @Inject constructor(
             migrateContact(db, safeId)
             migrateSentMessage(db, safeId)
             migrateBackup(db, safeId)
-            migrateAutoBackupError(db, autoBackupError)
+            migrateAutoBackupError(db, autoBackupError, safeId)
             migrateSafeFile(db, safeId, files)
 
             // Re-disable legacy_alter_table
@@ -242,6 +257,8 @@ class RoomMigration12to13 @Inject constructor(
     }
 
     private fun migrateSafeItem(db: SupportSQLiteDatabase, safeId: String?) {
+        val numEntries = queryNumEntries(db, "SafeItem")
+
         // Rename SafeItem table & delete indices to re-create them with the non-null safe_id column (without default value)
         db.execSQL("ALTER TABLE SafeItem RENAME TO SafeItem_Old")
         db.execSQL("DROP INDEX `index_SafeItem_parent_id`")
@@ -279,48 +296,55 @@ class RoomMigration12to13 @Inject constructor(
         db.execSQL("CREATE INDEX `index_SafeItem_index_alpha` ON `SafeItem` (`index_alpha`)")
         db.execSQL("CREATE INDEX `index_SafeItem_safe_id` ON `SafeItem` (`safe_id`)")
 
-        // Insert safe_id value in SafeItem_Old table
-        db.execSQL("ALTER TABLE SafeItem_Old ADD safe_id BLOB NOT NULL DEFAULT ${safeId ?: "0"}")
-        // Copy back data from SafeItem_Old table to new SafeItem table
-        db.execSQL(
-            "INSERT INTO SafeItem(" +
-                "id," +
-                "enc_name," +
-                "parent_id," +
-                "is_favorite," +
-                "created_at," +
-                "updated_at," +
-                "position," +
-                "icon_id," +
-                "enc_color," +
-                "deleted_at," +
-                "deleted_parent_id," +
-                "consulted_at," +
-                "index_alpha," +
-                "safe_id" +
-                ") SELECT " +
-                "id," +
-                "enc_name," +
-                "parent_id," +
-                "is_favorite," +
-                "created_at," +
-                "updated_at," +
-                "position," +
-                "icon_id," +
-                "enc_color," +
-                "deleted_at," +
-                "deleted_parent_id," +
-                "consulted_at," +
-                "index_alpha," +
-                "safe_id " +
-                "FROM SafeItem_Old",
-        )
+        if (safeId != null) {
+            // Insert safe_id value in SafeItem_Old table
+            db.execSQL("ALTER TABLE SafeItem_Old ADD safe_id BLOB NOT NULL DEFAULT $safeId")
+            // Copy back data from SafeItem_Old table to new SafeItem table
+            db.execSQL(
+                "INSERT INTO SafeItem(" +
+                    "id," +
+                    "enc_name," +
+                    "parent_id," +
+                    "is_favorite," +
+                    "created_at," +
+                    "updated_at," +
+                    "position," +
+                    "icon_id," +
+                    "enc_color," +
+                    "deleted_at," +
+                    "deleted_parent_id," +
+                    "consulted_at," +
+                    "index_alpha," +
+                    "safe_id" +
+                    ") SELECT " +
+                    "id," +
+                    "enc_name," +
+                    "parent_id," +
+                    "is_favorite," +
+                    "created_at," +
+                    "updated_at," +
+                    "position," +
+                    "icon_id," +
+                    "enc_color," +
+                    "deleted_at," +
+                    "deleted_parent_id," +
+                    "consulted_at," +
+                    "index_alpha," +
+                    "safe_id " +
+                    "FROM SafeItem_Old",
+            )
+        }
+
+        val migratedNumEntries = queryNumEntries(db, "SafeItem")
+        check(numEntries == migratedNumEntries)
 
         // Drop temp table
         db.execSQL("DROP TABLE SafeItem_Old")
     }
 
     private fun migrateIndexWordEntry(db: SupportSQLiteDatabase, safeId: String?) {
+        val numEntries = queryNumEntries(db, "IndexWordEntry")
+
         // Rename IndexWordEntry table & delete indices to re-create them with the non-null safe_id column (without default value)
         db.execSQL("ALTER TABLE IndexWordEntry RENAME TO IndexWordEntry_Old")
         db.execSQL("DROP INDEX `index_IndexWordEntry_item_match`")
@@ -341,16 +365,23 @@ class RoomMigration12to13 @Inject constructor(
         db.execSQL("CREATE INDEX `index_IndexWordEntry_field_match` ON `IndexWordEntry` (`field_match`)")
         db.execSQL("CREATE INDEX `index_IndexWordEntry_safe_id` ON `IndexWordEntry` (`safe_id`)")
 
-        // Insert safe_id value in IndexWordEntry_Old table
-        db.execSQL("ALTER TABLE IndexWordEntry_Old ADD safe_id BLOB NOT NULL DEFAULT ${safeId ?: "0"}")
-        // Copy back data from IndexWordEntry_Old table to new IndexWordEntry table
-        db.execSQL("INSERT INTO IndexWordEntry SELECT * FROM IndexWordEntry_Old")
+        if (safeId != null) {
+            // Insert safe_id value in IndexWordEntry_Old table
+            db.execSQL("ALTER TABLE IndexWordEntry_Old ADD safe_id BLOB NOT NULL DEFAULT $safeId")
+            // Copy back data from IndexWordEntry_Old table to new IndexWordEntry table
+            db.execSQL("INSERT INTO IndexWordEntry SELECT * FROM IndexWordEntry_Old")
+        }
+
+        val migratedNumEntries = queryNumEntries(db, "IndexWordEntry")
+        check(numEntries == migratedNumEntries)
 
         // Drop temp table
         db.execSQL("DROP TABLE IndexWordEntry_Old")
     }
 
     private fun migrateContact(db: SupportSQLiteDatabase, safeId: String?) {
+        val numEntries = queryNumEntries(db, "Contact")
+
         // Rename Contact table & delete indices to re-create them with the non-null safe_id column (without default value)
         db.execSQL("ALTER TABLE Contact RENAME TO Contact_Old")
 
@@ -369,16 +400,23 @@ class RoomMigration12to13 @Inject constructor(
         )
         db.execSQL("CREATE INDEX `index_Contact_safe_id` ON `Contact` (`safe_id`)")
 
-        // Insert safe_id value in Contact_Old table
-        db.execSQL("ALTER TABLE Contact_Old ADD safe_id BLOB NOT NULL DEFAULT ${safeId ?: "0"}")
-        // Copy back data from Contact_Old table to new Contact table
-        db.execSQL("INSERT INTO Contact SELECT * FROM Contact_Old")
+        if (safeId != null) {
+            // Insert safe_id value in Contact_Old table
+            db.execSQL("ALTER TABLE Contact_Old ADD safe_id BLOB NOT NULL DEFAULT $safeId")
+            // Copy back data from Contact_Old table to new Contact table
+            db.execSQL("INSERT INTO Contact SELECT * FROM Contact_Old")
+        }
+
+        val migratedNumEntries = queryNumEntries(db, "Contact")
+        check(numEntries == migratedNumEntries)
 
         // Drop temp table
         db.execSQL("DROP TABLE Contact_Old")
     }
 
     private fun migrateSentMessage(db: SupportSQLiteDatabase, safeId: String?) {
+        val numEntries = queryNumEntries(db, "SentMessage")
+
         // Rename Contact table & delete indices to re-create them with the non-null safe_id column (without default value)
         db.execSQL("ALTER TABLE SentMessage RENAME TO SentMessage_Old")
 
@@ -396,16 +434,23 @@ class RoomMigration12to13 @Inject constructor(
         )
         db.execSQL("CREATE INDEX `index_SentMessage_safe_id` ON `SentMessage` (`safe_id`)")
 
-        // Insert safe_id value in Contact_Old table
-        db.execSQL("ALTER TABLE SentMessage_Old ADD safe_id BLOB NOT NULL DEFAULT ${safeId ?: "0"}")
-        // Copy back data from Contact_Old table to new Contact table
-        db.execSQL("INSERT INTO SentMessage SELECT * FROM SentMessage_Old")
+        if (safeId != null) {
+            // Insert safe_id value in Contact_Old table
+            db.execSQL("ALTER TABLE SentMessage_Old ADD safe_id BLOB NOT NULL DEFAULT $safeId")
+            // Copy back data from Contact_Old table to new Contact table
+            db.execSQL("INSERT INTO SentMessage SELECT * FROM SentMessage_Old")
+        }
+
+        val migratedNumEntries = queryNumEntries(db, "SentMessage")
+        check(numEntries == migratedNumEntries)
 
         // Drop temp table
         db.execSQL("DROP TABLE SentMessage_Old")
     }
 
     private fun migrateBackup(db: SupportSQLiteDatabase, safeId: String?) {
+        val numEntries = queryNumEntries(db, "Backup")
+
         // Rename Backup table & delete indices to re-create them with the non-null safe_id column (without default value)
         db.execSQL("ALTER TABLE Backup RENAME TO Backup_Old")
         db.execSQL("DROP INDEX `index_Backup_remote_id`")
@@ -424,18 +469,23 @@ class RoomMigration12to13 @Inject constructor(
         db.execSQL("CREATE UNIQUE INDEX `index_Backup_remote_id` ON `Backup` (`remote_id`)")
         db.execSQL("CREATE INDEX `index_Backup_safe_id` ON `Backup` (`safe_id`)")
 
-        // Insert safe_id value in Backup_Old table
-        db.execSQL("ALTER TABLE Backup_Old ADD safe_id BLOB NOT NULL DEFAULT ${safeId ?: "0"}")
-        db.execSQL("ALTER TABLE Backup_Old ADD name TEXT DEFAULT ${safeId ?: "0"}")
-        db.execSQL("UPDATE Backup_Old SET name = id")
-        // Copy back data from Backup_Old table to new Backup table
-        db.execSQL("INSERT INTO Backup SELECT * FROM Backup_Old")
+        if (safeId != null) {
+            // Insert safe_id value in Backup_Old table
+            db.execSQL("ALTER TABLE Backup_Old ADD safe_id BLOB NOT NULL DEFAULT $safeId")
+            db.execSQL("ALTER TABLE Backup_Old ADD name TEXT DEFAULT $safeId")
+            db.execSQL("UPDATE Backup_Old SET name = id")
+            // Copy back data from Backup_Old table to new Backup table
+            db.execSQL("INSERT INTO Backup SELECT * FROM Backup_Old")
+        }
+
+        val migratedNumEntries = queryNumEntries(db, "Backup")
+        check(numEntries == migratedNumEntries)
 
         // Drop temp table
         db.execSQL("DROP TABLE Backup_Old")
     }
 
-    private fun migrateAutoBackupError(db: SupportSQLiteDatabase, autoBackupError: AutoBackupError?) {
+    private fun migrateAutoBackupError(db: SupportSQLiteDatabase, autoBackupError: AutoBackupErrorMigration?, safeId: String?) {
         db.execSQL(
             "CREATE TABLE `AutoBackupError` (" +
                 "`id` BLOB NOT NULL, " +
@@ -450,14 +500,14 @@ class RoomMigration12to13 @Inject constructor(
         )
         db.execSQL("CREATE INDEX `index_AutoBackupError_safe_id` ON `AutoBackupError` (`safe_id`)")
 
-        autoBackupError?.let {
+        if (autoBackupError != null && safeId != null) {
             val values = ContentValues().apply {
                 put("id", autoBackupError.id.toByteArray())
                 put("date", autoBackupError.date.toString())
                 put("code", autoBackupError.code)
                 put("message", autoBackupError.message)
                 put("source", autoBackupError.source.name)
-                put("safe_id", autoBackupError.safeId.toByteArray())
+                put("safe_id", safeId)
             }
             db.insert("AutoBackupError", SQLiteDatabase.CONFLICT_FAIL, values)
         }
@@ -474,12 +524,16 @@ class RoomMigration12to13 @Inject constructor(
         )
         db.execSQL("CREATE INDEX `index_SafeFile_safe_id` ON `SafeFile` (`safe_id`)")
 
-        files.forEach {
-            val value = ContentValues().apply {
-                put("file", it.path)
-                put("safe_id", safeId)
+        if (safeId != null) {
+            files.forEach {
+                val value = ContentValues().apply {
+                    put("file", it.path)
+                    put("safe_id", safeId)
+                }
+                db.insert("SafeFile", SQLiteDatabase.CONFLICT_FAIL, value)
             }
-            db.insert("SafeFile", SQLiteDatabase.CONFLICT_FAIL, value)
+        } else if (files.isNotEmpty()) {
+            logger.e("SafeId is null but files are not empty")
         }
     }
 

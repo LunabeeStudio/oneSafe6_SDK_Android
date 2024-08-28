@@ -54,7 +54,7 @@ object EmptyMainDatabaseModule
 
 @Module
 @InstallIn(SingletonComponent::class)
-object InMemoryMainDatabaseModule {
+object InMemoryMainDatabaseNamesModule {
     @Provides
     @DatabaseName(DatabaseName.Type.Main)
     fun provideMainDatabaseName(): String = ""
@@ -62,7 +62,11 @@ object InMemoryMainDatabaseModule {
     @Provides
     @DatabaseName(DatabaseName.Type.CipherTemp)
     fun provideCipherTempDatabaseName(): String = "test_temp_cipher_db"
+}
 
+@Module
+@InstallIn(SingletonComponent::class)
+object InMemoryMainDatabaseModule {
     @Provides
     @Singleton
     internal fun provideMainDatabase(@ApplicationContext appContext: Context): MainDatabase {

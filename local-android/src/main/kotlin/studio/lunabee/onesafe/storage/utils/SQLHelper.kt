@@ -20,11 +20,12 @@
 package studio.lunabee.onesafe.storage.utils
 
 import android.database.SQLException
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.lunabee.lblogger.LBLogger
 import com.lunabee.lblogger.e
 import studio.lunabee.onesafe.error.OSStorageError
 
-private val logger = LBLogger.get("runSQL")
+private val logger = LBLogger.get("SQLHelper")
 
 internal inline fun <R> runSQL(block: () -> R): R {
     return try {
@@ -33,4 +34,10 @@ internal inline fun <R> runSQL(block: () -> R): R {
         logger.e(e)
         throw OSStorageError(OSStorageError.Code.UNKNOWN_DATABASE_ERROR, cause = e)
     }
+}
+
+internal fun queryNumEntries(db: SupportSQLiteDatabase, table: String): Int {
+    return db.query("SELECT COUNT(*) FROM $table").apply {
+        moveToFirst()
+    }.getInt(0)
 }

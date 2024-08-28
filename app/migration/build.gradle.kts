@@ -50,6 +50,10 @@ android {
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
     }
+
+    sourceSets {
+        getByName("androidTest").assets.srcDir("$projectDir/schemas")
+    }
 }
 
 dependencies {
@@ -83,6 +87,7 @@ dependencies {
     androidTestImplementation(libs.bubbles.shared)
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(libs.junit4)
+    androidTestImplementation(libs.room.testing)
 
     testImplementation(project(":dependency-injection:test-component"))
     testImplementation(libs.bubbles.shared)
