@@ -43,7 +43,7 @@ import studio.lunabee.onesafe.domain.usecase.autolock.AutoLockInactivityGetRemai
 import studio.lunabee.onesafe.domain.usecase.autolock.AutoLockInactivityGetRemainingTimeUseCaseImpl
 import studio.lunabee.onesafe.importexport.usecase.DeleteBackupsUseCaseImpl
 import studio.lunabee.onesafe.migration.LoginAndMigrateUseCase
-import studio.lunabee.onesafe.migration.utils.AndroidSafeMigrationProvider
+import studio.lunabee.onesafe.migration.utils.AndroidMultiSafeMigrationProvider
 import studio.lunabee.onesafe.storage.migration.RoomMigration12to13
 import java.io.File
 import java.time.Clock
@@ -100,8 +100,8 @@ abstract class DomainModuleBinds {
 
     @Binds
     internal abstract fun bindsSafeMigrationProvider(
-        safeMigrationProviderUseCase: AndroidSafeMigrationProvider,
-    ): RoomMigration12to13.SafeMigrationProvider
+        safeMigrationProviderUseCase: AndroidMultiSafeMigrationProvider,
+    ): RoomMigration12to13.MultiSafeMigrationProvider
 
     @Binds
     internal abstract fun bindsAutoLockInactivityGetRemainingTimeUseCase(
