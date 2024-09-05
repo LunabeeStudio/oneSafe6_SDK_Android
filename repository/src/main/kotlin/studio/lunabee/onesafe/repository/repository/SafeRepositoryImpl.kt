@@ -55,8 +55,8 @@ class SafeRepositoryImpl @Inject constructor(
         localDataSource.setVersion(safeId, version)
     }
 
-    override suspend fun getAllSafe(): List<SafeCrypto> {
-        return localDataSource.getAllSafeCrypto()
+    override suspend fun getAllSafeOrderByLastOpenAsc(): List<SafeCrypto> {
+        return localDataSource.getAllSafeCryptoOrderByLastOpenAsc()
     }
 
     override suspend fun insertSafe(
@@ -149,5 +149,9 @@ class SafeRepositoryImpl @Inject constructor(
 
     override suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean {
         return localDataSource.isBiometricEnabledForSafe(safeId)
+    }
+
+    override suspend fun setLastOpen(safeId: SafeId) {
+        localDataSource.setLastOpen(safeId)
     }
 }

@@ -17,8 +17,6 @@
  * Last modified 4/7/23, 12:30 AM
  */
 
-import de.fayard.refreshVersions.core.StabilityLevel
-
 pluginManagement {
     repositories {
         google()
@@ -33,21 +31,8 @@ plugins {
 }
 
 refreshVersions {
-    @Suppress("UnstableApiUsage")
-    this.rejectVersionIf {
-        val excludeOldDriveVersioning = this.moduleId.group == "com.google.apis" &&
-            this.moduleId.name == "google-api-services-drive" &&
-            this.candidate.value.contains("^v3-rev\\d\\d?-".toRegex())
-
-        // FIXME workaround https://github.com/Splitties/refreshVersions/issues/223
-        val excludeLbPreviousSnapshot =
-            this.candidate.value.startsWith(this.current.value) && this.candidate.stabilityLevel == StabilityLevel.Snapshot
-
-        excludeOldDriveVersioning || excludeLbPreviousSnapshot
-    }
-    featureFlags {
-        enable(de.fayard.refreshVersions.core.FeatureFlag.LIBS)
-    }
+    // FIXME move refreshVersions config to Bubbles_KMP to avoid override
+    //  https://github.com/Splitties/refreshVersions/issues/723
 }
 
 rootProject.name = "oneSafe 6"

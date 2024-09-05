@@ -56,5 +56,14 @@ interface ImportEngine {
      * Save data depending on the [ImportMode] chosen by user.
      * @param mode [ImportMode]
      */
-    fun saveImportData(mode: ImportMode): Flow<LBFlowResult<UUID>>
+    fun saveImportData(mode: ImportMode): Flow<LBFlowResult<UUID?>>
+
+    /**
+     * Save in cache the data to import on the saving step.
+     * @param importBubbles whether to import bubbles or ignore them, the import remove all old bubbles contacts.
+     * @param importItems whether to import items or ignore them
+     */
+    fun setDataToImport(importBubbles: Boolean, importItems: Boolean)
+
+    val hasItemsToImport: Boolean
 }

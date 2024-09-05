@@ -34,4 +34,9 @@ class ExportInfo(
      * Salt used to generate crypto key for SafeItemKey re-encryption
      */
     val exportSalt: ByteArray,
+
+    /**
+     * encrypted bubbles Master key from actual safe
+     */
+    val encBubblesMasterKey: ByteArray?,
 )

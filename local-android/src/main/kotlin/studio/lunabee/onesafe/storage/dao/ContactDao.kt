@@ -32,6 +32,12 @@ interface ContactDao {
     @Insert
     suspend fun insert(contact: RoomContact)
 
+    @Insert
+    suspend fun insertAll(contacts: List<RoomContact>)
+
+    @Query("DELETE FROM Contact WHERE safe_id is :safeId")
+    suspend fun deleteAll(safeId: UUID)
+
     @Query("SELECT * FROM Contact WHERE safe_id is :safeId")
     fun getAllInFlow(safeId: UUID): Flow<List<RoomContact>>
 
@@ -40,6 +46,9 @@ interface ContactDao {
 
     @Query("SELECT * FROM Contact WHERE id = :id")
     fun getByIdFlow(id: UUID): Flow<RoomContact?>
+
+    @Query("SELECT id FROM Contact")
+    suspend fun getAllIds(): List<UUID>
 
     @Query("SELECT * FROM Contact WHERE id = :id AND safe_id is :safeId")
     suspend fun getById(id: UUID, safeId: UUID): RoomContact?

@@ -29,7 +29,7 @@ internal sealed class AutoBackupSettingsMainCardUiState {
 
     data class Disabled(
         override val toggleAutoBackup: () -> Unit,
-        val footer: LbcTextSpec = LbcTextSpec.StringResource(OSString.settings_autoBackupMaxNumberScreen_description),
+        val footer: LbcTextSpec = LbcTextSpec.StringResource(OSString.settings_autoBackupMaxNumberScreen_withBubbles_description),
     ) : AutoBackupSettingsMainCardUiState()
 
     data class Enabled(

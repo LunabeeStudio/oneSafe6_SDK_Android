@@ -48,6 +48,7 @@ class SafeLocalDataSourceImpl @Inject constructor(
             safeSettings = safeSettings,
             appVisit = appVisit,
             driveSettings = driveSettings,
+            openOrder = 0,
         )
         safeDao.insert(roomSafe)
     }
@@ -56,8 +57,8 @@ class SafeLocalDataSourceImpl @Inject constructor(
         safeDao.delete(safeId)
     }
 
-    override suspend fun getAllSafeCrypto(): List<SafeCrypto> {
-        return safeDao.getAll().map { it.toSafeCrypto() }
+    override suspend fun getAllSafeCryptoOrderByLastOpenAsc(): List<SafeCrypto> {
+        return safeDao.getAllOrderByLastOpenAsc().map { it.toSafeCrypto() }
     }
 
     override suspend fun updateSafeCrypto(safeCrypto: SafeCrypto) {
@@ -85,7 +86,7 @@ class SafeLocalDataSourceImpl @Inject constructor(
     }
 
     override suspend fun getAllSafeId(): List<SafeId> {
-        return safeDao.getAllSafeId()
+        return safeDao.getAllSafeIdByLastOpenAsc()
     }
 
     override suspend fun setVersion(safeId: SafeId, version: Int) {
@@ -118,5 +119,9 @@ class SafeLocalDataSourceImpl @Inject constructor(
 
     override suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean {
         return safeDao.isBiometricEnabledForSafe(safeId)
+    }
+
+    override suspend fun setLastOpen(safeId: SafeId) {
+        safeDao.setLastOpen(safeId)
     }
 }

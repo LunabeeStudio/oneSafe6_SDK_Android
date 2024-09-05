@@ -61,7 +61,7 @@ interface SafeItemFieldDao {
 
     @Query(
         """
-        SELECT *
+        SELECT SafeItemField.*
         FROM SafeItemField
         LEFT JOIN SafeItem ON SafeItemField.item_id = SafeItem.id
         WHERE SafeItem.safe_id = :safeId

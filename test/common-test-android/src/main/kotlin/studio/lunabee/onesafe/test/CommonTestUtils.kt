@@ -147,6 +147,7 @@ object CommonTestUtils {
                 hasSeenItemReadEditToolTip = false,
             ),
             version = 0,
+            openOrder = 0,
         )
     }
 }

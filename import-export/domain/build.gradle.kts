@@ -30,6 +30,10 @@ dependencies {
     implementation(project(":error"))
     api(project(":domain"))
     implementation(project(":common"))
+    implementation(libs.bubbles.messaging.domain)
+    implementation(libs.bubbles.domain)
+    implementation(libs.bubbles.repository)
+    implementation(libs.doubleratchet)
     implementation(project(":error"))
 
     testImplementation(project(":common-test"))

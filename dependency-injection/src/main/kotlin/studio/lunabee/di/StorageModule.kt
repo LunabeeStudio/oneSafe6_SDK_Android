@@ -36,6 +36,7 @@ import studio.lunabee.bubbles.repository.datasource.ContactLocalDataSource
 import studio.lunabee.importexport.datasource.AutoBackupErrorLocalDataSource
 import studio.lunabee.importexport.datasource.AutoBackupSettingsDataSource
 import studio.lunabee.importexport.datasource.CloudBackupLocalDataSource
+import studio.lunabee.importexport.datasource.ImportExportBubblesLocalDatasource
 import studio.lunabee.importexport.datasource.ImportExportSafeItemLocalDataSource
 import studio.lunabee.importexport.datasource.LocalBackupCacheDataSource
 import studio.lunabee.importexport.datasource.LocalBackupLocalDataSource
@@ -99,6 +100,7 @@ import studio.lunabee.onesafe.storage.datasource.FileLocalDatasourceImpl
 import studio.lunabee.onesafe.storage.datasource.ForceUpgradeLocalDatasourceImpl
 import studio.lunabee.onesafe.storage.datasource.HandShakeDataLocalDatasourceImpl
 import studio.lunabee.onesafe.storage.datasource.IconLocalDataSourceImpl
+import studio.lunabee.onesafe.storage.datasource.ImportExportBubblesLocalDatasourceImpl
 import studio.lunabee.onesafe.storage.datasource.IndexWordEntryLocalDataSourceImpl
 import studio.lunabee.onesafe.storage.datasource.LocalBackupFileCacheDataSource
 import studio.lunabee.onesafe.storage.datasource.LocalBackupLocalDataSourceImpl
@@ -118,6 +120,7 @@ import studio.lunabee.onesafe.storage.datastore.PasswordGeneratorConfigSerialize
 import studio.lunabee.onesafe.storage.datastore.RecentSearchSerializer
 import studio.lunabee.onesafe.storage.migration.RoomMigration12to13
 import studio.lunabee.onesafe.storage.migration.RoomMigration13to14
+import studio.lunabee.onesafe.storage.migration.RoomMigration15to16
 import studio.lunabee.onesafe.storage.migration.RoomMigration3to4
 import studio.lunabee.onesafe.storage.migration.RoomMigration8to9
 import studio.lunabee.onesafe.storage.migration.RoomMigration9to10
@@ -147,6 +150,11 @@ interface StorageModule {
     fun bindIndexWordEntryLocalDataSource(
         indexWordEntryLocalDataSourceImpl: IndexWordEntryLocalDataSourceImpl,
     ): IndexWordEntryLocalDataSource
+
+    @Binds
+    fun bindImportExportBubblesLocalDataSource(
+        importExportBubblesLocalDatasourceImpl: ImportExportBubblesLocalDatasourceImpl,
+    ): ImportExportBubblesLocalDatasource
 
     @Binds
     fun bindForceUpgradeLocalDatasource(
@@ -276,6 +284,7 @@ object DatabaseModule {
         migration9to10: RoomMigration9to10,
         migration12to13: RoomMigration12to13,
         migration13to14: RoomMigration13to14,
+        migration15to16: RoomMigration15to16,
         databaseKeyRepository: DatabaseKeyRepository,
         @DatabaseName(DatabaseName.Type.Main) dbName: String,
     ): MainDatabase {
@@ -290,6 +299,7 @@ object DatabaseModule {
                 migration9to10,
                 migration12to13,
                 migration13to14,
+                migration15to16,
             )
         }
     }

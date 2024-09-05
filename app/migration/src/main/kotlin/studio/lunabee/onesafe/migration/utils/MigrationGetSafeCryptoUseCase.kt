@@ -64,7 +64,7 @@ class MigrationGetSafeCryptoUseCase @Inject constructor(
     private val disableBiometricUseCase: DisableBiometricUseCase,
 ) {
     suspend operator fun invoke(password: CharArray): LBResult<MigrationSafeData> = OSError.runCatching {
-        val allSafe = safeRepository.getAllSafe()
+        val allSafe = safeRepository.getAllSafeOrderByLastOpenAsc()
         if (allSafe.isEmpty()) {
             throw OSDomainError.Code.SIGNIN_NOT_SIGNED_UP.get()
         } else {
@@ -87,7 +87,7 @@ class MigrationGetSafeCryptoUseCase @Inject constructor(
             }
             throw e
         }
-        safeRepository.getAllSafe().firstNotNullOfOrNull { safeCrypto ->
+        safeRepository.getAllSafeOrderByLastOpenAsc().firstNotNullOfOrNull { safeCrypto ->
             testAndGetCrypto(safeCrypto, key)
         } ?: throw OSCryptoError(OSCryptoError.Code.NO_SAFE_MATCH_KEY)
     }

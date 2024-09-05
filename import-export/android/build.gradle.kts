@@ -109,6 +109,7 @@ dependencies {
     testImplementation(project(":app:settings"))
     testImplementation(project(":crypto-android"))
     testImplementation(project(":common-test-android"))
+    testImplementation(libs.doubleratchet)
     testImplementation(libs.room.testing)
     testImplementation(libs.lblogger)
     testImplementation(libs.work.testing)

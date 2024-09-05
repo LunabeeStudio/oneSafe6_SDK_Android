@@ -97,7 +97,7 @@ class AndroidEditCryptoRepository @Inject constructor(
     }
 
     override suspend fun checkPasswordUniqueness(password: CharArray): Boolean {
-        val safes = safeRepository.getAllSafe()
+        val safes = safeRepository.getAllSafeOrderByLastOpenAsc()
         return safes.none { safe ->
             hashEngine.deriveKey(password, safe.salt).use { key ->
                 cryptoEngine.decrypt(

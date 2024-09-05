@@ -94,6 +94,9 @@ class ExportShareUseCase @Inject constructor(
                 safeItemFields = safeItemFields,
                 icons = iconRepository.getIcons(iconsId),
                 files = fileRepository.getFiles(fileIdList),
+                bubblesContactsWithKey = emptyMap(),
+                bubblesMessages = emptyList(),
+                bubblesConversation = emptyList(),
             )
 
             emitAll(

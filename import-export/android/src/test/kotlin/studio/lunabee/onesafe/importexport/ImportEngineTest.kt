@@ -32,9 +32,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
+import studio.lunabee.bubbles.domain.repository.ContactRepository
+import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.compose.androidtest.helper.LbcFolderResource
 import studio.lunabee.compose.androidtest.helper.LbcResourcesHelper
 import studio.lunabee.di.CryptoConstantsTestModule
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.repository.ConversationRepository
+import studio.lunabee.messaging.domain.repository.MessageRepository
 import studio.lunabee.onesafe.cryptography.CryptoConstants
 import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
 import studio.lunabee.onesafe.cryptography.PasswordHashEngine
@@ -68,6 +73,7 @@ import kotlin.random.Random
 import kotlin.system.measureTimeMillis
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 private val logger = LBLogger.get<ImportEngineTest>()
@@ -102,6 +108,14 @@ class ImportEngineTest : OSHiltUnitTest() {
 
     @Inject lateinit var sortItemNameUseCase: SortItemNameUseCase
 
+    @Inject lateinit var contactRepository: ContactRepository
+
+    @Inject lateinit var messageRepository: MessageRepository
+
+    @Inject lateinit var conversationRepository: ConversationRepository
+
+    @Inject lateinit var contactLocalDecryptUseCase: ContactLocalDecryptUseCase
+
     @Test
     fun import_data_test() {
         runTest {
@@ -133,6 +147,8 @@ class ImportEngineTest : OSHiltUnitTest() {
             logger.d("[authenticateAndExtractData] $authExecTime ms")
             assertSuccess(authResult)
 
+            importEngine.setDataToImport(importBubbles = true, importItems = true)
+
             val prepareDataImportResult: LBFlowResult<Unit>
             val prepareDataExecTime = measureTimeMillis {
                 prepareDataImportResult = importEngine.prepareDataForImport(
@@ -143,7 +159,7 @@ class ImportEngineTest : OSHiltUnitTest() {
             logger.d("[prepareDataForImport] $prepareDataExecTime ms")
             assertSuccess(prepareDataImportResult)
 
-            val saveImportDataResult: LBFlowResult<UUID>
+            val saveImportDataResult: LBFlowResult<UUID?>
             val saveExecTime = measureTimeMillis {
                 saveImportDataResult = importEngine.saveImportData(mode = ImportMode.Replace).last()
             }
@@ -212,6 +228,16 @@ class ImportEngineTest : OSHiltUnitTest() {
                     }
                 }
                 expectedSearchIndex.addAll(createIndexWordEntriesFromItemFieldUseCase(itemFieldDataToIndex))
+            }
+
+            val allContacts = contactRepository.getAllContactsFlow(DoubleRatchetUUID(firstSafeId.id)).first()
+            allContacts.forEach { contact ->
+                assertSuccess(contactLocalDecryptUseCase(contact.encName, contact.id, String::class))
+                assertNotEquals(null, conversationRepository.getConversation(contact.id))
+                val allMessages = messageRepository.getAllByContact(contactId = contact.id)
+                allMessages.forEach { message ->
+                    assertSuccess(contactLocalDecryptUseCase(message.encContent, contactId = contact.id, String::class))
+                }
             }
 
             println(

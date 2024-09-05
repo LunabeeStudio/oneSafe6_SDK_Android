@@ -80,6 +80,9 @@ class ShareExportEngineTest : OSHiltUnitTest() {
             safeItemFields = emptyList(),
             icons = emptyList(),
             files = emptyList(),
+            bubblesContactsWithKey = mapOf(),
+            bubblesConversation = emptyList(),
+            bubblesMessages = emptyList(),
         )
 
         val exportedArchiveResult = exportEngine.createExportArchiveContent(
@@ -98,6 +101,9 @@ class ShareExportEngineTest : OSHiltUnitTest() {
             safeItemFields = emptyList(),
             icons = emptyList(),
             files = emptyList(),
+            bubblesContactsWithKey = mapOf(),
+            bubblesConversation = emptyList(),
+            bubblesMessages = emptyList(),
         )
         val exportedArchiveResult = exportEngine.createExportArchiveContent(
             dataHolderFolder = File(context.cacheDir, "exportEngineTest"),

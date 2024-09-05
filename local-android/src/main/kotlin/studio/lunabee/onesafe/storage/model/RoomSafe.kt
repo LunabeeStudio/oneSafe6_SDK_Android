@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.storage.model
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import studio.lunabee.onesafe.domain.model.safe.AppVisit
 import studio.lunabee.onesafe.domain.model.safe.SafeCrypto
@@ -29,10 +30,9 @@ import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safe.SafeSettings
 import studio.lunabee.onesafe.importexport.model.GoogleDriveSettings
 
-// TODO <multisafe> add the lastOpen date and update it at login
-
 @Entity(
     tableName = "Safe",
+    indices = [Index("open_order", unique = true)],
 )
 data class RoomSafe(
     @PrimaryKey
@@ -46,6 +46,8 @@ data class RoomSafe(
     val appVisit: RoomAppVisit,
     @ColumnInfo(name = "version")
     val version: Int,
+    @ColumnInfo(name = "open_order")
+    val openOrder: Int,
 ) {
 
     fun toSafeCrypto(): SafeCrypto {
@@ -71,6 +73,7 @@ data class RoomSafe(
         if (settings != other.settings) return false
         if (appVisit != other.appVisit) return false
         if (version != other.version) return false
+        if (openOrder != other.openOrder) return false
 
         return true
     }
@@ -81,6 +84,7 @@ data class RoomSafe(
         result = 31 * result + settings.hashCode()
         result = 31 * result + appVisit.hashCode()
         result = 31 * result + version
+        result = 31 * result + openOrder
         return result
     }
 
@@ -90,6 +94,7 @@ data class RoomSafe(
             safeSettings: SafeSettings,
             appVisit: AppVisit,
             driveSettings: GoogleDriveSettings,
+            openOrder: Int,
         ): RoomSafe = RoomSafe(
             id = safeCrypto.id,
             crypto = RoomSafeCrypto.fromSafeCrypto(safeCrypto),
@@ -99,6 +104,7 @@ data class RoomSafe(
             ),
             appVisit = RoomAppVisit.fromAppVisit(appVisit),
             version = safeSettings.version,
+            openOrder = openOrder,
         )
     }
 }

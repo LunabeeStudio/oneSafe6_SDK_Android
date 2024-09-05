@@ -23,10 +23,14 @@ import com.lunabee.lbcore.model.LBFlowResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import studio.lunabee.bubbles.domain.repository.ContactKeyRepository
+import studio.lunabee.bubbles.domain.repository.ContactRepository
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.onesafe.domain.model.importexport.OSArchiveKind
 import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.repository.FileRepository
@@ -39,6 +43,7 @@ import studio.lunabee.onesafe.importexport.model.ExportData
 import studio.lunabee.onesafe.importexport.model.ExportItem
 import studio.lunabee.onesafe.importexport.model.ImportExportConstant
 import studio.lunabee.onesafe.importexport.model.LocalBackup
+import studio.lunabee.onesafe.importexport.repository.ImportExportBubblesRepository
 import java.io.File
 import java.time.Clock
 import java.time.Instant
@@ -55,6 +60,9 @@ class ExportBackupUseCase @Inject constructor(
     private val safeItemFieldRepository: SafeItemFieldRepository,
     private val iconRepository: IconRepository,
     private val fileRepository: FileRepository,
+    private val contactRepository: ContactRepository,
+    private val contactKeyRepository: ContactKeyRepository,
+    private val importExportBubblesRepository: ImportExportBubblesRepository,
     private val clock: Clock,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -67,11 +75,17 @@ class ExportBackupUseCase @Inject constructor(
             val safeItemsWithKeys = safeItemRepository.getAllSafeItems(safeId).associate { safeItem ->
                 ExportItem(safeItem) to safeItemKeyRepository.getSafeItemKey(safeItem.id)
             }
+            val contactsWithKeys = contactRepository.getAllContactsFlow(DoubleRatchetUUID(safeId.id)).first().associateWith { contact ->
+                contactKeyRepository.getContactLocalKey(contact.id)
+            }
             val data = ExportData(
                 safeItemsWithKeys = safeItemsWithKeys,
                 safeItemFields = safeItemFieldRepository.getAllSafeItemFields(safeId),
                 icons = iconRepository.getIcons(safeId),
                 files = fileRepository.getFiles(safeId),
+                bubblesContactsWithKey = contactsWithKeys,
+                bubblesMessages = importExportBubblesRepository.getAllByContactList(contactsWithKeys.keys.map { it.id }),
+                bubblesConversation = importExportBubblesRepository.getEncConversations(contactsWithKeys.keys.map { it.id }),
             )
 
             val now = Instant.now(clock)

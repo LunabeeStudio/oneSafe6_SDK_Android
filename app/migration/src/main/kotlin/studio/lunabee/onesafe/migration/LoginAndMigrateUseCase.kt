@@ -27,6 +27,7 @@ import kotlinx.coroutines.withContext
 import studio.lunabee.onesafe.domain.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.domain.usecase.authentication.LoadSafeUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.LoginUseCase
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.getOrThrow
@@ -76,6 +77,7 @@ class LoginAndMigrateUseCase @Inject constructor(
     private val safeRepository: SafeRepository,
     private val migrationCryptoUseCase: MigrationCryptoUseCase,
     private val migrationGetSafeCryptoUseCase: MigrationGetSafeCryptoUseCase,
+    private val loadSafeUseCase: LoadSafeUseCase,
 ) : LoginUseCase {
 
     override suspend operator fun invoke(password: CharArray): LBResult<Unit> = withContext(dispatcher) {
@@ -222,17 +224,11 @@ class LoginAndMigrateUseCase @Inject constructor(
             }
         }
 
-        // TODO <multisafe> migrationFromV14ToV15
-        //  - ⚠️ Handle the edge case where the user update the app and directly create a new safe without login the current safe (which
-        //    has just been migrated). In this case, we *probably* don't want the user not to run any migration because its new safe is
-        //    empty. So we have to detect this case to set the migration version of this safe to the LastVersion and set the current
-        //    version to the migrated legacy safe.
-
         // ⚠️ Add further migration here, don't forget to bump MigrationConstant.LastVersion
 
         if (failure == null) {
             safeRepository.setSafeVersion(migrationSafeData.id, MigrationConstant.LastVersion)
-            safeRepository.loadSafeId(migrationSafeData.id)
+            loadSafeUseCase(migrationSafeData.id)
             mainCryptoRepository.loadMasterKeyExternal(migrationSafeData.masterKey)
 
             if (migrationSafeData.version != version) {

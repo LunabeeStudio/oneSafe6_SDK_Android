@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import studio.lunabee.onesafe.domain.model.crypto.SubKeyType
 import studio.lunabee.onesafe.domain.model.importexport.OSArchiveKind
 import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.qualifier.DateFormatterType
@@ -67,6 +68,7 @@ class BackupExportEngineImpl @Inject constructor(
                     archiveMasterKey = null,
                     fromPlatformVersion = backupInfoProvider(),
                     exportSalt = safeRepository.getSalt(safeId),
+                    encBubblesMasterKey = safeRepository.getCurrentSubKey(SubKeyType.Bubbles),
                 )
             }
             when (exportInfoResult) {

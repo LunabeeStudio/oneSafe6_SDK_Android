@@ -73,7 +73,7 @@ import studio.lunabee.onesafe.storage.utils.addUniqueBiometricKeyTrigger
 
 @TypeConverters(InstantConverter::class, FileConverter::class, DurationConverter::class, ZonedDateTimeConverter::class)
 @Database(
-    version = 15,
+    version = 16,
     entities = [
         RoomSafeItem::class,
         RoomSafeItemField::class,

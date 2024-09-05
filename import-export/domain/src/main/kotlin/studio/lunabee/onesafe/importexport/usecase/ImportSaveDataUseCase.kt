@@ -37,7 +37,7 @@ class ImportSaveDataUseCase @Inject constructor(
     operator fun invoke(
         archiveExtractedDirectory: File,
         mode: ImportMode,
-    ): Flow<LBFlowResult<UUID>> {
+    ): Flow<LBFlowResult<UUID?>> {
         return importEngine.prepareDataForImport(archiveExtractedDirectory = archiveExtractedDirectory, mode = mode)
             .transformLatest { result ->
                 when (result) {

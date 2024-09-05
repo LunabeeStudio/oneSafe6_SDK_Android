@@ -30,6 +30,9 @@ interface ContactKeyDao {
     @Insert
     suspend fun insert(key: RoomContactKey)
 
+    @Insert
+    suspend fun insertAll(keys: List<RoomContactKey>)
+
     @Query("SELECT enc_value FROM ContactLocalKey WHERE contact_id = :contactId")
     suspend fun getById(contactId: UUID): ByteArray?
 }

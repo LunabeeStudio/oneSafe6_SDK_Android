@@ -57,17 +57,17 @@ class DummySafeRepository(initSafeId: SafeId? = firstSafeId) : SafeRepository {
         return listOfNotNull(safeIdFlow.value)
     }
 
-    override suspend fun getAllSafe(): List<SafeCrypto> {
+    override suspend fun getAllSafeOrderByLastOpenAsc(): List<SafeCrypto> {
         return listOfNotNull(
-            safeIdFlow.value?.let { safeId ->
+            safeIdFlow.value?.let {
                 SafeCrypto(
-                    id = safeId,
-                    salt = byteArrayOf(),
-                    encTest = byteArrayOf(),
-                    encIndexKey = byteArrayOf(),
-                    encBubblesKey = byteArrayOf(),
-                    encItemEditionKey = byteArrayOf(),
-                    biometricCryptoMaterial = BiometricCryptoMaterial(ByteArray(16), ByteArray(32)),
+                    it,
+                    byteArrayOf(),
+                    byteArrayOf(),
+                    byteArrayOf(),
+                    byteArrayOf(),
+                    byteArrayOf(),
+                    null,
                 )
             },
         )
@@ -148,5 +148,9 @@ class DummySafeRepository(initSafeId: SafeId? = firstSafeId) : SafeRepository {
 
     override suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean {
         return bioMap.containsKey(safeId)
+    }
+
+    override suspend fun setLastOpen(safeId: SafeId) {
+        /* no-op */
     }
 }

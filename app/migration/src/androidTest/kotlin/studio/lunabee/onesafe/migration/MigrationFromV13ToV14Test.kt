@@ -125,7 +125,7 @@ class MigrationFromV13ToV14Test : OSHiltTest() {
         }
 
         // Migrate
-        val safeCrypto = safeRepository.getAllSafe().first()
+        val safeCrypto = safeRepository.getAllSafeOrderByLastOpenAsc().first()
         val bubblesMasterKey = migrationCryptoV1UseCase.decrypt(safeCrypto.encBubblesKey!!, masterKey)
         migrationFromV13ToV14(bubblesMasterKey, safeCrypto.id)
 
