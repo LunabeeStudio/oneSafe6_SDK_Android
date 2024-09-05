@@ -65,6 +65,7 @@ class ShareExportEngineImpl @Inject constructor(
                 archiveMasterKey = keySaltPair.first,
                 fromPlatformVersion = backupInfoProvider(),
                 exportSalt = keySaltPair.second,
+                encBubblesMasterKey = null,
             )
             emit(LBFlowResult.Success(Unit))
         }.catch { e ->

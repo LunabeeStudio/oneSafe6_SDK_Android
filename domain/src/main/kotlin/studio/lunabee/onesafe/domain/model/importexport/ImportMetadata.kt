@@ -25,6 +25,7 @@ data class ImportMetadata(
     val archiveKind: OSArchiveKind,
     val isFromOldOneSafe: Boolean, // archive built with old version of OneSafe (only used for UI purpose at this time)
     val itemCount: Int, // number of item to import
+    val bubblesContactCount: Int, // number of bubbles contact to import
     val fromPlatform: String, // Platform Android or iOs
     val archiveVersion: Int, // Spec version (common between Android and iOs)
     val createdAt: Instant, // Using ISO8601 format like this: 2022-11-29T06:18:08.095Z

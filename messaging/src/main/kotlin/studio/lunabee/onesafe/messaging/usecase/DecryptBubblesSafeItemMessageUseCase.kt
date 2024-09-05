@@ -75,7 +75,7 @@ class DecryptBubblesSafeItemMessageUseCase @Inject constructor(
                                     LBResult.Failure(importResult.throwable)
                                 }
                                 is LBResult.Success -> {
-                                    val saveId = DoubleRatchetUUID(importResult.successData)
+                                    val saveId = importResult.successData?.let(::DoubleRatchetUUID)
                                     saveMessageUseCase(
                                         plainMessage = messageResultData.sharedMessage,
                                         contactId = messageResultData.decryptResult.contactId,
@@ -96,7 +96,7 @@ class DecryptBubblesSafeItemMessageUseCase @Inject constructor(
     private suspend fun importSafeFromFile(
         attachmentFile: File,
         messageKey: DRMessageKey,
-    ): LBResult<UUID> {
+    ): LBResult<UUID?> {
         return OSError.runCatching {
             unzipUseCase.invoke(attachmentFile.inputStream(), importArchiveDir)
                 .first { it !is LBFlowResult.Loading }

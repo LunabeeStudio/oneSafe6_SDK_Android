@@ -26,6 +26,11 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
 
     implementation(platform(libs.lunabee.bom))
+    implementation(libs.bubbles.domain)
+    implementation(libs.bubbles.messaging.domain)
+    implementation(libs.bubbles.messaging.repository)
+    implementation(libs.doubleratchet)
+
     implementation(libs.lbcore)
 
     implementation(project(":import-export-domain"))

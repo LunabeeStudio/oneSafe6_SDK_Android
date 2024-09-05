@@ -33,6 +33,7 @@ import studio.lunabee.onesafe.test.firstSafeId
 import studio.lunabee.onesafe.test.testUUIDs
 import javax.inject.Inject
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -59,10 +60,53 @@ class SafeDaoTest {
         dao.setBiometricMaterial(id0, BiometricCryptoMaterial(OSTestConfig.random.nextBytes(64)))
         dao.setBiometricMaterial(id1, BiometricCryptoMaterial(OSTestConfig.random.nextBytes(64)))
 
-        val actual = dao.getAll()
+        val actual = dao.getAllOrderByLastOpenAsc()
 
         assertEquals(id1, dao.getBiometricSafe()!!.id)
         assertNull(actual.first { it.id == id0 }.crypto.biometricCryptoMaterial)
         assertNotNull(actual.first { it.id == id1 }.crypto.biometricCryptoMaterial)
     }
+
+    @Test
+    fun last_open_insertion_test(): TestResult = runTest {
+        val ids = insertSafes()
+
+        // Check safe order after multi insert
+        val actualIdsOrdered = dao.getAllOrderByLastOpenAsc().map { it.id }
+        assertContentEquals(ids.reversed(), actualIdsOrdered)
+    }
+
+    @Test
+    fun last_open_delete_test(): TestResult = runTest {
+        val ids = insertSafes().reversed()
+
+        // Check re-ordering after delete
+        dao.delete(ids[4])
+        val safesAfterDelete = dao.getAllOrderByLastOpenAsc()
+        assertEquals(ids[5], safesAfterDelete[4].id) // 5 become 4
+        assertEquals(ids[3], safesAfterDelete[3].id) // safes before 4 does not change
+    }
+
+    @Test
+    fun last_open_set_last_open_test(): TestResult = runTest {
+        val ids = insertSafes().reversed()
+
+        // Check re-order after set last open
+        dao.setLastOpen(ids[6])
+        val safesAfterSetLastOpen = dao.getAllOrderByLastOpenAsc()
+        assertEquals(ids[6], safesAfterSetLastOpen.first().id) // new 0
+        assertEquals(ids[0], safesAfterSetLastOpen[1].id) // old 0 become 1
+        assertEquals(ids[7], safesAfterSetLastOpen[7].id) // safes after 6 does not change
+    }
+
+    private suspend fun insertSafes(): List<SafeId> = testUUIDs
+        .take(10)
+        .map {
+            val id = SafeId(it)
+            val safe = CommonTestUtils.roomSafe(id)
+            if (id != firstSafeId) { // already inserted
+                dao.insert(safe)
+            }
+            id
+        }
 }

@@ -19,6 +19,11 @@
 
 package studio.lunabee.onesafe.importexport
 
+import studio.lunabee.bubbles.domain.model.contact.Contact
+import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.model.EncConversation
+import studio.lunabee.messaging.domain.model.SafeMessage
 import studio.lunabee.onesafe.domain.model.importexport.ImportMetadata
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
@@ -44,6 +49,7 @@ interface ImportCacheDataSource {
      * This master will be used to decrypt old data.
      */
     var archiveMasterKey: ByteArray?
+    var archiveBubblesMasterKey: ByteArray?
 
     /**
      * Content decrypted from Protobuf data file. This is the full content of decrypted file.
@@ -58,6 +64,11 @@ interface ImportCacheDataSource {
     val thumbnails: MutableMap<UUID, ByteArray>
     val reEncryptedSafeItemKeys: MutableMap<UUID, SafeItemKey?>
 
+    val newContactIdsByOldOnes: MutableMap<DoubleRatchetUUID, DoubleRatchetUUID>
+    val newMessageIdsByOldOnes: MutableMap<DoubleRatchetUUID, DoubleRatchetUUID>
+    var reEncryptedContactKeys: MutableMap<DoubleRatchetUUID, ContactLocalKey>
+    var oldContactKeys: MutableMap<DoubleRatchetUUID, ContactLocalKey>
+
     // Following variables contains the final object to save in database.
     // All object are now correctly re-encrypted with current user info and with brand new ids.
     val migratedSafeItemsToImport: MutableList<SafeItem>
@@ -68,6 +79,13 @@ interface ImportCacheDataSource {
     var migratedIconsToImport: List<File>
     var migratedFilesToImport: List<File>
     val newEncryptedValue: MutableMap<UUID, ByteArray>
+
+    var migratedSafeMessage: Map<Float, SafeMessage>
+    var migratedConversation: List<EncConversation>
+    var migratedContacts: List<Contact>
+
+    var isBubblesDataImported: Boolean
+    var isItemDataImported: Boolean
 
     /**
      * Clean cache if an error occurred during authentication phase.
@@ -81,19 +99,30 @@ interface ImportCacheDataSource {
     fun clearAll() {
         importMetadata = null
         archiveMasterKey = null
+        archiveBubblesMasterKey = null
         archiveContent = null
-        rootItemData = null
         newItemIdsByOldOnes.clear()
         newIconIdsByOldOnes.clear()
         newFieldIdsByOldOnes.clear()
-        newFieldIdsByOldOnes.clear()
+        newFileIdsByOldOnes.clear()
+        thumbnails.clear()
         reEncryptedSafeItemKeys.clear()
+        newContactIdsByOldOnes.clear()
+        newMessageIdsByOldOnes.clear()
+        reEncryptedContactKeys.clear()
+        oldContactKeys.clear()
         migratedSafeItemsToImport.clear()
         migratedSafeItemFieldsToImport = emptyList()
         migratedSearchIndexToImport.clear()
+        allItemAlphaIndices.clear()
+        rootItemData = null
         migratedIconsToImport = emptyList()
         migratedFilesToImport = emptyList()
         newEncryptedValue.clear()
-        allItemAlphaIndices.clear()
+        migratedSafeMessage = emptyMap()
+        migratedConversation = emptyList()
+        migratedContacts = emptyList()
+        isBubblesDataImported = false
+        isItemDataImported = true
     }
 }

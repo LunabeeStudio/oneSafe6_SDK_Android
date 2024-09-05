@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.storage.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.model.safe.BiometricCryptoMaterial
@@ -30,59 +31,110 @@ import studio.lunabee.onesafe.storage.model.RoomSafe
 import studio.lunabee.onesafe.storage.model.RoomSafeCryptoUpdate
 
 @Dao
-interface SafeDao {
-    @Insert
-    suspend fun insert(roomSafe: RoomSafe)
+abstract class SafeDao {
+
+    @Transaction
+    open suspend fun insert(roomSafe: RoomSafe) {
+        getAllSafeIdByLastOpenDesc().forEach {
+            incrementOrder(it)
+        }
+        doInsert(roomSafe)
+    }
 
     @Update(entity = RoomSafe::class)
-    suspend fun updateCrypto(safeCrypto: RoomSafeCryptoUpdate)
+    abstract suspend fun updateCrypto(safeCrypto: RoomSafeCryptoUpdate)
 
-    @Query("DELETE FROM Safe WHERE id = :id")
-    suspend fun delete(id: SafeId)
+    @Transaction
+    open suspend fun delete(id: SafeId) {
+        val safes = getAllOrderByLastOpenAsc()
+        val safeToDelete = safes.first { it.id == id }
+        doDelete(id)
+        safes
+            .asSequence()
+            .filter { it.openOrder > safeToDelete.openOrder }
+            .forEach {
+                decrementOrder(it.id)
+            }
+    }
 
-    @Query("SELECT * FROM Safe")
-    suspend fun getAll(): List<RoomSafe>
+    @Transaction
+    open suspend fun setLastOpen(id: SafeId) {
+        val safes = getAllOrderByLastOpenDesc()
+        val safeToSet = safes.first { it.id == id }
+        setOpenOrder(id, -1)
+        safes
+            .asSequence()
+            .filter { it.openOrder < safeToSet.openOrder }
+            .forEach {
+                incrementOrder(it.id)
+            }
+        setOpenOrder(id, 0)
+    }
+
+    @Query("SELECT * FROM Safe ORDER BY open_order ASC")
+    abstract suspend fun getAllOrderByLastOpenAsc(): List<RoomSafe>
+
+    @Query("SELECT * FROM Safe ORDER BY open_order DESC")
+    protected abstract suspend fun getAllOrderByLastOpenDesc(): List<RoomSafe>
 
     @Query("SELECT crypto_enc_index_key FROM Safe WHERE id = :id")
-    suspend fun getIndexKey(id: SafeId): ByteArray?
+    abstract suspend fun getIndexKey(id: SafeId): ByteArray?
 
     @Query("SELECT crypto_enc_bubbles_key FROM Safe WHERE id = :id")
-    suspend fun getBubblesKey(id: SafeId): ByteArray?
+    abstract suspend fun getBubblesKey(id: SafeId): ByteArray?
 
     @Query("SELECT crypto_enc_item_edition_key FROM Safe WHERE id = :id")
-    suspend fun getItemEditionKey(id: SafeId): ByteArray?
+    abstract suspend fun getItemEditionKey(id: SafeId): ByteArray?
 
     @Query("SELECT COUNT(*) FROM Safe")
-    suspend fun countAll(): Int
+    abstract suspend fun countAll(): Int
 
     @Query("SELECT crypto_master_salt FROM Safe WHERE id = :id")
-    suspend fun getSalt(id: SafeId): ByteArray?
+    abstract suspend fun getSalt(id: SafeId): ByteArray?
 
-    @Query("SELECT id FROM Safe")
-    suspend fun getAllSafeId(): List<SafeId>
+    @Query("SELECT id FROM Safe ORDER BY open_order ASC")
+    abstract suspend fun getAllSafeIdByLastOpenAsc(): List<SafeId>
+
+    @Query("SELECT id FROM Safe ORDER BY open_order DESC")
+    protected abstract suspend fun getAllSafeIdByLastOpenDesc(): List<SafeId>
 
     @Query("UPDATE Safe SET version = :version WHERE id IS :safeId")
-    suspend fun setVersion(safeId: SafeId, version: Int)
+    abstract suspend fun setVersion(safeId: SafeId, version: Int)
 
     @Query("SELECT version FROM Safe WHERE id IS :safeId")
-    suspend fun getSafeVersion(safeId: SafeId): Int
+    abstract suspend fun getSafeVersion(safeId: SafeId): Int
 
     // See addUniqueBiometricKeyTrigger for biometric key uniqueness
     @Query("UPDATE Safe SET crypto_biometric_crypto_material = :cryptoMaterial WHERE id IS :safeId")
-    suspend fun setBiometricMaterial(safeId: SafeId, cryptoMaterial: BiometricCryptoMaterial)
+    abstract suspend fun setBiometricMaterial(safeId: SafeId, cryptoMaterial: BiometricCryptoMaterial)
 
     @Query("UPDATE Safe SET crypto_biometric_crypto_material = NULL")
-    suspend fun removeAllBiometricKeys()
+    abstract suspend fun removeAllBiometricKeys()
 
     @Query("SELECT * FROM Safe WHERE crypto_biometric_crypto_material IS NOT NULL")
-    suspend fun getBiometricSafe(): RoomSafe?
+    abstract suspend fun getBiometricSafe(): RoomSafe?
 
     @Query("SELECT EXISTS(SELECT 1 FROM Safe WHERE crypto_biometric_crypto_material IS NOT NULL LIMIT 1)")
-    fun hasBiometricSafe(): Flow<Boolean>
+    abstract fun hasBiometricSafe(): Flow<Boolean>
 
     @Query("SELECT EXISTS(SELECT 1 FROM Safe WHERE crypto_biometric_crypto_material IS NOT NULL AND :safeId = id LIMIT 1)")
-    fun isBiometricEnabledForSafeFlow(safeId: SafeId): Flow<Boolean>
+    abstract fun isBiometricEnabledForSafeFlow(safeId: SafeId): Flow<Boolean>
 
     @Query("SELECT EXISTS(SELECT 1 FROM Safe WHERE crypto_biometric_crypto_material IS NOT NULL AND :safeId = id LIMIT 1)")
-    suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean
+    abstract suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean
+
+    @Query("UPDATE Safe SET open_order = open_order + 1 WHERE id = :id")
+    protected abstract suspend fun incrementOrder(id: SafeId)
+
+    @Query("UPDATE Safe SET open_order = open_order - 1 WHERE id = :id")
+    protected abstract suspend fun decrementOrder(id: SafeId)
+
+    @Insert
+    protected abstract suspend fun doInsert(roomSafe: RoomSafe)
+
+    @Query("UPDATE Safe SET open_order = :openOrder WHERE id = :id")
+    protected abstract suspend fun setOpenOrder(id: SafeId, openOrder: Int)
+
+    @Query("DELETE FROM Safe WHERE id = :id")
+    protected abstract suspend fun doDelete(id: SafeId)
 }

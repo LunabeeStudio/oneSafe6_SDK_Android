@@ -34,7 +34,7 @@ interface SafeRepository {
     fun lastSafeIdLoaded(): SafeId?
     suspend fun currentSafeIdOrNull(): SafeId?
     suspend fun getAllSafeId(): List<SafeId>
-    suspend fun getAllSafe(): List<SafeCrypto>
+    suspend fun getAllSafeOrderByLastOpenAsc(): List<SafeCrypto>
     suspend fun insertSafe(
         safeCrypto: SafeCrypto,
         safeSettings: SafeSettings,
@@ -65,4 +65,5 @@ interface SafeRepository {
     fun hasBiometricSafe(): Flow<Boolean>
     fun isBiometricEnabledForSafeFlow(safeId: SafeId): Flow<Boolean>
     suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean
+    suspend fun setLastOpen(safeId: SafeId)
 }

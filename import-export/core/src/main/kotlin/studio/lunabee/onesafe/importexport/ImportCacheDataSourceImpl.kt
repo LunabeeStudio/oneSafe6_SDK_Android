@@ -19,6 +19,11 @@
 
 package studio.lunabee.onesafe.importexport
 
+import studio.lunabee.bubbles.domain.model.contact.Contact
+import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.model.EncConversation
+import studio.lunabee.messaging.domain.model.SafeMessage
 import studio.lunabee.onesafe.domain.model.importexport.ImportMetadata
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
@@ -34,10 +39,14 @@ import javax.inject.Singleton
 class ImportCacheDataSourceImpl @Inject constructor() : ImportCacheDataSource {
     override var importMetadata: ImportMetadata? = null
     override var archiveMasterKey: ByteArray? = null
+    override var archiveBubblesMasterKey: ByteArray? = null
 
     override var archiveContent: OSExportProto.Archive? = null
 
     override var newEncryptedValue: MutableMap<UUID, ByteArray> = mutableMapOf()
+    override var migratedSafeMessage: Map<Float, SafeMessage> = mapOf()
+    override var migratedConversation: List<EncConversation> = emptyList()
+    override var migratedContacts: List<Contact> = emptyList()
     override val newFileIdsByOldOnes: MutableMap<UUID, UUID> = mutableMapOf()
     override val thumbnails: MutableMap<UUID, ByteArray> = mutableMapOf()
     override var newItemIdsByOldOnes: MutableMap<UUID, UUID> = mutableMapOf()
@@ -45,6 +54,10 @@ class ImportCacheDataSourceImpl @Inject constructor() : ImportCacheDataSource {
     override var newFieldIdsByOldOnes: MutableMap<UUID, UUID> = mutableMapOf()
 
     override var reEncryptedSafeItemKeys: MutableMap<UUID, SafeItemKey?> = mutableMapOf()
+    override var newContactIdsByOldOnes: MutableMap<DoubleRatchetUUID, DoubleRatchetUUID> = mutableMapOf()
+    override var newMessageIdsByOldOnes: MutableMap<DoubleRatchetUUID, DoubleRatchetUUID> = mutableMapOf()
+    override var reEncryptedContactKeys: MutableMap<DoubleRatchetUUID, ContactLocalKey> = mutableMapOf()
+    override var oldContactKeys: MutableMap<DoubleRatchetUUID, ContactLocalKey> = mutableMapOf()
     override var migratedSafeItemsToImport: MutableList<SafeItem> = mutableListOf()
     override var migratedSafeItemFieldsToImport: List<SafeItemField> = emptyList()
     override var migratedSearchIndexToImport: MutableList<IndexWordEntry> = mutableListOf()
@@ -52,4 +65,8 @@ class ImportCacheDataSourceImpl @Inject constructor() : ImportCacheDataSource {
     override var rootItemData: Pair<String, Double>? = null
     override var migratedIconsToImport: List<File> = emptyList()
     override var migratedFilesToImport: List<File> = emptyList()
+
+    // false by default to avoid bubbles data deletion on item sharing
+    override var isBubblesDataImported: Boolean = false
+    override var isItemDataImported: Boolean = true
 }

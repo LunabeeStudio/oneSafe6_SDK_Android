@@ -37,7 +37,7 @@ interface SafeLocalDataSource {
 
     suspend fun deleteSafe(safeId: SafeId)
 
-    suspend fun getAllSafeCrypto(): List<SafeCrypto>
+    suspend fun getAllSafeCryptoOrderByLastOpenAsc(): List<SafeCrypto>
     suspend fun updateSafeCrypto(safeCrypto: SafeCrypto)
 
     suspend fun getIndexKey(safeId: SafeId): ByteArray?
@@ -55,4 +55,5 @@ interface SafeLocalDataSource {
     fun hasBiometricSafe(): Flow<Boolean>
     fun isBiometricEnabledForSafeFlow(safeId: SafeId): Flow<Boolean>
     suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean
+    suspend fun setLastOpen(safeId: SafeId)
 }

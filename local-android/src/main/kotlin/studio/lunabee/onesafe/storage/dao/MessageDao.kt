@@ -33,6 +33,9 @@ interface MessageDao {
     @Insert
     suspend fun insert(message: RoomMessage)
 
+    @Insert
+    suspend fun insertAll(messages: List<RoomMessage>)
+
     @Query("SELECT * FROM Message WHERE contact_id IS :contactId ORDER BY `order` DESC")
     suspend fun getAllByContact(contactId: UUID): List<RoomMessage>
 
@@ -88,4 +91,10 @@ interface MessageDao {
 
     @Query("UPDATE Message SET is_read = 1 WHERE contact_id IS :contactId")
     suspend fun markMessagesAsRead(contactId: UUID)
+
+    @Query("SELECT * FROM Message WHERE contact_id IN (:contactIds) ORDER BY `order` ASC")
+    suspend fun getAllByContactList(contactIds: List<UUID>): List<RoomMessage>
+
+    @Query("SELECT id FROM Message")
+    suspend fun getAllIds(): List<UUID>
 }

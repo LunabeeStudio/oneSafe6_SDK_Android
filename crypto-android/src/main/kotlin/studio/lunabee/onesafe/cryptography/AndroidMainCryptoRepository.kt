@@ -223,7 +223,7 @@ class AndroidMainCryptoRepository @Inject constructor(
 
     // TODO <multisafe> unit test (= test code NO_SAFE_IDENTIFIER_MATCH_KEY)
     private suspend fun getSafeFromMasterKey(): SafeCrypto = withContext(dispatcher) {
-        safeRepository.getAllSafe().firstOrNull { identifier ->
+        safeRepository.getAllSafeOrderByLastOpenAsc().firstOrNull { identifier ->
             try {
                 val plainMasterKeyTest = crypto.decrypt(identifier.encTest, masterKey!!, null)
                     .getOrThrow()

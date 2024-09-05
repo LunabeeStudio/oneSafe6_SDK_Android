@@ -30,8 +30,14 @@ import java.util.UUID
 interface DoubleRatchetConversationDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(key: RoomDoubleRatchetConversation)
+    suspend fun insert(conversation: RoomDoubleRatchetConversation)
+
+    @Insert
+    suspend fun insertAll(conversations: List<RoomDoubleRatchetConversation>)
 
     @Query("SELECT * FROM DoubleRatchetConversation WHERE id = :id")
     suspend fun getById(id: UUID): RoomDoubleRatchetConversation?
+
+    @Query("SELECT * FROM DoubleRatchetConversation WHERE id IN (:ids)")
+    suspend fun getByIds(ids: List<UUID>): List<RoomDoubleRatchetConversation>
 }

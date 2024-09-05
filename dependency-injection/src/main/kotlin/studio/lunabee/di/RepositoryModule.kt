@@ -26,6 +26,7 @@ import dagger.hilt.components.SingletonComponent
 import studio.lunabee.bubbles.domain.repository.BubblesSafeRepository
 import studio.lunabee.importexport.repository.AutoBackupErrorRepositoryImpl
 import studio.lunabee.importexport.repository.AutoBackupSettingsRepositoryImpl
+import studio.lunabee.importexport.repository.ImportExportBubblesRepositoryImpl
 import studio.lunabee.importexport.repository.ImportExportItemRepositoryImpl
 import studio.lunabee.importexport.repository.LocalBackupRepositoryImpl
 import studio.lunabee.messaging.domain.repository.MessagingSettingsRepository
@@ -50,6 +51,7 @@ import studio.lunabee.onesafe.domain.repository.SupportOSRepository
 import studio.lunabee.onesafe.domain.repository.UrlMetadataRepository
 import studio.lunabee.onesafe.importexport.repository.AutoBackupErrorRepository
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
+import studio.lunabee.onesafe.importexport.repository.ImportExportBubblesRepository
 import studio.lunabee.onesafe.importexport.repository.ImportExportItemRepository
 import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
 import studio.lunabee.onesafe.repository.repository.AutoLockRepositoryImpl
@@ -147,6 +149,11 @@ interface RepositoryModule {
 
     @Binds
     fun bindsBubblesSafeRepository(bubblesSafeRepositoryImpl: BubblesSafeRepositoryImpl): BubblesSafeRepository
+
+    @Binds
+    fun bindImportExportBubblesItemRepository(
+        importExportBubblesRepositoryImpl: ImportExportBubblesRepositoryImpl,
+    ): ImportExportBubblesRepository
 }
 
 @Module

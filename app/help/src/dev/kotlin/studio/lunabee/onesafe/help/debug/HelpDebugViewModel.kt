@@ -147,7 +147,7 @@ internal class HelpDebugViewModel @Inject constructor(
 
     fun removeAllItems() {
         viewModelScope.launch {
-            safeRepository.getAllSafe().forEach { safe ->
+            safeRepository.getAllSafeOrderByLastOpenAsc().forEach { safe ->
                 safeItemDao.removeByIds(safeItemDao.getAllSafeItemIds(safe.id))
                 iconRepository.getIcons(safe.id).forEach { it.delete() }
                 fileRepository.getFiles(safe.id).forEach { it.delete() }

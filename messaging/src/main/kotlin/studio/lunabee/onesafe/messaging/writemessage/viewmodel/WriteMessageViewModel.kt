@@ -301,7 +301,7 @@ class WriteMessageViewModel @Inject constructor(
                             )
                         }
                         is PlainMessageData.SafeItem -> {
-                            val item = secureGetItemUseCase.withIdentifier(plainMessageData.itemId.uuid).firstOrNull()
+                            val item = plainMessageData.itemId?.uuid?.let { secureGetItemUseCase.withIdentifier(it).firstOrNull() }
                             val name = item?.encName?.let { itemDecryptUseCase(it, item.id, String::class) }
                             val identifier = item?.encIdentifier?.let { itemDecryptUseCase(it, item.id, String::class) }
                             val icon = item?.iconId?.let { getIconUseCase(it, item.id) }

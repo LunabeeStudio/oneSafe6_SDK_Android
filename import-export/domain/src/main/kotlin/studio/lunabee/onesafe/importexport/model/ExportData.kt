@@ -19,6 +19,10 @@
 
 package studio.lunabee.onesafe.importexport.model
 
+import studio.lunabee.bubbles.domain.model.contact.Contact
+import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
+import studio.lunabee.messaging.domain.model.EncConversation
+import studio.lunabee.messaging.domain.model.SafeMessage
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemField
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import java.io.File
@@ -28,4 +32,7 @@ class ExportData(
     val safeItemFields: List<SafeItemField>,
     val icons: List<File>,
     val files: List<File>,
+    val bubblesContactsWithKey: Map<Contact, ContactLocalKey>,
+    val bubblesConversation: List<EncConversation>,
+    val bubblesMessages: List<SafeMessage>,
 )
