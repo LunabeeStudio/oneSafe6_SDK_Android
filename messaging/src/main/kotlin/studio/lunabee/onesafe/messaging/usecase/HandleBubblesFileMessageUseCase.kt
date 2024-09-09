@@ -23,8 +23,6 @@ import android.content.Context
 import android.net.Uri
 import com.lunabee.lbcore.model.LBFlowResult
 import com.lunabee.lbcore.model.LBFlowResult.Companion.transformResult
-import com.lunabee.lblogger.LBLogger
-import com.lunabee.lblogger.e
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -41,8 +39,6 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
 import javax.inject.Inject
-
-private val logger = LBLogger.get<HandleBubblesFileMessageUseCase>()
 
 class HandleBubblesFileMessageUseCase @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -62,11 +58,6 @@ class HandleBubblesFileMessageUseCase @Inject constructor(
         when (e) {
             is FileNotFoundException -> // ignore non-file URIs
                 emit(LBFlowResult.Success(null))
-            is IllegalArgumentException -> {
-                // Fix Unsupported Uri content://studio.lunabee.onesafe.importexport.backupprovider/root/root which happened on Firebase
-                logger.e(e)
-                emit(LBFlowResult.Success(null))
-            }
             else -> throw e
         }
     }

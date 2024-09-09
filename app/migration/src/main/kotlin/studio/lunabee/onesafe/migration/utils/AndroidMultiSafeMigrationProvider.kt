@@ -20,7 +20,6 @@
 package studio.lunabee.onesafe.migration.utils
 
 import android.content.Context
-import android.database.DatabaseUtils
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStoreFile
 import androidx.datastore.preferences.core.Preferences
@@ -28,6 +27,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.lunabee.lblogger.LBLogger
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.firstOrNull
@@ -41,13 +41,13 @@ import studio.lunabee.onesafe.domain.model.safe.BiometricCryptoMaterial
 import studio.lunabee.onesafe.domain.model.safeitem.ItemLayout
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
-import studio.lunabee.onesafe.domain.qualifier.DatabaseName
 import studio.lunabee.onesafe.domain.usecase.settings.DefaultSafeSettingsProvider
 import studio.lunabee.onesafe.importexport.model.GoogleDriveSettings
 import studio.lunabee.onesafe.importexport.utils.AutoBackupErrorIdProvider
 import studio.lunabee.onesafe.storage.datastore.ProtoSerializer
 import studio.lunabee.onesafe.storage.migration.RoomMigration12to13
 import studio.lunabee.onesafe.storage.model.RoomAppVisit
+import studio.lunabee.onesafe.storage.utils.queryNumEntries
 import studio.lunabee.onesafe.use
 import java.io.File
 import java.time.Instant
@@ -66,7 +66,6 @@ class AndroidMultiSafeMigrationProvider @Inject constructor(
     private val autoBackupErrorIdProvider: AutoBackupErrorIdProvider,
     @ApplicationContext private val context: Context,
     @DatastoreEngineProvider(DataStoreType.Encrypted) private val encDataStore: DatastoreEngine,
-    @DatabaseName(DatabaseName.Type.Main) private val dbName: String,
 ) : RoomMigration12to13.MultiSafeMigrationProvider {
     private val ctaDataStore = ProtoSerializer.dataStore(
         context = context,
@@ -76,7 +75,7 @@ class AndroidMultiSafeMigrationProvider @Inject constructor(
     private val encFilesDir: File = File(context.filesDir, "files")
     private val iconDir: File = File(context.filesDir, "icons")
 
-    override suspend fun getSafeCrypto(): RoomMigration12to13.SafeCryptoMigration? {
+    override suspend fun getSafeCrypto(db: SupportSQLiteDatabase): RoomMigration12to13.SafeCryptoMigration? {
         // TODO <multisafe> verify all condition in fresh install and migration case
         // TODO <multisafe> takeUnless -> see TODO ProtobufModelExt.kt
 
@@ -105,18 +104,13 @@ class AndroidMultiSafeMigrationProvider @Inject constructor(
         } else {
             // Make sure the database is really empty because returning null here will cause the migration to not copy back data during
             // tables migration
-            val dbFile = context.getDatabasePath(dbName)
-            if (dbFile.exists()) {
-                context.openOrCreateDatabase(dbName, Context.MODE_PRIVATE, null, null).use { db ->
-                    val itemCount = DatabaseUtils.queryNumEntries(db, "SafeItem")
-                    check(itemCount == 0L) {
-                        "No master key/salt found but database contains items"
-                    }
-                    val contactCount = DatabaseUtils.queryNumEntries(db, "Contact")
-                    check(contactCount == 0L) {
-                        "No master key/salt found but database contains contacts"
-                    }
-                }
+            val itemCount = queryNumEntries(db, "SafeItem")
+            check(itemCount == 0) {
+                "No master key/salt found but database contains items"
+            }
+            val contactCount = queryNumEntries(db, "Contact")
+            check(contactCount == 0) {
+                "No master key/salt found but database contains contacts"
             }
             null
         }

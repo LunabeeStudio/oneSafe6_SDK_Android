@@ -84,7 +84,6 @@ import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.settings.backupnumber.AutoBackupMaxNumber
 import studio.lunabee.onesafe.importexport.settings.backupnumber.AutoBackupMaxNumberBottomSheet
 import studio.lunabee.onesafe.importexport.utils.AccountPermissionRationaleDialogState
-import studio.lunabee.onesafe.importexport.utils.BackupFileManagerHelper
 import studio.lunabee.onesafe.model.OSSwitchState
 import studio.lunabee.onesafe.molecule.ElevatedTopAppBar
 import studio.lunabee.onesafe.ui.UiConstants
@@ -150,12 +149,6 @@ fun AutoBackupSettingsRoute(
     val dialogState by viewModel.dialogState.collectAsStateWithLifecycle()
     dialogState?.DefaultAlertDialog()
 
-    val openFileManager = {
-        if (!BackupFileManagerHelper.openInternalFileManager(context)) {
-            viewModel.showError(LbcTextSpec.StringResource(OSString.common_error_noFileManager))
-        }
-    }
-
     when (val state = uiState) {
         null -> OSScreen(UiConstants.TestTag.Screen.AutoBackupSettingsScreen) {}
         else -> {
@@ -185,7 +178,7 @@ fun AutoBackupSettingsRoute(
                 setAutoBackupFrequency = { viewModel.setAutoBackupFrequency(it) },
                 setAutoBackupMaxNumber = { viewModel.setAutoBackupMaxNumber(it) },
                 navigateToRestoreBackup = navigateToRestoreBackup,
-                openFileManager = openFileManager,
+                openFileManager = { viewModel.openInternalBackupStorage(context) },
                 featureFlagCloudBackup = viewModel.featureFlagCloudBackup,
                 snackbarHostState = snackbarHostState,
             )

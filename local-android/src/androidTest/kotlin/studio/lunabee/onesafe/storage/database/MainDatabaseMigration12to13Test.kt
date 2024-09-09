@@ -21,6 +21,7 @@ package studio.lunabee.onesafe.storage.database
 
 import android.database.sqlite.SQLiteConstraintException
 import androidx.room.testing.MigrationTestHelper
+import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -225,7 +226,7 @@ internal class DummySafeMigrationProvider : RoomMigration12to13.MultiSafeMigrati
         null
     }
 
-    override suspend fun getSafeCrypto(): RoomMigration12to13.SafeCryptoMigration {
+    override suspend fun getSafeCrypto(db: SupportSQLiteDatabase): RoomMigration12to13.SafeCryptoMigration {
         return RoomMigration12to13.SafeCryptoMigration(
             id = SafeId(safeId),
             salt = salt,

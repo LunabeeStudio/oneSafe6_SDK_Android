@@ -60,7 +60,7 @@ class RoomMigration12to13 @Inject constructor(
      * Retrieves data to inject in new v13 tables during migration
      */
     interface MultiSafeMigrationProvider {
-        suspend fun getSafeCrypto(): SafeCryptoMigration?
+        suspend fun getSafeCrypto(db: SupportSQLiteDatabase): SafeCryptoMigration?
         suspend fun getSafeSettings(): SafeSettingsMigration
         suspend fun getAppVisit(): RoomAppVisit?
         suspend fun getDriveSettings(): GoogleDriveSettings?
@@ -89,7 +89,21 @@ class RoomMigration12to13 @Inject constructor(
 
     override fun migrate(db: SupportSQLiteDatabase) {
         runBlocking {
-            val safeCryptoMigration = safeMigrationProvider.getSafeCrypto()
+            val safeCryptoMigration = safeMigrationProvider.getSafeCrypto(db)
+
+            if (safeCryptoMigration == null) {
+                // Make sure the database is really empty because using null will cause the migration to not copy back data during
+                // tables migration
+                val itemCount = queryNumEntries(db, "SafeItem")
+                check(itemCount == 0) {
+                    "No master key/salt found but database contains items"
+                }
+                val contactCount = queryNumEntries(db, "Contact")
+                check(contactCount == 0) {
+                    "No master key/salt found but database contains contacts"
+                }
+            }
+
             val safeSettings = safeMigrationProvider.getSafeSettings()
             val appVisit = safeMigrationProvider.getAppVisit()
             val driveSettings = safeMigrationProvider.getDriveSettings()

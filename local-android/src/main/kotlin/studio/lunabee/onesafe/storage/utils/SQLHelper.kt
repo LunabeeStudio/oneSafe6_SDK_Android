@@ -36,7 +36,7 @@ internal inline fun <R> runSQL(block: () -> R): R {
     }
 }
 
-internal fun queryNumEntries(db: SupportSQLiteDatabase, table: String): Int {
+fun queryNumEntries(db: SupportSQLiteDatabase, table: String): Int {
     return db.query("SELECT COUNT(*) FROM $table").apply {
         moveToFirst()
     }.getInt(0)
