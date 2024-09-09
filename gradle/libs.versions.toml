@@ -100,6 +100,8 @@ androidx-room = "2.6.1"
 ##         ⬆ = "2.7.0-alpha05"
 ##         ⬆ = "2.7.0-alpha06"
 
+androidx-sqlite = "2.4.0"
+
 mockk = "1.13.12"
 
 android-tools-desugar_jdk_libs = "2.0.4"
@@ -421,6 +423,7 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 room-testing = { group = "androidx.room", name = "room-testing", version.ref = "androidx-room" }
 room-paging = { group = "androidx.room", name = "room-paging", version.ref = "androidx-room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidx-room" }
+sqlite-ktx = { group = "androidx.sqlite", name = "sqlite-ktx", version.ref = "androidx-sqlite" }
 
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom-stable" }
 # Keep both for easier switch

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2024 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,47 +13,58 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 10/27/2023 - for the oneSafe6 SDK.
- * Last modified 10/27/23, 2:48 PM
+ * Created by Lunabee Studio / Date - 9/6/2024 - for the oneSafe6 SDK.
+ * Last modified 9/6/24, 1:52 PM
  */
 
-package studio.lunabee.onesafe.importexport.utils
+package studio.lunabee.onesafe.importexport.usecase
 
 import android.content.ActivityNotFoundException
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.provider.DocumentsContract
-import androidx.activity.compose.ManagedActivityResultLauncher
 import com.lunabee.lblogger.LBLogger
-import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.importexport.provider.BackupsProvider
+import javax.inject.Inject
 
-private val logger = LBLogger.get<BackupFileManagerHelper>()
+private val logger = LBLogger.get<OpenAndroidInternalBackupStorageUseCase>()
 
-object BackupFileManagerHelper {
-
+/**
+ * Helper to open the device file manager using the [BackupsProvider]
+ */
+class OpenAndroidInternalBackupStorageUseCase @Inject constructor(
+    private val appComponents: Array<ComponentName>,
+) {
     /**
-     * Open the default file picker to pick a backup
+     * @param context An activity context to start chooser activity
      */
-    fun launchFilePicker(pickFileLauncher: ManagedActivityResultLauncher<String, Uri?>) {
-        pickFileLauncher.launch(ImportExportAndroidConstants.MimeTypeOs6lsb)
-    }
-
-    /**
-     * Helper to open the device file manager using the [BackupsProvider]
-     * Inspired from Yuzu app 🪦
-     *
-     * @see <a href="https://t.ly/MnrR9" />Yuzu HomeSettingsFragment.kt</a>
-     */
-    fun openInternalFileManager(context: Context): Boolean {
-        // First, try to open the user data folder directly
+    operator fun invoke(context: Context): Boolean {
         var result = false
+
         try {
-            context.startActivity(getFileManagerIntentOnDocumentProvider(Intent.ACTION_VIEW, context.packageName))
+            val fileManagerIntent = getFileManagerIntentOnDocumentProvider(Intent.ACTION_VIEW, context.packageName)
+            val chooserTitle = context.getString(OSString.import_selectFile_internalStorageChooser_title)
+            val chooserIntent = Intent.createChooser(
+                fileManagerIntent,
+                chooserTitle,
+            )
+                .putExtra(Intent.EXTRA_EXCLUDE_COMPONENTS, appComponents)
+                .putExtra(Intent.EXTRA_TITLE, chooserTitle)
+            context.startActivity(chooserIntent)
             result = true
         } catch (_: ActivityNotFoundException) {
-            logger.v("fallback 1")
+            logger.v("fallback 0")
+        }
+
+        if (!result) {
+            try {
+                context.startActivity(getFileManagerIntentOnDocumentProvider(Intent.ACTION_VIEW, context.packageName))
+                result = true
+            } catch (_: ActivityNotFoundException) {
+                logger.v("fallback 1")
+            }
         }
 
         if (!result) {

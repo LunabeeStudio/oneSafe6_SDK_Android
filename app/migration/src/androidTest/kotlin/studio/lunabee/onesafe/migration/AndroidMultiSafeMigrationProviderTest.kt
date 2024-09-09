@@ -94,19 +94,19 @@ class AndroidMultiSafeMigrationProviderTest : OSHiltTest() {
 
         // Fails due to item
         assertThrows<IllegalStateException> {
-            assertNull(migrationProvider.getSafeCrypto())
+            assertNull(migrationProvider.getSafeCrypto(db))
         }.printStackTrace()
 
         db.delete("SafeItem", null, null)
 
         // Fails due to contact
         assertThrows<IllegalStateException> {
-            assertNull(migrationProvider.getSafeCrypto())
+            assertNull(migrationProvider.getSafeCrypto(db))
         }.printStackTrace()
 
         db.delete("Contact", null, null)
 
         // No crypto & empty db
-        assertNull(migrationProvider.getSafeCrypto())
+        assertNull(migrationProvider.getSafeCrypto(db))
     }
 }

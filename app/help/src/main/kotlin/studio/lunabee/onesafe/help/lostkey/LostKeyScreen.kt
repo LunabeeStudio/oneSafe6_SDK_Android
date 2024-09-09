@@ -29,8 +29,7 @@ import studio.lunabee.onesafe.commonui.CommonUiConstants
 import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
 import studio.lunabee.onesafe.commonui.extension.findFragmentActivity
-import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
-import studio.lunabee.onesafe.importexport.utils.BackupFileManagerHelper
+import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
 import studio.lunabee.onesafe.molecule.ElevatedTopAppBar
 import studio.lunabee.onesafe.organism.card.OSMessageCard
 import studio.lunabee.onesafe.ui.UiConstants
@@ -72,17 +71,6 @@ fun LostKeyRoute(
         }
     }
 
-    val openFileManager = {
-        if (!BackupFileManagerHelper.openInternalFileManager(context)) {
-            viewModel.showSnackbar(
-                ErrorSnackbarState(
-                    message = LbcTextSpec.StringResource(OSString.common_error_noFileManager),
-                    onClick = { },
-                ),
-            )
-        }
-    }
-
     val folderUri by viewModel.folderUri.collectAsStateWithLifecycle()
 
     val pickFileLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
@@ -94,9 +82,9 @@ fun LostKeyRoute(
     LostKeyScreen(
         navigateBack = navigateBack,
         openDiscord = { uriHandler.openUri(CommonUiConstants.ExternalLink.Discord) },
-        openFileManager = openFileManager,
+        openFileManager = { viewModel.openInternalBackupStorage(context) },
         openDrive = folderUri?.let { { context.startActivity(Intent.parseUri(it.toString(), 0)) } },
-        launchFilePicker = { BackupFileManagerHelper.launchFilePicker(pickFileLauncher) },
+        launchFilePicker = { pickFileLauncher.launch(ImportExportAndroidConstants.MimeTypeOs6lsb) },
         snackbarHostState = snackbarHostState,
     )
 }

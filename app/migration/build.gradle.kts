@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.protobuf.kotlinlite)
     implementation(libs.kotlinx.serialization.protobuf)
+    implementation(libs.sqlite.ktx)
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)

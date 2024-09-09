@@ -1,5 +1,6 @@
 package studio.lunabee.onesafe.help.lostkey
 
+import android.content.Context
 import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
@@ -18,10 +19,13 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.commonui.CommonUiConstants
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
 import studio.lunabee.onesafe.commonui.snackbar.SnackbarState
 import studio.lunabee.onesafe.importexport.usecase.GetCloudInfoUseCase
+import studio.lunabee.onesafe.importexport.usecase.OpenAndroidInternalBackupStorageUseCase
 import studio.lunabee.onesafe.importexport.usecase.StoreExternalBackupUseCase
 import java.net.URI
 import javax.inject.Inject
@@ -31,6 +35,7 @@ class LostKeyViewModel @Inject constructor(
     getCloudInfoUseCase: GetCloudInfoUseCase,
     private val storeExternalBackupUseCase: StoreExternalBackupUseCase,
     private val loadingManager: LoadingManager,
+    private val openInternalBackupStorageUseCase: OpenAndroidInternalBackupStorageUseCase,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<LostKeyUiState> = MutableStateFlow(LostKeyUiState.Idle)
@@ -61,6 +66,12 @@ class LostKeyViewModel @Inject constructor(
     fun showSnackbar(errorSnackbarState: ErrorSnackbarState) {
         viewModelScope.launch {
             _snackbarState.emit(errorSnackbarState)
+        }
+    }
+
+    fun openInternalBackupStorage(context: Context) {
+        if (!openInternalBackupStorageUseCase(context)) {
+            showSnackbar(ErrorSnackbarState(LbcTextSpec.StringResource(OSString.common_error_noFileManager), {}))
         }
     }
 }

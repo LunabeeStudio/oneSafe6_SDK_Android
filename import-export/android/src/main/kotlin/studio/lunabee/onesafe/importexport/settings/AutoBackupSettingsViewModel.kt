@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.importexport.settings
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lunabee.lbcore.model.LBFlowResult
@@ -38,6 +39,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.commonui.CommonUiConstants
+import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.dialog.DialogState
 import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
 import studio.lunabee.onesafe.commonui.snackbar.SnackbarState
@@ -53,6 +55,7 @@ import studio.lunabee.onesafe.importexport.usecase.GetAutoBackupSettingUseCase
 import studio.lunabee.onesafe.importexport.usecase.GetCloudInfoUseCase
 import studio.lunabee.onesafe.importexport.usecase.GetLatestBackupUseCase
 import studio.lunabee.onesafe.importexport.usecase.HasBackupUseCase
+import studio.lunabee.onesafe.importexport.usecase.OpenAndroidInternalBackupStorageUseCase
 import studio.lunabee.onesafe.importexport.usecase.SetAutoBackupSettingUseCase
 import studio.lunabee.onesafe.importexport.usecase.SetKeepLocalBackupUseCase
 import studio.lunabee.onesafe.importexport.usecase.SetupAndSyncCloudBackupUseCase
@@ -77,6 +80,7 @@ class AutoBackupSettingsViewModel @Inject constructor(
     private val updateAutoBackUpsMaxNumberUseCase: UpdateAutoBackUpsMaxNumberUseCase,
     private val deleteCloudBackupsLocallyUseCase: DeleteCloudBackupsLocallyUseCase,
     private val setupCloudBackupUseCase: SetupAndSyncCloudBackupUseCase,
+    private val openInternalBackupStorageUseCase: OpenAndroidInternalBackupStorageUseCase,
 ) : ViewModel() {
     val featureFlagCloudBackup: Boolean = featureFlags.cloudBackup()
 
@@ -250,5 +254,11 @@ class AutoBackupSettingsViewModel @Inject constructor(
 
     fun showError(errorMessage: LbcTextSpec) {
         _snackbarState.value = ErrorSnackbarState(errorMessage, ::dismissSnackbar)
+    }
+
+    fun openInternalBackupStorage(context: Context) {
+        if (!openInternalBackupStorageUseCase(context)) {
+            showError(LbcTextSpec.StringResource(OSString.common_error_noFileManager))
+        }
     }
 }

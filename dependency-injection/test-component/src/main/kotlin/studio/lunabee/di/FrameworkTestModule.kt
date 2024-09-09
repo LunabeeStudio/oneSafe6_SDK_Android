@@ -19,6 +19,7 @@
 
 package studio.lunabee.di
 
+import android.content.ComponentName
 import android.content.Context
 import com.lunabee.lbcore.helper.LBLoadingVisibilityDelayDelegate
 import com.lunabee.lbloading.DelayedLoadingManager
@@ -178,5 +179,12 @@ object FrameworkTestModule {
                 lastPasswordVerification = SettingsDefaults.lastPasswordVerificationDefault(clock),
                 independentSafeInfoCtaState = SettingsDefaults.independentSafeInfoCtaState(clock),
             )
+    }
+
+    @Provides
+    fun provideAppComponents(): Array<ComponentName> {
+        return arrayOf(
+            ComponentName("studio.lunabee.onesafe", "studio.lunabee.onesafe.MainActivity"),
+        )
     }
 }
