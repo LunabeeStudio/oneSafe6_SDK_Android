@@ -39,6 +39,7 @@ import studio.lunabee.onesafe.importexport.model.GoogleDriveSettings
 import java.nio.ByteBuffer
 import java.time.Instant
 import java.util.UUID
+import kotlin.random.Random
 import kotlin.time.Duration
 
 object OSTestUtils {
@@ -314,4 +315,9 @@ suspend fun CreateItemUseCase.test(
         is LBResult.Failure -> throw result.throwable!!
         is LBResult.Success -> result.successData
     }
+}
+
+val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+fun Random.nextString(length: Int = 10): String {
+    return buildString(length) { append(charPool.random(this@nextString)) }
 }

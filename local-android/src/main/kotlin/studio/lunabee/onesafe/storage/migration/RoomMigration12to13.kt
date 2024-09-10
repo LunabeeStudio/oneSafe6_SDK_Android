@@ -380,10 +380,11 @@ class RoomMigration12to13 @Inject constructor(
         db.execSQL("CREATE INDEX `index_IndexWordEntry_safe_id` ON `IndexWordEntry` (`safe_id`)")
 
         if (safeId != null) {
+            val values = "`id`,`word`,`item_match`,`field_match`,`safe_id`"
             // Insert safe_id value in IndexWordEntry_Old table
             db.execSQL("ALTER TABLE IndexWordEntry_Old ADD safe_id BLOB NOT NULL DEFAULT $safeId")
             // Copy back data from IndexWordEntry_Old table to new IndexWordEntry table
-            db.execSQL("INSERT INTO IndexWordEntry SELECT * FROM IndexWordEntry_Old")
+            db.execSQL("INSERT INTO IndexWordEntry($values) SELECT $values FROM IndexWordEntry_Old")
         }
 
         val migratedNumEntries = queryNumEntries(db, "IndexWordEntry")
@@ -415,10 +416,12 @@ class RoomMigration12to13 @Inject constructor(
         db.execSQL("CREATE INDEX `index_Contact_safe_id` ON `Contact` (`safe_id`)")
 
         if (safeId != null) {
+            val values =
+                "`id`,`enc_name`,`enc_shared_key`,`updated_at`,`shared_conversation_id`,`enc_sharing_mode`,`consulted_at`,`safe_id`"
             // Insert safe_id value in Contact_Old table
             db.execSQL("ALTER TABLE Contact_Old ADD safe_id BLOB NOT NULL DEFAULT $safeId")
             // Copy back data from Contact_Old table to new Contact table
-            db.execSQL("INSERT INTO Contact SELECT * FROM Contact_Old")
+            db.execSQL("INSERT INTO Contact($values) SELECT $values FROM Contact_Old")
         }
 
         val migratedNumEntries = queryNumEntries(db, "Contact")
@@ -449,10 +452,11 @@ class RoomMigration12to13 @Inject constructor(
         db.execSQL("CREATE INDEX `index_SentMessage_safe_id` ON `SentMessage` (`safe_id`)")
 
         if (safeId != null) {
+            val values = "`id`,`enc_content`,`enc_created_at`,`contact_id`,`safe_id`,`order`"
             // Insert safe_id value in Contact_Old table
             db.execSQL("ALTER TABLE SentMessage_Old ADD safe_id BLOB NOT NULL DEFAULT $safeId")
             // Copy back data from Contact_Old table to new Contact table
-            db.execSQL("INSERT INTO SentMessage SELECT * FROM SentMessage_Old")
+            db.execSQL("INSERT INTO SentMessage($values) SELECT $values FROM SentMessage_Old")
         }
 
         val migratedNumEntries = queryNumEntries(db, "SentMessage")
@@ -484,12 +488,13 @@ class RoomMigration12to13 @Inject constructor(
         db.execSQL("CREATE INDEX `index_Backup_safe_id` ON `Backup` (`safe_id`)")
 
         if (safeId != null) {
+            val values = "`id`,`remote_id`,`local_file`,`date`,`safe_id`,`name`"
             // Insert safe_id value in Backup_Old table
             db.execSQL("ALTER TABLE Backup_Old ADD safe_id BLOB NOT NULL DEFAULT $safeId")
             db.execSQL("ALTER TABLE Backup_Old ADD name TEXT DEFAULT $safeId")
             db.execSQL("UPDATE Backup_Old SET name = id")
             // Copy back data from Backup_Old table to new Backup table
-            db.execSQL("INSERT INTO Backup SELECT * FROM Backup_Old")
+            db.execSQL("INSERT INTO Backup($values) SELECT $values FROM Backup_Old")
         }
 
         val migratedNumEntries = queryNumEntries(db, "Backup")

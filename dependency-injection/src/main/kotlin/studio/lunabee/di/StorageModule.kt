@@ -121,6 +121,7 @@ import studio.lunabee.onesafe.storage.datastore.RecentSearchSerializer
 import studio.lunabee.onesafe.storage.migration.RoomMigration12to13
 import studio.lunabee.onesafe.storage.migration.RoomMigration13to14
 import studio.lunabee.onesafe.storage.migration.RoomMigration15to16
+import studio.lunabee.onesafe.storage.migration.RoomMigration16to17
 import studio.lunabee.onesafe.storage.migration.RoomMigration3to4
 import studio.lunabee.onesafe.storage.migration.RoomMigration8to9
 import studio.lunabee.onesafe.storage.migration.RoomMigration9to10
@@ -285,6 +286,7 @@ object DatabaseModule {
         migration12to13: RoomMigration12to13,
         migration13to14: RoomMigration13to14,
         migration15to16: RoomMigration15to16,
+        migration16to17: RoomMigration16to17,
         databaseKeyRepository: DatabaseKeyRepository,
         @DatabaseName(DatabaseName.Type.Main) dbName: String,
     ): MainDatabase {
@@ -300,6 +302,7 @@ object DatabaseModule {
                 migration12to13,
                 migration13to14,
                 migration15to16,
+                migration16to17,
             )
         }
     }
