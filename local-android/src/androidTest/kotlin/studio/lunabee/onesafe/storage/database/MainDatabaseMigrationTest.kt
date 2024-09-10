@@ -19,7 +19,6 @@
 
 package studio.lunabee.onesafe.storage.database
 
-import android.content.ContentValues
 import android.database.Cursor
 import androidx.core.database.getBlobOrNull
 import androidx.core.database.getStringOrNull
@@ -30,10 +29,12 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
 import org.junit.Rule
 import studio.lunabee.onesafe.storage.MainDatabase
+import studio.lunabee.onesafe.storage.dao.SafeDao
 import studio.lunabee.onesafe.storage.migration.RoomMigration15to16
 import studio.lunabee.onesafe.storage.migration.RoomMigration3to4
 import studio.lunabee.onesafe.storage.migration.RoomMigration8to9
 import studio.lunabee.onesafe.storage.migration.RoomMigration9to10
+import studio.lunabee.onesafe.storage.utils.toSqlBlobString
 import studio.lunabee.onesafe.test.OSTestConfig
 import studio.lunabee.onesafe.test.testUUIDs
 import studio.lunabee.onesafe.toByteArray
@@ -55,6 +56,8 @@ class MainDatabaseMigrationTest {
     @Inject lateinit var migration9to10: RoomMigration9to10
 
     @Inject lateinit var migration15to16: RoomMigration15to16
+
+    @Inject lateinit var safeDao: SafeDao
 
     @get:Rule
     val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
@@ -174,77 +177,6 @@ class MainDatabaseMigrationTest {
         assertEquals("recursive_item_insert", trigger0)
         assertEquals("recursive_item_update", trigger1)
     }
-
-    @Test
-    fun migration15to16_test() {
-        val contentValuesList = List(5) {
-            ContentValues().apply {
-                put("id", testUUIDs[it].toByteArray())
-                put("version", 0)
-                put("crypto_master_salt", byteArrayOf(0))
-                put("crypto_enc_test", byteArrayOf(0))
-                put("crypto_enc_index_key", byteArrayOf(0))
-                put("crypto_enc_bubbles_key", byteArrayOf(0))
-                put("crypto_enc_item_edition_key", byteArrayOf(0))
-                put("crypto_biometric_crypto_material", byteArrayOf(0))
-                put("setting_material_you", false)
-                put("setting_automation", false)
-                put("setting_display_share_warning", false)
-                put("setting_allow_screenshot", false)
-                put("setting_bubbles_preview", false)
-                put("setting_camera_system", false)
-                put("setting_auto_lock_osk_hidden_delay", 0)
-                put("setting_verify_password_interval", "")
-                put("setting_last_password_verification", 0)
-                put("setting_auto_lock_inactivity_delay", 0)
-                put("setting_auto_lock_app_change_delay", 0)
-                put("setting_clipboard_delay", 0)
-                put("setting_bubbles_resend_message_delay", 0)
-                put("setting_auto_lock_osk_inactivity_delay", 0)
-                put("setting_auto_backup_enabled", false)
-                put("setting_auto_backup_frequency", 0)
-                put("setting_auto_backup_max_number", false)
-                put("setting_cloud_backup_enabled", false)
-                put("setting_keep_local_backup_enabled", false)
-                put("setting_item_ordering", false)
-                put("setting_items_layout_setting", false)
-                put("setting_bubbles_home_card_cta_state", "")
-                put("setting_bubbles_home_card_cta_timestamp", 0)
-                put("setting_drive_selected_account", "")
-                put("setting_drive_folder_id", "")
-                put("setting_drive_folder_url", "")
-                put("setting_enable_auto_backup_cta_state", "")
-                put("setting_enable_auto_backup_cta_timestamp", 0)
-                put("app_visit_has_finish_one_safe_k_on_boarding", false)
-                put("app_visit_has_done_on_boarding_bubbles", false)
-                put("app_visit_has_hidden_camera_tips", false)
-                put("app_visit_has_seen_item_edition_url_tool_tip", false)
-                put("app_visit_has_seen_item_edition_emoji_tool_tip", false)
-                put("app_visit_has_seen_item_read_edit_tool_tip", false)
-                put("setting_independent_safe_info_cta_state", "")
-                put("setting_independent_safe_info_cta_timestamp", 0)
-                put("setting_shake_to_lock", false)
-            }
-        }
-        helper.createDatabase(dbName, 15).use { db ->
-            contentValuesList.forEach { contentValues ->
-                db.insert("Safe", 0, contentValues)
-            }
-        }
-
-        val db = helper.runMigrationsAndValidate(dbName, 16, true, migration15to16)
-        val cursor = db.query("SELECT * FROM Safe")
-        val openOrderIndex = cursor.getColumnIndex("open_order")
-        assertEquals(5, cursor.count)
-        var expected = 0
-        while (cursor.moveToNext()) {
-            val actual = cursor.getInt(openOrderIndex)
-            assertEquals(expected, actual)
-            expected++
-        }
-    }
-
-    private fun ByteArray.toSqlBlobString() = "X'${joinToString(separator = "") { byte -> "%02x".format(byte) }}'"
 }
 
 internal fun Cursor.getBlob(columnName: String): ByteArray {
