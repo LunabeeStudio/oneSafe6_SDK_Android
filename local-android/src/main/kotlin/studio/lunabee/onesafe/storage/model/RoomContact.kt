@@ -54,6 +54,7 @@ data class RoomContact(
     @ColumnInfo(name = "enc_sharing_mode") val encSharingMode: ByteArray,
     @ColumnInfo(name = "consulted_at", defaultValue = "null") val consultedAt: Instant?,
     @ColumnInfo(name = "safe_id", index = true) val safeId: SafeId,
+    @ColumnInfo(name = "enc_reset_conversation_date", defaultValue = "null") val encResetConversationDate: ByteArray? = null,
 ) {
     fun toContact(): Contact =
         Contact(
@@ -65,6 +66,7 @@ data class RoomContact(
             encSharingMode = encSharingMode,
             consultedAt = consultedAt?.toKotlinInstant(),
             safeId = DoubleRatchetUUID(safeId.id),
+            encResetConversationDate = encResetConversationDate,
         )
 
     override fun equals(other: Any?): Boolean {
@@ -81,6 +83,7 @@ data class RoomContact(
         if (!encSharingMode.contentEquals(other.encSharingMode)) return false
         if (consultedAt != other.consultedAt) return false
         if (safeId != other.safeId) return false
+        if (!encResetConversationDate.contentEquals(other.encResetConversationDate)) return false
 
         return true
     }
@@ -94,6 +97,7 @@ data class RoomContact(
         result = 31 * result + encSharingMode.contentHashCode()
         result = 31 * result + (consultedAt?.hashCode() ?: 0)
         result = 31 * result + safeId.hashCode()
+        result = 31 * result + encResetConversationDate.hashCode()
         return result
     }
 
@@ -108,6 +112,7 @@ data class RoomContact(
                 encSharingMode = bubblesContact.encSharingMode,
                 consultedAt = bubblesContact.consultedAt?.toJavaInstant(),
                 safeId = SafeId(bubblesContact.safeId.uuid),
+                encResetConversationDate = bubblesContact.encResetConversationDate,
             )
     }
 }

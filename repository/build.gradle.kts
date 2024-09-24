@@ -32,7 +32,8 @@ dependencies {
     implementation(libs.bubbles.messaging.domain)
     implementation(libs.bubbles.domain)
     implementation(libs.doubleratchet)
-    implementation(project(":domain"))
+    implementation(project(":domain-jvm"))
     implementation(project(":import-export-domain"))
-    implementation(project(":error"))
+    implementation(project(":common-jvm"))
+    implementation(libs.onesafe.error)
 }

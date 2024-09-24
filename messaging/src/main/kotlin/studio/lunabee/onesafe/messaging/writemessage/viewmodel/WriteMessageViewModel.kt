@@ -68,6 +68,7 @@ import studio.lunabee.messaging.domain.repository.SentMessageRepository
 import studio.lunabee.messaging.domain.usecase.DecryptSafeMessageUseCase
 import studio.lunabee.messaging.domain.usecase.EncryptMessageUseCase
 import studio.lunabee.messaging.domain.usecase.GetConversationStateUseCase
+import studio.lunabee.messaging.domain.usecase.GetResetMessageUseCase
 import studio.lunabee.messaging.domain.usecase.GetSendMessageDataUseCase
 import studio.lunabee.messaging.domain.usecase.SaveSentMessageUseCase
 import studio.lunabee.onesafe.commonui.CommonUiConstants
@@ -92,6 +93,8 @@ import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDes
 import studio.lunabee.onesafe.messaging.writemessage.model.BubblesWritingMessage
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
 import studio.lunabee.onesafe.messaging.writemessage.model.SentMessageData
+import studio.lunabee.onesafe.messaging.writemessage.model.WriteContactInfo
+import studio.lunabee.onesafe.messaging.writemessage.model.WriteConversationState
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageUiState
 import studio.lunabee.onesafe.ui.extensions.toColor
 import java.io.File
@@ -125,6 +128,7 @@ class WriteMessageViewModel @Inject constructor(
     private val secureGetItemUseCase: SecureGetItemUseCase,
     private val itemDecryptUseCase: ItemDecryptUseCase,
     private val getIconUseCase: GetIconUseCase,
+    private val getResetMessageUseCase: GetResetMessageUseCase,
     isSafeReadyUseCase: IsSafeReadyUseCase,
     getAppSettingUseCase: GetAppSettingUseCase,
 ) : ViewModel() {
@@ -183,16 +187,22 @@ class WriteMessageViewModel @Inject constructor(
                         id = conversationId,
                         nameProvider = nameProvider,
                         messageSharingMode = sharingMode,
-                        isConversationReady = true, // default to true to show the default UI
+                        conversationState = WriteConversationState.Ready, // default to ready to show the default UI
                         isCorrupted = true,
                     )
                     is LBResult.Success -> {
-                        val isConversationReady = conversationState.successData != ConversationState.WaitingForReply
                         WriteContactInfo(
                             id = conversationId,
                             nameProvider = nameProvider,
                             messageSharingMode = sharingMode,
-                            isConversationReady = isConversationReady,
+                            conversationState = when (conversationState.successData) {
+                                ConversationState.Reset -> WriteConversationState.Reset
+                                ConversationState.WaitingForReply -> WriteConversationState.WaitingForReply
+                                ConversationState.Running,
+                                ConversationState.FullySetup,
+                                ConversationState.WaitingForFirstMessage,
+                                -> WriteConversationState.Ready
+                            },
                             isCorrupted = false,
                         )
                     }
@@ -228,7 +238,7 @@ class WriteMessageViewModel @Inject constructor(
                 contactId = writeContactInfo.id,
                 nameProvider = writeContactInfo.nameProvider,
                 messageSharingMode = writeContactInfo.messageSharingMode,
-                isConversationReady = writeContactInfo.isConversationReady,
+                conversationState = writeContactInfo.conversationState,
                 message = bubblesWritingMessage,
                 isCorrupted = writeContactInfo.isCorrupted,
             )
@@ -275,7 +285,7 @@ class WriteMessageViewModel @Inject constructor(
                                 id = message.id,
                                 text = LbcTextSpec.StringResource(OSString.bubbles_acceptedInvitation),
                                 direction = message.direction,
-                                sendAt = plainMessageData.sentAt.data?.toJavaInstant(),
+                                date = plainMessageData.sentAt.data?.toJavaInstant(),
                                 channelName = plainMessageData.channel?.data,
                                 type = ConversationUiData.MessageType.Invitation,
                                 hasCorruptedData = plainMessageData.hasCorruptedData,
@@ -294,7 +304,7 @@ class WriteMessageViewModel @Inject constructor(
                                 id = message.id,
                                 text = text,
                                 direction = message.direction,
-                                sendAt = plainMessageData.sentAt.data?.toJavaInstant(),
+                                date = plainMessageData.sentAt.data?.toJavaInstant(),
                                 channelName = plainMessageData.channel?.data,
                                 type = ConversationUiData.MessageType.Message,
                                 hasCorruptedData = plainMessageData.hasCorruptedData,
@@ -315,7 +325,7 @@ class WriteMessageViewModel @Inject constructor(
                             ConversationUiData.Message.SafeItem(
                                 id = message.id,
                                 direction = message.direction,
-                                sendAt = plainMessageData.sentAt.data?.toJavaInstant(),
+                                date = plainMessageData.sentAt.data?.toJavaInstant(),
                                 channelName = plainMessageData.channel?.data,
                                 icon = illustration,
                                 name = itemNameProvider,
@@ -323,9 +333,12 @@ class WriteMessageViewModel @Inject constructor(
                                 itemId = item?.id,
                             )
                         }
+                        is PlainMessageData.ResetConversation -> ConversationUiData.ResetConversation(
+                            date = plainMessageData.sentAt.data?.toJavaInstant(),
+                        )
                     }
                 }.insertSeparators { before, after ->
-                    val beforeSendAt = before?.sendAt
+                    val beforeSendAt = before?.date
                     when {
                         beforeSendAt == null || before.wereSentOnSameDay(after) -> null
                         else -> ConversationUiData.DateHeader(beforeSendAt)
@@ -387,7 +400,7 @@ class WriteMessageViewModel @Inject constructor(
                 plainMessage = SharedMessage(
                     content = sentMessageData.plainMessage,
                     recipientId = sentMessageData.contactId,
-                    sentAt = lastMessageChange.toKotlinInstant(),
+                    date = lastMessageChange.toKotlinInstant(),
                 ),
                 messageString = Base64.decode(sentMessageData.encMessage),
                 contactId = sentMessageData.contactId,
@@ -506,6 +519,13 @@ class WriteMessageViewModel @Inject constructor(
         _dialogState.value = null
     }
 
+    @OptIn(ExperimentalEncodingApi::class)
+    suspend fun getResetMessage(): String? {
+        return contactId.value?.let {
+            getResetMessageUseCase(contactId = it).data?.let(Base64::encode)
+        }
+    }
+
     /**
      * Create a zip archive from the message to send
      * @param messageToSend [String] the message to send (encoded to base64)
@@ -535,12 +555,4 @@ class WriteMessageViewModel @Inject constructor(
     fun consumeArchive() {
         deleteBubblesArchiveUseCase()
     }
-
-    private data class WriteContactInfo(
-        val id: DoubleRatchetUUID,
-        val nameProvider: OSNameProvider,
-        val messageSharingMode: MessageSharingMode,
-        val isConversationReady: Boolean,
-        val isCorrupted: Boolean,
-    )
 }

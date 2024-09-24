@@ -59,6 +59,7 @@ data class RoomSafe(
             encBubblesKey = this.crypto.encBubblesKey,
             encItemEditionKey = this.crypto.encItemEditionKey,
             biometricCryptoMaterial = this.crypto.biometricCryptoMaterial,
+            autoDestructionKey = this.crypto.autoDestructionKey,
         )
     }
 

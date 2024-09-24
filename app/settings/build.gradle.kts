@@ -44,8 +44,8 @@ dependencies {
     implementation(libs.lblogger)
     implementation(libs.lbcore)
 
-    implementation(project(":domain"))
-    implementation(project(":error"))
+    implementation(project(":domain-jvm"))
+    implementation(libs.onesafe.error)
     implementation(project(":repository"))
-    implementation(project(":common"))
+    implementation(project(":common-jvm"))
 }

@@ -43,6 +43,9 @@ fun ImeLoginRoute(
 ) {
     val loginUiState: LoginUiState by viewModel.uiState.collectAsStateWithLifecycle()
     when (val uiState = loginUiState) {
+        LoginUiState.Initialize -> {
+            /* no-op */
+        }
         LoginUiState.Bypass -> onSuccess()
         is LoginUiState.Data -> {
             val isSuccess = uiState.loginResult is LoginUiState.LoginResult.Success
@@ -52,7 +55,6 @@ fun ImeLoginRoute(
                 }
             }
 
-            val isBiometricEnabled: Boolean by viewModel.isBiometricEnabled.collectAsStateWithLifecycle(initialValue = false)
             val exitIcon: LoginExitIcon = LoginExitIcon.Close(onClose)
             val context = LocalContext.current
             val onBiometricClick: () -> Unit = {
@@ -74,11 +76,10 @@ fun ImeLoginRoute(
                 setPasswordValue = viewModel::setPasswordValue,
                 versionName = viewModel.versionName,
                 loginFromPassword = viewModel::loginFromPassword,
-                isBiometricEnabled = isBiometricEnabled,
                 onBiometricClick = onBiometricClick,
+                logoRes = R.drawable.onesafek_logo,
                 snackbarHostState = snackbarHostState,
                 isIllustrationDisplayed = false,
-                logoRes = R.drawable.onesafek_logo,
             )
         }
     }

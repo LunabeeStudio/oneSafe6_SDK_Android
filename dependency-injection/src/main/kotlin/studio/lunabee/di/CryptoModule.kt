@@ -37,33 +37,35 @@ import studio.lunabee.bubbles.domain.crypto.BubblesRandomKeyProvider
 import studio.lunabee.bubbles.repository.BubblesMainCryptoRepository
 import studio.lunabee.onesafe.bubbles.crypto.DiffieHellmanKeyExchangeEngine
 import studio.lunabee.onesafe.bubbles.crypto.HKDFHashEngine
-import studio.lunabee.onesafe.cryptography.AndroidEditCryptoRepository
-import studio.lunabee.onesafe.cryptography.AndroidImportExportCryptoRepository
-import studio.lunabee.onesafe.cryptography.AndroidMainCryptoRepository
-import studio.lunabee.onesafe.cryptography.AndroidMigrationCryptoRepository
-import studio.lunabee.onesafe.cryptography.BiometricEngine
-import studio.lunabee.onesafe.cryptography.BubblesRandomKeyProviderImpl
-import studio.lunabee.onesafe.cryptography.CryptoConstants
-import studio.lunabee.onesafe.cryptography.DatabaseKeyRepositoryImpl
-import studio.lunabee.onesafe.cryptography.DatastoreEngine
-import studio.lunabee.onesafe.cryptography.EncryptedDataStoreEngine
-import studio.lunabee.onesafe.cryptography.IVProvider
-import studio.lunabee.onesafe.cryptography.JceRsaCryptoEngine
-import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
-import studio.lunabee.onesafe.cryptography.PasswordHashEngine
-import studio.lunabee.onesafe.cryptography.PlainDatastoreEngine
-import studio.lunabee.onesafe.cryptography.ProtoData
-import studio.lunabee.onesafe.cryptography.RsaCryptoEngine
-import studio.lunabee.onesafe.cryptography.SecureIVProvider
-import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
-import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
-import studio.lunabee.onesafe.cryptography.utils.ProtoDataSerializer
+import studio.lunabee.onesafe.cryptography.android.AndroidEditCryptoRepository
+import studio.lunabee.onesafe.cryptography.android.AndroidImportExportCryptoRepository
+import studio.lunabee.onesafe.cryptography.android.AndroidMainCryptoRepository
+import studio.lunabee.onesafe.cryptography.android.AndroidMigrationCryptoRepository
+import studio.lunabee.onesafe.cryptography.android.AndroidWorkerCryptoRepository
+import studio.lunabee.onesafe.cryptography.android.BiometricEngine
+import studio.lunabee.onesafe.cryptography.android.BubblesRandomKeyProviderImpl
+import studio.lunabee.onesafe.cryptography.android.CryptoConstants
+import studio.lunabee.onesafe.cryptography.android.DatabaseKeyRepositoryImpl
+import studio.lunabee.onesafe.cryptography.android.DatastoreEngine
+import studio.lunabee.onesafe.cryptography.android.EncryptedDataStoreEngine
+import studio.lunabee.onesafe.cryptography.android.IVProvider
+import studio.lunabee.onesafe.cryptography.android.JceRsaCryptoEngine
+import studio.lunabee.onesafe.cryptography.android.PBKDF2JceHashEngine
+import studio.lunabee.onesafe.cryptography.android.PasswordHashEngine
+import studio.lunabee.onesafe.cryptography.android.PlainDatastoreEngine
+import studio.lunabee.onesafe.cryptography.android.ProtoData
+import studio.lunabee.onesafe.cryptography.android.RsaCryptoEngine
+import studio.lunabee.onesafe.cryptography.android.SecureIVProvider
+import studio.lunabee.onesafe.cryptography.android.qualifier.DataStoreType
+import studio.lunabee.onesafe.cryptography.android.qualifier.DatastoreEngineProvider
+import studio.lunabee.onesafe.cryptography.android.utils.ProtoDataSerializer
 import studio.lunabee.onesafe.domain.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.domain.repository.BiometricCipherRepository
 import studio.lunabee.onesafe.domain.repository.DatabaseKeyRepository
 import studio.lunabee.onesafe.domain.repository.EditCryptoRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.MigrationCryptoRepository
+import studio.lunabee.onesafe.domain.repository.WorkerCryptoRepository
 import studio.lunabee.onesafe.importexport.repository.ImportExportCryptoRepository
 import javax.inject.Singleton
 
@@ -122,6 +124,11 @@ abstract class CryptoModule {
     internal abstract fun bindsBubblesRandomKeyProvider(
         bubblesRandomKeyProvider: BubblesRandomKeyProviderImpl,
     ): BubblesRandomKeyProvider
+
+    @Binds
+    internal abstract fun bindWorkerCryptoRepository(
+        androidWorkerCryptoRepository: AndroidWorkerCryptoRepository,
+    ): WorkerCryptoRepository
 }
 
 @Module

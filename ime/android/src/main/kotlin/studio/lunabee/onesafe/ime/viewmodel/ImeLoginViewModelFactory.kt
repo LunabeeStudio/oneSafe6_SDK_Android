@@ -21,12 +21,14 @@ package studio.lunabee.onesafe.ime.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.work.WorkManager
 import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.domain.qualifier.StoreBetaTrack
 import studio.lunabee.onesafe.domain.qualifier.VersionName
 import studio.lunabee.onesafe.domain.usecase.authentication.HasBiometricSafeUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.LoginUseCase
+import studio.lunabee.onesafe.domain.usecase.autodestruction.EncryptPasswordAutoDestructionUseCase
 import studio.lunabee.onesafe.domain.usecase.settings.GetAppVisitUseCase
 import studio.lunabee.onesafe.ime.repository.ImeBiometricResultRepository
 import studio.lunabee.onesafe.login.viewmodel.LoginFromPasswordDelegateImpl
@@ -42,6 +44,8 @@ class ImeLoginViewModelFactory @Inject constructor(
     private val imeBiometricResultRepository: ImeBiometricResultRepository,
     private val isSafeReadyUseCase: IsSafeReadyUseCase,
     @StoreBetaTrack private val isBetaVersion: Boolean,
+    private val encryptPasswordAutoDestructionUseCase: EncryptPasswordAutoDestructionUseCase,
+    private val workManager: WorkManager,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val loginUiStateHolder = LoginUiStateHolder(isSafeReadyUseCase, getAppVisitUseCase, isBetaVersion)
@@ -53,6 +57,8 @@ class ImeLoginViewModelFactory @Inject constructor(
                 loginUseCase = loginUseCase,
                 featureFlags = featureFlags,
                 loginUiStateHolder = loginUiStateHolder,
+                workManager = workManager,
+                encryptPasswordAutoDestructionUseCase = encryptPasswordAutoDestructionUseCase,
             ),
             imeBiometricResultRepository = imeBiometricResultRepository,
             isSafeReadyUseCase = isSafeReadyUseCase,

@@ -32,9 +32,9 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
-import studio.lunabee.onesafe.cryptography.EncryptedDataStoreEngine
-import studio.lunabee.onesafe.cryptography.ProtoData
-import studio.lunabee.onesafe.cryptography.utils.ProtoDataSerializer
+import studio.lunabee.onesafe.cryptography.android.EncryptedDataStoreEngine
+import studio.lunabee.onesafe.cryptography.android.ProtoData
+import studio.lunabee.onesafe.cryptography.android.utils.ProtoDataSerializer
 import javax.inject.Inject
 import kotlin.test.Test
 import kotlin.test.assertEquals

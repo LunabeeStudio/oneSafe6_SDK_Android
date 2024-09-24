@@ -62,7 +62,7 @@ class EnforceCryptoDispatcherDetectorTest {
             mainRepoStub,
             kt(
                 """
-                package studio.lunabee.onesafe.cryptography
+                package studio.lunabee.onesafe.cryptography.android
                 import ${CryptoDispatcher::class.qualifiedName}
                 import $mainCryptoRepoQualified
                 class AndroidMainCryptoRepository(
@@ -92,7 +92,7 @@ class EnforceCryptoDispatcherDetectorTest {
             mainRepoStub,
             kt(
                 """
-                package studio.lunabee.onesafe.cryptography
+                package studio.lunabee.onesafe.cryptography.android
                 import ${CryptoDispatcher::class.qualifiedName}
                 import $mainCryptoRepoQualified
                 class AndroidMainCryptoRepository(
@@ -113,10 +113,10 @@ class EnforceCryptoDispatcherDetectorTest {
             .run()
             .expect(
                 """
-                src/studio/lunabee/onesafe/cryptography/AndroidMainCryptoRepository.kt:8: Error: Expected call to withContext(CryptoDispatcher) not found [EnforceCryptoDispatcherContext]
+                src/studio/lunabee/onesafe/cryptography/android/AndroidMainCryptoRepository.kt:8: Error: Expected call to withContext(CryptoDispatcher) not found [EnforceCryptoDispatcherContext]
                     suspend fun publicSuspendMethod() { 
                                 ~~~~~~~~~~~~~~~~~~~
-                src/studio/lunabee/onesafe/cryptography/AndroidMainCryptoRepository.kt:11: Error: Expected call to withContext(CryptoDispatcher) not found [EnforceCryptoDispatcherContext]
+                src/studio/lunabee/onesafe/cryptography/android/AndroidMainCryptoRepository.kt:11: Error: Expected call to withContext(CryptoDispatcher) not found [EnforceCryptoDispatcherContext]
                     suspend fun publicSuspendMethodWrong(): Unit = withContext(wrongDispatcher) {
                                 ~~~~~~~~~~~~~~~~~~~~~~~~
                 2 errors, 0 warnings
@@ -131,7 +131,7 @@ class EnforceCryptoDispatcherDetectorTest {
             cryptoQualifierStub,
             kt(
                 """
-                package studio.lunabee.onesafe.cryptography
+                package studio.lunabee.onesafe.cryptography.android
                 class AndroidMainCryptoRepository : $mainCryptoRepoName {
                     fun publicMethod() { 
                         println("Hello")
@@ -153,7 +153,7 @@ class EnforceCryptoDispatcherDetectorTest {
             mainRepoStub,
             kt(
                 """
-                package studio.lunabee.onesafe.cryptography
+                package studio.lunabee.onesafe.cryptography.android
 
                 import ${CryptoDispatcher::class.qualifiedName}
                 import kotlinx.coroutines.flow.Flow
@@ -185,7 +185,7 @@ class EnforceCryptoDispatcherDetectorTest {
             mainRepoStub,
             kt(
                 """
-                package studio.lunabee.onesafe.cryptography
+                package studio.lunabee.onesafe.cryptography.android
 
                 import ${CryptoDispatcher::class.qualifiedName}
                 import kotlinx.coroutines.flow.Flow
@@ -210,13 +210,13 @@ class EnforceCryptoDispatcherDetectorTest {
             .run()
             .expect(
                 """
-                src/studio/lunabee/onesafe/cryptography/AndroidMainCryptoRepository.kt:13: Error: Expected call to flowOn(CryptoDispatcher) not found [EnforceCryptoDispatcherFlow]
+                src/studio/lunabee/onesafe/cryptography/android/AndroidMainCryptoRepository.kt:13: Error: Expected call to flowOn(CryptoDispatcher) not found [EnforceCryptoDispatcherFlow]
                     fun publicFlowBlockMethod(): Flow<Unit> { 
                         ~~~~~~~~~~~~~~~~~~~~~
-                src/studio/lunabee/onesafe/cryptography/AndroidMainCryptoRepository.kt:16: Error: Expected call to flowOn(CryptoDispatcher) not found [EnforceCryptoDispatcherFlow]
+                src/studio/lunabee/onesafe/cryptography/android/AndroidMainCryptoRepository.kt:16: Error: Expected call to flowOn(CryptoDispatcher) not found [EnforceCryptoDispatcherFlow]
                     fun publicFlowReturnMethod(): Flow<Unit> = flowOf(Unit)
                         ~~~~~~~~~~~~~~~~~~~~~~
-                src/studio/lunabee/onesafe/cryptography/AndroidMainCryptoRepository.kt:17: Error: Expected call to flowOn(CryptoDispatcher) not found [EnforceCryptoDispatcherFlow]
+                src/studio/lunabee/onesafe/cryptography/android/AndroidMainCryptoRepository.kt:17: Error: Expected call to flowOn(CryptoDispatcher) not found [EnforceCryptoDispatcherFlow]
                     fun publicFlowReturnMethod(): Flow<Unit> = flowOf(Unit).flowOn(wrongDispatcher)
                         ~~~~~~~~~~~~~~~~~~~~~~
                 3 errors, 0 warnings                    

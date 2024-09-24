@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import studio.lunabee.importexport.datasource.CloudBackupEngine
 import studio.lunabee.importexport.datasource.CloudBackupLocalDataSource
-import studio.lunabee.onesafe.combine
+import studio.lunabee.onesafe.jvm.combine
 import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.error.OSImportExportError
 import studio.lunabee.onesafe.importexport.model.CloudBackup

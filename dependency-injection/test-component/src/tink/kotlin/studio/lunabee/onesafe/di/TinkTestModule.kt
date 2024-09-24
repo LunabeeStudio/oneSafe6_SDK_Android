@@ -25,9 +25,9 @@ import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import studio.lunabee.bubbles.domain.crypto.BubblesCryptoEngine
 import studio.lunabee.di.TinkModule
-import studio.lunabee.onesafe.cryptography.CryptoEngine
+import studio.lunabee.onesafe.cryptography.android.CryptoEngine
 import javax.inject.Singleton
-import studio.lunabee.onesafe.cryptography.ChachaPolyTinkCryptoEngine
+import studio.lunabee.onesafe.cryptography.android.ChachaPolyTinkCryptoEngine
 
 @Module
 @TestInstallIn(

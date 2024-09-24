@@ -17,11 +17,38 @@
  * Last modified 4/7/23, 12:30 AM
  */
 
+import org.gradle.internal.management.VersionCatalogBuilderInternal
+
 pluginManagement {
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    // Share versions with KMP project
+    // https://stackoverflow.com/questions/73646181/gradle-version-catalogue-share-a-version-between-multiple-toml-files
+    versionCatalogs {
+        val kmpLibsBuilder: VersionCatalogBuilder = create("versions") {
+            from(files("oneSafe6_KMP/gradle/libs.versions.toml")) // load versions
+        }
+
+        create("libs") {
+            val kmpLibs = (kmpLibsBuilder as VersionCatalogBuilderInternal).build()
+            kmpLibs.versionAliases.forEach { alias ->
+                // inject version to this catalog
+                val version = kmpLibs.getVersion(alias).version
+                println("Inject version $version for alias $alias")
+                version(alias) {
+                    strictly(version.strictVersion)
+                    require(version.requiredVersion)
+                    prefer(version.preferredVersion)
+                    version.rejectedVersions.forEach { reject(it) }
+                }
+            }
+        }
     }
 }
 
@@ -48,13 +75,12 @@ include("app:settings")
 include("app:migration")
 include("app:login")
 include("app:help")
-include("domain")
+include(":domain-jvm")
 include("repository")
 include("crypto-android")
 include("crypto-android:checks")
 include("local-android")
-include("common")
-include("error")
+include("common-jvm")
 include("remote")
 include("benchmark-android")
 include("macrobenchmark-android")
@@ -95,6 +121,6 @@ project(":ime-android").projectDir = File("ime/android")
 include(":ime-domain")
 project(":ime-domain").projectDir = File("ime/domain")
 
-includeBuild("oneSafe_Bubbles_KMP")
+includeBuild("oneSafe6_KMP")
 
 // include(":mockos5") // mockos5 apk is embedded for tests

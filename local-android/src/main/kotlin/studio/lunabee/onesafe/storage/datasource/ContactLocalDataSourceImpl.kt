@@ -60,8 +60,13 @@ class ContactLocalDataSourceImpl @Inject constructor(
         dao.getRecentContactsFlow(maxNumber, safeId.uuid).mapValues { it.toContact() }
 
     override fun getContactFlow(id: DoubleRatchetUUID): Flow<Contact?> = dao.getByIdFlow(id.uuid).map { it?.toContact() }
-    override suspend fun getContact(id: DoubleRatchetUUID, safeId: DoubleRatchetUUID): Contact? = dao.getById(id.uuid, safeId.uuid)
-        .let { it?.toContact() }
+    override suspend fun getContact(id: DoubleRatchetUUID): Contact? {
+        return dao.getById(id.uuid).let { it?.toContact() }
+    }
+
+    override suspend fun getContactInSafe(id: DoubleRatchetUUID, safeId: DoubleRatchetUUID): Contact? {
+        return dao.getByIdInSafe(id.uuid, safeId.uuid).let { it?.toContact() }
+    }
 
     override suspend fun getContactSharedKey(id: DoubleRatchetUUID): ContactSharedKey? = dao.getContactSharedKey(id.uuid)
         ?.let(::ContactSharedKey)
@@ -88,5 +93,13 @@ class ContactLocalDataSourceImpl @Inject constructor(
 
     override suspend fun updateContactConsultedAt(id: DoubleRatchetUUID, consultedAt: Instant) {
         dao.updateContactConsultedAt(id.uuid, consultedAt.toJavaInstant())
+    }
+
+    override suspend fun getContactCount(safeId: DoubleRatchetUUID): Int {
+        return dao.getContactCount(safeId.uuid)
+    }
+
+    override suspend fun updateContactResetConversationDate(id: DoubleRatchetUUID, encResetConversationDate: ByteArray) {
+        dao.updateContactResetConversationDate(id.uuid, encResetConversationDate)
     }
 }

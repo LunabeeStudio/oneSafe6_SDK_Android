@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import studio.lunabee.onesafe.error.OSDriveError
-import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.jvm.get
 import java.io.IOException
 import java.io.InputStream
 import java.net.UnknownHostException

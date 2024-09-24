@@ -13,66 +13,40 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-android = { id = "kotlin-android", version.ref = "kotlin" }
-hilt = { id = "com.google.dagger.hilt.android", version.ref = "google-dagger" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger-hilt" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 [versions]
 
-aboutlibraries = "11.2.2"
+# Use version 0 for dependencies shared with KMP module
+kotlin = "0"
+detekt = "0"
+android-gradle-plugin = "0"
+dagger-hilt = "0"
+ksp = "0"
+lunabee-library = "0"
+bouncycastle = "0"
+kotlinx-datetime = "0"
+doubleratchet = "0"
+kotlinx-coroutines = "0"
+kotlinx-serialization = "0"
+javax-inject = "0"
+protobuf-plugin = "0"
+androidx-paging = "0"
+mockk = "0"
+
+aboutlibraries = "11.2.3"
 
 benchmark = "1.2.3"
 
-android-gradle-plugin = "8.5.2"
-##                 ⬆ = "8.6.0-alpha01"
-##                 ⬆ = "8.6.0-alpha02"
-##                 ⬆ = "8.6.0-alpha03"
-##                 ⬆ = "8.6.0-alpha04"
-##                 ⬆ = "8.6.0-alpha05"
-##                 ⬆ = "8.6.0-alpha06"
-##                 ⬆ = "8.6.0-alpha07"
-##                 ⬆ = "8.6.0-alpha08"
-##                 ⬆ = "8.6.0-beta01"
-##                 ⬆ = "8.6.0-beta02"
-##                 ⬆ = "8.6.0-rc01"
-##                 ⬆ = "8.7.0-alpha01"
-##                 ⬆ = "8.7.0-alpha02"
-##                 ⬆ = "8.7.0-alpha03"
-##                 ⬆ = "8.7.0-alpha04"
-##                 ⬆ = "8.7.0-alpha05"
-##                 ⬆ = "8.7.0-alpha06"
-##                 ⬆ = "8.7.0-alpha07"
+florisboard-library = "0.4.0-1.0.2"
 
-kotlin = "2.0.10"
-##  ⬆ = "2.0.20-Beta1"
-##  ⬆ = "2.0.20-Beta2"
-##  ⬆ = "2.0.20-RC"
-##  ⬆ = "2.0.20-RC2"
-
-ksp = "2.0.10-1.0.24"
-##⬆= "2.0.20-Beta1-1.0.22"
-##⬆= "2.0.20-Beta2-1.0.23"
-##⬆= "2.0.20-RC-1.0.24"
-##⬆= "2.0.20-RC2-1.0.24"
-
-google-dagger = "2.52"
-
-florisboard-library = "0.4.0-beta02-1.0.0"
-
-doubleratchet-jvm = "0.1.4-data-class-SNAPSHOT"
-##             ⬆ = "0.1.4-uuid-bytes-ios-SNAPSHOT"
-##             ⬆ = "0.1.4-uuid-bytes-iossupport-SNAPSHOT"
-##             ⬆ = "0.1.4-uuid-bytes-SNAPSHOT"
-##             ⬆ = "0.1.4-uuid-string-SNAPSHOT"
-##             ⬆ = "0.1.4-SNAPSHOT"
-##             ⬆ = "0.1.4-SNAPSHOT-3"
-##             ⬆ = "0.1.4-uuid-SNAPSHOT"
-
-logback-classic = "1.5.7"
+logback-classic = "1.5.8"
 
 play-services-base = "18.5.0"
 play-services-auth-base = "18.0.13"
-google-api-client = "2.6.0"
-google-api-services-drive = "v3-rev20240809-2.0.0"
+google-api-client = "2.7.0"
+google-api-services-drive = "v3-rev20240914-2.0.0"
 
 threeten-extra = "1.8.0"
 
@@ -81,10 +55,6 @@ zxing-android-embedded = "4.3.0"
 androidx-hilt = "1.2.0"
 
 junit4 = "4.13.2"
-
-kotlinx-coroutines = "1.8.1"
-##              ⬆ = "1.9.0-RC"
-##              ⬆ = "1.9.0-RC.2"
 
 androidx-test-core = "1.6.1"
 
@@ -99,12 +69,20 @@ androidx-room = "2.6.1"
 ##         ⬆ = "2.7.0-alpha04"
 ##         ⬆ = "2.7.0-alpha05"
 ##         ⬆ = "2.7.0-alpha06"
+##         ⬆ = "2.7.0-alpha07"
+##         ⬆ = "2.7.0-alpha08"
 
 androidx-sqlite = "2.4.0"
+##           ⬆ = "2.5.0-alpha01"
+##           ⬆ = "2.5.0-alpha02"
+##           ⬆ = "2.5.0-alpha03"
+##           ⬆ = "2.5.0-alpha04"
+##           ⬆ = "2.5.0-alpha05"
+##           ⬆ = "2.5.0-alpha06"
+##           ⬆ = "2.5.0-alpha07"
+##           ⬆ = "2.5.0-alpha08"
 
-mockk = "1.13.12"
-
-android-tools-desugar_jdk_libs = "2.0.4"
+android-tools-desugar_jdk_libs = "2.1.2"
 
 androidx-tracing = "1.2.0"
 ##            ⬆ = "1.3.0-alpha01"
@@ -112,18 +90,19 @@ androidx-tracing = "1.2.0"
 
 androidx-security-crypto = "1.1.0-alpha06"
 
-kotlinx-serialization = "1.7.1"
-
 androidx-appcompat = "1.7.0"
 
 androidx-core = "1.13.1"
 ##         ⬆ = "1.14.0-alpha01"
 ##         ⬆ = "1.15.0-alpha01"
+##         ⬆ = "1.15.0-alpha02"
 
-androidx-lifecycle = "2.8.4"
+androidx-lifecycle = "2.8.6"
 ##              ⬆ = "2.9.0-alpha01"
+##              ⬆ = "2.9.0-alpha02"
+##              ⬆ = "2.9.0-alpha03"
 
-compose-bom-stable = "2024.06.00"
+compose-bom-stable = "2024.09.02"
 compose-bom-alpha = "2024.02.00-alpha01"
 
 google-android-material = "1.12.0"
@@ -132,6 +111,7 @@ google-android-material = "1.12.0"
 ##                   ⬆ = "1.13.0-alpha03"
 ##                   ⬆ = "1.13.0-alpha04"
 ##                   ⬆ = "1.13.0-alpha05"
+##                   ⬆ = "1.13.0-alpha06"
 
 androidx-biometric = "1.1.0"
 ##              ⬆ = "1.2.0-alpha01"
@@ -142,46 +122,45 @@ androidx-biometric = "1.1.0"
 ##              ⬆ = "1.4.0-alpha01"
 ##              ⬆ = "1.4.0-alpha02"
 
-androidx-paging = "3.3.2"
-
 androidx-core-splashscreen = "1.0.1"
 ##                      ⬆ = "1.1.0-alpha01"
 ##                      ⬆ = "1.1.0-alpha02"
 ##                      ⬆ = "1.1.0-rc01"
 ##                      ⬆ = "1.2.0-alpha01"
+##                      ⬆ = "1.2.0-alpha02"
 
 androidx-work = "2.9.1"
 ##         ⬆ = "2.10.0-alpha01"
 ##         ⬆ = "2.10.0-alpha02"
+##         ⬆ = "2.10.0-alpha03"
+##         ⬆ = "2.10.0-alpha04"
 
 androidx-autofill = "1.1.0"
 ##             ⬆ = "1.2.0-alpha01"
 ##             ⬆ = "1.2.0-alpha02"
 ##             ⬆ = "1.2.0-beta01"
 ##             ⬆ = "1.3.0-alpha01"
+##             ⬆ = "1.3.0-beta01"
 
 androidx-slice-builders-ktx = "1.0.0-alpha08"
 
-androidx-emoji2 = "1.4.0"
-##           ⬆ = "1.5.0-alpha01"
-##           ⬆ = "1.5.0-beta01"
+androidx-emoji2 = "1.5.0"
 
 androidx-paging-compose = "3.3.2"
 
-androidx-activity = "1.9.1"
+androidx-activity = "1.9.2"
 ##             ⬆ = "1.10.0-alpha01"
+##             ⬆ = "1.10.0-alpha02"
 
 androidx-hilt-navigation-compose = "1.2.0"
 
-kotlinx-collections-immutable = "0.3.7"
+kotlinx-collections-immutable = "0.3.8"
 
-google-accompanist = "0.34.0"
-##              ⬆ = "0.35.0-alpha"
-##              ⬆ = "0.35.1-alpha"
+google-accompanist = "0.36.0"
 
 androidx-palette = "1.0.0"
 
-firebase-bom = "33.1.2"
+firebase-bom = "33.3.0"
 
 # FIXME 3.0.0+ Requires play services to be applied
 firebase-crashlytics-gradle = "2.9.9"
@@ -191,18 +170,14 @@ firebase-crashlytics-gradle = "2.9.9"
 
 androidx-test-ext-junit = "1.2.1"
 
-androidx-benchmark = "1.2.4"
-##              ⬆ = "1.3.0-alpha01"
-##              ⬆ = "1.3.0-alpha02"
-##              ⬆ = "1.3.0-alpha03"
-##              ⬆ = "1.3.0-alpha04"
-##              ⬆ = "1.3.0-alpha05"
-##              ⬆ = "1.3.0-beta01"
-##              ⬆ = "1.3.0-beta02"
-##              ⬆ = "1.3.0-rc01"
+androidx-benchmark = "1.3.1"
+##              ⬆ = "1.4.0-alpha01"
 
 androidx-annotation = "1.8.2"
 ##               ⬆ = "1.9.0-alpha01"
+##               ⬆ = "1.9.0-alpha02"
+##               ⬆ = "1.9.0-alpha03"
+##               ⬆ = "1.9.0-beta01"
 
 # FIXME 1.1.0 have some issue when cleaning and re-reading data (see export_engine_not_signed_up_test). To investigate
 androidx-datastore = "1.0.0"
@@ -225,6 +200,7 @@ androidx-preference = "1.2.1"
 ktor = "2.3.12"
 ##⬆ = "3.0.0-beta-1"
 ##⬆ = "3.0.0-beta-2"
+##⬆ = "3.0.0-rc-1"
 
 androidx-test-espresso = "3.6.0-beta01"
 
@@ -233,83 +209,36 @@ androidx-test-uiautomator = "2.3.0"
 
 coil-kt = "2.7.0"
 
-androidx-startup = "1.1.1"
-##            ⬆ = "1.2.0-alpha01"
-##            ⬆ = "1.2.0-alpha02"
+androidx-startup = "1.2.0"
 
-navigation-compose = "2.7.7"
-##              ⬆ = "2.8.0-alpha01"
-##              ⬆ = "2.8.0-alpha02"
-##              ⬆ = "2.8.0-alpha03"
-##              ⬆ = "2.8.0-alpha04"
-##              ⬆ = "2.8.0-alpha05"
-##              ⬆ = "2.8.0-alpha06"
-##              ⬆ = "2.8.0-alpha07"
-##              ⬆ = "2.8.0-alpha08"
-##              ⬆ = "2.8.0-beta01"
-##              ⬆ = "2.8.0-beta02"
-##              ⬆ = "2.8.0-beta03"
-##              ⬆ = "2.8.0-beta04"
-##              ⬆ = "2.8.0-beta05"
-##              ⬆ = "2.8.0-beta06"
-##              ⬆ = "2.8.0-beta07"
+navigation-compose = "2.8.1"
 
-detekt = "1.23.6"
+protobuf = "4.28.2"
 
-protobuf = "4.27.3"
-##    ⬆ = "4.28.0-RC1"
-##    ⬆ = "4.28.0-RC2"
-
-protobuf-plugin = "0.9.4"
-
-lunabee-library = "4.2.0-189-develop-SNAPSHOT"
 
 compose-shimmer = "1.3.1"
 
-lbcaccessibility = "1.6.0"
-##            ⬆ = "1.7.0-257-SNAPSHOT"
+lbcaccessibility = "1.9.0-283-SNAPSHOT"
 
-lbcandroidtest = "1.3.0"
+lbcandroidtest = "1.6.0-283-SNAPSHOT"
 
-lbctheme = "1.2.0"
-##    ⬆ = "1.3.0-257-SNAPSHOT"
+lbctheme = "1.5.0-283-SNAPSHOT"
 
-lbccore = "1.2.0"
-##   ⬆ = "1.3.0-251-SNAPSHOT"
-##   ⬆ = "1.3.0-252-SNAPSHOT"
-##   ⬆ = "1.3.0-253-SNAPSHOT"
-##   ⬆ = "1.3.0-254-SNAPSHOT"
-##   ⬆ = "1.3.0-255-SNAPSHOT"
-##   ⬆ = "1.3.0-256-SNAPSHOT"
-##   ⬆ = "1.4.0-257-SNAPSHOT"
+lbccore = "1.6.0-283-SNAPSHOT"
 
 lbcfoundation = "1.1.0"
 
-lbchaptic = "1.0.0"
-##     ⬆ = "1.1.0-257-SNAPSHOT"
+lbchaptic = "1.3.0-283-SNAPSHOT"
 
-tink-android = "1.14.1"
+tink-android = "1.15.0"
 
 conscrypt = "2.5.3"
 
 conscrypt-openjdk-uber = "2.5.2"
 
-bouncycastle = "1.78.1"
-
 nbvcxz = "1.5.1"
 
-lint = "31.5.2"
-##⬆ = "31.6.0-alpha01"
-##⬆ = "31.6.0-alpha02"
-##⬆ = "31.6.0-alpha03"
-##⬆ = "31.6.0-alpha04"
-##⬆ = "31.6.0-alpha05"
-##⬆ = "31.6.0-alpha06"
-##⬆ = "31.6.0-alpha07"
-##⬆ = "31.6.0-alpha08"
-##⬆ = "31.6.0-beta01"
-##⬆ = "31.6.0-beta02"
-##⬆ = "31.6.0-rc01"
+lint = "31.6.1"
 ##⬆ = "31.7.0-alpha01"
 ##⬆ = "31.7.0-alpha02"
 ##⬆ = "31.7.0-alpha03"
@@ -317,6 +246,12 @@ lint = "31.5.2"
 ##⬆ = "31.7.0-alpha05"
 ##⬆ = "31.7.0-alpha06"
 ##⬆ = "31.7.0-alpha07"
+##⬆ = "31.7.0-alpha08"
+##⬆ = "31.7.0-alpha09"
+##⬆ = "31.7.0-beta01"
+##⬆ = "31.7.0-beta02"
+##⬆ = "31.8.0-alpha01"
+##⬆ = "31.8.0-alpha02"
 
 javapoet = "1.13.0"
 
@@ -324,7 +259,7 @@ seismic = "1.0.3"
 
 bouquet = "1.1.3"
 
-zoomable = "1.6.1"
+zoomable = "1.6.2"
 ##    ⬆ = "1.7.0-beta01"
 ##    ⬆ = "1.7.0-beta02"
 ##    ⬆ = "2.0.0-alpha01"
@@ -334,7 +269,8 @@ zoomable = "1.6.1"
 
 exifinterface = "1.3.7"
 
-androidx-media3 = "1.4.0"
+androidx-media3 = "1.4.1"
+##           ⬆ = "1.5.0-alpha01"
 
 camerax = "1.3.4"
 ##   ⬆ = "1.4.0-alpha01"
@@ -345,6 +281,8 @@ camerax = "1.3.4"
 ##   ⬆ = "1.4.0-beta01"
 ##   ⬆ = "1.4.0-beta02"
 ##   ⬆ = "1.4.0-rc01"
+##   ⬆ = "1.4.0-rc02"
+##   ⬆ = "1.5.0-alpha01"
 
 espresso-core = "3.6.1"
 
@@ -353,13 +291,11 @@ sqlcipher-android = "4.6.1"
 
 process-phoenix = "3.0.0"
 
-lottie = "6.5.0"
+lottie = "6.5.2"
 robolectric = "4.13"
 slf4j-simple = "2.0.16"
 ##        ⬆ = "2.1.0-alpha0"
 ##        ⬆ = "2.1.0-alpha1"
-
-kotlinx-datetime = "0.6.1"
 
 review = "2.0.1"
 
@@ -371,7 +307,7 @@ androidx-exifinterface = { group = "androidx.exifinterface", name = "exifinterfa
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "android-tools-desugar_jdk_libs" }
 android-gradle-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "android-gradle-plugin" }
 
-javax-inject = { group = "javax.inject", name = "javax.inject", version = "1" }
+javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "javax-inject" }
 
 kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
@@ -398,11 +334,10 @@ lbctheme = { group = "studio.lunabee.compose", name = "lbctheme", version.ref = 
 lbccore = { group = "studio.lunabee.compose", name = "lbccore", version.ref = "lbccore" }
 lbcaccessibility = { group = "studio.lunabee.compose", name = "lbcaccessibility", version.ref = "lbcaccessibility" }
 lbcandroidtest = { group = "studio.lunabee.compose", name = "lbcandroidtest", version.ref = "lbcandroidtest" }
-lbcfoundation = { group = "studio.lunabee.compose", name = "lbcfoundation", version.ref = "lbcfoundation" }
 lbchaptic = { group = "studio.lunabee.compose", name = "lbchaptic", version.ref = "lbchaptic" }
 
 florisboard = { group = "studio.lunabee.florisboard", name = "florisboard-library", version.ref = "florisboard-library" }
-doubleratchet = { group = "studio.lunabee.doubleratchet", name = "doubleratchet-jvm", version.ref = "doubleratchet-jvm" }
+doubleratchet = { group = "studio.lunabee.doubleratchet", name = "doubleratchet-jvm", version.ref = "doubleratchet" }
 
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
 firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
@@ -425,8 +360,10 @@ room-paging = { group = "androidx.room", name = "room-paging", version.ref = "an
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidx-room" }
 sqlite-ktx = { group = "androidx.sqlite", name = "sqlite-ktx", version.ref = "androidx-sqlite" }
 
-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom-stable" }
 # Keep both for easier switch
+#noinspection SimilarGradleDependency
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom-stable" }
+#noinspection SimilarGradleDependency
 compose-bom-stable = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom-stable" }
 compose-bom-alpha = { group = "dev.chrisbanes.compose", name = "compose-bom", version.ref = "compose-bom-alpha" }
 compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
@@ -440,10 +377,9 @@ compose-material-icons-extended = { group = "androidx.compose.material", name = 
 compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
 compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata" }
 
-hilt-core = { group = "com.google.dagger", name = "hilt-core", version.ref = "google-dagger" }
-dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "google-dagger" }
-hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "google-dagger" }
-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "google-dagger" }
+dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "dagger-hilt" }
+hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "dagger-hilt" }
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "dagger-hilt" }
 
 androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "androidx-hilt" }
 hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "androidx-hilt" }
@@ -477,7 +413,7 @@ mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "moc
 
 paging-common-ktx = { group = "androidx.paging", name = "paging-common-ktx", version.ref = "androidx-paging" }
 paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "androidx-paging" }
-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "androidx-paging-compose" }
+paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "androidx-paging" }
 
 androidx-test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidx-test-core" }
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidx-test-runner" }
@@ -543,8 +479,11 @@ kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime",
 
 # Bubbles
 bubbles-shared = { group = "studio.lunabee.bubbles", name = "shared", version = "" }
+bubbles-domain = { group = "studio.lunabee.bubbles", name = "bubbles-domain", version = "" }
+bubbles-repository = { group = "studio.lunabee.bubbles", name = "bubbles-repository", version = "" }
 bubbles-messaging-domain = { group = "studio.lunabee.messaging", name = "messaging-domain", version = "" }
 bubbles-messaging-repository = { group = "studio.lunabee.messaging", name = "messaging-repository", version = "" }
-bubbles-domain = { group = "studio.lunabee.bubbles", name = "bubbles-domain", version = "" }
-bubbles-error = { group = "studio.lunabee.bubbles", name = "error", version = "" }
-bubbles-repository = { group = "studio.lunabee.bubbles", name = "bubbles-repository", version = "" }
+onesafe-domain = { group = "studio.lunabee.onesafe", name = "domain", version = "" }
+onesafe-error = { group = "studio.lunabee.onesafe", name = "error", version = "" }
+onesafe-crypto = { group = "studio.lunabee.onesafe", name = "crypto", version = "" }
+onesafe-common = { group = "studio.lunabee.onesafe", name = "common", version = "" }

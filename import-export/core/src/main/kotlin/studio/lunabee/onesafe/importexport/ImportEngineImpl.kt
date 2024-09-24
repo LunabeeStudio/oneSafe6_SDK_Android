@@ -75,12 +75,12 @@ import studio.lunabee.onesafe.importexport.engine.ImportEngine
 import studio.lunabee.onesafe.importexport.repository.ImportExportBubblesRepository
 import studio.lunabee.onesafe.importexport.repository.ImportExportCryptoRepository
 import studio.lunabee.onesafe.importexport.repository.ImportExportItemRepository
+import studio.lunabee.onesafe.jvm.toByteArray
+import studio.lunabee.onesafe.jvm.toUUID
+import studio.lunabee.onesafe.jvm.use
 import studio.lunabee.onesafe.proto.OSExportProto
 import studio.lunabee.onesafe.proto.OSExportProto.ArchiveSafeItem
 import studio.lunabee.onesafe.proto.OSExportProto.ArchiveSafeItemField
-import studio.lunabee.onesafe.toByteArray
-import studio.lunabee.onesafe.toUUID
-import studio.lunabee.onesafe.use
 import java.io.File
 import java.time.Clock
 import java.time.Instant
@@ -90,9 +90,8 @@ import java.time.format.FormatStyle
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
-import studio.lunabee.bubbles.domain.model.EncryptEntry as BubblesEncryptEntry
 
-private val log = LBLogger.get("<Import>")
+private val log = LBLogger.get<ImportEngineImpl>()
 
 @Singleton
 class ImportEngineImpl @Inject constructor(
@@ -689,6 +688,7 @@ class ImportEngineImpl @Inject constructor(
                 sharedConversationId = DoubleRatchetUUID(contact.sharedConversationId),
                 consultedAt = Instant.parse(contact.consultedAt).toKotlinInstant(),
                 safeId = DoubleRatchetUUID(safeRepository.currentSafeId().id),
+                encResetConversationDate = contact.encResetConversationDate.toByteArrayOrNull(),
             )
         }
     }
@@ -752,7 +752,7 @@ class ImportEngineImpl @Inject constructor(
         // we drop the safe item id if the item does not exist in the archive (removed item)
         val newId = importCacheDataSource.newItemIdsByOldOnes[oldId] ?: return null
         val key = importCacheDataSource.reEncryptedContactKeys[newContactId]!!
-        return bubblesCryptoRepository.localEncrypt(key, BubblesEncryptEntry(DoubleRatchetUUID(newId)))
+        return bubblesCryptoRepository.localEncrypt(key, EncryptEntry(DoubleRatchetUUID(newId)))
     }
 
     private fun buildAppendItemName(): String {

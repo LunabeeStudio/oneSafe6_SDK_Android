@@ -278,6 +278,7 @@ abstract class AbstractExportEngine(
                 encSharingMode = contact.encSharingMode.toByteString()
                 sharedConversationId = contact.sharedConversationId.uuidString()
                 consultedAt = contact.consultedAt?.let { consultedAt -> dateTimeFormatter.format(consultedAt.toJavaInstant()) }.orEmpty()
+                encResetConversationDate = contact.encResetConversationDate.byteStringOrEmpty()
             }
         }
     }

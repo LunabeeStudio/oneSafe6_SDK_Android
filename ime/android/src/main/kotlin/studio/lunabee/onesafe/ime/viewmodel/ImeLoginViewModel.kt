@@ -26,18 +26,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
-import studio.lunabee.onesafe.commonui.CommonUiConstants
 import studio.lunabee.onesafe.commonui.error.description
 import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
 import studio.lunabee.onesafe.domain.usecase.authentication.HasBiometricSafeUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.IsBiometricEnabledState
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
-import studio.lunabee.onesafe.error.OSError.Companion.get
 import studio.lunabee.onesafe.error.OSImeError
 import studio.lunabee.onesafe.ime.repository.ImeBiometricResultRepository
+import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.login.state.LoginUiState
 import studio.lunabee.onesafe.login.viewmodel.LoginFromPasswordDelegate
 import studio.lunabee.onesafe.login.viewmodel.LoginFromPasswordDelegateImpl
@@ -50,20 +47,9 @@ class ImeLoginViewModel(
     imeBiometricResultRepository: ImeBiometricResultRepository,
     isSafeReadyUseCase: IsSafeReadyUseCase,
     val versionName: String,
-) : ViewModel(),
+) : ViewModel(loginUiStateHolder, loginFromPasswordDelegate),
     LoginFromPasswordDelegate by loginFromPasswordDelegate {
     val uiState: StateFlow<LoginUiState> = loginUiStateHolder.uiState
-
-    val isBiometricEnabled: StateFlow<Boolean> = hasBiometricSafeUseCase().map { result ->
-        if (result is IsBiometricEnabledState.Error) {
-            imeBiometricResultRepository.setError(result.error ?: OSImeError.Code.IME_BIOMETRIC_LOGIN_ERROR.get())
-        }
-        result.isEnabled
-    }.stateIn(
-        viewModelScope,
-        CommonUiConstants.Flow.DefaultSharingStarted,
-        false,
-    )
 
     private val _biometricError: MutableStateFlow<ErrorSnackbarState?> = MutableStateFlow(null)
     val biometricError: StateFlow<ErrorSnackbarState?> = _biometricError.asStateFlow()
@@ -75,7 +61,10 @@ class ImeLoginViewModel(
             .onEach {
                 loginUiStateHolder.dataState
                     ?.copy(loginResult = LoginUiState.LoginResult.Success(false))
-                    ?.let { state -> loginUiStateHolder.setUiState(state) }
+                    ?.let { state ->
+                        imeBiometricResultRepository.setError(null)
+                        loginUiStateHolder.setUiState(state)
+                    }
             }
             .launchIn(viewModelScope)
 
@@ -84,12 +73,38 @@ class ImeLoginViewModel(
             .onEach { error ->
                 _biometricError.value = error?.let {
                     ErrorSnackbarState(
-                        error.description(),
-                    ) {
-                        imeBiometricResultRepository.setError(null)
-                    }
+                        message = error.description(),
+                        onClick = {
+                            imeBiometricResultRepository.setError(null)
+                        },
+                    )
                 }
             }
             .launchIn(viewModelScope)
+
+        hasBiometricSafeUseCase()
+            .onEach { isBiometricEnabledState ->
+                when (isBiometricEnabledState) {
+                    IsBiometricEnabledState.Disabled -> {
+                        loginUiStateHolder.dataState?.let { dataState ->
+                            loginUiStateHolder.setUiState(dataState.copy(getBiometricCipher = null))
+                        }
+                    }
+                    IsBiometricEnabledState.Enabled -> {
+                        loginUiStateHolder.dataState?.let { dataState ->
+                            loginUiStateHolder.setUiState(
+                                dataState.copy(
+                                    getBiometricCipher = { null }, // biometry is handled by ImeBiometricViewModel
+                                ),
+                            )
+                        }
+                    }
+                    is IsBiometricEnabledState.Error -> {
+                        imeBiometricResultRepository.setError(
+                            isBiometricEnabledState.error ?: OSImeError.Code.IME_BIOMETRIC_LOGIN_ERROR.get(),
+                        )
+                    }
+                }
+            }.launchIn(viewModelScope)
     }
 }

@@ -28,8 +28,6 @@ import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.migration.utils.MigrationSafeData
 import javax.inject.Inject
 
-// TODO <multisafe> unit test MigrationFromV14ToV15
-
 private val logger = LBLogger.get<MigrationFromV14ToV15>()
 
 /**
@@ -55,6 +53,7 @@ class MigrationFromV14ToV15 @Inject constructor(
             encBubblesKey = migrationSafeData.encBubblesKey ?: newCrypto.encBubblesKey,
             encItemEditionKey = migrationSafeData.encItemEditionKey ?: newCrypto.encItemEditionKey,
             biometricCryptoMaterial = migrationSafeData.biometricCryptoMaterial,
+            autoDestructionKey = null,
         )
         safeRepository.updateSafeCrypto(mergedCrypto)
     }

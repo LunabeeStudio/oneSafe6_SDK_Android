@@ -46,7 +46,7 @@ import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsReposito
 import studio.lunabee.onesafe.importexport.usecase.ClearAutoBackupErrorUseCase
 import studio.lunabee.onesafe.importexport.usecase.StoreAutoBackupErrorUseCase
 import studio.lunabee.onesafe.importexport.utils.AutoBackupErrorIdProvider
-import studio.lunabee.onesafe.toByteArray
+import studio.lunabee.onesafe.jvm.toByteArray
 import java.time.Clock
 import java.time.ZonedDateTime
 import javax.inject.Inject
@@ -62,6 +62,7 @@ class AutoBackupWorkersHelper @Inject constructor(
     private val clearAutoBackupErrorUseCase: ClearAutoBackupErrorUseCase,
     private val autoBackupErrorIdProvider: AutoBackupErrorIdProvider,
     private val safeRepository: SafeRepository,
+    private val workManager: WorkManager,
 ) {
     suspend fun start(
         synchronizeCloudFirst: Boolean,
@@ -78,7 +79,7 @@ class AutoBackupWorkersHelper @Inject constructor(
             .setInputData(data)
             .build()
 
-        WorkManager.getInstance(context)
+        workManager
             .enqueueUniqueWork(AUTO_BACKUP_SCHEDULER_WORK_NAME, ExistingWorkPolicy.APPEND_OR_REPLACE, workRequest)
     }
 
@@ -86,12 +87,10 @@ class AutoBackupWorkersHelper @Inject constructor(
         safeId: SafeId? = null,
     ) {
         val backupSafeId = safeId ?: safeRepository.currentSafeId()
-        val workManager = WorkManager.getInstance(context)
         workManager.cancelAllWorkByTag(ImportExportAndroidConstants.autoBackupWorkerTag(backupSafeId))
     }
 
     private suspend fun isScheduled(safeId: SafeId): Boolean {
-        val workManager = WorkManager.getInstance(context)
         return workManager
             .getWorkInfosForUniqueWorkFlow(AutoBackupSchedulerWorker.autoBackupChainWorkName(safeId))
             .first()

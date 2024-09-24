@@ -74,6 +74,7 @@ message ArchiveBubblesContact {
   bytes enc_sharing_mode = 5;
   string shared_conversation_id = 6;
   string consulted_at = 7;
+  optional bytes enc_reset_conversation_date = 8;
 }
 
 message ArchiveBubblesConversation {

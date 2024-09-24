@@ -94,7 +94,7 @@ dependencies {
     androidTestImplementation(project(":common-test-android")) {
         exclude(group = "io.mockk")
     }
-    androidTestImplementation(project(":domain"))
+    androidTestImplementation(project(":domain-jvm"))
     androidTestImplementation(project(":crypto-android"))
     androidTestImplementation(project(":local-android"))
     androidTestImplementation(project(":app:core-ui"))

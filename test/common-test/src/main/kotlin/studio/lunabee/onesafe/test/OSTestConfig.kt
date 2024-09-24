@@ -19,10 +19,19 @@
 
 package studio.lunabee.onesafe.test
 
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import org.threeten.extra.MutableClock
 import studio.lunabee.onesafe.domain.model.camera.CameraSystem
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.ItemLayout
+import java.nio.ByteBuffer
+import java.util.UUID
 import kotlin.random.Random
 
 object OSTestConfig {
@@ -36,6 +45,8 @@ object OSTestConfig {
     val cameraSystem: CameraSystem
         get() = config.cameraSystem
     val clock: MutableClock = MutableClock.epochUTC()
+    val extraSafeIds: List<SafeId>
+        get() = config.extraSafeIds
 
     @Serializable
     internal class Config {
@@ -56,5 +67,28 @@ object OSTestConfig {
         // FIXME <flaky> CameraSystem.InApp lead to compose test timeout
         //        val cameraSystem: CameraSystem = CameraSystem.entries[Math.floorMod(seed, CameraSystem.entries.size)]
         val cameraSystem: CameraSystem = CameraSystem.External
+
+        val extraSafeIds: List<
+            @Serializable(with = SafeIdAsStringSerializer::class)
+            SafeId,
+            > = List(random.nextInt(0, 3)) {
+            val randomBytes = random.nextBytes(16)
+            val buffer = ByteBuffer.wrap(randomBytes)
+            SafeId(buildUUID(randomBytes, buffer))
+        }
+    }
+}
+
+object SafeIdAsStringSerializer : KSerializer<SafeId> {
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("SafeId", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: SafeId) {
+        val string = value.toString()
+        encoder.encodeString(string)
+    }
+
+    override fun deserialize(decoder: Decoder): SafeId {
+        val string = decoder.decodeString()
+        return SafeId(UUID.fromString(string))
     }
 }

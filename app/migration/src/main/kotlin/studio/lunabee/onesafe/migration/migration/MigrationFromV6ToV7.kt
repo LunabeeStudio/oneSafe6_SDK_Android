@@ -20,15 +20,15 @@
 package studio.lunabee.onesafe.migration.migration
 
 import com.lunabee.lbcore.model.LBResult
-import studio.lunabee.onesafe.cryptography.CryptoDataMapper
-import studio.lunabee.onesafe.cryptography.CryptoEngine
+import studio.lunabee.onesafe.cryptography.android.AndroidCryptoDataMapper
+import studio.lunabee.onesafe.cryptography.android.CryptoEngine
 import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.usecase.item.SortItemNameUseCase
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSError
-import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.jvm.get
 import javax.inject.Inject
 
 /**
@@ -38,7 +38,7 @@ class MigrationFromV6ToV7 @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
     private val safeItemKeyRepository: SafeItemKeyRepository,
     private val cryptoEngine: CryptoEngine,
-    private val cryptoDataMapper: CryptoDataMapper,
+    private val cryptoDataMapper: AndroidCryptoDataMapper,
     private val sortItemNameUseCase: SortItemNameUseCase,
 ) {
     suspend operator fun invoke(masterKey: ByteArray, safeId: SafeId): LBResult<Unit> = OSError.runCatching {

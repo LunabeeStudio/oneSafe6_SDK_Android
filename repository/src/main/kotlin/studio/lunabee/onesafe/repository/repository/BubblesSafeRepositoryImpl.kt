@@ -21,11 +21,11 @@ package studio.lunabee.onesafe.repository.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import studio.lunabee.bubbles.domain.di.Inject
+import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.bubbles.domain.repository.BubblesSafeRepository
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
-import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.error.OSRepositoryError
 import studio.lunabee.onesafe.repository.datasource.SafeIdCacheDataSource
 

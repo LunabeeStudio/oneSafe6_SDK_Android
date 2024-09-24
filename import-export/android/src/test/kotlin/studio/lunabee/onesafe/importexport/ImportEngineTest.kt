@@ -37,12 +37,12 @@ import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.compose.androidtest.helper.LbcFolderResource
 import studio.lunabee.compose.androidtest.helper.LbcResourcesHelper
 import studio.lunabee.di.CryptoConstantsTestModule
+import studio.lunabee.onesafe.cryptography.android.CryptoConstants
+import studio.lunabee.onesafe.cryptography.android.PBKDF2JceHashEngine
+import studio.lunabee.onesafe.cryptography.android.PasswordHashEngine
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.messaging.domain.repository.ConversationRepository
 import studio.lunabee.messaging.domain.repository.MessageRepository
-import studio.lunabee.onesafe.cryptography.CryptoConstants
-import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
-import studio.lunabee.onesafe.cryptography.PasswordHashEngine
 import studio.lunabee.onesafe.domain.Constant
 import studio.lunabee.onesafe.domain.model.importexport.ImportMetadata
 import studio.lunabee.onesafe.domain.model.importexport.ImportMode

@@ -26,8 +26,8 @@ import androidx.test.filters.LargeTest
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Rule
 import kotlin.test.Test
-import studio.lunabee.onesafe.cryptography.CryptoConstants
-import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
+import studio.lunabee.onesafe.cryptography.android.CryptoConstants
+import studio.lunabee.onesafe.cryptography.android.PBKDF2JceHashEngine
 import java.lang.reflect.Method
 
 @LargeTest

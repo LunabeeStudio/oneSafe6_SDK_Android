@@ -29,6 +29,7 @@ import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.migration.utils.MigrationCryptoV1UseCase
+import studio.lunabee.onesafe.jvm.use
 import studio.lunabee.onesafe.use
 import javax.inject.Inject
 

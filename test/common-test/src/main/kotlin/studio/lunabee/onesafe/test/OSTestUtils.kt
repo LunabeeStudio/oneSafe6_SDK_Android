@@ -289,18 +289,22 @@ val testUUIDs: List<UUID> by lazy {
     val buffer = ByteBuffer.wrap(randomBytes)
     (0..999).map {
         OSTestConfig.random.nextBytes(randomBytes)
-        randomBytes[6] = (randomBytes[6].toInt() and 0x0f).toByte() // clear version
-        randomBytes[6] = (randomBytes[6].toInt() or 0x40).toByte() // set to version 4
-        randomBytes[8] = (randomBytes[8].toInt() and 0x3f).toByte() // clear variant
-        randomBytes[8] = (randomBytes[8].toInt() or 0x80).toByte() // set to IETF variant
-        val firstLong = buffer.long
-        val secondLong = buffer.long
-        buffer.rewind()
-        UUID(firstLong, secondLong)
+        buildUUID(randomBytes, buffer)
     }
 }
 
-val firstSafeId: SafeId = SafeId(testUUIDs[0])
+fun buildUUID(randomBytes: ByteArray, buffer: ByteBuffer): UUID {
+    randomBytes[6] = (randomBytes[6].toInt() and 0x0f).toByte() // clear version
+    randomBytes[6] = (randomBytes[6].toInt() or 0x40).toByte() // set to version 4
+    randomBytes[8] = (randomBytes[8].toInt() and 0x3f).toByte() // clear variant
+    randomBytes[8] = (randomBytes[8].toInt() or 0x80).toByte() // set to IETF variant
+    val firstLong = buffer.long
+    val secondLong = buffer.long
+    buffer.rewind()
+    return UUID(firstLong, secondLong)
+}
+
+val firstSafeId: SafeId by lazy { SafeId(testUUIDs[0]) }
 
 suspend fun CreateItemUseCase.test(
     name: String? = null,

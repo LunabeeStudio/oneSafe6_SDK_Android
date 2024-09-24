@@ -25,9 +25,9 @@ import studio.lunabee.onesafe.domain.model.safe.BiometricCryptoMaterial
 import studio.lunabee.onesafe.domain.model.safe.SafeCrypto
 import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safe.SafeSettings
-import studio.lunabee.onesafe.error.OSError.Companion.get
 import studio.lunabee.onesafe.error.OSStorageError
 import studio.lunabee.onesafe.importexport.model.GoogleDriveSettings
+import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.repository.datasource.SafeLocalDataSource
 import studio.lunabee.onesafe.storage.dao.SafeDao
 import studio.lunabee.onesafe.storage.model.RoomSafe
@@ -101,6 +101,10 @@ class SafeLocalDataSourceImpl @Inject constructor(
         return safeDao.setBiometricMaterial(safeId, biometricCryptoMaterial)
     }
 
+    override suspend fun setAutoDestructionKey(safeId: SafeId, autoDestructionKey: ByteArray?) {
+        return safeDao.setAutoDestructionKey(safeId, autoDestructionKey)
+    }
+
     override suspend fun removeAllBiometricKeys() {
         return safeDao.removeAllBiometricKeys()
     }
@@ -117,11 +121,19 @@ class SafeLocalDataSourceImpl @Inject constructor(
         return safeDao.isBiometricEnabledForSafeFlow(safeId)
     }
 
+    override suspend fun isAutoDestructionEnabledForSafe(safeId: SafeId): Boolean {
+        return safeDao.isAutoDestructionEnabledForSafe(safeId)
+    }
+
     override suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean {
         return safeDao.isBiometricEnabledForSafe(safeId)
     }
 
     override suspend fun setLastOpen(safeId: SafeId) {
         safeDao.setLastOpen(safeId)
+    }
+
+    override suspend fun getSafeCrypto(safeId: SafeId): SafeCrypto? {
+        return safeDao.getSafeCrypto(safeId)?.toSafeCrypto()
     }
 }

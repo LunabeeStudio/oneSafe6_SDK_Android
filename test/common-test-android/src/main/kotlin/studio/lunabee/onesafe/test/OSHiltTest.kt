@@ -20,15 +20,11 @@
 package studio.lunabee.onesafe.test
 
 import android.database.sqlite.SQLiteDatabase
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import androidx.hilt.work.HiltWorkerFactory
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.work.Configuration
-import androidx.work.testing.SynchronousExecutor
-import androidx.work.testing.WorkManagerTestInitHelper
+import com.lunabee.lbcore.model.LBResult
 import dagger.hilt.android.testing.HiltAndroidRule
 import io.mockk.unmockkAll
 import kotlinx.coroutines.Dispatchers
@@ -38,10 +34,11 @@ import kotlinx.coroutines.withContext
 import org.junit.After
 import org.junit.Before
 import org.threeten.extra.MutableClock
-import studio.lunabee.onesafe.cryptography.DatastoreEngine
-import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
-import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
+import studio.lunabee.onesafe.cryptography.android.DatastoreEngine
+import studio.lunabee.onesafe.cryptography.android.qualifier.DataStoreType
+import studio.lunabee.onesafe.cryptography.android.qualifier.DatastoreEngineProvider
 import studio.lunabee.onesafe.domain.common.SafeIdProvider
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.qualifier.DatabaseName
 import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.repository.IconRepository
@@ -96,8 +93,6 @@ abstract class OSHiltTest : OSTest() {
 
     @Inject lateinit var lockAppUseCase: LockAppUseCase
 
-    @Inject lateinit var workerFactory: HiltWorkerFactory
-
     @Inject lateinit var appSettingsRepository: SafeSettingsRepository
 
     @Inject lateinit var iconRepository: IconRepository
@@ -147,7 +142,6 @@ abstract class OSHiltTest : OSTest() {
     fun injectAndInit() {
         OSTestConfig.clock.setInstant(Instant.EPOCH)
         hiltRule.inject()
-        initializeWorkManager()
         // Use runBlocking to make sure the test cannot start before/while initialize
         runTest(testDispatcher) {
             initialize()
@@ -155,16 +149,6 @@ abstract class OSHiltTest : OSTest() {
     }
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
-
-    private fun initializeWorkManager() {
-        val context = context
-        val config = Configuration.Builder()
-            .setMinimumLoggingLevel(Log.DEBUG)
-            .setExecutor(SynchronousExecutor())
-            .setWorkerFactory(workerFactory)
-            .build()
-        WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
-    }
 
     /**
      * Default is signing in and do things for logout
@@ -174,7 +158,7 @@ abstract class OSHiltTest : OSTest() {
         when (val state = initialTestState) {
             is InitialTestState.SignedOut -> {} // Nothing to do
             is InitialTestState.SignedUp -> {
-                signup()
+                signupAll()
                 setAppVisibleUseCase.setHasVisitedLoginKey()
                 itemSettingsRepository.setItemsLayout(safeId = firstSafeId, style = OSTestConfig.itemLayouts)
                 appSettingsRepository.setCameraSystem(safeId = firstSafeId, value = OSTestConfig.cameraSystem)
@@ -183,7 +167,7 @@ abstract class OSHiltTest : OSTest() {
                 logout()
             }
             is InitialTestState.Home -> {
-                signup()
+                signupAll()
                 setAppVisibleUseCase.setHasVisitedLoginKey()
                 itemSettingsRepository.setItemsLayout(safeId = firstSafeId, style = OSTestConfig.itemLayouts)
                 appSettingsRepository.setCameraSystem(safeId = firstSafeId, value = OSTestConfig.cameraSystem)
@@ -222,21 +206,33 @@ abstract class OSHiltTest : OSTest() {
         cryptoRepository.unloadMasterKeys()
     }
 
-    /**
-     * Signup user with [password] and save credential. A master key will be generated at this point.
-     */
-    suspend fun signup(password: CharArray = testPassword.toCharArray()) {
-        generateCryptoForNewSafeUseCase(password)
-        finishSafeCreationUseCase()
-        safeRepository.setSafeVersion(firstSafeId, Int.MAX_VALUE)
-        // TODO <multisafe> randomly populate a second safe
+    private suspend fun signupAll() {
+        OSTestConfig.extraSafeIds.forEach {
+            StaticIdProvider.id = it.id
+            generateCryptoForNewSafeUseCase(it.id.toString().toCharArray())
+            finishSafeCreationUseCase()
+            safeRepository.setSafeVersion(it, Int.MAX_VALUE)
+        }
+        StaticIdProvider.id = firstSafeId.id
+        signup()
     }
 
     /**
      * Signup user with [password] and save credential. A master key will be generated at this point.
      */
-    suspend fun login(password: CharArray = testPassword.toCharArray()) {
-        loginUseCase(password)
+    suspend fun signup(password: CharArray = testPassword.toCharArray(), safeId: SafeId = firstSafeId) {
+        StaticIdProvider.id = safeId.id
+        generateCryptoForNewSafeUseCase(password)
+        finishSafeCreationUseCase()
+        safeRepository.setSafeVersion(safeId, Int.MAX_VALUE)
+        StaticIdProvider.id = firstSafeId.id
+    }
+
+    /**
+     * Sign in user with [password] and save credential. A master key will be generated at this point.
+     */
+    suspend fun login(password: CharArray = testPassword.toCharArray()): LBResult<Unit> {
+        return loginUseCase(password)
     }
 
     /**

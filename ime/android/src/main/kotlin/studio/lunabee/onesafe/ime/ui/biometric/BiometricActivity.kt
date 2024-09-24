@@ -40,7 +40,7 @@ class BiometricActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val biometricPrompt: (() -> Unit) = biometricPrompt(
+            val biometricPrompt: suspend () -> Unit = biometricPrompt(
                 labels = DisplayBiometricLabels.Login,
                 getCipher = viewModel::getCipher,
                 onSuccess = {

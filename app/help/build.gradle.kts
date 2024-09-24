@@ -68,7 +68,7 @@ dependencies {
 
     implementation(project(":app:core-ui"))
     implementation(project(":app:common-ui"))
-    implementation(project(":domain"))
+    implementation(project(":domain-jvm"))
     implementation(project(":import-export-android"))
 
     devImplementation(libs.work.runtime)
@@ -82,7 +82,7 @@ dependencies {
     devImplementation(libs.bubbles.messaging.domain)
     devImplementation(libs.bubbles.domain)
     devImplementation(project(":local-android"))
-    devImplementation(project(":error"))
+    devImplementation(libs.onesafe.error)
     devImplementation(project(":app:settings"))
 
     androidTestImplementation(project(":common-test-android"))

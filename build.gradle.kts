@@ -175,7 +175,7 @@ subprojects {
 }
 
 tasks.named("refreshVersions") {
-    dependsOn(gradle.includedBuild("oneSafe_Bubbles_KMP").task(":refreshVersions"))
+    dependsOn(gradle.includedBuild("oneSafe6_KMP").task(":refreshVersions"))
     doLast {
         file("versions.properties").delete()
     }

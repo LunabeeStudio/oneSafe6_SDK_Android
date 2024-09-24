@@ -162,7 +162,7 @@ fun MessageRow(
             }
             val channelText = messageData.channelName?.let(LbcTextSpec::Raw)
                 ?: LbcTextSpec.StringResource(OSString.oneSafeK_channel_unknown)
-            messageData.sendAt?.let { sendAt ->
+            messageData.date?.let { sendAt ->
                 OSText(
                     text = LbcTextSpec.StringResource(
                         OSString.oneSafeK_messageRow_timeChannelLabel,
@@ -249,7 +249,7 @@ fun OneSafeKMessageRowPreview() {
                     id = createRandomUUID(),
                     text = LbcTextSpec.Raw(loremIpsum(10)),
                     direction = MessageDirection.SENT,
-                    sendAt = Instant.now(),
+                    date = Instant.now(),
                     channelName = "Telegram",
                     type = ConversationUiData.MessageType.Message,
                     hasCorruptedData = false,
@@ -266,7 +266,7 @@ fun OneSafeKMessageRowPreview() {
                     id = createRandomUUID(),
                     text = LbcTextSpec.Raw(loremIpsum(10)),
                     direction = MessageDirection.RECEIVED,
-                    sendAt = Instant.now(),
+                    date = Instant.now(),
                     channelName = "Telegram",
                     type = ConversationUiData.MessageType.Message,
                     hasCorruptedData = false,
@@ -283,7 +283,7 @@ fun OneSafeKMessageRowPreview() {
                     id = createRandomUUID(),
                     text = LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_corruptedMessage),
                     direction = MessageDirection.SENT,
-                    sendAt = Instant.now(),
+                    date = Instant.now(),
                     channelName = null,
                     type = ConversationUiData.MessageType.Message,
                     hasCorruptedData = true,

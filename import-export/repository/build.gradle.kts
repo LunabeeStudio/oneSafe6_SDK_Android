@@ -34,6 +34,6 @@ dependencies {
     implementation(libs.lbcore)
 
     implementation(project(":import-export-domain"))
-    implementation(project(":common"))
-    implementation(project(":error"))
+    implementation(project(":common-jvm"))
+    implementation(libs.onesafe.error)
 }

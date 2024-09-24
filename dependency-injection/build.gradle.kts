@@ -75,7 +75,7 @@ dependencies {
     implementation(libs.kotlinx.datetime)
 
     implementation(project(":crypto-android"))
-    implementation(project(":domain"))
+    implementation(project(":domain-jvm"))
     implementation(project(":import-export-core"))
     implementation(project(":import-export-domain"))
     implementation(project(":import-export-repository"))

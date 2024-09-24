@@ -38,7 +38,7 @@ import studio.lunabee.onesafe.getOrThrow
 import studio.lunabee.onesafe.importexport.usecase.ArchiveUnzipUseCase
 import studio.lunabee.onesafe.importexport.usecase.ImportAuthUseCase
 import studio.lunabee.onesafe.importexport.usecase.ImportSaveDataUseCase
-import studio.lunabee.onesafe.toCharArray
+import studio.lunabee.onesafe.jvm.toCharArray
 import java.io.File
 import java.util.UUID
 import javax.inject.Inject

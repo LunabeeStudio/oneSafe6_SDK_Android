@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.androidx.test.core.ktx)
     implementation(libs.datastore)
     implementation(libs.datastore.preferences)
+    implementation(libs.work.testing)
 
     implementation(platform(libs.compose.bom))
     implementation(libs.androidx.test.runner)
@@ -84,7 +85,7 @@ dependencies {
     implementation(libs.doubleratchet)
 
     implementation(project(":crypto-android"))
-    implementation(project(":domain"))
+    implementation(project(":domain-jvm"))
     implementation(project(":import-export-core"))
     implementation(project(":import-export-domain"))
     implementation(project(":repository"))
@@ -94,13 +95,14 @@ dependencies {
     implementation(project(":app:settings"))
     implementation(project(":app:migration"))
     implementation(project(":app:common-ui"))
+    implementation(project(":common-jvm"))
 
     implementation(libs.bubbles.domain)
     implementation(libs.bubbles.repository)
     implementation(libs.bubbles.messaging.repository)
     implementation(libs.bubbles.messaging.domain)
     implementation(project(":bubbles-crypto-android"))
-    implementation(project(":error"))
+    implementation(libs.onesafe.error)
     implementation(project(":common-test-android"))
     api(project(":common-test"))
 }

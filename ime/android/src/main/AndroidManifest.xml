@@ -11,7 +11,7 @@
             android:process="${imeProcessName}"
             tools:node="merge" />
         <activity
-            android:name="dev.patrickgold.florisboard.app.ext.ImportFileActivity"
+            android:name="dev.patrickgold.florisboard.ime.clipboard.FlorisCopyToClipboardActivity"
             android:process="${imeProcessName}"
             tools:node="merge" />
         <activity
@@ -79,6 +79,13 @@
                 android:name="android.view.im"
                 android:resource="@xml/floris_method" />
         </service>
+
+        <service
+            android:name="dev.patrickgold.florisboard.FlorisSpellCheckerService"
+            android:exported="true"
+            android:permission="android.permission.BIND_TEXT_SERVICE"
+            android:process="${imeProcessName}"
+            tools:node="merge" />
 
         <!-- Activity for biometric login -->
         <activity

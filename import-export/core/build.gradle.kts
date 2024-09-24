@@ -28,14 +28,15 @@ dependencies {
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)
     implementation(libs.lblogger)
+
+    implementation(project(":domain-jvm"))
     implementation(libs.doubleratchet)
     implementation(libs.bubbles.domain)
     implementation(libs.bubbles.messaging.domain)
     implementation(libs.bubbles.repository)
     implementation(libs.kotlinx.datetime)
-    implementation(project(":domain"))
-    implementation(project(":error"))
-    implementation(project(":common"))
+    implementation(libs.onesafe.error)
+    implementation(project(":common-jvm"))
     implementation(project(":import-export-proto"))
     implementation(project(":import-export-domain"))
 }

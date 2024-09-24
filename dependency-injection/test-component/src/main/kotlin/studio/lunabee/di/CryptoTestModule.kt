@@ -29,11 +29,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.CoroutineDispatcher
-import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
-import studio.lunabee.onesafe.cryptography.PasswordHashEngine
-import studio.lunabee.onesafe.cryptography.ProtoData
+import studio.lunabee.onesafe.cryptography.android.PBKDF2JceHashEngine
+import studio.lunabee.onesafe.cryptography.android.PasswordHashEngine
+import studio.lunabee.onesafe.cryptography.android.ProtoData
 import studio.lunabee.onesafe.domain.qualifier.CryptoDispatcher
-import studio.lunabee.onesafe.cryptography.utils.ProtoDataSerializer
+import studio.lunabee.onesafe.cryptography.android.utils.ProtoDataSerializer
 
 @Module
 @TestInstallIn(

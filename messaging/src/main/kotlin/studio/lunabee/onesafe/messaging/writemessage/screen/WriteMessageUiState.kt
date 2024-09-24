@@ -24,6 +24,7 @@ import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.onesafe.commonui.OSNameProvider
 import studio.lunabee.onesafe.messaging.writemessage.model.BubblesWritingMessage
+import studio.lunabee.onesafe.messaging.writemessage.model.WriteConversationState
 
 // TODO <bubbles> error state (no contact found on deeplink for example)
 
@@ -35,7 +36,7 @@ sealed interface WriteMessageUiState {
         val nameProvider: OSNameProvider,
         val message: BubblesWritingMessage,
         val messageSharingMode: MessageSharingMode,
-        val isConversationReady: Boolean,
+        val conversationState: WriteConversationState,
         val isCorrupted: Boolean,
     ) : WriteMessageUiState
 }

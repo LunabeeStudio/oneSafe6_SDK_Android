@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.importexport.worker
 
 import android.Manifest
+import android.content.Context
 import android.os.Build
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.WorkInfo
@@ -71,7 +72,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
     override val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
     override val initialTestState: InitialTestState = InitialTestState.Home()
 
-    private val context = InstrumentationRegistry.getInstrumentation().targetContext
+    private val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
 
     companion object {
         @JvmStatic
@@ -122,8 +123,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
     fun success_test(): TestResult = runTest {
         val workManager = WorkManager.getInstance(context)
         val testDriver = WorkManagerTestInitHelper.getTestDriver(context)!!
-
-        CloudBackupWorker.start(context, false, firstSafeId)
+        CloudBackupWorker.start(workManager, false, firstSafeId)
         val workId = getWorkId(workManager)
         val actual = mutableListOf<WorkInfo.State>()
         val collectJob = launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -147,10 +147,10 @@ class CloudBackupWorkerTest : OSHiltTest() {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun retry_test(): TestResult = runTest {
+        val workManager = WorkManager.getInstance(context)
         every { cloudAutoBackupUseCase.invoke(firstSafeId) } returns
             flowOf(LBFlowResult.Failure(OSDriveError(OSDriveError.Code.DRIVE_REQUEST_EXECUTION_FAILED)))
 
-        val workManager = WorkManager.getInstance(context)
         val testDriver = WorkManagerTestInitHelper.getTestDriver(context)!!
 
         val expected = listOf(
@@ -159,7 +159,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
             WorkInfo.State.ENQUEUED, // retry
         )
 
-        CloudBackupWorker.start(context, false, firstSafeId)
+        CloudBackupWorker.start(workManager, false, firstSafeId)
         val workId = getWorkId(workManager)
         launch(UnconfinedTestDispatcher(testScheduler)) {
             val actual = workManager.getWorkInfoByIdFlow(workId).take(3).map { it.state }.toList()
@@ -172,13 +172,13 @@ class CloudBackupWorkerTest : OSHiltTest() {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun unrecoverable_failure_test(): TestResult = runTest {
+        val workManager = WorkManager.getInstance(context)
         every { cloudAutoBackupUseCase.invoke(firstSafeId) } returns
             flowOf(LBFlowResult.Failure(OSDriveError(OSDriveError.Code.DRIVE_AUTHENTICATION_REQUIRED)))
 
-        val workManager = WorkManager.getInstance(context)
         val testDriver = WorkManagerTestInitHelper.getTestDriver(context)!!
 
-        CloudBackupWorker.start(context, false, firstSafeId)
+        CloudBackupWorker.start(workManager, false, firstSafeId)
         val workId = getWorkId(workManager)
         val actual = mutableListOf<WorkInfo.State>()
         val collectJob = launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -206,10 +206,10 @@ class CloudBackupWorkerTest : OSHiltTest() {
 
     @Test
     fun error_notification_test(): TestResult = runTest {
+        val workManager = WorkManager.getInstance(context)
         every { cloudAutoBackupUseCase.invoke(firstSafeId) } returns
             flowOf(LBFlowResult.Failure(OSDriveError(OSDriveError.Code.DRIVE_AUTHENTICATION_REQUIRED)))
 
-        val workManager = WorkManager.getInstance(context)
         val testDriver = WorkManagerTestInitHelper.getTestDriver(context)!!
 
         runWorker(workManager, testDriver)
@@ -232,7 +232,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
         workManager: WorkManager,
         testDriver: TestDriver,
     ) {
-        CloudBackupWorker.start(context, false, firstSafeId)
+        CloudBackupWorker.start(workManager, false, firstSafeId)
         val workId = getWorkId(workManager)
         testDriver.setAllConstraintsMet(workId)
         workManager.getWorkInfoByIdFlow(workId).first { it.state.isFinished }

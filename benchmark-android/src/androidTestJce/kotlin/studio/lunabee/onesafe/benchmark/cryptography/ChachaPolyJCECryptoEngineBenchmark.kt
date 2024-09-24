@@ -30,7 +30,7 @@ import org.junit.Before
 import org.junit.Rule
 import kotlin.test.Test
 import studio.lunabee.compose.androidtest.helper.LbcResourcesHelper
-import studio.lunabee.onesafe.cryptography.ChachaPolyJCECryptoEngine
+import studio.lunabee.onesafe.cryptography.android.ChachaPolyJCECryptoEngine
 import java.io.File
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals

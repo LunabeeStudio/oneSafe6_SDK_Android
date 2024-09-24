@@ -19,8 +19,15 @@
 
 package studio.lunabee.di
 
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
+import android.util.Log
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
+import androidx.work.WorkManager
+import androidx.work.impl.utils.SynchronousExecutor
+import androidx.work.testing.WorkManagerTestInitHelper
 import com.lunabee.lbcore.helper.LBLoadingVisibilityDelayDelegate
 import com.lunabee.lbloading.DelayedLoadingManager
 import com.lunabee.lbloading.LoadingManager
@@ -146,6 +153,23 @@ object FrameworkTestModule {
                 /* no-op */
             }
         }
+    }
+
+    @Provides
+    @Singleton
+    fun provideWorkManager(@ApplicationContext context: Context, workerFactory: HiltWorkerFactory): WorkManager {
+        initializeWorkManager(context, workerFactory)
+        return WorkManager.getInstance(context)
+    }
+
+    @SuppressLint("RestrictedApi")
+    private fun initializeWorkManager(context: Context, workerFactory: HiltWorkerFactory) {
+        val config = Configuration.Builder()
+            .setMinimumLoggingLevel(Log.DEBUG)
+            .setExecutor(SynchronousExecutor())
+            .setWorkerFactory(workerFactory)
+            .build()
+        WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
     }
 
     @Provides

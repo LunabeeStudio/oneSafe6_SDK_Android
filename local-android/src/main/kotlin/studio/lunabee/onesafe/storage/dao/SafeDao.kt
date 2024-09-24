@@ -108,6 +108,9 @@ abstract class SafeDao {
     @Query("UPDATE Safe SET crypto_biometric_crypto_material = :cryptoMaterial WHERE id IS :safeId")
     abstract suspend fun setBiometricMaterial(safeId: SafeId, cryptoMaterial: BiometricCryptoMaterial)
 
+    @Query("UPDATE Safe SET crypto_auto_destruction_key = :autoDestructionKey WHERE id IS :safeId")
+    abstract suspend fun setAutoDestructionKey(safeId: SafeId, autoDestructionKey: ByteArray?)
+
     @Query("UPDATE Safe SET crypto_biometric_crypto_material = NULL")
     abstract suspend fun removeAllBiometricKeys()
 
@@ -119,6 +122,9 @@ abstract class SafeDao {
 
     @Query("SELECT EXISTS(SELECT 1 FROM Safe WHERE crypto_biometric_crypto_material IS NOT NULL AND :safeId = id LIMIT 1)")
     abstract fun isBiometricEnabledForSafeFlow(safeId: SafeId): Flow<Boolean>
+
+    @Query("SELECT EXISTS(SELECT 1 FROM Safe WHERE crypto_auto_destruction_key IS NOT NULL AND :safeId = id LIMIT 1)")
+    abstract suspend fun isAutoDestructionEnabledForSafe(safeId: SafeId): Boolean
 
     @Query("SELECT EXISTS(SELECT 1 FROM Safe WHERE crypto_biometric_crypto_material IS NOT NULL AND :safeId = id LIMIT 1)")
     abstract suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean
@@ -137,4 +143,7 @@ abstract class SafeDao {
 
     @Query("DELETE FROM Safe WHERE id = :id")
     protected abstract suspend fun doDelete(id: SafeId)
+
+    @Query("SELECT * FROM Safe WHERE id = :safeId")
+    abstract suspend fun getSafeCrypto(safeId: SafeId): RoomSafe?
 }

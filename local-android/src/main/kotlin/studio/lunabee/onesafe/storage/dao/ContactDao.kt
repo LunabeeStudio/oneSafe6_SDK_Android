@@ -50,8 +50,11 @@ interface ContactDao {
     @Query("SELECT id FROM Contact")
     suspend fun getAllIds(): List<UUID>
 
-    @Query("SELECT * FROM Contact WHERE id = :id AND safe_id is :safeId")
-    suspend fun getById(id: UUID, safeId: UUID): RoomContact?
+    @Query("SELECT * FROM Contact WHERE id = :id")
+    suspend fun getById(id: UUID): RoomContact?
+
+    @Query("SELECT * FROM Contact WHERE id = :id AND safe_id = :safeId")
+    suspend fun getByIdInSafe(id: UUID, safeId: UUID): RoomContact?
 
     @Query("SELECT enc_shared_key FROM Contact WHERE id = :id")
     suspend fun getContactSharedKey(id: UUID): ByteArray?
@@ -73,4 +76,10 @@ interface ContactDao {
 
     @Query("UPDATE Contact SET consulted_at =:consultedAt WHERE id = :id")
     suspend fun updateContactConsultedAt(id: UUID, consultedAt: Instant)
+
+    @Query("UPDATE Contact SET enc_reset_conversation_date = :encResetConversationDate WHERE id = :id")
+    suspend fun updateContactResetConversationDate(id: UUID, encResetConversationDate: ByteArray)
+
+    @Query("SELECT COUNT(*) FROM Contact WHERE safe_id = :safeId")
+    suspend fun getContactCount(safeId: UUID): Int
 }

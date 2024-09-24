@@ -40,8 +40,8 @@ import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.importexport.ImportExportAndroidConstants
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.usecase.SynchronizeCloudBackupsUseCase
-import studio.lunabee.onesafe.toByteArray
-import studio.lunabee.onesafe.toUUID
+import studio.lunabee.onesafe.jvm.toByteArray
+import studio.lunabee.onesafe.jvm.toUUID
 
 private val logger = LBLogger.get<CloudSynchronizeBackupWorker>()
 

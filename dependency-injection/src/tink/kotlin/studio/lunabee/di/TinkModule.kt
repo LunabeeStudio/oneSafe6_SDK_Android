@@ -23,8 +23,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import studio.lunabee.onesafe.cryptography.ChachaPolyTinkCryptoEngine
-import studio.lunabee.onesafe.cryptography.CryptoEngine
+import studio.lunabee.onesafe.cryptography.android.ChachaPolyTinkCryptoEngine
+import studio.lunabee.onesafe.cryptography.android.CryptoEngine
 
 @Module
 @InstallIn(SingletonComponent::class)

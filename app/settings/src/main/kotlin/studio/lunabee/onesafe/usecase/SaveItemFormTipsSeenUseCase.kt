@@ -22,11 +22,6 @@ package studio.lunabee.onesafe.usecase
 import studio.lunabee.onesafe.domain.usecase.settings.SetAppVisitUseCase
 import javax.inject.Inject
 
-/**
- * Return [ItemFormTips] to display to the user.
- * Get all in blocking mode has we do not expect any changes during the screen display.
- * Display url tips first, then emoji tips on the next launch.
- */
 class SaveItemFormTipsSeenUseCase @Inject constructor(
     private val setAppVisitUseCase: SetAppVisitUseCase,
 ) {

@@ -54,7 +54,7 @@ import studio.lunabee.onesafe.domain.qualifier.InternalBackupMimetype
 import studio.lunabee.onesafe.domain.qualifier.RemoteDir
 import studio.lunabee.onesafe.domain.qualifier.RemoteDispatcher
 import studio.lunabee.onesafe.error.OSDriveError
-import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.error.osCode
 import studio.lunabee.onesafe.importexport.data.GoogleDrivePreferencesRepository
 import studio.lunabee.onesafe.importexport.model.AutoBackupError

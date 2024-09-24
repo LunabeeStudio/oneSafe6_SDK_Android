@@ -28,8 +28,8 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import kotlin.test.Test
-import studio.lunabee.onesafe.cryptography.PasswordHashEngine
-import studio.lunabee.onesafe.cryptography.SaltProvider
+import studio.lunabee.onesafe.cryptography.android.PasswordHashEngine
+import studio.lunabee.onesafe.domain.utils.SaltProvider
 import studio.lunabee.onesafe.domain.usecase.item.CreateItemUseCase
 import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
 import studio.lunabee.onesafe.migration.migration.MigrationFromV6ToV7

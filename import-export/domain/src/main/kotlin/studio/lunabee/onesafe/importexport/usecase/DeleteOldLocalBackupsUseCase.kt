@@ -19,7 +19,7 @@
 
 package studio.lunabee.onesafe.importexport.usecase
 
-import studio.lunabee.onesafe.data
+import studio.lunabee.onesafe.jvm.data
 import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository

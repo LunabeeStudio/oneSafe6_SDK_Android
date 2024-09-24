@@ -139,7 +139,7 @@ fun ImeNavGraph(
                 WriteMessageRoute(
                     onChangeRecipient = { navController.navigate(ChangeContactDestination.route) },
                     sendMessage = { sentMessageData, messageToSend, _ ->
-                        viewModel.saveEncryptedMessage(sentMessageData)
+                        sentMessageData?.let { viewModel.saveEncryptedMessage(it) }
                         sendMessage(messageToSend)
                     },
                     resendMessage = { messageToSend, _ ->

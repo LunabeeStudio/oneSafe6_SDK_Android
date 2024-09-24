@@ -54,8 +54,8 @@ import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.usecase.CloudAutoBackupUseCase
 import studio.lunabee.onesafe.importexport.usecase.DeleteOldCloudBackupsUseCase
 import studio.lunabee.onesafe.importexport.utils.ForegroundInfoCompat
-import studio.lunabee.onesafe.toByteArray
-import studio.lunabee.onesafe.toUUID
+import studio.lunabee.onesafe.jvm.toByteArray
+import studio.lunabee.onesafe.jvm.toUUID
 
 // TODO <AutoBackup> split cloudAutoBackupUseCase with zip and upload part so the worker can chain them to have finer control over the flow
 
@@ -141,8 +141,8 @@ class CloudBackupWorker @AssistedInject constructor(
             return workRequestBuilder.build()
         }
 
-        internal fun start(context: Context, setExpedited: Boolean, safeId: SafeId) {
-            WorkManager.getInstance(context)
+        internal fun start(workManager: WorkManager, setExpedited: Boolean, safeId: SafeId) {
+            workManager
                 .enqueueUniqueWork(
                     ImportExportAndroidConstants.autoBackupWorkerName(safeId),
                     ExistingWorkPolicy.APPEND_OR_REPLACE,

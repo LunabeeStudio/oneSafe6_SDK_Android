@@ -18,7 +18,6 @@
  */
 
 import com.google.protobuf.gradle.id
-import java.util.Properties
 
 plugins {
     `kotlin-library`
@@ -30,9 +29,6 @@ dependencies {
     api(libs.protobuf.kotlinlite)
     testImplementation(project(":common-test"))
 }
-
-val properties: Properties = Properties()
-File(rootDir.path + "/versions.properties").inputStream().use { properties.load(it) }
 
 protobuf {
     protoc {

@@ -29,7 +29,7 @@ import studio.lunabee.messaging.domain.model.MessageOrder
 import studio.lunabee.messaging.domain.model.SafeMessage
 import studio.lunabee.messaging.repository.datasource.MessageLocalDataSource
 import studio.lunabee.messaging.repository.datasource.MessagePagingLocalDataSource
-import studio.lunabee.onesafe.mapPagingValues
+import studio.lunabee.onesafe.jvm.mapPagingValues
 import studio.lunabee.onesafe.storage.dao.MessageDao
 import studio.lunabee.onesafe.storage.model.RoomMessage
 import javax.inject.Inject

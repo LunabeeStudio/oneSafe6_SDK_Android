@@ -1,0 +1,60 @@
+/*
+ * Copyright (c) 2023 Lunabee Studio
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
+ * Last modified 4/7/23, 12:24 AM
+ */
+
+package studio.lunabee.onesafe.cryptography.android.extension
+
+import java.security.PrivateKey
+import javax.crypto.SecretKey
+import javax.security.auth.DestroyFailedException
+
+internal fun PrivateKey.safeDestroy() {
+    try {
+        destroy()
+    } catch (e: DestroyFailedException) {
+        // Destroy not implemented
+    } catch (e: NoSuchMethodError) {
+        // Destroy not implemented
+    }
+}
+
+internal fun SecretKey.safeDestroy() {
+    try {
+        destroy()
+    } catch (e: DestroyFailedException) {
+        // Destroy not implemented
+    } catch (e: NoSuchMethodError) {
+        // Destroy not implemented
+    }
+}
+
+internal inline fun <T> PrivateKey.use(block: (PrivateKey) -> T): T {
+    return try {
+        block(this)
+    } finally {
+        this.safeDestroy()
+    }
+}
+
+internal inline fun <T> SecretKey.use(block: (SecretKey) -> T): T {
+    return try {
+        block(this)
+    } finally {
+        this.safeDestroy()
+    }
+}

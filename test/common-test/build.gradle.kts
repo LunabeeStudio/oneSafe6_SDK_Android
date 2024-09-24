@@ -28,8 +28,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     api(libs.threeten.extra)
 
-    implementation(project(":domain"))
-    implementation(project(":error"))
+    implementation(project(":domain-jvm"))
+    implementation(libs.onesafe.error)
     implementation(project(":import-export-domain"))
 
     implementation(platform(libs.lunabee.bom))

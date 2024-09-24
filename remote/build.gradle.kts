@@ -33,6 +33,6 @@ dependencies {
     implementation(libs.lblogger)
 
     implementation(project(":repository"))
-    implementation(project(":domain"))
-    implementation(project(":error"))
+    implementation(project(":domain-jvm"))
+    implementation(libs.onesafe.error)
 }

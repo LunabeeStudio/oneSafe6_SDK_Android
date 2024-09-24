@@ -19,7 +19,6 @@
 
 package studio.lunabee.onesafe.bubbles.ui.home
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -75,7 +74,6 @@ fun BubblesHomeRoute(
 
 context(BubblesHomeNavScope)
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 private fun BubblesHomeScreen(
     contacts: List<UIBubblesContactInfo>?,
     conversation: List<BubblesConversationInfo>?,
