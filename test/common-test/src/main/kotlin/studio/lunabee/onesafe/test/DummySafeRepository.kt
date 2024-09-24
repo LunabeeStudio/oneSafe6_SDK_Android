@@ -68,6 +68,7 @@ class DummySafeRepository(initSafeId: SafeId? = firstSafeId) : SafeRepository {
                     byteArrayOf(),
                     byteArrayOf(),
                     null,
+                    null,
                 )
             },
         )
@@ -122,6 +123,9 @@ class DummySafeRepository(initSafeId: SafeId? = firstSafeId) : SafeRepository {
         bioMap[safeId] = biometricCryptoMaterial
     }
 
+    override suspend fun setAutoDestructionKey(safeId: SafeId, autoDestructionKey: ByteArray?) {
+    }
+
     override suspend fun removeBiometricKey() {
         bioMap.clear()
     }
@@ -135,6 +139,7 @@ class DummySafeRepository(initSafeId: SafeId? = firstSafeId) : SafeRepository {
             encBubblesKey = byteArrayOf(),
             encItemEditionKey = byteArrayOf(),
             biometricCryptoMaterial = BiometricCryptoMaterial(ByteArray(16), ByteArray(32)),
+            autoDestructionKey = null,
         )
     }
 
@@ -146,11 +151,28 @@ class DummySafeRepository(initSafeId: SafeId? = firstSafeId) : SafeRepository {
         return flowOf(bioMap.containsKey(safeId))
     }
 
+    override suspend fun isAutoDestructionEnabledForSafe(safeId: SafeId): Boolean {
+        return false
+    }
+
     override suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean {
         return bioMap.containsKey(safeId)
     }
 
     override suspend fun setLastOpen(safeId: SafeId) {
         /* no-op */
+    }
+
+    override suspend fun getSafeCrypto(safeId: SafeId): SafeCrypto? {
+        return SafeCrypto(
+            id = bioMap.keys.first(),
+            salt = byteArrayOf(),
+            encTest = byteArrayOf(),
+            encIndexKey = byteArrayOf(),
+            encBubblesKey = byteArrayOf(),
+            encItemEditionKey = byteArrayOf(),
+            biometricCryptoMaterial = null,
+            autoDestructionKey = null,
+        )
     }
 }

@@ -31,7 +31,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.toKotlinInstant
 import org.junit.Rule
 import org.junit.Test
-import studio.lunabee.bubbles.domain.model.EncryptEntry
+import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.bubbles.domain.model.contact.PlainContact
 import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
@@ -41,8 +41,8 @@ import studio.lunabee.bubbles.domain.repository.ContactRepository
 import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.bubbles.domain.usecase.CreateContactUseCase
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
-import studio.lunabee.onesafe.cryptography.PasswordHashEngine
-import studio.lunabee.onesafe.cryptography.SaltProvider
+import studio.lunabee.onesafe.cryptography.android.PasswordHashEngine
+import studio.lunabee.onesafe.domain.utils.SaltProvider
 import studio.lunabee.onesafe.migration.migration.MigrationFromV13ToV14
 import studio.lunabee.onesafe.migration.utils.MigrationCryptoV1UseCase
 import studio.lunabee.onesafe.test.InitialTestState

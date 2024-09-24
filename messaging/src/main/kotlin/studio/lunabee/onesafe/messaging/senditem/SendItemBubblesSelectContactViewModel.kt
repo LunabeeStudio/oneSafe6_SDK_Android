@@ -183,7 +183,7 @@ class SendItemBubblesSelectContactViewModel @Inject constructor(
                 plainMessage = SharedMessage(
                     content = MessagingConstant.SafeItemMessageData,
                     recipientId = fileShareData.contactId,
-                    sentAt = Instant.now(clock).toKotlinInstant(),
+                    date = Instant.now(clock).toKotlinInstant(),
                 ),
                 contactId = fileShareData.contactId,
                 id = createRandomUUID(),

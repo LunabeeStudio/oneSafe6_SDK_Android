@@ -42,6 +42,7 @@ sealed interface ContactDetailUiState {
         Running,
         FullySetup,
         WaitingForReply,
+        Reset,
         WaitingForFirstMessage,
         Indecipherable,
         ;
@@ -53,6 +54,7 @@ sealed interface ContactDetailUiState {
                     ConversationState.FullySetup -> FullySetup
                     ConversationState.WaitingForReply -> WaitingForReply
                     ConversationState.WaitingForFirstMessage -> WaitingForFirstMessage
+                    ConversationState.Reset -> Reset
                 }
             }
         }

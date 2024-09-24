@@ -32,6 +32,7 @@ import studio.lunabee.messaging.domain.repository.MessageRepository
 import studio.lunabee.messaging.domain.repository.SentMessageRepository
 import studio.lunabee.messaging.domain.usecase.DecryptSafeMessageUseCase
 import studio.lunabee.messaging.domain.usecase.EncryptMessageUseCase
+import studio.lunabee.messaging.domain.usecase.GetResetMessageUseCase
 import studio.lunabee.messaging.domain.usecase.GetConversationStateUseCase
 import studio.lunabee.messaging.domain.usecase.GetSendMessageDataUseCase
 import studio.lunabee.messaging.domain.usecase.SaveSentMessageUseCase
@@ -68,6 +69,7 @@ class WriteMessageViewModelFactory @Inject constructor(
     private val secureGetItemUseCase: SecureGetItemUseCase,
     private val getIconUseCase: GetIconUseCase,
     private val itemDecryptUseCase: ItemDecryptUseCase,
+    private val getResetMessageUseCase: GetResetMessageUseCase,
 ) : AbstractSavedStateViewModelFactory() {
     override fun <T : ViewModel> create(key: String, modelClass: Class<T>, handle: SavedStateHandle): T {
         @Suppress("UNCHECKED_CAST")
@@ -94,6 +96,7 @@ class WriteMessageViewModelFactory @Inject constructor(
             secureGetItemUseCase = secureGetItemUseCase,
             getIconUseCase = getIconUseCase,
             itemDecryptUseCase = itemDecryptUseCase,
+            getResetMessageUseCase = getResetMessageUseCase,
         ) as T
     }
 }

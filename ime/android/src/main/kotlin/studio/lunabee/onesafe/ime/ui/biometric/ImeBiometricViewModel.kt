@@ -24,11 +24,10 @@ import androidx.lifecycle.viewModelScope
 import com.lunabee.lbcore.model.LBResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import studio.lunabee.onesafe.domain.usecase.authentication.GetBiometricCipherUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.LoginUseCase
 import studio.lunabee.onesafe.error.OSAppError
-import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.error.OSImeError
 import studio.lunabee.onesafe.ime.repository.ImeBiometricResultRepository
 import javax.crypto.Cipher
@@ -41,8 +40,8 @@ class ImeBiometricViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
 ) : ViewModel() {
 
-    fun getCipher(): Cipher? {
-        return runBlocking { getBiometricCipherUseCase.forVerify().data } // TODO <multisafe> clean runBlocking + handle result
+    suspend fun getCipher(): Cipher? {
+        return getBiometricCipherUseCase.forVerify().data
     }
 
     fun biometricLogin(cipher: Cipher) {

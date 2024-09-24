@@ -28,7 +28,7 @@ import studio.lunabee.onesafe.domain.utils.mkdirs
 import studio.lunabee.onesafe.error.OSImportExportError
 import studio.lunabee.onesafe.importexport.engine.ShareExportEngine
 import studio.lunabee.onesafe.importexport.usecase.ExportShareUseCase
-import studio.lunabee.onesafe.toCharArray
+import studio.lunabee.onesafe.jvm.toCharArray
 import java.io.File
 import java.util.UUID
 import javax.inject.Inject

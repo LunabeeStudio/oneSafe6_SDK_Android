@@ -24,8 +24,8 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import studio.lunabee.bubbles.domain.crypto.BubblesCryptoEngine
-import studio.lunabee.onesafe.cryptography.ChachaPolyJCECryptoEngine
-import studio.lunabee.onesafe.cryptography.CryptoEngine
+import studio.lunabee.onesafe.cryptography.android.ChachaPolyJCECryptoEngine
+import studio.lunabee.onesafe.cryptography.android.CryptoEngine
 
 @Module
 @InstallIn(SingletonComponent::class)

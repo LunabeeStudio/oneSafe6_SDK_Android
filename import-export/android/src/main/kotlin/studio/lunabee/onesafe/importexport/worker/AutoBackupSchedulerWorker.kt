@@ -44,7 +44,7 @@ import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsReposito
 import studio.lunabee.onesafe.importexport.settings.AutoBackupFrequency
 import studio.lunabee.onesafe.importexport.usecase.GetDurationBeforeBackupOutdatedUseCase
 import studio.lunabee.onesafe.importexport.usecase.SynchronizeCloudBackupsUseCase
-import studio.lunabee.onesafe.toByteArray
+import studio.lunabee.onesafe.jvm.toByteArray
 import java.time.Clock
 import kotlin.time.Duration
 import kotlin.time.toJavaDuration

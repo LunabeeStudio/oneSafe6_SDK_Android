@@ -80,7 +80,7 @@ fun CipherKeyTextFieldCard(
                 placeholder = LbcTextSpec.Raw("0x…"),
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.None,
-                    autoCorrect = false,
+                    autoCorrectEnabled = false,
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done,
                 ),

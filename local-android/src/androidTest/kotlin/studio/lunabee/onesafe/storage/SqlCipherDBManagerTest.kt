@@ -33,6 +33,7 @@ import org.junit.After
 import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
 import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
 import studio.lunabee.onesafe.error.OSStorageError
+import studio.lunabee.onesafe.test.CommonTestUtils
 import studio.lunabee.onesafe.test.OSTestConfig
 import studio.lunabee.onesafe.test.assertDoesNotThrow
 import studio.lunabee.onesafe.test.assertSuccess
@@ -82,7 +83,7 @@ class SqlCipherDBManagerTest {
     @Test
     fun migrateToEncrypted_test(): TestResult = runTest {
         val plainDb: MainDatabase = plainDbBuilder.build().insertDummySafe()
-        val expectedItem = OSStorageTestUtils.createRoomSafeItem(encName = byteArrayOf(1, 2, 3, 4))
+        val expectedItem = CommonTestUtils.roomSafeItem(encName = byteArrayOf(1, 2, 3, 4))
         plainDb.safeItemDao().insert(expectedItem)
 
         val manager = SqlCipherDBManager(Dispatchers.IO, context, dbName, tempCipherDbName)
@@ -103,7 +104,7 @@ class SqlCipherDBManagerTest {
     @Test
     fun migrateToPlain_test(): TestResult = runTest {
         val cipherDb: MainDatabase = cipherDbBuilder.build().insertDummySafe()
-        val expectedItem = OSStorageTestUtils.createRoomSafeItem(encName = byteArrayOf(1, 2, 3, 4))
+        val expectedItem = CommonTestUtils.roomSafeItem(encName = byteArrayOf(1, 2, 3, 4))
         cipherDb.safeItemDao().insert(expectedItem)
 
         val manager = SqlCipherDBManager(Dispatchers.IO, context, dbName, tempCipherDbName)
@@ -124,7 +125,7 @@ class SqlCipherDBManagerTest {
     @Test
     fun migrateToPlain_rollback_test(): TestResult = runTest {
         val cipherDb: MainDatabase = cipherDbBuilder.build().insertDummySafe()
-        val expectedItem = OSStorageTestUtils.createRoomSafeItem(encName = byteArrayOf(1, 2, 3, 4))
+        val expectedItem = CommonTestUtils.roomSafeItem(encName = byteArrayOf(1, 2, 3, 4))
         cipherDb.safeItemDao().insert(expectedItem)
 
         val manager = SqlCipherDBManager(Dispatchers.IO, context, dbName, tempCipherDbName)

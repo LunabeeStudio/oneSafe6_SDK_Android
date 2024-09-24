@@ -39,7 +39,7 @@ import studio.lunabee.onesafe.storage.DaoUtils.ITEM_ORDER_BY_POSITION
 import studio.lunabee.onesafe.storage.DaoUtils.ITEM_ORDER_BY_UPDATED_AT
 import studio.lunabee.onesafe.storage.model.RoomSafeItem
 import studio.lunabee.onesafe.storage.model.RoomSafeItemField
-import studio.lunabee.onesafe.toByteArray
+import studio.lunabee.onesafe.jvm.toByteArray
 import java.util.UUID
 
 /*

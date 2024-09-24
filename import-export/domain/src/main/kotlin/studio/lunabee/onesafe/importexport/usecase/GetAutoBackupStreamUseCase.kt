@@ -26,14 +26,14 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.error.OSDriveError
-import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.error.OSImportExportError
 import studio.lunabee.onesafe.error.OSRepositoryError
 import studio.lunabee.onesafe.error.osCatch
 import studio.lunabee.onesafe.error.osCode
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
 import studio.lunabee.onesafe.importexport.repository.LocalBackupRepository
-import studio.lunabee.onesafe.onFailure
+import studio.lunabee.onesafe.jvm.onFailure
 import java.io.InputStream
 import javax.inject.Inject
 

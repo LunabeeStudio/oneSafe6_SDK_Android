@@ -49,10 +49,10 @@ dependencies {
     implementation(libs.doubleratchet)
 
     implementation(libs.bubbles.domain)
-    implementation(project(":domain"))
+    implementation(project(":domain-jvm"))
     implementation(project(":crypto-android"))
-    implementation(project(":error"))
-    implementation(project(":common"))
+    implementation(libs.onesafe.error)
+    implementation(project(":common-jvm"))
 
     androidTestImplementation(libs.bubbles.repository)
     androidTestImplementation(libs.kotlinx.coroutines.test)

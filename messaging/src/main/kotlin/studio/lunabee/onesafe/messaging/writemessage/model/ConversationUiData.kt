@@ -30,9 +30,9 @@ import java.util.UUID
 
 sealed interface ConversationUiData {
 
-    sealed interface Message : ConversationUiData {
+    val date: Instant?
 
-        val sendAt: Instant?
+    sealed interface Message : ConversationUiData {
         val id: DoubleRatchetUUID
         val direction: MessageDirection
         val channelName: String?
@@ -40,7 +40,7 @@ sealed interface ConversationUiData {
         data class Text(
             override val id: DoubleRatchetUUID,
             override val direction: MessageDirection,
-            override val sendAt: Instant?,
+            override val date: Instant?,
             override val channelName: String?,
             val hasCorruptedData: Boolean,
             val text: LbcTextSpec,
@@ -50,24 +50,28 @@ sealed interface ConversationUiData {
         data class SafeItem(
             override val id: DoubleRatchetUUID,
             override val direction: MessageDirection,
-            override val sendAt: Instant?,
+            override val date: Instant?,
             override val channelName: String?,
             val itemId: UUID?,
             val name: OSNameProvider,
             val identifier: LbcTextSpec?,
             val icon: OSItemIllustration,
         ) : Message
-
-        fun wereSentOnSameDay(other: Message?): Boolean =
-            other?.sendAt?.let { sendAt?.isSameDayAs(it) } ?: false
     }
 
+    data class ResetConversation(
+        override val date: Instant?,
+    ) : ConversationUiData
+
     data class DateHeader(
-        val date: Instant,
+        override val date: Instant,
     ) : ConversationUiData
 
     enum class MessageType {
         Message,
         Invitation,
     }
+
+    fun wereSentOnSameDay(other: ConversationUiData?): Boolean =
+        other?.date?.let { date?.isSameDayAs(it) } ?: false
 }

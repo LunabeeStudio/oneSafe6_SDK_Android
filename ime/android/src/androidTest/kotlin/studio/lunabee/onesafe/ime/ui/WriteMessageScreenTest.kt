@@ -42,6 +42,7 @@ import studio.lunabee.onesafe.commonui.DefaultNameProvider
 import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.messaging.writemessage.model.BubblesWritingMessage
+import studio.lunabee.onesafe.messaging.writemessage.model.WriteConversationState
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageNavScope
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageRoute
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageUiState
@@ -64,7 +65,7 @@ class WriteMessageScreenTest : LbcComposeTest() {
                 nameProvider = DefaultNameProvider("Florian"),
                 message = BubblesWritingMessage(TextFieldValue(plainMessage), preview),
                 messageSharingMode = MessageSharingMode.CypherText,
-                isConversationReady = true,
+                conversationState = WriteConversationState.Ready,
                 isCorrupted = false,
             ),
         )
@@ -99,7 +100,7 @@ class WriteMessageScreenTest : LbcComposeTest() {
                 nameProvider = DefaultNameProvider("Florian"),
                 message = BubblesWritingMessage(TextFieldValue(""), ""),
                 messageSharingMode = MessageSharingMode.CypherText,
-                isConversationReady = true,
+                conversationState = WriteConversationState.Ready,
                 isCorrupted = true,
             ),
         )

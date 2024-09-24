@@ -50,6 +50,7 @@ class AutoBackupChainWorker @AssistedInject constructor(
     private val itemRepository: SafeItemRepository,
     private val autoBackupWorkersHelper: AutoBackupWorkersHelper,
     private val featureFlags: FeatureFlags,
+    private val workManager: WorkManager,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         val safeId = inputData.getByteArray(AUTO_BACKUP_CHAIN_WORKER_SAFE_ID_DATA)?.let { SafeId(it) }
@@ -74,12 +75,12 @@ class AutoBackupChainWorker @AssistedInject constructor(
                             autoBackupWorkersHelper.cancel()
                         }
                         AutoBackupMode.LocalOnly -> LocalBackupWorker.start(
-                            applicationContext,
+                            workManager,
                             featureFlags.backupWorkerExpedited(),
                             safeId,
                         )
                         AutoBackupMode.CloudOnly -> CloudBackupWorker.start(
-                            applicationContext,
+                            workManager,
                             featureFlags.backupWorkerExpedited(),
                             safeId,
                         )

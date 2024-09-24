@@ -37,7 +37,7 @@ import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemWithIdentifier
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.error.OSStorageError
-import studio.lunabee.onesafe.mapPagingValues
+import studio.lunabee.onesafe.jvm.mapPagingValues
 import studio.lunabee.onesafe.repository.datasource.SafeItemLocalDataSource
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.dao.IndexWordEntryDao

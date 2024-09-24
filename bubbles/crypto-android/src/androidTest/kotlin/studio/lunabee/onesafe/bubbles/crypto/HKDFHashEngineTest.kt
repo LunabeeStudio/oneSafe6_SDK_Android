@@ -21,7 +21,7 @@ package studio.lunabee.onesafe.bubbles.crypto
 
 import studio.lunabee.bubbles.domain.crypto.BubblesDataHashEngine
 import studio.lunabee.onesafe.test.testUUIDs
-import studio.lunabee.onesafe.toByteArray
+import studio.lunabee.onesafe.jvm.toByteArray
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 

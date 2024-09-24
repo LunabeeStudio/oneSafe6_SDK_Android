@@ -30,7 +30,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.runBlocking
 import studio.lunabee.onesafe.domain.qualifier.DatabaseName
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
@@ -39,7 +38,6 @@ import studio.lunabee.onesafe.storage.MainDatabaseCallback
 import studio.lunabee.onesafe.storage.OSForceUpgradeProto.ForceUpgradeProtoData
 import studio.lunabee.onesafe.storage.SqlCipherDBManager
 import studio.lunabee.onesafe.storage.datastore.ForceUpgradeDataSerializer
-import studio.lunabee.onesafe.test.insertDummySafe
 import javax.inject.Singleton
 
 // Use empty TestInstallIn + InstallIn to allow local override of the module (in SearchItemUseCaseTest for example)
@@ -73,8 +71,6 @@ object InMemoryMainDatabaseModule {
         return Room.inMemoryDatabaseBuilder(appContext, MainDatabase::class.java)
             .addCallback(MainDatabaseCallback())
             .build()
-            // TODO <multisafe> check why we need this for tests, ideally we should start with an empty DB
-            .also { runBlocking { it.insertDummySafe() } }
     }
 
     @Provides

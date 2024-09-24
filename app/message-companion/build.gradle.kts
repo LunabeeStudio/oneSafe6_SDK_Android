@@ -60,8 +60,8 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.bubbles.domain)
 
-    implementation(project(":domain"))
-    implementation(project(":error"))
+    implementation(project(":domain-jvm"))
+    implementation(libs.onesafe.error)
 
     androidTestImplementation(project(":common-test-android"))
     androidTestImplementation(project(":dependency-injection:test-component"))

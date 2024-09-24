@@ -32,9 +32,9 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import kotlin.test.Test
 import studio.lunabee.di.CryptoConstantsTestModule
-import studio.lunabee.onesafe.cryptography.CryptoConstants
-import studio.lunabee.onesafe.cryptography.PBKDF2JceHashEngine
-import studio.lunabee.onesafe.cryptography.PasswordHashEngine
+import studio.lunabee.onesafe.cryptography.android.CryptoConstants
+import studio.lunabee.onesafe.cryptography.android.PBKDF2JceHashEngine
+import studio.lunabee.onesafe.cryptography.android.PasswordHashEngine
 import studio.lunabee.onesafe.domain.model.importexport.OSArchiveKind
 import studio.lunabee.onesafe.error.OSImportExportError
 import studio.lunabee.onesafe.importexport.engine.ShareExportEngine

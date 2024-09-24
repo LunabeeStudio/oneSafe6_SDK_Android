@@ -18,7 +18,7 @@
  */
 
 import com.google.protobuf.gradle.id
-import java.util.Properties
+import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
 
 plugins {
     `android-library`
@@ -31,7 +31,7 @@ plugins {
 description = "Android implementation of oneSafe cryptography"
 
 android {
-    namespace = "studio.lunabee.onesafe.cryptography"
+    namespace = "studio.lunabee.onesafe.cryptography.android"
 
     defaultConfig {
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
@@ -62,9 +62,6 @@ android {
         }
     }
 
-    val properties: Properties = Properties()
-    File(rootDir.path + "/versions.properties").inputStream().use { properties.load(it) }
-
     protobuf {
         protoc {
             artifact = libs.protoc.get().toString()
@@ -93,6 +90,15 @@ android {
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
+    }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            all {
+                it.maxParallelForks = 10
+            }
+        }
     }
 }
 
@@ -124,14 +130,15 @@ dependencies {
     implementation(libs.lblogger)
     implementation(libs.kotlin.reflect)
 
-    implementation(project(":domain"))
+    implementation(project(":domain-jvm"))
     implementation(libs.bubbles.domain)
     implementation(libs.bubbles.messaging.domain)
     implementation(libs.bubbles.shared)
     implementation(libs.kotlinx.datetime)
     implementation(libs.bubbles.repository)
-    implementation(project(":error"))
-    implementation(project(":common"))
+    implementation(libs.onesafe.error)
+    implementation(libs.onesafe.crypto)
+    implementation(project(":common-jvm"))
     implementation(project(":import-export-domain"))
 
     kspAndroidTest(libs.dagger.hilt.compiler)
@@ -143,7 +150,14 @@ dependencies {
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.biometric) // used to check if device has biometric
 
-    testImplementation(project(":common-test-android"))
+    testImplementation(libs.hilt.android.testing)
+    kspTest(libs.dagger.hilt.compiler)
+    testImplementation(project(":dependency-injection:test-component"))
+    testImplementation(project(":common-test-robolectric"))
+    testImplementation(libs.compose.ui.test.junit4)
+    testImplementation(libs.mockk.android)
+    testImplementation(libs.biometric) // used to check if device has biometric
+    testImplementation(libs.conscrypt.openjdk.uber)
 
     lintChecks(project(":crypto-android:checks"))
 }

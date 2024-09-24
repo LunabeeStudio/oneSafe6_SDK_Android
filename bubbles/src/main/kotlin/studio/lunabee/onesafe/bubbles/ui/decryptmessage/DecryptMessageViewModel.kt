@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import studio.lunabee.bubbles.error.BubblesError
 import studio.lunabee.messaging.domain.usecase.ManageIncomingMessageUseCase
 import studio.lunabee.messaging.domain.usecase.ManagingIncomingMessageResultData
 import studio.lunabee.onesafe.bubbles.ui.extension.getBase64FromMessage
@@ -64,7 +63,7 @@ class DecryptMessageViewModel @Inject constructor(
                     }
                     is LBResult.Failure -> {
                         _uiResultState.value = DecryptMessageUiState.Error(
-                            (result.throwable as? OSError) ?: (result.throwable as? BubblesError),
+                            (result.throwable as? OSError),
                         )
                     }
                 }

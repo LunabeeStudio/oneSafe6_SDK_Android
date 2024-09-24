@@ -26,7 +26,7 @@ import androidx.test.filters.LargeTest
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Rule
 import kotlin.test.Test
-import studio.lunabee.onesafe.cryptography.HKDFTinkHashEngine
+import studio.lunabee.onesafe.cryptography.android.HKDFTinkHashEngine
 import java.lang.reflect.Method
 
 @LargeTest

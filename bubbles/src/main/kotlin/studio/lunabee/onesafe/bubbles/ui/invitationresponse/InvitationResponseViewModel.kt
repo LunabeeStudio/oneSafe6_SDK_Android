@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.bubbles.domain.usecase.GetContactUseCase
-import studio.lunabee.bubbles.error.BubblesMessagingError
+import studio.lunabee.onesafe.error.BubblesMessagingError
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.messaging.domain.usecase.GetInvitationResponseMessageUseCase
 import studio.lunabee.onesafe.bubbles.ui.invitation.InvitationUiState

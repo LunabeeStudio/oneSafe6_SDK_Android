@@ -82,6 +82,7 @@ fun ContactDetailRoute(
                 onResendResponseClick = { navigateToResponse(viewModel.contactId.uuid) },
                 onScanResponseClick = navigateToScanBarcode,
                 onEditClick = { navigateToContactEdition(viewModel.contactId.uuid) },
+                onResetConversation = viewModel::resetContactConversation,
             )
         }
         is ContactDetailUiState.Idle -> OSScreen(testTag = "") {
@@ -107,6 +108,7 @@ fun ContactDetailScreen(
     onEditClick: () -> Unit,
     uiState: ContactDetailUiState.Data,
     onMessageSharingModeChange: (MessageSharingModeUi) -> Unit,
+    onResetConversation: () -> Unit,
     onScanResponseClick: () -> Unit,
     conversationState: UIConversationState,
 ) {
@@ -140,6 +142,7 @@ fun ContactDetailScreen(
                     onResendResponseClick = onResendResponseClick,
                     onScanResponseClick = onScanResponseClick,
                     lazyListScope = this,
+                    onResetConversation = onResetConversation,
                 )
                 lazyVerticalOSRegularSpacer()
                 item {
@@ -206,6 +209,7 @@ fun ContactDetailScreenDataPreview() {
             onMessageSharingModeChange = {},
             onScanResponseClick = {},
             conversationState = UIConversationState.Running,
+            onResetConversation = {},
         )
     }
 }
@@ -231,6 +235,7 @@ fun ContactDetailScreenCorruptedPreview() {
             onMessageSharingModeChange = {},
             onScanResponseClick = {},
             conversationState = UIConversationState.Indecipherable,
+            onResetConversation = {},
         )
     }
 }

@@ -18,7 +18,6 @@
  */
 
 import com.google.protobuf.gradle.id
-import java.util.Properties
 
 plugins {
     `android-library`
@@ -57,11 +56,8 @@ android {
     }
 
     sourceSets {
-        getByName("androidTest").assets.srcDir("$projectDir/schemas")
+        getByName("test").assets.srcDir("$projectDir/schemas")
     }
-
-    val properties: Properties = Properties()
-    File(rootDir.path + "/versions.properties").inputStream().use { properties.load(it) }
 
     protobuf {
         protoc {
@@ -85,6 +81,15 @@ android {
                 task.plugins {
                     id("kotlin")
                 }
+            }
+        }
+    }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            all {
+                it.maxParallelForks = 10
             }
         }
     }
@@ -114,10 +119,10 @@ dependencies {
     implementation(libs.lbextensions)
     implementation(libs.lbcore)
 
-    implementation(project(":domain"))
+    implementation(project(":domain-jvm"))
     implementation(project(":repository"))
-    implementation(project(":error"))
-    implementation(project(":common"))
+    implementation(libs.onesafe.error)
+    implementation(project(":common-jvm"))
     implementation(project(":crypto-android"))
 
     implementation(libs.bubbles.domain)
@@ -138,6 +143,15 @@ dependencies {
     androidTestImplementation(libs.bubbles.shared)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.room.testing)
+
+    testImplementation(libs.hilt.android.testing)
+    kspTest(libs.dagger.hilt.compiler)
+    testImplementation(project(":dependency-injection:test-component"))
+    testImplementation(project(":common-test-robolectric"))
+    testImplementation(libs.compose.ui.test.junit4)
+    testImplementation(libs.bubbles.shared)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.room.testing)
 }
 
 tasks.register("cleanProtobuf") {

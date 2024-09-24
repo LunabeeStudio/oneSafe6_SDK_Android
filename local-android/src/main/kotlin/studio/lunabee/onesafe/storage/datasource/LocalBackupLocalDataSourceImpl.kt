@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.Flow
 import studio.lunabee.importexport.datasource.LocalBackupLocalDataSource
 import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.qualifier.InternalDir
-import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.error.OSImportExportError
 import studio.lunabee.onesafe.error.OSStorageError
 import studio.lunabee.onesafe.importexport.model.LocalBackup

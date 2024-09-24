@@ -20,8 +20,8 @@
 package studio.lunabee.onesafe.benchmark.cryptography
 
 import androidx.test.filters.LargeTest
-import studio.lunabee.onesafe.cryptography.ChachaPolyTinkCryptoEngine
-import studio.lunabee.onesafe.cryptography.CryptoEngine
+import studio.lunabee.onesafe.cryptography.android.ChachaPolyTinkCryptoEngine
+import studio.lunabee.onesafe.cryptography.android.CryptoEngine
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlin.test.Test
 

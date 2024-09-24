@@ -26,7 +26,7 @@ import androidx.core.util.AtomicFile
 import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
 import dagger.hilt.android.qualifiers.ApplicationContext
-import studio.lunabee.onesafe.cryptography.CryptoDataMapper
+import studio.lunabee.onesafe.cryptography.android.AndroidCryptoDataMapper
 import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
@@ -46,7 +46,7 @@ private val logger = LBLogger.get<MigrationFromV9ToV10>()
 class MigrationFromV9ToV10 @Inject constructor(
     private val safeItemFieldRepository: SafeItemFieldRepository,
     private val safeItemKeyRepository: SafeItemKeyRepository,
-    private val cryptoDataMapper: CryptoDataMapper,
+    private val cryptoDataMapper: AndroidCryptoDataMapper,
     @ApplicationContext private val context: Context,
     private val migrationCryptoV1UseCase: MigrationCryptoV1UseCase,
 ) {

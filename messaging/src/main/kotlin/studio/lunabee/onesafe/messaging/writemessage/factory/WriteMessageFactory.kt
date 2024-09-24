@@ -27,6 +27,7 @@ import studio.lunabee.onesafe.messaging.utils.MessageSectionDateFormatter
 import studio.lunabee.onesafe.messaging.writemessage.composable.ConversationDayHeader
 import studio.lunabee.onesafe.messaging.writemessage.composable.MessageRow
 import studio.lunabee.onesafe.messaging.writemessage.composable.MessageTextLongPress
+import studio.lunabee.onesafe.messaging.writemessage.composable.ResetConversationRow
 import studio.lunabee.onesafe.messaging.writemessage.composable.SafeItemMessageCombinedPress
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
 
@@ -70,6 +71,7 @@ object WriteMessageFactory {
                     is ConversationUiData.DateHeader -> ConversationDayHeader(
                         text = messageSectionDateFormatter(item.date),
                     )
+                    is ConversationUiData.ResetConversation -> ResetConversationRow()
                 }
             }
         }

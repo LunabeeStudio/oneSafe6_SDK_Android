@@ -27,14 +27,14 @@ dependencies {
     implementation(libs.lbcore)
     implementation(libs.lblogger)
 
-    implementation(project(":error"))
-    api(project(":domain"))
-    implementation(project(":common"))
+    implementation(libs.onesafe.error)
+    api(project(":domain-jvm"))
+    implementation(project(":common-jvm"))
     implementation(libs.bubbles.messaging.domain)
     implementation(libs.bubbles.domain)
     implementation(libs.bubbles.repository)
     implementation(libs.doubleratchet)
-    implementation(project(":error"))
+    implementation(libs.onesafe.error)
 
     testImplementation(project(":common-test"))
     testImplementation(libs.mockk)

@@ -31,10 +31,10 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.lunabee.lblogger.LBLogger
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.firstOrNull
-import studio.lunabee.onesafe.cryptography.DatastoreEngine
-import studio.lunabee.onesafe.cryptography.ProtoData
-import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
-import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
+import studio.lunabee.onesafe.cryptography.android.DatastoreEngine
+import studio.lunabee.onesafe.cryptography.android.ProtoData
+import studio.lunabee.onesafe.cryptography.android.qualifier.DataStoreType
+import studio.lunabee.onesafe.cryptography.android.qualifier.DatastoreEngineProvider
 import studio.lunabee.onesafe.domain.common.SafeIdProvider
 import studio.lunabee.onesafe.domain.model.camera.CameraSystem
 import studio.lunabee.onesafe.domain.model.safe.BiometricCryptoMaterial
@@ -47,6 +47,7 @@ import studio.lunabee.onesafe.importexport.utils.AutoBackupErrorIdProvider
 import studio.lunabee.onesafe.storage.datastore.ProtoSerializer
 import studio.lunabee.onesafe.storage.migration.RoomMigration12to13
 import studio.lunabee.onesafe.storage.model.RoomAppVisit
+import studio.lunabee.onesafe.jvm.use
 import studio.lunabee.onesafe.storage.utils.queryNumEntries
 import studio.lunabee.onesafe.use
 import java.io.File

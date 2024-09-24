@@ -23,9 +23,9 @@ import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import studio.lunabee.onesafe.cryptography.DatastoreEngine
-import studio.lunabee.onesafe.cryptography.qualifier.DataStoreType
-import studio.lunabee.onesafe.cryptography.qualifier.DatastoreEngineProvider
+import studio.lunabee.onesafe.cryptography.android.DatastoreEngine
+import studio.lunabee.onesafe.cryptography.android.qualifier.DataStoreType
+import studio.lunabee.onesafe.cryptography.android.qualifier.DatastoreEngineProvider
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.error.OSMigrationError
@@ -34,6 +34,7 @@ import studio.lunabee.onesafe.migration.utils.MigrationCryptoV1UseCase
 import studio.lunabee.onesafe.migration.utils.MigrationGetSafeIdBeforeV14UseCase
 import studio.lunabee.onesafe.storage.dao.IndexWordEntryDao
 import studio.lunabee.onesafe.storage.dao.SafeItemKeyDao
+import studio.lunabee.onesafe.jvm.use
 import studio.lunabee.onesafe.use
 import javax.inject.Inject
 

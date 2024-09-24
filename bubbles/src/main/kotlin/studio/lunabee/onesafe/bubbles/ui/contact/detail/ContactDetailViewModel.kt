@@ -38,6 +38,7 @@ import studio.lunabee.bubbles.domain.usecase.GetContactUseCase
 import studio.lunabee.bubbles.domain.usecase.UpdateMessageSharingModeContactUseCase
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.messaging.domain.usecase.GetConversationStateUseCase
+import studio.lunabee.messaging.domain.usecase.ResetConversationUseCase
 import studio.lunabee.onesafe.bubbles.ui.contact.model.MessageSharingModeUi
 import studio.lunabee.onesafe.bubbles.ui.extension.getNameProvider
 import studio.lunabee.onesafe.commonui.dialog.DialogAction
@@ -58,6 +59,7 @@ class ContactDetailViewModel @Inject constructor(
     private val updateMessageSharingModeContactUseCase: UpdateMessageSharingModeContactUseCase,
     private val getConversationStateUseCase: GetConversationStateUseCase,
     private val imageHelper: ImageHelper,
+    private val resetConversationUseCase: ResetConversationUseCase,
     isSafeReadyUseCase: IsSafeReadyUseCase,
 ) : ViewModel() {
     val contactId: DoubleRatchetUUID = savedStateHandle.get<String>(ContactDetailDestination.ContactIdArg)?.let { DoubleRatchetUUID(it) }
@@ -159,5 +161,11 @@ class ContactDetailViewModel @Inject constructor(
             ),
             dismiss = { _dialogState.value = null },
         )
+    }
+
+    fun resetContactConversation() {
+        viewModelScope.launch {
+            resetConversationUseCase(contactId)
+        }
     }
 }

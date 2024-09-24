@@ -124,7 +124,7 @@ fun SendItemBubblesSelectContactRoute(
             sharedItemInfo = sharedItemInfo,
         )
     } else {
-        OSScreen(testTag = UiConstants.TestTag.Screen.SendItemBubbles) {
+        OSScreen(testTag = UiConstants.TestTag.Screen.SendItemBubblesScreen) {
             Column {
                 OSTopAppBar(
                     title = LbcTextSpec.StringResource(OSString.common_share),
@@ -160,7 +160,7 @@ fun FilledSendItemBubblesSelectContactScreen(
     val lazyListState: LazyListState = rememberLazyListState()
     val nestedScrollConnection = rememberOSTopBarVisibilityNestedScrollConnection(lazyListState)
 
-    OSScreen(testTag = UiConstants.TestTag.Screen.SendItemBubbles) {
+    OSScreen(testTag = UiConstants.TestTag.Screen.SendItemBubblesScreen) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()

@@ -36,6 +36,8 @@ data class RoomSafeCrypto(
     val encItemEditionKey: ByteArray,
     @ColumnInfo(name = "biometric_crypto_material")
     val biometricCryptoMaterial: BiometricCryptoMaterial?,
+    @ColumnInfo(name = "auto_destruction_key", defaultValue = "NULL")
+    val autoDestructionKey: ByteArray?,
 ) {
 
     companion object {
@@ -46,6 +48,7 @@ data class RoomSafeCrypto(
             encBubblesKey = safeCrypto.encBubblesKey,
             encItemEditionKey = safeCrypto.encItemEditionKey,
             biometricCryptoMaterial = safeCrypto.biometricCryptoMaterial,
+            autoDestructionKey = safeCrypto.autoDestructionKey,
         )
     }
 

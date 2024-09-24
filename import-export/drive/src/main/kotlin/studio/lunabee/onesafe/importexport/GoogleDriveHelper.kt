@@ -25,7 +25,7 @@ import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
 import com.lunabee.lblogger.e
 import studio.lunabee.onesafe.error.OSDriveError
-import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.jvm.get
 
 private val logger = LBLogger.get<GoogleDriveHelper>()
 

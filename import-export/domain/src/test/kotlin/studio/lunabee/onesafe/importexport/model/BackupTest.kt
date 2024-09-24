@@ -19,8 +19,6 @@
 
 package studio.lunabee.onesafe.importexport.model
 
-// TODO <multisafe> add test for many safes backup for every use case
-
 import studio.lunabee.onesafe.test.firstSafeId
 import java.io.File
 import java.time.Instant

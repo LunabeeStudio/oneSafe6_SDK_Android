@@ -51,8 +51,8 @@ import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.usecase.DeleteOldLocalBackupsUseCase
 import studio.lunabee.onesafe.importexport.usecase.LocalAutoBackupUseCase
 import studio.lunabee.onesafe.importexport.utils.ForegroundInfoCompat
-import studio.lunabee.onesafe.toByteArray
-import studio.lunabee.onesafe.toUUID
+import studio.lunabee.onesafe.jvm.toByteArray
+import studio.lunabee.onesafe.jvm.toUUID
 
 private val logger = LBLogger.get<LocalBackupWorker>()
 
@@ -149,8 +149,8 @@ class LocalBackupWorker @AssistedInject constructor(
             return workRequestBuilder.build()
         }
 
-        internal fun start(context: Context, setExpedited: Boolean, safeId: SafeId) {
-            WorkManager.getInstance(context)
+        internal fun start(workManager: WorkManager, setExpedited: Boolean, safeId: SafeId) {
+            workManager
                 .enqueueUniqueWork(
                     ImportExportAndroidConstants.autoBackupWorkerName(safeId),
                     ExistingWorkPolicy.APPEND_OR_REPLACE,

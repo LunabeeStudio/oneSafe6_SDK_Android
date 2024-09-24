@@ -20,10 +20,10 @@
 package studio.lunabee.onesafe.migration.utils
 
 import androidx.core.util.AtomicFile
-import studio.lunabee.onesafe.cryptography.CryptoEngine
-import studio.lunabee.onesafe.cryptography.utils.OSCryptoInputStream
-import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.cryptography.android.CryptoEngine
+import studio.lunabee.onesafe.cryptography.android.utils.OSCryptoInputStream
 import studio.lunabee.onesafe.error.OSMigrationError
+import studio.lunabee.onesafe.jvm.get
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream

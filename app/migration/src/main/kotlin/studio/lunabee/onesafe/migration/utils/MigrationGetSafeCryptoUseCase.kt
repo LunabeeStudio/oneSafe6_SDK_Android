@@ -20,8 +20,8 @@
 package studio.lunabee.onesafe.migration.utils
 
 import com.lunabee.lbcore.model.LBResult
-import studio.lunabee.onesafe.cryptography.BiometricEngine
-import studio.lunabee.onesafe.cryptography.PasswordHashEngine
+import studio.lunabee.onesafe.cryptography.android.BiometricEngine
+import studio.lunabee.onesafe.cryptography.android.PasswordHashEngine
 import studio.lunabee.onesafe.domain.model.safe.BiometricCryptoMaterial
 import studio.lunabee.onesafe.domain.model.safe.SafeCrypto
 import studio.lunabee.onesafe.domain.model.safe.SafeId
@@ -32,7 +32,7 @@ import studio.lunabee.onesafe.domain.usecase.authentication.IsSignUpUseCase
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
-import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.error.OSMigrationError
 import studio.lunabee.onesafe.migration.MigrationConstant
 import javax.crypto.Cipher

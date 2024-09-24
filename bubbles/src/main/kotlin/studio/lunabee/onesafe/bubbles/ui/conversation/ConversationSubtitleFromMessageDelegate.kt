@@ -57,6 +57,7 @@ class ConversationSubtitleFromMessageDelegate @Inject constructor(
                     MessageDirection.RECEIVED -> LbcTextSpec.StringResource(OSString.bubbles_message_subtitle_receivedItem, label)
                 }
             }
+            PlainMessageContentData.ResetConversation -> LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_conversationReset)
         }
         return ConversationSubtitle.Message(content = messageContent)
     }

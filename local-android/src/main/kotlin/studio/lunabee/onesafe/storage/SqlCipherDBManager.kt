@@ -37,9 +37,9 @@ import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
 import studio.lunabee.onesafe.domain.qualifier.DatabaseName
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
-import studio.lunabee.onesafe.error.OSError.Companion.get
+import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.error.OSStorageError
-import studio.lunabee.onesafe.use
+import studio.lunabee.onesafe.jvm.use
 import java.io.File
 import javax.inject.Inject
 import net.zetetic.database.sqlcipher.SQLiteDatabase as SQLCipherDatabase

@@ -71,7 +71,10 @@ object ContactDetailScreenFactory {
                         ).markdown(),
                     )
                 }
-                ContactDetailUiState.UIConversationState.Running -> {}
+                ContactDetailUiState.UIConversationState.Running,
+                ContactDetailUiState.UIConversationState.Reset,
+                -> {
+                }
                 ContactDetailUiState.UIConversationState.Indecipherable -> OSMessageCard(
                     title = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_corruptedCard_title),
                     description = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_corruptedCard_description),
@@ -127,6 +130,7 @@ object ContactDetailScreenFactory {
         onResendInvitationClick: () -> Unit,
         onResendResponseClick: () -> Unit,
         onScanResponseClick: () -> Unit,
+        onResetConversation: () -> Unit,
         lazyListScope: LazyListScope,
     ) {
         lazyListScope.item {
@@ -165,11 +169,27 @@ object ContactDetailScreenFactory {
                 when (conversationState) {
                     ContactDetailUiState.UIConversationState.Running,
                     ContactDetailUiState.UIConversationState.FullySetup,
-                    ContactDetailUiState.UIConversationState.Indecipherable,
+                    ContactDetailUiState.UIConversationState.Reset,
                     -> {
-                        /* no-op */
+                        OSClickableRow(
+                            text = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_resetConversation),
+                            onClick = onResetConversation,
+                            buttonColors = OSTextButtonDefaults.secondaryTextButtonColors(OSActionState.Enabled),
+                            state = if (conversationState != ContactDetailUiState.UIConversationState.Reset) {
+                                OSActionState.Enabled
+                            } else {
+                                OSActionState.Disabled
+                            },
+                            leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = OSDrawable.ic_restore)) },
+                            contentPadding = LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
+                                index = 1,
+                                elementsCount = 2,
+                            ),
+                        )
                     }
-                    ContactDetailUiState.UIConversationState.WaitingForReply -> {
+                    ContactDetailUiState.UIConversationState.Indecipherable,
+                    ContactDetailUiState.UIConversationState.WaitingForReply,
+                    -> {
                         OSClickableRow(
                             text = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_resendInvitation),
                             onClick = onResendInvitationClick,

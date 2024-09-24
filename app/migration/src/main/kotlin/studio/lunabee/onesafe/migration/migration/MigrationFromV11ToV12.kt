@@ -27,7 +27,7 @@ import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.migration.utils.MigrationCryptoV1UseCase
-import studio.lunabee.onesafe.toByteArray
+import studio.lunabee.onesafe.jvm.toByteArray
 import javax.inject.Inject
 
 private val logger = LBLogger.get<MigrationFromV11ToV12>()

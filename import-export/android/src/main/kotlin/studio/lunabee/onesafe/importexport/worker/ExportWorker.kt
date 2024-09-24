@@ -47,8 +47,8 @@ import studio.lunabee.onesafe.error.OSAppError
 import studio.lunabee.onesafe.importexport.engine.BackupExportEngine
 import studio.lunabee.onesafe.importexport.usecase.ExportBackupUseCase
 import studio.lunabee.onesafe.importexport.utils.ForegroundInfoCompat
-import studio.lunabee.onesafe.toByteArray
-import studio.lunabee.onesafe.toUUID
+import studio.lunabee.onesafe.jvm.toByteArray
+import studio.lunabee.onesafe.jvm.toUUID
 import java.io.File
 
 private val logger = LBLogger.get<ExportWorker>()
@@ -139,7 +139,7 @@ class ExportWorker @AssistedInject constructor(
 
         private const val EXPORT_WORKER_SAFE_ID_DATA = "cffdf5f4-2e63-4a36-8e72-32557f1cb4a8"
 
-        fun start(context: Context, setExpedited: Boolean, safeId: SafeId): Flow<LBFlowResult<File>> {
+        fun start(workManager: WorkManager, setExpedited: Boolean, safeId: SafeId): Flow<LBFlowResult<File>> {
             val workRequestBuilder = OneTimeWorkRequestBuilder<ExportWorker>()
             if (setExpedited) {
                 workRequestBuilder.setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
@@ -150,7 +150,6 @@ class ExportWorker @AssistedInject constructor(
                 .build()
             workRequestBuilder.setInputData(data)
             val workRequest = workRequestBuilder.build()
-            val workManager = WorkManager.getInstance(context)
             workManager.enqueueUniqueWork(EXPORT_WORKER_NAME, ExistingWorkPolicy.APPEND_OR_REPLACE, workRequest)
 
             return workManager.getWorkInfoByIdFlow(workRequest.id).map { workInfo ->

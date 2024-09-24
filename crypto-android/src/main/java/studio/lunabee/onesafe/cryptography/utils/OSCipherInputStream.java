@@ -17,7 +17,9 @@
  * Last modified 1/12/24, 11:58 AM
  */
 
-package studio.lunabee.onesafe.cryptography.utils;import java.io.FilterInputStream;
+package studio.lunabee.onesafe.cryptography.android.utils
+;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 

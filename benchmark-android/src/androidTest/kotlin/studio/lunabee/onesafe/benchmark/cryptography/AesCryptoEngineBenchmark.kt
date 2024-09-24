@@ -27,7 +27,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Rule
 import kotlin.test.Test
 import studio.lunabee.compose.androidtest.helper.LbcResourcesHelper
-import studio.lunabee.onesafe.cryptography.AesCryptoEngine
+import studio.lunabee.onesafe.cryptography.android.AesCryptoEngine
 import java.io.File
 
 @LargeTest

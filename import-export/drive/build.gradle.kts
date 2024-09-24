@@ -64,7 +64,7 @@ dependencies {
 
     implementation(project(":import-export-repository"))
     implementation(project(":import-export-domain"))
-    implementation(project(":domain"))
-    implementation(project(":error"))
-    implementation(project(":common"))
+    implementation(project(":domain-jvm"))
+    implementation(libs.onesafe.error)
+    implementation(project(":common-jvm"))
 }

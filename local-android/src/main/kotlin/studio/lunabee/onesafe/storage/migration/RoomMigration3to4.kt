@@ -25,7 +25,7 @@ import androidx.core.database.getBlobOrNull
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import studio.lunabee.onesafe.domain.common.MessageIdProvider
-import studio.lunabee.onesafe.toByteArray
+import studio.lunabee.onesafe.jvm.toByteArray
 import javax.inject.Inject
 
 class RoomMigration3to4 @Inject constructor(private val idProvider: MessageIdProvider) : Migration(3, 4) {

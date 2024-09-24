@@ -88,6 +88,7 @@ import studio.lunabee.onesafe.messaging.writemessage.composable.DropDownSafeItem
 import studio.lunabee.onesafe.messaging.writemessage.composable.MessageTextLongPress
 import studio.lunabee.onesafe.messaging.writemessage.composable.NoPreviewComposeMessageCard
 import studio.lunabee.onesafe.messaging.writemessage.composable.SafeItemMessageCombinedPress
+import studio.lunabee.onesafe.messaging.writemessage.composable.SendResetMessageLayout
 import studio.lunabee.onesafe.messaging.writemessage.composable.topbar.ContactActionMenu
 import studio.lunabee.onesafe.messaging.writemessage.composable.topbar.WriteMessageTopBar
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
@@ -96,6 +97,7 @@ import studio.lunabee.onesafe.messaging.writemessage.model.BubblesWritingMessage
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationMoreOptionsSnackbarState
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
 import studio.lunabee.onesafe.messaging.writemessage.model.SentMessageData
+import studio.lunabee.onesafe.messaging.writemessage.model.WriteConversationState
 import studio.lunabee.onesafe.messaging.writemessage.viewmodel.WriteMessageViewModel
 import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.ui.UiConstants
@@ -110,7 +112,7 @@ context(WriteMessageNavScope)
 @Composable
 fun WriteMessageRoute(
     onChangeRecipient: (() -> Unit)?,
-    sendMessage: (data: SentMessageData, messageToSend: String, sharingMode: MessageSharingMode) -> Unit,
+    sendMessage: (data: SentMessageData?, messageToSend: String, sharingMode: MessageSharingMode) -> Unit,
     resendMessage: (String, MessageSharingMode) -> Unit,
     contactIdFlow: StateFlow<String?>,
     sendIcon: OSImageSpec,
@@ -249,7 +251,7 @@ fun WriteMessageRoute(
                     conversation = conversation,
                     onBackClick = navigateBack,
                     sendIcon = sendIcon,
-                    isConversationReady = state.isConversationReady,
+                    conversationState = state.conversationState,
                     onPreviewClick = {
                         viewModel.displayPreviewInfo()
                     },
@@ -259,6 +261,18 @@ fun WriteMessageRoute(
                     focusRequester = composeMessageFocusRequester,
                     canSend = !state.isCorrupted,
                     safeItemMessageCombinedPress = safeItemMessageCombinedPress,
+                    onSendResetMessageClick = {
+                        coroutineScope.launch {
+                            val sentMessageData = viewModel.getResetMessage()
+                            sentMessageData?.let {
+                                sendMessage(
+                                    null,
+                                    sentMessageData.getDeepLinkFromMessage(state.messageSharingMode),
+                                    state.messageSharingMode,
+                                )
+                            }
+                        }
+                    },
                 )
             }
         }
@@ -276,12 +290,13 @@ fun WriteMessageScreen(
     conversation: LazyPagingItems<ConversationUiData>,
     onBackClick: () -> Unit,
     sendIcon: OSImageSpec,
-    isConversationReady: Boolean,
+    conversationState: WriteConversationState,
     onPreviewClick: () -> Unit,
     onDeleteAllMessagesClick: () -> Unit,
     isOneSafeK: Boolean,
     messageTextLongPress: MessageTextLongPress,
     safeItemMessageCombinedPress: SafeItemMessageCombinedPress,
+    onSendResetMessageClick: () -> Unit,
     focusRequester: FocusRequester,
     canSend: Boolean,
 ) {
@@ -345,7 +360,7 @@ fun WriteMessageScreen(
                 contentAlignment = Alignment.TopEnd,
             ) {
                 when {
-                    !isConversationReady -> {
+                    conversationState == WriteConversationState.WaitingForReply -> {
                         ConversationNotReadyCard(
                             contactName = nameProvider.name.string,
                             onResendInvitationClick = onResendInvitationClick,
@@ -390,35 +405,46 @@ fun WriteMessageScreen(
                     }
                 }
             }
-            if (isConversationReady) {
-                OSTheme(
-                    isSystemInDarkTheme = true,
-                    isMaterialYouSettingsEnabled = LocalDesignSystem.current.isMaterialYouEnabled,
-                ) {
-                    LaunchedEffect(key1 = Unit) {
-                        focusRequester.requestFocus()
+            when (conversationState) {
+                WriteConversationState.Ready -> {
+                    OSTheme(
+                        isSystemInDarkTheme = true,
+                        isMaterialYouSettingsEnabled = LocalDesignSystem.current.isMaterialYouEnabled,
+                    ) {
+                        LaunchedEffect(key1 = Unit) {
+                            focusRequester.requestFocus()
+                        }
+                        if (message.preview != null) {
+                            ComposeMessageCard(
+                                plainMessage = message.plainMessage,
+                                encryptedMessage = message.preview,
+                                onPlainMessageChange = onPlainMessageChange,
+                                onClickOnSend = sendMessage,
+                                sendIcon = sendIcon,
+                                onPreviewClick = onPreviewClick,
+                                focusRequester = focusRequester,
+                                canSend = canSend,
+                            )
+                        } else {
+                            NoPreviewComposeMessageCard(
+                                plainMessage = message.plainMessage,
+                                onPlainMessageChange = onPlainMessageChange,
+                                onClickOnSend = sendMessage,
+                                sendIcon = sendIcon,
+                                focusRequester = focusRequester,
+                                canSend = canSend,
+                            )
+                        }
                     }
-                    if (message.preview != null) {
-                        ComposeMessageCard(
-                            plainMessage = message.plainMessage,
-                            encryptedMessage = message.preview,
-                            onPlainMessageChange = onPlainMessageChange,
-                            onClickOnSend = sendMessage,
-                            sendIcon = sendIcon,
-                            onPreviewClick = onPreviewClick,
-                            focusRequester = focusRequester,
-                            canSend = canSend,
-                        )
-                    } else {
-                        NoPreviewComposeMessageCard(
-                            plainMessage = message.plainMessage,
-                            onPlainMessageChange = onPlainMessageChange,
-                            onClickOnSend = sendMessage,
-                            sendIcon = sendIcon,
-                            focusRequester = focusRequester,
-                            canSend = canSend,
-                        )
-                    }
+                }
+                WriteConversationState.Reset -> {
+                    SendResetMessageLayout(
+                        contactName = nameProvider.name,
+                        onSendResetClick = onSendResetMessageClick,
+                    )
+                }
+                WriteConversationState.WaitingForReply -> {
+                    /* no-op */
                 }
             }
         }
@@ -569,7 +595,7 @@ fun WriteMessageScreenPreview() {
                         id = createRandomUUID(),
                         text = LbcTextSpec.Raw("hello"),
                         direction = MessageDirection.RECEIVED,
-                        sendAt = Instant.ofEpochSecond(0),
+                        date = Instant.ofEpochSecond(0),
                         channelName = loremIpsum(1),
                         type = ConversationUiData.MessageType.Message,
                         hasCorruptedData = false,
@@ -578,7 +604,7 @@ fun WriteMessageScreenPreview() {
                         id = createRandomUUID(),
                         text = LbcTextSpec.Raw("hello hello"),
                         direction = MessageDirection.SENT,
-                        sendAt = Instant.ofEpochSecond(0),
+                        date = Instant.ofEpochSecond(0),
                         channelName = loremIpsum(1),
                         type = ConversationUiData.MessageType.Message,
                         hasCorruptedData = false,
@@ -597,7 +623,7 @@ fun WriteMessageScreenPreview() {
             conversation = pagingItems,
             onBackClick = {},
             sendIcon = OSImageSpec.Drawable(OSDrawable.ic_send),
-            isConversationReady = true,
+            conversationState = WriteConversationState.Ready,
             onPreviewClick = {},
             onDeleteAllMessagesClick = {},
             isOneSafeK = false,
@@ -610,6 +636,7 @@ fun WriteMessageScreenPreview() {
                 onDeleteMessageClick = {},
                 onNavigateToItemClick = {},
             ),
+            onSendResetMessageClick = {},
         )
     }
 }
@@ -625,7 +652,7 @@ fun ImeWriteMessageScreenPreview() {
                         id = createRandomUUID(),
                         text = LbcTextSpec.Raw("hello"),
                         direction = MessageDirection.RECEIVED,
-                        sendAt = Instant.ofEpochSecond(0),
+                        date = Instant.ofEpochSecond(0),
                         channelName = loremIpsum(1),
                         type = ConversationUiData.MessageType.Message,
                         hasCorruptedData = false,
@@ -634,7 +661,7 @@ fun ImeWriteMessageScreenPreview() {
                         id = createRandomUUID(),
                         text = LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_corruptedMessage),
                         direction = MessageDirection.SENT,
-                        sendAt = Instant.now(),
+                        date = Instant.now(),
                         channelName = null,
                         type = ConversationUiData.MessageType.Message,
                         hasCorruptedData = true,
@@ -643,7 +670,7 @@ fun ImeWriteMessageScreenPreview() {
                         id = createRandomUUID(),
                         text = LbcTextSpec.Raw("hello hello"),
                         direction = MessageDirection.SENT,
-                        sendAt = Instant.ofEpochSecond(0),
+                        date = Instant.ofEpochSecond(0),
                         channelName = loremIpsum(1),
                         type = ConversationUiData.MessageType.Message,
                         hasCorruptedData = false,
@@ -662,7 +689,7 @@ fun ImeWriteMessageScreenPreview() {
             conversation = pagingItems,
             onBackClick = {},
             sendIcon = OSImageSpec.Drawable(OSDrawable.ic_send),
-            isConversationReady = true,
+            conversationState = WriteConversationState.Ready,
             onPreviewClick = {},
             onDeleteAllMessagesClick = {},
             isOneSafeK = false,
@@ -675,6 +702,7 @@ fun ImeWriteMessageScreenPreview() {
                 onDeleteMessageClick = {},
                 onNavigateToItemClick = {},
             ),
+            onSendResetMessageClick = {},
         )
     }
 }
@@ -694,7 +722,7 @@ fun ImeWriteMessageScreenCorruptedPreview() {
             conversation = pagingItems,
             onBackClick = {},
             sendIcon = OSImageSpec.Drawable(OSDrawable.ic_send),
-            isConversationReady = true,
+            conversationState = WriteConversationState.Ready,
             onPreviewClick = {},
             onDeleteAllMessagesClick = {},
             isOneSafeK = false,
@@ -707,6 +735,7 @@ fun ImeWriteMessageScreenCorruptedPreview() {
                 onDeleteMessageClick = {},
                 onNavigateToItemClick = {},
             ),
+            onSendResetMessageClick = {},
         )
     }
 }

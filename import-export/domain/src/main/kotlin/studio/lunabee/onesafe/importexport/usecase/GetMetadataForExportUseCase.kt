@@ -20,21 +20,26 @@
 package studio.lunabee.onesafe.importexport.usecase
 
 import com.lunabee.lbcore.model.LBResult
-import kotlinx.coroutines.flow.first
+import studio.lunabee.bubbles.domain.repository.ContactRepository
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.onesafe.domain.model.importexport.ExportMetadata
-import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.error.OSError
 import javax.inject.Inject
 
 class GetMetadataForExportUseCase @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
     private val safeRepository: SafeRepository,
+    private val contactRepository: ContactRepository,
 ) {
-    suspend operator fun invoke(): LBResult<ExportMetadata> {
-        val itemCount = safeItemRepository.getSafeItemsCountFlow(safeRepository.currentSafeId()).first()
-        val metadata = ExportMetadata(
+    suspend operator fun invoke(): LBResult<ExportMetadata> = OSError.runCatching {
+        val safeId = safeRepository.currentSafeId()
+        val itemCount = safeItemRepository.getSafeItemsCount(safeId)
+        val contactCount = contactRepository.getContactCount(DoubleRatchetUUID(safeId.id))
+        ExportMetadata(
             itemCount = itemCount,
+            contactCount = contactCount,
         )
-        return LBResult.Success(metadata)
     }
 }

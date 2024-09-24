@@ -77,7 +77,7 @@ dependencies {
     implementation(libs.lbcore)
     implementation(libs.lbextensions.android)
 
-    implementation(project(":domain"))
+    implementation(project(":domain-jvm"))
     implementation(project(":app:settings"))
     api(project(":common-test"))
     api(project(":local-android"))

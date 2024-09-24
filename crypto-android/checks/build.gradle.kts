@@ -32,7 +32,7 @@ dependencies {
     testImplementation(libs.lint.tests)
     testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlinx.coroutines.core)
-    testImplementation(project(":domain"))
+    testImplementation(project(":domain-jvm"))
 }
 
 java {
