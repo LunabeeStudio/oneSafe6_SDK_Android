@@ -66,6 +66,7 @@ interface SafeRepository {
     fun hasBiometricSafe(): Flow<Boolean>
     fun isBiometricEnabledForSafeFlow(safeId: SafeId): Flow<Boolean>
     suspend fun isAutoDestructionEnabledForSafe(safeId: SafeId): Boolean
+    fun isAutoDestructionEnabledForSafeFlow(safeId: SafeId): Flow<Boolean>
     suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean
     suspend fun setLastOpen(safeId: SafeId)
     suspend fun getSafeCrypto(safeId: SafeId): SafeCrypto?

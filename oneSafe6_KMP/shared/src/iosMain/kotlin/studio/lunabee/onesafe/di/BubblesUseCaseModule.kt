@@ -32,6 +32,8 @@ import studio.lunabee.bubbles.domain.usecase.UpdateContactUseCase
 import studio.lunabee.bubbles.domain.usecase.UpdateMessageSharingModeContactUseCase
 import studio.lunabee.messaging.domain.usecase.CreateInvitationUseCase
 import studio.lunabee.messaging.domain.usecase.GetInvitationMessageUseCase
+import studio.lunabee.messaging.domain.usecase.UpdateContactResetConversationDateUseCase
+import studio.lunabee.messaging.domain.usecase.GetResetMessageUseCase
 
 val bubblesUseCaseModule: Module = module {
     singleOf(::ContactLocalDecryptUseCase)
@@ -45,6 +47,8 @@ val bubblesUseCaseModule: Module = module {
     singleOf(::GetInvitationMessageUseCase)
     singleOf(::DecryptContactNameUseCase)
     singleOf(::DecryptContactSharingModeUseCase)
+    singleOf(::UpdateContactResetConversationDateUseCase)
+    singleOf(::GetResetMessageUseCase)
 }
 
 class BubblesUseCases : KoinComponent {
@@ -59,4 +63,5 @@ class BubblesUseCases : KoinComponent {
     val getInvitationMessageUseCase: GetInvitationMessageUseCase by inject()
     val decryptContactNameUseCase: DecryptContactNameUseCase by inject()
     val decryptContactSharingModeUseCase: DecryptContactSharingModeUseCase by inject()
+    val getResetMessageUseCase: GetResetMessageUseCase by inject()
 }

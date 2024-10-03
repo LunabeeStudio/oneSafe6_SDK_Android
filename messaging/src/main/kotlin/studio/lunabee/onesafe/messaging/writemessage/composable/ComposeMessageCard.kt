@@ -58,7 +58,7 @@ import studio.lunabee.onesafe.atom.text.OSText
 import studio.lunabee.onesafe.atom.textfield.OSTextField
 import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.commonui.OSString
-import studio.lunabee.onesafe.commonui.localprovider.LocalIsKeyBoardVisible
+import studio.lunabee.onesafe.commonui.localprovider.LocalOneSafeKImeController
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
 import studio.lunabee.onesafe.extension.loremIpsum
 import studio.lunabee.onesafe.messaging.MessagingConstants
@@ -79,7 +79,7 @@ fun ComposeMessageCard(
     focusRequester: FocusRequester,
     canSend: Boolean,
 ) {
-    val isKeyboardVisible: Boolean = LocalIsKeyBoardVisible.current
+    val isKeyboardVisible: Boolean = LocalOneSafeKImeController.current.isVisible
     Box(
         modifier = Modifier
             .background(LocalColorPalette.current.Neutral70)

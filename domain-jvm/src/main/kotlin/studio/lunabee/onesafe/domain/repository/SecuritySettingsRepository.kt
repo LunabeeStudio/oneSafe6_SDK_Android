@@ -47,7 +47,7 @@ interface SecuritySettingsRepository {
     suspend fun setAutoLockInactivityDelay(safeId: SafeId, delay: Duration)
     suspend fun setAutoLockAppChangeDelay(safeId: SafeId, delay: Duration)
     suspend fun setClipboardClearDelay(safeId: SafeId, delay: Duration)
-    suspend fun setPasswordInterval(safeId: SafeId, passwordInterval: VerifyPasswordInterval)
+    suspend fun setVerifyPasswordInterval(safeId: SafeId, passwordInterval: VerifyPasswordInterval)
     suspend fun setLastPasswordVerification(safeId: SafeId, instant: Instant)
     suspend fun setBubblesResendMessageDelay(safeId: SafeId, delay: Duration)
     suspend fun setAutoLockOSKInactivityDelay(safeId: SafeId, delay: Duration)

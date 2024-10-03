@@ -146,4 +146,7 @@ abstract class SafeDao {
 
     @Query("SELECT * FROM Safe WHERE id = :safeId")
     abstract suspend fun getSafeCrypto(safeId: SafeId): RoomSafe?
+
+    @Query("SELECT EXISTS(SELECT 1 FROM Safe WHERE crypto_auto_destruction_key IS NOT NULL AND :safeId = id LIMIT 1)")
+    abstract fun isAutoDestructionEnabledForSafeFlow(safeId: SafeId): Flow<Boolean>
 }

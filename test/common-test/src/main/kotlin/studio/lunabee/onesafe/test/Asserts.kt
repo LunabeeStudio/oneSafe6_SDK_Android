@@ -21,6 +21,7 @@ package studio.lunabee.onesafe.test
 
 import com.lunabee.lbcore.model.LBFlowResult
 import com.lunabee.lbcore.model.LBResult
+import studio.lunabee.onesafe.error.OSError
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.reflect.KProperty1
@@ -74,10 +75,32 @@ inline fun <reified T> assertSuccess(value: LBResult<T>?, message: String? = nul
  *
  * @see assertIs
  */
+@Deprecated("Use assertFailure(value, expectedCode, message) overload")
 @OptIn(ExperimentalContracts::class)
 inline fun <reified T> assertFailure(value: LBResult<T>?, message: String? = null): LBResult.Failure<T> {
     contract { returns() implies (value is LBResult.Failure<T>) }
     return assertIs(value, listOfNotNull(message, value?.toString()).joinToString("\n"))
+}
+
+/**
+ * Wrapper for assertIs<LBResult.Failure> which prints the value of the result in case of assertion failure
+ *
+ * @see assertIs
+ */
+@OptIn(ExperimentalContracts::class)
+inline fun <reified T, reified Err : OSError, ErrCode : Enum<ErrCode>> assertFailure(
+    value: LBResult<T>?,
+    expectedCode: OSError.ErrorCode<ErrCode, Err>? = null,
+    message: String? = null,
+): LBResult.Failure<T> {
+    contract { returns() implies (value is LBResult.Failure<T>) }
+    val errMessage = listOfNotNull(message, value?.toString()).joinToString("\n")
+    val throwable = assertIs<LBResult.Failure<T>>(value, errMessage).throwable
+    expectedCode?.let {
+        val actualCode = assertIs<Err>(throwable, errMessage).code
+        assertEquals(expectedCode, actualCode, errMessage)
+    }
+    return value
 }
 
 // TODO move assertSuccess + assertFailure to lib?

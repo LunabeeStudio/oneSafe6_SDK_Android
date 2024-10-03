@@ -81,7 +81,7 @@ class DoubleRatchetDatasourceImpl @Inject constructor(
 
     override suspend fun popMessageKey(id: DRMessageKeyId): DRMessageKey? {
         val key = doubleRatchetKeyLocalDatasource.getById(id.value)?.let { encData ->
-            val key = contactKeyRepository.getContactLocalKey(DoubleRatchetUUID(id.conversationId))
+            val key = contactKeyRepository.getContactLocalKey(DoubleRatchetUUID.fromString(id.conversationId))
             DRMessageKey(bubblesCryptoRepository.localDecrypt(key, DecryptEntry(encData, ByteArray::class)))
         }
         doubleRatchetKeyLocalDatasource.deleteById(id.value)
@@ -89,7 +89,7 @@ class DoubleRatchetDatasourceImpl @Inject constructor(
     }
 
     override suspend fun saveMessageKey(id: DRMessageKeyId, key: DRMessageKey) {
-        val contactKey = contactKeyRepository.getContactLocalKey(DoubleRatchetUUID(id.conversationId))
+        val contactKey = contactKeyRepository.getContactLocalKey(DoubleRatchetUUID.fromString(id.conversationId))
         val encDoubleRatchetKey = EncDoubleRatchetKey(
             id = id.value,
             data = bubblesCryptoRepository.localEncrypt(contactKey, EncryptEntry(key.value)),

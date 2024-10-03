@@ -17,8 +17,9 @@ skie = { id = "co.touchlab.skie", version.ref = "skie" }
 [versions]
 
 ksp = "2.0.20-1.0.25"
+##⬆= "2.1.0-Beta1-1.0.25"
 
-skie = "0.9.0-RC.5"
+skie = "0.9.0"
 
 android-gradle-plugin = "8.6.1"
 ##                 ⬆ = "8.7.0-alpha01"
@@ -32,15 +33,19 @@ android-gradle-plugin = "8.6.1"
 ##                 ⬆ = "8.7.0-alpha09"
 ##                 ⬆ = "8.7.0-beta01"
 ##                 ⬆ = "8.7.0-beta02"
+##                 ⬆ = "8.7.0-rc01"
 ##                 ⬆ = "8.8.0-alpha01"
 ##                 ⬆ = "8.8.0-alpha02"
+##                 ⬆ = "8.8.0-alpha03"
+##                 ⬆ = "8.8.0-alpha04"
 
 kotlin = "2.0.20"
+##  ⬆ = "2.0.21-RC"
 ##  ⬆ = "2.1.0-Beta1"
 
 dagger-hilt = "2.52"
 
-junit-jupiter = "5.10.0"
+junit-jupiter = "5.11.1"
 
 lunabee-library = "4.2.0-190-develop-SNAPSHOT"
 
@@ -50,15 +55,7 @@ detekt = "1.23.7"
 
 kotlinx-datetime = "0.6.1"
 
-doubleratchet = "0.1.4-data-class-SNAPSHOT"
-##         ⬆ = "0.1.4-uuid-bytes-ios-SNAPSHOT"
-##         ⬆ = "0.1.4-uuid-bytes-iossupport-SNAPSHOT"
-##         ⬆ = "0.1.4-uuid-bytes-SNAPSHOT"
-##         ⬆ = "0.1.4-uuid-string-SNAPSHOT"
-##         ⬆ = "0.1.4-SNAPSHOT"
-##         ⬆ = "0.1.4-SNAPSHOT-2"
-##         ⬆ = "0.1.4-SNAPSHOT-3"
-##         ⬆ = "0.1.4-uuid-SNAPSHOT"
+doubleratchet = "0.1.6"
 
 kotlinx-coroutines = "1.9.0"
 

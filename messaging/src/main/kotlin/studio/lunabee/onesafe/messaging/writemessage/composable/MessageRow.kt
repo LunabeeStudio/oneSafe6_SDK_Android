@@ -147,7 +147,7 @@ fun MessageRow(
                     }
                 }
                 is ConversationUiData.Message.Text -> {
-                    OSText(
+                    MessageText(
                         text = messageData.text,
                         textAlign = style.textAlign,
                         color = style.textColor,

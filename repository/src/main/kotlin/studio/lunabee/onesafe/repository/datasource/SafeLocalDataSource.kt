@@ -59,4 +59,5 @@ interface SafeLocalDataSource {
     suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean
     suspend fun setLastOpen(safeId: SafeId)
     suspend fun getSafeCrypto(safeId: SafeId): SafeCrypto?
+    fun isAutoDestructionEnabledForSafeFlow(safeId: SafeId): Flow<Boolean>
 }

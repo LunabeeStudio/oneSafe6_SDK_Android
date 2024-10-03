@@ -42,6 +42,7 @@ import studio.lunabee.onesafe.SettingsDefaults
 import studio.lunabee.onesafe.commonui.usecase.AndroidResizeIconUseCaseFactory
 import studio.lunabee.onesafe.domain.LoadFileCancelAllUseCase
 import studio.lunabee.onesafe.domain.manager.IsAppBlockedUseCase
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safe.SafeSettings
 import studio.lunabee.onesafe.domain.qualifier.ArchiveCacheDir
 import studio.lunabee.onesafe.domain.qualifier.BuildNumber
@@ -52,12 +53,15 @@ import studio.lunabee.onesafe.domain.qualifier.VersionName
 import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.usecase.ResizeIconUseCase
 import studio.lunabee.onesafe.domain.usecase.clipboard.ClipboardClearUseCase
+import studio.lunabee.onesafe.domain.usecase.clipboard.ClipboardContainsSafeDataUseCase
+import studio.lunabee.onesafe.domain.usecase.clipboard.ClipboardScheduleClearUseCase
 import studio.lunabee.onesafe.domain.usecase.settings.DefaultSafeSettingsProvider
 import studio.lunabee.onesafe.test.OSTestConfig
 import studio.lunabee.onesafe.test.OSTestConfig.clock
 import java.io.File
 import java.util.UUID
 import javax.inject.Singleton
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 @Module
@@ -149,7 +153,7 @@ object FrameworkTestModule {
     @Provides
     fun provideClipboardClearUseCase(): ClipboardClearUseCase {
         return object : ClipboardClearUseCase {
-            override suspend fun invoke() {
+            override suspend fun invoke(safeId: SafeId) {
                 /* no-op */
             }
         }
@@ -210,5 +214,25 @@ object FrameworkTestModule {
         return arrayOf(
             ComponentName("studio.lunabee.onesafe", "studio.lunabee.onesafe.MainActivity"),
         )
+    }
+
+    @Provides
+    fun provideClipboardShouldClearUseCase(): ClipboardContainsSafeDataUseCase {
+        return object : ClipboardContainsSafeDataUseCase {
+            override fun invoke(): Boolean? = null
+        }
+    }
+
+    @Provides
+    fun provideClipboardScheduleClearUseCase(): ClipboardScheduleClearUseCase {
+        return object : ClipboardScheduleClearUseCase {
+            override suspend fun setup(clearDelay: Duration, safeId: SafeId) {
+                /* no-op */
+            }
+
+            override fun cancel() {
+                /* no-op */
+            }
+        }
     }
 }

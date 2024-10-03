@@ -19,16 +19,43 @@
 
 package studio.lunabee.onesafe.domain.usecase.clipboard
 
+import studio.lunabee.onesafe.domain.model.safe.SafeId
+import studio.lunabee.onesafe.domain.repository.ClipboardRepository
+import studio.lunabee.onesafe.domain.usecase.settings.GetSecuritySettingUseCase
+import javax.inject.Inject
 import kotlin.time.Duration
+
+/**
+ * Check if the device clipboard contains a clip from oneSafe
+ */
+interface ClipboardContainsSafeDataUseCase {
+
+    /**
+     * @return True if the clipboard contains a clip from oneSafe, returns null if the clipboard cannot be checked
+     */
+    operator fun invoke(): Boolean?
+}
 
 /**
  * Check if a clipboard clear request should be enqueue depending of user parameters and value present in the clipboard.
  * Should be call both to enqueue the clearing job and to verify the state of the clipboard before actually cleaning
  */
-interface ClipboardShouldClearUseCase {
+class ClipboardShouldClearUseCase @Inject constructor(
+    private val clipboardRepository: ClipboardRepository,
+    private val getSecuritySettingUseCase: GetSecuritySettingUseCase,
+    private val clipboardContainsSafeDataUseCase: ClipboardContainsSafeDataUseCase,
+) {
     /**
-     * @return The user setting delay for clipboard auto-clear (returned by [ClipboardGetClearDelayUseCase]) or null if the clipboard
-     * should not be clear
+     * @return The user setting delay for clipboard auto-clear or null if the clipboard should not be clear
      */
-    suspend operator fun invoke(): Duration?
+    suspend operator fun invoke(safeId: SafeId): Duration? {
+        val clearDelay = getSecuritySettingUseCase.clipboardClearDelay(safeId).data
+        val shouldClear = clearDelay != Duration.INFINITE && (clipboardContainsSafeDataUseCase() ?: clipboardRepository.hasCopiedValue)
+
+        return if (shouldClear) {
+            clearDelay
+        } else {
+            null
+        }
+    }
 }

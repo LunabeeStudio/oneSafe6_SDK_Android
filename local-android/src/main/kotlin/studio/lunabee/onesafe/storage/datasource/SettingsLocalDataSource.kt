@@ -232,8 +232,8 @@ class SettingsLocalDataSource @Inject constructor(
     override suspend fun verifyPasswordInterval(safeId: SafeId): VerifyPasswordInterval =
         dao.verifyPasswordInterval(safeId)
 
-    override suspend fun setPasswordInterval(safeId: SafeId, passwordInterval: VerifyPasswordInterval): Unit =
-        dao.setPasswordInterval(safeId, passwordInterval)
+    override suspend fun setVerifyPasswordInterval(safeId: SafeId, passwordInterval: VerifyPasswordInterval): Unit =
+        dao.setVerifyPasswordInterval(safeId, passwordInterval)
 
     override suspend fun lastPasswordVerification(safeId: SafeId): Instant =
         dao.getLastPasswordVerification(safeId)

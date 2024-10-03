@@ -48,7 +48,7 @@ class AutoLockBackgroundUseCase @Inject constructor(
     private suspend fun doAutoLock(duration: Duration) {
         if (duration != Duration.INFINITE) {
             delay(duration)
-            lockAppUseCase()
+            lockAppUseCase(false)
         }
     }
 }

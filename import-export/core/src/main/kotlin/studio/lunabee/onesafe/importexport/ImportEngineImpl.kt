@@ -81,6 +81,7 @@ import studio.lunabee.onesafe.jvm.use
 import studio.lunabee.onesafe.proto.OSExportProto
 import studio.lunabee.onesafe.proto.OSExportProto.ArchiveSafeItem
 import studio.lunabee.onesafe.proto.OSExportProto.ArchiveSafeItemField
+import studio.lunabee.onesafe.protobuf.toByteArrayOrNull
 import java.io.File
 import java.time.Clock
 import java.time.Instant
@@ -376,7 +377,7 @@ class ImportEngineImpl @Inject constructor(
         val contactLists = importCacheDataSource.archiveContent?.contactsList.orEmpty()
         val existingContactIds: List<DoubleRatchetUUID> = importExportContactRepository.getAllContactIds()
         contactLists.associateTo(importCacheDataSource.newContactIdsByOldOnes) { archiveContact ->
-            val oldContactId = DoubleRatchetUUID(archiveContact.id)
+            val oldContactId = DoubleRatchetUUID.fromString(archiveContact.id)
             var newContactId = DoubleRatchetUUID(idProvider())
             while (existingContactIds.contains(newContactId)) newContactId = DoubleRatchetUUID(idProvider())
             oldContactId to newContactId
@@ -385,7 +386,7 @@ class ImportEngineImpl @Inject constructor(
         val messageLists = importCacheDataSource.archiveContent?.messagesList.orEmpty()
         val existingMessageIds: List<DoubleRatchetUUID> = importExportContactRepository.getAllMessageIds()
         messageLists.associateTo(importCacheDataSource.newMessageIdsByOldOnes) { archiveBubblesMessage ->
-            val oldMessageId = DoubleRatchetUUID(archiveBubblesMessage.id)
+            val oldMessageId = DoubleRatchetUUID.fromString(archiveBubblesMessage.id)
             var newMessageId = DoubleRatchetUUID(idProvider())
             while (existingMessageIds.contains(newMessageId)) newMessageId = DoubleRatchetUUID(idProvider())
             oldMessageId to newMessageId
@@ -488,14 +489,14 @@ class ImportEngineImpl @Inject constructor(
             ?.contactKeysList
             .orEmpty()
             .associateTo(importCacheDataSource.oldContactKeys) { archiveContactKey ->
-                archiveContactKey.contactId.let(::DoubleRatchetUUID) to ContactLocalKey(archiveContactKey.encLocalKey.toByteArray())
+                DoubleRatchetUUID.fromString(archiveContactKey.contactId) to ContactLocalKey(archiveContactKey.encLocalKey.toByteArray())
             }
         importCacheDataSource
             .archiveContent
             ?.contactKeysList
             .orEmpty()
             .associateTo(importCacheDataSource.reEncryptedContactKeys) { archiveContactKey ->
-                val oldId = archiveContactKey.contactId.let(::DoubleRatchetUUID)
+                val oldId = DoubleRatchetUUID.fromString(archiveContactKey.contactId)
                 val oldRawContactKeyValue: ByteArray = importCryptoRepository.decryptRawItemKey(
                     cipherData = archiveContactKey.encLocalKey.toByteArray(),
                     key = importCacheDataSource.archiveBubblesMasterKey!!,
@@ -633,15 +634,15 @@ class ImportEngineImpl @Inject constructor(
             SafeItem(
                 id = newItemId,
                 encName = archiveSafeItem.encName.toByteArrayOrNull(),
-                parentId = archiveSafeItem.parentId.nullIfEmpty()?.let(UUID::fromString)?.let(newSafeItemIdsByOldOnes::get),
+                parentId = archiveSafeItem.parentId.ifEmpty { null }?.let(UUID::fromString)?.let(newSafeItemIdsByOldOnes::get),
                 isFavorite = archiveSafeItem.isFavorite,
                 updatedAt = Instant.parse(archiveSafeItem.updatedAt),
                 position = archiveSafeItem.position,
-                iconId = archiveSafeItem.iconId.nullIfEmpty()?.let(UUID::fromString),
+                iconId = archiveSafeItem.iconId.ifEmpty { null }?.let(UUID::fromString),
                 encColor = archiveSafeItem.encColor.toByteArrayOrNull(),
-                deletedAt = archiveSafeItem.deletedAt.nullIfEmpty()?.let { Instant.parse(it) },
-                deletedParentId = if (archiveSafeItem.deletedAt.nullIfEmpty() != null) {
-                    archiveSafeItem.deletedParentId.nullIfEmpty()?.let {
+                deletedAt = archiveSafeItem.deletedAt.ifEmpty { null }?.let { Instant.parse(it) },
+                deletedParentId = if (archiveSafeItem.deletedAt.ifEmpty { null } != null) {
+                    archiveSafeItem.deletedParentId.ifEmpty { null }?.let {
                         newSafeItemIdsByOldOnes[UUID.fromString(it)]
                     }
                 } else {
@@ -677,7 +678,7 @@ class ImportEngineImpl @Inject constructor(
 
     private suspend fun mapContactFromArchive(archiveContacts: List<OSExportProto.ArchiveBubblesContact>): List<Contact> {
         return archiveContacts.map { contact ->
-            val oldContactId = DoubleRatchetUUID(contact.id)
+            val oldContactId = DoubleRatchetUUID.fromString(contact.id)
             val newContactId = importCacheDataSource.newContactIdsByOldOnes[oldContactId]!!
             Contact(
                 id = newContactId,
@@ -685,7 +686,7 @@ class ImportEngineImpl @Inject constructor(
                 encSharedKey = contact.encSharedKey.toByteArrayOrNull()?.let { ContactSharedKey(it) },
                 updatedAt = Instant.parse(contact.updatedAt).toKotlinInstant(),
                 encSharingMode = contact.encSharingMode.toByteArray(),
-                sharedConversationId = DoubleRatchetUUID(contact.sharedConversationId),
+                sharedConversationId = DoubleRatchetUUID.fromString(contact.sharedConversationId),
                 consultedAt = Instant.parse(contact.consultedAt).toKotlinInstant(),
                 safeId = DoubleRatchetUUID(safeRepository.currentSafeId().id),
                 encResetConversationDate = contact.encResetConversationDate.toByteArrayOrNull(),
@@ -695,7 +696,7 @@ class ImportEngineImpl @Inject constructor(
 
     private fun mapConversationFromArchive(archiveConversations: List<OSExportProto.ArchiveBubblesConversation>): List<EncConversation> {
         return archiveConversations.map { conversation ->
-            val oldContactId = DoubleRatchetUUID(conversation.id)
+            val oldContactId = DoubleRatchetUUID.fromString(conversation.id)
             val newConversationId = importCacheDataSource.newContactIdsByOldOnes[oldContactId]!!
             EncConversation(
                 id = newConversationId,
@@ -714,9 +715,9 @@ class ImportEngineImpl @Inject constructor(
 
     private suspend fun mapSafeMessageFromArchive(archiveSafeMessages: List<OSExportProto.ArchiveBubblesMessage>): Map<Float, SafeMessage> {
         return archiveSafeMessages.associate { safeMessage ->
-            val oldContactId = DoubleRatchetUUID(safeMessage.fromContactId)
+            val oldContactId = DoubleRatchetUUID.fromString(safeMessage.fromContactId)
             val newContactId = importCacheDataSource.newContactIdsByOldOnes[oldContactId]!!
-            val oldMessageId = DoubleRatchetUUID(safeMessage.id)
+            val oldMessageId = DoubleRatchetUUID.fromString(safeMessage.id)
             val newMessageId = importCacheDataSource.newMessageIdsByOldOnes[oldMessageId]!!
 
             safeMessage.order to SafeMessage(

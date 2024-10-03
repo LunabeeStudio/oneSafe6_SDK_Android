@@ -250,7 +250,7 @@ abstract class OSHiltTest : OSTest() {
      * ```
      */
     fun logout(): Unit = runBlocking {
-        lockAppUseCase()
+        lockAppUseCase(false)
     }
 
     @After

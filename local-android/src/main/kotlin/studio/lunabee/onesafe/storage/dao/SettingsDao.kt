@@ -266,7 +266,7 @@ interface SettingsDao {
     suspend fun setClipboardClearDelay(safeId: SafeId, delay: Duration)
 
     @Query("UPDATE Safe SET setting_verify_password_interval = :passwordInterval WHERE id IS :safeId")
-    suspend fun setPasswordInterval(safeId: SafeId, passwordInterval: VerifyPasswordInterval)
+    suspend fun setVerifyPasswordInterval(safeId: SafeId, passwordInterval: VerifyPasswordInterval)
 
     @Query("UPDATE Safe SET setting_last_password_verification = :instant WHERE id IS :safeId")
     suspend fun setLastPasswordVerification(safeId: SafeId, instant: Instant)

@@ -22,4 +22,4 @@ package studio.lunabee.onesafe.test
 import kotlinx.coroutines.runBlocking
 import studio.lunabee.onesafe.domain.usecase.autolock.LockAppUseCase
 
-fun LockAppUseCase.blocking(): Unit = runBlocking { this@blocking.invoke() }
+fun LockAppUseCase.blocking(): Unit = runBlocking { this@blocking.invoke(true) }

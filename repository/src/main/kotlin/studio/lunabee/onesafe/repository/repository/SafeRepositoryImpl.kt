@@ -155,6 +155,10 @@ class SafeRepositoryImpl @Inject constructor(
         return localDataSource.isAutoDestructionEnabledForSafe(safeId)
     }
 
+    override fun isAutoDestructionEnabledForSafeFlow(safeId: SafeId): Flow<Boolean> {
+        return localDataSource.isAutoDestructionEnabledForSafeFlow(safeId)
+    }
+
     override suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean {
         return localDataSource.isBiometricEnabledForSafe(safeId)
     }

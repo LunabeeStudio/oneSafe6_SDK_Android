@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.ime
 import android.app.ActivityManager
 import android.content.ClipboardManager
 import android.content.Context
+import android.os.Process
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
@@ -57,6 +58,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.platform.WindowInfo
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -78,8 +81,9 @@ import kotlinx.coroutines.launch
 import studio.lunabee.messaging.domain.repository.MessageChannelRepository
 import studio.lunabee.messaging.domain.usecase.ProcessMessageQueueUseCase
 import studio.lunabee.onesafe.atom.textfield.LocalTextFieldInteraction
-import studio.lunabee.onesafe.commonui.localprovider.LocalIsKeyBoardVisible
 import studio.lunabee.onesafe.commonui.localprovider.LocalIsOneSafeK
+import studio.lunabee.onesafe.commonui.localprovider.LocalOneSafeKImeController
+import studio.lunabee.onesafe.commonui.localprovider.OneSafeKImeController
 import studio.lunabee.onesafe.domain.usecase.authentication.CheckDatabaseAccessUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSignUpUseCase
@@ -257,7 +261,7 @@ class OSFlorisImeService : FlorisImeService() {
     override fun onCreateInputView(): View {
         // Always lock on UI (re)creation
         lifecycleScope.launch {
-            lockAppUseCase()
+            lockAppUseCase(false)
         }
         return super.onCreateInputView()
     }
@@ -367,7 +371,7 @@ class OSFlorisImeService : FlorisImeService() {
                                         !isDatabaseAccessible -> HelpActivity.launch(this@OSFlorisImeService)
                                         isSafeReady -> {
                                             setAppVisitUseCase.setHasDoneTutorialLockOsk()
-                                            lockUseCase()
+                                            lockUseCase(false)
                                         }
                                         else -> showOneSafeUi()
                                     }
@@ -424,8 +428,8 @@ class OSFlorisImeService : FlorisImeService() {
         }
 
         val focusManager = LocalFocusManager.current
-        LaunchedEffect(isKeyboardVisible) {
-            if (!isKeyboardVisible) {
+        LaunchedEffect(isOneSafeUiVisible) {
+            if (!isOneSafeUiVisible) {
                 focusManager.clearFocus()
             }
         }
@@ -469,11 +473,22 @@ class OSFlorisImeService : FlorisImeService() {
                     )
             },
             LocalIsOneSafeK.provides(true),
-            LocalIsKeyBoardVisible.provides(isKeyboardVisible),
+            LocalOneSafeKImeController.provides(
+                OneSafeKImeController(
+                    isVisible = isKeyboardVisible,
+                    showKeyboard = ::showKeyboard,
+                    hideKeyboard = ::hideKeyboard,
+                ),
+            ),
             LocalOnBackPressedDispatcherOwner.provides(object : OnBackPressedDispatcherOwner {
                 override val lifecycle: Lifecycle = this@OSFlorisImeService.lifecycle
                 override val onBackPressedDispatcher: OnBackPressedDispatcher =
                     OnBackPressedDispatcher(null)
+            }),
+            // TextField checks if the window as the focus in order to show the edition caret. Override real focus information to force it
+            LocalWindowInfo.provides(object : WindowInfo {
+                override val isWindowFocused: Boolean
+                    get() = isOneSafeVisible
             }),
         ) {
             Box(
@@ -557,7 +572,6 @@ class OSFlorisImeService : FlorisImeService() {
                     }
                 },
                 hasDoneOnBoardingBubbles = hasDoneOnBoardingBubbles,
-                hideKeyboard = ::hideKeyboard,
             )
         }
     }
@@ -566,9 +580,13 @@ class OSFlorisImeService : FlorisImeService() {
         isKeyboardVisibleFlow.value = false
     }
 
+    private fun showKeyboard() {
+        isKeyboardVisibleFlow.value = true
+    }
+
     private fun switchOSKToKeyboard() {
         isOneSafeUiVisibleFlow.value = false
-        isKeyboardVisibleFlow.value = true
+        showKeyboard()
     }
 
     companion object {
@@ -577,7 +595,7 @@ class OSFlorisImeService : FlorisImeService() {
             activityManager.runningAppProcesses.firstOrNull {
                 it.processName == context.packageName + BuildConfig.IME_PROCESS_NAME
             }?.pid?.let {
-                android.os.Process.killProcess(it)
+                Process.killProcess(it)
             }
         }
     }

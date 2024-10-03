@@ -42,7 +42,7 @@ class DeleteSafeUseCase @Inject constructor(
 ) {
 
     suspend operator fun invoke(safeId: SafeId): LBResult<Unit> = OSError.runCatching(logger) {
-        lockAppUseCase()
+        lockAppUseCase(true)
         // Delete files (files, icons, backups)
         iconRepository.deleteAll(safeId)
         fileRepository.deleteAll(safeId)

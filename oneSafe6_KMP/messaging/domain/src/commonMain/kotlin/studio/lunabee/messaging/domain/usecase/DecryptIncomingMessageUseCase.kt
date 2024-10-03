@@ -151,7 +151,7 @@ class DecryptIncomingMessageUseCase @Inject constructor(
                 sequenceNumber = plainMessageProto.header.sequenceMessageNumber,
                 publicKey = DRPublicKey(plainMessageProto.header.publicKey),
             ),
-            recipientId = DoubleRatchetUUID(plainMessageProto.recipientId),
+            recipientId = DoubleRatchetUUID.fromString(plainMessageProto.recipientId),
         )
         // We skip the handshake step if we already did one
         if (contact.encSharedKey == null) {
@@ -213,7 +213,7 @@ class DecryptIncomingMessageUseCase @Inject constructor(
         val messageResetConversationDate = plainMessageProto?.conversationResetDate?.toInstant()
             ?: plainResetInvitationMessage?.conversationResetDate?.toInstant() ?: Instant.DISTANT_PAST
         return when {
-            messageResetConversationDate <= contactResetConversationDate -> DecryptIncomingMessageData.OutdatedConversationMessage(
+            messageResetConversationDate < contactResetConversationDate -> DecryptIncomingMessageData.OutdatedConversationMessage(
                 contact.id,
             )
             plainMessageProto != null -> decryptSafeMessage(contact, plainMessageProto)
@@ -234,11 +234,9 @@ class DecryptIncomingMessageUseCase @Inject constructor(
                 sequenceNumber = plainMessageProto.header.sequenceMessageNumber,
                 publicKey = DRPublicKey(plainMessageProto.header.publicKey),
             ),
-            recipientId = DoubleRatchetUUID(plainMessageProto.recipientId),
+            recipientId = DoubleRatchetUUID.fromString(plainMessageProto.recipientId),
         )
-        if (plainMessage.messageHeader.messageNumber == 0) {
-            handShakeDataRepository.delete(contact.id)
-        }
+        handShakeDataRepository.delete(contact.id)
         return when (plainMessage.recipientId) {
             contact.id -> DecryptIncomingMessageData.DecryptOwnMessage(contact.id)
             else -> {
@@ -298,6 +296,8 @@ class DecryptIncomingMessageUseCase @Inject constructor(
     private fun tryParseHandShakeMessage(messageData: ByteArray): ProtoHandShakeMessage? {
         return try {
             val result = ProtoBuf.decodeFromByteArray<ProtoHandShakeMessage>(messageData)
+            DoubleRatchetUUID.fromString(result.recipientId)
+            DoubleRatchetUUID.fromString(result.conversationId)
             return result
         } catch (e: SerializationException) {
             null
@@ -310,8 +310,12 @@ class DecryptIncomingMessageUseCase @Inject constructor(
     private fun tryParseResetMessage(messageData: ByteArray): ProtoResetInvitationMessage? {
         return try {
             val result = ProtoBuf.decodeFromByteArray<ProtoResetInvitationMessage>(messageData)
+            DoubleRatchetUUID.fromString(result.recipientId)
+            DoubleRatchetUUID.fromString(result.conversationId)
             return result
         } catch (e: SerializationException) {
+            null
+        } catch (e: IllegalArgumentException) {
             null
         }
     }
@@ -320,8 +324,11 @@ class DecryptIncomingMessageUseCase @Inject constructor(
     private fun tryParseMessage(messageData: ByteArray): ProtoMessage? {
         return try {
             val result = ProtoBuf.decodeFromByteArray<ProtoMessage>(messageData)
+            DoubleRatchetUUID.fromString(result.recipientId)
             return result
         } catch (e: SerializationException) {
+            null
+        } catch (e: IllegalArgumentException) {
             null
         }
     }

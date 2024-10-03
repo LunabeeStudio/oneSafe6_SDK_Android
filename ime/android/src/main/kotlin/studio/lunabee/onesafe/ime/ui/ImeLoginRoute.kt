@@ -29,11 +29,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import studio.lunabee.onesafe.commonui.snackbar.ErrorSnackbarState
 import studio.lunabee.onesafe.ime.R
+import studio.lunabee.onesafe.ime.model.ImeLoginUiState
 import studio.lunabee.onesafe.ime.ui.biometric.BiometricActivity
 import studio.lunabee.onesafe.ime.viewmodel.ImeLoginViewModel
 import studio.lunabee.onesafe.login.screen.LoginExitIcon
 import studio.lunabee.onesafe.login.screen.LoginScreenWrapper
-import studio.lunabee.onesafe.login.state.LoginUiState
+import studio.lunabee.onesafe.login.state.CommonLoginUiState
 
 @Composable
 fun ImeLoginRoute(
@@ -41,14 +42,14 @@ fun ImeLoginRoute(
     onClose: () -> Unit,
     viewModel: ImeLoginViewModel,
 ) {
-    val loginUiState: LoginUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    when (val uiState = loginUiState) {
-        LoginUiState.Initialize -> {
+    val loginUiState: ImeLoginUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    when (val uiState = loginUiState.commonLoginUiState) {
+        CommonLoginUiState.Initialize -> {
             /* no-op */
         }
-        LoginUiState.Bypass -> onSuccess()
-        is LoginUiState.Data -> {
-            val isSuccess = uiState.loginResult is LoginUiState.LoginResult.Success
+        CommonLoginUiState.Bypass -> onSuccess()
+        is CommonLoginUiState.Data -> {
+            val isSuccess = uiState.loginResult is CommonLoginUiState.LoginResult.Success
             LaunchedEffect(isSuccess) {
                 if (isSuccess) {
                     onSuccess()
@@ -57,13 +58,17 @@ fun ImeLoginRoute(
 
             val exitIcon: LoginExitIcon = LoginExitIcon.Close(onClose)
             val context = LocalContext.current
-            val onBiometricClick: () -> Unit = {
-                val intent = Intent(context, BiometricActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS or
-                    Intent.FLAG_ACTIVITY_NO_ANIMATION or
-                    Intent.FLAG_ACTIVITY_NO_HISTORY
-                context.startActivity(intent)
+            val onBiometricClick = if (loginUiState.hasBiometry) {
+                {
+                    val intent = Intent(context, BiometricActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS or
+                        Intent.FLAG_ACTIVITY_NO_ANIMATION or
+                        Intent.FLAG_ACTIVITY_NO_HISTORY
+                    context.startActivity(intent)
+                }
+            } else {
+                null
             }
 
             val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }

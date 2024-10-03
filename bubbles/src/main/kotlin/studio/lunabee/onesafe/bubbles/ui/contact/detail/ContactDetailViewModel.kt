@@ -37,6 +37,7 @@ import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.bubbles.domain.usecase.GetContactUseCase
 import studio.lunabee.bubbles.domain.usecase.UpdateMessageSharingModeContactUseCase
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.messaging.domain.model.ConversationState
 import studio.lunabee.messaging.domain.usecase.GetConversationStateUseCase
 import studio.lunabee.messaging.domain.usecase.ResetConversationUseCase
 import studio.lunabee.onesafe.bubbles.ui.contact.model.MessageSharingModeUi
@@ -62,7 +63,8 @@ class ContactDetailViewModel @Inject constructor(
     private val resetConversationUseCase: ResetConversationUseCase,
     isSafeReadyUseCase: IsSafeReadyUseCase,
 ) : ViewModel() {
-    val contactId: DoubleRatchetUUID = savedStateHandle.get<String>(ContactDetailDestination.ContactIdArg)?.let { DoubleRatchetUUID(it) }
+    val contactId: DoubleRatchetUUID = savedStateHandle.get<String>(ContactDetailDestination.ContactIdArg)
+        ?.let { DoubleRatchetUUID.fromString(it) }
         ?: error("Missing contact id in args")
 
     private val _dialogState = MutableStateFlow<DialogState?>(null)
@@ -89,7 +91,7 @@ class ContactDetailViewModel @Inject constructor(
                     MessageSharingMode::class,
                 ).data?.let { MessageSharingModeUi.fromMode(it) } ?: MessageSharingModeUi.CypherText
 
-                val conversationState = getConversationStateUseCase(contactId)
+                val conversationState: LBResult<ConversationState> = getConversationStateUseCase(contactId)
 
                 when (conversationState) {
                     is LBResult.Failure -> {

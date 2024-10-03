@@ -19,6 +19,10 @@
 
 package studio.lunabee.onesafe.domain.usecase.autodestruction
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import studio.lunabee.onesafe.domain.repository.SafeRepository
 import javax.inject.Inject
 
@@ -29,5 +33,10 @@ class IsAutoDestructionEnabledUseCase @Inject constructor(
     suspend operator fun invoke(): Boolean {
         val currentSafeId = safeRepository.currentSafeId()
         return safeRepository.isAutoDestructionEnabledForSafe(currentSafeId)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun flow(): Flow<Boolean> = safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+        safeId?.let { safeRepository.isAutoDestructionEnabledForSafeFlow(safeId) } ?: flowOf(false)
     }
 }

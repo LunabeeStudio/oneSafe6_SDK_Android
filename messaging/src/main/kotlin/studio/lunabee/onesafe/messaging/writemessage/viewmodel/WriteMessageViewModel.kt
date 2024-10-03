@@ -148,18 +148,18 @@ class WriteMessageViewModel @Inject constructor(
         WriteMessageDestination.ContactIdArg,
         savedStateHandle.get<String>(WriteMessageDestination.ContactIdArg),
     ).map {
-        it?.let { DoubleRatchetUUID(it) }
+        it?.let { DoubleRatchetUUID.fromString(it) }
     }.stateIn(
         viewModelScope,
         CommonUiConstants.Flow.DefaultSharingStarted,
-        savedStateHandle.get<String>(WriteMessageDestination.ContactIdArg)?.let { DoubleRatchetUUID(it) },
+        savedStateHandle.get<String>(WriteMessageDestination.ContactIdArg)?.let { DoubleRatchetUUID.fromString(it) },
     )
 
     private val contactFlow = savedStateHandle.getStateFlow(
         WriteMessageDestination.ContactIdArg,
         savedStateHandle.get<String>(WriteMessageDestination.ContactIdArg),
     ).flatMapLatest { contactId ->
-        val uuid = DoubleRatchetUUID(contactId.orEmpty())
+        val uuid = DoubleRatchetUUID.fromString(contactId.orEmpty())
         this.contactId.value?.let { getContactUseCase.flow(uuid).distinctUntilChanged() } ?: flowOf(null)
     }
 
@@ -264,7 +264,7 @@ class WriteMessageViewModel @Inject constructor(
     val conversation: Flow<PagingData<ConversationUiData>> =
         savedStateHandle
             .getStateFlow<String?>(WriteMessageDestination.ContactIdArg, null)
-            .map { it?.let { DoubleRatchetUUID(it) } }
+            .map { it?.let { DoubleRatchetUUID.fromString(it) } }
             .filterNotNull()
             .flatMapLatest { contactId ->
                 messagePagingRepository.getAllPaged(

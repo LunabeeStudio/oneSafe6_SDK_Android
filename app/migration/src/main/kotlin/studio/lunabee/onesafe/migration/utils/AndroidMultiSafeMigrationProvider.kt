@@ -44,10 +44,10 @@ import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import studio.lunabee.onesafe.domain.usecase.settings.DefaultSafeSettingsProvider
 import studio.lunabee.onesafe.importexport.model.GoogleDriveSettings
 import studio.lunabee.onesafe.importexport.utils.AutoBackupErrorIdProvider
+import studio.lunabee.onesafe.protobuf.toByteArrayOrNull
 import studio.lunabee.onesafe.storage.datastore.ProtoSerializer
 import studio.lunabee.onesafe.storage.migration.RoomMigration12to13
 import studio.lunabee.onesafe.storage.model.RoomAppVisit
-import studio.lunabee.onesafe.jvm.use
 import studio.lunabee.onesafe.storage.utils.queryNumEntries
 import studio.lunabee.onesafe.use
 import java.io.File
@@ -77,16 +77,13 @@ class AndroidMultiSafeMigrationProvider @Inject constructor(
     private val iconDir: File = File(context.filesDir, "icons")
 
     override suspend fun getSafeCrypto(db: SupportSQLiteDatabase): RoomMigration12to13.SafeCryptoMigration? {
-        // TODO <multisafe> verify all condition in fresh install and migration case
-        // TODO <multisafe> takeUnless -> see TODO ProtobufModelExt.kt
-
         val data = encodedDataStore.data.firstOrNull()?.dataMap
-        val masterSalt = data?.get(datastoreMasterSalt)?.takeUnless { it.isEmpty }?.toByteArray()
+        val masterSalt = data?.get(datastoreMasterSalt)?.toByteArrayOrNull()
         return if (masterSalt != null) {
-            val testValue = data[datastoreMasterKeyTest]?.takeUnless { it.isEmpty }?.toByteArray()!!
-            val searchIndexKey = data[datastoreSearchIndexKey]?.takeUnless { it.isEmpty }?.toByteArray()
-            val itemEditionKey = data[datastoreItemEditionKey]?.takeUnless { it.isEmpty }?.toByteArray()
-            val bubblesKey = data[datastoreBubblesContactKey]?.takeUnless { it.isEmpty }?.toByteArray()
+            val testValue = data[datastoreMasterKeyTest]?.toByteArrayOrNull()!!
+            val searchIndexKey = data[datastoreSearchIndexKey]?.toByteArrayOrNull()
+            val itemEditionKey = data[datastoreItemEditionKey]?.toByteArrayOrNull()
+            val bubblesKey = data[datastoreBubblesContactKey]?.toByteArrayOrNull()
             val encBiometricMasterKey = encDataStore.retrieveValue(BiometricDataStoreIvKey).firstOrNull()?.use { iv ->
                 encDataStore.retrieveValue(BiometricDataStoreMasterKeyKey).firstOrNull()?.use { key ->
                     BiometricCryptoMaterial(iv, key)

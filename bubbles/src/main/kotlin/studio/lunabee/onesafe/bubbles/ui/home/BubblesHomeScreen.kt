@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe.bubbles.ui.home
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +30,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -38,16 +41,20 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
 import studio.lunabee.onesafe.atom.OSScreen
+import studio.lunabee.onesafe.atom.button.OSIconButton
+import studio.lunabee.onesafe.atom.button.defaults.OSIconButtonDefaults
 import studio.lunabee.onesafe.bubbles.ui.contact.EmptyContactsScreen
 import studio.lunabee.onesafe.bubbles.ui.contact.FilledContactsScreen
 import studio.lunabee.onesafe.bubbles.ui.conversation.AppEmptyConversationScreen
 import studio.lunabee.onesafe.bubbles.ui.conversation.AppFilledConversationScreen
+import studio.lunabee.onesafe.bubbles.ui.home.composable.AddContactDropdownMenu
 import studio.lunabee.onesafe.bubbles.ui.home.model.BubblesTabsData
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.action.topAppBarOptionNavBack
+import studio.lunabee.onesafe.model.OSActionState
 import studio.lunabee.onesafe.model.TopAppBarOptionTrailing
 import studio.lunabee.onesafe.molecule.OSTopAppBar
 import studio.lunabee.onesafe.molecule.tabs.OSTabs
@@ -108,11 +115,26 @@ private fun BubblesHomeScreen(
                 title = LbcTextSpec.StringResource(OSString.bubbles_title),
                 options = listOf(
                     topAppBarOptionNavBack(navigateBack),
-                    TopAppBarOptionTrailing.secondaryIconAction(
-                        image = OSImageSpec.Drawable(OSDrawable.ic_add),
-                        onClick = navigateToCreateContact,
-                        contentDescription = LbcTextSpec.StringResource(OSString.bubbles_inviteContact),
-                    ),
+                    TopAppBarOptionTrailing {
+                        var isMenuExpanded by remember { mutableStateOf(false) }
+                        Box {
+                            OSIconButton(
+                                image = OSImageSpec.Drawable(OSDrawable.ic_add),
+                                onClick = { isMenuExpanded = true },
+                                buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
+                                modifier = Modifier
+                                    .testTag(tag = UiConstants.TestTag.OSAppBarMenu),
+                                contentDescription = LbcTextSpec.StringResource(OSString.bubbles_inviteContact),
+                                colors = OSIconButtonDefaults.secondaryIconButtonColors(state = OSActionState.Enabled),
+                            )
+                            AddContactDropdownMenu(
+                                isMenuExpended = isMenuExpanded,
+                                onDismiss = { isMenuExpanded = false },
+                                onCreateContactClick = navigateToCreateContact,
+                                onScanClick = navigateToScanBarcode,
+                            )
+                        }
+                    },
                 ),
             )
             OSTabs(
@@ -142,6 +164,9 @@ private fun BubblesHomeScreen(
                         if (contacts?.isEmpty() == true) {
                             AppEmptyConversationScreen(
                                 modifier = Modifier.testTag(UiConstants.TestTag.Screen.BubblesHomeScreenConversationTab),
+                                onDecryptClick = navigateToDecryptMessage,
+                                onSettingClick = navigateToBubblesSettings,
+                                isOSKShown = isOSKShown,
                             )
                         } else {
                             AppFilledConversationScreen(

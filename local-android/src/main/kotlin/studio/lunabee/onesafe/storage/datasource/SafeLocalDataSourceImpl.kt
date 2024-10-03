@@ -136,4 +136,8 @@ class SafeLocalDataSourceImpl @Inject constructor(
     override suspend fun getSafeCrypto(safeId: SafeId): SafeCrypto? {
         return safeDao.getSafeCrypto(safeId)?.toSafeCrypto()
     }
+
+    override fun isAutoDestructionEnabledForSafeFlow(safeId: SafeId): Flow<Boolean> {
+        return safeDao.isAutoDestructionEnabledForSafeFlow(safeId)
+    }
 }

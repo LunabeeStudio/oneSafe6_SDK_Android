@@ -37,6 +37,7 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.onesafe.error)
     implementation(project(":common-jvm"))
+    implementation(project(":common-protobuf"))
     implementation(project(":import-export-proto"))
     implementation(project(":import-export-domain"))
 }

@@ -60,7 +60,6 @@ dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.datastore.preferences)
     implementation(libs.hilt.android)
-    implementation(libs.protobuf.kotlinlite)
     implementation(libs.kotlinx.serialization.protobuf)
     implementation(libs.sqlite.ktx)
 
@@ -75,6 +74,7 @@ dependencies {
     implementation(project(":repository"))
     implementation(project(":crypto-android"))
     implementation(project(":common-jvm"))
+    implementation(project(":common-protobuf"))
     implementation(libs.onesafe.error)
     implementation(project(":local-android"))
     implementation(project(":app:settings"))

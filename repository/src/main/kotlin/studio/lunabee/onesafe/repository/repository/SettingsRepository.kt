@@ -165,8 +165,8 @@ class SettingsRepository @Inject constructor(
     override suspend fun verifyPasswordInterval(safeId: SafeId): VerifyPasswordInterval =
         safeDataSource.verifyPasswordInterval(safeId)
 
-    override suspend fun setPasswordInterval(safeId: SafeId, passwordInterval: VerifyPasswordInterval) {
-        safeDataSource.setPasswordInterval(safeId, passwordInterval)
+    override suspend fun setVerifyPasswordInterval(safeId: SafeId, passwordInterval: VerifyPasswordInterval) {
+        safeDataSource.setVerifyPasswordInterval(safeId, passwordInterval)
     }
 
     override suspend fun lastPasswordVerificationInstant(safeId: SafeId): Instant =

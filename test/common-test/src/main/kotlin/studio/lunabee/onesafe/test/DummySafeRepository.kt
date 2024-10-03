@@ -155,6 +155,10 @@ class DummySafeRepository(initSafeId: SafeId? = firstSafeId) : SafeRepository {
         return false
     }
 
+    override fun isAutoDestructionEnabledForSafeFlow(safeId: SafeId): Flow<Boolean> {
+        return flowOf(false)
+    }
+
     override suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean {
         return bioMap.containsKey(safeId)
     }

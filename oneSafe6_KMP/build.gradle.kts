@@ -52,6 +52,16 @@ allprojects {
             }
         }
         maven {
+            url = uri("https://artifactory.lunabee.studio/artifactory/double-ratchet-kmm/")
+            credentials {
+                username = artifactoryUsername
+                password = artifactoryPassword
+            }
+            mavenContent {
+                releasesOnly()
+            }
+        }
+        maven {
             url = URI("https://artifactory.lunabee.studio/artifactory/libs-release-local")
             credentials {
                 username = artifactoryUsername

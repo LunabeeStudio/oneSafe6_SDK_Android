@@ -151,7 +151,6 @@ fun NavGraphBuilder.writeMessageScreen(
             },
             contactIdFlow = backStackEntry.savedStateHandle.getStateFlow(WriteMessageDestination.ContactIdArg, null),
             sendIcon = OSImageSpec.Drawable(OSDrawable.ic_share),
-            hideKeyboard = null,
             resendMessage = { messageToSend, sharingMode ->
                 when (sharingMode) {
                     MessageSharingMode.Deeplink ->

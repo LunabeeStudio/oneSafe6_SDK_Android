@@ -48,7 +48,7 @@ class EditContactViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ContactFormViewModel(editContactDelegate) {
     private val contactId: DoubleRatchetUUID = savedStateHandle.get<String>(EditContactDestination.ContactIdArgs)
-        ?.let { DoubleRatchetUUID(it) }
+        ?.let { DoubleRatchetUUID.fromString(it) }
         ?: error("Missing contact id in args")
 
     init {
@@ -80,13 +80,13 @@ class EditContactDelegate @Inject constructor(
     loadingManager: LoadingManager,
 ) : DefaultContactFormDelegate(loadingManager) {
     private val contactId: DoubleRatchetUUID = savedStateHandle.get<String>(EditContactDestination.ContactIdArgs)
-        ?.let { DoubleRatchetUUID(it) }
+        ?.let { DoubleRatchetUUID.fromString(it) }
         ?: error("Missing contact id in args")
 
     private val _createInvitationResult: MutableStateFlow<LBResult<DoubleRatchetUUID>?> = MutableStateFlow(null)
     override val createInvitationResult: StateFlow<LBResult<DoubleRatchetUUID>?> = _createInvitationResult.asStateFlow()
     override suspend fun doSaveContact(contactName: String, sharingMode: MessageSharingMode) {
-        val updateRes = updateContactUseCase(contactId, sharingMode, contactName)
+        val updateRes: LBResult<Unit> = updateContactUseCase(contactId, sharingMode, contactName)
         when (updateRes) {
             is LBResult.Failure -> _createInvitationResult.value = LBResult.Failure(updateRes.throwable, contactId)
             is LBResult.Success -> _createInvitationResult.value = LBResult.Success(contactId)

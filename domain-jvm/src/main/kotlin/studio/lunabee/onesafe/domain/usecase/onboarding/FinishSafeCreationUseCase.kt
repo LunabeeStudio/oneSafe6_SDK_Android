@@ -25,6 +25,7 @@ import studio.lunabee.onesafe.domain.model.safe.AppVisit
 import studio.lunabee.onesafe.domain.model.safe.SafeCrypto
 import studio.lunabee.onesafe.domain.repository.EditCryptoRepository
 import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.domain.usecase.UpdatePanicButtonWidgetUseCase
 import studio.lunabee.onesafe.domain.usecase.settings.DefaultSafeSettingsProvider
 import studio.lunabee.onesafe.domain.usecase.settings.SetSecuritySettingUseCase
 import studio.lunabee.onesafe.error.OSError
@@ -39,6 +40,7 @@ class FinishSafeCreationUseCase @Inject constructor(
     private val safeIdProvider: SafeIdProvider,
     private val safeRepository: SafeRepository,
     private val getDefaultSafeSettingsUseCase: DefaultSafeSettingsProvider,
+    private val updatePanicButtonWidgetUseCase: UpdatePanicButtonWidgetUseCase,
 ) {
     suspend operator fun invoke(): LBResult<Unit> = OSError.runCatching {
         val cryptoSafe = editCryptoRepository.setMainCryptographicData()
@@ -59,5 +61,6 @@ class FinishSafeCreationUseCase @Inject constructor(
             appVisit = AppVisit(),
         )
         setSecuritySettingUseCase.setLastPasswordVerification(currentSafeId = safeId)
+        updatePanicButtonWidgetUseCase()
     }
 }
