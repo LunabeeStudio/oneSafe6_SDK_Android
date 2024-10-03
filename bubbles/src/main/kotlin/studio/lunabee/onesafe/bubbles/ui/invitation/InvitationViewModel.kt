@@ -47,7 +47,8 @@ class InvitationViewModel @Inject constructor(
     private val contactLocalDecryptUseCase: ContactLocalDecryptUseCase,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    val contactId: DoubleRatchetUUID = savedStateHandle.get<String>(InvitationDestination.ContactIdArgs)?.let { DoubleRatchetUUID(it) }
+    val contactId: DoubleRatchetUUID = savedStateHandle.get<String>(InvitationDestination.ContactIdArgs)
+        ?.let { DoubleRatchetUUID.fromString(it) }
         ?: error("Missing contact id in args")
 
     private val _uiState: MutableStateFlow<InvitationUiState?> = MutableStateFlow(null)
@@ -65,7 +66,7 @@ class InvitationViewModel @Inject constructor(
                     contactId,
                     String::class,
                 )
-                val invitationStringRes = getInvitationMessageUseCase(contactId)
+                val invitationStringRes: LBResult<ByteArray> = getInvitationMessageUseCase(contactId)
                 when (invitationStringRes) {
                     is LBResult.Failure -> {
                         _dialogState.value = ErrorDialogState(

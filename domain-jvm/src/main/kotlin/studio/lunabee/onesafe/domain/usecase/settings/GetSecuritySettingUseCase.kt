@@ -24,6 +24,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.repository.SecuritySettingsRepository
@@ -105,9 +106,9 @@ class GetSecuritySettingUseCase @Inject constructor(
     /**
      * @see clipboardDelayFlow
      */
-    suspend fun clipboardClearDelay(): LBResult<Duration> = OSError.runCatching {
-        val safeId = safeRepository.currentSafeId()
-        securitySettingsRepository.clipboardClearDelay(safeId)
+    suspend fun clipboardClearDelay(safeId: SafeId? = null): LBResult<Duration> = OSError.runCatching {
+        val currentSafeId = safeId ?: safeRepository.currentSafeId()
+        securitySettingsRepository.clipboardClearDelay(currentSafeId)
     }
 
     suspend fun verifyPasswordInterval(): LBResult<VerifyPasswordInterval> = OSError.runCatching {

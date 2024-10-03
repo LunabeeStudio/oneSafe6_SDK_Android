@@ -26,7 +26,7 @@ plugins {
 }
 
 dependencies {
-    api(libs.protobuf.kotlinlite)
+    implementation(libs.protobuf.kotlinlite)
     testImplementation(project(":common-test"))
 }
 

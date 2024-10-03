@@ -19,23 +19,8 @@
 
 package studio.lunabee.onesafe.importexport
 
-import com.google.protobuf.ByteString
-import com.google.protobuf.kotlin.toByteString
 import studio.lunabee.onesafe.domain.model.importexport.OSArchiveKind
 import studio.lunabee.onesafe.proto.OSExportProto.ArchiveMetadata.ArchiveKind
-
-// TODO <multisafe> share with other module proto
-fun ByteString?.toByteArrayOrNull(): ByteArray? {
-    return this?.takeUnless { it.isEmpty }?.toByteArray()
-}
-
-fun String.nullIfEmpty(): String? {
-    return takeIf { it.isNotEmpty() }
-}
-
-fun ByteArray?.byteStringOrEmpty(): ByteString {
-    return (this ?: byteArrayOf()).toByteString()
-}
 
 fun OSArchiveKind.toProtoArchiveKind(): ArchiveKind =
     when (this) {

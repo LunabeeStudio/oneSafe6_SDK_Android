@@ -34,6 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -77,6 +78,7 @@ import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.commonui.dialog.DefaultAlertDialog
 import studio.lunabee.onesafe.commonui.dialog.ImeDialog
 import studio.lunabee.onesafe.commonui.localprovider.LocalIsOneSafeK
+import studio.lunabee.onesafe.commonui.localprovider.LocalOneSafeKImeController
 import studio.lunabee.onesafe.commonui.snackbar.SnackbarState
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
 import studio.lunabee.onesafe.extension.loremIpsum
@@ -117,8 +119,8 @@ fun WriteMessageRoute(
     contactIdFlow: StateFlow<String?>,
     sendIcon: OSImageSpec,
     viewModel: WriteMessageViewModel = hiltViewModel(),
-    hideKeyboard: (() -> Unit)?,
 ) {
+    val oneSafeKImeController = LocalOneSafeKImeController.current
     val updateContactId by contactIdFlow.collectAsStateWithLifecycle()
     updateContactId?.let {
         viewModel.savedStateHandle[WriteMessageDestination.ContactIdArg] = updateContactId
@@ -195,11 +197,19 @@ fun WriteMessageRoute(
             }
             if (isOneSafeK) {
                 dialogState?.let { dialog ->
+                    val keyboardWasShown = remember { oneSafeKImeController.isVisible }
+
                     dialog.ImeDialog {
                         composeMessageFocusRequester.requestFocus()
                     }
-                    LaunchedEffect(dialog, hideKeyboard) {
-                        hideKeyboard?.invoke()
+
+                    DisposableEffect(dialog) {
+                        oneSafeKImeController.hideKeyboard()
+                        onDispose {
+                            if (keyboardWasShown) {
+                                oneSafeKImeController.showKeyboard()
+                            }
+                        }
                     }
                 }
                 snackbarState?.SnackBar(oneSafeKSnackbarHostState)

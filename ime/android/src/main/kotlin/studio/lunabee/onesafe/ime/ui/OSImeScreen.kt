@@ -30,7 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import studio.lunabee.onesafe.atom.OSScreen
-import studio.lunabee.onesafe.commonui.localprovider.LocalIsKeyBoardVisible
+import studio.lunabee.onesafe.commonui.localprovider.LocalOneSafeKImeController
 import studio.lunabee.onesafe.extension.landscapeSystemBarsPadding
 import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 
@@ -42,7 +42,7 @@ fun OSImeScreen(
     applySystemBarPadding: Boolean = false,
     content: @Composable (BoxScope.() -> Unit),
 ) {
-    val isKeyBoardVisible = LocalIsKeyBoardVisible.current
+    val isKeyBoardVisible = LocalOneSafeKImeController.current.isVisible
     OSScreen(
         testTag = testTag,
         modifier = if (isKeyBoardVisible) {

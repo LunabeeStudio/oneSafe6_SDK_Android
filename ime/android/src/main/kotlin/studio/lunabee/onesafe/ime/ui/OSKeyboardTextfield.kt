@@ -23,7 +23,7 @@ import android.text.InputType
 import android.view.inputmethod.EditorInfo
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -95,10 +95,15 @@ fun Modifier.keyboardTextfield(
                 return true
             }
 
-            LaunchedEffect(textFieldValue) {
+            DisposableEffect(textFieldValue) {
                 if (focusState?.hasFocus == true) {
                     editorInstance.intercept = setTextOnIntercept
                     editorInstance.deleteBackwards = setTextOnDeleteBackwards
+                }
+
+                onDispose {
+                    editorInstance.intercept = null
+                    editorInstance.deleteBackwards = null
                 }
             }
 
@@ -134,6 +139,7 @@ fun Modifier.keyboardTextfield(
 // https://android.googlesource.com/platform//frameworks/support/+/refs/heads/androidx-main/compose/ui/ui/src/androidMain/kotlin/androidx/compose/ui/text/input/TextInputServiceAndroid.android.kt#482
 private fun EditorInfo.update(imeOptions: ImeOptions, textFieldValue: TextFieldValue) {
     this.imeOptions = when (imeOptions.imeAction) {
+        ImeAction.Unspecified -> EditorInfo.IME_ACTION_UNSPECIFIED
         ImeAction.Default -> {
             if (imeOptions.singleLine) {
                 // this is the last resort to enable single line
@@ -151,9 +157,10 @@ private fun EditorInfo.update(imeOptions: ImeOptions, textFieldValue: TextFieldV
         ImeAction.Search -> EditorInfo.IME_ACTION_SEARCH
         ImeAction.Send -> EditorInfo.IME_ACTION_SEND
         ImeAction.Done -> EditorInfo.IME_ACTION_DONE
-        else -> error("invalid ImeAction")
+        else -> error("invalid ImeAction ${imeOptions.imeAction}")
     }
     when (imeOptions.keyboardType) {
+        KeyboardType.Unspecified -> InputType.TYPE_NULL
         KeyboardType.Text -> this.inputType = InputType.TYPE_CLASS_TEXT
         KeyboardType.Ascii -> {
             this.inputType = InputType.TYPE_CLASS_TEXT
@@ -178,7 +185,7 @@ private fun EditorInfo.update(imeOptions: ImeOptions, textFieldValue: TextFieldV
             this.inputType =
                 InputType.TYPE_CLASS_NUMBER or EditorInfo.TYPE_NUMBER_FLAG_DECIMAL
         }
-        else -> error("Invalid Keyboard Type")
+        else -> error("Invalid Keyboard Type ${imeOptions.keyboardType}")
     }
     if (!imeOptions.singleLine) {
         if (hasFlag(this.inputType, InputType.TYPE_CLASS_TEXT)) {

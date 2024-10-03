@@ -114,8 +114,8 @@ class ManageIncomingMessageUseCase @Inject constructor(
     private fun tryParseInvitationMessage(messageData: ByteArray): Boolean {
         return try {
             val result = ProtoBuf.decodeFromByteArray<ProtoInvitationMessage>(messageData)
-            DoubleRatchetUUID(result.recipientId)
-            DoubleRatchetUUID(result.conversationId)
+            DoubleRatchetUUID.fromString(result.recipientId)
+            DoubleRatchetUUID.fromString(result.conversationId)
             true
         } catch (e: SerializationException) {
             false

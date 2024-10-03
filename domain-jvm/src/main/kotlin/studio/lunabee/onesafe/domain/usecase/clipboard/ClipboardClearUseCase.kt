@@ -19,9 +19,11 @@
 
 package studio.lunabee.onesafe.domain.usecase.clipboard
 
+import studio.lunabee.onesafe.domain.model.safe.SafeId
+
 /**
  * Clear the system clipboard
  */
 interface ClipboardClearUseCase {
-    suspend operator fun invoke()
+    suspend operator fun invoke(safeId: SafeId)
 }

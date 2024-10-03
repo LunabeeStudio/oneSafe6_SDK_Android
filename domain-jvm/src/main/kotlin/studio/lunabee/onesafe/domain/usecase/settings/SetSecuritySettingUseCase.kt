@@ -63,7 +63,7 @@ class SetSecuritySettingUseCase @Inject constructor(
         logger,
     ) {
         val safeId = currentSafeId ?: safeRepository.currentSafeId()
-        securitySettingsRepository.setPasswordInterval(safeId, passwordInterval)
+        securitySettingsRepository.setVerifyPasswordInterval(safeId, passwordInterval)
     }
 
     suspend fun setLastPasswordVerification(

@@ -70,12 +70,12 @@ class AcceptInvitationUseCase @Inject constructor(
                 id = contactId,
                 name = contactName,
                 sharedKey = sharedSecretKey.value,
-                sharedConversationId = DoubleRatchetUUID(invitationMessageProto.conversationId),
+                sharedConversationId = DoubleRatchetUUID.fromString(invitationMessageProto.conversationId),
                 sharingMode = sharingMode,
             ),
         )
         val sharedSalt = bubblesCryptoRepository.deriveUUIDToKey(
-            DoubleRatchetUUID(invitationMessageProto.conversationId),
+            DoubleRatchetUUID.fromString(invitationMessageProto.conversationId),
             doubleRatchetKeyRepository.rootKeyByteSize,
         )
         doubleRatchetEngine.createNewConversationFromInvitation(
@@ -88,7 +88,7 @@ class AcceptInvitationUseCase @Inject constructor(
             conversationLocalId = contactId,
             oneSafePublicKey = keyPair.publicKey.value,
             oneSafePrivateKey = null,
-            conversationSharedId = DoubleRatchetUUID(invitationMessageProto.conversationId),
+            conversationSharedId = DoubleRatchetUUID.fromString(invitationMessageProto.conversationId),
         )
         insertHandShakeDataUseCase(handShakeData)
         return contactId

@@ -24,8 +24,8 @@ import androidx.datastore.preferences.core.Preferences
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.jvm.getAsFlow
-import studio.lunabee.onesafe.repository.datasource.GlobalSettingsLocalDataSource
 import studio.lunabee.onesafe.jvm.store
+import studio.lunabee.onesafe.repository.datasource.GlobalSettingsLocalDataSource
 import javax.inject.Inject
 import kotlin.properties.ReadOnlyProperty
 

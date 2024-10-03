@@ -51,8 +51,6 @@ import studio.lunabee.onesafe.use
 import javax.crypto.Cipher
 import javax.inject.Inject
 
-// TODO <multisafe> unit test (especially login part)
-
 private val logger = LBLogger.get<LoginAndMigrateUseCase>()
 
 /**

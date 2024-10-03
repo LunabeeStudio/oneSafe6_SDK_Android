@@ -49,7 +49,7 @@ class InvitationResponseViewModel @Inject constructor(
     private val getInvitationResponseMessageUseCase: GetInvitationResponseMessageUseCase,
 ) : ViewModel() {
     val contactId: DoubleRatchetUUID = savedStateHandle.get<String>(InvitationResponseDestination.ContactIdArgs)?.let {
-        DoubleRatchetUUID(it)
+        DoubleRatchetUUID.fromString(it)
     } ?: error("Missing contact id in args")
 
     private val _uiState: MutableStateFlow<InvitationUiState?> = MutableStateFlow(null)
@@ -65,7 +65,7 @@ class InvitationResponseViewModel @Inject constructor(
     @OptIn(ExperimentalEncodingApi::class)
     private fun initializeWithMessage() {
         viewModelScope.launch {
-            val messageResult = getInvitationResponseMessageUseCase(contactId)
+            val messageResult: LBResult<ByteArray> = getInvitationResponseMessageUseCase(contactId)
             when (messageResult) {
                 is LBResult.Failure -> exitWithError(messageResult.throwable)
                 is LBResult.Success -> {
@@ -73,7 +73,7 @@ class InvitationResponseViewModel @Inject constructor(
                     if (contact == null) {
                         exitWithError(BubblesMessagingError(BubblesMessagingError.Code.CONTACT_NOT_FOUND))
                     } else {
-                        val nameResult = contactLocalDecryptUseCase(
+                        val nameResult: LBResult<String> = contactLocalDecryptUseCase(
                             contact.encName,
                             contactId,
                             String::class,

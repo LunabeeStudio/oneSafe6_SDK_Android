@@ -136,7 +136,6 @@ class WriteMessageScreenTest : LbcComposeTest() {
                         contactIdFlow = MutableStateFlow(null),
                         sendIcon = OSImageSpec.Drawable(OSDrawable.ic_share),
                         viewModel = mockkVm,
-                        hideKeyboard = null,
                         resendMessage = { _, _ -> },
                     )
                 }

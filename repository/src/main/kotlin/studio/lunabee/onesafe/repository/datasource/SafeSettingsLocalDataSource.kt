@@ -78,7 +78,7 @@ interface SafeSettingsLocalDataSource {
     suspend fun clipboardDelay(safeId: SafeId): Duration
     suspend fun setClipboardClearDelay(safeId: SafeId, delay: Duration)
     suspend fun verifyPasswordInterval(safeId: SafeId): VerifyPasswordInterval
-    suspend fun setPasswordInterval(safeId: SafeId, passwordInterval: VerifyPasswordInterval)
+    suspend fun setVerifyPasswordInterval(safeId: SafeId, passwordInterval: VerifyPasswordInterval)
     suspend fun lastPasswordVerification(safeId: SafeId): Instant
     suspend fun setLastPasswordVerification(safeId: SafeId, instant: Instant)
     suspend fun autoLockOSKInactivityDelay(safeId: SafeId): Duration

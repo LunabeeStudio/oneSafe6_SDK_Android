@@ -34,7 +34,6 @@ import studio.lunabee.onesafe.domain.repository.SupportOSRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.ChangePasswordUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSignUpUseCase
 import studio.lunabee.onesafe.domain.usecase.autolock.LockAppUseCase
-import studio.lunabee.onesafe.domain.usecase.clipboard.ClipboardClearUseCase
 import studio.lunabee.onesafe.domain.usecase.settings.GetAppSettingUseCase
 import studio.lunabee.onesafe.domain.usecase.settings.SetAppSettingUseCase
 import studio.lunabee.onesafe.domain.usecase.support.IncrementVisitForAskingForSupportUseCase
@@ -54,7 +53,6 @@ internal class HelpDebugViewModel @Inject constructor(
     getSettings: GetAppSettingUseCase,
     private val setSettings: SetAppSettingUseCase,
     private val isSignUpUseCase: IsSignUpUseCase,
-    private val clipboardClearUseCase: ClipboardClearUseCase,
     private val changePasswordUseCase: ChangePasswordUseCase,
     private val lockAppUseCase: LockAppUseCase,
     private val mainDatabase: MainDatabase,
@@ -106,12 +104,6 @@ internal class HelpDebugViewModel @Inject constructor(
         viewModelScope.launch { setSettings.toggleMaterialYou() }
     }
 
-    fun clearClipboard() {
-        viewModelScope.launch {
-            clipboardClearUseCase()
-        }
-    }
-
     fun changePassword() {
         val newPassword = Char(Random.nextInt(97, 123))
         viewModelScope.launch {
@@ -125,7 +117,7 @@ internal class HelpDebugViewModel @Inject constructor(
 
     fun autolock() {
         viewModelScope.launch {
-            lockAppUseCase()
+            lockAppUseCase(true)
         }
     }
 

@@ -179,6 +179,8 @@ androidx-annotation = "1.8.2"
 ##               ⬆ = "1.9.0-alpha03"
 ##               ⬆ = "1.9.0-beta01"
 
+glance = "1.1.0"
+
 # FIXME 1.1.0 have some issue when cleaning and re-reading data (see export_engine_not_signed_up_test). To investigate
 androidx-datastore = "1.0.0"
 ##              ⬆ = "1.1.0-dev01"
@@ -229,6 +231,8 @@ lbccore = "1.6.0-283-SNAPSHOT"
 lbcfoundation = "1.1.0"
 
 lbchaptic = "1.3.0-283-SNAPSHOT"
+
+lbcglance = "1.0.0"
 
 tink-android = "1.15.0"
 
@@ -335,6 +339,7 @@ lbccore = { group = "studio.lunabee.compose", name = "lbccore", version.ref = "l
 lbcaccessibility = { group = "studio.lunabee.compose", name = "lbcaccessibility", version.ref = "lbcaccessibility" }
 lbcandroidtest = { group = "studio.lunabee.compose", name = "lbcandroidtest", version.ref = "lbcandroidtest" }
 lbchaptic = { group = "studio.lunabee.compose", name = "lbchaptic", version.ref = "lbchaptic" }
+lbcglance = { group = "studio.lunabee.compose", name = "lbcglance", version.ref = "lbcglance" }
 
 florisboard = { group = "studio.lunabee.florisboard", name = "florisboard-library", version.ref = "florisboard-library" }
 doubleratchet = { group = "studio.lunabee.doubleratchet", name = "doubleratchet-jvm", version.ref = "doubleratchet" }
@@ -376,6 +381,8 @@ compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
 compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata" }
+
+glance-widget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "glance" }
 
 dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "dagger-hilt" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "dagger-hilt" }

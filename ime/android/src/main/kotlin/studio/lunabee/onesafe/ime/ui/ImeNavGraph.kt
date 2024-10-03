@@ -62,7 +62,6 @@ fun ImeNavGraph(
     sendMessage: (String) -> Unit,
     hasDoneOnBoardingBubbles: Boolean,
     modifier: Modifier = Modifier,
-    hideKeyboard: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -148,7 +147,6 @@ fun ImeNavGraph(
                     viewModel = viewModel,
                     contactIdFlow = backStackEntry.savedStateHandle.getStateFlow(WriteMessageDestination.ContactIdArg, null),
                     sendIcon = OSImageSpec.Drawable(OSDrawable.ic_send),
-                    hideKeyboard = hideKeyboard,
                 )
             }
         }

@@ -48,6 +48,7 @@ class AutoLockInactivityUseCase @Inject constructor(
         doAutoLock(
             inactivityDelayFlow = securitySettingsRepository.autoLockInactivityDelayFlow(safeId),
             remainingDelay = { autoLockInactivityGetRemainingTimeUseCase.app(safeId) },
+            clearClipboard = true,
         )
     }
 
@@ -56,12 +57,14 @@ class AutoLockInactivityUseCase @Inject constructor(
         doAutoLock(
             inactivityDelayFlow = securitySettingsRepository.autoLockOSKInactivityDelayFlow(safeId),
             remainingDelay = { autoLockInactivityGetRemainingTimeUseCase.osk(safeId) },
+            clearClipboard = false,
         )
     }
 
     private suspend fun doAutoLock(
         inactivityDelayFlow: Flow<Duration>,
         remainingDelay: suspend () -> Duration,
+        clearClipboard: Boolean,
     ) {
         combine(
             inactivityDelayFlow,
@@ -75,7 +78,7 @@ class AutoLockInactivityUseCase @Inject constructor(
                     delay(currentDelay)
                     currentDelay = remainingDelay()
                 }
-                lockAppUseCase()
+                lockAppUseCase(clearClipboard)
             }
         }
     }

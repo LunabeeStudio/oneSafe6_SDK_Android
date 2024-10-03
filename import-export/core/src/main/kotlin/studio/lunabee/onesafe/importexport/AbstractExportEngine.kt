@@ -54,6 +54,7 @@ import studio.lunabee.onesafe.proto.archiveMetadata
 import studio.lunabee.onesafe.proto.archiveSafeItem
 import studio.lunabee.onesafe.proto.archiveSafeItemField
 import studio.lunabee.onesafe.proto.archiveSafeItemKey
+import studio.lunabee.onesafe.protobuf.byteStringOrEmpty
 import studio.lunabee.onesafe.use
 import java.io.File
 import java.time.ZoneId

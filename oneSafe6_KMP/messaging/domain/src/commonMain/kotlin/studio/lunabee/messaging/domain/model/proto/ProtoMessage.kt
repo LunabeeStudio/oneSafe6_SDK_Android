@@ -30,7 +30,7 @@ import kotlinx.serialization.protobuf.ProtoNumber
  */
 @Serializable
 @OptIn(ExperimentalSerializationApi::class)
-class ProtoMessage(
+data class ProtoMessage(
     @ProtoNumber(1)
     @ByteString
     val body: ByteArray,
@@ -39,5 +39,5 @@ class ProtoMessage(
     @ProtoNumber(3)
     val recipientId: String,
     @ProtoNumber(4)
-    val conversationResetDate: ProtoTimestamp,
+    val conversationResetDate: ProtoTimestamp?,
 )

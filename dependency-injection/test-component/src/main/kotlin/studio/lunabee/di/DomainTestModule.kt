@@ -47,6 +47,7 @@ import studio.lunabee.onesafe.domain.qualifier.RemoteDispatcher
 import studio.lunabee.onesafe.domain.repository.AutoLockRepository
 import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.repository.SecuritySettingsRepository
+import studio.lunabee.onesafe.domain.usecase.UpdatePanicButtonWidgetUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.DeleteBackupsUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.LoginUseCase
 import studio.lunabee.onesafe.domain.usecase.autolock.AutoLockInactivityGetRemainingTimeUseCase
@@ -60,6 +61,15 @@ import studio.lunabee.onesafe.test.firstSafeId
 import java.io.File
 import java.time.Clock
 import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object WidgetTestModule {
+    @Provides
+    fun providesUpdateWidgetUseCase(): UpdatePanicButtonWidgetUseCase = object : UpdatePanicButtonWidgetUseCase {
+        override suspend fun invoke() {}
+    }
+}
 
 @Module
 @TestInstallIn(

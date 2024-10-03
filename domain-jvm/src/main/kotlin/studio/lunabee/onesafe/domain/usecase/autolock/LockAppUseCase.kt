@@ -24,18 +24,29 @@ import kotlinx.coroutines.withContext
 import studio.lunabee.onesafe.domain.LoadFileCancelAllUseCase
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.domain.usecase.clipboard.ClipboardScheduleClearUseCase
+import studio.lunabee.onesafe.domain.usecase.clipboard.ClipboardShouldClearUseCase
 import javax.inject.Inject
 
 class LockAppUseCase @Inject constructor(
     private val mainCryptoRepository: MainCryptoRepository,
     private val loadFileCancelAllUseCase: LoadFileCancelAllUseCase,
     private val safeRepository: SafeRepository,
+    private val clipboardShouldClearUseCase: ClipboardShouldClearUseCase,
+    private val clipboardScheduleClearUseCase: ClipboardScheduleClearUseCase,
 ) {
-    suspend operator fun invoke() {
+    suspend operator fun invoke(clearClipboard: Boolean) {
         withContext(NonCancellable) {
-            loadFileCancelAllUseCase.invoke()
-            mainCryptoRepository.unloadMasterKeys()
-            safeRepository.clearSafeId()
+            safeRepository.currentSafeIdOrNull()?.let { safeId ->
+                loadFileCancelAllUseCase.invoke()
+                mainCryptoRepository.unloadMasterKeys()
+                safeRepository.clearSafeId()
+                if (clearClipboard) {
+                    clipboardShouldClearUseCase(safeId)?.let { delay ->
+                        clipboardScheduleClearUseCase.setup(delay, safeId)
+                    }
+                }
+            }
         }
     }
 }

@@ -19,27 +19,16 @@
 
 package studio.lunabee.onesafe.bubbles.ui.conversation
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import studio.lunabee.compose.core.LbcTextSpec
-import studio.lunabee.onesafe.atom.OSCard
 import studio.lunabee.onesafe.atom.lazyVerticalOSRegularSpacer
 import studio.lunabee.onesafe.bubbles.ui.contact.ContactScreenFactory
+import studio.lunabee.onesafe.bubbles.ui.home.composable.ConversationScreenMenu
 import studio.lunabee.onesafe.bubbles.ui.model.BubblesConversationInfo
-import studio.lunabee.onesafe.commonui.OSDrawable
-import studio.lunabee.onesafe.commonui.OSString
-import studio.lunabee.onesafe.molecule.OSRow
 import studio.lunabee.onesafe.ui.res.OSDimens
-import studio.lunabee.onesafe.ui.theme.LocalColorPalette
-import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import java.util.UUID
 
 @Composable
@@ -61,62 +50,11 @@ fun AppFilledConversationScreen(
         )
         lazyVerticalOSRegularSpacer()
         item {
-            OSCard(modifier = Modifier.fillMaxWidth()) {
-                OSRow(
-                    text = LbcTextSpec.StringResource(OSString.bubbles_decryptMessage),
-                    startContent = {
-                        Icon(
-                            painter = painterResource(id = OSDrawable.ic_message),
-                            contentDescription = null,
-                        )
-                    },
-                    endContent = {
-                        Icon(
-                            painter = painterResource(id = OSDrawable.ic_navigate_next),
-                            tint = LocalColorPalette.current.Neutral30,
-                            contentDescription = null,
-                        )
-                    },
-                    modifier = Modifier
-                        .clickable(onClick = onDecryptClick)
-                        .padding(
-                            start = OSDimens.SystemSpacing.Small,
-                            top = OSDimens.SystemSpacing.Small,
-                            bottom = OSDimens.SystemSpacing.Small,
-                        )
-                        .padding(
-                            LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
-                                index = 0,
-                                elementsCount = if (isOSKShown) 2 else 1,
-                            ),
-                        ),
-                )
-                if (isOSKShown) {
-                    OSRow(
-                        text = LbcTextSpec.StringResource(OSString.bubbles_configureOneSafeK),
-                        secondaryText = LbcTextSpec.StringResource(OSString.bubbles_configureOneSafeK_subtitle),
-                        textMaxLines = Int.MAX_VALUE,
-                        startContent = {
-                            Icon(painter = painterResource(id = OSDrawable.ic_settings), contentDescription = null)
-                        },
-                        endContent = {
-                            Icon(
-                                painter = painterResource(id = OSDrawable.ic_navigate_next),
-                                tint = LocalColorPalette.current.Neutral30,
-                                contentDescription = null,
-                            )
-                        },
-                        modifier = Modifier
-                            .clickable(onClick = onSettingClick)
-                            .padding(
-                                start = OSDimens.SystemSpacing.Small,
-                                top = OSDimens.SystemSpacing.Small,
-                                bottom = OSDimens.SystemSpacing.Small,
-                            )
-                            .padding(LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(index = 1, elementsCount = 2)),
-                    )
-                }
-            }
+            ConversationScreenMenu(
+                onDecryptClick = onDecryptClick,
+                onSettingClick = onSettingClick,
+                isOSKShown = isOSKShown,
+            )
         }
     }
 }

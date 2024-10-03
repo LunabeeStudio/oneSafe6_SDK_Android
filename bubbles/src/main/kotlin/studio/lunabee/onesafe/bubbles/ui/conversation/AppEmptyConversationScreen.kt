@@ -19,12 +19,14 @@
 
 package studio.lunabee.onesafe.bubbles.ui.conversation
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import studio.lunabee.compose.core.LbcTextSpec
+import studio.lunabee.onesafe.atom.OSRegularSpacer
+import studio.lunabee.onesafe.bubbles.ui.home.composable.ConversationScreenMenu
 import studio.lunabee.onesafe.commonui.OSDrawable
 import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.molecule.OSTopImageBox
@@ -33,9 +35,12 @@ import studio.lunabee.onesafe.ui.res.OSDimens
 
 @Composable
 fun AppEmptyConversationScreen(
+    onDecryptClick: () -> Unit,
+    onSettingClick: () -> Unit,
+    isOSKShown: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize()) {
         OSTopImageBox(
             imageRes = OSDrawable.character_sabine_oups_center,
             modifier = Modifier.padding(OSDimens.SystemSpacing.Regular),
@@ -46,5 +51,12 @@ fun AppEmptyConversationScreen(
                 description = LbcTextSpec.StringResource(OSString.bubbles_noContact_subtitle),
             )
         }
+        ConversationScreenMenu(
+            onDecryptClick = onDecryptClick,
+            onSettingClick = onSettingClick,
+            isOSKShown = isOSKShown,
+            modifier = Modifier.padding(horizontal = OSDimens.SystemSpacing.Regular),
+        )
+        OSRegularSpacer()
     }
 }

@@ -115,7 +115,6 @@ internal fun HelpRootDrawer(
                 toggleMaterialYouSetting = viewModel::toggleMaterialYouSetting,
                 mainNavController = navController,
                 closeDrawer = closeDrawer,
-                clearClipboard = viewModel::clearClipboard,
                 changePassword = viewModel::changePassword,
                 autolock = viewModel::autolock,
                 hasGoogleApi = hasGoogleApi,
@@ -145,7 +144,6 @@ private fun HelpDebugMenuContent(
     toggleMaterialYouSetting: () -> Unit,
     mainNavController: NavController,
     closeDrawer: () -> Unit,
-    clearClipboard: () -> Unit,
     changePassword: () -> Unit,
     autolock: () -> Unit,
     hasGoogleApi: Boolean,
@@ -236,15 +234,6 @@ private fun HelpDebugMenuContent(
         )
 
         Button(
-            onClick = {
-                clearClipboard()
-            },
-            modifier = defaultModifier,
-        ) {
-            OSText(LbcTextSpec.Raw("Clear clipboard"))
-        }
-
-        Button(
             onClick = changePassword,
             modifier = defaultModifier,
         ) {
@@ -273,7 +262,8 @@ private fun HelpDebugMenuContent(
             },
             modifier = defaultModifier,
         ) {
-            if (loadingManager.loadingState.value.isBlocking) {
+            val loadingState by loadingManager.loadingState.collectAsStateWithLifecycle()
+            if (loadingState.isBlocking) {
                 OSText(LbcTextSpec.Raw("Stop loading"))
             } else {
                 OSText(LbcTextSpec.Raw("Start loading"))
@@ -505,7 +495,6 @@ private fun RootDrawerPreview() {
                 toggleMaterialYouSetting = {},
                 mainNavController = rememberNavController(),
                 closeDrawer = {},
-                clearClipboard = {},
                 changePassword = { LBResult.Success("") },
                 autolock = {},
                 hasGoogleApi = true,

@@ -89,6 +89,8 @@ include("dependency-injection:test-component")
 include("app:message-companion")
 include("app:common-ui")
 include("app:common-ui:checks")
+include("common-protobuf")
+include(":widget-android")
 
 include("common-test")
 project(":common-test").projectDir = File("test/common-test")
