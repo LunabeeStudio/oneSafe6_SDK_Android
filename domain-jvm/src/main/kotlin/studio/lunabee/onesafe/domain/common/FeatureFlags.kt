@@ -19,13 +19,11 @@
 
 package studio.lunabee.onesafe.domain.common
 
-import kotlinx.coroutines.flow.Flow
-
 interface FeatureFlags {
     fun florisBoard(): Boolean
     fun accessibilityService(): Boolean
     fun oneSafeK(): Boolean
-    fun bubbles(): Flow<Boolean>
+    fun bubbles(): Boolean
     fun quickSignIn(): Boolean
     fun cloudBackup(): Boolean
     fun backupWorkerExpedited(): Boolean

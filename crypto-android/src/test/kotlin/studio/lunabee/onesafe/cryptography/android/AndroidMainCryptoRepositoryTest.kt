@@ -31,7 +31,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -43,8 +42,6 @@ import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import studio.lunabee.onesafe.cryptography.android.qualifier.DataStoreType
-import studio.lunabee.onesafe.cryptography.android.qualifier.DatastoreEngineProvider
 import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
@@ -102,12 +99,8 @@ class AndroidMainCryptoRepositoryTest {
     @CryptoDispatcher
     internal lateinit var cryptoDispatcher: CoroutineDispatcher
 
-    @Inject
-    @DatastoreEngineProvider(DataStoreType.Plain)
-    internal lateinit var dataStoreEngine: DatastoreEngine
-
     private val featureFlags: FeatureFlags = mockk {
-        every { this@mockk.bubbles() } returns flowOf(false)
+        every { this@mockk.bubbles() } returns false
     }
 
     private val repository: AndroidMainCryptoRepository by lazy {
@@ -363,7 +356,7 @@ class AndroidMainCryptoRepositoryTest {
 
     @Test
     fun encrypt_decrypt_for_bubbles_test(): TestResult = runTest {
-        every { featureFlags.bubbles() } returns flowOf(true)
+        every { featureFlags.bubbles() } returns true
         generateAndLoadCrypto()
         val plainData = "contactName"
         val encryptedData = this@AndroidMainCryptoRepositoryTest.repository.encryptBubbles(plainData.encodeToByteArray())

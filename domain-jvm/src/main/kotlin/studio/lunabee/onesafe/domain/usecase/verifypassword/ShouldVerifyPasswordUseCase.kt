@@ -24,6 +24,7 @@ import com.lunabee.lblogger.LBLogger
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.repository.SecuritySettingsRepository
+import studio.lunabee.onesafe.domain.usecase.authentication.IsCurrentSafeBiometricEnabledUseCase
 import studio.lunabee.onesafe.error.OSError
 import java.time.Clock
 import java.time.LocalDateTime
@@ -34,11 +35,13 @@ private val logger = LBLogger.get<ShouldVerifyPasswordUseCase>()
 
 class ShouldVerifyPasswordUseCase @Inject constructor(
     private val securitySettingsRepository: SecuritySettingsRepository,
+    private val isCurrentSafeBiometricEnabledUseCase: IsCurrentSafeBiometricEnabledUseCase,
     private val clock: Clock,
     private val safeRepository: SafeRepository,
 ) {
     suspend operator fun invoke(): LBResult<Boolean> = OSError.runCatching(logger) {
         val safeId = safeRepository.currentSafeId()
+        val isCurrentSafeBiometricEnabled = isCurrentSafeBiometricEnabledUseCase()
         val lastPasswordVerification = securitySettingsRepository.lastPasswordVerificationInstant(safeId)
         val verificationInterval = securitySettingsRepository.verifyPasswordInterval(safeId)
         var shouldVerifyDateTime = LocalDateTime.ofInstant(lastPasswordVerification, ZoneId.systemDefault())
@@ -50,6 +53,6 @@ class ShouldVerifyPasswordUseCase @Inject constructor(
             VerifyPasswordInterval.EVERY_SIX_MONTHS -> shouldVerifyDateTime.plusMonths(6)
             VerifyPasswordInterval.NEVER -> LocalDateTime.MAX
         }
-        shouldVerifyDateTime.isBefore(LocalDateTime.now(clock))
+        isCurrentSafeBiometricEnabled && shouldVerifyDateTime.isBefore(LocalDateTime.now(clock))
     }
 }

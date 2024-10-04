@@ -153,7 +153,7 @@ class AndroidMainCryptoRepository @Inject constructor(
 
         val encIndexKey = generateIndexKey(key)
         val encItemEditionKey = generateItemEditionKey(key)
-        val encBubblesKey = if (featureFlags.bubbles().first()) {
+        val encBubblesKey = if (featureFlags.bubbles()) {
             generateBubblesKey(key)
         } else {
             null
@@ -199,7 +199,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
         val encIndexKey = reEncryptIndexKey()
         val encItemEditionKey = reEncryptItemEditionKey()
-        val encBubblesKey = if (featureFlags.bubbles().first()) {
+        val encBubblesKey = if (featureFlags.bubbles()) {
             reEncryptBubblesContactKey()
         } else {
             null
@@ -242,7 +242,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         masterKey = biometricEngine.decryptKey(encKey, cipher)
         retrieveKeyForIndex(safeCrypto)
         retrieveKeyForEdition(safeCrypto)
-        if (featureFlags.bubbles().first()) {
+        if (featureFlags.bubbles()) {
             retrieveKeyForBubblesContact(safeCrypto)
         }
         logger.v("cryptographic keys loaded using biometric")
@@ -260,7 +260,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         val safeCrypto = getSafeFromMasterKey()
         retrieveKeyForIndex(safeCrypto)
         retrieveKeyForEdition(safeCrypto)
-        if (featureFlags.bubbles().first()) {
+        if (featureFlags.bubbles()) {
             retrieveKeyForBubblesContact(safeCrypto)
         }
         logger.v("cryptographic keys externally loaded")
