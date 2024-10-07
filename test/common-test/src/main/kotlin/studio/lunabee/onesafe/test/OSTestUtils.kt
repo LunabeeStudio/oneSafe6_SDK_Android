@@ -20,8 +20,6 @@
 package studio.lunabee.onesafe.test
 
 import com.lunabee.lbcore.model.LBResult
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import studio.lunabee.onesafe.domain.common.CtaState
 import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.domain.model.camera.CameraSystem
@@ -172,7 +170,7 @@ object OSTestUtils {
         florisBoard: Boolean = false,
         accessibilityService: Boolean = false,
         oneSafeK: Boolean = false,
-        bubbles: Flow<Boolean> = flowOf(true),
+        bubbles: Boolean = true,
         quickSignIn: Boolean = false,
         cloudBackup: Boolean = false,
         backupForegroundService: Boolean = false,
@@ -182,7 +180,7 @@ object OSTestUtils {
             override fun florisBoard(): Boolean = florisBoard
             override fun accessibilityService(): Boolean = accessibilityService
             override fun oneSafeK(): Boolean = oneSafeK
-            override fun bubbles(): Flow<Boolean> = bubbles
+            override fun bubbles(): Boolean = bubbles
             override fun quickSignIn(): Boolean = quickSignIn
             override fun cloudBackup(): Boolean = cloudBackup
             override fun backupWorkerExpedited(): Boolean = backupForegroundService
