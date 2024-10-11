@@ -30,12 +30,14 @@ import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.printToString
 import androidx.fragment.app.FragmentActivity
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
 import co.touchlab.kermit.Logger
 import com.lunabee.lbextensions.content.getQuantityString
 import org.junit.Rule
 import studio.lunabee.compose.androidtest.LbcAndroidTestConstants
 import studio.lunabee.compose.androidtest.extension.waitUntilAtLeastOneExists
 import studio.lunabee.compose.androidtest.rule.LbcPrintRule
+import java.io.ByteArrayOutputStream
 import java.io.File
 
 /**
@@ -62,14 +64,33 @@ abstract class OSActivityTest<A : FragmentActivity> : OSHiltTest() {
     context(ComposeUiTest)
     protected fun onFailure(e: Throwable) {
         val suffix = LbcAndroidTestConstants.FailureSuffix + "_${e.javaClass.simpleName}"
-        printRule.printWholeScreen(suffix)
-        val tree = isRoot()
-            .waitUntilAtLeastOneExists(true)
-            .onFirst()
-            .printToString()
-        Logger.withTag("ON_FAILURE").e(tree)
-        val composeTreeFile = File("${printRule.basePath}_failing_compose_tree.txt")
-        composeTreeFile.writeText(tree)
+        printRule.printWholeScreen(suffix, true)
+        val tree = kotlin.runCatching {
+            isRoot()
+                .waitUntilAtLeastOneExists(true)
+                .onFirst()
+                .printToString()
+        }.getOrNull()
+
+        if (tree != null) {
+            Logger.withTag("ON_FAILURE").e(tree)
+            val composeTreeFile = File("${printRule.basePath}_failing_compose_tree.txt")
+            Logger.withTag("ON_FAILURE").v("Dumping compose tree to ${composeTreeFile.absolutePath}")
+            composeTreeFile.writeText(tree)
+        } else {
+            Logger.withTag("ON_FAILURE").e("Unable to print compose tree. Dump the view instead.", e)
+            val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+            val viewTree = ByteArrayOutputStream().use {
+                device.dumpWindowHierarchy(it)
+                it.toString()
+            }
+            Logger.withTag("ON_FAILURE").e(viewTree)
+            val viewTreeFile = File("${printRule.basePath}_failing_view_tree.xml")
+            Logger.withTag("ON_FAILURE").v("Dumping view to ${viewTreeFile.absolutePath}")
+            viewTreeFile.parentFile?.mkdirs()
+            viewTreeFile.createNewFile()
+            viewTreeFile.writeText(viewTree)
+        }
     }
 
     fun initKeyboardHelper() {

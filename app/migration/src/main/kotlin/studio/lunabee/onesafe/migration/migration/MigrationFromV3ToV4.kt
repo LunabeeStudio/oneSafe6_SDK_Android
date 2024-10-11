@@ -23,6 +23,7 @@ import android.content.Context
 import androidx.core.app.NotificationManagerCompat
 import com.lunabee.lbcore.model.LBResult
 import dagger.hilt.android.qualifiers.ApplicationContext
+import studio.lunabee.onesafe.migration.MigrationSafeData0
 import javax.inject.Inject
 
 /**
@@ -30,8 +31,8 @@ import javax.inject.Inject
  */
 class MigrationFromV3ToV4 @Inject constructor(
     @ApplicationContext private val context: Context,
-) {
-    operator fun invoke(): LBResult<Unit> {
+) : AppMigration0(3, 4) {
+    override suspend fun migrate(migrationSafeData: MigrationSafeData0): LBResult<Unit> {
         val manager: NotificationManagerCompat = NotificationManagerCompat.from(context)
         manager.deleteNotificationChannel("cca60cd3-876b-4279-8ce4-b7c3936fb3bc")
         return LBResult.Success(Unit)

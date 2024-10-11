@@ -25,7 +25,7 @@ import studio.lunabee.onesafe.domain.model.safe.SafeCrypto
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.error.OSError
-import studio.lunabee.onesafe.migration.utils.MigrationSafeData
+import studio.lunabee.onesafe.migration.MigrationSafeData0
 import javax.inject.Inject
 
 private val logger = LBLogger.get<MigrationFromV14ToV15>()
@@ -36,10 +36,9 @@ private val logger = LBLogger.get<MigrationFromV14ToV15>()
 class MigrationFromV14ToV15 @Inject constructor(
     private val mainCryptoRepository: MainCryptoRepository,
     private val safeRepository: SafeRepository,
-) {
-    suspend operator fun invoke(
-        migrationSafeData: MigrationSafeData,
-    ): LBResult<Unit> = OSError.runCatching(logger) {
+) : AppMigration0(14, 15) {
+
+    override suspend fun migrate(migrationSafeData: MigrationSafeData0): LBResult<Unit> = OSError.runCatching(logger) {
         val newCrypto = mainCryptoRepository.generateCrypto(
             key = migrationSafeData.masterKey,
             salt = migrationSafeData.salt,

@@ -87,11 +87,15 @@ import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
 import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
 import studio.lunabee.onesafe.domain.usecase.item.SecureGetItemUseCase
 import studio.lunabee.onesafe.domain.usecase.settings.GetAppSettingUseCase
+import studio.lunabee.onesafe.domain.usecase.settings.GetAppVisitUseCase
+import studio.lunabee.onesafe.domain.usecase.settings.SetAppVisitUseCase
 import studio.lunabee.onesafe.messaging.usecase.CreateBubblesMessageArchiveUseCase
 import studio.lunabee.onesafe.messaging.usecase.DeleteBubblesArchiveUseCase
 import studio.lunabee.onesafe.messaging.writemessage.destination.WriteMessageDestination
 import studio.lunabee.onesafe.messaging.writemessage.model.BubblesWritingMessage
 import studio.lunabee.onesafe.messaging.writemessage.model.ConversationUiData
+import studio.lunabee.onesafe.messaging.writemessage.model.SaveMessageConfirmationDialogState
+import studio.lunabee.onesafe.messaging.writemessage.model.SaveMessageConfirmationSnackbarState
 import studio.lunabee.onesafe.messaging.writemessage.model.SentMessageData
 import studio.lunabee.onesafe.messaging.writemessage.model.WriteContactInfo
 import studio.lunabee.onesafe.messaging.writemessage.model.WriteConversationState
@@ -129,6 +133,8 @@ class WriteMessageViewModel @Inject constructor(
     private val itemDecryptUseCase: ItemDecryptUseCase,
     private val getIconUseCase: GetIconUseCase,
     private val getResetMessageUseCase: GetResetMessageUseCase,
+    private val setAppVisitUseCase: SetAppVisitUseCase,
+    private val getAppVisitUseCase: GetAppVisitUseCase,
     isSafeReadyUseCase: IsSafeReadyUseCase,
     getAppSettingUseCase: GetAppSettingUseCase,
 ) : ViewModel() {
@@ -554,5 +560,23 @@ class WriteMessageViewModel @Inject constructor(
 
     fun consumeArchive() {
         deleteBubblesArchiveUseCase()
+    }
+
+    fun askForSafeConfirmation(sentMessageDataUnderSharing: SentMessageData) {
+        viewModelScope.launch {
+            if (getAppVisitUseCase.hasSeenDialogMessageSaveConfirmation()) {
+                _snackbarState.value = SaveMessageConfirmationSnackbarState(
+                    onClick = {
+                        saveEncryptedMessage(sentMessageDataUnderSharing)
+                    },
+                )
+            } else {
+                setAppVisitUseCase.setHasSeenDialogMessageSaveConfirmation()
+                _dialogState.value = SaveMessageConfirmationDialogState(
+                    onConfirm = { saveEncryptedMessage(sentMessageDataUnderSharing) },
+                    dismiss = { _dialogState.value = null },
+                )
+            }
+        }
     }
 }

@@ -40,7 +40,6 @@ import studio.lunabee.onesafe.test.CommonTestUtils
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltTest
 import studio.lunabee.onesafe.test.OSTestConfig
-import studio.lunabee.onesafe.test.firstSafeId
 import studio.lunabee.onesafe.test.test
 import java.util.UUID
 import javax.inject.Inject
@@ -85,7 +84,7 @@ class MigrationFromV11ToV12Test : OSHiltTest() {
         fieldRepository.saveThumbnailFileName(field.id, null)
         val updatedField = fieldRepository.getSafeItemField(field.id)
         assertNull(updatedField.encThumbnailFileName)
-        migrationFromV11ToV12(masterKey(), firstSafeId)
+        migrationFromV11ToV12.migrate(AppMigrationsTestUtils.safeData0(version = 11, masterKey = masterKey()))
         val updatedMigrationField = fieldRepository.getSafeItemField(field.id)
         val encThumbnailFileName = updatedMigrationField.encThumbnailFileName
         assertNotNull(encThumbnailFileName)

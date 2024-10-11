@@ -141,6 +141,10 @@ class SettingsLocalDataSource @Inject constructor(
         return dao.getBubblesResendMessageDelayFlow(safeId)
     }
 
+    override suspend fun hasSeenDialogMessageSaveConfirmation(safeId: SafeId): Boolean {
+        return dao.hasSeenDialogMessageSaveConfirmation(safeId)
+    }
+
     override suspend fun getCameraSystem(safeId: SafeId): CameraSystem =
         dao.getCameraSystem(safeId)
 
@@ -181,6 +185,9 @@ class SettingsLocalDataSource @Inject constructor(
 
     override suspend fun setAutoLockAppChangeDelay(safeId: SafeId, duration: Duration): Unit =
         dao.setAutoLockAppChangeDelay(safeId, duration)
+
+    override suspend fun setHasSeenDialogMessageSaveConfirmation(safeId: SafeId): Unit =
+        dao.setHasSeenDialogMessageSaveConfirmation(safeId)
 
     override suspend fun setBubblesResendMessageDelay(safeId: SafeId, delay: Duration): Unit =
         dao.setBubblesResendMessageDelay(safeId, delay)

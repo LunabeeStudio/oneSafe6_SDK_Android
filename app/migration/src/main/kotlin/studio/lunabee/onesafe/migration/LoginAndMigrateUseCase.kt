@@ -29,13 +29,22 @@ import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.LoadSafeUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.LoginUseCase
+import studio.lunabee.onesafe.domain.usecase.settings.SetSecuritySettingUseCase
 import studio.lunabee.onesafe.error.OSError
+import studio.lunabee.onesafe.error.OSMigrationError
 import studio.lunabee.onesafe.getOrThrow
+import studio.lunabee.onesafe.jvm.get
+import studio.lunabee.onesafe.migration.migration.AppMigration0
+import studio.lunabee.onesafe.migration.migration.AppMigration15
 import studio.lunabee.onesafe.migration.migration.MigrationFromV0ToV1
 import studio.lunabee.onesafe.migration.migration.MigrationFromV10ToV11
 import studio.lunabee.onesafe.migration.migration.MigrationFromV11ToV12
+import studio.lunabee.onesafe.migration.migration.MigrationFromV12ToV13
 import studio.lunabee.onesafe.migration.migration.MigrationFromV13ToV14
 import studio.lunabee.onesafe.migration.migration.MigrationFromV14ToV15
+import studio.lunabee.onesafe.migration.migration.MigrationFromV15ToV16
+import studio.lunabee.onesafe.migration.migration.MigrationFromV16ToV17
+import studio.lunabee.onesafe.migration.migration.MigrationFromV1ToV2
 import studio.lunabee.onesafe.migration.migration.MigrationFromV2ToV3
 import studio.lunabee.onesafe.migration.migration.MigrationFromV3ToV4
 import studio.lunabee.onesafe.migration.migration.MigrationFromV4ToV5
@@ -44,9 +53,7 @@ import studio.lunabee.onesafe.migration.migration.MigrationFromV6ToV7
 import studio.lunabee.onesafe.migration.migration.MigrationFromV7ToV8
 import studio.lunabee.onesafe.migration.migration.MigrationFromV8ToV9
 import studio.lunabee.onesafe.migration.migration.MigrationFromV9ToV10
-import studio.lunabee.onesafe.migration.utils.MigrationCryptoUseCase
 import studio.lunabee.onesafe.migration.utils.MigrationGetSafeCryptoUseCase
-import studio.lunabee.onesafe.migration.utils.MigrationSafeData
 import studio.lunabee.onesafe.use
 import javax.crypto.Cipher
 import javax.inject.Inject
@@ -58,6 +65,7 @@ private val logger = LBLogger.get<LoginAndMigrateUseCase>()
  */
 class LoginAndMigrateUseCase @Inject constructor(
     private val migrationFromV0ToV1: Lazy<MigrationFromV0ToV1>,
+    private val migrationFromV1ToV2: Lazy<MigrationFromV1ToV2>,
     private val migrationFromV2ToV3: Lazy<MigrationFromV2ToV3>,
     private val migrationFromV3ToV4: Lazy<MigrationFromV3ToV4>,
     private val migrationFromV4ToV5: Lazy<MigrationFromV4ToV5>,
@@ -68,14 +76,17 @@ class LoginAndMigrateUseCase @Inject constructor(
     private val migrationFromV9ToV10: Lazy<MigrationFromV9ToV10>,
     private val migrationFromV10ToV11: Lazy<MigrationFromV10ToV11>,
     private val migrationFromV11ToV12: Lazy<MigrationFromV11ToV12>,
+    private val migrationFromV12ToV13: Lazy<MigrationFromV12ToV13>,
     private val migrationFromV13ToV14: Lazy<MigrationFromV13ToV14>,
     private val migrationFromV14ToV15: Lazy<MigrationFromV14ToV15>,
+    private val migrationFromV15ToV16: Lazy<MigrationFromV15ToV16>,
+    private val migrationFromV16ToV17: Lazy<MigrationFromV16ToV17>,
     private val mainCryptoRepository: MainCryptoRepository,
     @CryptoDispatcher private val dispatcher: CoroutineDispatcher,
     private val safeRepository: SafeRepository,
-    private val migrationCryptoUseCase: MigrationCryptoUseCase,
     private val migrationGetSafeCryptoUseCase: MigrationGetSafeCryptoUseCase,
     private val loadSafeUseCase: LoadSafeUseCase,
+    private val setSecuritySettingUseCase: SetSecuritySettingUseCase,
 ) : LoginUseCase {
 
     override suspend operator fun invoke(password: CharArray): LBResult<Unit> = withContext(dispatcher) {
@@ -83,14 +94,13 @@ class LoginAndMigrateUseCase @Inject constructor(
         when (masterKeyResult) {
             is LBResult.Failure -> LBResult.Failure(masterKeyResult.throwable)
             is LBResult.Success -> {
+                setSecuritySettingUseCase.setLastPasswordVerification(currentSafeId = masterKeyResult.successData.id)
+
                 val migrationSafeData = masterKeyResult.successData
                 val masterKey = migrationSafeData.masterKey
 
                 masterKey.use {
-                    migrationSafeData.encBubblesKey?.let { bubblesKey ->
-                        val bubblesMasterKey = migrationCryptoUseCase.decrypt(bubblesKey, masterKey, migrationSafeData.version)
-                        doMigrations(migrationSafeData, bubblesMasterKey)
-                    } ?: doMigrations(migrationSafeData, null)
+                    doMigrations(migrationSafeData)
                 }
             }
         }
@@ -101,139 +111,73 @@ class LoginAndMigrateUseCase @Inject constructor(
         val masterKey = migrationSafeData?.masterKey
 
         masterKey?.use {
-            migrationSafeData.encBubblesKey?.let { bubblesKey ->
-                val bubblesMasterKey = migrationCryptoUseCase.decrypt(bubblesKey, masterKey, migrationSafeData.version)
-                doMigrations(migrationSafeData, bubblesMasterKey)
-            } ?: doMigrations(migrationSafeData, null)
+            doMigrations(migrationSafeData)
         } ?: LBResult.Failure()
     }
 
     private suspend fun doMigrations(
-        migrationSafeData: MigrationSafeData,
-        bubblesMasterKey: ByteArray?,
+        migrationSafeData0: MigrationSafeData0,
     ): LBResult<Unit> = OSError.runCatching {
-        var version = migrationSafeData.version
+        var version = migrationSafeData0.version
         var failure: LBResult.Failure<Unit>? = null
 
-        val runMigration: suspend (migration: suspend () -> LBResult<Unit>) -> Unit = { migration ->
-            val result = migration()
+        // ⚠️ Add further migration here, don't forget to bump MigrationConstant.LastVersion
+        val migrations = listOf(
+            migrationFromV0ToV1,
+            migrationFromV1ToV2,
+            migrationFromV2ToV3,
+            migrationFromV3ToV4,
+            migrationFromV4ToV5,
+            migrationFromV5ToV6,
+            migrationFromV6ToV7,
+            migrationFromV7ToV8,
+            migrationFromV8ToV9,
+            migrationFromV9ToV10,
+            migrationFromV10ToV11,
+            migrationFromV11ToV12,
+            migrationFromV12ToV13,
+            migrationFromV13ToV14,
+            migrationFromV14ToV15,
+            migrationFromV15ToV16,
+            migrationFromV16ToV17,
+        )
+
+        while (version < MigrationConstant.LastVersion) {
+            val migration = runCatching {
+                migrations.first { it.get().startVersion == version }
+            }.getOrElse { e ->
+                throw OSMigrationError.Code.MISSING_MIGRATION.get(
+                    message = "Missing migration from $version to ${MigrationConstant.LastVersion}",
+                    cause = e,
+                )
+            }.get()
+            val result = when (migration) {
+                is AppMigration0 -> migration.migrate(migrationSafeData = migrationSafeData0)
+                is AppMigration15 -> migration.migrate(migrationSafeData = migrationSafeData0.as15())
+            }
             when (result) {
                 is LBResult.Failure -> {
-                    logger.e("Migration from $version to ${version + 1} failed")
+                    logger.e("Migration from ${migration.startVersion} to ${migration.endVersion} failed", result.throwable)
                     failure = result
                 }
                 is LBResult.Success -> {
-                    logger.i("Migration from $version to ${version + 1} succeeded")
-                    version++
-                    safeRepository.setSafeVersion(migrationSafeData.id, version)
+                    logger.i("Migration from ${migration.startVersion} to ${migration.endVersion} succeeded")
+                    version = migration.endVersion
+                    safeRepository.setSafeVersion(migrationSafeData0.id, version)
                 }
             }
         }
 
-        if (version == 0) {
-            runMigration {
-                migrationFromV0ToV1.get()(migrationSafeData.masterKey)
-            }
-        }
-
-        if (version == 1 && failure == null) {
-            runMigration {
-                // Deprecated migration due to datastore to room migration
-                LBResult.Success(Unit)
-            }
-        }
-
-        if (version == 2 && failure == null) {
-            runMigration {
-                migrationFromV2ToV3.get()()
-            }
-        }
-
-        if (version == 3 && failure == null) {
-            runMigration {
-                migrationFromV3ToV4.get()()
-            }
-        }
-
-        if (version == 4 && failure == null) {
-            runMigration {
-                migrationFromV4ToV5.get()()
-            }
-        }
-
-        if (version == 5 && failure == null) {
-            runMigration {
-                migrationFromV5ToV6.get()(migrationSafeData.id)
-            }
-        }
-
-        if (version == 6 && failure == null) {
-            runMigration {
-                migrationFromV6ToV7.get()(migrationSafeData.masterKey, migrationSafeData.id)
-            }
-        }
-
-        if (version == 7 && failure == null) {
-            runMigration {
-                migrationFromV7ToV8.get()(migrationSafeData.id)
-            }
-        }
-
-        if (version == 8 && failure == null) {
-            runMigration {
-                migrationFromV8ToV9.get()()
-            }
-        }
-
-        if (version == 9 && failure == null) {
-            runMigration {
-                migrationFromV9ToV10.get()(migrationSafeData.masterKey, migrationSafeData.id)
-            }
-        }
-
-        if (version == 10 && failure == null) {
-            runMigration {
-                migrationFromV10ToV11.get()(migrationSafeData.id)
-            }
-        }
-
-        if (version == 11 && failure == null) {
-            runMigration {
-                migrationFromV11ToV12.get()(migrationSafeData.masterKey, migrationSafeData.id)
-            }
-        }
-
-        if (version == 12 && failure == null) {
-            runMigration {
-                // Deprecated migration due to datastore to room migration (see MigrationToMultiSafeHelper::legacyMigrationFromV12ToV13)
-                LBResult.Success(Unit)
-            }
-        }
-
-        if (version == 13 && failure == null) {
-            runMigration {
-                migrationFromV13ToV14.get()(bubblesMasterKey, migrationSafeData.id)
-            }
-        }
-
-        if (version == 14 && failure == null) {
-            runMigration {
-                migrationFromV14ToV15.get()(migrationSafeData)
-            }
-        }
-
-        // ⚠️ Add further migration here, don't forget to bump MigrationConstant.LastVersion
-
         if (failure == null) {
-            safeRepository.setSafeVersion(migrationSafeData.id, MigrationConstant.LastVersion)
-            loadSafeUseCase(migrationSafeData.id)
-            mainCryptoRepository.loadMasterKeyExternal(migrationSafeData.masterKey)
+            safeRepository.setSafeVersion(migrationSafeData0.id, MigrationConstant.LastVersion)
+            loadSafeUseCase(migrationSafeData0.id)
+            mainCryptoRepository.loadMasterKey(migrationSafeData0.masterKey)
 
-            if (migrationSafeData.version != version) {
-                logger.i("Migration from v${migrationSafeData.version} to v$version succeeded")
+            if (migrationSafeData0.version != version) {
+                logger.i("Migration from v${migrationSafeData0.version} to v$version succeeded")
             }
         } else {
-            failure?.getOrThrow()
+            failure.getOrThrow()
         }
     }
 }

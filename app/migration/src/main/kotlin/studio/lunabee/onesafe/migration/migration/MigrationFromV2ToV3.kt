@@ -25,6 +25,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.error.OSError
+import studio.lunabee.onesafe.migration.MigrationSafeData0
 import javax.inject.Inject
 
 /**
@@ -32,9 +33,8 @@ import javax.inject.Inject
  */
 class MigrationFromV2ToV3 @Inject constructor(
     private val dataStore: DataStore<Preferences>,
-) {
-
-    suspend operator fun invoke(): LBResult<Unit> = OSError.runCatching {
+) : AppMigration0(2, 3) {
+    override suspend fun migrate(migrationSafeData: MigrationSafeData0): LBResult<Unit> = OSError.runCatching {
         dataStore.edit {
             it.remove(booleanPreferencesKey("ebb8bf03-8323-4190-8256-2023b11aab77"))
         }

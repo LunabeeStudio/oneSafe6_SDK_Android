@@ -30,7 +30,7 @@ class NewSafeCrypto(
     val salt: ByteArray,
     val encTest: ByteArray,
     val encIndexKey: ByteArray,
-    val encBubblesKey: ByteArray?,
+    val encBubblesKey: ByteArray,
     val encItemEditionKey: ByteArray,
     val biometricCryptoMaterial: BiometricCryptoMaterial?,
 )

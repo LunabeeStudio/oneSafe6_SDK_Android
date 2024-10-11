@@ -21,11 +21,11 @@ package studio.lunabee.onesafe.migration.migration
 
 import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
-import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.repository.IconRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.utils.CrossSafeData
 import studio.lunabee.onesafe.error.OSError
+import studio.lunabee.onesafe.migration.MigrationSafeData0
 import java.util.UUID
 import javax.inject.Inject
 
@@ -37,9 +37,11 @@ private val logger = LBLogger.get<MigrationFromV10ToV11>()
 class MigrationFromV10ToV11 @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
     private val iconRepository: IconRepository,
-) {
+) : AppMigration0(10, 11) {
+
     @OptIn(CrossSafeData::class)
-    suspend operator fun invoke(safeId: SafeId): LBResult<Unit> = OSError.runCatching {
+    override suspend fun migrate(migrationSafeData: MigrationSafeData0): LBResult<Unit> = OSError.runCatching {
+        val safeId = migrationSafeData.id
         val allIcons = iconRepository.getAllIcons()
         val allItemIcons = safeItemRepository.getAllSafeItems(safeId).mapNotNull { it.iconId?.toString() }
         val orphanIcons = allIcons.filterNot { it.name in allItemIcons }

@@ -60,4 +60,8 @@ interface SafeLocalDataSource {
     suspend fun setLastOpen(safeId: SafeId)
     suspend fun getSafeCrypto(safeId: SafeId): SafeCrypto?
     fun isAutoDestructionEnabledForSafeFlow(safeId: SafeId): Flow<Boolean>
+    fun isPanicDestructionEnabledFlow(safeId: SafeId): Flow<Boolean>
+    suspend fun setIsPanicDestructionEnabled(safeId: SafeId, isEnabled: Boolean)
+    suspend fun hasAnySafePanicWidgetEnabled(): Boolean
+    suspend fun getSafeToDestroy(): List<SafeId>
 }

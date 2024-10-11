@@ -31,7 +31,7 @@ data class RoomSafeCrypto(
     @ColumnInfo(name = "enc_index_key")
     val encIndexKey: ByteArray,
     @ColumnInfo(name = "enc_bubbles_key")
-    val encBubblesKey: ByteArray?,
+    val encBubblesKey: ByteArray,
     @ColumnInfo(name = "enc_item_edition_key")
     val encItemEditionKey: ByteArray,
     @ColumnInfo(name = "biometric_crypto_material")
@@ -61,12 +61,13 @@ data class RoomSafeCrypto(
         if (!salt.contentEquals(other.salt)) return false
         if (!encTest.contentEquals(other.encTest)) return false
         if (!encIndexKey.contentEquals(other.encIndexKey)) return false
-        if (encBubblesKey != null) {
-            if (other.encBubblesKey == null) return false
-            if (!encBubblesKey.contentEquals(other.encBubblesKey)) return false
-        } else if (other.encBubblesKey != null) return false
+        if (!encBubblesKey.contentEquals(other.encBubblesKey)) return false
         if (!encItemEditionKey.contentEquals(other.encItemEditionKey)) return false
         if (biometricCryptoMaterial != other.biometricCryptoMaterial) return false
+        if (autoDestructionKey != null) {
+            if (other.autoDestructionKey == null) return false
+            if (!autoDestructionKey.contentEquals(other.autoDestructionKey)) return false
+        } else if (other.autoDestructionKey != null) return false
 
         return true
     }
@@ -75,9 +76,10 @@ data class RoomSafeCrypto(
         var result = salt.contentHashCode()
         result = 31 * result + encTest.contentHashCode()
         result = 31 * result + encIndexKey.contentHashCode()
-        result = 31 * result + (encBubblesKey?.contentHashCode() ?: 0)
+        result = 31 * result + encBubblesKey.contentHashCode()
         result = 31 * result + encItemEditionKey.contentHashCode()
         result = 31 * result + (biometricCryptoMaterial?.hashCode() ?: 0)
+        result = 31 * result + (autoDestructionKey?.contentHashCode() ?: 0)
         return result
     }
 }

@@ -70,4 +70,8 @@ interface SafeRepository {
     suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean
     suspend fun setLastOpen(safeId: SafeId)
     suspend fun getSafeCrypto(safeId: SafeId): SafeCrypto?
+    fun isPanicDestructionEnabledFlow(safeId: SafeId): Flow<Boolean>
+    suspend fun setIsPanicDestructionEnabled(safeId: SafeId, isEnabled: Boolean)
+    suspend fun hasAnySafePanicWidgetEnabled(): Boolean
+    suspend fun getSafeToDestroy(): List<SafeId>
 }

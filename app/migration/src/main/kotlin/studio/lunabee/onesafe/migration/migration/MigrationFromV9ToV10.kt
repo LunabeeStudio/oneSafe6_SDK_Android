@@ -27,11 +27,11 @@ import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
 import dagger.hilt.android.qualifiers.ApplicationContext
 import studio.lunabee.onesafe.cryptography.android.AndroidCryptoDataMapper
-import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.error.OSError
+import studio.lunabee.onesafe.migration.MigrationSafeData0
 import studio.lunabee.onesafe.migration.utils.MigrationCryptoV1UseCase
 import java.io.File
 import javax.inject.Inject
@@ -49,8 +49,10 @@ class MigrationFromV9ToV10 @Inject constructor(
     private val cryptoDataMapper: AndroidCryptoDataMapper,
     @ApplicationContext private val context: Context,
     private val migrationCryptoV1UseCase: MigrationCryptoV1UseCase,
-) {
-    suspend operator fun invoke(masterKey: ByteArray, safeId: SafeId): LBResult<Unit> {
+) : AppMigration0(9, 10) {
+    override suspend fun migrate(migrationSafeData: MigrationSafeData0): LBResult<Unit> {
+        val safeId = migrationSafeData.id
+        val masterKey = migrationSafeData.masterKey
         val fieldsByItemId = safeItemFieldRepository.getAllSafeItemFields(safeId).groupBy { it.itemId }
         fieldsByItemId.forEach { (itemId, fields) ->
             OSError.runCatching(logger) {

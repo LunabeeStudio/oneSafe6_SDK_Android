@@ -20,9 +20,9 @@
 package studio.lunabee.onesafe.migration.migration
 
 import com.lunabee.lbcore.model.LBResult
-import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.repository.ItemSettingsRepository
+import studio.lunabee.onesafe.migration.MigrationSafeData0
 import javax.inject.Inject
 
 /**
@@ -30,8 +30,9 @@ import javax.inject.Inject
  */
 class MigrationFromV7ToV8 @Inject constructor(
     private val itemSettingsRepository: ItemSettingsRepository,
-) {
-    suspend operator fun invoke(safeId: SafeId): LBResult<Unit> {
+) : AppMigration0(7, 8) {
+    override suspend fun migrate(migrationSafeData: MigrationSafeData0): LBResult<Unit> {
+        val safeId = migrationSafeData.id
         itemSettingsRepository.setItemOrdering(safeId, ItemOrder.Position)
         return LBResult.Success(Unit)
     }

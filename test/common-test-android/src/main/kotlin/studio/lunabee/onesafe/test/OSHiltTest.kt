@@ -52,7 +52,6 @@ import studio.lunabee.onesafe.domain.usecase.onboarding.FinishSafeCreationUseCas
 import studio.lunabee.onesafe.domain.usecase.onboarding.GenerateCryptoForNewSafeUseCase
 import studio.lunabee.onesafe.domain.usecase.settings.SetAppVisitUseCase
 import studio.lunabee.onesafe.storage.MainDatabase
-import studio.lunabee.onesafe.storage.OSRecentSearchProto
 import java.time.Clock
 import java.time.Instant
 import javax.inject.Inject
@@ -100,8 +99,6 @@ abstract class OSHiltTest : OSTest() {
     @Inject lateinit var fileRepository: FileRepository
 
     @Inject lateinit var mainDatabase: MainDatabase
-
-    @Inject lateinit var recentSearchDataStore: DataStore<OSRecentSearchProto.RecentSearchProto>
 
     @Inject lateinit var preferencesDataStore: DataStore<Preferences>
 
@@ -188,7 +185,6 @@ abstract class OSHiltTest : OSTest() {
             }
             context.filesDir.deleteRecursively()
             resetCryptography()
-            recentSearchDataStore.updateData { it.defaultInstanceForType }
             mainDatabaseName.takeIf { it.isNotBlank() }?.let { mainDatabaseName ->
                 context.getDatabasePath(mainDatabaseName)?.let { dbFile ->
                     SQLiteDatabase.deleteDatabase(dbFile)

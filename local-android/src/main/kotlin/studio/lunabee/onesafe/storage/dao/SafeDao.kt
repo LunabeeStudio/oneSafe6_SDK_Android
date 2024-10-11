@@ -149,4 +149,16 @@ abstract class SafeDao {
 
     @Query("SELECT EXISTS(SELECT 1 FROM Safe WHERE crypto_auto_destruction_key IS NOT NULL AND :safeId = id LIMIT 1)")
     abstract fun isAutoDestructionEnabledForSafeFlow(safeId: SafeId): Flow<Boolean>
+
+    @Query("SELECT is_panic_destruction_enabled FROM Safe WHERE id = :safeId")
+    abstract fun isPanicDestructionEnabledFlow(safeId: SafeId): Flow<Boolean>
+
+    @Query("UPDATE Safe SET is_panic_destruction_enabled = :isEnabled WHERE id = :safeId")
+    abstract suspend fun setIsPanicDestructionEnabled(safeId: SafeId, isEnabled: Boolean)
+
+    @Query("SELECT EXISTS(SELECT 1 FROM Safe WHERE is_panic_destruction_enabled IS 1 LIMIT 1)")
+    abstract suspend fun hasAnySafePanicWidgetEnabled(): Boolean
+
+    @Query("SELECT id FROM Safe WHERE is_panic_destruction_enabled IS 1")
+    abstract suspend fun getSafeToDestroy(): List<SafeId>
 }

@@ -20,16 +20,14 @@
 package studio.lunabee.onesafe.domain.usecase.autodestruction
 
 import studio.lunabee.onesafe.di.Inject
-import java.security.MessageDigest
+import studio.lunabee.onesafe.domain.utils.ShaEngine
 
-class DeriveAutoDestructionPasswordUseCase @Inject constructor() {
+class DeriveAutoDestructionPasswordUseCase @Inject constructor(
+    private val shaEngine: ShaEngine,
+) {
     @OptIn(ExperimentalStdlibApi::class)
     operator fun invoke(password: String, safeSalt: String): String {
         val concatString = safeSalt + password
-        return MessageDigest.getInstance(Algorithm).digest(concatString.encodeToByteArray()).toHexString()
-    }
-
-    private companion object {
-        const val Algorithm = "SHA-256"
+        return shaEngine.sha256(concatString).toHexString()
     }
 }

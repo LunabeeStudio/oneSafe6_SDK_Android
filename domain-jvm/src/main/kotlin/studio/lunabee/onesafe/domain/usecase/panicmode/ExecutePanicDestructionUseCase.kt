@@ -17,21 +17,20 @@
  * Last modified 16/09/2024 11:32
  */
 
-package studio.lunabee.onesafe.domain.usecase
+package studio.lunabee.onesafe.domain.usecase.panicmode
 
 import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.DeleteSafeUseCase
 
-// TODO Temp useCase used by widget to delete all safe, will be replace by useCase deleting only specific safes
-class DeleteAllSafeUseCase @Inject constructor(
+class ExecutePanicDestructionUseCase @Inject constructor(
     private val safeRepository: SafeRepository,
     private val deleteSafeUseCase: DeleteSafeUseCase,
 ) {
 
     suspend operator fun invoke(): LBResult<Unit> {
-        return safeRepository.getAllSafeId().map {
+        return safeRepository.getSafeToDestroy().map {
             deleteSafeUseCase(it)
         }.lastOrNull() ?: LBResult.Success(Unit)
     }

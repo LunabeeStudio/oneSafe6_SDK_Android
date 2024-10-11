@@ -48,6 +48,11 @@ class SetAppVisitUseCase @Inject constructor(
         appVisitRepository.setHasDoneOnBoardingBubbles(safeId, true)
     }
 
+    suspend fun setHasSeenDialogMessageSaveConfirmation(): LBResult<Unit> = OSError.runCatching(logger) {
+        val safeId = safeRepository.currentSafeId()
+        appVisitRepository.setHasSeenDialogMessageSaveConfirmation(safeId)
+    }
+
     suspend fun setHasHiddenCameraTips(): LBResult<Unit> = OSError.runCatching(logger) {
         val safeId = safeRepository.currentSafeId()
         appVisitRepository.setHasHiddenCameraTips(safeId, true)

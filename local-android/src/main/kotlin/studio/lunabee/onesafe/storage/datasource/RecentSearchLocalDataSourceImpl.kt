@@ -19,41 +19,33 @@
 
 package studio.lunabee.onesafe.storage.datasource
 
-import androidx.datastore.core.DataStore
-import com.google.protobuf.ByteString
-import com.google.protobuf.kotlin.toByteString
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
-import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.repository.datasource.RecentSearchLocalDatasource
-import studio.lunabee.onesafe.storage.OSRecentSearchProto.RecentSearchProto
-import studio.lunabee.onesafe.storage.copy
+import studio.lunabee.onesafe.storage.dao.RecentSearchDao
+import studio.lunabee.onesafe.storage.model.RoomRecentSearch
 import javax.inject.Inject
 
 class RecentSearchLocalDataSourceImpl @Inject constructor(
-    private val dataStore: DataStore<RecentSearchProto>,
-    @FileDispatcher private val fileDispatcher: CoroutineDispatcher,
+    private val recentSearchDao: RecentSearchDao,
 ) : RecentSearchLocalDatasource {
-    private val limitRecentSearchSaved: Int = 12
+    override fun getRecentSearch(safeId: SafeId): Flow<List<ByteArray>> {
+        return recentSearchDao.getAllOrderByDateDesc(safeId)
+    }
 
-    override fun getRecentSearch(): Flow<LinkedHashSet<ByteArray>> = dataStore.data.map { data ->
-        LinkedHashSet<ByteArray>().also {
-            it.addAll(data.recentSearchList.map(ByteString::toByteArray))
-        }
-    }.flowOn(fileDispatcher)
-
-    override suspend fun saveRecentSearch(recentSearch: List<ByteArray>) {
-        withContext(fileDispatcher) {
-            dataStore.updateData {
-                it.copy {
-                    val list = recentSearch.map(ByteArray::toByteString)
-                    this@copy.recentSearch.clear()
-                    this@copy.recentSearch.addAll(list.take(limitRecentSearchSaved))
-                }
-            }
-        }
+    override suspend fun saveRecentSearch(
+        safeId: SafeId,
+        searchHash: ByteArray,
+        encSearch: ByteArray,
+        timestamp: Long,
+        limitRecentSearchSaved: Int,
+    ) {
+        val roomRecentSearch = RoomRecentSearch(
+            hashSearch = searchHash,
+            encSearch = encSearch,
+            safeId = safeId,
+            timestampMs = timestamp,
+        )
+        recentSearchDao.upsertRecentSearchWithLimit(roomRecentSearch, limitRecentSearchSaved)
     }
 }

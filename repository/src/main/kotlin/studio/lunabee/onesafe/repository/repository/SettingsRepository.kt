@@ -238,12 +238,20 @@ class SettingsRepository @Inject constructor(
         return safeDataSource.hasSeenItemReadEditToolTipFlow(safeId).filterNotNull()
     }
 
+    override suspend fun hasSeenDialogMessageSaveConfirmation(safeId: SafeId): Boolean {
+        return safeDataSource.hasSeenDialogMessageSaveConfirmation(safeId)
+    }
+
     override suspend fun hasSeenItemEditionUrlToolTip(safeId: SafeId): Boolean {
         return safeDataSource.hasSeenItemEditionUrlToolTip(safeId)
     }
 
     override suspend fun hasSeenItemEditionEmojiToolTip(safeId: SafeId): Boolean {
         return safeDataSource.hasSeenItemEditionEmojiToolTip(safeId)
+    }
+
+    override suspend fun setHasSeenDialogMessageSaveConfirmation(safeId: SafeId) {
+        safeDataSource.setHasSeenDialogMessageSaveConfirmation(safeId)
     }
 
     override suspend fun setHasVisitedLogin(value: Boolean) {

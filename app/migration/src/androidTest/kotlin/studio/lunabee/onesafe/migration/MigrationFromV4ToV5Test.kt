@@ -69,7 +69,7 @@ class MigrationFromV4ToV5Test : OSHiltTest() {
         ).onEach { it.file.createNewFile() }
 
         assertContentEquals(emptyList(), getAllLocalBackupsUseCase(firstSafeId))
-        migrationFromV4ToV5()
+        migrationFromV4ToV5.migrate(AppMigrationsTestUtils.safeData0(4))
         val actual = getAllLocalBackupsUseCase(firstSafeId)
         assertContentEquals(expected, actual)
     }
@@ -90,7 +90,7 @@ class MigrationFromV4ToV5Test : OSHiltTest() {
         ).onEach { it.file.createNewFile() }
 
         val expected = (getAllLocalBackupsUseCase(firstSafeId) + oldBackups).sortedDescending().take(5)
-        migrationFromV4ToV5()
+        migrationFromV4ToV5.migrate(AppMigrationsTestUtils.safeData0(4))
         val actual = getAllLocalBackupsUseCase(firstSafeId)
         assertContentEquals(expected, actual)
     }

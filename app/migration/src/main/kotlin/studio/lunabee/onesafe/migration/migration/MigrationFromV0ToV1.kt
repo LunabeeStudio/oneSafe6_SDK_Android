@@ -29,12 +29,12 @@ import studio.lunabee.onesafe.cryptography.android.qualifier.DatastoreEngineProv
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.error.OSMigrationError
+import studio.lunabee.onesafe.migration.MigrationSafeData0
 import studio.lunabee.onesafe.migration.utils.MigrationCryptoV0UseCase
 import studio.lunabee.onesafe.migration.utils.MigrationCryptoV1UseCase
 import studio.lunabee.onesafe.migration.utils.MigrationGetSafeIdBeforeV14UseCase
 import studio.lunabee.onesafe.storage.dao.IndexWordEntryDao
 import studio.lunabee.onesafe.storage.dao.SafeItemKeyDao
-import studio.lunabee.onesafe.jvm.use
 import studio.lunabee.onesafe.use
 import javax.inject.Inject
 
@@ -55,12 +55,13 @@ class MigrationFromV0ToV1 @Inject constructor(
     private val safeItemKeyDao: SafeItemKeyDao,
     private val indexWordEntryDao: IndexWordEntryDao,
     private val migrationGetSafeIdBeforeV14UseCase: MigrationGetSafeIdBeforeV14UseCase,
-) {
-    suspend operator fun invoke(masterKey: ByteArray): LBResult<Unit> = OSError.runCatching(
+) : AppMigration0(0, 1) {
+    override suspend fun migrate(migrationSafeData: MigrationSafeData0): LBResult<Unit> = OSError.runCatching(
         mapErr = {
             OSMigrationError(OSMigrationError.Code.USERNAME_REMOVAL_FAIL, cause = it)
         },
     ) {
+        val masterKey = migrationSafeData.masterKey
         val safeId = migrationGetSafeIdBeforeV14UseCase()
         val username = dataStoreEngine.retrieveValue(DATASTORE_USERNAME).firstOrNull()
         if (username != null) {

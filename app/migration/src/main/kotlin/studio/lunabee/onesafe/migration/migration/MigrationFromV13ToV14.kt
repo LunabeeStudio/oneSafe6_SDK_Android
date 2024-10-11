@@ -26,10 +26,10 @@ import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.bubbles.domain.repository.ContactKeyRepository
 import studio.lunabee.bubbles.domain.repository.ContactRepository
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
-import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.error.OSError
+import studio.lunabee.onesafe.migration.MigrationSafeData0
+import studio.lunabee.onesafe.migration.utils.MigrationCryptoUseCase
 import studio.lunabee.onesafe.migration.utils.MigrationCryptoV1UseCase
-import studio.lunabee.onesafe.jvm.use
 import studio.lunabee.onesafe.use
 import javax.inject.Inject
 
@@ -39,11 +39,21 @@ class MigrationFromV13ToV14 @Inject constructor(
     private val contactRepository: ContactRepository,
     private val migrationCryptoV1UseCase: MigrationCryptoV1UseCase,
     private val contactKeyRepository: ContactKeyRepository,
-) {
+    private val migrationCryptoUseCase: MigrationCryptoUseCase,
+) : AppMigration0(13, 14) {
+
     /**
      * Migrate `isDeepLink` (Boolean) to [MessageSharingMode] for all contacts
      */
-    suspend operator fun invoke(bubblesMasterKey: ByteArray?, safeId: SafeId): LBResult<Unit> = OSError.runCatching(logger) {
+    override suspend fun migrate(migrationSafeData: MigrationSafeData0): LBResult<Unit> = OSError.runCatching(logger) {
+        val safeId = migrationSafeData.id
+        val bubblesMasterKey = migrationSafeData.encBubblesKey?.let {
+            migrationCryptoUseCase.decrypt(
+                cipherData = migrationSafeData.encBubblesKey,
+                key = migrationSafeData.masterKey,
+                safeVersion = migrationSafeData.version,
+            )
+        }
         contactRepository.getAllContactsFlow(DoubleRatchetUUID(safeId.id)).first().forEach { contact ->
             val encKey = contactKeyRepository.getContactLocalKey(contact.id).encKey
 

@@ -24,11 +24,11 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import com.lunabee.lbcore.model.LBResult
-import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.usecase.GetAutoBackupModeUseCase
 import studio.lunabee.onesafe.importexport.worker.AutoBackupWorkersHelper
+import studio.lunabee.onesafe.migration.MigrationSafeData0
 import javax.inject.Inject
 
 /**
@@ -39,8 +39,9 @@ class MigrationFromV5ToV6 @Inject constructor(
     private val dataStore: DataStore<Preferences>,
     private val getAutoBackupModeUseCase: GetAutoBackupModeUseCase,
     private val autoBackupWorkersHelper: AutoBackupWorkersHelper,
-) {
-    suspend operator fun invoke(safeId: SafeId): LBResult<Unit> = OSError.runCatching {
+) : AppMigration0(5, 6) {
+    override suspend fun migrate(migrationSafeData: MigrationSafeData0): LBResult<Unit> = OSError.runCatching {
+        val safeId = migrationSafeData.id
         dataStore.edit {
             it.remove(booleanPreferencesKey("1d361eb7-a13f-49d1-9f9b-a37520c12361"))
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2024 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 4/7/2023 - for the oneSafe6 SDK.
- * Last modified 4/7/23, 12:24 AM
+ * Created by Lunabee Studio / Date - 9/27/2024 - for the oneSafe6 SDK.
+ * Last modified 27/09/2024 11:16
  */
 
-package studio.lunabee.onesafe.cryptography.android
+package studio.lunabee.onesafe.domain.usecase.panicmode
 
-import java.security.MessageDigest
-import javax.inject.Inject
-
-class ShaEngine @Inject constructor() {
-    fun sha256(input: ByteArray): ByteArray {
-        val messageDigest = MessageDigest.getInstance(ALG_SHA_256)
-        messageDigest.update(input)
-        return messageDigest.digest()
-    }
-
-    companion object {
-        private const val ALG_SHA_256 = "SHA-256"
-    }
+interface IsPanicWidgetInstalledUseCase {
+    suspend operator fun invoke(): Boolean
 }

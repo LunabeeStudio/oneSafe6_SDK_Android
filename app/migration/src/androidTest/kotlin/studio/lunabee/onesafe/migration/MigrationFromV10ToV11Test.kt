@@ -62,7 +62,7 @@ class MigrationFromV10ToV11Test : OSHiltTest() {
         val item = createItemUseCase.test(icon = byteArrayOf(1))
         val itemIconFile = File(iconDir, item.iconId!!.toString())
 
-        migrationFromV10ToV11(firstSafeId)
+        migrationFromV10ToV11.migrate(AppMigrationsTestUtils.safeData0(10))
 
         assertFalse(wrongIconFile.exists())
         assertTrue(itemIconFile.exists())

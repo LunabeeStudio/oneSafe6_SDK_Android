@@ -55,6 +55,7 @@ interface SafeSettingsLocalDataSource {
     fun hasSeenItemReadEditToolTipFlow(safeId: SafeId): Flow<Boolean?>
     fun bubblesResendMessageDelayFlow(safeId: SafeId): Flow<Duration?>
 
+    suspend fun hasSeenDialogMessageSaveConfirmation(safeId: SafeId): Boolean
     suspend fun getCameraSystem(safeId: SafeId): CameraSystem
     suspend fun allowScreenshot(safeId: SafeId): Boolean
     suspend fun shakeToLock(safeId: SafeId): Boolean
@@ -71,6 +72,7 @@ interface SafeSettingsLocalDataSource {
     suspend fun setBubblesResendMessageDelay(safeId: SafeId, delay: Duration)
     suspend fun setAutoLockOSKInactivityDelay(safeId: SafeId, duration: Duration)
     suspend fun setAutoLockOSKHiddenDelay(safeId: SafeId, duration: Duration)
+    suspend fun setHasSeenDialogMessageSaveConfirmation(safeId: SafeId)
     suspend fun setItemOrdering(safeId: SafeId, order: ItemOrder)
     suspend fun setItemLayout(safeId: SafeId, style: ItemLayout)
     suspend fun autoLockInactivityDelay(safeId: SafeId): Duration

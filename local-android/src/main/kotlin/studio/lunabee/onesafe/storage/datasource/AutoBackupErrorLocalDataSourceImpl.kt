@@ -29,8 +29,6 @@ import studio.lunabee.onesafe.storage.model.RoomAutoBackupError
 import java.util.UUID
 import javax.inject.Inject
 
-// TODO <multisafe> migrate backup errors to database with SafeId foreign key
-
 class AutoBackupErrorLocalDataSourceImpl @Inject constructor(
     private val dao: AutoBackupErrorDao,
 ) : AutoBackupErrorLocalDataSource {

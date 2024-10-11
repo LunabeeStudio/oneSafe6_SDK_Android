@@ -69,7 +69,6 @@ import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.MainDatabaseTransactionManager
 import studio.lunabee.onesafe.storage.OSForceUpgradeProto.ForceUpgradeProtoData
 import studio.lunabee.onesafe.storage.OSPasswordGeneratorConfigProto.PasswordGeneratorConfigProto
-import studio.lunabee.onesafe.storage.OSRecentSearchProto.RecentSearchProto
 import studio.lunabee.onesafe.storage.SqlCipherDBManager
 import studio.lunabee.onesafe.storage.dao.AutoBackupErrorDao
 import studio.lunabee.onesafe.storage.dao.BackupDao
@@ -81,6 +80,7 @@ import studio.lunabee.onesafe.storage.dao.EnqueuedMessageDao
 import studio.lunabee.onesafe.storage.dao.HandShakeDataDao
 import studio.lunabee.onesafe.storage.dao.IndexWordEntryDao
 import studio.lunabee.onesafe.storage.dao.MessageDao
+import studio.lunabee.onesafe.storage.dao.RecentSearchDao
 import studio.lunabee.onesafe.storage.dao.SafeDao
 import studio.lunabee.onesafe.storage.dao.SafeFileDao
 import studio.lunabee.onesafe.storage.dao.SafeItemDao
@@ -117,11 +117,11 @@ import studio.lunabee.onesafe.storage.datasource.SentMessageLocalDatasourceImpl
 import studio.lunabee.onesafe.storage.datasource.SettingsLocalDataSource
 import studio.lunabee.onesafe.storage.datastore.ForceUpgradeDataSerializer
 import studio.lunabee.onesafe.storage.datastore.PasswordGeneratorConfigSerializer
-import studio.lunabee.onesafe.storage.datastore.RecentSearchSerializer
 import studio.lunabee.onesafe.storage.migration.RoomMigration12to13
 import studio.lunabee.onesafe.storage.migration.RoomMigration13to14
 import studio.lunabee.onesafe.storage.migration.RoomMigration15to16
 import studio.lunabee.onesafe.storage.migration.RoomMigration16to17
+import studio.lunabee.onesafe.storage.migration.RoomMigration19to20
 import studio.lunabee.onesafe.storage.migration.RoomMigration3to4
 import studio.lunabee.onesafe.storage.migration.RoomMigration8to9
 import studio.lunabee.onesafe.storage.migration.RoomMigration9to10
@@ -287,6 +287,7 @@ object DatabaseModule {
         migration13to14: RoomMigration13to14,
         migration15to16: RoomMigration15to16,
         migration16to17: RoomMigration16to17,
+        migration19to20: RoomMigration19to20,
         databaseKeyRepository: DatabaseKeyRepository,
         @DatabaseName(DatabaseName.Type.Main) dbName: String,
     ): MainDatabase {
@@ -303,6 +304,7 @@ object DatabaseModule {
                 migration13to14,
                 migration15to16,
                 migration16to17,
+                migration19to20,
             )
         }
     }
@@ -423,6 +425,11 @@ object MainDatabaseModule {
     fun provideSafeFileDao(mainDatabase: MainDatabase): SafeFileDao {
         return mainDatabase.safeFileDao()
     }
+
+    @Provides
+    fun provideRecentSearchDao(mainDatabase: MainDatabase): RecentSearchDao {
+        return mainDatabase.recentSearchDao()
+    }
 }
 
 @Module
@@ -438,22 +445,6 @@ object AppMaintenanceDatastoreModule {
     private val Context.dataStoreProto: DataStore<ForceUpgradeProtoData> by dataStore(
         fileName = datastoreFile,
         serializer = ForceUpgradeDataSerializer,
-    )
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-object RecentSearchDatastoreModule {
-
-    private const val datastoreFile: String = "201c4654-39bd-400e-a3ef-3408e0729273"
-
-    @Provides
-    @Singleton
-    fun provideDatastore(@ApplicationContext context: Context): DataStore<RecentSearchProto> = context.dataStoreProto
-
-    private val Context.dataStoreProto: DataStore<RecentSearchProto> by dataStore(
-        fileName = datastoreFile,
-        serializer = RecentSearchSerializer,
     )
 }
 

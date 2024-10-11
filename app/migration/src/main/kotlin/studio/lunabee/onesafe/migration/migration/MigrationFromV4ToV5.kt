@@ -26,6 +26,7 @@ import com.lunabee.lblogger.e
 import dagger.hilt.android.qualifiers.ApplicationContext
 import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.importexport.usecase.DeleteOldLocalBackupsUseCase
+import studio.lunabee.onesafe.migration.MigrationSafeData0
 import studio.lunabee.onesafe.migration.utils.MigrationGetSafeIdBeforeV14UseCase
 import studio.lunabee.onesafe.storage.dao.BackupDao
 import studio.lunabee.onesafe.storage.model.RoomLocalBackup
@@ -52,10 +53,10 @@ class MigrationFromV4ToV5 @Inject constructor(
     private val clock: Clock,
     private val safeRepository: SafeRepository,
     private val migrationGetSafeIdBeforeV14UseCase: MigrationGetSafeIdBeforeV14UseCase,
-) {
+) : AppMigration0(4, 5) {
     private val backupsDir: File = File(context.filesDir, backupDir)
 
-    suspend operator fun invoke(): LBResult<Unit> {
+    override suspend fun migrate(migrationSafeData: MigrationSafeData0): LBResult<Unit> {
         val safeId = migrationGetSafeIdBeforeV14UseCase()
         val backupFiles = backupsDir.listFiles { _, name ->
             name.startsWith(ArchiveFilePrefix) && name.endsWith(ExtensionOs6Backup)

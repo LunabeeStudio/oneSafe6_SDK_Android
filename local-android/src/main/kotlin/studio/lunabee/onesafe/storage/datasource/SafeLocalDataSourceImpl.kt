@@ -140,4 +140,20 @@ class SafeLocalDataSourceImpl @Inject constructor(
     override fun isAutoDestructionEnabledForSafeFlow(safeId: SafeId): Flow<Boolean> {
         return safeDao.isAutoDestructionEnabledForSafeFlow(safeId)
     }
+
+    override fun isPanicDestructionEnabledFlow(safeId: SafeId): Flow<Boolean> {
+        return safeDao.isPanicDestructionEnabledFlow(safeId = safeId)
+    }
+
+    override suspend fun setIsPanicDestructionEnabled(safeId: SafeId, isEnabled: Boolean) {
+        safeDao.setIsPanicDestructionEnabled(safeId = safeId, isEnabled = isEnabled)
+    }
+
+    override suspend fun hasAnySafePanicWidgetEnabled(): Boolean {
+        return safeDao.hasAnySafePanicWidgetEnabled()
+    }
+
+    override suspend fun getSafeToDestroy(): List<SafeId> {
+        return safeDao.getSafeToDestroy()
+    }
 }

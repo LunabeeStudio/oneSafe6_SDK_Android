@@ -136,12 +136,8 @@ fun WriteMessageRoute(
     val viewModelSnackbarState: SnackbarState? by viewModel.snackbarState.collectAsStateWithLifecycle(initialValue = null)
     val composeMessageFocusRequester = remember { FocusRequester() }
 
-    val viewModelSnackbarStateVisual = viewModelSnackbarState?.snackbarVisuals
-    LaunchedEffect(viewModelSnackbarStateVisual) {
-        viewModelSnackbarStateVisual?.let {
-            viewModelSnackBarHostState.showSnackbar(it)
-            viewModel.resetSnackbarState()
-        }
+    viewModelSnackbarState?.LaunchedSnackbarEffect(viewModelSnackBarHostState) {
+        viewModel.resetSnackbarState()
     }
 
     when (val state = uiState) {

@@ -170,4 +170,20 @@ class SafeRepositoryImpl @Inject constructor(
     override suspend fun getSafeCrypto(safeId: SafeId): SafeCrypto? {
         return localDataSource.getSafeCrypto(safeId)
     }
+
+    override fun isPanicDestructionEnabledFlow(safeId: SafeId): Flow<Boolean> {
+        return localDataSource.isPanicDestructionEnabledFlow(safeId)
+    }
+
+    override suspend fun setIsPanicDestructionEnabled(safeId: SafeId, isEnabled: Boolean) {
+        return localDataSource.setIsPanicDestructionEnabled(safeId, isEnabled)
+    }
+
+    override suspend fun hasAnySafePanicWidgetEnabled(): Boolean {
+        return localDataSource.hasAnySafePanicWidgetEnabled()
+    }
+
+    override suspend fun getSafeToDestroy(): List<SafeId> {
+        return localDataSource.getSafeToDestroy()
+    }
 }
