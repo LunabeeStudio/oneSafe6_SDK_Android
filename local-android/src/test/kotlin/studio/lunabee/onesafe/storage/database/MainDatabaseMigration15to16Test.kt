@@ -20,9 +20,9 @@
 package studio.lunabee.onesafe.storage.database
 
 import android.content.ContentValues
-import androidx.room.Room
 import androidx.room.testing.MigrationTestHelper
 import androidx.test.platform.app.InstrumentationRegistry
+import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
@@ -37,10 +37,10 @@ import studio.lunabee.onesafe.domain.model.camera.CameraSystem
 import studio.lunabee.onesafe.domain.model.safeitem.ItemLayout
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
+import studio.lunabee.onesafe.domain.qualifier.DatabaseName
 import studio.lunabee.onesafe.jvm.toByteArray
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.migration.RoomMigration15to16
-import studio.lunabee.onesafe.storage.migration.RoomMigration16to17
 import studio.lunabee.onesafe.storage.model.RoomCtaState
 import studio.lunabee.onesafe.test.OSTestConfig
 import studio.lunabee.onesafe.test.assertDoesNotThrow
@@ -56,7 +56,9 @@ import kotlin.test.assertEquals
 )
 @HiltAndroidTest
 class MainDatabaseMigration15to16Test {
-    private val dbName = "migration-test"
+    @BindValue
+    @DatabaseName(DatabaseName.Type.Main)
+    val dbName: String = "migration-test"
 
     @get:Rule
     val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
@@ -71,7 +73,7 @@ class MainDatabaseMigration15to16Test {
     lateinit var migration15to16: RoomMigration15to16
 
     @Inject
-    lateinit var migration16to17: RoomMigration16to17
+    lateinit var mainDatabase: dagger.Lazy<MainDatabase>
 
     @Before
     fun setUp() {
@@ -146,15 +148,9 @@ class MainDatabaseMigration15to16Test {
             expected++
         }
 
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
         assertDoesNotThrow {
-            Room.databaseBuilder(
-                context,
-                MainDatabase::class.java,
-                dbName,
-            ).addMigrations(
-                migration16to17,
-            ).build()
+            mainDatabase
+                .get()
                 .safeDao()
                 .getAllOrderByLastOpenAsc()
         }

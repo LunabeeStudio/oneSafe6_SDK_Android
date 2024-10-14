@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.protobuf.kotlinlite)
     implementation(libs.emoji2)
     implementation(libs.emoji2.bundled)
+    implementation(libs.androidx.test.uiautomator)
 
     implementation(platform(libs.lunabee.bom))
     implementation(libs.lbcore)

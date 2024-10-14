@@ -35,6 +35,8 @@ class RoomAppVisit(
     val hasSeenItemEditionEmojiToolTip: Boolean,
     @ColumnInfo(name = "has_seen_item_read_edit_tool_tip")
     val hasSeenItemReadEditToolTip: Boolean,
+    @ColumnInfo(name = "has_seen_dialog_message_save_confirmation", defaultValue = "0")
+    val hasSeenDialogMessageSaveConfirmation: Boolean,
 ) {
     companion object {
         fun fromAppVisit(appVisit: AppVisit): RoomAppVisit = RoomAppVisit(
@@ -44,6 +46,7 @@ class RoomAppVisit(
             hasSeenItemEditionUrlToolTip = appVisit.hasSeenItemEditionUrlToolTip,
             hasSeenItemEditionEmojiToolTip = appVisit.hasSeenItemEditionEmojiToolTip,
             hasSeenItemReadEditToolTip = appVisit.hasSeenItemReadEditToolTip,
+            hasSeenDialogMessageSaveConfirmation = appVisit.hasSeenDialogMessageSaveConfirmation,
         )
     }
 }

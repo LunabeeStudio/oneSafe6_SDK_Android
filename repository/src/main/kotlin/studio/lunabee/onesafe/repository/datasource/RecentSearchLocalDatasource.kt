@@ -20,9 +20,10 @@
 package studio.lunabee.onesafe.repository.datasource
 
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 
 interface RecentSearchLocalDatasource {
 
-    fun getRecentSearch(): Flow<LinkedHashSet<ByteArray>>
-    suspend fun saveRecentSearch(recentSearch: List<ByteArray>)
+    fun getRecentSearch(safeId: SafeId): Flow<List<ByteArray>>
+    suspend fun saveRecentSearch(safeId: SafeId, searchHash: ByteArray, encSearch: ByteArray, timestamp: Long, limitRecentSearchSaved: Int)
 }

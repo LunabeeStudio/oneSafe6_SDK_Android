@@ -222,6 +222,9 @@ interface SettingsDao {
     @Query("UPDATE Safe SET setting_auto_lock_app_change_delay = :duration WHERE id IS :safeId")
     suspend fun setAutoLockAppChangeDelay(safeId: SafeId, duration: Duration)
 
+    @Query("UPDATE Safe SET app_visit_has_seen_dialog_message_save_confirmation = 1 WHERE id IS :safeId")
+    suspend fun setHasSeenDialogMessageSaveConfirmation(safeId: SafeId)
+
     @Query("UPDATE Safe SET setting_bubbles_resend_message_delay = :delay WHERE id IS :safeId")
     suspend fun setBubblesResendMessageDelay(safeId: SafeId, delay: Duration)
 
@@ -306,6 +309,9 @@ interface SettingsDao {
 
     @Query("SELECT setting_display_share_warning FROM Safe WHERE id IS :safeId")
     suspend fun getDisplayShareWarning(safeId: SafeId): Boolean
+
+    @Query("SELECT app_visit_has_seen_dialog_message_save_confirmation FROM Safe WHERE id IS :safeId")
+    suspend fun hasSeenDialogMessageSaveConfirmation(safeId: SafeId): Boolean
 
     @Query(
         """

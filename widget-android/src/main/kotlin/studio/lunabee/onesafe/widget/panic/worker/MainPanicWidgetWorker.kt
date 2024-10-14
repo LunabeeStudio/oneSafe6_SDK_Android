@@ -33,8 +33,8 @@ import androidx.work.WorkerParameters
 import com.lunabee.lbcore.model.LBResult
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import studio.lunabee.onesafe.domain.usecase.DeleteAllSafeUseCase
 import studio.lunabee.onesafe.domain.usecase.IsPanicWidgetEnabledUseCase
+import studio.lunabee.onesafe.domain.usecase.panicmode.ExecutePanicDestructionUseCase
 import studio.lunabee.onesafe.widget.panic.PanicButtonWidget
 import studio.lunabee.onesafe.widget.panic.state.PanicWidgetState
 import studio.lunabee.onesafe.widget.panic.state.PanicWidgetStateDefinition
@@ -45,7 +45,7 @@ internal class MainPanicWidgetWorker @AssistedInject constructor(
     @Assisted private val context: Context,
     @Assisted workerParameters: WorkerParameters,
     private val isPanicWidgetEnabledUseCase: IsPanicWidgetEnabledUseCase,
-    private val deleteAllSafeUseCase: DeleteAllSafeUseCase,
+    private val executePanicDestructionUseCase: ExecutePanicDestructionUseCase,
 ) : CoroutineWorker(context, workerParameters) {
 
     override suspend fun doWork(): Result {
@@ -80,7 +80,7 @@ internal class MainPanicWidgetWorker @AssistedInject constructor(
             glanceId = glanceId,
             newState = PanicWidgetWorkerState.Loading,
         )
-        return when (deleteAllSafeUseCase()) {
+        return when (executePanicDestructionUseCase()) {
             is LBResult.Failure -> {
                 val newWidgetWorkerState = PanicWidgetWorkerState.Idle
                 updateUiWidgetState(

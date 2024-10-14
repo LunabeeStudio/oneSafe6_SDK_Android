@@ -61,7 +61,6 @@ class ImeLoginViewModelFactory @Inject constructor(
                 loginUiStateHolder = loginUiStateHolder,
                 workManager = workManager,
                 encryptPasswordAutoDestructionUseCase = encryptPasswordAutoDestructionUseCase,
-                setSecuritySettingUseCase = setSecuritySettingUseCase,
             ),
             imeBiometricResultRepository = imeBiometricResultRepository,
             isSafeReadyUseCase = isSafeReadyUseCase,

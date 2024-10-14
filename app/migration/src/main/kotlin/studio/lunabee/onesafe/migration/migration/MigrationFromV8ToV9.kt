@@ -22,6 +22,7 @@ package studio.lunabee.onesafe.migration.migration
 import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.domain.repository.SupportOSRepository
 import studio.lunabee.onesafe.domain.usecase.support.ShouldAskForSupportUseCase
+import studio.lunabee.onesafe.migration.MigrationSafeData0
 import java.time.Clock
 import java.time.Instant
 import javax.inject.Inject
@@ -33,8 +34,8 @@ class MigrationFromV8ToV9 @Inject constructor(
     private val shouldAskForSupportUseCase: ShouldAskForSupportUseCase,
     private val supportOSRepository: SupportOSRepository,
     private val clock: Clock,
-) {
-    suspend operator fun invoke(): LBResult<Unit> {
+) : AppMigration0(8, 9) {
+    override suspend fun migrate(migrationSafeData: MigrationSafeData0): LBResult<Unit> {
         if (shouldAskForSupportUseCase()) {
             supportOSRepository.setVisibleSince(Instant.now(clock))
         }

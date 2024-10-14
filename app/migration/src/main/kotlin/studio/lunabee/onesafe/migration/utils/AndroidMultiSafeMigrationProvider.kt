@@ -58,7 +58,6 @@ import kotlin.time.Duration.Companion.milliseconds
 
 private val logger = LBLogger.get<AndroidMultiSafeMigrationProvider>()
 
-// TODO <multisafe> move?
 class AndroidMultiSafeMigrationProvider @Inject constructor(
     private val safeIdProvider: SafeIdProvider,
     private val encodedDataStore: DataStore<ProtoData>,
@@ -178,6 +177,7 @@ class AndroidMultiSafeMigrationProvider @Inject constructor(
                 hasSeenItemEditionUrlToolTip = prefs?.get(hasSeenItemEditionUrlToolTipKey) ?: HasSeenItemEditionUrlToolTipDefault,
                 hasSeenItemEditionEmojiToolTip = prefs?.get(hasSeenItemEditionEmojiToolTipKey) ?: HasSeenItemEditionEmojiToolTipDefault,
                 hasSeenItemReadEditToolTip = prefs?.get(hasSeenItemReadEditToolTipKey) ?: HasSeenItemReadEditToolTipDefault,
+                hasSeenDialogMessageSaveConfirmation = false,
             )
         } catch (t: Throwable) {
             logger.e("AppVisit migration failed", t)
@@ -188,6 +188,7 @@ class AndroidMultiSafeMigrationProvider @Inject constructor(
                 hasSeenItemEditionUrlToolTip = HasSeenItemEditionUrlToolTipDefault,
                 hasSeenItemEditionEmojiToolTip = HasSeenItemEditionEmojiToolTipDefault,
                 hasSeenItemReadEditToolTip = HasSeenItemReadEditToolTipDefault,
+                hasSeenDialogMessageSaveConfirmation = false,
             )
         }
     }

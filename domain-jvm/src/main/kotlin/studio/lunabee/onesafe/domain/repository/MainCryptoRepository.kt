@@ -24,7 +24,6 @@ import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.NewSafeCrypto
 import studio.lunabee.onesafe.domain.model.safe.BiometricCryptoMaterial
-import studio.lunabee.onesafe.domain.model.safe.SafeCrypto
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemKey
 import java.io.File
 import java.io.InputStream
@@ -72,14 +71,12 @@ interface MainCryptoRepository {
      */
     suspend fun testCurrentPassword(password: CharArray)
 
-    suspend fun loadMasterKeyFromBiometric(safeCrypto: SafeCrypto, cipher: Cipher)
-    suspend fun decryptMasterKeyWithBiometric(biometricCryptoMaterial: BiometricCryptoMaterial, cipher: Cipher): ByteArray
     suspend fun enableBiometric(biometricCipher: Cipher, key: ByteArray? = null): BiometricCryptoMaterial
     suspend fun reEncryptItemKey(itemKey: SafeItemKey, key: ByteArray)
     fun isCryptoDataInMemoryFlow(): Flow<Boolean>
-    suspend fun loadMasterKeyExternal(masterKey: ByteArray)
+    suspend fun loadMasterKey(masterKey: ByteArray)
     suspend fun decryptRecentSearch(encRecentSearch: List<ByteArray>): List<String>
-    suspend fun encryptRecentSearch(plainRecentSearch: List<String>): List<ByteArray>
+    suspend fun encryptRecentSearch(plainRecentSearch: String): ByteArray
     suspend fun derivePassword(salt: ByteArray, password: CharArray): ByteArray
 
     /**

@@ -22,12 +22,12 @@ package studio.lunabee.onesafe.migration.migration
 import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
 import studio.lunabee.onesafe.domain.Constant
-import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.error.OSError
-import studio.lunabee.onesafe.migration.utils.MigrationCryptoV1UseCase
 import studio.lunabee.onesafe.jvm.toByteArray
+import studio.lunabee.onesafe.migration.MigrationSafeData0
+import studio.lunabee.onesafe.migration.utils.MigrationCryptoV1UseCase
 import javax.inject.Inject
 
 private val logger = LBLogger.get<MigrationFromV11ToV12>()
@@ -39,8 +39,10 @@ class MigrationFromV11ToV12 @Inject constructor(
     private val safeItemFieldRepository: SafeItemFieldRepository,
     private val migrationCryptoV1UseCase: MigrationCryptoV1UseCase,
     private val safeItemKeyRepository: SafeItemKeyRepository,
-) {
-    suspend operator fun invoke(masterKey: ByteArray, safeId: SafeId): LBResult<Unit> = OSError.runCatching(logger) {
+) : AppMigration0(11, 12) {
+    override suspend fun migrate(migrationSafeData: MigrationSafeData0): LBResult<Unit> = OSError.runCatching(logger) {
+        val safeId = migrationSafeData.id
+        val masterKey = migrationSafeData.masterKey
         val allFields = safeItemFieldRepository.getAllSafeItemFields(safeId)
         allFields.forEach { field ->
             val key = safeItemKeyRepository.getSafeItemKey(field.itemId)

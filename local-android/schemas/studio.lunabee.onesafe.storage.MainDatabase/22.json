@@ -1,0 +1,1560 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 22,
+    "identityHash": "182113dc6c9b9877b317006662b82121",
+    "entities": [
+      {
+        "tableName": "SafeItem",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` BLOB NOT NULL, `enc_name` BLOB, `parent_id` BLOB, `is_favorite` INTEGER NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `position` REAL NOT NULL, `icon_id` BLOB, `enc_color` BLOB, `deleted_at` INTEGER, `deleted_parent_id` BLOB, `consulted_at` INTEGER, `index_alpha` REAL NOT NULL, `safe_id` BLOB NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`parent_id`) REFERENCES `SafeItem`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`deleted_parent_id`) REFERENCES `SafeItem`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`safe_id`) REFERENCES `Safe`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encName",
+            "columnName": "enc_name",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "parentId",
+            "columnName": "parent_id",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isFavorite",
+            "columnName": "is_favorite",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "iconId",
+            "columnName": "icon_id",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "encColor",
+            "columnName": "enc_color",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "deletedAt",
+            "columnName": "deleted_at",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "deletedParentId",
+            "columnName": "deleted_parent_id",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "consultedAt",
+            "columnName": "consulted_at",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "indexAlpha",
+            "columnName": "index_alpha",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "safeId",
+            "columnName": "safe_id",
+            "affinity": "BLOB",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_SafeItem_parent_id",
+            "unique": false,
+            "columnNames": [
+              "parent_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_SafeItem_parent_id` ON `${TABLE_NAME}` (`parent_id`)"
+          },
+          {
+            "name": "index_SafeItem_created_at",
+            "unique": false,
+            "columnNames": [
+              "created_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_SafeItem_created_at` ON `${TABLE_NAME}` (`created_at`)"
+          },
+          {
+            "name": "index_SafeItem_deleted_parent_id",
+            "unique": false,
+            "columnNames": [
+              "deleted_parent_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_SafeItem_deleted_parent_id` ON `${TABLE_NAME}` (`deleted_parent_id`)"
+          },
+          {
+            "name": "index_SafeItem_consulted_at",
+            "unique": false,
+            "columnNames": [
+              "consulted_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_SafeItem_consulted_at` ON `${TABLE_NAME}` (`consulted_at`)"
+          },
+          {
+            "name": "index_SafeItem_index_alpha",
+            "unique": false,
+            "columnNames": [
+              "index_alpha"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_SafeItem_index_alpha` ON `${TABLE_NAME}` (`index_alpha`)"
+          },
+          {
+            "name": "index_SafeItem_safe_id",
+            "unique": false,
+            "columnNames": [
+              "safe_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_SafeItem_safe_id` ON `${TABLE_NAME}` (`safe_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "SafeItem",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "parent_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "SafeItem",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deleted_parent_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "Safe",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "safe_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "SafeItemField",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` BLOB NOT NULL, `enc_name` BLOB, `position` REAL NOT NULL, `item_id` BLOB NOT NULL, `enc_placeholder` BLOB, `enc_value` BLOB, `show_prediction` INTEGER NOT NULL, `enc_kind` BLOB, `updated_at` INTEGER NOT NULL, `is_item_identifier` INTEGER NOT NULL, `enc_formatting_mask` BLOB, `enc_secure_display_mask` BLOB, `is_secured` INTEGER NOT NULL, `enc_thumbnail_file_name` BLOB DEFAULT null, PRIMARY KEY(`id`), FOREIGN KEY(`item_id`) REFERENCES `SafeItem`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encName",
+            "columnName": "enc_name",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "itemId",
+            "columnName": "item_id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encPlaceholder",
+            "columnName": "enc_placeholder",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "encValue",
+            "columnName": "enc_value",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "showPrediction",
+            "columnName": "show_prediction",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encKind",
+            "columnName": "enc_kind",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isItemIdentifier",
+            "columnName": "is_item_identifier",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encFormattingMask",
+            "columnName": "enc_formatting_mask",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "encSecureDisplayMask",
+            "columnName": "enc_secure_display_mask",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isSecured",
+            "columnName": "is_secured",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encThumbnailFileName",
+            "columnName": "enc_thumbnail_file_name",
+            "affinity": "BLOB",
+            "notNull": false,
+            "defaultValue": "null"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_SafeItemField_item_id",
+            "unique": false,
+            "columnNames": [
+              "item_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_SafeItemField_item_id` ON `${TABLE_NAME}` (`item_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "SafeItem",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "item_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "IndexWordEntry",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `word` BLOB NOT NULL, `item_match` BLOB NOT NULL, `field_match` BLOB, `safe_id` BLOB NOT NULL, FOREIGN KEY(`item_match`) REFERENCES `SafeItem`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`field_match`) REFERENCES `SafeItemField`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`safe_id`) REFERENCES `Safe`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encWord",
+            "columnName": "word",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "itemMatch",
+            "columnName": "item_match",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fieldMatch",
+            "columnName": "field_match",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "safeId",
+            "columnName": "safe_id",
+            "affinity": "BLOB",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_IndexWordEntry_item_match",
+            "unique": false,
+            "columnNames": [
+              "item_match"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_IndexWordEntry_item_match` ON `${TABLE_NAME}` (`item_match`)"
+          },
+          {
+            "name": "index_IndexWordEntry_field_match",
+            "unique": false,
+            "columnNames": [
+              "field_match"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_IndexWordEntry_field_match` ON `${TABLE_NAME}` (`field_match`)"
+          },
+          {
+            "name": "index_IndexWordEntry_safe_id",
+            "unique": false,
+            "columnNames": [
+              "safe_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_IndexWordEntry_safe_id` ON `${TABLE_NAME}` (`safe_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "SafeItem",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "item_match"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "SafeItemField",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "field_match"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "Safe",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "safe_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "SafeItemKey",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` BLOB NOT NULL, `enc_value` BLOB NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`id`) REFERENCES `SafeItem`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encValue",
+            "columnName": "enc_value",
+            "affinity": "BLOB",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "SafeItem",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Contact",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` BLOB NOT NULL, `enc_name` BLOB NOT NULL, `enc_shared_key` BLOB, `updated_at` INTEGER NOT NULL, `shared_conversation_id` BLOB NOT NULL, `enc_sharing_mode` BLOB NOT NULL, `consulted_at` INTEGER DEFAULT null, `safe_id` BLOB NOT NULL, `enc_reset_conversation_date` BLOB DEFAULT null, PRIMARY KEY(`id`), FOREIGN KEY(`safe_id`) REFERENCES `Safe`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encName",
+            "columnName": "enc_name",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encSharedKey",
+            "columnName": "enc_shared_key",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sharedConversationId",
+            "columnName": "shared_conversation_id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encSharingMode",
+            "columnName": "enc_sharing_mode",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "consultedAt",
+            "columnName": "consulted_at",
+            "affinity": "INTEGER",
+            "notNull": false,
+            "defaultValue": "null"
+          },
+          {
+            "fieldPath": "safeId",
+            "columnName": "safe_id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encResetConversationDate",
+            "columnName": "enc_reset_conversation_date",
+            "affinity": "BLOB",
+            "notNull": false,
+            "defaultValue": "null"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Contact_safe_id",
+            "unique": false,
+            "columnNames": [
+              "safe_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Contact_safe_id` ON `${TABLE_NAME}` (`safe_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Safe",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "safe_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Message",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` BLOB NOT NULL, `contact_id` BLOB NOT NULL, `enc_sent_at` BLOB NOT NULL, `enc_content` BLOB NOT NULL, `direction` TEXT NOT NULL, `order` REAL NOT NULL, `enc_channel` BLOB, `encSafeId` BLOB, `is_read` INTEGER NOT NULL DEFAULT true, PRIMARY KEY(`id`), FOREIGN KEY(`contact_id`) REFERENCES `Contact`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contactId",
+            "columnName": "contact_id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encSentAt",
+            "columnName": "enc_sent_at",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encContent",
+            "columnName": "enc_content",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "direction",
+            "columnName": "direction",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "order",
+            "columnName": "order",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encChannel",
+            "columnName": "enc_channel",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "encSafeId",
+            "columnName": "encSafeId",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isRead",
+            "columnName": "is_read",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "true"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Message_order_contact_id",
+            "unique": true,
+            "columnNames": [
+              "order",
+              "contact_id"
+            ],
+            "orders": [
+              "DESC",
+              "DESC"
+            ],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Message_order_contact_id` ON `${TABLE_NAME}` (`order` DESC, `contact_id` DESC)"
+          },
+          {
+            "name": "index_Message_contact_id",
+            "unique": false,
+            "columnNames": [
+              "contact_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Message_contact_id` ON `${TABLE_NAME}` (`contact_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Contact",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "contact_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "ContactLocalKey",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`contact_id` BLOB NOT NULL, `enc_value` BLOB NOT NULL, PRIMARY KEY(`contact_id`), FOREIGN KEY(`contact_id`) REFERENCES `Contact`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "contactId",
+            "columnName": "contact_id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encLocalKey",
+            "columnName": "enc_value",
+            "affinity": "BLOB",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "contact_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "Contact",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "contact_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "EnqueuedMessage",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `enc_message` BLOB NOT NULL, `enc_channel` BLOB)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encMessage",
+            "columnName": "enc_message",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encChannel",
+            "columnName": "enc_channel",
+            "affinity": "BLOB",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_EnqueuedMessage_enc_message",
+            "unique": true,
+            "columnNames": [
+              "enc_message"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_EnqueuedMessage_enc_message` ON `${TABLE_NAME}` (`enc_message`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "DoubleRatchetKey",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `data` BLOB NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "data",
+            "columnName": "data",
+            "affinity": "BLOB",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "DoubleRatchetConversation",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` BLOB NOT NULL, `encPersonalPublicKey` BLOB NOT NULL, `encPersonalPrivateKey` BLOB NOT NULL, `encMessageNumber` BLOB NOT NULL, `encSequenceNumber` BLOB NOT NULL, `encRootKey` BLOB, `encSendingChainKey` BLOB, `encReceiveChainKey` BLOB, `encLastContactPublicKey` BLOB, `encReceivedLastMessageNumber` BLOB, PRIMARY KEY(`id`), FOREIGN KEY(`id`) REFERENCES `Contact`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encPersonalPublicKey",
+            "columnName": "encPersonalPublicKey",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encPersonalPrivateKey",
+            "columnName": "encPersonalPrivateKey",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encMessageNumber",
+            "columnName": "encMessageNumber",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encSequenceNumber",
+            "columnName": "encSequenceNumber",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encRootKey",
+            "columnName": "encRootKey",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "encSendingChainKey",
+            "columnName": "encSendingChainKey",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "encReceiveChainKey",
+            "columnName": "encReceiveChainKey",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "encLastContactPublicKey",
+            "columnName": "encLastContactPublicKey",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "encReceivedLastMessageNumber",
+            "columnName": "encReceivedLastMessageNumber",
+            "affinity": "BLOB",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "Contact",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "HandShakeData",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`conversation_local_id` BLOB NOT NULL, `encConversationSharedId` BLOB NOT NULL, `encOneSafePrivateKey` BLOB, `encOneSafePublicKey` BLOB, PRIMARY KEY(`conversation_local_id`), FOREIGN KEY(`conversation_local_id`) REFERENCES `Contact`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "conversationLocalId",
+            "columnName": "conversation_local_id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encConversationSharedId",
+            "columnName": "encConversationSharedId",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encOneSafePrivateKey",
+            "columnName": "encOneSafePrivateKey",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "encOneSafePublicKey",
+            "columnName": "encOneSafePublicKey",
+            "affinity": "BLOB",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "conversation_local_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "Contact",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "conversation_local_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "SentMessage",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` BLOB NOT NULL, `enc_content` BLOB NOT NULL, `enc_created_at` BLOB NOT NULL, `contact_id` BLOB NOT NULL, `safe_id` BLOB NOT NULL, `order` REAL NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`id`) REFERENCES `Message`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`safe_id`) REFERENCES `Safe`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encContent",
+            "columnName": "enc_content",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encCreatedAt",
+            "columnName": "enc_created_at",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contactId",
+            "columnName": "contact_id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "safeId",
+            "columnName": "safe_id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "order",
+            "columnName": "order",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_SentMessage_safe_id",
+            "unique": false,
+            "columnNames": [
+              "safe_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_SentMessage_safe_id` ON `${TABLE_NAME}` (`safe_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Message",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "Safe",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "safe_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Backup",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `remote_id` TEXT, `local_file` TEXT, `date` INTEGER NOT NULL, `safe_id` BLOB, `name` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`safe_id`) REFERENCES `Safe`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "remoteId",
+            "columnName": "remote_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "localFile",
+            "columnName": "local_file",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "safeId",
+            "columnName": "safe_id",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Backup_remote_id",
+            "unique": true,
+            "columnNames": [
+              "remote_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Backup_remote_id` ON `${TABLE_NAME}` (`remote_id`)"
+          },
+          {
+            "name": "index_Backup_safe_id",
+            "unique": false,
+            "columnNames": [
+              "safe_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Backup_safe_id` ON `${TABLE_NAME}` (`safe_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Safe",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "safe_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Safe",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` BLOB NOT NULL, `version` INTEGER NOT NULL, `open_order` INTEGER NOT NULL, `is_panic_destruction_enabled` INTEGER NOT NULL DEFAULT 0, `crypto_master_salt` BLOB NOT NULL, `crypto_enc_test` BLOB NOT NULL, `crypto_enc_index_key` BLOB NOT NULL, `crypto_enc_bubbles_key` BLOB NOT NULL, `crypto_enc_item_edition_key` BLOB NOT NULL, `crypto_biometric_crypto_material` BLOB, `crypto_auto_destruction_key` BLOB DEFAULT NULL, `setting_material_you` INTEGER NOT NULL, `setting_automation` INTEGER NOT NULL, `setting_display_share_warning` INTEGER NOT NULL, `setting_allow_screenshot` INTEGER NOT NULL, `setting_shake_to_lock` INTEGER NOT NULL, `setting_bubbles_preview` INTEGER NOT NULL, `setting_camera_system` TEXT NOT NULL, `setting_auto_lock_osk_hidden_delay` INTEGER NOT NULL, `setting_verify_password_interval` TEXT NOT NULL, `setting_last_password_verification` INTEGER NOT NULL, `setting_auto_lock_inactivity_delay` INTEGER NOT NULL, `setting_auto_lock_app_change_delay` INTEGER NOT NULL, `setting_clipboard_delay` INTEGER NOT NULL, `setting_bubbles_resend_message_delay` INTEGER NOT NULL, `setting_auto_lock_osk_inactivity_delay` INTEGER NOT NULL, `setting_auto_backup_enabled` INTEGER NOT NULL, `setting_auto_backup_frequency` INTEGER NOT NULL, `setting_auto_backup_max_number` INTEGER NOT NULL, `setting_cloud_backup_enabled` INTEGER NOT NULL, `setting_keep_local_backup_enabled` INTEGER NOT NULL, `setting_item_ordering` TEXT NOT NULL, `setting_items_layout_setting` TEXT NOT NULL, `setting_bubbles_home_card_cta_state` TEXT NOT NULL, `setting_bubbles_home_card_cta_timestamp` INTEGER, `setting_drive_selected_account` TEXT, `setting_drive_folder_id` TEXT, `setting_drive_folder_url` TEXT, `setting_enable_auto_backup_cta_state` TEXT NOT NULL, `setting_enable_auto_backup_cta_timestamp` INTEGER, `setting_independent_safe_info_cta_state` TEXT NOT NULL, `setting_independent_safe_info_cta_timestamp` INTEGER, `app_visit_has_finish_one_safe_k_on_boarding` INTEGER NOT NULL, `app_visit_has_done_on_boarding_bubbles` INTEGER NOT NULL, `app_visit_has_hidden_camera_tips` INTEGER NOT NULL, `app_visit_has_seen_item_edition_url_tool_tip` INTEGER NOT NULL, `app_visit_has_seen_item_edition_emoji_tool_tip` INTEGER NOT NULL, `app_visit_has_seen_item_read_edit_tool_tip` INTEGER NOT NULL, `app_visit_has_seen_dialog_message_save_confirmation` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "version",
+            "columnName": "version",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "openOrder",
+            "columnName": "open_order",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isPanicDestructionEnabled",
+            "columnName": "is_panic_destruction_enabled",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "crypto.salt",
+            "columnName": "crypto_master_salt",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "crypto.encTest",
+            "columnName": "crypto_enc_test",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "crypto.encIndexKey",
+            "columnName": "crypto_enc_index_key",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "crypto.encBubblesKey",
+            "columnName": "crypto_enc_bubbles_key",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "crypto.encItemEditionKey",
+            "columnName": "crypto_enc_item_edition_key",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "crypto.biometricCryptoMaterial",
+            "columnName": "crypto_biometric_crypto_material",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "crypto.autoDestructionKey",
+            "columnName": "crypto_auto_destruction_key",
+            "affinity": "BLOB",
+            "notNull": false,
+            "defaultValue": "NULL"
+          },
+          {
+            "fieldPath": "settings.materialYou",
+            "columnName": "setting_material_you",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.automation",
+            "columnName": "setting_automation",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.displayShareWarning",
+            "columnName": "setting_display_share_warning",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.allowScreenshot",
+            "columnName": "setting_allow_screenshot",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.shakeToLock",
+            "columnName": "setting_shake_to_lock",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.bubblesPreview",
+            "columnName": "setting_bubbles_preview",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.cameraSystem",
+            "columnName": "setting_camera_system",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.autoLockOSKHiddenDelay",
+            "columnName": "setting_auto_lock_osk_hidden_delay",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.verifyPasswordInterval",
+            "columnName": "setting_verify_password_interval",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.lastPasswordVerification",
+            "columnName": "setting_last_password_verification",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.autoLockInactivityDelay",
+            "columnName": "setting_auto_lock_inactivity_delay",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.autoLockAppChangeDelay",
+            "columnName": "setting_auto_lock_app_change_delay",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.clipboardDelay",
+            "columnName": "setting_clipboard_delay",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.bubblesResendMessageDelay",
+            "columnName": "setting_bubbles_resend_message_delay",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.autoLockOSKInactivityDelay",
+            "columnName": "setting_auto_lock_osk_inactivity_delay",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.autoBackupEnabled",
+            "columnName": "setting_auto_backup_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.autoBackupFrequency",
+            "columnName": "setting_auto_backup_frequency",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.autoBackupMaxNumber",
+            "columnName": "setting_auto_backup_max_number",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.cloudBackupEnabled",
+            "columnName": "setting_cloud_backup_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.keepLocalBackupEnabled",
+            "columnName": "setting_keep_local_backup_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.itemOrdering",
+            "columnName": "setting_item_ordering",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.itemLayout",
+            "columnName": "setting_items_layout_setting",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.bubblesHomeCardCtaState.state",
+            "columnName": "setting_bubbles_home_card_cta_state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.bubblesHomeCardCtaState.timestamp",
+            "columnName": "setting_bubbles_home_card_cta_timestamp",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "settings.driveSettings.selectedAccount",
+            "columnName": "setting_drive_selected_account",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "settings.driveSettings.folderId",
+            "columnName": "setting_drive_folder_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "settings.driveSettings.folderUrl",
+            "columnName": "setting_drive_folder_url",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "settings.enableAutoBackupCtaState.state",
+            "columnName": "setting_enable_auto_backup_cta_state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.enableAutoBackupCtaState.timestamp",
+            "columnName": "setting_enable_auto_backup_cta_timestamp",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "settings.independentSafeInfoCtaState.state",
+            "columnName": "setting_independent_safe_info_cta_state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settings.independentSafeInfoCtaState.timestamp",
+            "columnName": "setting_independent_safe_info_cta_timestamp",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "appVisit.hasFinishOneSafeKOnBoarding",
+            "columnName": "app_visit_has_finish_one_safe_k_on_boarding",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appVisit.hasDoneOnBoardingBubbles",
+            "columnName": "app_visit_has_done_on_boarding_bubbles",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appVisit.hasHiddenCameraTips",
+            "columnName": "app_visit_has_hidden_camera_tips",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appVisit.hasSeenItemEditionUrlToolTip",
+            "columnName": "app_visit_has_seen_item_edition_url_tool_tip",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appVisit.hasSeenItemEditionEmojiToolTip",
+            "columnName": "app_visit_has_seen_item_edition_emoji_tool_tip",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appVisit.hasSeenItemReadEditToolTip",
+            "columnName": "app_visit_has_seen_item_read_edit_tool_tip",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appVisit.hasSeenDialogMessageSaveConfirmation",
+            "columnName": "app_visit_has_seen_dialog_message_save_confirmation",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Safe_open_order",
+            "unique": true,
+            "columnNames": [
+              "open_order"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Safe_open_order` ON `${TABLE_NAME}` (`open_order`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "AutoBackupError",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` BLOB NOT NULL, `date` TEXT NOT NULL, `code` TEXT NOT NULL, `message` TEXT, `source` TEXT NOT NULL, `safe_id` BLOB NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`safe_id`) REFERENCES `Safe`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "code",
+            "columnName": "code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "message",
+            "columnName": "message",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "safeId",
+            "columnName": "safe_id",
+            "affinity": "BLOB",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_AutoBackupError_safe_id",
+            "unique": false,
+            "columnNames": [
+              "safe_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_AutoBackupError_safe_id` ON `${TABLE_NAME}` (`safe_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Safe",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "safe_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "SafeFile",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`file` TEXT NOT NULL, `safe_id` BLOB NOT NULL, PRIMARY KEY(`file`), FOREIGN KEY(`safe_id`) REFERENCES `Safe`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "file",
+            "columnName": "file",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "safeId",
+            "columnName": "safe_id",
+            "affinity": "BLOB",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "file"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_SafeFile_safe_id",
+            "unique": false,
+            "columnNames": [
+              "safe_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_SafeFile_safe_id` ON `${TABLE_NAME}` (`safe_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Safe",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "safe_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "RecentSearch",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`hash_search` BLOB NOT NULL, `enc_search` BLOB NOT NULL, `timestamp_ms` INTEGER NOT NULL, `safe_id` BLOB NOT NULL, PRIMARY KEY(`hash_search`, `safe_id`), FOREIGN KEY(`safe_id`) REFERENCES `Safe`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "hashSearch",
+            "columnName": "hash_search",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encSearch",
+            "columnName": "enc_search",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestampMs",
+            "columnName": "timestamp_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "safeId",
+            "columnName": "safe_id",
+            "affinity": "BLOB",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "hash_search",
+            "safe_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "Safe",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "safe_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '182113dc6c9b9877b317006662b82121')"
+    ]
+  }
+}

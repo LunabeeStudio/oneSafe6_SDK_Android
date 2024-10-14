@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.repository.repository
 
 import kotlinx.coroutines.flow.Flow
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.repository.RecentSearchRepository
 import studio.lunabee.onesafe.repository.datasource.RecentSearchLocalDatasource
 import javax.inject.Inject
@@ -27,7 +28,19 @@ import javax.inject.Inject
 class RecentSearchRepositoryImpl @Inject constructor(
     private val recentSearchLocalDatasource: RecentSearchLocalDatasource,
 ) : RecentSearchRepository {
-    override fun getRecentSearch(): Flow<LinkedHashSet<ByteArray>> = recentSearchLocalDatasource.getRecentSearch()
+    override fun getRecentSearch(safeId: SafeId): Flow<List<ByteArray>> = recentSearchLocalDatasource.getRecentSearch(safeId)
 
-    override suspend fun saveRecentSearch(recentSearch: List<ByteArray>): Unit = recentSearchLocalDatasource.saveRecentSearch(recentSearch)
+    override suspend fun saveRecentSearch(
+        safeId: SafeId,
+        searchHash: ByteArray,
+        recentSearch: ByteArray,
+        timestamp: Long,
+        limitRecentSearchSaved: Int,
+    ): Unit = recentSearchLocalDatasource.saveRecentSearch(
+        safeId = safeId,
+        searchHash = searchHash,
+        encSearch = recentSearch,
+        timestamp = timestamp,
+        limitRecentSearchSaved = limitRecentSearchSaved,
+    )
 }

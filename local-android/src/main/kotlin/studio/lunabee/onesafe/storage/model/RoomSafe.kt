@@ -48,6 +48,8 @@ data class RoomSafe(
     val version: Int,
     @ColumnInfo(name = "open_order")
     val openOrder: Int,
+    @ColumnInfo(name = "is_panic_destruction_enabled", defaultValue = "0")
+    val isPanicDestructionEnabled: Boolean,
 ) {
 
     fun toSafeCrypto(): SafeCrypto {
@@ -75,6 +77,7 @@ data class RoomSafe(
         if (appVisit != other.appVisit) return false
         if (version != other.version) return false
         if (openOrder != other.openOrder) return false
+        if (isPanicDestructionEnabled != other.isPanicDestructionEnabled) return false
 
         return true
     }
@@ -86,6 +89,7 @@ data class RoomSafe(
         result = 31 * result + appVisit.hashCode()
         result = 31 * result + version
         result = 31 * result + openOrder
+        result = 31 * result + isPanicDestructionEnabled.hashCode()
         return result
     }
 
@@ -106,6 +110,7 @@ data class RoomSafe(
             appVisit = RoomAppVisit.fromAppVisit(appVisit),
             version = safeSettings.version,
             openOrder = openOrder,
+            isPanicDestructionEnabled = false,
         )
     }
 }

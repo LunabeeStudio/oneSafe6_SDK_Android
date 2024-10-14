@@ -24,12 +24,24 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import studio.lunabee.onesafe.domain.usecase.UpdatePanicButtonWidgetUseCase
+import studio.lunabee.onesafe.domain.usecase.panicmode.AddPanicWidgetToHomeScreenUseCase
+import studio.lunabee.onesafe.domain.usecase.panicmode.IsPanicWidgetInstalledUseCase
+import studio.lunabee.onesafe.widget.panic.usecase.AddPanicWidgetToHomeScreenUseCaseImpl
+import studio.lunabee.onesafe.widget.panic.usecase.IsPanicWidgetInstalledUseCaseImpl
 import studio.lunabee.onesafe.widget.panic.usecase.UpdatePanicButtonWidgetUseCaseImpl
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal abstract class WidgetModule {
+abstract class WidgetModule {
 
     @Binds
     abstract fun bindUpdatePanicButtonWidgetUseCase(impl: UpdatePanicButtonWidgetUseCaseImpl): UpdatePanicButtonWidgetUseCase
+
+    @Binds
+    internal abstract fun bindAddPanicWidgetToHomeScreenUseCase(
+        impl: AddPanicWidgetToHomeScreenUseCaseImpl,
+    ): AddPanicWidgetToHomeScreenUseCase
+
+    @Binds
+    internal abstract fun bindIsPanicWidgetInstalledUseCase(impl: IsPanicWidgetInstalledUseCaseImpl): IsPanicWidgetInstalledUseCase
 }

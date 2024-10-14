@@ -71,6 +71,7 @@ androidx-room = "2.6.1"
 ##         ⬆ = "2.7.0-alpha06"
 ##         ⬆ = "2.7.0-alpha07"
 ##         ⬆ = "2.7.0-alpha08"
+##         ⬆ = "2.7.0-alpha09"
 
 androidx-sqlite = "2.4.0"
 ##           ⬆ = "2.5.0-alpha01"
@@ -81,6 +82,7 @@ androidx-sqlite = "2.4.0"
 ##           ⬆ = "2.5.0-alpha06"
 ##           ⬆ = "2.5.0-alpha07"
 ##           ⬆ = "2.5.0-alpha08"
+##           ⬆ = "2.5.0-alpha09"
 
 android-tools-desugar_jdk_libs = "2.1.2"
 
@@ -96,13 +98,15 @@ androidx-core = "1.13.1"
 ##         ⬆ = "1.14.0-alpha01"
 ##         ⬆ = "1.15.0-alpha01"
 ##         ⬆ = "1.15.0-alpha02"
+##         ⬆ = "1.15.0-beta01"
 
 androidx-lifecycle = "2.8.6"
 ##              ⬆ = "2.9.0-alpha01"
 ##              ⬆ = "2.9.0-alpha02"
 ##              ⬆ = "2.9.0-alpha03"
+##              ⬆ = "2.9.0-alpha04"
 
-compose-bom-stable = "2024.09.02"
+compose-bom-stable = "2024.09.03"
 compose-bom-alpha = "2024.02.00-alpha01"
 
 google-android-material = "1.12.0"
@@ -134,6 +138,7 @@ androidx-work = "2.9.1"
 ##         ⬆ = "2.10.0-alpha02"
 ##         ⬆ = "2.10.0-alpha03"
 ##         ⬆ = "2.10.0-alpha04"
+##         ⬆ = "2.10.0-beta01"
 
 androidx-autofill = "1.1.0"
 ##             ⬆ = "1.2.0-alpha01"
@@ -160,7 +165,7 @@ google-accompanist = "0.36.0"
 
 androidx-palette = "1.0.0"
 
-firebase-bom = "33.3.0"
+firebase-bom = "33.4.0"
 
 # FIXME 3.0.0+ Requires play services to be applied
 firebase-crashlytics-gradle = "2.9.9"
@@ -170,14 +175,16 @@ firebase-crashlytics-gradle = "2.9.9"
 
 androidx-test-ext-junit = "1.2.1"
 
-androidx-benchmark = "1.3.1"
+androidx-benchmark = "1.3.2"
 ##              ⬆ = "1.4.0-alpha01"
+##              ⬆ = "1.4.0-alpha02"
 
 androidx-annotation = "1.8.2"
 ##               ⬆ = "1.9.0-alpha01"
 ##               ⬆ = "1.9.0-alpha02"
 ##               ⬆ = "1.9.0-alpha03"
 ##               ⬆ = "1.9.0-beta01"
+##               ⬆ = "1.9.0-rc01"
 
 glance = "1.1.0"
 
@@ -203,6 +210,7 @@ ktor = "2.3.12"
 ##⬆ = "3.0.0-beta-1"
 ##⬆ = "3.0.0-beta-2"
 ##⬆ = "3.0.0-rc-1"
+##⬆ = "3.0.0-rc-2"
 
 androidx-test-espresso = "3.6.0-beta01"
 
@@ -213,24 +221,32 @@ coil-kt = "2.7.0"
 
 androidx-startup = "1.2.0"
 
-navigation-compose = "2.8.1"
+navigation-compose = "2.8.2"
 
 protobuf = "4.28.2"
-
+##    ⬆ = "4.29.0-RC1"
 
 compose-shimmer = "1.3.1"
 
-lbcaccessibility = "1.9.0-283-SNAPSHOT"
+lbcaccessibility = "1.9.0-289-SNAPSHOT"
+##            ⬆ = "1.9.0-290-SNAPSHOT"
+##            ⬆ = "1.9.0-291-SNAPSHOT"
 
-lbcandroidtest = "1.6.0-283-SNAPSHOT"
+lbcandroidtest = "1.6.0-289-SNAPSHOT"
+##          ⬆ = "1.6.0-290-SNAPSHOT"
+##          ⬆ = "1.6.0-291-SNAPSHOT"
 
-lbctheme = "1.5.0-283-SNAPSHOT"
+lbctheme = "1.5.0-289-SNAPSHOT"
+##    ⬆ = "1.5.0-290-SNAPSHOT"
+##    ⬆ = "1.5.0-291-SNAPSHOT"
 
-lbccore = "1.6.0-283-SNAPSHOT"
+lbccore = "1.6.0-289-SNAPSHOT"
+##   ⬆ = "1.6.0-290-SNAPSHOT"
+##   ⬆ = "1.6.0-291-SNAPSHOT"
 
-lbcfoundation = "1.1.0"
-
-lbchaptic = "1.3.0-283-SNAPSHOT"
+lbchaptic = "1.3.0-289-SNAPSHOT"
+##     ⬆ = "1.3.0-290-SNAPSHOT"
+##     ⬆ = "1.3.0-291-SNAPSHOT"
 
 lbcglance = "1.0.0"
 
@@ -242,20 +258,12 @@ conscrypt-openjdk-uber = "2.5.2"
 
 nbvcxz = "1.5.1"
 
-lint = "31.6.1"
-##⬆ = "31.7.0-alpha01"
-##⬆ = "31.7.0-alpha02"
-##⬆ = "31.7.0-alpha03"
-##⬆ = "31.7.0-alpha04"
-##⬆ = "31.7.0-alpha05"
-##⬆ = "31.7.0-alpha06"
-##⬆ = "31.7.0-alpha07"
-##⬆ = "31.7.0-alpha08"
-##⬆ = "31.7.0-alpha09"
-##⬆ = "31.7.0-beta01"
-##⬆ = "31.7.0-beta02"
+lint = "31.7.0"
 ##⬆ = "31.8.0-alpha01"
 ##⬆ = "31.8.0-alpha02"
+##⬆ = "31.8.0-alpha03"
+##⬆ = "31.8.0-alpha04"
+##⬆ = "31.8.0-alpha05"
 
 javapoet = "1.13.0"
 
@@ -286,7 +294,9 @@ camerax = "1.3.4"
 ##   ⬆ = "1.4.0-beta02"
 ##   ⬆ = "1.4.0-rc01"
 ##   ⬆ = "1.4.0-rc02"
+##   ⬆ = "1.4.0-rc03"
 ##   ⬆ = "1.5.0-alpha01"
+##   ⬆ = "1.5.0-alpha02"
 
 espresso-core = "3.6.1"
 

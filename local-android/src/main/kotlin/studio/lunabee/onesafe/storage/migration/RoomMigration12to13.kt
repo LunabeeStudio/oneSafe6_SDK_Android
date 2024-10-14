@@ -37,12 +37,12 @@ import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.model.GoogleDriveSettings
+import studio.lunabee.onesafe.jvm.toByteArray
 import studio.lunabee.onesafe.storage.model.RoomAppVisit
 import studio.lunabee.onesafe.storage.model.RoomCtaState
 import studio.lunabee.onesafe.storage.utils.addUniqueBiometricKeyTrigger
 import studio.lunabee.onesafe.storage.utils.queryNumEntries
 import studio.lunabee.onesafe.storage.utils.toSqlBlobString
-import studio.lunabee.onesafe.jvm.toByteArray
 import java.io.File
 import java.time.Instant
 import java.time.ZonedDateTime
@@ -117,7 +117,7 @@ class RoomMigration12to13 @Inject constructor(
                     salt = safeCryptoMigration.salt,
                     encTest = safeCryptoMigration.encTest,
                     encIndexKey = safeCryptoMigration.encIndexKey ?: byteArrayOf(0),
-                    encBubblesKey = safeCryptoMigration.encBubblesKey,
+                    encBubblesKey = safeCryptoMigration.encBubblesKey ?: byteArrayOf(0),
                     encItemEditionKey = safeCryptoMigration.encItemEditionKey ?: byteArrayOf(0),
                     biometricCryptoMaterial = safeCryptoMigration.biometricCryptoMaterial,
                     autoDestructionKey = null,

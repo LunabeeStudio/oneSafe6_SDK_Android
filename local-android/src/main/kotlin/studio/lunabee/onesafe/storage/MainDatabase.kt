@@ -43,6 +43,7 @@ import studio.lunabee.onesafe.storage.dao.EnqueuedMessageDao
 import studio.lunabee.onesafe.storage.dao.HandShakeDataDao
 import studio.lunabee.onesafe.storage.dao.IndexWordEntryDao
 import studio.lunabee.onesafe.storage.dao.MessageDao
+import studio.lunabee.onesafe.storage.dao.RecentSearchDao
 import studio.lunabee.onesafe.storage.dao.SafeDao
 import studio.lunabee.onesafe.storage.dao.SafeFileDao
 import studio.lunabee.onesafe.storage.dao.SafeItemDao
@@ -62,6 +63,7 @@ import studio.lunabee.onesafe.storage.model.RoomEnqueuedMessage
 import studio.lunabee.onesafe.storage.model.RoomHandShakeData
 import studio.lunabee.onesafe.storage.model.RoomIndexWordEntry
 import studio.lunabee.onesafe.storage.model.RoomMessage
+import studio.lunabee.onesafe.storage.model.RoomRecentSearch
 import studio.lunabee.onesafe.storage.model.RoomSafe
 import studio.lunabee.onesafe.storage.model.RoomSafeFile
 import studio.lunabee.onesafe.storage.model.RoomSafeItem
@@ -73,7 +75,7 @@ import studio.lunabee.onesafe.storage.utils.addUniqueBiometricKeyTrigger
 
 @TypeConverters(InstantConverter::class, FileConverter::class, DurationConverter::class, ZonedDateTimeConverter::class)
 @Database(
-    version = 18,
+    version = 22,
     entities = [
         RoomSafeItem::class,
         RoomSafeItemField::class,
@@ -91,6 +93,7 @@ import studio.lunabee.onesafe.storage.utils.addUniqueBiometricKeyTrigger
         RoomSafe::class,
         RoomAutoBackupError::class,
         RoomSafeFile::class,
+        RoomRecentSearch::class,
     ],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -103,6 +106,9 @@ import studio.lunabee.onesafe.storage.utils.addUniqueBiometricKeyTrigger
         AutoMigration(from = 11, to = 12, spec = RoomMigrationSpec11to12::class),
         AutoMigration(from = 14, to = 15),
         AutoMigration(from = 17, to = 18),
+        AutoMigration(from = 18, to = 19),
+        AutoMigration(from = 20, to = 21),
+        AutoMigration(from = 21, to = 22),
     ],
 )
 abstract class MainDatabase : RoomDatabase() {
@@ -124,6 +130,7 @@ abstract class MainDatabase : RoomDatabase() {
     abstract fun settingsDao(): SettingsDao
     abstract fun autoBackupErrorDao(): AutoBackupErrorDao
     abstract fun safeFileDao(): SafeFileDao
+    abstract fun recentSearchDao(): RecentSearchDao
 
     companion object {
         fun build(

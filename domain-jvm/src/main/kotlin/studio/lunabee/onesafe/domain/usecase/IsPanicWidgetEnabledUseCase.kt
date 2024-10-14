@@ -25,5 +25,5 @@ import javax.inject.Inject
 class IsPanicWidgetEnabledUseCase @Inject constructor(
     private val safeRepository: SafeRepository,
 ) {
-    suspend operator fun invoke(): Boolean = safeRepository.hasSafe()
+    suspend operator fun invoke(): Boolean = safeRepository.hasAnySafePanicWidgetEnabled()
 }

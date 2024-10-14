@@ -22,13 +22,13 @@ package studio.lunabee.onesafe.migration.migration
 import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.cryptography.android.AndroidCryptoDataMapper
 import studio.lunabee.onesafe.cryptography.android.CryptoEngine
-import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.usecase.item.SortItemNameUseCase
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.jvm.get
+import studio.lunabee.onesafe.migration.MigrationSafeData0
 import javax.inject.Inject
 
 /**
@@ -40,8 +40,11 @@ class MigrationFromV6ToV7 @Inject constructor(
     private val cryptoEngine: CryptoEngine,
     private val cryptoDataMapper: AndroidCryptoDataMapper,
     private val sortItemNameUseCase: SortItemNameUseCase,
-) {
-    suspend operator fun invoke(masterKey: ByteArray, safeId: SafeId): LBResult<Unit> = OSError.runCatching {
+) : AppMigration0(6, 7) {
+
+    override suspend fun migrate(migrationSafeData: MigrationSafeData0): LBResult<Unit> = OSError.runCatching {
+        val safeId = migrationSafeData.id
+        val masterKey = migrationSafeData.masterKey
         val items = safeItemRepository.getAllSafeItemIdName(safeId).map { item ->
             val itemKey = safeItemKeyRepository.getSafeItemKey(item.id)
             val itemKeyRaw = cryptoEngine.decrypt(itemKey.encValue, masterKey, null).getOrElse {

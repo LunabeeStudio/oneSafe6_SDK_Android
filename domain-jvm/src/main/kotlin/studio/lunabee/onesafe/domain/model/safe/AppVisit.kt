@@ -29,6 +29,7 @@ class AppVisit(
     val hasSeenItemEditionUrlToolTip: Boolean,
     val hasSeenItemEditionEmojiToolTip: Boolean,
     val hasSeenItemReadEditToolTip: Boolean,
+    val hasSeenDialogMessageSaveConfirmation: Boolean,
 ) {
     constructor() : this(
         hasVisitedLogin = false,
@@ -40,5 +41,6 @@ class AppVisit(
         hasSeenItemEditionUrlToolTip = false,
         hasSeenItemEditionEmojiToolTip = false,
         hasSeenItemReadEditToolTip = false,
+        hasSeenDialogMessageSaveConfirmation = false,
     )
 }

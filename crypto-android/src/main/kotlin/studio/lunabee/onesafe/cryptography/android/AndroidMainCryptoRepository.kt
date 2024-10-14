@@ -39,7 +39,6 @@ import studio.lunabee.onesafe.cryptography.android.utils.OSCryptoInputStream
 import studio.lunabee.onesafe.cryptography.android.utils.OSCryptoOutputStream
 import studio.lunabee.onesafe.cryptography.android.utils.SafeDataMutableStateFlow
 import studio.lunabee.onesafe.cryptography.android.utils.safeCryptoArrayDelete
-import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.NewSafeCrypto
@@ -76,7 +75,6 @@ class AndroidMainCryptoRepository @Inject constructor(
     private val crypto: CryptoEngine,
     private val hashEngine: PasswordHashEngine,
     private val biometricEngine: BiometricEngine,
-    private val featureFlags: FeatureFlags,
     private val randomKeyProvider: RandomKeyProvider,
     private val mapper: AndroidCryptoDataMapper,
     @CryptoDispatcher private val dispatcher: CoroutineDispatcher,
@@ -153,11 +151,7 @@ class AndroidMainCryptoRepository @Inject constructor(
 
         val encIndexKey = generateIndexKey(key)
         val encItemEditionKey = generateItemEditionKey(key)
-        val encBubblesKey = if (featureFlags.bubbles()) {
-            generateBubblesKey(key)
-        } else {
-            null
-        }
+        val encBubblesKey = generateBubblesKey(key)
 
         val testValue = crypto.encrypt(
             plainData = MASTER_KEY_TEST_VALUE.encodeToByteArray(),
@@ -199,11 +193,7 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
         val encIndexKey = reEncryptIndexKey()
         val encItemEditionKey = reEncryptItemEditionKey()
-        val encBubblesKey = if (featureFlags.bubbles()) {
-            reEncryptBubblesContactKey()
-        } else {
-            null
-        }
+        val encBubblesKey = reEncryptBubblesContactKey()
 
         val encBiometricMasterKey = if (biometricCipher != null) {
             biometricEngine.encryptKey(key, biometricCipher)
@@ -235,34 +225,12 @@ class AndroidMainCryptoRepository @Inject constructor(
         } ?: throw OSCryptoError(OSCryptoError.Code.NO_SAFE_MATCH_KEY)
     }
 
-    override suspend fun loadMasterKeyFromBiometric(safeCrypto: SafeCrypto, cipher: Cipher): Unit = withContext(dispatcher) {
-        val encKey = checkNotNull(safeCrypto.biometricCryptoMaterial) {
-            "encBiometricMasterKey must not be null"
-        }
-        masterKey = biometricEngine.decryptKey(encKey, cipher)
-        retrieveKeyForIndex(safeCrypto)
-        retrieveKeyForEdition(safeCrypto)
-        if (featureFlags.bubbles()) {
-            retrieveKeyForBubblesContact(safeCrypto)
-        }
-        logger.v("cryptographic keys loaded using biometric")
-    }
-
-    override suspend fun decryptMasterKeyWithBiometric(
-        biometricCryptoMaterial: BiometricCryptoMaterial,
-        cipher: Cipher,
-    ): ByteArray = withContext(dispatcher) {
-        biometricEngine.decryptKey(biometricCryptoMaterial, cipher)
-    }
-
-    override suspend fun loadMasterKeyExternal(masterKey: ByteArray): Unit = withContext(dispatcher) {
+    override suspend fun loadMasterKey(masterKey: ByteArray): Unit = withContext(dispatcher) {
         this@AndroidMainCryptoRepository.masterKey = masterKey.copyOf()
         val safeCrypto = getSafeFromMasterKey()
         retrieveKeyForIndex(safeCrypto)
         retrieveKeyForEdition(safeCrypto)
-        if (featureFlags.bubbles()) {
-            retrieveKeyForBubblesContact(safeCrypto)
-        }
+        retrieveKeyForBubblesContact(safeCrypto)
         logger.v("cryptographic keys externally loaded")
     }
 
@@ -309,7 +277,6 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    // TODO <multisafe> missing key should be considered as an error (no migration added to create it?)
     private suspend fun retrieveKeyForEdition(safeCrypto: SafeCrypto): Unit = withContext(dispatcher) {
         val encKey = safeCrypto.encItemEditionKey
         itemEditionKey = crypto.decrypt(encKey, masterKey!!, null).getOrElse {
@@ -317,15 +284,10 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    // TODO <multisafe> missing key should be considered as an error (no migration added to create it?)
     private suspend fun retrieveKeyForBubblesContact(safeCrypto: SafeCrypto): Unit = withContext(dispatcher) {
         val encKey = safeCrypto.encBubblesKey
-        if (encKey != null) {
-            bubblesMasterKey = crypto.decrypt(encKey, masterKey!!, null).getOrElse {
-                throw OSCryptoError.Code.BUBBLES_CONTACT_KEY_DECRYPTION_FAIL.get(cause = it)
-            }
-        } else {
-            generateBubblesKey(masterKey!!)
+        bubblesMasterKey = crypto.decrypt(encKey, masterKey!!, null).getOrElse {
+            throw OSCryptoError.Code.BUBBLES_CONTACT_KEY_DECRYPTION_FAIL.get(cause = it)
         }
     }
 
@@ -511,11 +473,9 @@ class AndroidMainCryptoRepository @Inject constructor(
         crypto.getCipherOutputStream(outputStream, key, null)
     }
 
-    override suspend fun encryptRecentSearch(plainRecentSearch: List<String>): List<ByteArray> = withContext(dispatcher) {
-        plainRecentSearch.map { element ->
-            crypto.encrypt(plainData = element.encodeToByteArray(), key = searchIndexKey!!, associatedData = null).getOrElse {
-                throw OSCryptoError.Code.RECENT_SEARCH_ENCRYPTION_FAIL.get(cause = it)
-            }
+    override suspend fun encryptRecentSearch(plainRecentSearch: String): ByteArray = withContext(dispatcher) {
+        crypto.encrypt(plainData = plainRecentSearch.encodeToByteArray(), key = searchIndexKey!!, associatedData = null).getOrElse {
+            throw OSCryptoError.Code.RECENT_SEARCH_ENCRYPTION_FAIL.get(cause = it)
         }
     }
 

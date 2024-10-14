@@ -76,6 +76,7 @@ object CommonTestUtils {
         hasSeenItemEditionUrlToolTip: Boolean = false,
         hasSeenItemEditionEmojiToolTip: Boolean = false,
         hasSeenItemReadEditToolTip: Boolean = false,
+        hasSeenDialogMessageSaveConfirmation: Boolean = false,
     ): RoomAppVisit = RoomAppVisit(
         hasFinishOneSafeKOnBoarding = hasFinishOneSafeKOnBoarding,
         hasDoneOnBoardingBubbles = hasDoneOnBoardingBubbles,
@@ -83,6 +84,7 @@ object CommonTestUtils {
         hasSeenItemEditionUrlToolTip = hasSeenItemEditionUrlToolTip,
         hasSeenItemEditionEmojiToolTip = hasSeenItemEditionEmojiToolTip,
         hasSeenItemReadEditToolTip = hasSeenItemReadEditToolTip,
+        hasSeenDialogMessageSaveConfirmation = hasSeenDialogMessageSaveConfirmation,
     )
 
     fun roomSafe(
@@ -94,7 +96,7 @@ object CommonTestUtils {
                 salt = byteArrayOf(),
                 encTest = byteArrayOf(),
                 encIndexKey = byteArrayOf(),
-                encBubblesKey = null,
+                encBubblesKey = byteArrayOf(),
                 encItemEditionKey = byteArrayOf(),
                 biometricCryptoMaterial = BiometricCryptoMaterial(
                     iv = OSTestConfig.random.nextBytes(16),
@@ -150,9 +152,11 @@ object CommonTestUtils {
                 hasSeenItemEditionUrlToolTip = false,
                 hasSeenItemEditionEmojiToolTip = false,
                 hasSeenItemReadEditToolTip = false,
+                hasSeenDialogMessageSaveConfirmation = false,
             ),
             version = 0,
             openOrder = 0,
+            isPanicDestructionEnabled = false,
         )
     }
 

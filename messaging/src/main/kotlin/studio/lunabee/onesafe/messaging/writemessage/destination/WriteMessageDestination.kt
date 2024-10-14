@@ -122,6 +122,8 @@ fun NavGraphBuilder.writeMessageScreen(
                 rawMessageSent?.let { message ->
                     if (message == primaryClip?.text) {
                         sentMessageDataUnderSharing?.let(viewModel::saveEncryptedMessage)
+                    } else {
+                        sentMessageDataUnderSharing?.let(viewModel::askForSafeConfirmation)
                     }
                 }
                 sentMessageDataUnderSharing = null

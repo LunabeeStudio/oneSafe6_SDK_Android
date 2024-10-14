@@ -19,17 +19,31 @@
 
 package studio.lunabee.onesafe.domain.usecase.search
 
+import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.RecentSearchRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.domain.utils.ShaEngine
+import studio.lunabee.onesafe.error.OSError
+import java.time.Clock
 import javax.inject.Inject
 
+/**
+ * Encrypt and save a recent search with its hash (sha256) and timestamp
+ */
 class EncryptAndSaveRecentSearchUseCase @Inject constructor(
+    private val safeRepository: SafeRepository,
     private val cryptoRepository: MainCryptoRepository,
     private val recentSearchRepository: RecentSearchRepository,
+    private val clock: Clock,
+    private val shaEngine: ShaEngine,
 ) {
-
-    suspend operator fun invoke(clearRecentSearch: List<String>) {
-        val encValue = cryptoRepository.encryptRecentSearch(clearRecentSearch.distinct())
-        recentSearchRepository.saveRecentSearch(encValue)
+    suspend operator fun invoke(plainRecentSearch: String): LBResult<Unit> = OSError.runCatching {
+        val safeId = safeRepository.currentSafeId()
+        val hash = shaEngine.sha256(plainRecentSearch)
+        val encValue = cryptoRepository.encryptRecentSearch(plainRecentSearch)
+        recentSearchRepository.saveRecentSearch(safeId, hash, encValue, clock.millis(), LimitRecentSearchSaved)
     }
 }
+
+private const val LimitRecentSearchSaved: Int = 12

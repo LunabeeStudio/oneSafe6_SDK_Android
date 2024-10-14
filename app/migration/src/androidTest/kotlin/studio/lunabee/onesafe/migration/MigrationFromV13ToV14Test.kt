@@ -31,7 +31,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.toKotlinInstant
 import org.junit.Rule
 import org.junit.Test
-import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.bubbles.domain.model.contact.PlainContact
 import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
@@ -42,6 +41,7 @@ import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.bubbles.domain.usecase.CreateContactUseCase
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.onesafe.cryptography.android.PasswordHashEngine
+import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.domain.utils.SaltProvider
 import studio.lunabee.onesafe.migration.migration.MigrationFromV13ToV14
 import studio.lunabee.onesafe.migration.utils.MigrationCryptoV1UseCase
@@ -126,8 +126,14 @@ class MigrationFromV13ToV14Test : OSHiltTest() {
 
         // Migrate
         val safeCrypto = safeRepository.getAllSafeOrderByLastOpenAsc().first()
-        val bubblesMasterKey = migrationCryptoV1UseCase.decrypt(safeCrypto.encBubblesKey!!, masterKey)
-        migrationFromV13ToV14(bubblesMasterKey, safeCrypto.id)
+        migrationFromV13ToV14.migrate(
+            AppMigrationsTestUtils.safeData0(
+                version = 13,
+                encBubblesKey = safeCrypto.encBubblesKey,
+                id = safeCrypto.id,
+                masterKey = masterKey,
+            ),
+        )
 
         // Check V14 state
         contactRepository.getAllContactsFlow(DoubleRatchetUUID(firstSafeId.id)).first().forEach { contact ->

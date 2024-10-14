@@ -57,83 +57,82 @@ fun Modifier.keyboardTextfield(
     keyboardActions: KeyboardActions,
 ): Modifier {
     val osKeyboardActionRunner = OSKeyboardActionRunner(keyboardActions)
-    return this then Modifier
-        .composed {
-            var focusState: FocusState? by remember { mutableStateOf(null) }
-            val textFieldValue = getTextFieldValue()
-            var internalTextFieldValue by remember(textFieldValue) { mutableStateOf(textFieldValue) }
-            val context = LocalContext.current
-            val editorInstance by remember(context) {
-                mutableStateOf((context.editorInstance().value as InterceptEditorInstance))
+    return this.composed {
+        var focusState: FocusState? by remember { mutableStateOf(null) }
+        val textFieldValue = getTextFieldValue()
+        var internalTextFieldValue by remember(textFieldValue) { mutableStateOf(textFieldValue) }
+        val context = LocalContext.current
+        val editorInstance by remember(context) {
+            mutableStateOf((context.editorInstance().value as InterceptEditorInstance))
+        }
+
+        val setTextOnIntercept = fun(newText: String): Boolean {
+            val selection = internalTextFieldValue.selection
+            val text = internalTextFieldValue.text.replaceRange(selection.start, selection.end, newText)
+            internalTextFieldValue = TextFieldValue(text, TextRange(selection.start + newText.length))
+            setTextFieldValue(internalTextFieldValue)
+            return true
+        }
+
+        val setTextOnDeleteBackwards = fun(): Boolean {
+            val fieldValue = internalTextFieldValue
+            val selection = fieldValue.selection
+            val text: String
+            val position: Int
+            if (selection.start == selection.end) {
+                text = fieldValue.text.removeRange(
+                    (selection.start - 1).coerceAtLeast(0),
+                    selection.start,
+                )
+                position = (selection.start - 1).coerceAtLeast(0)
+            } else {
+                text = fieldValue.text.removeRange(selection.start, selection.end)
+                position = selection.start
+            }
+            internalTextFieldValue = TextFieldValue(text, TextRange(position))
+            setTextFieldValue(internalTextFieldValue)
+            return true
+        }
+
+        DisposableEffect(textFieldValue) {
+            if (focusState?.hasFocus == true) {
+                editorInstance.intercept = setTextOnIntercept
+                editorInstance.deleteBackwards = setTextOnDeleteBackwards
             }
 
-            val setTextOnIntercept = fun(newText: String): Boolean {
-                val selection = internalTextFieldValue.selection
-                val text = internalTextFieldValue.text.replaceRange(selection.start, selection.end, newText)
-                internalTextFieldValue = TextFieldValue(text, TextRange(selection.start + newText.length))
-                setTextFieldValue(internalTextFieldValue)
-                return true
-            }
-
-            val setTextOnDeleteBackwards = fun(): Boolean {
-                val fieldValue = internalTextFieldValue
-                val selection = fieldValue.selection
-                val text: String
-                val position: Int
-                if (selection.start == selection.end) {
-                    text = fieldValue.text.removeRange(
-                        (selection.start - 1).coerceAtLeast(0),
-                        selection.start,
-                    )
-                    position = (selection.start - 1).coerceAtLeast(0)
-                } else {
-                    text = fieldValue.text.removeRange(selection.start, selection.end)
-                    position = selection.start
-                }
-                internalTextFieldValue = TextFieldValue(text, TextRange(position))
-                setTextFieldValue(internalTextFieldValue)
-                return true
-            }
-
-            DisposableEffect(textFieldValue) {
-                if (focusState?.hasFocus == true) {
-                    editorInstance.intercept = setTextOnIntercept
-                    editorInstance.deleteBackwards = setTextOnDeleteBackwards
-                }
-
-                onDispose {
-                    editorInstance.intercept = null
-                    editorInstance.deleteBackwards = null
-                }
-            }
-
-            onFocusChanged { state ->
-                focusState = state
-                if (state.hasFocus) {
-                    if (!isKeyboardVisible()) {
-                        toggleKeyboardVisibility()
-                    }
-                    val editorInfo = EditorInfo().apply {
-                        update(keyboardOptions.toImeOptions(), internalTextFieldValue)
-                    }
-                    editorInstance.handleStartInputView(
-                        editorInfo = FlorisEditorInfo.wrap(editorInfo),
-                        isRestart = true,
-                    )
-                    editorInstance.interceptAction = { _ ->
-                        osKeyboardActionRunner.runAction(keyboardOptions.imeAction)
-                        true
-                    }
-                    editorInstance.intercept = setTextOnIntercept
-                    editorInstance.deleteBackwards = setTextOnDeleteBackwards
-                } else {
-                    // reset to default values
-                    editorInstance.intercept = null
-                    editorInstance.deleteBackwards = null
-                    editorInstance.interceptAction = { false }
-                }
+            onDispose {
+                editorInstance.intercept = null
+                editorInstance.deleteBackwards = null
             }
         }
+
+        onFocusChanged { state ->
+            focusState = state
+            if (state.hasFocus) {
+                if (!isKeyboardVisible()) {
+                    toggleKeyboardVisibility()
+                }
+                val editorInfo = EditorInfo().apply {
+                    update(keyboardOptions.toImeOptions(), internalTextFieldValue)
+                }
+                editorInstance.handleStartInputView(
+                    editorInfo = FlorisEditorInfo.wrap(editorInfo),
+                    isRestart = true,
+                )
+                editorInstance.interceptAction = { _ ->
+                    osKeyboardActionRunner.runAction(keyboardOptions.imeAction)
+                    true
+                }
+                editorInstance.intercept = setTextOnIntercept
+                editorInstance.deleteBackwards = setTextOnDeleteBackwards
+            } else {
+                // reset to default values
+                editorInstance.intercept = null
+                editorInstance.deleteBackwards = null
+                editorInstance.interceptAction = { false }
+            }
+        }
+    }
 }
 
 // https://android.googlesource.com/platform//frameworks/support/+/refs/heads/androidx-main/compose/ui/ui/src/androidMain/kotlin/androidx/compose/ui/text/input/TextInputServiceAndroid.android.kt#482

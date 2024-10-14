@@ -27,11 +27,10 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
-import kotlin.test.Test
 import studio.lunabee.onesafe.cryptography.android.PasswordHashEngine
-import studio.lunabee.onesafe.domain.utils.SaltProvider
 import studio.lunabee.onesafe.domain.usecase.item.CreateItemUseCase
 import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
+import studio.lunabee.onesafe.domain.utils.SaltProvider
 import studio.lunabee.onesafe.migration.migration.MigrationFromV6ToV7
 import studio.lunabee.onesafe.storage.dao.SafeItemDao
 import studio.lunabee.onesafe.test.InitialTestState
@@ -40,6 +39,7 @@ import studio.lunabee.onesafe.test.OSTestConfig
 import studio.lunabee.onesafe.test.firstSafeId
 import studio.lunabee.onesafe.test.test
 import javax.inject.Inject
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @HiltAndroidTest
@@ -93,7 +93,7 @@ class MigrationFromV6ToV7Test : OSHiltTest() {
             idName[it.first]!! to it.second
         }
 
-        migrationFromV6ToV7(masterKey(), firstSafeId)
+        migrationFromV6ToV7.migrate(AppMigrationsTestUtils.safeData0(version = 6, masterKey = masterKey()))
 
         val actualList = safeItemDao.getAllSafeItems(firstSafeId)
         expectedList.forEach { expected ->

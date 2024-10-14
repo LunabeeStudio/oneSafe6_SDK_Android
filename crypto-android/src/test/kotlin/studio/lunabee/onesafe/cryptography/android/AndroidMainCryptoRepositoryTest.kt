@@ -23,7 +23,6 @@ import android.util.Base64
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +41,6 @@ import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import studio.lunabee.onesafe.domain.common.FeatureFlags
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.domain.model.safe.SafeCrypto
@@ -99,16 +97,11 @@ class AndroidMainCryptoRepositoryTest {
     @CryptoDispatcher
     internal lateinit var cryptoDispatcher: CoroutineDispatcher
 
-    private val featureFlags: FeatureFlags = mockk {
-        every { this@mockk.bubbles() } returns false
-    }
-
     private val repository: AndroidMainCryptoRepository by lazy {
         AndroidMainCryptoRepository(
             crypto = crypto,
             hashEngine = hashEngine,
             biometricEngine = mockk(),
-            featureFlags = featureFlags,
             randomKeyProvider = randomKeyProvider,
             mapper = mapper,
             dispatcher = cryptoDispatcher,
@@ -125,7 +118,7 @@ class AndroidMainCryptoRepositoryTest {
     fun storeMasterKeyAndSalt_already_saved_test(): TestResult = runTest {
         generateAndLoadCrypto()
         val error = assertFailsWith<OSCryptoError> {
-            this@AndroidMainCryptoRepositoryTest.repository.loadMasterKeyExternal(masterKey)
+            this@AndroidMainCryptoRepositoryTest.repository.loadMasterKey(masterKey)
         }
         assertEquals(OSCryptoError.Code.MASTER_KEY_ALREADY_LOADED, error.code)
     }
@@ -246,7 +239,7 @@ class AndroidMainCryptoRepositoryTest {
         val encNum = this@AndroidMainCryptoRepositoryTest.repository.encrypt(key, EncryptEntry(num))
 
         unloadMasterKey()
-        this@AndroidMainCryptoRepositoryTest.repository.loadMasterKeyExternal(masterKey)
+        this@AndroidMainCryptoRepositoryTest.repository.loadMasterKey(masterKey)
         val decNum = this@AndroidMainCryptoRepositoryTest.repository.decrypt(key, DecryptEntry(encNum, Int::class))
 
         assertEquals(num, decNum)
@@ -295,7 +288,7 @@ class AndroidMainCryptoRepositoryTest {
         launch { assertTrue(repository.isCryptoDataInMemory(1.seconds)) }
         launch(Dispatchers.Default) {
             delay(100.milliseconds)
-            repository.loadMasterKeyExternal(masterKey)
+            repository.loadMasterKey(masterKey)
         }
     }
 
@@ -322,7 +315,7 @@ class AndroidMainCryptoRepositoryTest {
             safeSettings = OSTestUtils.safeSettings(),
             appVisit = OSTestUtils.appVisit(),
         )
-        this@AndroidMainCryptoRepositoryTest.repository.loadMasterKeyExternal(key)
+        this@AndroidMainCryptoRepositoryTest.repository.loadMasterKey(key)
 
         val newSafeCrypto2 = this@AndroidMainCryptoRepositoryTest.repository.regenerateAndOverrideLoadedCrypto(
             masterKey,
@@ -342,21 +335,11 @@ class AndroidMainCryptoRepositoryTest {
         safeRepository.updateSafeCrypto(safeCrypto = safeCrypto2)
 
         unloadMasterKey()
-        assertDoesNotThrow { this@AndroidMainCryptoRepositoryTest.repository.loadMasterKeyExternal(masterKey) }
-    }
-
-    @Test
-    fun bubbles_contacts_key_not_set_if_feature_not_enabled_test(): TestResult = runTest {
-        generateAndLoadCrypto()
-        val error = assertFailsWith<OSCryptoError> {
-            this@AndroidMainCryptoRepositoryTest.repository.encryptBubbles(ByteArray(1))
-        }
-        assertEquals(OSCryptoError.Code.BUBBLES_MASTER_KEY_NOT_LOADED, error.code)
+        assertDoesNotThrow { this@AndroidMainCryptoRepositoryTest.repository.loadMasterKey(masterKey) }
     }
 
     @Test
     fun encrypt_decrypt_for_bubbles_test(): TestResult = runTest {
-        every { featureFlags.bubbles() } returns true
         generateAndLoadCrypto()
         val plainData = "contactName"
         val encryptedData = this@AndroidMainCryptoRepositoryTest.repository.encryptBubbles(plainData.encodeToByteArray())
@@ -373,7 +356,7 @@ class AndroidMainCryptoRepositoryTest {
      *     Notion</a>
      */
     @Test
-    fun stress_unloadMasterKeys_vs_loadMasterKeyExternal_test() {
+    fun stress_unloadMasterKeys_vs_loadMasterKey_test() {
         var error: Throwable? = null
         val maxTime = System.currentTimeMillis() + 10_000
         val repeat = 100
@@ -394,7 +377,7 @@ class AndroidMainCryptoRepositoryTest {
                             return@runBlocking
                         }
                         try {
-                            repository.loadMasterKeyExternal(masterKey)
+                            repository.loadMasterKey(masterKey)
                         } catch (e: OSCryptoError) {
                             val expectedErrors = listOf(
                                 OSCryptoError.Code.MASTER_KEY_ALREADY_LOADED,
@@ -441,7 +424,7 @@ class AndroidMainCryptoRepositoryTest {
             safeSettings = OSTestUtils.safeSettings(),
             appVisit = OSTestUtils.appVisit(),
         )
-        repository.loadMasterKeyExternal(masterKey)
+        repository.loadMasterKey(masterKey)
     }
 
     private suspend fun unloadMasterKey() {

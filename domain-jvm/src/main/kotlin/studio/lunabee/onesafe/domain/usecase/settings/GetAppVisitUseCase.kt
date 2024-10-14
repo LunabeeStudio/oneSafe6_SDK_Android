@@ -44,6 +44,11 @@ class GetAppVisitUseCase @Inject constructor(
         } ?: flowOf(false)
     }
 
+    suspend fun hasSeenDialogMessageSaveConfirmation(): Boolean {
+        val safeId = safeRepository.currentSafeId()
+        return appVisitRepository.hasSeenDialogMessageSaveConfirmation(safeId)
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     fun hasDoneOnBoardingBubbles(): Flow<Boolean> = safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
         safeId?.let {

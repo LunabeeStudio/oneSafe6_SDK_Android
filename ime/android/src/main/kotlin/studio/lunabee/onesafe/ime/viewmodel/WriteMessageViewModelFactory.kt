@@ -32,8 +32,8 @@ import studio.lunabee.messaging.domain.repository.MessageRepository
 import studio.lunabee.messaging.domain.repository.SentMessageRepository
 import studio.lunabee.messaging.domain.usecase.DecryptSafeMessageUseCase
 import studio.lunabee.messaging.domain.usecase.EncryptMessageUseCase
-import studio.lunabee.messaging.domain.usecase.GetResetMessageUseCase
 import studio.lunabee.messaging.domain.usecase.GetConversationStateUseCase
+import studio.lunabee.messaging.domain.usecase.GetResetMessageUseCase
 import studio.lunabee.messaging.domain.usecase.GetSendMessageDataUseCase
 import studio.lunabee.messaging.domain.usecase.SaveSentMessageUseCase
 import studio.lunabee.onesafe.domain.usecase.GetIconUseCase
@@ -41,6 +41,8 @@ import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
 import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
 import studio.lunabee.onesafe.domain.usecase.item.SecureGetItemUseCase
 import studio.lunabee.onesafe.domain.usecase.settings.GetAppSettingUseCase
+import studio.lunabee.onesafe.domain.usecase.settings.GetAppVisitUseCase
+import studio.lunabee.onesafe.domain.usecase.settings.SetAppVisitUseCase
 import studio.lunabee.onesafe.messaging.usecase.CreateBubblesMessageArchiveUseCase
 import studio.lunabee.onesafe.messaging.usecase.DeleteBubblesArchiveUseCase
 import studio.lunabee.onesafe.messaging.writemessage.viewmodel.WriteMessageViewModel
@@ -70,6 +72,8 @@ class WriteMessageViewModelFactory @Inject constructor(
     private val getIconUseCase: GetIconUseCase,
     private val itemDecryptUseCase: ItemDecryptUseCase,
     private val getResetMessageUseCase: GetResetMessageUseCase,
+    private val getAppVisitUseCase: GetAppVisitUseCase,
+    private val setAppVisitUseCase: SetAppVisitUseCase,
 ) : AbstractSavedStateViewModelFactory() {
     override fun <T : ViewModel> create(key: String, modelClass: Class<T>, handle: SavedStateHandle): T {
         @Suppress("UNCHECKED_CAST")
@@ -97,6 +101,8 @@ class WriteMessageViewModelFactory @Inject constructor(
             getIconUseCase = getIconUseCase,
             itemDecryptUseCase = itemDecryptUseCase,
             getResetMessageUseCase = getResetMessageUseCase,
+            getAppVisitUseCase = getAppVisitUseCase,
+            setAppVisitUseCase = setAppVisitUseCase,
         ) as T
     }
 }

@@ -264,6 +264,7 @@ object OSTestUtils {
         hasSeenItemEditionUrlToolTip: Boolean = false,
         hasSeenItemEditionEmojiToolTip: Boolean = false,
         hasSeenItemReadEditToolTip: Boolean = false,
+        hasSeenDialogMessageSaveConfirmation: Boolean = false,
     ): AppVisit = AppVisit(
         hasVisitedLogin = hasVisitedLogin,
         hasFinishOneSafeKOnBoarding = hasFinishOneSafeKOnBoarding,
@@ -274,6 +275,7 @@ object OSTestUtils {
         hasSeenItemEditionUrlToolTip = hasSeenItemEditionUrlToolTip,
         hasSeenItemEditionEmojiToolTip = hasSeenItemEditionEmojiToolTip,
         hasSeenItemReadEditToolTip = hasSeenItemReadEditToolTip,
+        hasSeenDialogMessageSaveConfirmation = hasSeenDialogMessageSaveConfirmation,
     )
 }
 

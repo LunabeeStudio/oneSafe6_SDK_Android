@@ -33,9 +33,11 @@ interface AppVisitRepository {
     fun hasSeenItemEditionEmojiToolTipFlow(safeId: SafeId): Flow<Boolean>
     fun hasSeenItemReadEditToolTipFlow(safeId: SafeId): Flow<Boolean>
 
+    suspend fun hasSeenDialogMessageSaveConfirmation(safeId: SafeId): Boolean
     suspend fun hasSeenItemEditionUrlToolTip(safeId: SafeId): Boolean
     suspend fun hasSeenItemEditionEmojiToolTip(safeId: SafeId): Boolean
 
+    suspend fun setHasSeenDialogMessageSaveConfirmation(safeId: SafeId)
     suspend fun setHasVisitedLogin(value: Boolean)
     suspend fun setHasDoneTutorialOpenOsk(value: Boolean)
     suspend fun setHasDoneTutorialLockOsk(value: Boolean)

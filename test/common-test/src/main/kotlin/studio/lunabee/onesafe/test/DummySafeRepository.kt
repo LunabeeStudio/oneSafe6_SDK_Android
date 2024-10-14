@@ -35,6 +35,7 @@ class DummySafeRepository(initSafeId: SafeId? = firstSafeId) : SafeRepository {
     private val safeIdFlow: MutableStateFlow<SafeId?> = MutableStateFlow(initSafeId)
     private var lastSafeId: SafeId? = initSafeId
     private val bioMap: MutableMap<SafeId, BiometricCryptoMaterial?> = mutableMapOf()
+    private val isPanicDestructionEnabled: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     override suspend fun loadSafeId(safeId: SafeId) {
         safeIdFlow.value = safeId
@@ -178,5 +179,21 @@ class DummySafeRepository(initSafeId: SafeId? = firstSafeId) : SafeRepository {
             biometricCryptoMaterial = null,
             autoDestructionKey = null,
         )
+    }
+
+    override fun isPanicDestructionEnabledFlow(safeId: SafeId): Flow<Boolean> {
+        return isPanicDestructionEnabled
+    }
+
+    override suspend fun setIsPanicDestructionEnabled(safeId: SafeId, isEnabled: Boolean) {
+        isPanicDestructionEnabled.value = isEnabled
+    }
+
+    override suspend fun hasAnySafePanicWidgetEnabled(): Boolean {
+        return false
+    }
+
+    override suspend fun getSafeToDestroy(): List<SafeId> {
+        return listOf()
     }
 }

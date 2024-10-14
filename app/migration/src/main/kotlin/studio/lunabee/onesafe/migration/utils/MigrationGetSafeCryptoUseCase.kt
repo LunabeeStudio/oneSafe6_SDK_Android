@@ -22,7 +22,6 @@ package studio.lunabee.onesafe.migration.utils
 import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.cryptography.android.BiometricEngine
 import studio.lunabee.onesafe.cryptography.android.PasswordHashEngine
-import studio.lunabee.onesafe.domain.model.safe.BiometricCryptoMaterial
 import studio.lunabee.onesafe.domain.model.safe.SafeCrypto
 import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository.Companion.MASTER_KEY_TEST_VALUE
@@ -32,23 +31,12 @@ import studio.lunabee.onesafe.domain.usecase.authentication.IsSignUpUseCase
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
-import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.error.OSMigrationError
+import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.migration.MigrationConstant
+import studio.lunabee.onesafe.migration.MigrationSafeData0
 import javax.crypto.Cipher
 import javax.inject.Inject
-
-class MigrationSafeData(
-    val masterKey: ByteArray,
-    val version: Int,
-    val id: SafeId,
-    val salt: ByteArray,
-    val encTest: ByteArray,
-    val encIndexKey: ByteArray?,
-    val encBubblesKey: ByteArray?,
-    val encItemEditionKey: ByteArray?,
-    val biometricCryptoMaterial: BiometricCryptoMaterial?,
-)
 
 /**
  * Retrieve the master key and other crypto keys manually
@@ -63,7 +51,7 @@ class MigrationGetSafeCryptoUseCase @Inject constructor(
     private val isSignUpUseCase: IsSignUpUseCase,
     private val disableBiometricUseCase: DisableBiometricUseCase,
 ) {
-    suspend operator fun invoke(password: CharArray): LBResult<MigrationSafeData> = OSError.runCatching {
+    suspend operator fun invoke(password: CharArray): LBResult<MigrationSafeData0> = OSError.runCatching {
         val allSafe = safeRepository.getAllSafeOrderByLastOpenAsc()
         if (allSafe.isEmpty()) {
             throw OSDomainError.Code.SIGNIN_NOT_SIGNED_UP.get()
@@ -75,7 +63,7 @@ class MigrationGetSafeCryptoUseCase @Inject constructor(
         }
     }
 
-    suspend operator fun invoke(cipher: Cipher): LBResult<MigrationSafeData> = OSError.runCatching {
+    suspend operator fun invoke(cipher: Cipher): LBResult<MigrationSafeData0> = OSError.runCatching {
         val biometricSafe = safeRepository.getBiometricSafe()
         val encKey = biometricSafe.biometricCryptoMaterial ?: throw OSDomainError.Code.MISSING_BIOMETRIC_KEY.get()
         val key = try {
@@ -95,20 +83,20 @@ class MigrationGetSafeCryptoUseCase @Inject constructor(
     private suspend fun testAndGetCrypto(
         safeCrypto: SafeCrypto,
         key: ByteArray,
-    ): MigrationSafeData? {
+    ): MigrationSafeData0? {
         return try {
             val version = getCurrentVersion(safeCrypto.id)
             val plainMasterKeyTest = migrationCryptoUseCase.decrypt(safeCrypto.encTest, key, version)
                 .decodeToString()
             if (plainMasterKeyTest == MASTER_KEY_TEST_VALUE) {
-                MigrationSafeData(
+                MigrationSafeData0(
                     masterKey = key,
                     version = version,
                     id = safeCrypto.id,
                     salt = safeCrypto.salt,
                     encTest = safeCrypto.encTest,
                     encIndexKey = safeCrypto.encIndexKey.takeUnless { it.contentEquals(byteArrayOf(0)) },
-                    encBubblesKey = safeCrypto.encBubblesKey?.takeUnless { it.contentEquals(byteArrayOf(0)) },
+                    encBubblesKey = safeCrypto.encBubblesKey.takeUnless { it.contentEquals(byteArrayOf(0)) },
                     encItemEditionKey = safeCrypto.encItemEditionKey.takeUnless { it.contentEquals(byteArrayOf(0)) },
                     biometricCryptoMaterial = safeCrypto.biometricCryptoMaterial,
                 )
