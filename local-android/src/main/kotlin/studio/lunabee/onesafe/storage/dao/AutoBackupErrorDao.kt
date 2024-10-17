@@ -36,5 +36,5 @@ interface AutoBackupErrorDao {
     suspend fun setError(backupError: RoomAutoBackupError)
 
     @Query("DELETE FROM AutoBackupError WHERE id = :errorId")
-    fun removeError(errorId: UUID)
+    suspend fun removeError(errorId: UUID)
 }
