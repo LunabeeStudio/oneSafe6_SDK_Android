@@ -47,6 +47,9 @@ interface ContactDao {
     @Query("SELECT * FROM Contact WHERE id = :id")
     fun getByIdFlow(id: UUID): Flow<RoomContact?>
 
+    @Query("SELECT COUNT(*) FROM Contact WHERE safe_id = :safeId")
+    fun getContactCountFlow(safeId: UUID): Flow<Int>
+
     @Query("SELECT id FROM Contact")
     suspend fun getAllIds(): List<UUID>
 

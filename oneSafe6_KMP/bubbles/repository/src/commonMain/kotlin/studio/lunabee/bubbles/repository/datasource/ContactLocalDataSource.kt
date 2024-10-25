@@ -31,6 +31,7 @@ interface ContactLocalDataSource {
     fun getAllContactsFlow(safeId: DoubleRatchetUUID): Flow<List<Contact>>
     fun getRecentContactsFlow(maxNumber: Int, safeId: DoubleRatchetUUID): Flow<List<Contact>>
     fun getContactFlow(id: DoubleRatchetUUID): Flow<Contact?>
+    fun getContactCountFlow(safeId: DoubleRatchetUUID): Flow<Int>
     suspend fun getContact(id: DoubleRatchetUUID): Contact?
     suspend fun getContactInSafe(id: DoubleRatchetUUID, safeId: DoubleRatchetUUID): Contact?
     suspend fun getContactSharedKey(id: DoubleRatchetUUID): ContactSharedKey?

@@ -68,6 +68,9 @@ class SettingsRepository @Inject constructor(
     override fun independentSafeInfoCtaState(safeId: SafeId): Flow<CtaState> =
         safeDataSource.independentSafeInfoCtaState(safeId).filterNotNull()
 
+    override fun preventionWarningCtaState(safeId: SafeId): Flow<CtaState?> =
+        safeDataSource.preventionWarningCtaState(safeId)
+
     override fun cameraSystemFlow(safeId: SafeId): Flow<CameraSystem> =
         safeDataSource.cameraSystemFlow(safeId).filterNotNull()
 
@@ -97,6 +100,9 @@ class SettingsRepository @Inject constructor(
 
     override fun itemLayout(safeId: SafeId): Flow<ItemLayout> =
         safeDataSource.itemLayout(safeId).filterNotNull()
+
+    override fun hasBackupSince(safeId: SafeId, duration: Duration): Flow<Boolean> =
+        safeDataSource.hasBackupSince(safeId = safeId, duration = duration)
 
     override suspend fun cameraSystem(safeId: SafeId): CameraSystem =
         safeDataSource.getCameraSystem(safeId)
@@ -292,5 +298,9 @@ class SettingsRepository @Inject constructor(
 
     override suspend fun bubblesResendMessageDelayInMillis(safeId: DoubleRatchetUUID): Long {
         return safeDataSource.bubblesResendMessageDelay(SafeId(safeId.uuid)).inWholeMilliseconds
+    }
+
+    override suspend fun setPreventionWarningCtaState(safeId: SafeId, ctaState: CtaState) {
+        safeDataSource.setPreventionWarningCtaState(safeId, ctaState)
     }
 }

@@ -41,7 +41,7 @@ benchmark = "1.2.3"
 
 florisboard-library = "0.4.0-1.0.2"
 
-logback-classic = "1.5.8"
+logback-classic = "1.5.11"
 
 play-services-base = "18.5.0"
 play-services-auth-base = "18.0.13"
@@ -63,89 +63,33 @@ androidx-test-runner = "1.6.2"
 androidx-test-rules = "1.6.1"
 
 androidx-room = "2.6.1"
-##         ⬆ = "2.7.0-alpha01"
-##         ⬆ = "2.7.0-alpha02"
-##         ⬆ = "2.7.0-alpha03"
-##         ⬆ = "2.7.0-alpha04"
-##         ⬆ = "2.7.0-alpha05"
-##         ⬆ = "2.7.0-alpha06"
-##         ⬆ = "2.7.0-alpha07"
-##         ⬆ = "2.7.0-alpha08"
-##         ⬆ = "2.7.0-alpha09"
 
 androidx-sqlite = "2.4.0"
-##           ⬆ = "2.5.0-alpha01"
-##           ⬆ = "2.5.0-alpha02"
-##           ⬆ = "2.5.0-alpha03"
-##           ⬆ = "2.5.0-alpha04"
-##           ⬆ = "2.5.0-alpha05"
-##           ⬆ = "2.5.0-alpha06"
-##           ⬆ = "2.5.0-alpha07"
-##           ⬆ = "2.5.0-alpha08"
-##           ⬆ = "2.5.0-alpha09"
 
 android-tools-desugar_jdk_libs = "2.1.2"
 
 androidx-tracing = "1.2.0"
-##            ⬆ = "1.3.0-alpha01"
-##            ⬆ = "1.3.0-alpha02"
 
 androidx-security-crypto = "1.1.0-alpha06"
 
 androidx-appcompat = "1.7.0"
 
 androidx-core = "1.13.1"
-##         ⬆ = "1.14.0-alpha01"
-##         ⬆ = "1.15.0-alpha01"
-##         ⬆ = "1.15.0-alpha02"
-##         ⬆ = "1.15.0-beta01"
 
 androidx-lifecycle = "2.8.6"
-##              ⬆ = "2.9.0-alpha01"
-##              ⬆ = "2.9.0-alpha02"
-##              ⬆ = "2.9.0-alpha03"
-##              ⬆ = "2.9.0-alpha04"
 
-compose-bom-stable = "2024.09.03"
+compose-bom-stable = "2024.10.00"
 compose-bom-alpha = "2024.02.00-alpha01"
 
 google-android-material = "1.12.0"
-##                   ⬆ = "1.13.0-alpha01"
-##                   ⬆ = "1.13.0-alpha02"
-##                   ⬆ = "1.13.0-alpha03"
-##                   ⬆ = "1.13.0-alpha04"
-##                   ⬆ = "1.13.0-alpha05"
-##                   ⬆ = "1.13.0-alpha06"
 
 androidx-biometric = "1.1.0"
-##              ⬆ = "1.2.0-alpha01"
-##              ⬆ = "1.2.0-alpha02"
-##              ⬆ = "1.2.0-alpha03"
-##              ⬆ = "1.2.0-alpha04"
-##              ⬆ = "1.2.0-alpha05"
-##              ⬆ = "1.4.0-alpha01"
-##              ⬆ = "1.4.0-alpha02"
 
 androidx-core-splashscreen = "1.0.1"
-##                      ⬆ = "1.1.0-alpha01"
-##                      ⬆ = "1.1.0-alpha02"
-##                      ⬆ = "1.1.0-rc01"
-##                      ⬆ = "1.2.0-alpha01"
-##                      ⬆ = "1.2.0-alpha02"
 
 androidx-work = "2.9.1"
-##         ⬆ = "2.10.0-alpha01"
-##         ⬆ = "2.10.0-alpha02"
-##         ⬆ = "2.10.0-alpha03"
-##         ⬆ = "2.10.0-alpha04"
-##         ⬆ = "2.10.0-beta01"
 
 androidx-autofill = "1.1.0"
-##             ⬆ = "1.2.0-alpha01"
-##             ⬆ = "1.2.0-alpha02"
-##             ⬆ = "1.2.0-beta01"
-##             ⬆ = "1.3.0-alpha01"
-##             ⬆ = "1.3.0-beta01"
 
 androidx-slice-builders-ktx = "1.0.0-alpha08"
 
@@ -153,9 +97,7 @@ androidx-emoji2 = "1.5.0"
 
 androidx-paging-compose = "3.3.2"
 
-androidx-activity = "1.9.2"
-##             ⬆ = "1.10.0-alpha01"
-##             ⬆ = "1.10.0-alpha02"
+androidx-activity = "1.9.3"
 
 androidx-hilt-navigation-compose = "1.2.0"
 
@@ -175,9 +117,10 @@ firebase-crashlytics-gradle = "2.9.9"
 
 androidx-test-ext-junit = "1.2.1"
 
-androidx-benchmark = "1.3.2"
+androidx-benchmark = "1.3.3"
 ##              ⬆ = "1.4.0-alpha01"
 ##              ⬆ = "1.4.0-alpha02"
+##              ⬆ = "1.4.0-alpha03"
 
 androidx-annotation = "1.8.2"
 ##               ⬆ = "1.9.0-alpha01"
@@ -185,8 +128,9 @@ androidx-annotation = "1.8.2"
 ##               ⬆ = "1.9.0-alpha03"
 ##               ⬆ = "1.9.0-beta01"
 ##               ⬆ = "1.9.0-rc01"
+##               ⬆ = "1.9.0"
 
-glance = "1.1.0"
+glance = "1.1.1"
 
 # FIXME 1.1.0 have some issue when cleaning and re-reading data (see export_engine_not_signed_up_test). To investigate
 androidx-datastore = "1.0.0"
@@ -206,22 +150,17 @@ androidx-datastore = "1.0.0"
 
 androidx-preference = "1.2.1"
 
-ktor = "2.3.12"
-##⬆ = "3.0.0-beta-1"
-##⬆ = "3.0.0-beta-2"
-##⬆ = "3.0.0-rc-1"
-##⬆ = "3.0.0-rc-2"
+ktor = "3.0.0"
 
 androidx-test-espresso = "3.6.0-beta01"
 
 androidx-test-uiautomator = "2.3.0"
-##                     ⬆ = "2.4.0-alpha01"
 
 coil-kt = "2.7.0"
 
 androidx-startup = "1.2.0"
 
-navigation-compose = "2.8.2"
+navigation-compose = "2.8.3"
 
 protobuf = "4.28.2"
 ##    ⬆ = "4.29.0-RC1"
@@ -229,24 +168,14 @@ protobuf = "4.28.2"
 compose-shimmer = "1.3.1"
 
 lbcaccessibility = "1.9.0-289-SNAPSHOT"
-##            ⬆ = "1.9.0-290-SNAPSHOT"
-##            ⬆ = "1.9.0-291-SNAPSHOT"
 
 lbcandroidtest = "1.6.0-289-SNAPSHOT"
-##          ⬆ = "1.6.0-290-SNAPSHOT"
-##          ⬆ = "1.6.0-291-SNAPSHOT"
 
 lbctheme = "1.5.0-289-SNAPSHOT"
-##    ⬆ = "1.5.0-290-SNAPSHOT"
-##    ⬆ = "1.5.0-291-SNAPSHOT"
 
 lbccore = "1.6.0-289-SNAPSHOT"
-##   ⬆ = "1.6.0-290-SNAPSHOT"
-##   ⬆ = "1.6.0-291-SNAPSHOT"
 
 lbchaptic = "1.3.0-289-SNAPSHOT"
-##     ⬆ = "1.3.0-290-SNAPSHOT"
-##     ⬆ = "1.3.0-291-SNAPSHOT"
 
 lbcglance = "1.0.0"
 
@@ -258,12 +187,7 @@ conscrypt-openjdk-uber = "2.5.2"
 
 nbvcxz = "1.5.1"
 
-lint = "31.7.0"
-##⬆ = "31.8.0-alpha01"
-##⬆ = "31.8.0-alpha02"
-##⬆ = "31.8.0-alpha03"
-##⬆ = "31.8.0-alpha04"
-##⬆ = "31.8.0-alpha05"
+lint = "31.7.1"
 
 javapoet = "1.13.0"
 
@@ -272,31 +196,12 @@ seismic = "1.0.3"
 bouquet = "1.1.3"
 
 zoomable = "1.6.2"
-##    ⬆ = "1.7.0-beta01"
-##    ⬆ = "1.7.0-beta02"
-##    ⬆ = "2.0.0-alpha01"
-##    ⬆ = "2.0.0-alpha02"
-##    ⬆ = "2.0.0-alpha03"
-##    ⬆ = "2.0.0-beta01"
 
 exifinterface = "1.3.7"
 
 androidx-media3 = "1.4.1"
-##           ⬆ = "1.5.0-alpha01"
 
 camerax = "1.3.4"
-##   ⬆ = "1.4.0-alpha01"
-##   ⬆ = "1.4.0-alpha02"
-##   ⬆ = "1.4.0-alpha03"
-##   ⬆ = "1.4.0-alpha04"
-##   ⬆ = "1.4.0-alpha05"
-##   ⬆ = "1.4.0-beta01"
-##   ⬆ = "1.4.0-beta02"
-##   ⬆ = "1.4.0-rc01"
-##   ⬆ = "1.4.0-rc02"
-##   ⬆ = "1.4.0-rc03"
-##   ⬆ = "1.5.0-alpha01"
-##   ⬆ = "1.5.0-alpha02"
 
 espresso-core = "3.6.1"
 
@@ -308,8 +213,6 @@ process-phoenix = "3.0.0"
 lottie = "6.5.2"
 robolectric = "4.13"
 slf4j-simple = "2.0.16"
-##        ⬆ = "2.1.0-alpha0"
-##        ⬆ = "2.1.0-alpha1"
 
 review = "2.0.1"
 

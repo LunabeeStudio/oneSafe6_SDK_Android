@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.common.CtaState
 import studio.lunabee.onesafe.domain.model.camera.CameraSystem
 import studio.lunabee.onesafe.domain.model.safe.SafeId
+import kotlin.time.Duration
 
 interface SafeSettingsRepository {
     fun materialYou(safeId: SafeId): Flow<Boolean>
@@ -33,6 +34,8 @@ interface SafeSettingsRepository {
     fun bubblesPreview(safeId: SafeId): Flow<Boolean> // TODO <multisafe> -> new bubbles settings (?)
     fun bubblesHomeCardCtaState(safeId: SafeId): Flow<CtaState> // TODO <multisafe> -> new bubbles settings (?)
     fun independentSafeInfoCtaState(safeId: SafeId): Flow<CtaState>
+    fun hasBackupSince(safeId: SafeId, duration: Duration): Flow<Boolean>
+    fun preventionWarningCtaState(safeId: SafeId): Flow<CtaState?>
 
     suspend fun cameraSystem(safeId: SafeId): CameraSystem
     suspend fun allowScreenshot(safeId: SafeId): Boolean
@@ -48,4 +51,5 @@ interface SafeSettingsRepository {
     suspend fun setBubblesHomeCardCtaState(safeId: SafeId, ctaState: CtaState)
     suspend fun displayShareWarning(safeId: SafeId): Boolean
     suspend fun setIndependentSafeInfoCtaState(safeId: SafeId, ctaState: CtaState)
+    suspend fun setPreventionWarningCtaState(safeId: SafeId, ctaState: CtaState)
 }

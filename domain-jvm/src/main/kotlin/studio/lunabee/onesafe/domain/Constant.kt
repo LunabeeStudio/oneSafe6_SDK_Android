@@ -19,8 +19,10 @@
 
 package studio.lunabee.onesafe.domain
 
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
 
 object Constant {
@@ -34,4 +36,9 @@ object Constant {
     const val FileMaxSizeBytes: Int = FileMaxSizeMegaBytes * 1024 * 1024
     const val IndeterminateProgress: Float = -1f
     val ThumbnailPlaceHolderName: UUID = UUID.fromString("2ae4e851-508b-456c-93b6-dd4236d6b6a1")
+    val DelayBeforeShowingCtaState: Long = 30.days.inWholeDays
+    private val DelayBeforeFirstShowPreventionWarningCtaState: Long = 10.days.inWholeDays
+    val InitialDelay: Long = DelayBeforeShowingCtaState - DelayBeforeFirstShowPreventionWarningCtaState
+    val PreventionWarningBackupAge: Duration = 30.days
+    val DelayUnitPreventionWarningCtaState: ChronoUnit = ChronoUnit.DAYS
 }

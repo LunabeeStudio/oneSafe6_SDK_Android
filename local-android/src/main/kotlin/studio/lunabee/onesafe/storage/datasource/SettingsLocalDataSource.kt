@@ -32,6 +32,7 @@ import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import studio.lunabee.onesafe.importexport.data.GoogleDriveEnginePreferencesDatasource
 import studio.lunabee.onesafe.importexport.model.SafeAutoBackupEnabled
 import studio.lunabee.onesafe.repository.datasource.SafeSettingsLocalDataSource
+import studio.lunabee.onesafe.storage.dao.BackupDao
 import studio.lunabee.onesafe.storage.dao.SettingsDao
 import studio.lunabee.onesafe.storage.model.RoomCtaState
 import java.time.Instant
@@ -40,6 +41,7 @@ import kotlin.time.Duration
 
 class SettingsLocalDataSource @Inject constructor(
     private val dao: SettingsDao,
+    private val backupDao: BackupDao,
 ) : SafeSettingsLocalDataSource, AutoBackupSettingsDataSource, GoogleDriveEnginePreferencesDatasource {
     override fun autoLockOSKHiddenDelayFlow(safeId: SafeId): Flow<Duration?> =
         dao.getAutoLockOSKHiddenDelayFlow(safeId).distinctUntilChanged()
@@ -104,6 +106,10 @@ class SettingsLocalDataSource @Inject constructor(
     override fun itemLayout(safeId: SafeId): Flow<ItemLayout?> =
         dao.getItemLayout(safeId).distinctUntilChanged()
 
+    override fun preventionWarningCtaState(safeId: SafeId): Flow<CtaState?> {
+        return dao.preventionWarningCtaState(safeId).map { it?.toCtaState() }.distinctUntilChanged()
+    }
+
     override fun independentSafeInfoCtaState(safeId: SafeId): Flow<CtaState?> =
         dao.getIndependentSafeInfoCtaState(safeId).map { it?.toCtaState() }.distinctUntilChanged()
 
@@ -141,8 +147,17 @@ class SettingsLocalDataSource @Inject constructor(
         return dao.getBubblesResendMessageDelayFlow(safeId)
     }
 
+    override fun hasBackupSince(safeId: SafeId, duration: Duration): Flow<Boolean> {
+        return backupDao.hasBackupSince(safeId = safeId, duration = duration.inWholeSeconds)
+    }
+
     override suspend fun hasSeenDialogMessageSaveConfirmation(safeId: SafeId): Boolean {
         return dao.hasSeenDialogMessageSaveConfirmation(safeId)
+    }
+
+    override suspend fun setPreventionWarningCtaState(safeId: SafeId, ctaState: CtaState) {
+        val state = RoomCtaState.fromCtaState(ctaState)
+        dao.setPreventionWarningCtaState(safeId, state.state, state.timestamp)
     }
 
     override suspend fun getCameraSystem(safeId: SafeId): CameraSystem =

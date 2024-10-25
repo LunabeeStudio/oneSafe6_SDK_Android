@@ -47,6 +47,7 @@ interface SafeSettingsLocalDataSource {
     fun itemOrdering(safeId: SafeId): Flow<ItemOrder?>
     fun itemLayout(safeId: SafeId): Flow<ItemLayout?>
     fun independentSafeInfoCtaState(safeId: SafeId): Flow<CtaState?>
+    fun preventionWarningCtaState(safeId: SafeId): Flow<CtaState?>
     fun hasFinishOneSafeKOnBoardingFlow(safeId: SafeId): Flow<Boolean?>
     fun hasDoneOnBoardingBubblesFlow(safeId: SafeId): Flow<Boolean?>
     fun hasHiddenCameraTipsFlow(safeId: SafeId): Flow<Boolean?>
@@ -54,6 +55,7 @@ interface SafeSettingsLocalDataSource {
     fun hasSeenItemEditionEmojiToolTipFlow(safeId: SafeId): Flow<Boolean?>
     fun hasSeenItemReadEditToolTipFlow(safeId: SafeId): Flow<Boolean?>
     fun bubblesResendMessageDelayFlow(safeId: SafeId): Flow<Duration?>
+    fun hasBackupSince(safeId: SafeId, duration: Duration): Flow<Boolean>
 
     suspend fun hasSeenDialogMessageSaveConfirmation(safeId: SafeId): Boolean
     suspend fun getCameraSystem(safeId: SafeId): CameraSystem
@@ -88,6 +90,7 @@ interface SafeSettingsLocalDataSource {
     suspend fun automation(safeId: SafeId): Boolean
     suspend fun displayShareWarning(safeId: SafeId): Boolean
     suspend fun setIndependentSafeInfoCtaState(safeId: SafeId, ctaState: CtaState)
+    suspend fun setPreventionWarningCtaState(safeId: SafeId, ctaState: CtaState)
     suspend fun hasSeenItemEditionUrlToolTip(safeId: SafeId): Boolean
     suspend fun hasSeenItemEditionEmojiToolTip(safeId: SafeId): Boolean
     suspend fun setHasFinishOneSafeKOnBoarding(safeId: SafeId, value: Boolean)

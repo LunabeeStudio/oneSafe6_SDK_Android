@@ -19,6 +19,7 @@
 
 package studio.lunabee.onesafe
 
+import studio.lunabee.onesafe.domain.Constant
 import studio.lunabee.onesafe.domain.common.CtaState
 import studio.lunabee.onesafe.domain.model.camera.CameraSystem
 import studio.lunabee.onesafe.domain.model.safeitem.ItemLayout
@@ -56,6 +57,10 @@ object SettingsDefaults {
     val ItemOrderingDefault: ItemOrder = ItemOrder.Alphabetic
     val ItemLayoutDefault: ItemLayout = ItemLayout.Grid
     val EnableAutoBackupCtaState: CtaState = CtaState.Hidden
+
     fun lastPasswordVerificationDefault(clock: Clock): Instant = Instant.now(clock)
     fun independentSafeInfoCtaState(clock: Clock): CtaState = CtaState.VisibleSince(Instant.now(clock))
+    fun preventionWarningCtaState(clock: Clock): CtaState = CtaState.DismissedAt(
+        Instant.now(clock).minus(Constant.InitialDelay, Constant.DelayUnitPreventionWarningCtaState),
+    )
 }

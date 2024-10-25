@@ -16,22 +16,13 @@ skie = { id = "co.touchlab.skie", version.ref = "skie" }
 
 [versions]
 
-ksp = "2.0.20-1.0.25"
-##⬆= "2.0.21-RC-1.0.25"
-##⬆= "2.1.0-Beta1-1.0.25"
+ksp = "2.0.21-1.0.25"
 
-skie = "0.9.2"
+skie = "0.9.3"
 
-android-gradle-plugin = "8.7.0"
-##                 ⬆ = "8.8.0-alpha01"
-##                 ⬆ = "8.8.0-alpha02"
-##                 ⬆ = "8.8.0-alpha03"
-##                 ⬆ = "8.8.0-alpha04"
-##                 ⬆ = "8.8.0-alpha05"
+android-gradle-plugin = "8.7.1"
 
-kotlin = "2.0.20"
-##  ⬆ = "2.0.21-RC"
-##  ⬆ = "2.1.0-Beta1"
+kotlin = "2.0.21"
 
 dagger-hilt = "2.52"
 
@@ -59,7 +50,7 @@ koin = "4.0.0"
 
 androidx-paging = "3.3.2"
 
-mockk = "1.13.12"
+mockk = "1.13.13"
 
 [libraries]
 

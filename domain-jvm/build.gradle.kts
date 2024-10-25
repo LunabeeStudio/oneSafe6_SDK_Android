@@ -40,6 +40,8 @@ dependencies {
     implementation(libs.onesafe.error)
     api(libs.onesafe.domain)
     implementation(project(":common-jvm"))
+    implementation(libs.doubleratchet)
+    implementation(libs.bubbles.domain)
 
     testImplementation(project(":common-test"))
     testImplementation(libs.mockk)

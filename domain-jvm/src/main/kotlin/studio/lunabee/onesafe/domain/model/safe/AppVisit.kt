@@ -20,7 +20,6 @@
 package studio.lunabee.onesafe.domain.model.safe
 
 class AppVisit(
-    val hasVisitedLogin: Boolean,
     val hasFinishOneSafeKOnBoarding: Boolean,
     val hasDoneOnBoardingBubbles: Boolean,
     val hasDoneTutorialOpenOsk: Boolean,
@@ -32,7 +31,6 @@ class AppVisit(
     val hasSeenDialogMessageSaveConfirmation: Boolean,
 ) {
     constructor() : this(
-        hasVisitedLogin = false,
         hasFinishOneSafeKOnBoarding = false,
         hasDoneOnBoardingBubbles = false,
         hasDoneTutorialOpenOsk = false,

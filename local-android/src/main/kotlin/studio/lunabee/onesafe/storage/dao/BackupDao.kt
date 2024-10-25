@@ -114,6 +114,18 @@ interface BackupDao {
     @Query("SELECT EXISTS(SELECT 1 FROM Backup WHERE local_file IS NOT NULL AND safe_id IS :safeId LIMIT 1)")
     fun hasLocalBackup(safeId: SafeId): Flow<Boolean>
 
+    @Query(
+        """
+            SELECT EXISTS(
+                SELECT 1 
+                FROM Backup 
+                WHERE (safe_id IS :safeId OR safe_id IS NULL) 
+                AND `date` > ((strftime('%s', 'now') - :duration) * 1000) LIMIT 1
+            )
+        """,
+    )
+    fun hasBackupSince(safeId: SafeId, duration: Long): Flow<Boolean>
+
     @Transaction
     suspend fun deleteAllCloudBackup(safeId: SafeId) {
         nullifyAllRemoteId(safeId)

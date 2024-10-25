@@ -83,6 +83,10 @@ class ContactRepositoryImpl @Inject constructor(
         return localDataSource.getContactCount(safeId)
     }
 
+    override fun getContactCountFlow(safeId: DoubleRatchetUUID): Flow<Int> {
+        return localDataSource.getContactCountFlow(safeId)
+    }
+
     override suspend fun updateContactResetConversationDate(id: DoubleRatchetUUID, encResetConversationDate: ByteArray) {
         localDataSource.updateContactResetConversationDate(id, encResetConversationDate)
     }
