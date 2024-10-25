@@ -60,6 +60,11 @@ class ContactLocalDataSourceImpl @Inject constructor(
         dao.getRecentContactsFlow(maxNumber, safeId.uuid).mapValues { it.toContact() }
 
     override fun getContactFlow(id: DoubleRatchetUUID): Flow<Contact?> = dao.getByIdFlow(id.uuid).map { it?.toContact() }
+
+    override fun getContactCountFlow(safeId: DoubleRatchetUUID): Flow<Int> {
+        return dao.getContactCountFlow(safeId.uuid)
+    }
+
     override suspend fun getContact(id: DoubleRatchetUUID): Contact? {
         return dao.getById(id.uuid).let { it?.toContact() }
     }

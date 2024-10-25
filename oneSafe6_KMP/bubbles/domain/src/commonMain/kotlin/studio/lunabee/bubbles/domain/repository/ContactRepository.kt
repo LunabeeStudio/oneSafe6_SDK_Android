@@ -41,5 +41,6 @@ interface ContactRepository {
     suspend fun updateContact(id: DoubleRatchetUUID, encSharingMode: ByteArray, encName: ByteArray, updateAt: Instant)
     suspend fun updateContactConsultedAt(id: DoubleRatchetUUID, consultedAt: Instant)
     suspend fun getContactCount(safeId: DoubleRatchetUUID): Int
+    fun getContactCountFlow(safeId: DoubleRatchetUUID): Flow<Int>
     suspend fun updateContactResetConversationDate(id: DoubleRatchetUUID, encResetConversationDate: ByteArray)
 }

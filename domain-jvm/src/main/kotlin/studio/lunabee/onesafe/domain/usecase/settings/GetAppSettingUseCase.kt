@@ -26,8 +26,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import studio.lunabee.onesafe.domain.common.CtaState
 import studio.lunabee.onesafe.domain.model.camera.CameraSystem
-import studio.lunabee.onesafe.domain.repository.SafeSettingsRepository
 import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.domain.repository.SafeSettingsRepository
 import studio.lunabee.onesafe.error.OSError
 import javax.inject.Inject
 
@@ -53,13 +53,6 @@ class GetAppSettingUseCase @Inject constructor(
         safeId?.let {
             settingRepository.automationFlow(safeId)
         } ?: flowOf(default.automation)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    fun displayShareWarningFlow(): Flow<Boolean> = safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
-        safeId?.let {
-            settingRepository.displayShareWarningFlow(safeId)
-        } ?: flowOf(default.displayShareWarning)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

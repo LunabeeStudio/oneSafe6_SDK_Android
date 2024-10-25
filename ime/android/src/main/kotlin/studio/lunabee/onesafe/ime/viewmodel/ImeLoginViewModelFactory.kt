@@ -30,7 +30,6 @@ import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.LoginUseCase
 import studio.lunabee.onesafe.domain.usecase.autodestruction.EncryptPasswordAutoDestructionUseCase
 import studio.lunabee.onesafe.domain.usecase.settings.GetAppVisitUseCase
-import studio.lunabee.onesafe.domain.usecase.settings.SetSecuritySettingUseCase
 import studio.lunabee.onesafe.ime.repository.ImeBiometricResultRepository
 import studio.lunabee.onesafe.login.viewmodel.LoginFromPasswordDelegateImpl
 import studio.lunabee.onesafe.login.viewmodel.LoginUiStateHolder
@@ -46,7 +45,6 @@ class ImeLoginViewModelFactory @Inject constructor(
     private val isSafeReadyUseCase: IsSafeReadyUseCase,
     @StoreBetaTrack private val isBetaVersion: Boolean,
     private val encryptPasswordAutoDestructionUseCase: EncryptPasswordAutoDestructionUseCase,
-    private val setSecuritySettingUseCase: SetSecuritySettingUseCase,
     private val workManager: WorkManager,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

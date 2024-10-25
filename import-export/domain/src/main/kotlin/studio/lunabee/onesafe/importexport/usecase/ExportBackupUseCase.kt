@@ -50,8 +50,9 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.UUID
 import javax.inject.Inject
+import kotlin.random.Random
+import kotlin.random.nextInt
 
 class ExportBackupUseCase @Inject constructor(
     private val archiveZipUseCase: ArchiveZipUseCase,
@@ -63,6 +64,7 @@ class ExportBackupUseCase @Inject constructor(
     private val contactRepository: ContactRepository,
     private val contactKeyRepository: ContactKeyRepository,
     private val importExportBubblesRepository: ImportExportBubblesRepository,
+    private val dismissPreventionWarningCtaUseCase: DismissPreventionWarningCtaUseCase,
     private val clock: Clock,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -109,6 +111,8 @@ class ExportBackupUseCase @Inject constructor(
                                 is LBFlowResult.Loading -> LBFlowResult.Loading(progress = zipResult.progress)
                                 is LBFlowResult.Success -> {
                                     val localBackup = LocalBackup(now, zipResult.successData, safeId)
+                                    // Easy way to consider an export as a backup to remove display of prevention warning.
+                                    dismissPreventionWarningCtaUseCase()
                                     LBFlowResult.Success(localBackup)
                                 }
                             }
@@ -129,7 +133,7 @@ class ExportBackupUseCase @Inject constructor(
                 ImportExportConstant.ArchiveFilePrefix,
                 DateTimeFormatter.BASIC_ISO_DATE.format(localDateTime), // i.e 20230113
                 ImportExportConstant.ArchiveTimeFormatter.format(localDateTime), // i.e 134602
-                UUID.randomUUID().toString().take(6), // i.e 234324 random string to avoid backup override with multi-safe
+                Random.nextInt(100_000..999_999), // i.e random string to avoid backup override with multi-safe
             ).joinToString(ImportExportConstant.ArchiveFileSeparator) + ".${ImportExportConstant.ExtensionOs6Backup}"
         }
     }

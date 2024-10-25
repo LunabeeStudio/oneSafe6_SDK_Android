@@ -144,6 +144,10 @@ object CommonTestUtils {
                     state = RoomCtaState.State.Hidden,
                     timestamp = null,
                 ),
+                preventionWarningCtaState = RoomCtaState(
+                    state = RoomCtaState.State.Hidden,
+                    timestamp = null,
+                ),
             ),
             appVisit = RoomAppVisit(
                 hasFinishOneSafeKOnBoarding = false,

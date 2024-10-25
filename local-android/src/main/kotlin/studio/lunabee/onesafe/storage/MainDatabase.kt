@@ -73,9 +73,14 @@ import studio.lunabee.onesafe.storage.model.RoomSentMessage
 import studio.lunabee.onesafe.storage.utils.addRecursiveCheckTriggers
 import studio.lunabee.onesafe.storage.utils.addUniqueBiometricKeyTrigger
 
-@TypeConverters(InstantConverter::class, FileConverter::class, DurationConverter::class, ZonedDateTimeConverter::class)
+@TypeConverters(
+    InstantConverter::class,
+    FileConverter::class,
+    DurationConverter::class,
+    ZonedDateTimeConverter::class,
+)
 @Database(
-    version = 22,
+    version = 23,
     entities = [
         RoomSafeItem::class,
         RoomSafeItemField::class,

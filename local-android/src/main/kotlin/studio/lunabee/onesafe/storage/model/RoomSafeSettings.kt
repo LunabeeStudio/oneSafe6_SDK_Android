@@ -53,6 +53,8 @@ data class RoomSafeSettings(
     val lastPasswordVerification: Instant,
     @Embedded(prefix = "bubbles_home_card_cta_")
     val bubblesHomeCardCtaState: RoomCtaState,
+    @Embedded(prefix = "prevention_warning_cta_")
+    val preventionWarningCtaState: RoomCtaState,
     @ColumnInfo(name = "auto_lock_inactivity_delay")
     val autoLockInactivityDelay: Duration,
     @ColumnInfo(name = "auto_lock_app_change_delay")
@@ -113,6 +115,7 @@ data class RoomSafeSettings(
             driveSettings = RoomDriveSettings.fromDriveSettings(driveSettings),
             lastPasswordVerification = safeSettings.lastPasswordVerification,
             independentSafeInfoCtaState = RoomCtaState.fromCtaState(safeSettings.independentSafeInfoCtaState),
+            preventionWarningCtaState = RoomCtaState.fromCtaState(safeSettings.preventionWarningCtaState),
         )
     }
 
@@ -148,6 +151,7 @@ data class RoomSafeSettings(
         if (driveSettings != other.driveSettings) return false
         if (enableAutoBackupCtaState != other.enableAutoBackupCtaState) return false
         if (independentSafeInfoCtaState != other.independentSafeInfoCtaState) return false
+        if (preventionWarningCtaState != other.preventionWarningCtaState) return false
 
         return true
     }
@@ -179,6 +183,7 @@ data class RoomSafeSettings(
         result = 31 * result + driveSettings.hashCode()
         result = 31 * result + enableAutoBackupCtaState.hashCode()
         result = 31 * result + independentSafeInfoCtaState.hashCode()
+        result = 31 * result + preventionWarningCtaState.hashCode()
         return result
     }
 }

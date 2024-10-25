@@ -325,6 +325,16 @@ interface SettingsDao {
 
     @Query(
         """
+        SELECT
+            setting_prevention_warning_cta_state as state,
+            setting_prevention_warning_cta_timestamp as timestamp
+        FROM Safe WHERE id IS :safeId
+        """,
+    )
+    fun preventionWarningCtaState(safeId: SafeId): Flow<RoomCtaState?>
+
+    @Query(
+        """
             UPDATE Safe SET 
             setting_independent_safe_info_cta_state = :state, 
             setting_independent_safe_info_cta_timestamp = :timestamp 
@@ -350,4 +360,14 @@ interface SettingsDao {
 
     @Query("UPDATE Safe SET app_visit_has_seen_item_read_edit_tool_tip = :value WHERE id IS :safeId")
     suspend fun setHasSeenItemReadEditToolTip(safeId: SafeId, value: Boolean)
+
+    @Query(
+        """
+            UPDATE Safe SET 
+            setting_prevention_warning_cta_state = :state, 
+            setting_prevention_warning_cta_timestamp = :timestamp 
+            WHERE id IS :safeId
+            """,
+    )
+    suspend fun setPreventionWarningCtaState(safeId: SafeId, state: State, timestamp: Instant?)
 }

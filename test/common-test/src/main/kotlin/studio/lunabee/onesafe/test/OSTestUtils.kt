@@ -215,6 +215,7 @@ object OSTestUtils {
         enableAutoBackupCtaState: CtaState = CtaState.Hidden,
         lastPasswordVerification: Instant = Instant.now(OSTestConfig.clock),
         independentSafeInfoCtaState: CtaState = CtaState.Hidden,
+        preventionWarningCtaState: CtaState = CtaState.Hidden,
     ): SafeSettings = SafeSettings(
         version = version,
         materialYou = materialYou,
@@ -242,6 +243,7 @@ object OSTestUtils {
         enableAutoBackupCtaState = enableAutoBackupCtaState,
         lastPasswordVerification = lastPasswordVerification,
         independentSafeInfoCtaState = independentSafeInfoCtaState,
+        preventionWarningCtaState = preventionWarningCtaState,
     )
 
     fun driveSettings(
@@ -255,7 +257,6 @@ object OSTestUtils {
     )
 
     fun appVisit(
-        hasVisitedLogin: Boolean = false,
         hasFinishOneSafeKOnBoarding: Boolean = false,
         hasDoneOnBoardingBubbles: Boolean = false,
         hasDoneTutorialOpenOsk: Boolean = false,
@@ -266,7 +267,6 @@ object OSTestUtils {
         hasSeenItemReadEditToolTip: Boolean = false,
         hasSeenDialogMessageSaveConfirmation: Boolean = false,
     ): AppVisit = AppVisit(
-        hasVisitedLogin = hasVisitedLogin,
         hasFinishOneSafeKOnBoarding = hasFinishOneSafeKOnBoarding,
         hasDoneOnBoardingBubbles = hasDoneOnBoardingBubbles,
         hasDoneTutorialOpenOsk = hasDoneTutorialOpenOsk,

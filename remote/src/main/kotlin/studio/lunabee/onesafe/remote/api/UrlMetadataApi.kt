@@ -23,7 +23,6 @@ import co.touchlab.kermit.Logger
 import com.lunabee.lbcore.model.LBFlowResult
 import com.lunabee.lblogger.LBLogger
 import io.ktor.client.HttpClient
-import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.onDownload
 import io.ktor.client.plugins.timeout
 import io.ktor.client.request.get
@@ -47,7 +46,9 @@ class UrlMetadataApi @Inject constructor(
     suspend fun getHtmlPageCode(url: String): String {
         return httpClient.get(urlString = url) {
             timeout {
-                HttpTimeout.HttpTimeoutCapabilityConfiguration(getHtmlPageTimeout, getHtmlPageTimeout, getHtmlPageTimeout)
+                requestTimeoutMillis = getHtmlPageTimeout
+                connectTimeoutMillis = getHtmlPageTimeout
+                socketTimeoutMillis = getHtmlPageTimeout
             }
         }.bodyAsText()
     }
@@ -55,7 +56,7 @@ class UrlMetadataApi @Inject constructor(
     fun downloadImage(url: String, targetFile: File): Flow<LBFlowResult<File>> = callbackFlow {
         val byteReadChannel = httpClient.get(urlString = url) {
             onDownload { bytesSentTotal, contentLength ->
-                val progress = if (contentLength == 0L) {
+                val progress = if (contentLength == null || contentLength == 0L) {
                     Constant.IndeterminateProgress
                 } else {
                     bytesSentTotal.toFloat() / contentLength

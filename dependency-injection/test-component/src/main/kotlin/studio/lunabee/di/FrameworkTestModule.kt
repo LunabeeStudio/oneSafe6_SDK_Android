@@ -206,6 +206,7 @@ object FrameworkTestModule {
                 enableAutoBackupCtaState = SettingsDefaults.EnableAutoBackupCtaState,
                 lastPasswordVerification = SettingsDefaults.lastPasswordVerificationDefault(clock),
                 independentSafeInfoCtaState = SettingsDefaults.independentSafeInfoCtaState(clock),
+                preventionWarningCtaState = SettingsDefaults.preventionWarningCtaState(clock),
             )
     }
 
