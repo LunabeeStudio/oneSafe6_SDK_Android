@@ -244,6 +244,7 @@ object OSTestUtils {
         lastPasswordVerification = lastPasswordVerification,
         independentSafeInfoCtaState = independentSafeInfoCtaState,
         preventionWarningCtaState = preventionWarningCtaState,
+        lastExportDate = null,
     )
 
     fun driveSettings(

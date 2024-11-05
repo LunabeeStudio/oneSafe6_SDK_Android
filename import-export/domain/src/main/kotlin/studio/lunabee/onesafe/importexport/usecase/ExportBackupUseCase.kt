@@ -38,6 +38,7 @@ import studio.lunabee.onesafe.domain.repository.IconRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.domain.repository.SafeSettingsRepository
 import studio.lunabee.onesafe.importexport.engine.BackupExportEngine
 import studio.lunabee.onesafe.importexport.model.ExportData
 import studio.lunabee.onesafe.importexport.model.ExportItem
@@ -64,7 +65,7 @@ class ExportBackupUseCase @Inject constructor(
     private val contactRepository: ContactRepository,
     private val contactKeyRepository: ContactKeyRepository,
     private val importExportBubblesRepository: ImportExportBubblesRepository,
-    private val dismissPreventionWarningCtaUseCase: DismissPreventionWarningCtaUseCase,
+    private val settingsRepository: SafeSettingsRepository,
     private val clock: Clock,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -111,8 +112,7 @@ class ExportBackupUseCase @Inject constructor(
                                 is LBFlowResult.Loading -> LBFlowResult.Loading(progress = zipResult.progress)
                                 is LBFlowResult.Success -> {
                                     val localBackup = LocalBackup(now, zipResult.successData, safeId)
-                                    // Easy way to consider an export as a backup to remove display of prevention warning.
-                                    dismissPreventionWarningCtaUseCase()
+                                    settingsRepository.setLastExportDate(Instant.now(clock), safeId = safeId)
                                     LBFlowResult.Success(localBackup)
                                 }
                             }

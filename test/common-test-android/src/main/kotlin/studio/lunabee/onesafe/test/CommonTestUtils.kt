@@ -148,6 +148,7 @@ object CommonTestUtils {
                     state = RoomCtaState.State.Hidden,
                     timestamp = null,
                 ),
+                lastExportDate = null,
             ),
             appVisit = RoomAppVisit(
                 hasFinishOneSafeKOnBoarding = false,
