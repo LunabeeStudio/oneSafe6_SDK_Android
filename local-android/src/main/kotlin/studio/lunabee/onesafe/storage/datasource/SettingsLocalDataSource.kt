@@ -151,6 +151,10 @@ class SettingsLocalDataSource @Inject constructor(
         return backupDao.hasBackupSince(safeId = safeId, duration = duration.inWholeSeconds)
     }
 
+    override fun hasExportSince(safeId: SafeId, duration: Duration): Flow<Boolean> {
+        return dao.hasExportSince(safeId = safeId, durationSec = duration.inWholeSeconds)
+    }
+
     override suspend fun hasSeenDialogMessageSaveConfirmation(safeId: SafeId): Boolean {
         return dao.hasSeenDialogMessageSaveConfirmation(safeId)
     }
@@ -342,5 +346,9 @@ class SettingsLocalDataSource @Inject constructor(
 
     override suspend fun bubblesResendMessageDelay(safeId: SafeId): Duration {
         return dao.getBubblesResendMessageDelay(safeId)
+    }
+
+    override suspend fun setLastExportDate(instant: Instant, safeId: SafeId) {
+        dao.setLastExportDate(instant = instant, safeId = safeId)
     }
 }

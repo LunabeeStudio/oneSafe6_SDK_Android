@@ -82,9 +82,10 @@ class GetPreventionWarningCtaStateUseCase @Inject constructor(
             safeRepository.isBiometricEnabledForSafeFlow(safeId = safeId),
             securitySettingsRepository.verifyPasswordIntervalFlow(safeId = safeId),
             settingRepository.hasBackupSince(safeId = safeId, duration = Constant.PreventionWarningBackupAge),
-        ) { isBiometricEnabled, verifyPasswordInterval, hasBackupSinceOneMonth ->
+            settingRepository.hasExportSince(safeId = safeId, duration = Constant.PreventionWarningBackupAge),
+        ) { isBiometricEnabled, verifyPasswordInterval, hasBackupSinceOneMonth, hasExportSinceOneMonth ->
             val shouldWarnAboutPasswordVerification = isBiometricEnabled && verifyPasswordInterval == VerifyPasswordInterval.NEVER
-            val shouldWarnAboutBackup = !hasBackupSinceOneMonth
+            val shouldWarnAboutBackup = !hasBackupSinceOneMonth || !hasExportSinceOneMonth
             when {
                 shouldWarnAboutBackup && shouldWarnAboutPasswordVerification -> PreventionSettingsWarning.PasswordVerificationAndBackup
                 shouldWarnAboutPasswordVerification -> PreventionSettingsWarning.PasswordVerification

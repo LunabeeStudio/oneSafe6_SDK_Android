@@ -80,7 +80,7 @@ import studio.lunabee.onesafe.storage.utils.addUniqueBiometricKeyTrigger
     ZonedDateTimeConverter::class,
 )
 @Database(
-    version = 23,
+    version = 24,
     entities = [
         RoomSafeItem::class,
         RoomSafeItemField::class,
@@ -114,6 +114,7 @@ import studio.lunabee.onesafe.storage.utils.addUniqueBiometricKeyTrigger
         AutoMigration(from = 18, to = 19),
         AutoMigration(from = 20, to = 21),
         AutoMigration(from = 21, to = 22),
+        AutoMigration(from = 23, to = 24),
     ],
 )
 abstract class MainDatabase : RoomDatabase() {

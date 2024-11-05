@@ -56,6 +56,7 @@ interface SafeSettingsLocalDataSource {
     fun hasSeenItemReadEditToolTipFlow(safeId: SafeId): Flow<Boolean?>
     fun bubblesResendMessageDelayFlow(safeId: SafeId): Flow<Duration?>
     fun hasBackupSince(safeId: SafeId, duration: Duration): Flow<Boolean>
+    fun hasExportSince(safeId: SafeId, duration: Duration): Flow<Boolean>
 
     suspend fun hasSeenDialogMessageSaveConfirmation(safeId: SafeId): Boolean
     suspend fun getCameraSystem(safeId: SafeId): CameraSystem
@@ -100,4 +101,5 @@ interface SafeSettingsLocalDataSource {
     suspend fun setHasSeenItemEditionEmojiToolTip(safeId: SafeId, value: Boolean)
     suspend fun setHasSeenItemReadEditToolTip(safeId: SafeId, value: Boolean)
     suspend fun bubblesResendMessageDelay(safeId: SafeId): Duration
+    suspend fun setLastExportDate(instant: Instant, safeId: SafeId)
 }

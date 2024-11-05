@@ -51,6 +51,8 @@ data class RoomSafeSettings(
     val verifyPasswordInterval: VerifyPasswordInterval,
     @ColumnInfo(name = "last_password_verification")
     val lastPasswordVerification: Instant,
+    @ColumnInfo(name = "last_export_date", defaultValue = "NULL")
+    val lastExportDate: Instant?,
     @Embedded(prefix = "bubbles_home_card_cta_")
     val bubblesHomeCardCtaState: RoomCtaState,
     @Embedded(prefix = "prevention_warning_cta_")
@@ -116,6 +118,7 @@ data class RoomSafeSettings(
             lastPasswordVerification = safeSettings.lastPasswordVerification,
             independentSafeInfoCtaState = RoomCtaState.fromCtaState(safeSettings.independentSafeInfoCtaState),
             preventionWarningCtaState = RoomCtaState.fromCtaState(safeSettings.preventionWarningCtaState),
+            lastExportDate = safeSettings.lastExportDate,
         )
     }
 
@@ -152,6 +155,7 @@ data class RoomSafeSettings(
         if (enableAutoBackupCtaState != other.enableAutoBackupCtaState) return false
         if (independentSafeInfoCtaState != other.independentSafeInfoCtaState) return false
         if (preventionWarningCtaState != other.preventionWarningCtaState) return false
+        if (lastExportDate != other.lastExportDate) return false
 
         return true
     }
@@ -184,6 +188,7 @@ data class RoomSafeSettings(
         result = 31 * result + enableAutoBackupCtaState.hashCode()
         result = 31 * result + independentSafeInfoCtaState.hashCode()
         result = 31 * result + preventionWarningCtaState.hashCode()
+        result = 31 * result + lastExportDate.hashCode()
         return result
     }
 }

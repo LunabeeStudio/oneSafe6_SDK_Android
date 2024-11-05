@@ -207,6 +207,7 @@ object FrameworkTestModule {
                 lastPasswordVerification = SettingsDefaults.lastPasswordVerificationDefault(clock),
                 independentSafeInfoCtaState = SettingsDefaults.independentSafeInfoCtaState(clock),
                 preventionWarningCtaState = SettingsDefaults.preventionWarningCtaState(clock),
+                lastExportDate = null,
             )
     }
 

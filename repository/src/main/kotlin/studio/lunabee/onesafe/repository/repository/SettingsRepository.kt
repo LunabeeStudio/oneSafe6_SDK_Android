@@ -71,6 +71,10 @@ class SettingsRepository @Inject constructor(
     override fun preventionWarningCtaState(safeId: SafeId): Flow<CtaState?> =
         safeDataSource.preventionWarningCtaState(safeId)
 
+    override fun hasExportSince(safeId: SafeId, duration: Duration): Flow<Boolean> {
+        return safeDataSource.hasExportSince(safeId = safeId, duration = duration)
+    }
+
     override fun cameraSystemFlow(safeId: SafeId): Flow<CameraSystem> =
         safeDataSource.cameraSystemFlow(safeId).filterNotNull()
 
@@ -122,6 +126,10 @@ class SettingsRepository @Inject constructor(
 
     override suspend fun setBubblesHomeCardCtaState(safeId: SafeId, ctaState: CtaState): Unit =
         safeDataSource.setBubblesHomeCardCtaState(safeId, ctaState)
+
+    override suspend fun setLastExportDate(instant: Instant, safeId: SafeId) {
+        safeDataSource.setLastExportDate(instant = instant, safeId = safeId)
+    }
 
     override suspend fun displayShareWarning(safeId: SafeId): Boolean =
         safeDataSource.displayShareWarning(safeId)

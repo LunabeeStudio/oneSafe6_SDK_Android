@@ -55,4 +55,5 @@ data class SafeSettings(
     val lastPasswordVerification: Instant,
     val independentSafeInfoCtaState: CtaState,
     val preventionWarningCtaState: CtaState,
+    val lastExportDate: Instant?,
 )

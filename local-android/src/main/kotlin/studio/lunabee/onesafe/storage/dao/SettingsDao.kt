@@ -370,4 +370,19 @@ interface SettingsDao {
             """,
     )
     suspend fun setPreventionWarningCtaState(safeId: SafeId, state: State, timestamp: Instant?)
+
+    @Query("UPDATE Safe SET setting_last_export_date = :instant WHERE id IS :safeId")
+    suspend fun setLastExportDate(instant: Instant, safeId: SafeId)
+
+    @Query(
+        """
+            SELECT EXISTS(
+                SELECT 1 
+                FROM Safe 
+                WHERE id IS :safeId
+                AND setting_last_export_date > ((strftime('%s', 'now') - :durationSec) * 1000) LIMIT 1
+            )
+        """,
+    )
+    fun hasExportSince(safeId: SafeId, durationSec: Long): Flow<Boolean>
 }
