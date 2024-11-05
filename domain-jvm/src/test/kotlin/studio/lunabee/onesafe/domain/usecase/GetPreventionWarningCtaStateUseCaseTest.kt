@@ -41,6 +41,7 @@ import studio.lunabee.onesafe.test.testUUIDs
 import java.time.Clock
 import java.time.Instant
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class GetPreventionWarningCtaStateUseCaseTest {
     private val settingRepository: SafeSettingsRepository = mockk()
@@ -100,7 +101,7 @@ class GetPreventionWarningCtaStateUseCaseTest {
             every { safeItemRepository.getSafeItemsCountFlow(any()) } returns flowOf(10)
             every { settingRepository.hasBackupSince(any(), any()) } returns flowOf(false)
             every { settingRepository.preventionWarningCtaState(any()) } returns flowOf(CtaState.DismissedAt(lastDismissAt))
-            every { settingRepository.hasExportSince(any(), any()) } returns flowOf(true)
+            every { settingRepository.hasExportSince(any(), any()) } returns flowOf(false)
             assertEquals(PreventionSettingsWarning.PasswordVerificationAndBackup, useCase().first())
         }
     }
@@ -114,7 +115,7 @@ class GetPreventionWarningCtaStateUseCaseTest {
             every { safeItemRepository.getSafeItemsCountFlow(any()) } returns flowOf(10)
             every { settingRepository.hasBackupSince(any(), any()) } returns flowOf(false)
             every { settingRepository.preventionWarningCtaState(any()) } returns flowOf(CtaState.DismissedAt(lastDismissAt))
-            every { settingRepository.hasExportSince(any(), any()) } returns flowOf(true)
+            every { settingRepository.hasExportSince(any(), any()) } returns flowOf(false)
             assertEquals(PreventionSettingsWarning.Backup, useCase().first())
         }
     }
@@ -149,6 +150,20 @@ class GetPreventionWarningCtaStateUseCaseTest {
 
     @Test
     fun prevention_manual_export_test() {
+        runTest {
+            every { safeRepository.isBiometricEnabledForSafeFlow(any()) } returns flowOf(true)
+            every { securitySettingsRepository.verifyPasswordIntervalFlow(any()) } returns flowOf(VerifyPasswordInterval.EVERY_WEEK)
+            every { contactRepository.getContactCountFlow(any()) } returns flowOf(0)
+            every { safeItemRepository.getSafeItemsCountFlow(any()) } returns flowOf(10)
+            every { settingRepository.hasBackupSince(any(), any()) } returns flowOf(false)
+            every { settingRepository.preventionWarningCtaState(any()) } returns flowOf(CtaState.DismissedAt(lastDismissAt))
+            every { settingRepository.hasExportSince(any(), any()) } returns flowOf(true)
+            assertNull(useCase().first())
+        }
+    }
+
+    @Test
+    fun prevention_no_export_test() {
         runTest {
             every { safeRepository.isBiometricEnabledForSafeFlow(any()) } returns flowOf(true)
             every { securitySettingsRepository.verifyPasswordIntervalFlow(any()) } returns flowOf(VerifyPasswordInterval.EVERY_WEEK)
