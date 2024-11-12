@@ -45,8 +45,9 @@ class GetAppVisitUseCase @Inject constructor(
     }
 
     suspend fun hasSeenDialogMessageSaveConfirmation(): Boolean {
-        val safeId = safeRepository.currentSafeId()
-        return appVisitRepository.hasSeenDialogMessageSaveConfirmation(safeId)
+        return safeRepository.currentSafeIdOrNull()?.let { safeId ->
+            appVisitRepository.hasSeenDialogMessageSaveConfirmation(safeId)
+        } ?: true
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
