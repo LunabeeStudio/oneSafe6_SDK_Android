@@ -23,7 +23,5 @@ import studio.lunabee.onesafe.commonui.utils.FileDetails
 import studio.lunabee.onesafe.importexport.model.ImportExportConstant
 
 fun FileDetails?.isOsFile(): Boolean {
-    return this != null
-        && extension != null
-        && (extension == ImportExportConstant.ExtensionOs6Backup || extension == ImportExportConstant.ExtensionOs6Sharing)
+    return this?.extension?.let { ImportExportConstant.isOS6Extension(it) } ?: false
 }

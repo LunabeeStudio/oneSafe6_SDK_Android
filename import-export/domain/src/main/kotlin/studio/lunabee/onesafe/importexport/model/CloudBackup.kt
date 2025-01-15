@@ -29,5 +29,5 @@ data class CloudBackup(
     override val safeId: SafeId?,
 ) : Backup() {
     override val id: String
-        get() = name + safeId
+        get() = name + (safeId ?: "")
 }

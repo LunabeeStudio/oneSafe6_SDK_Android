@@ -46,7 +46,7 @@ class KeyboardHelper(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             try {
                 waitUntil(timeout) {
-                    val keyboardVisible = view.rootWindowInsets.isVisible(WindowInsets.Type.ime())
+                    val keyboardVisible = view.rootWindowInsets?.isVisible(WindowInsets.Type.ime())
                     keyboardVisible == visible
                 }
             } catch (e: ComposeTimeoutException) {

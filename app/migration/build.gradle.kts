@@ -44,6 +44,7 @@ android {
             pickFirsts += "META-INF/LICENSE.md"
             pickFirsts += "META-INF/LICENSE-notice.md"
             pickFirsts += "META-INF/INDEX.LIST"
+            pickFirsts += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
         }
     }
 

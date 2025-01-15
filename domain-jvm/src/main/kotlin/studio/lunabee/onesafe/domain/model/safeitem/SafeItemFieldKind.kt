@@ -58,7 +58,22 @@ sealed class SafeItemFieldKind(
                 is Photo,
                 is Video,
                 -> true
-                else -> false
+                CreditCardNumber,
+                Date,
+                DateAndHour,
+                Email,
+                Hour,
+                Iban,
+                Note,
+                Number,
+                Password,
+                Phone,
+                SocialSecurityNumber,
+                Text,
+                is Unknown,
+                Url,
+                YearMonth,
+                -> false
             }
         }
 

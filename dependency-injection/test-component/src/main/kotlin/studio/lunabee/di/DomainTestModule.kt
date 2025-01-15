@@ -50,6 +50,7 @@ import studio.lunabee.onesafe.domain.repository.SecuritySettingsRepository
 import studio.lunabee.onesafe.domain.usecase.UpdatePanicButtonWidgetUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.DeleteBackupsUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.LoginUseCase
+import studio.lunabee.onesafe.domain.usecase.autolock.AutoLockBackgroundUseCase
 import studio.lunabee.onesafe.domain.usecase.autolock.AutoLockInactivityGetRemainingTimeUseCase
 import studio.lunabee.onesafe.domain.usecase.autolock.AutoLockInactivityGetRemainingTimeUseCaseImpl
 import studio.lunabee.onesafe.importexport.usecase.DeleteBackupsUseCaseImpl
@@ -167,6 +168,19 @@ object DomainTestModule {
             clock,
             safeRepository,
         )
+    }
+
+    @Provides
+    fun providesAutoLockBackgroundUseCase(): AutoLockBackgroundUseCase {
+        return object : AutoLockBackgroundUseCase {
+            override suspend fun app() {
+                /* no-op */
+            }
+
+            override suspend fun osk() {
+                /* no-op */
+            }
+        }
     }
 }
 

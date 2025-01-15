@@ -44,6 +44,7 @@ android {
         resources.pickFirsts += "META-INF/LICENSE-notice.md"
         resources.pickFirsts += "META-INF/DEPENDENCIES"
         resources.pickFirsts += "META-INF/INDEX.LIST"
+        resources.pickFirsts += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
     }
 }
 

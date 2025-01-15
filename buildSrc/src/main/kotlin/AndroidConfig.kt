@@ -19,8 +19,8 @@
 
 object AndroidConfig {
     private const val VERSION_CODE: Int = 9999
-    private const val VERSION_NAME: String = "6.4.5.2"
-    const val COMPILE_SDK: Int = 34
+    private const val VERSION_NAME: String = "6.4.6.0"
+    const val COMPILE_SDK: Int = 35
     const val TARGET_SDK: Int = COMPILE_SDK
     const val MIN_APP_SDK: Int = 24
     const val MIN_LIB_SDK: Int = 21

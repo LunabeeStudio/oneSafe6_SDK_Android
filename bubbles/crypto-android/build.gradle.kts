@@ -29,9 +29,10 @@ android {
     }
 
     packaging {
-        resources.pickFirsts.add("META-INF/LICENSE.md")
-        resources.pickFirsts.add("META-INF/LICENSE-notice.md")
-        resources.pickFirsts.add("META-INF/DEPENDENCIES")
+        resources.pickFirsts += "META-INF/LICENSE.md"
+        resources.pickFirsts += "META-INF/LICENSE-notice.md"
+        resources.pickFirsts += "META-INF/DEPENDENCIES"
+        resources.pickFirsts += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
     }
 
     compileOptions {

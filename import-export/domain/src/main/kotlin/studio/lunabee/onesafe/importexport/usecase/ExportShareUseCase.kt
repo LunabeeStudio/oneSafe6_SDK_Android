@@ -32,10 +32,10 @@ import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
 import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.repository.IconRepository
 import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
-import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
 import studio.lunabee.onesafe.importexport.engine.ShareExportEngine
 import studio.lunabee.onesafe.importexport.model.ExportData
@@ -71,8 +71,14 @@ class ExportShareUseCase @Inject constructor(
             // Get all item and re-encrypt keys with export key
             val items = safeItemRepository.getSafeItemsAndChildren(itemToShare, includeChildren)
             val safeItemsWithKeys = items.associate { safeItem ->
-                ExportItem(safeItem, keepFavorite = false) to
-                    safeItemKeyRepository.getSafeItemKey(id = safeItem.id).also { itemKey ->
+                val item = if (safeItem.id == itemToShare) {
+                    // Nullify parent id of root item
+                    safeItem.copy(parentId = null)
+                } else {
+                    safeItem
+                }
+                ExportItem(item, keepFavorite = false) to
+                    safeItemKeyRepository.getSafeItemKey(id = item.id).also { itemKey ->
                         mainCryptoRepository.reEncryptItemKey(itemKey, exportEngine.exportKey)
                     }
             }

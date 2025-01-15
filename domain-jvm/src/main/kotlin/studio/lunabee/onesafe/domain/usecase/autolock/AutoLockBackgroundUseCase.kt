@@ -28,18 +28,23 @@ import kotlin.time.Duration
 /**
  * Retrieve the user param delay before automatically locking app when app change
  */
-class AutoLockBackgroundUseCase @Inject constructor(
+interface AutoLockBackgroundUseCase {
+    suspend fun app()
+    suspend fun osk()
+}
+
+class AutoLockBackgroundUseCaseImpl @Inject constructor(
     private val securitySettingsRepository: SecuritySettingsRepository,
     private val lockAppUseCase: LockAppUseCase,
     private val safeRepository: SafeRepository,
-) {
-    suspend fun app() {
+) : AutoLockBackgroundUseCase {
+    override suspend fun app() {
         val safeId = safeRepository.currentSafeIdOrNull()
         val duration = safeId?.let { securitySettingsRepository.autoLockAppChangeDelay(it) } ?: Duration.ZERO
         doAutoLock(duration)
     }
 
-    suspend fun osk() {
+    override suspend fun osk() {
         val safeId = safeRepository.currentSafeIdOrNull()
         val duration = safeId?.let { securitySettingsRepository.autoLockOSKHiddenDelay(it) } ?: Duration.ZERO
         doAutoLock(duration)
