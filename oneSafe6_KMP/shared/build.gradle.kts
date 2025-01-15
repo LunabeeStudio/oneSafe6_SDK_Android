@@ -21,6 +21,7 @@ plugins {
     alias(libs.plugins.dagger.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.skie)
+    alias(libs.plugins.crashlyticslink)
 }
 
 android {
@@ -40,6 +41,8 @@ android {
 group = "studio.lunabee.bubbles"
 description = "DI entry point for ios app"
 version = "0.0.1-SNAPSHOT"
+
+val activateCrashlytics: Boolean = System.getenv("KOTLIN_FRAMEWORK_ACTIVATE_CRASHLYTICS").toBoolean()
 
 kotlin {
     androidTarget()
@@ -75,7 +78,14 @@ kotlin {
             api(project(":oneSafe6_KMP:error"))
             api(project(":oneSafe6_KMP:crypto"))
         }
-        iosMain.dependencies { implementation(libs.koin.core) }
+        iosMain.dependencies {
+            implementation(libs.koin.core)
+            if (activateCrashlytics) {
+                implementation(project(":oneSafe6_KMP:crashlytics"))
+            } else {
+                implementation(project(":oneSafe6_KMP:crashlytics-dummy"))
+            }
+        }
 
         androidMain.dependencies {
             implementation(libs.dagger.hilt.android)

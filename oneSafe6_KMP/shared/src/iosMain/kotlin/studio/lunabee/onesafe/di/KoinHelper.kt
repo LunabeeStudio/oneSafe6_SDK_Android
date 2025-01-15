@@ -33,6 +33,7 @@ import studio.lunabee.messaging.repository.datasource.HandShakeDataLocalDatasour
 import studio.lunabee.messaging.repository.datasource.MessageLocalDataSource
 import studio.lunabee.messaging.repository.datasource.MessageQueueLocalDatasource
 import studio.lunabee.messaging.repository.datasource.SentMessageLocalDatasource
+import studio.lunabee.onesafe.crashlytics.CrashlyticsHelper
 
 @Suppress("LongParameterList")
 fun initKoin(
@@ -53,6 +54,7 @@ fun initKoin(
     bubblesRandomKeyProvider: BubblesRandomKeyProvider,
     messageQueueLocalDatasource: MessageQueueLocalDatasource,
 ) {
+    setupCrashlytics()
     startKoin {
         modules(
             logicModule(
@@ -75,4 +77,8 @@ fun initKoin(
             ),
         )
     }
+}
+
+private fun setupCrashlytics() {
+    CrashlyticsHelper.setupCrashlytics()
 }

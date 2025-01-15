@@ -39,6 +39,8 @@ import studio.lunabee.onesafe.domain.qualifier.InternalDir
 import studio.lunabee.onesafe.domain.qualifier.RemoteDispatcher
 import studio.lunabee.onesafe.domain.usecase.authentication.DeleteBackupsUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.LoginUseCase
+import studio.lunabee.onesafe.domain.usecase.autolock.AutoLockBackgroundUseCase
+import studio.lunabee.onesafe.domain.usecase.autolock.AutoLockBackgroundUseCaseImpl
 import studio.lunabee.onesafe.domain.usecase.autolock.AutoLockInactivityGetRemainingTimeUseCase
 import studio.lunabee.onesafe.domain.usecase.autolock.AutoLockInactivityGetRemainingTimeUseCaseImpl
 import studio.lunabee.onesafe.importexport.usecase.DeleteBackupsUseCaseImpl
@@ -117,4 +119,9 @@ abstract class DomainModuleBinds {
     internal abstract fun bindsDeleteBackupsUseCase(
         deleteBackupsUseCase: DeleteBackupsUseCaseImpl,
     ): DeleteBackupsUseCase
+
+    @Binds
+    internal abstract fun bindsAutoLockBackgroundUseCase(
+        autoLockBackgroundUseCaseImpl: AutoLockBackgroundUseCaseImpl,
+    ): AutoLockBackgroundUseCase
 }

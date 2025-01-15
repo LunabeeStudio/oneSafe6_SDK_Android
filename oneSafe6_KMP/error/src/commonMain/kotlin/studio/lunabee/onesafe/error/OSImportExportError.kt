@@ -44,5 +44,7 @@ data class OSImportExportError(
         FILE_NOT_A_BACKUP("The file is not a backup"),
         CANNOT_OPEN_URI("Unable to open a stream on the Uri"),
         CANNOT_OPEN_STREAM_WITHOUT_SAFE_ID("Unable to open a stream without loaded safe id"),
+        MISSING_MAPPED_BACKUP_ICON("Missing new mapped id for icon"),
+        MISSING_MAPPED_BACKUP_FILE("Missing new mapped id for file"),
     }
 }

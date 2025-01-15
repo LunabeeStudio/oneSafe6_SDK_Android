@@ -38,6 +38,7 @@ import studio.lunabee.messaging.domain.usecase.InsertHandShakeDataUseCase
 import studio.lunabee.messaging.domain.usecase.ManageIncomingMessageUseCase
 import studio.lunabee.messaging.domain.usecase.ProcessMessageQueueUseCase
 import studio.lunabee.messaging.domain.usecase.RemoveOldSentMessagesUseCase
+import studio.lunabee.messaging.domain.usecase.ResetConversationUseCase
 import studio.lunabee.messaging.domain.usecase.SaveMessageUseCase
 import studio.lunabee.messaging.domain.usecase.SaveSentMessageUseCase
 
@@ -62,6 +63,7 @@ val messagingUseCaseModule = module {
     singleOf(::SaveMessageUseCase)
     singleOf(::SaveSentMessageUseCase)
     singleOf(::MessageOrderCalculator)
+    singleOf(::ResetConversationUseCase)
 }
 
 class MessagingUseCases : KoinComponent {
@@ -85,4 +87,5 @@ class MessagingUseCases : KoinComponent {
     val saveMessageUseCase: SaveMessageUseCase by inject()
     val saveSentMessageUseCase: SaveSentMessageUseCase by inject()
     val messageOrderCalculator: MessageOrderCalculator by inject()
+    val resetConversationUseCase: ResetConversationUseCase by inject()
 }

@@ -75,6 +75,7 @@ import studio.lunabee.onesafe.importexport.engine.ImportEngine
 import studio.lunabee.onesafe.importexport.repository.ImportExportBubblesRepository
 import studio.lunabee.onesafe.importexport.repository.ImportExportCryptoRepository
 import studio.lunabee.onesafe.importexport.repository.ImportExportItemRepository
+import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.jvm.toByteArray
 import studio.lunabee.onesafe.jvm.toUUID
 import studio.lunabee.onesafe.jvm.use
@@ -197,7 +198,7 @@ class ImportEngineImpl @Inject constructor(
                 // Use a separate block to handle this type of error differently (i.e credential might be valid but archive is flaky)
                 finishWithError(e)
             } catch (e: InvalidProtocolBufferException) {
-                finishWithError(OSImportExportError(OSImportExportError.Code.ARCHIVE_MALFORMED))
+                finishWithError(OSImportExportError(OSImportExportError.Code.ARCHIVE_MALFORMED, cause = e))
             }
         }.onStart { emit(LBFlowResult.Loading()) }
     }
@@ -331,7 +332,7 @@ class ImportEngineImpl @Inject constructor(
             val oldIconId = icon.nameWithoutExtension.let(UUID::fromString)
             importCacheDataSource.newIconIdsByOldOnes[oldIconId]?.let { newIconId ->
                 iconRepository.copyAndDeleteIconFile(iconFile = icon, iconId = newIconId, safeId = safeId)
-            }
+            } ?: throw OSImportExportError.Code.MISSING_MAPPED_BACKUP_ICON.get("Cannot find icon id $oldIconId in new icon id map")
         }
 
         // We iterate over all the file urls to rename them using the new file ids.
@@ -339,7 +340,7 @@ class ImportEngineImpl @Inject constructor(
             val oldFileId = file.nameWithoutExtension.let(UUID::fromString)
             importCacheDataSource.newFileIdsByOldOnes[oldFileId]?.let { newFileId ->
                 fileRepository.copyAndDeleteFile(file = file, fileId = newFileId, safeId = safeId)
-            }
+            } ?: throw OSImportExportError.Code.MISSING_MAPPED_BACKUP_FILE.get("Cannot find file id $oldFileId in new file id map")
         }
 
         safeItems.addAll(SortedAncestors(safeItemsNotSorted = importCacheDataSource.migratedSafeItemsToImport).sortByAncestors())

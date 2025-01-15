@@ -35,7 +35,9 @@ import io.mockk.every
 import io.mockk.mockk
 import junit.framework.TestCase.assertNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
@@ -44,6 +46,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import net.bytebuddy.matcher.ElementMatchers.returns
 import org.junit.After
 import org.junit.BeforeClass
 import org.junit.Rule
@@ -97,7 +100,10 @@ class CloudBackupWorkerTest : OSHiltTest() {
 
     @BindValue
     val cloudAutoBackupUseCase: CloudAutoBackupUseCase = mockk {
-        every { this@mockk.invoke(firstSafeId) } returns flowOf(LBFlowResult.Success(successCloudBackup))
+        every { this@mockk.invoke(firstSafeId) } returns flow {
+            delay(1) // without delay, RUNNING state is not emitted
+            emit(LBFlowResult.Success(successCloudBackup))
+        }
     }
 
     @BindValue
@@ -127,12 +133,12 @@ class CloudBackupWorkerTest : OSHiltTest() {
         val workId = getWorkId(workManager)
         val actual = mutableListOf<WorkInfo.State>()
         val collectJob = launch(UnconfinedTestDispatcher(testScheduler)) {
-            workManager.getWorkInfoByIdFlow(workId).map { it.state }.toList(actual)
+            workManager.getWorkInfoByIdFlow(workId).map { it!!.state }.toList(actual)
         }
 
         testDriver.setAllConstraintsMet(workId)
 
-        workManager.getWorkInfoByIdFlow(workId).first { it.state.isFinished }
+        workManager.getWorkInfoByIdFlow(workId).first { it!!.state.isFinished }
 
         val expected = listOf(
             WorkInfo.State.ENQUEUED,
@@ -148,8 +154,10 @@ class CloudBackupWorkerTest : OSHiltTest() {
     @Test
     fun retry_test(): TestResult = runTest {
         val workManager = WorkManager.getInstance(context)
-        every { cloudAutoBackupUseCase.invoke(firstSafeId) } returns
-            flowOf(LBFlowResult.Failure(OSDriveError(OSDriveError.Code.DRIVE_REQUEST_EXECUTION_FAILED)))
+        every { cloudAutoBackupUseCase.invoke(firstSafeId) } returns flow {
+            delay(1) // without delay, RUNNING state is not emitted
+            emit(LBFlowResult.Failure(OSDriveError(OSDriveError.Code.DRIVE_REQUEST_EXECUTION_FAILED)))
+        }
 
         val testDriver = WorkManagerTestInitHelper.getTestDriver(context)!!
 
@@ -162,7 +170,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
         CloudBackupWorker.start(workManager, false, firstSafeId)
         val workId = getWorkId(workManager)
         launch(UnconfinedTestDispatcher(testScheduler)) {
-            val actual = workManager.getWorkInfoByIdFlow(workId).take(3).map { it.state }.toList()
+            val actual = workManager.getWorkInfoByIdFlow(workId).take(3).map { it!!.state }.toList()
             assertContentEquals(expected, actual)
         }
 
@@ -173,8 +181,10 @@ class CloudBackupWorkerTest : OSHiltTest() {
     @Test
     fun unrecoverable_failure_test(): TestResult = runTest {
         val workManager = WorkManager.getInstance(context)
-        every { cloudAutoBackupUseCase.invoke(firstSafeId) } returns
-            flowOf(LBFlowResult.Failure(OSDriveError(OSDriveError.Code.DRIVE_AUTHENTICATION_REQUIRED)))
+        every { cloudAutoBackupUseCase.invoke(firstSafeId) } returns flow {
+            delay(1) // without delay, RUNNING state is not emitted
+            emit(LBFlowResult.Failure(OSDriveError(OSDriveError.Code.DRIVE_AUTHENTICATION_REQUIRED)))
+        }
 
         val testDriver = WorkManagerTestInitHelper.getTestDriver(context)!!
 
@@ -182,12 +192,12 @@ class CloudBackupWorkerTest : OSHiltTest() {
         val workId = getWorkId(workManager)
         val actual = mutableListOf<WorkInfo.State>()
         val collectJob = launch(UnconfinedTestDispatcher(testScheduler)) {
-            workManager.getWorkInfoByIdFlow(workId).map { it.state }.toList(actual)
+            workManager.getWorkInfoByIdFlow(workId).map { it!!.state }.toList(actual)
         }
 
         testDriver.setAllConstraintsMet(workId)
 
-        workManager.getWorkInfoByIdFlow(workId).first { it.state.isFinished }
+        workManager.getWorkInfoByIdFlow(workId).first { it!!.state.isFinished }
 
         val expected = listOf(
             WorkInfo.State.ENQUEUED,
@@ -235,7 +245,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
         CloudBackupWorker.start(workManager, false, firstSafeId)
         val workId = getWorkId(workManager)
         testDriver.setAllConstraintsMet(workId)
-        workManager.getWorkInfoByIdFlow(workId).first { it.state.isFinished }
+        workManager.getWorkInfoByIdFlow(workId).first { it!!.state.isFinished }
     }
 
     private suspend fun getWorkId(workManager: WorkManager): UUID {

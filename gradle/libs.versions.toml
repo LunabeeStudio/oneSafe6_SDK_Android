@@ -35,18 +35,18 @@ protobuf-plugin = "0"
 androidx-paging = "0"
 mockk = "0"
 
-aboutlibraries = "11.2.3"
+aboutlibraries = "11.4.0"
 
-benchmark = "1.2.3"
+benchmark = "1.3.3"
 
-florisboard-library = "0.4.0-1.0.2"
+florisboard-library = "0.4.5-1.0.2"
 
-logback-classic = "1.5.11"
+logback-classic = "1.5.16"
 
 play-services-base = "18.5.0"
-play-services-auth-base = "18.0.13"
-google-api-client = "2.7.0"
-google-api-services-drive = "v3-rev20240914-2.0.0"
+play-services-auth-base = "18.1.0"
+google-api-client = "2.7.1"
+google-api-services-drive = "v3-rev20241206-2.0.0"
 
 threeten-extra = "1.8.0"
 
@@ -66,7 +66,7 @@ androidx-room = "2.6.1"
 
 androidx-sqlite = "2.4.0"
 
-android-tools-desugar_jdk_libs = "2.1.2"
+android-tools-desugar_jdk_libs = "2.1.4"
 
 androidx-tracing = "1.2.0"
 
@@ -74,12 +74,12 @@ androidx-security-crypto = "1.1.0-alpha06"
 
 androidx-appcompat = "1.7.0"
 
-androidx-core = "1.13.1"
+androidx-core = "1.15.0"
 
-androidx-lifecycle = "2.8.6"
+androidx-lifecycle = "2.8.7"
 
-compose-bom-stable = "2024.10.00"
-compose-bom-alpha = "2024.02.00-alpha01"
+compose-bom-stable = "2024.12.01"
+compose-bom-alpha = "2024.02.00-alpha02"
 
 google-android-material = "1.12.0"
 
@@ -87,7 +87,7 @@ androidx-biometric = "1.1.0"
 
 androidx-core-splashscreen = "1.0.1"
 
-androidx-work = "2.9.1"
+androidx-work = "2.10.0"
 
 androidx-autofill = "1.1.0"
 
@@ -103,54 +103,29 @@ androidx-hilt-navigation-compose = "1.2.0"
 
 kotlinx-collections-immutable = "0.3.8"
 
-google-accompanist = "0.36.0"
+google-accompanist = "0.37.0"
 
 androidx-palette = "1.0.0"
 
-firebase-bom = "33.4.0"
+firebase-bom = "33.7.0"
 
 # FIXME 3.0.0+ Requires play services to be applied
 firebase-crashlytics-gradle = "2.9.9"
-##                       ⬆ = "3.0.0"
-##                       ⬆ = "3.0.1"
-##                       ⬆ = "3.0.2"
 
 androidx-test-ext-junit = "1.2.1"
 
 androidx-benchmark = "1.3.3"
-##              ⬆ = "1.4.0-alpha01"
-##              ⬆ = "1.4.0-alpha02"
-##              ⬆ = "1.4.0-alpha03"
 
-androidx-annotation = "1.8.2"
-##               ⬆ = "1.9.0-alpha01"
-##               ⬆ = "1.9.0-alpha02"
-##               ⬆ = "1.9.0-alpha03"
-##               ⬆ = "1.9.0-beta01"
-##               ⬆ = "1.9.0-rc01"
-##               ⬆ = "1.9.0"
+androidx-annotation = "1.9.1"
 
 glance = "1.1.1"
 
 # FIXME 1.1.0 have some issue when cleaning and re-reading data (see export_engine_not_signed_up_test). To investigate
 androidx-datastore = "1.0.0"
-##              ⬆ = "1.1.0-dev01"
-##              ⬆ = "1.1.0-alpha01"
-##              ⬆ = "1.1.0-alpha02"
-##              ⬆ = "1.1.0-alpha03"
-##              ⬆ = "1.1.0-alpha04"
-##              ⬆ = "1.1.0-alpha05"
-##              ⬆ = "1.1.0-alpha06"
-##              ⬆ = "1.1.0-alpha07"
-##              ⬆ = "1.1.0-beta01"
-##              ⬆ = "1.1.0-beta02"
-##              ⬆ = "1.1.0-rc01"
-##              ⬆ = "1.1.0"
-##              ⬆ = "1.1.1"
 
 androidx-preference = "1.2.1"
 
-ktor = "3.0.0"
+ktor = "3.0.3"
 
 androidx-test-espresso = "3.6.0-beta01"
 
@@ -160,26 +135,25 @@ coil-kt = "2.7.0"
 
 androidx-startup = "1.2.0"
 
-navigation-compose = "2.8.3"
+navigation-compose = "2.8.5"
 
-protobuf = "4.28.2"
-##    ⬆ = "4.29.0-RC1"
+protobuf = "4.29.3"
 
 compose-shimmer = "1.3.1"
 
-lbcaccessibility = "1.9.0-289-SNAPSHOT"
+lbcaccessibility = "1.9.0-315-SNAPSHOT"
 
-lbcandroidtest = "1.6.0-289-SNAPSHOT"
+lbcandroidtest = "1.6.0-315-SNAPSHOT"
 
-lbctheme = "1.5.0-289-SNAPSHOT"
+lbctheme = "1.5.0-315-SNAPSHOT"
 
-lbccore = "1.6.0-289-SNAPSHOT"
+lbccore = "1.6.0-315-SNAPSHOT"
 
-lbchaptic = "1.3.0-289-SNAPSHOT"
+lbchaptic = "1.3.0-315-SNAPSHOT"
 
 lbcglance = "1.0.0"
 
-tink-android = "1.15.0"
+tink-android = "1.16.0"
 
 conscrypt = "2.5.3"
 
@@ -187,7 +161,16 @@ conscrypt-openjdk-uber = "2.5.2"
 
 nbvcxz = "1.5.1"
 
-lint = "31.7.1"
+lint = "31.8.0"
+##⬆ = "31.9.0-alpha01"
+##⬆ = "31.9.0-alpha02"
+##⬆ = "31.9.0-alpha03"
+##⬆ = "31.9.0-alpha04"
+##⬆ = "31.9.0-alpha05"
+##⬆ = "31.9.0-alpha06"
+##⬆ = "31.9.0-alpha07"
+##⬆ = "31.9.0-alpha08"
+##⬆ = "31.9.0-alpha09"
 
 javapoet = "1.13.0"
 
@@ -195,13 +178,13 @@ seismic = "1.0.3"
 
 bouquet = "1.1.3"
 
-zoomable = "1.6.2"
+zoomable = "2.0.0"
 
 exifinterface = "1.3.7"
 
-androidx-media3 = "1.4.1"
+androidx-media3 = "1.5.1"
 
-camerax = "1.3.4"
+camerax = "1.4.1"
 
 espresso-core = "3.6.1"
 
@@ -210,11 +193,11 @@ sqlcipher-android = "4.6.1"
 
 process-phoenix = "3.0.0"
 
-lottie = "6.5.2"
-robolectric = "4.13"
+lottie = "6.6.2"
+robolectric = "4.14.1"
 slf4j-simple = "2.0.16"
 
-review = "2.0.1"
+review = "2.0.2"
 
 [libraries]
 

@@ -94,3 +94,9 @@ project(":oneSafe6_KMP:crypto").projectDir = File("crypto")
 
 include(":oneSafe6_KMP:common")
 project(":oneSafe6_KMP:common").projectDir = File("common")
+
+include(":oneSafe6_KMP:crashlytics")
+project(":oneSafe6_KMP:crashlytics").projectDir = File("crashlytics")
+
+include(":oneSafe6_KMP:crashlytics-dummy")
+project(":oneSafe6_KMP:crashlytics-dummy").projectDir = File("crashlyticsDummy")

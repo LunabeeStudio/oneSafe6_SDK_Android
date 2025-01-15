@@ -45,5 +45,6 @@ data class OSAppError(
         IMAGE_CAPTURE_FAILED("Image capture using cameraX has failed"),
         IMAGE_CAPTURED_NOT_FOUND("Failed to retrieve the captured file"),
         CAMERA_SETUP_FAILED("Failed to setup camera"),
+        EXPORT_UNKNOWN_ID("Unable to observe the running work, id is unknown"),
     }
 }

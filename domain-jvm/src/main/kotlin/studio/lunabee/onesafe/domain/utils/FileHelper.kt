@@ -33,4 +33,7 @@ object FileHelper {
     }
 
     fun String.clearExtension(): String = this.substringBeforeLast('.').ifBlank { this }
+
+    fun String.extension(): String? = substringAfterLast('.')
+        .takeIf { substringResult -> substringResult != this } // i.e file does not have an '.' in name
 }

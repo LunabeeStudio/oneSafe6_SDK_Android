@@ -22,6 +22,22 @@
             </SchemaInfo>
           </value>
         </entry>
+        <entry key="renovate-schema">
+          <value>
+            <SchemaInfo>
+              <option name="generatedName" value="New Schema" />
+              <option name="name" value="renovate-schema" />
+              <option name="relativePathToSchema" value="https://docs.renovatebot.com/renovate-schema.json" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value="renovate.json" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
       </map>
     </state>
   </component>

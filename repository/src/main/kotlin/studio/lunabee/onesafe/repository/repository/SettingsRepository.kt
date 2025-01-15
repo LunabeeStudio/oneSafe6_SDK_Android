@@ -162,8 +162,9 @@ class SettingsRepository @Inject constructor(
         safeDataSource.setAutoLockInactivityDelay(safeId, delay)
     }
 
-    override suspend fun autoLockAppChangeDelay(safeId: SafeId): Duration =
-        safeDataSource.autoLockAppChangeDelay(safeId)
+    override suspend fun autoLockAppChangeDelay(safeId: SafeId): Duration {
+        return safeDataSource.autoLockAppChangeDelay(safeId)
+    }
 
     override suspend fun setAutoLockAppChangeDelay(safeId: SafeId, delay: Duration) {
         safeDataSource.setAutoLockAppChangeDelay(safeId, delay)

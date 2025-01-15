@@ -153,7 +153,7 @@ class ExportWorker @AssistedInject constructor(
             workManager.enqueueUniqueWork(EXPORT_WORKER_NAME, ExistingWorkPolicy.APPEND_OR_REPLACE, workRequest)
 
             return workManager.getWorkInfoByIdFlow(workRequest.id).map { workInfo ->
-                when (workInfo.state) {
+                when (workInfo?.state) {
                     WorkInfo.State.BLOCKED,
                     WorkInfo.State.ENQUEUED,
                     WorkInfo.State.RUNNING,
@@ -171,6 +171,7 @@ class ExportWorker @AssistedInject constructor(
                         LBFlowResult.Failure(OSAppError(OSAppError.Code.EXPORT_WORKER_FAILURE, message))
                     }
                     WorkInfo.State.CANCELLED -> LBFlowResult.Failure(OSAppError(OSAppError.Code.EXPORT_WORKER_CANCELED))
+                    null -> LBFlowResult.Failure(OSAppError(OSAppError.Code.EXPORT_UNKNOWN_ID))
                 }
             }
         }

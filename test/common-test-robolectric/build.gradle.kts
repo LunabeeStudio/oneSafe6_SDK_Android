@@ -40,6 +40,7 @@ android {
             pickFirsts += "META-INF/DEPENDENCIES"
             pickFirsts += "org/conscrypt/conscrypt.properties"
             pickFirsts += "META-INF/INDEX.LIST"
+            pickFirsts += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
         }
     }
 

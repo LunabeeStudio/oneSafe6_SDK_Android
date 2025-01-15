@@ -13,24 +13,25 @@ androidLibrary = { id = "com.android.library", version.ref = "android-gradle-plu
 dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger-hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 skie = { id = "co.touchlab.skie", version.ref = "skie" }
+crashlyticslink = { id = "co.touchlab.crashkios.crashlyticslink", version.ref = "crashkios" }
 
 [versions]
 
-ksp = "2.0.21-1.0.25"
+ksp = "2.1.0-1.0.29"
 
-skie = "0.9.3"
+skie = "0.10.0"
 
-android-gradle-plugin = "8.7.1"
+android-gradle-plugin = "8.8.0"
 
-kotlin = "2.0.21"
+kotlin = "2.1.0"
 
-dagger-hilt = "2.52"
+dagger-hilt = "2.55"
 
-junit-jupiter = "5.11.1"
+junit-jupiter = "5.11.4"
 
 lunabee-library = "4.2.0-190-develop-SNAPSHOT"
 
-bouncycastle = "1.78.1"
+bouncycastle = "1.80"
 
 detekt = "1.23.7"
 
@@ -38,19 +39,21 @@ kotlinx-datetime = "0.6.1"
 
 doubleratchet = "0.1.6"
 
-kotlinx-coroutines = "1.9.0"
+kotlinx-coroutines = "1.10.1"
 
-kotlinx-serialization = "1.7.3"
+kotlinx-serialization = "1.8.0"
 
 javax-inject = "1"
 
 protobuf-plugin = "0.9.4"
 
-koin = "4.0.0"
+koin = "4.0.1"
 
-androidx-paging = "3.3.2"
+androidx-paging = "3.3.5"
 
-mockk = "1.13.13"
+mockk = "1.13.16"
+
+crashkios = "0.9.0"
 
 [libraries]
 
@@ -66,6 +69,7 @@ javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "j
 lunabee-bom = { group = "studio.lunabee", name = "lunabee-bom", version.ref = "lunabee-library" }
 lbcore = { group = "studio.lunabee", name = "lbcore" }
 lblogger = { group = "studio.lunabee", name = "lblogger-kermit" }
+lblogger-crashlytics = { group = "studio.lunabee", name = "lblogger-kermit-crashlytics" }
 kotlinx-serialization-protobuf = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-protobuf", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-cbor = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-cbor", version.ref = "kotlinx-serialization" }
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
@@ -74,3 +78,4 @@ dagger-hilt-android-compiler = { group = "com.google.dagger", name = "hilt-andro
 androidx-paging-common = { group = "androidx.paging", name = "paging-common-ktx", version.ref = "androidx-paging" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
+crashkios = { group = "co.touchlab.crashkios", name = "crashlytics", version.ref = "crashkios" }
