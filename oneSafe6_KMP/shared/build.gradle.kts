@@ -15,9 +15,8 @@
  */
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
+    id("org.jetbrains.kotlin.multiplatform")
     id("com.android.library")
-    `lunabee-publish`
     alias(libs.plugins.dagger.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.skie)
@@ -26,10 +25,10 @@ plugins {
 
 android {
     namespace = "studio.lunabee.onesafe.di"
-    compileSdk = ProjectConfig.COMPILE_SDK
+    compileSdk = AndroidConfig.COMPILE_SDK
 
     defaultConfig {
-        minSdk = ProjectConfig.MIN_SDK
+        minSdk = AndroidConfig.MIN_LIB_SDK
     }
 
     compileOptions {
@@ -64,19 +63,20 @@ kotlin {
     }
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.kotlinx.datetime)
+            implementation(project.dependencies.platform(libs.lunabee.bom))
+
             implementation(libs.doubleratchet)
             implementation(libs.kotlinx.coroutines.core)
-            implementation(project.dependencies.platform(libs.lunabee.bom))
+            implementation(libs.kotlinx.datetime)
             implementation(libs.lbcore)
             implementation(libs.lblogger)
 
             api(project(":oneSafe6_KMP:bubbles-domain"))
             api(project(":oneSafe6_KMP:bubbles-repository"))
+            api(project(":oneSafe6_KMP:crypto"))
+            api(project(":oneSafe6_KMP:error"))
             api(project(":oneSafe6_KMP:messaging-domain"))
             api(project(":oneSafe6_KMP:messaging-repository"))
-            api(project(":oneSafe6_KMP:error"))
-            api(project(":oneSafe6_KMP:crypto"))
         }
         iosMain.dependencies {
             implementation(libs.koin.core)
@@ -88,7 +88,7 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation(libs.dagger.hilt.android)
+            implementation(libs.hilt.android)
         }
     }
 }

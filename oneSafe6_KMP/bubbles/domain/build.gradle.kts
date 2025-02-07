@@ -15,7 +15,7 @@
  */
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
+    id("org.jetbrains.kotlin.multiplatform")
 }
 
 group = "studio.lunabee.bubbles"
@@ -28,16 +28,17 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.kotlinx.datetime)
+            implementation(project.dependencies.platform(libs.lunabee.bom))
+
             implementation(libs.doubleratchet)
             implementation(libs.kotlinx.coroutines.core)
-            implementation(project.dependencies.platform(libs.lunabee.bom))
+            implementation(libs.kotlinx.datetime)
             implementation(libs.lbcore)
             implementation(libs.lblogger)
 
-            implementation(project(":oneSafe6_KMP:error"))
             api(project(":oneSafe6_KMP:domain"))
             implementation(project(":oneSafe6_KMP:common"))
+            implementation(project(":oneSafe6_KMP:error"))
         }
     }
 }

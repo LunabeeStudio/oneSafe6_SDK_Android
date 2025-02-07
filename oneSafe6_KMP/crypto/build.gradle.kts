@@ -15,7 +15,7 @@
  */
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
+    id("org.jetbrains.kotlin.multiplatform")
 }
 
 group = "studio.lunabee.onesafe"
@@ -28,12 +28,12 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.kotlinx.datetime)
             implementation(libs.doubleratchet)
+            implementation(libs.kotlinx.datetime)
 
+            implementation(project(":oneSafe6_KMP:bubbles-domain"))
             implementation(project(":oneSafe6_KMP:common"))
             implementation(project(":oneSafe6_KMP:error"))
-            implementation(project(":oneSafe6_KMP:bubbles-domain"))
         }
     }
 }

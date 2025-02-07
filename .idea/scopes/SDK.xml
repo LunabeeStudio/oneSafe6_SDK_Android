@@ -1,3 +1,0 @@
-<component name="DependencyValidationManager">
-  <scope name="SDK" pattern="!file:onesafe6-license.template||!file:opensource.py||!file:*.md&amp;&amp;file[oneSafe_6*]:*/||file[studio.lunabee.onesafe.oneSafe_6*]:*/||(!file[oneSafe_6.app*]:*/||file[oneSafe_6.app.settings*]:*/||file[oneSafe_6.app.message-companion*]:*/||file[oneSafe_6.app.ime*]:*/||file[oneSafe_6.app.migration*]:*/)&amp;&amp;!file[oneSafe_6.macrobenchmark-android*]:*/&amp;&amp;!file[oneSafe_6]:Commons_Android//*" />
-</component>

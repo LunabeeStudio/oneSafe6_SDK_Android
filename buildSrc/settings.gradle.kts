@@ -17,8 +17,6 @@
  * Last modified 4/7/23, 12:45 AM
  */
 
-import org.gradle.internal.management.VersionCatalogBuilderInternal
-
 pluginManagement {
     plugins {
         id("de.fayard.refreshVersions") version "0.60.5"
@@ -26,27 +24,9 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
-    // Share versions with KMP project
-    // https://stackoverflow.com/questions/73646181/gradle-version-catalogue-share-a-version-between-multiple-toml-files
     versionCatalogs {
-        val kmpLibsBuilder: VersionCatalogBuilder = create("versions") {
-            from(files("../oneSafe6_KMP/gradle/libs.versions.toml")) // load versions
-        }
-
         create("libs") {
             from(files("../gradle/libs.versions.toml"))
-            val kmpLibs = (kmpLibsBuilder as VersionCatalogBuilderInternal).build()
-            kmpLibs.versionAliases.forEach { alias ->
-                // inject version to this catalog
-                val version = kmpLibs.getVersion(alias).version
-                println("Inject version $version for alias $alias")
-                version(alias) {
-                    strictly(version.strictVersion)
-                    require(version.requiredVersion)
-                    prefer(version.preferredVersion)
-                    version.rejectedVersions.forEach { reject(it) }
-                }
-            }
         }
     }
 }

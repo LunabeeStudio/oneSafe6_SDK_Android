@@ -17,7 +17,7 @@
  * Last modified 4/7/23, 12:30 AM
  */
 
-import org.gradle.internal.management.VersionCatalogBuilderInternal
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
     repositories {
@@ -27,102 +27,129 @@ pluginManagement {
     }
 }
 
-dependencyResolutionManagement {
-    // Share versions with KMP project
-    // https://stackoverflow.com/questions/73646181/gradle-version-catalogue-share-a-version-between-multiple-toml-files
-    versionCatalogs {
-        val kmpLibsBuilder: VersionCatalogBuilder = create("versions") {
-            from(files("oneSafe6_KMP/gradle/libs.versions.toml")) // load versions
-        }
-
-        create("libs") {
-            val kmpLibs = (kmpLibsBuilder as VersionCatalogBuilderInternal).build()
-            kmpLibs.versionAliases.forEach { alias ->
-                // inject version to this catalog
-                val version = kmpLibs.getVersion(alias).version
-                println("Inject version $version for alias $alias")
-                version(alias) {
-                    strictly(version.strictVersion)
-                    require(version.requiredVersion)
-                    prefer(version.preferredVersion)
-                    version.rejectedVersions.forEach { reject(it) }
-                }
-            }
-        }
-    }
-}
-
 plugins {
     // See https://jmfayard.github.io/refreshVersions
     id("de.fayard.refreshVersions") version "0.60.5"
 }
 
-refreshVersions {
-    // FIXME move refreshVersions config to Bubbles_KMP to avoid override
-    //  https://github.com/Splitties/refreshVersions/issues/723
-}
-
-rootProject.name = "oneSafe 6"
+rootProject.name = "oneSafe6"
 
 include(":Commons_Android")
 project(":Commons_Android").projectDir = File("Commons_Android/gradle")
 include(":Commons_OS6")
 project(":Commons_OS6").projectDir = File("oneSafe6_common")
 include("app")
+project(":app").projectDir = File("oneSafe6_Android/app")
 include("app:core-ui")
+project(":app:core-ui").projectDir = File("oneSafe6_Android/app/core-ui")
 include("app:core-ui:checks")
+project(":app:core-ui:checks").projectDir = File("oneSafe6_Android/app/core-ui/checks")
 include("app:settings")
+project(":app:settings").projectDir = File("oneSafe6_Android/app/settings")
 include("app:migration")
+project(":app:migration").projectDir = File("oneSafe6_Android/app/migration")
 include("app:login")
+project(":app:login").projectDir = File("oneSafe6_Android/app/login")
 include("app:help")
+project(":app:help").projectDir = File("oneSafe6_Android/app/help")
 include(":domain-jvm")
+project(":domain-jvm").projectDir = File("oneSafe6_Android/domain-jvm")
 include("repository")
+project(":repository").projectDir = File("oneSafe6_Android/repository")
 include("crypto-android")
+project(":crypto-android").projectDir = File("oneSafe6_Android/crypto-android")
 include("crypto-android:checks")
+project(":crypto-android:checks").projectDir = File("oneSafe6_Android/crypto-android/checks")
 include("local-android")
+project(":local-android").projectDir = File("oneSafe6_Android/local-android")
 include("common-jvm")
+project(":common-jvm").projectDir = File("oneSafe6_Android/common-jvm")
 include("remote")
+project(":remote").projectDir = File("oneSafe6_Android/remote")
 include("benchmark-android")
+project(":benchmark-android").projectDir = File("oneSafe6_Android/benchmark-android")
 include("macrobenchmark-android")
+project(":macrobenchmark-android").projectDir = File("oneSafe6_Android/macrobenchmark-android")
 include("dependency-injection")
+project(":dependency-injection").projectDir = File("oneSafe6_Android/dependency-injection")
 include("dependency-injection:test-component")
+project(":dependency-injection:test-component").projectDir = File("oneSafe6_Android/dependency-injection/test-component")
 include("app:message-companion")
+project(":app:message-companion").projectDir = File("oneSafe6_Android/app/message-companion")
 include("app:common-ui")
+project(":app:common-ui").projectDir = File("oneSafe6_Android/app/common-ui")
 include("app:common-ui:checks")
+project(":app:common-ui:checks").projectDir = File("oneSafe6_Android/app/common-ui/checks")
 include("common-protobuf")
+project(":common-protobuf").projectDir = File("oneSafe6_Android/common-protobuf")
 include(":widget-android")
+project(":widget-android").projectDir = File("oneSafe6_Android/widget-android")
 
 include("common-test")
-project(":common-test").projectDir = File("test/common-test")
+project(":common-test").projectDir = File("oneSafe6_Android/test/common-test")
 include("common-test-android")
-project(":common-test-android").projectDir = File("test/common-test-android")
+project(":common-test-android").projectDir = File("oneSafe6_Android/test/common-test-android")
 include("common-test-robolectric")
-project(":common-test-robolectric").projectDir = File("test/common-test-robolectric")
+project(":common-test-robolectric").projectDir = File("oneSafe6_Android/test/common-test-robolectric")
 
 include("import-export-core")
-project(":import-export-core").projectDir = File("import-export/core")
+project(":import-export-core").projectDir = File("oneSafe6_Android/import-export/core")
 include("import-export-proto")
-project(":import-export-proto").projectDir = File("import-export/proto")
+project(":import-export-proto").projectDir = File("oneSafe6_Android/import-export/proto")
 include(":import-export-domain")
-project(":import-export-domain").projectDir = File("import-export/domain")
+project(":import-export-domain").projectDir = File("oneSafe6_Android/import-export/domain")
 include(":import-export-drive")
-project(":import-export-drive").projectDir = File("import-export/drive")
+project(":import-export-drive").projectDir = File("oneSafe6_Android/import-export/drive")
 include(":import-export-repository")
-project(":import-export-repository").projectDir = File("import-export/repository")
+project(":import-export-repository").projectDir = File("oneSafe6_Android/import-export/repository")
 include(":import-export-android")
-project(":import-export-android").projectDir = File("import-export/android")
+project(":import-export-android").projectDir = File("oneSafe6_Android/import-export/android")
 
 include("bubbles")
+project(":bubbles").projectDir = File("oneSafe6_Android/bubbles")
 include(":bubbles-crypto-android")
-project(":bubbles-crypto-android").projectDir = File("bubbles/crypto-android")
+project(":bubbles-crypto-android").projectDir = File("oneSafe6_Android/bubbles/crypto-android")
 
 include("messaging")
+project(":messaging").projectDir = File("oneSafe6_Android/messaging")
 
 include(":ime-android")
-project(":ime-android").projectDir = File("ime/android")
+project(":ime-android").projectDir = File("oneSafe6_Android/ime/android")
 include(":ime-domain")
-project(":ime-domain").projectDir = File("ime/domain")
-
-includeBuild("oneSafe6_KMP")
+project(":ime-domain").projectDir = File("oneSafe6_Android/ime/domain")
 
 // include(":mockos5") // mockos5 apk is embedded for tests
+
+// KMP
+include(":oneSafe6_KMP:bubbles-domain")
+project(":oneSafe6_KMP:bubbles-domain").projectDir = File("oneSafe6_KMP/bubbles/domain")
+
+include(":oneSafe6_KMP:bubbles-repository")
+project(":oneSafe6_KMP:bubbles-repository").projectDir = File("oneSafe6_KMP/bubbles/repository")
+
+include(":oneSafe6_KMP:messaging-domain")
+project(":oneSafe6_KMP:messaging-domain").projectDir = File("oneSafe6_KMP/messaging/domain")
+
+include(":oneSafe6_KMP:messaging-repository")
+project(":oneSafe6_KMP:messaging-repository").projectDir = File("oneSafe6_KMP/messaging/repository")
+
+include(":oneSafe6_KMP:shared")
+project(":oneSafe6_KMP:shared").projectDir = File("oneSafe6_KMP/shared")
+
+include(":oneSafe6_KMP:error")
+project(":oneSafe6_KMP:error").projectDir = File("oneSafe6_KMP/error")
+
+include(":oneSafe6_KMP:domain")
+project(":oneSafe6_KMP:domain").projectDir = File("oneSafe6_KMP/domain")
+
+include(":oneSafe6_KMP:crypto")
+project(":oneSafe6_KMP:crypto").projectDir = File("oneSafe6_KMP/crypto")
+
+include(":oneSafe6_KMP:common")
+project(":oneSafe6_KMP:common").projectDir = File("oneSafe6_KMP/common")
+
+include(":oneSafe6_KMP:crashlytics")
+project(":oneSafe6_KMP:crashlytics").projectDir = File("oneSafe6_KMP/crashlytics")
+
+include(":oneSafe6_KMP:crashlytics-dummy")
+project(":oneSafe6_KMP:crashlytics-dummy").projectDir = File("oneSafe6_KMP/crashlyticsDummy")
