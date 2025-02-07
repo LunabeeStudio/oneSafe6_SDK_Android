@@ -15,7 +15,7 @@
  */
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
+    id("org.jetbrains.kotlin.multiplatform")
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -29,26 +29,28 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.kotlinx.datetime)
+            implementation(project.dependencies.platform(libs.lunabee.bom))
+
             implementation(libs.doubleratchet)
             implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.kotlinx.serialization.protobuf)
+            implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.serialization.cbor)
-            implementation(project.dependencies.platform(libs.lunabee.bom))
+            implementation(libs.kotlinx.serialization.protobuf)
             implementation(libs.lbcore)
             implementation(libs.lblogger)
+
             implementation(project(":oneSafe6_KMP:bubbles-domain"))
-            implementation(project(":oneSafe6_KMP:error"))
             implementation(project(":oneSafe6_KMP:common"))
+            implementation(project(":oneSafe6_KMP:error"))
         }
 
         jvmMain.dependencies {
-            implementation(libs.androidx.paging.common)
+            implementation(libs.paging.common.ktx)
         }
 
         jvmTest.dependencies {
             implementation(libs.kotlin.test)
-            implementation(libs.kotlinx.coroutine.test)
+            implementation(libs.kotlinx.coroutines.test)
             implementation(libs.mockk)
         }
     }

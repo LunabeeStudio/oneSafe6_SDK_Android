@@ -1,0 +1,326 @@
+[
+  {
+    "title" : "BNP Paribas",
+    "url" : "https://mabanque.bnpparibas",
+    "iconId" : "f2ca2d3a-72b4-4855-a9a8-42f57f2e2582",
+    "color" : "009865"
+  },
+  {
+    "title" : "HSBC",
+    "url" : "https://www.hsbc.com",
+    "iconId" : "cea4ff1a-8022-4637-bd4c-957e5d301505",
+    "color" : "DB0011"
+  },
+  {
+    "title" : "GitHub",
+    "url" : "https://github.com",
+    "iconId" : "565697cf-a172-4cb7-842d-51d87a121606",
+    "color" : "000000"
+  },
+  {
+    "title" : "Snapchat",
+    "url" : "https://www.snapchat.com",
+    "iconId" : "ce397fe6-347a-4465-9acd-f9215c1b9dda",
+    "color" : "FFFC00"
+  },
+  {
+    "title" : "Lunabee Studio",
+    "url" : "https://lunabee.studio",
+    "iconId" : "5b97bb3d-0c11-42de-b1b8-b0532dc22643",
+    "color" : "000000"
+  },
+  {
+    "title" : "Facebook",
+    "url" : "https://m.facebook.com",
+    "iconId" : "0e34d79e-483b-4e0e-8b48-0a225b7e80ac",
+    "color" : "1877F2"
+  },
+  {
+    "title" : "appstoreconnect.apple.com",
+    "url" : "https://appstoreconnect.apple.com",
+    "iconId" : "424e0977-4d9f-491b-bda5-93f251c8f596",
+    "color" : "666666"
+  },
+  {
+    "title" : "Instagram",
+    "url" : "https://instagram.com",
+    "iconId" : "95907285-fd5a-4fa6-8fd1-d12882a0b4b8",
+    "color" : "DB287E"
+  },
+  {
+    "title" : "Flickr",
+    "url" : "https://www.flickr.com",
+    "iconId" : "29a6dbd4-ce97-4f40-8b7a-a199634bf64a",
+    "color" : "FF0084"
+  },
+  {
+    "title" : "myCANAL",
+    "url" : "https://www.canalplus.com",
+    "iconId" : "39a98a27-3e68-4d7f-ada6-5c8bc6f97716",
+    "color" : "1A1A1A"
+  },
+  {
+    "title" : "lemonde.fr",
+    "url" : "https://www.lemonde.fr",
+    "iconId" : "41fafd74-b632-44a8-a6a1-e7ea72c8a8f8",
+    "color" : "000000"
+  },
+  {
+    "title" : "Stream Disney",
+    "url" : "https://www.disneyplus.com",
+    "iconId" : "50ed7718-61d6-4198-a605-aa05c50d1dd0",
+    "color" : "1D1FFF"
+  },
+  {
+    "title" : "LinkedIn",
+    "url" : "https://de.linkedin.com",
+    "iconId" : "dbceb5ec-6ae0-4152-9afa-c6c94991fc18",
+    "color" : "0077B5"
+  },
+  {
+    "title" : "oneSafe",
+    "url" : "https://www.onesafe-apps.com",
+    "iconId" : "9b5df653-2875-4f1c-82b2-fb3ac261f29c",
+    "color" : "79A6FF"
+  },
+  {
+    "title" : "PayFit",
+    "url" : "https://app.payfit.com",
+    "iconId" : "bf0fa44f-12cb-47e2-bba7-3bb851a64f63",
+    "color" : "0062D1"
+  },
+  {
+    "title" : "Greenly",
+    "url" : "https://greenly.earth",
+    "iconId" : "916bd76d-44b4-4df6-890e-e5ac47881968",
+    "color" : "07503E"
+  },
+  {
+    "title" : "Site officiel PlayStation®",
+    "url" : "https://www.playstation.com",
+    "iconId" : "aed58524-f5ea-4144-999a-40c137db77cf",
+    "color" : "231F20"
+  },
+  {
+    "title" : "tiktok.com",
+    "url" : "https://undefined",
+    "iconId" : "70f89e7d-c175-4d53-8768-9e91c810c0b2",
+    "color" : "00F7EF"
+  },
+  {
+    "title" : "Slack",
+    "url" : "https://slack.com",
+    "iconId" : "ccfe4569-6184-47f5-b0ae-df5f731a9d70",
+    "color" : "4B154C"
+  },
+  {
+    "title" : "La Poste",
+    "url" : "https://www.laposte.fr",
+    "iconId" : "9f2ced2a-8c61-4d9b-a72e-6fc086af1ca5",
+    "color" : "F3E536"
+  },
+  {
+    "title" : "Microsoft",
+    "url" : "https://www.microsoft.com",
+    "iconId" : "37298b5f-427d-4409-80b4-b1ab99c20bbb",
+    "color" : "F25022"
+  },
+  {
+    "title" : "Bienvenue sur Prime",
+    "url" : "https://www.primevideo.com",
+    "iconId" : "b9994518-6959-461b-a0f0-83110424c1bb",
+    "color" : "202E5C"
+  },
+  {
+    "title" : "Disneyland Paris",
+    "url" : "https://www.disneylandparis.com",
+    "iconId" : "314969c0-1532-4cf9-90d8-f16bb3c62458",
+    "color" : "000000"
+  },
+  {
+    "title" : "Medium",
+    "url" : "https://medium.com",
+    "iconId" : "7b0fa33d-009b-4ca9-90eb-cb52dda7ebb5",
+    "color" : "000000"
+  },
+  {
+    "title" : "iCloud",
+    "url" : "https://www.icloud.com",
+    "iconId" : "3fd6a097-91fe-4386-b4e0-e53cee2f24a9",
+    "color" : "92DCF7"
+  },
+  {
+    "title" : "Online / Dedibox",
+    "url" : "https://console.online.net",
+    "iconId" : "1883d7fc-23af-409e-a8db-bc25062da30f",
+    "color" : "4F0599"
+  },
+  {
+    "title" : "Dashlane",
+    "url" : "https://www.dashlane.com",
+    "iconId" : "18dc209c-a2fd-493b-ac27-aed4800c20ec",
+    "color" : "0E353D"
+  },
+  {
+    "title" : "Libération",
+    "url" : "https://www.liberation.fr",
+    "iconId" : "ba56d35e-bcb3-4eb1-8f23-9658b213b040",
+    "color" : "ED1C24"
+  },
+  {
+    "title" : "Enedis",
+    "url" : "https://www.enedis.fr",
+    "iconId" : "1f862353-0aac-46a6-a93f-941420280619",
+    "color" : "1423DC"
+  },
+  {
+    "title" : "Apple",
+    "url" : "https://www.apple.com",
+    "iconId" : "582bc915-9c20-4324-b77c-368d1e92f864",
+    "color" : "A6B1B7"
+  },
+  {
+    "title" : "Trello",
+    "url" : "https://trello.com",
+    "iconId" : "4058e56e-38c2-4c94-bcc2-a38dd7369fd4",
+    "color" : "007CC4"
+  },
+  {
+    "title" : "EDF FR",
+    "url" : "https://www.edf.fr",
+    "iconId" : "64b4395b-2409-4276-a51a-5efac15cc75e",
+    "color" : "00337C"
+  },
+  {
+    "title" : "Shopify",
+    "url" : "https://www.shopify.com",
+    "iconId" : "200c3713-9ab6-4dad-835e-e7f6c4da83e5",
+    "color" : "95BF47"
+  },
+  {
+    "title" : "Cafori",
+    "url" : "https://www.cafori.com",
+    "iconId" : "385c83ea-c870-4cfc-9159-82a01fe558dd",
+    "color" : "663213"
+  },
+  {
+    "title" : "Spotify",
+    "url" : "https://open.spotify.com",
+    "iconId" : "13a406ab-f2e1-4abf-b501-df4439e8be7a",
+    "color" : "1ED760"
+  },
+  {
+    "title" : "ENGIE",
+    "url" : "https://www.engie.com",
+    "iconId" : "67dc9dc3-8f91-4970-8f54-4c58619a2687",
+    "color" : "0DC4E2"
+  },
+  {
+    "title" : "SNCF Connect",
+    "url" : "https://www.sncf-connect.com",
+    "iconId" : "70bfdef3-ea7a-4ca4-a422-d413a4b4fa90",
+    "color" : "0C131F"
+  },
+  {
+    "title" : "OUI",
+    "url" : "https://www.oui.com",
+    "iconId" : "d2b950b6-cf59-45f7-af4b-d688f35e923a",
+    "color" : "C6FFFF"
+  },
+  {
+    "title" : "SNCF",
+    "url" : "https://www.sncf.com",
+    "iconId" : "412bd03d-bd36-4ddc-b09e-cba0275df1e5",
+    "color" : "DA232E"
+  },
+  {
+    "title" : "Twitter",
+    "url" : "https://twitter.com",
+    "iconId" : "322c84b7-b1e1-4d44-bd93-6430fad8797f",
+    "color" : "1DA1F2"
+  },
+  {
+    "title" : "Google",
+    "url" : "https://www.google.com",
+    "iconId" : "bb7ee305-2790-4d81-843b-cd1ab3d9b515",
+    "color" : "EA4335"
+  },
+  {
+    "title" : "Pinterest",
+    "url" : "https://www.pinterest.fr",
+    "iconId" : "0ed3baac-99e4-446c-a922-ce1110297fed",
+    "color" : "CC2127"
+  },
+  {
+    "title" : "Decathlon",
+    "url" : "https://www.decathlon.com",
+    "iconId" : "5449a30b-0199-4a3b-80a8-89e3b2265bed",
+    "color" : "0080C4"
+  },
+  {
+    "title" : "Amazon.fr",
+    "url" : "https://www.amazon.fr",
+    "iconId" : "5c596e2e-30f7-45b5-8e9c-979af95a1993",
+    "color" : "FFA700"
+  },
+  {
+    "title" : "Notion",
+    "url" : "https://www.notion.so",
+    "iconId" : "d40fea9f-2314-4364-b7ce-376aa23b11a6",
+    "color" : "000000"
+  },
+  {
+    "title" : "Cinémas Pathé",
+    "url" : "https://www.pathe.fr",
+    "iconId" : "cab615ba-8f7b-41ad-b39b-db32d265bb18",
+    "color" : "F3D269"
+  },
+  {
+    "title" : "Alibaba",
+    "url" : "https://www.alibaba.com",
+    "iconId" : "bc64d3f7-d05a-4efa-86ab-debcfe6504ca",
+    "color" : "FD6A21"
+  },
+  {
+    "title" : "Meta",
+    "url" : "https://www.meta.com",
+    "iconId" : "9f86bff3-a82e-42f6-a64c-75263573dc58",
+    "color" : "1B2A33"
+  },
+  {
+    "title" : "Dropbox",
+    "url" : "https://www.dropbox.com",
+    "iconId" : "c5ccea82-5d09-4013-9199-f06412fecff3",
+    "color" : "0061FE"
+  },
+  {
+    "title" : "Microsoft",
+    "url" : "https://www.microsoft.com",
+    "iconId" : "ab54d99d-bd47-4e2a-85e5-c10aac92c9dd",
+    "color" : "F25022"
+  },
+  {
+    "title" : "CDiscount",
+    "url" : "https://www.cdiscount.com",
+    "iconId" : "ef98cb1e-2b79-484d-9302-a5623ad78fb2",
+    "color" : "293848"
+  },
+  {
+    "title" : "Wish",
+    "url" : "https://www.wish.com",
+    "iconId" : "7d4a5023-64ca-4679-924c-5b69079a786f",
+    "color" : "32E476"
+  },
+  {
+    "title" : "LEFIGARO",
+    "url" : "https://www.lefigaro.fr",
+    "iconId" : "7ab9fa16-187e-4534-b1c5-35fdc0e2a0b6",
+    "color" : "163860"
+  },
+  {
+    "title" : "Fnac",
+    "url" : "https://www.fnac.com",
+    "iconId" : "58abf62b-28c0-497c-b9e8-8ba1767b3ba1",
+    "color" : "D99813"
+  }
+]

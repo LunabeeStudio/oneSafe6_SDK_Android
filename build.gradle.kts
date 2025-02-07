@@ -117,6 +117,8 @@ val excludedTestProjects: List<String> = listOf(
     "test-component",
     "mockos5",
     "core-ui:checks",
+    "crashlytics-dummy",
+    "oneSafe6_KMP:common",
 )
 
 subprojects {
@@ -133,6 +135,7 @@ subprojects {
 
         val isAndroidLibrary = extensions.findByType<com.android.build.gradle.LibraryExtension>() != null
         val isApp = extensions.findByType<com.android.build.gradle.AppExtension>() != null
+        val isKmp = extensions.findByType<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension>() != null
         val hasEnvironmentFlavor = project.name == "import-export-android" ||
             project.name == "ime-android" ||
             project.name == "migration" ||
@@ -144,6 +147,7 @@ subprojects {
         val appVariant = "$envFlavor${OSDimensions.StoreChannel.Prod.uppercaseFirstChar()}"
         val testTaskNames: List<String> = when {
             isApp -> listOf("app:test${appVariant}ReleaseUnitTest")
+            isKmp -> listOf("$qualifiedName:allTests")
             hasEnvironmentFlavor -> listOf("$qualifiedName:test${envFlavor}ReleaseUnitTest")
             isCryptoModule -> listOf(
                 "$qualifiedName:testJceReleaseUnitTest",

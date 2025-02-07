@@ -1,0 +1,125 @@
+[
+    {
+        "isItemIdentifier" : true,
+        "isSecured" : false,
+        "kind" : "text",
+        "name" : "Nom d'utilisateur",
+        "placeholder" : "Identifiant",
+        "position" : 1,
+        "showPrediction" : false,
+        "value" : "JammyCoooool"
+    },
+    {
+        "isItemIdentifier" : false,
+        "isSecured" : true,
+        "kind" : "password",
+        "name" : "Mot de passe",
+        "placeholder" : "Mot de passe",
+        "position" : 2,
+        "showPrediction" : false,
+        "value" : "b6@Aad7SuDYFg&c"
+    },
+    {
+        "isItemIdentifier" : false,
+        "isSecured" : false,
+        "kind" : "date",
+        "name" : "Date",
+        "placeholder" : "Date",
+        "position" : 3,
+        "showPrediction" : false,
+        "value" : "2023-03-16T00:00:00"
+    },
+    {
+        "isItemIdentifier" : false,
+        "isSecured" : false,
+        "kind" : "time",
+        "name" : "Heure",
+        "placeholder" : "Heure",
+        "position" : 4,
+        "showPrediction" : false,
+        "value" : "2023-03-13T07:15:13"
+    },
+    {
+        "isItemIdentifier" : false,
+        "isSecured" : false,
+        "kind" : "number",
+        "name" : "Nombre",
+        "placeholder" : "Nombre",
+        "position" : 5,
+        "showPrediction" : false,
+        "value" : "5632147890"
+    },
+    {
+        "isItemIdentifier" : false,
+        "isSecured" : false,
+        "kind" : "phone",
+        "name" : "Téléphone",
+        "placeholder" : "Téléphone",
+        "position" : 6,
+        "showPrediction" : false,
+        "value" : "0656325932"
+    },
+    {
+        "isItemIdentifier" : false,
+        "isSecured" : true,
+        "kind" : "note",
+        "name" : "Note sécurisée",
+        "placeholder" : "Note sécurisée",
+        "position" : 7,
+        "showPrediction" : false,
+        "value" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris facilisis laoreet leo a vehicula. Donec laoreet, nunc quis dignissim volutpat, augue nisi condimentum lectus, id cursus neque enim et augue. Ut aliquet posuere pellentesque. Fusce id imperdiet nibh. Duis sit amet lacus quam. Phasellus a rutrum lectus, pulvinar sodales odio. Duis sollicitudin tincidunt diam, vitae elementum diam molestie tempus."
+    },
+    {
+        "isItemIdentifier" : false,
+        "isSecured" : false,
+        "kind" : "note",
+        "name" : "Note",
+        "placeholder" : "Note",
+        "position" : 8,
+        "showPrediction" : false,
+        "value" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris facilisis laoreet leo a vehicula. Donec laoreet, nunc quis dignissim volutpat, augue nisi condimentum lectus, id cursus neque enim et augue. Ut aliquet posuere pellentesque. Fusce id imperdiet nibh. Duis sit amet lacus quam. Phasellus a rutrum lectus, pulvinar sodales odio. Duis sollicitudin tincidunt diam, vitae elementum diam molestie tempus."
+    },
+    {
+        "isItemIdentifier" : false,
+        "isSecured" : false,
+        "kind" : "text",
+        "name" : "Texte",
+        "placeholder" : "Texte",
+        "position" : 9,
+        "showPrediction" : false,
+        "value" : "normal text"
+    },
+    {
+        "formattingMask" : "#### #### #### ####",
+        "isItemIdentifier" : false,
+        "isSecured" : true,
+        "kind" : "creditCardNumber",
+        "name" : "Numéro de la carte",
+        "placeholder" : "Numéro de la carte",
+        "position" : 10,
+        "secureDisplayMask" : "**•• •••• •••• ****",
+        "showPrediction" : false,
+        "value" : "1232455865618319"
+    },
+    {
+        "isItemIdentifier" : false,
+        "isSecured" : false,
+        "kind" : "monthYear",
+        "name" : "Expiration date",
+        "placeholder" : "mm/yy",
+        "position" : 11,
+        "secureDisplayMask" : "**/**",
+        "showPrediction" : false,
+        "value" : "2025-07-31T00:00:00"
+    },
+    {
+        "isItemIdentifier" : false,
+        "isSecured" : false,
+        "kind" : "dateAndTime",
+        "name" : "Date and time",
+        "placeholder" : "Date and time",
+        "position" : 12,
+        "showPrediction" : false,
+        "value" : "2025-07-31T10:00:00"
+    }
+]

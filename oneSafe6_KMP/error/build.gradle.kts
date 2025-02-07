@@ -15,7 +15,7 @@
  */
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
+    id("org.jetbrains.kotlin.multiplatform")
 }
 
 group = "studio.lunabee.onesafe"
@@ -28,10 +28,10 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(project.dependencies.platform(libs.lunabee.bom))
+
             implementation(libs.doubleratchet)
             implementation(libs.kotlinx.coroutines.core)
-
-            implementation(project.dependencies.platform(libs.lunabee.bom))
             implementation(libs.lbcore)
             implementation(libs.lblogger)
         }

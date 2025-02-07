@@ -15,7 +15,7 @@
  */
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
+    id("org.jetbrains.kotlin.multiplatform")
 }
 
 group = "studio.lunabee.messaging"
@@ -28,21 +28,23 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.kotlinx.datetime)
+            implementation(project.dependencies.platform(libs.lunabee.bom))
+
             implementation(libs.doubleratchet)
             implementation(libs.kotlinx.coroutines.core)
-            implementation(project.dependencies.platform(libs.lunabee.bom))
+            implementation(libs.kotlinx.datetime)
             implementation(libs.lbcore)
             implementation(libs.lblogger)
-            implementation(project(":oneSafe6_KMP:messaging-domain"))
+
             implementation(project(":oneSafe6_KMP:bubbles-domain"))
-            implementation(project(":oneSafe6_KMP:error"))
-            implementation(project(":oneSafe6_KMP:crypto"))
             implementation(project(":oneSafe6_KMP:common"))
+            implementation(project(":oneSafe6_KMP:crypto"))
+            implementation(project(":oneSafe6_KMP:error"))
+            implementation(project(":oneSafe6_KMP:messaging-domain"))
         }
 
         jvmMain.dependencies {
-            implementation(libs.androidx.paging.common)
+            implementation(libs.paging.common.ktx)
         }
     }
 }

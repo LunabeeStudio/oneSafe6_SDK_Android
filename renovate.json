@@ -14,5 +14,31 @@
       "allowedVersions": "1.0.0",
       "description": "Datastore 1.1.0 have some issue when cleaning and re-reading data (see export_engine_not_signed_up_test)"
     }
+  ],
+  "hostRules": [
+    {
+        "matchHost": "https://artifactory.lunabee.studio/artifactory/libs-release-local",
+        "hostType": "maven",
+        "username": "library-consumer-public",
+        "password": "AKCp8k8PbuxYXoLgvNpc5Aro1ytENk3rSyXCwQ71BA4byg3h7iuMyQ6Sd4ZmJtSJcr7XjwMej"
+    },
+    {
+        "matchHost": "https://artifactory.lunabee.studio/artifactory/libs-snapshot-local",
+        "hostType": "maven",
+        "username": "library-consumer-public",
+        "password": "AKCp8k8PbuxYXoLgvNpc5Aro1ytENk3rSyXCwQ71BA4byg3h7iuMyQ6Sd4ZmJtSJcr7XjwMej"
+    },
+    {
+        "matchHost": "https://artifactory.lunabee.studio/artifactory/florisboard-library-local",
+        "hostType": "maven",
+        "username": "library-consumer-public",
+        "password": "AKCp8k8PbuxYXoLgvNpc5Aro1ytENk3rSyXCwQ71BA4byg3h7iuMyQ6Sd4ZmJtSJcr7XjwMej"
+    },
+    {
+        "matchHost": "https://artifactory.lunabee.studio/artifactory/double-ratchet-kmm/",
+        "hostType": "maven",
+        "username": "library-consumer-public",
+        "password": "AKCp8k8PbuxYXoLgvNpc5Aro1ytENk3rSyXCwQ71BA4byg3h7iuMyQ6Sd4ZmJtSJcr7XjwMej"
+    }
   ]
 }
