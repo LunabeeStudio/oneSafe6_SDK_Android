@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <!-- FIXME probably false positive Lint -->
+    <uses-permission
+        android:name="android.permission.SCHEDULE_EXACT_ALARM"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- Use migration permission from old oneSafe -->
+    <uses-permission android:name="${oneSafe5Package}.permission.MIGRATION" />
+
+    <queries>
+        <!-- required for package visibility since Android 11 -->
+        <package android:name="${oneSafe5Package}" />
+    </queries>
+
+    <application
+        android:name=".OneSafeApp"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/os_data_extraction_rules"
+        android:fullBackupContent="@xml/os_backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/application_name"
+        android:largeHeap="true"
+        android:process="${mainProcessName}"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:ignore="unusedAttribute">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.Splashscreen"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="${applicationId}.MIGRATION" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <!-- mimeType is mandatory https://stackoverflow.com/a/12315898/10935947 -->
+                <data
+                    android:host="${oneSafe5Package}.migrationprovider"
+                    android:mimeType="*/*"
+                    android:path="/migration/migration"
+                    android:scheme="content" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="*/*" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+            </intent-filter>
+
+            <intent-filter android:autoVerify="true">
+                <data
+                    android:host="www.onesafe-apps.com"
+                    android:path="/bubbles"
+                    android:scheme="https" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+
+        </activity>
+
+        <activity-alias
+            android:name=".${appIconDefault}"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/application_name"
+            android:roundIcon="@mipmap/ic_launcher"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".${appIconDefaultDark}"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_dark"
+            android:label="@string/application_name"
+            android:roundIcon="@mipmap/ic_launcher_dark"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".${appIconChessText}"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_chess_text"
+            android:label="@string/settings_personalization_appName_chess"
+            android:roundIcon="@mipmap/ic_launcher_chess_text"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".${appIconChess}"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_chess"
+            android:label="@string/settings_personalization_appName_chess"
+            android:roundIcon="@mipmap/ic_launcher_chess"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".${appIconHeadphones}"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_headphone"
+            android:label="@string/settings_personalization_appName_headphones"
+            android:roundIcon="@mipmap/ic_launcher_headphone"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity
+            android:name=".feature.autofill.AutoFillActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:process="${autofillProcessName}"
+            android:taskAffinity=""
+            android:theme="@style/AppTheme.Splashscreen"
+            android:windowSoftInputMode="adjustResize"
+            tools:targetApi="o" />
+
+        <activity
+            android:name=".feature.camera.CameraActivity"
+            android:exported="false"
+            android:multiprocess="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateHidden"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity" />
+
+        <service
+            android:name=".OSAutoFillService"
+            android:exported="true"
+            android:label="@string/application_name"
+            android:permission="android.permission.BIND_AUTOFILL_SERVICE"
+            android:process="${autofillProcessName}"
+            android:supportsInlineSuggestions="true"
+            tools:targetApi="o">
+            <intent-filter>
+                <action android:name="android.service.autofill.AutofillService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.autofill"
+                android:resource="@xml/os_autofill_service_config" />
+        </service>
+
+        <provider
+            android:name=".OSFileProvider"
+            android:authorities="${applicationId}.cameraiconprovider"
+            android:enabled="true"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/os_file_path" />
+        </provider>
+
+        <receiver
+            android:name=".feature.clipboard.ClipboardClearBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="${applicationId}.ClipboardClearBroadcastReceiver" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".ClearFileCacheService"
+            android:exported="false"
+            android:stopWithTask="false" />
+
+        <!-- https://developer.android.com/guide/background/persistent/configuration/custom-configuration#remove-default -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
+
+        <activity
+            android:name=".FinishSetupDatabaseActivity"
+            android:exported="false"
+            android:process="${databaseSetupProcessName}"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Splashscreen"
+            android:windowSoftInputMode="adjustResize"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity" />
+
+    </application>
+
+</manifest>

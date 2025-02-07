@@ -104,6 +104,7 @@ lint/tmp/
 versions.properties
 
 .DS_Store
+**.DS_Store
 /.kotlin/sessions/*.salive
 .kotlin/metadata/kotlinTransformedCInteropMetadataLibraries
 .kotlin/metadata/kotlinTransformedMetadataLibraries

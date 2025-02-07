@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 8.1.0" type="baseline" client="gradle" dependencies="true" name="AGP (8.1.0)" variant="all" version="8.1.0">
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not \&#xA;include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue \&#xA;explanation for more."
+        errorLine1="        &lt;item quantity=&quot;one&quot;>O item do ficheiro está a ser importado, por favor não saia da aplicação&lt;/item>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pt/strings.xml"
+            line="378"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not \&#xA;include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue \&#xA;explanation for more."
+        errorLine1="        &lt;item quantity=&quot;one&quot;>L’élément du fichier est en cours d’importation, merci de ne pas quitter l’application&lt;/item>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="382"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not \&#xA;include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue \&#xA;explanation for more."
+        errorLine1="        &lt;item quantity=&quot;one&quot;>O seu ficheiro foi desencriptado com sucesso.\nO seu artigo será importado em breve.\n\nAgora, vamos criar o seu cofre juntos.&lt;/item>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pt/strings.xml"
+            line="403"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not \&#xA;include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue \&#xA;explanation for more."
+        errorLine1="        &lt;item quantity=&quot;one&quot;>Nous avons bien réussi à déchiffrer ton fichier.\nTon item sera bientôt en cours d’importation.\n\nMaintenant, créons ensemble ton coffre.&lt;/item>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="410"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;backups&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;settings_autoBackupScreen_autoBackup_footer&quot;>oneSafe keeps the last %d backups and deletes the oldest ones as new backups are made.&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="780"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="UnusedQuantity"
+        message="For language &quot;fr&quot; (French) the following quantities are not relevant: `many`"
+        errorLine1="    &lt;plurals name=&quot;accessibility_settings_confirmImport_singular&quot;>"
+        errorLine2="    ^">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="22"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ConvertToWebp"
+        message="One or more images in this project can be converted to the WebP format which typically results in smaller file sizes, even for lossless conversion">
+        <location
+            file="src/dev/res/mipmap-xxxhdpi/ic_launcher_round.png"/>
+    </issue>
+
+    <issue
+        id="ConvertToWebp"
+        message="One or more images in this project can be converted to the WebP format which typically results in smaller file sizes, even for lossless conversion">
+        <location
+            file="src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"/>
+    </issue>
+
+    <issue
+        id="IconDuplicates"
+        message="The following unrelated icon files have identical contents: ic_launcher.png, ic_launcher_round.png">
+        <location
+            file="src/dev/res/mipmap-hdpi/ic_launcher_round.png"/>
+        <location
+            file="src/dev/res/mipmap-hdpi/ic_launcher.png"/>
+    </issue>
+
+    <issue
+        id="IconDuplicates"
+        message="The following unrelated icon files have identical contents: ic_launcher.png, ic_launcher_round.png">
+        <location
+            file="src/dev/res/mipmap-mdpi/ic_launcher_round.png"/>
+        <location
+            file="src/dev/res/mipmap-mdpi/ic_launcher.png"/>
+    </issue>
+
+    <issue
+        id="IconDuplicates"
+        message="The following unrelated icon files have identical contents: ic_launcher.png, ic_launcher_round.png">
+        <location
+            file="src/dev/res/mipmap-xhdpi/ic_launcher_round.png"/>
+        <location
+            file="src/dev/res/mipmap-xhdpi/ic_launcher.png"/>
+    </issue>
+
+    <issue
+        id="IconDuplicates"
+        message="The following unrelated icon files have identical contents: ic_launcher.png, ic_launcher_round.png">
+        <location
+            file="src/dev/res/mipmap-xxhdpi/ic_launcher_round.png"/>
+        <location
+            file="src/dev/res/mipmap-xxhdpi/ic_launcher.png"/>
+    </issue>
+
+    <issue
+        id="IconDuplicates"
+        message="The following unrelated icon files have identical contents: ic_launcher.png, ic_launcher_round.png">
+        <location
+            file="src/dev/res/mipmap-xxxhdpi/ic_launcher_round.png"/>
+        <location
+            file="src/dev/res/mipmap-xxxhdpi/ic_launcher.png"/>
+    </issue>
+
+    <issue
+        id="IconDuplicates"
+        message="The following unrelated icon files have identical contents: ic_launcher.png, ic_launcher_round.png">
+        <location
+            file="src/main/res/mipmap-hdpi/ic_launcher_round.png"/>
+        <location
+            file="src/main/res/mipmap-hdpi/ic_launcher.png"/>
+    </issue>
+
+    <issue
+        id="IconDuplicates"
+        message="The following unrelated icon files have identical contents: ic_launcher.png, ic_launcher_round.png">
+        <location
+            file="src/main/res/mipmap-mdpi/ic_launcher_round.png"/>
+        <location
+            file="src/main/res/mipmap-mdpi/ic_launcher.png"/>
+    </issue>
+
+    <issue
+        id="IconDuplicates"
+        message="The following unrelated icon files have identical contents: ic_launcher.png, ic_launcher_round.png">
+        <location
+            file="src/main/res/mipmap-xhdpi/ic_launcher_round.png"/>
+        <location
+            file="src/main/res/mipmap-xhdpi/ic_launcher.png"/>
+    </issue>
+
+    <issue
+        id="IconDuplicates"
+        message="The following unrelated icon files have identical contents: ic_launcher.png, ic_launcher_round.png">
+        <location
+            file="src/main/res/mipmap-xxhdpi/ic_launcher_round.png"/>
+        <location
+            file="src/main/res/mipmap-xxhdpi/ic_launcher.png"/>
+    </issue>
+
+    <issue
+        id="IconDuplicates"
+        message="The following unrelated icon files have identical contents: ic_launcher.png, ic_launcher_round.png">
+        <location
+            file="src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"/>
+        <location
+            file="src/main/res/mipmap-xxxhdpi/ic_launcher.png"/>
+    </issue>
+
+</issues>

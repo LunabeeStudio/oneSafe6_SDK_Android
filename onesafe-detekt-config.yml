@@ -1,7 +1,7 @@
 comments:
   AbsentOrWrongFileLicense:
     active: true
-    licenseTemplateFile: "onesafe6-license.template"
+    licenseTemplateFile: "lunabee-license.template"
     excludes:
       - '**/app/*'
       - '**/app/src/**'
@@ -12,6 +12,7 @@ comments:
       - '**/Commons_Android/**'
       - '**/macrobenchmark-android/**'
       - '**/mockos5/*'
+      - '**/oneSafe6_iOS/*'
 
 complexity:
   LongMethod:

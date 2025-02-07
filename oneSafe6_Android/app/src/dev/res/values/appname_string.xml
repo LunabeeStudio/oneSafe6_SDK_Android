@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="application_name" translatable="false">OS6 Dev</string>
+    <string name="floris_app_name" translatable="false" tools:ignore="UnusedResources">OS6K Dev</string>
+</resources>

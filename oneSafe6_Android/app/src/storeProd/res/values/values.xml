@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?><!-- File initially generate by Google play service gradle plugin -->
+<!-- https://github.com/firebase/firebase-android-sdk/issues/1560#issuecomment-862686404 -->
+<resources>
+    <string name="default_web_client_id" translatable="false">nop</string>
+    <string name="gcm_defaultSenderId" translatable="false">nop</string>
+    <string name="google_api_key" translatable="false">nop</string>
+    <string name="google_app_id" translatable="false">1:874555585125:android:3a9f446ab5ba07abd58c8c</string>
+    <string name="google_crash_reporting_api_key" translatable="false">nop</string>
+    <string name="google_storage_bucket" translatable="false">onesafe-revival.appspot.com</string>
+    <string name="project_id" translatable="false">onesafe-revival</string>
+</resources>

@@ -15,7 +15,7 @@
  */
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
+    id("org.jetbrains.kotlin.multiplatform")
 }
 
 group = "studio.lunabee.onesafe"
@@ -30,12 +30,13 @@ kotlin {
 
         commonMain.dependencies {
             implementation(project.dependencies.platform(libs.lunabee.bom))
+
             implementation(libs.lblogger)
         }
 
         iosMain.dependencies {
-            implementation(libs.lblogger.crashlytics)
             implementation(libs.crashkios)
+            implementation(libs.lblogger.crashlytics)
         }
     }
 }
