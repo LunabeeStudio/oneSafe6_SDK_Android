@@ -1,0 +1,1506 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="accessibility_camera_stopRecord">أوقف السجل</string>
+    <string name="accounts_permission_rationale_message">مطلوب إذن الحساب للوصول إلى قائمة حساب Google على الجهاز، من أجل إعداد الاتصال مع Google Drive.</string>
+    <string name="bubbles_writeMessageScreen_corruptedMessage">❌رسالة غير قابلة للفك❌</string>
+    <string name="finishSetupDatabase_canceledDialog_message">فشل التشفير الزائد. تم الاحتفاظ بقاعدة البيانات الخاصة بك دون تعديل</string>
+    <string name="home_displayOptions_largeGrid">شبكة كبيرة</string>
+    <string name="home_displayOptions_title">عرض العناصر كـ</string>
+    <string name="overEncryptionKey_enableButton">تمكين التشفير</string>
+    <string name="safeItemDetail_addMedia_menu_files">من الملفات</string>
+    <string name="settings_autoBackupMaxNumberScreen_withBubbles_description">تتضمن النسخ الاحتياطية التلقائية جميع عناصر oneSafe الخاصة بك، بالإضافة إلى محتوى Bubbles.</string>
+    <string name="settings_panicDestruction_section_title">أداة وضع الذعر</string>
+    <string name="settings_personalization_cameraSystem_inApp_description">الكاميرا الأكثر أمانًا داخل التطبيق (استنادًا إلى تقنية CameraX).\nميزات محدودة.</string>
+    <string name="settings_personalization_cameraSystem_system_title">كاميرا الجهاز</string>
+    <string name="aboutScreen_companyName">استوديو لونابي 2024 - جميع الحقوق محفوظة</string>
+    <string name="aboutScreen_creditCard_label">الاعتمادات</string>
+    <string name="aboutScreen_infoCard_facebookLabel">تابعونا على الفيسبوك</string>
+    <string name="aboutScreen_infoCard_newLettersLabel">اشترك في النشرة الإخبارية</string>
+    <string name="aboutScreen_infoCard_termsLabel">اقرأ بياننا</string>
+    <string name="aboutScreen_infoCard_tiktokLabel">تابعنا على تيك توك</string>
+    <string name="aboutScreen_infoCard_title">البقاء على علم</string>
+    <string name="aboutScreen_infoCard_twitterLabel">تابعونا على اكس/ تويتر</string>
+    <string name="aboutScreen_infoCard_youtubeLabel">تابعنا على يوتيوب</string>
+    <string name="aboutScreen_librariesCard_label">المكتبات</string>
+    <string name="aboutScreen_message">بدأت مغامرة oneSafe في عام 2011!\n\nنحن نسعى جاهدين لإنشاء خزنة متنقلة آمنة للغاية تحمي حياتك الرقمية، بينما نبذل قصارى جهدنا لجعلها سهلة الاستخدام.\n\nيعد oneSafe 6 أحدث إصدار من oneSafe، وسيتم إثرائه بميزات جديدة بشكل منتظم.\n\nيسعدنا وجودك بين مستخدمينا 💙</string>
+    <string name="aboutScreen_title">عن</string>
+    <string name="accessibility_camera_disableFlash">تعطيل الفلاش</string>
+    <string name="accessibility_camera_disableSound">تعطيل الصوت</string>
+    <string name="accessibility_camera_enableFlash">تمكين الفلاش</string>
+    <string name="accessibility_camera_enableSound">تمكين الصوت</string>
+    <string name="accessibility_camera_options">عرض خيارات الكاميرا</string>
+    <string name="accessibility_camera_recordSuccess">تم تسجيل الفيديو بنجاح</string>
+    <string name="accessibility_camera_recordVideo">سجل فيديو</string>
+    <string name="accessibility_camera_shootSuccess">التقاط الصور الناجحة</string>
+    <string name="accessibility_camera_switchCamera">تبديل الكاميرا</string>
+    <string name="accessibility_camera_takePhoto">تصوير</string>
+    <string name="accessibility_common_closePopup">تجاهل التنبيه المنبثق</string>
+    <string name="accessibility_field_delete">احذف الحقل %s</string>
+    <string name="accessibility_field_displayActions">عرض الإجراءات المتاحة</string>
+    <string name="accessibility_field_openPreview">فتح معاينة الملف</string>
+    <string name="accessibility_home_community">تعال إلى الدردشة مع المجتمع على خادم Discord الخاص بنا!</string>
+    <string name="accessibility_home_contacts_button_clickLabel">عرض جهات الاتصال</string>
+    <string name="accessibility_home_itemClicked">استشر تفاصيل %s</string>
+    <string name="accessibility_home_longItemClicked">تنفيذ الإجراء على %s</string>
+    <string name="accessibility_home_settings_button_clickLabel">عرض إعدادات التطبيق</string>
+    <string name="accessibility_home_settings_button_contentDescription">زر الإعدادات</string>
+    <string name="accessibility_icons_addItem">اضافة عنصر</string>
+    <string name="accessibility_icons_home">بيت</string>
+    <string name="accessibility_oneSafeK_sendAction">أرسل الرسالة المشفرة</string>
+    <plurals name="accessibility_settings_confirmImport">
+        <item quantity="zero">استيراد عنصر%d</item>
+        <item quantity="one">استيراد%d عنصر</item>
+        <item quantity="two">استيراد%d عنصر</item>
+        <item quantity="other">استيراد%d عنصر</item>
+        <item quantity="many">استيراد%d عنصر</item>
+        <item quantity="few">استيراد%d عنصر</item>
+    </plurals>
+    <string name="accounts_permission_rationale_title">الوصول إلى حسابات جوجل</string>
+    <string name="android_chooseGoogleAccount_description">اختر حساب Google الذي تريد استخدامه للنسخ الاحتياطي السحابي على Google Drive</string>
+    <string name="appBetaVersion_bottomSheet_description">شكرًا لكونك أحد مختبري الإصدار التجريبي من OneSafe 6! لديك تقارير الأعطال عبر Firebase في هذا الإصدار حتى نتمكن من التحقيق في المشكلات وإصلاحها. لا توجد تحليلات، تقارير الأعطال فقط، لخصوصيتك.\n\nإذا كان لديك أي ملاحظات، يرجى إعلامنا بها على Discord.</string>
+    <string name="appBetaVersion_bottomSheet_discordButton">افتح الخلاف</string>
+    <string name="appBetaVersion_bottomSheet_title">النسخة التجريبية 🧪</string>
+    <string name="appBetaVersion_chip">النسخة التجريبية</string>
+    <string name="appPresentation_next_accessibility_customAction">العرض التالي</string>
+    <string name="appPresentation_personalization_action">انطلق!</string>
+    <string name="appPresentation_personalization_description">قم بتنظيم وتخصيص خزنتك للحصول على تجربة فعالة ورائعة.</string>
+    <string name="appPresentation_personalization_title">من السهل التخصيص</string>
+    <string name="appPresentation_previous_accessibility_customAction">العرض السابق</string>
+    <string name="appPresentation_security_action">إنشاء خزنتي</string>
+    <string name="appPresentation_security_description">oneSafe هو مكانك الآمن لجميع بياناتك الحساسة والسرية. كل شيء مشفر وآمن للغاية.</string>
+    <string name="appPresentation_security_title">آمن للغاية</string>
+    <string name="appPresentation_setup_action">تهيئة خزنتي</string>
+    <string name="appPresentation_skip_accessibility_customAction">تخطي جميع العروض التقديمية</string>
+    <string name="appPresentation_slider_accessibility_progress">العرض التقديمي %1$d في %2$d</string>
+    <string name="appPresentation_startButtonLabel">يبدأ</string>
+    <string name="appPresentation_transparency_action">اقرأ بياننا</string>
+    <string name="appPresentation_transparency_description">لا خوادم، ولا جمع بيانات، ولا تتبع. يوفر OneSafe حماية لا هوادة فيها لخصوصيتك وبياناتك.</string>
+    <string name="appPresentation_transparency_title">خصوصية</string>
+    <string name="archivePreview_backup_description">هذا ملف نسخ احتياطي لـ oneSafe 6.\n\nيمكنك الاستيراد بسهولة عن طريق اختيار oneSafe 6 في خيارات المشاركة</string>
+    <string name="archivePreview_sharing_description">هذا ملف مشاركة oneSafe 6.\n\nيمكنك الاستيراد بسهولة عن طريق اختيار oneSafe 6 في خيارات المشاركة</string>
+    <string name="archivePreview_title">يا! ✌️</string>
+    <string name="autoBackup_errorCard_action_askForHelp">طلب المساعدة</string>
+    <string name="autoBackup_errorCard_message">إذا استمرت المشكلة، يمكنك إخبارنا بها على Discord.\nخطأ: %s</string>
+    <string name="autoBackup_errorCard_title">⚠️ فشل النسخ الاحتياطي التلقائي</string>
+    <string name="autoBackup_snackbar_completed">تم الانتهاء من النسخ الاحتياطي التلقائي</string>
+    <string name="autoBackup_snackbar_error">حدث خطأ أثناء النسخ الاحتياطي التلقائي. شفرة %s</string>
+    <string name="autoBackup_snackbar_inProgress">النسخ الاحتياطي التلقائي قيد التقدم</string>
+    <string name="autoBackup_snackbar_storageError">لا توجد مساحة تخزين كافية لإجراء النسخ الاحتياطي التلقائي</string>
+    <string name="autodestruction_onBoarding_disabled_action">التهيئة</string>
+    <string name="autodestruction_onBoarding_disabled_description">يمكنك تعيين كلمة مرور خاصة لتدمير OneSafe عند إدخالها بدلاً من كلمة المرور الرئيسية.\n\nسيعرض لك خطأ “كلمة مرور خاطئة“ لتجنب عرض ما حدث على الشاشة، إذا تمت ملاحظتك.</string>
+    <string name="autodestruction_onBoarding_enabled_action">تعطيل</string>
+    <string name="autodestruction_onBoarding_enabled_description">لقد قمت بتعيين كلمة مرور خاصة لتدمير OneSafe عند إدخالها بدلاً من كلمة المرور الرئيسية.\n\nسيعرض خطأ “كلمة مرور خاطئة“ لتجنب عرض ما حدث على الشاشة، إذا تمت ملاحظتك.</string>
+    <string name="autodestruction_onBoarding_title">التدمير التلقائي</string>
+    <string name="autodestruction_onBoarding_warning">⚠️ **تحذير، لم تقم بتفعيل النسخ الاحتياطية التلقائية الآمنة في السحابة. يوصى بتفعيله قبل إعداد التدمير الذاتي!**</string>
+    <string name="autodestruction_passwordConfirmation_description">تأكيد كلمة مرور التدمير الذاتي</string>
+    <string name="autodestruction_passwordCreation_description">تعيين كلمة مرور التدمير الذاتي لهذه الخزنة</string>
+    <string name="autodestruction_success">تم تفعيل التدمير الذاتي بنجاح.</string>
+    <string name="autofill_ResponseDataSet_password">كلمة مرور لـ %s</string>
+    <string name="autofill_disableDialog_description">لتعطيل الخدمة ، انتقل إلى الإعدادات&gt; النظام&gt; اللغات والإدخال&gt; خيارات متقدمة&gt; مساعدة الإدخال&gt; خدمة الملء التلقائي.</string>
+    <string name="autofill_disableDialog_description_sdk33">لإلغاء تنشيط الخدمة ، انتقل إلى الإعدادات&gt; كلمات المرور والحسابات</string>
+    <string name="autofill_hints_email">بريد إلكتروني</string>
+    <string name="autofill_hints_emailCustom">بريد إلكتروني</string>
+    <string name="autofill_hints_password">كلمة المرور</string>
+    <string name="autofill_itemSaved_message">تم حفظ البند الخاص بك بنجاح</string>
+    <string name="autofill_noIdentifier_label">لا يوجد معرف</string>
+    <string name="autofill_safeItemsList_otherSectionTitle">أشياء أخرى</string>
+    <string name="autofill_safeItemsList_suggestions_noResults_withUrl">لا توجد عناصر مطابقة.\n\n💡 تأكد من وجود عناصر في oneSafe تتطابق مع بعض الكلمات الرئيسية التالية:</string>
+    <string name="autofill_safeItemsList_suggestions_noResults_withoutUrl">لا توجد عناصر مطابقة.\n\n💡 ليس لدينا أي معلومات مقدمة للبحث عن العناصر. يجب عليك إدخال الكلمات الرئيسية وبدء البحث.</string>
+    <string name="autofill_safeItemsList_suggestionsHeader">البنود المقابلة</string>
+    <string name="autofill_settings_info">ستتيح لك هذه الميزة استخدام oneSafe للملء التلقائي لبيانات اعتماد تسجيل الدخول الخاصة بك على مواقع الويب والتطبيقات.</string>
+    <string name="autofill_startServiceLabel">املأ بـ oneSafe</string>
+    <string name="autofill_title">واحد آمن</string>
+    <string name="backup_exportBackup_description">تم إنشاء ملف النسخ الاحتياطي الخاص بك بنجاح باستخدام كلمة مرورك الرئيسية.\n\nماذا تريد ان تفعل الآن ؟</string>
+    <string name="backup_exportBackup_doneButton">منتهي</string>
+    <string name="backup_exportBackup_exportButton">تصدير النسخة الاحتياطية</string>
+    <string name="backup_exportBackup_saveButton">حفظ الملف</string>
+    <string name="backup_exportBackup_shareButton">أرسل الملف</string>
+    <string name="backup_exportBackup_title">إنه جاهز!</string>
+    <string name="backup_protectBackup_description">سيحتوي ملف النسخ الاحتياطي الخاص بك على **جميع %d عناصرك الآمنة**.\nسنقوم ** بتأمين** هذا الملف عن طريق تشفيره ببيانات اعتمادك.</string>
+    <string name="backup_protectBackup_description_invalidBackup">النسخة الاحتياطية التي تحاول استيرادها مشوهة أو لم تتم معالجتها بشكل صحيح بواسطة هذا الإصدار من التطبيق.</string>
+    <string name="backup_protectBackup_noItems_message">ليس لديك شيء لتصديره.</string>
+    <string name="backup_protectBackup_noItems_title">غير قادر على التصدير</string>
+    <string name="backup_protectBackup_passwordCard_description">أدخل كلمة المرور التي تستخدمها لفتح oneSafe. سيكون عليك استخدام نفس الشيء للاستيراد.</string>
+    <string name="backup_protectBackup_passwordCard_passwordErrorLabel">يبدو أن كلمة مرورك غير صحيحة 😬</string>
+    <string name="backup_protectBackup_passwordCard_passwordInputLabel">كلمة السر الرئيسية</string>
+    <string name="backup_protectBackup_title">حماية النسخة الاحتياطية</string>
+    <string name="backup_protectBackup_title_invalidBackup">محتوى غير صالح</string>
+    <string name="backup_protectBackup_withBubbles_description">سيحتوي ملف النسخ الاحتياطي الخاص بك على ** جميع عناصر OneSafe الخاصة بك (%1$d)** ومحادثات الفقاعات (%2$d)**.\nسنقوم ** بتأمين ** هذا الملف من خلال تشفيره بمعرّفاتك.</string>
+    <string name="bin_deleteAll_success_message">تمت إزالة جميع العناصر بشكل دائم</string>
+    <string name="bin_empty_card_description">عند نقل العناصر إلى الحاوية ، ستظهر في هذا القسم.\n\nيمكنك بعد ذلك استعادتها أو حذفها نهائيًا.</string>
+    <string name="bin_empty_card_title">سلة فارغة!</string>
+    <string name="bin_infoCard_message">سيتم حذف العناصر الموجودة في الحاوية تلقائيًا بعد 30 يومًا.</string>
+    <string name="bin_removeAll_alert_message">سيتم حذف جميع العناصر الموجودة في المهملات نهائيًا.\nهل تؤكد هذا الحذف الدائم؟</string>
+    <string name="bin_removeAll_alert_title">حذف الكل</string>
+    <string name="bin_restoreAll_alert_message">ستتم استعادة جميع العناصر الموجودة في الحاوية.\nهل تؤكد هذا الاستعادة؟</string>
+    <string name="bin_restoreAll_alert_title">استعادة كل شيء</string>
+    <string name="bin_restoreAll_success_message">تمت استعادة كافة العناصر</string>
+    <string name="bin_topBar_menu_accessibility_description">انظر بن الإجراءات العالمية</string>
+    <string name="bin_topBar_menu_removeAll">احذف كل شيء بشكل دائم</string>
+    <string name="bin_topBar_menu_restoreAll">استعادة كل</string>
+    <string name="breadcrumb_accessibility_add">قم بإنشاء عنصر جديد</string>
+    <string name="breadcrumb_accessibility_elementBreadcrumb_hint">فعّل للتنقل</string>
+    <string name="breadcrumb_accessibility_firstElementBreadcrumb">مسار التنقل: %s</string>
+    <string name="breadcrumb_accessibility_heading">صندوق الأدوات</string>
+    <string name="breadcrumb_accessibility_lastElementBreadcrumb_hint">العنصر الحالي</string>
+    <string name="breadcrumb_accessibility_quickNavigation_backToHome">العودة إلى المنزل</string>
+    <string name="breadcrumb_accessibility_quickNavigation_backToItem">رجوع إلى %s</string>
+    <string name="breadcrumb_accessibility_quickNavigation_hint">تصفح العناصر المفتوحة للعودة إليها بسرعة أكبر.</string>
+    <string name="breadcrumb_accessibility_quickNavigation_label">الإنتقال السريع</string>
+    <string name="breadcrumb_accessibility_search">يبحث</string>
+    <string name="breadcrumb_menu_title">عنصر جديد</string>
+    <string name="bubbles_acceptedInvitation">تم قبول الدعوة</string>
+    <string name="bubbles_configureOneSafeK">قم بتكوين oneSafe K</string>
+    <string name="bubbles_configureOneSafeK_subtitle">باستخدام oneSafe K (لوحة المفاتيح)، يمكنك التواصل عبر أي تطبيق جوال مع جهات الاتصال الخاصة بك في “فقاعة مشفرة“، مباشرة من لوحة المفاتيح.</string>
+    <string name="bubbles_contact_help">مساعدة - سؤال وجواب</string>
+    <string name="bubbles_contact_settingsButton">إعدادات</string>
+    <string name="bubbles_contactDetail_congratulation_description">يمكنك الآن التواصل مع %s بأمان في oneSafe!</string>
+    <string name="bubbles_contactDetail_congratulation_title">تهانينا! 🥳</string>
+    <string name="bubbles_contactDetail_corruptedCard_description">لا يمكننا فك تشفير بعض المعلومات الموجودة في جهة الاتصال هذه.</string>
+    <string name="bubbles_contactDetail_corruptedCard_title">❌ غير قابل للفك</string>
+    <string name="bubbles_contactDetail_delete_confirm">قم بإزالة جهة الاتصال</string>
+    <string name="bubbles_contactDetail_delete_description">إذا قمت بحذف جهة الاتصال هذه، فستتم أيضًا إزالة البيانات المرتبطة بجهة الاتصال هذه والمحادثة.</string>
+    <string name="bubbles_contactDetail_delete_title">هل أنت متأكد أنك تريد حذف جهة الاتصال هذه؟</string>
+    <string name="bubbles_contactDetail_deleteContact">قم بحذف الاتصال</string>
+    <string name="bubbles_contactDetail_editAction">تحرير جهة الاتصال</string>
+    <string name="bubbles_contactDetail_resendInvitation">أعد إرسال الدعوة</string>
+    <string name="bubbles_contactDetail_resendResponse">إعادة إرسال الرد على الدعوة</string>
+    <string name="bubbles_contactDetail_resetConversation">إعادة تعيين أمان المحادثة</string>
+    <string name="bubbles_contactDetail_scanAnswer">تفحص الإجابة</string>
+    <string name="bubbles_contactDetail_sendMessage">أرسل رسالة مشفرة</string>
+    <string name="bubbles_contactDetail_useDeeplink">استخدم الروابط العميقة لمشاركة الرسائل</string>
+    <string name="bubbles_contactDetail_useDeeplink_description">أمان أفضل للبيانات دون استخدام ارتباط عميق ، ولكن استخدام أقل سلاسة: سيتعين على المحاور الخاص بك نسخ ولصق الرسائل المشفرة أو استخدام oneSafe K على Android</string>
+    <string name="bubbles_contactDetail_waitingForReply_description">أنت تنتظر إجابة من **%s** لإكمال إنشاء جهة الاتصال الآمنة</string>
+    <string name="bubbles_contactDetail_waitingForReply_title">في انتظار الجواب …</string>
+    <string name="bubbles_contacts">جهات الاتصال</string>
+    <string name="bubbles_conversationAction_deleteConversation_confirmation">هل أنت متأكد من رغبتك في حذف هذه المحادثة وجهة الاتصال المرتبطة بها؟</string>
+    <string name="bubbles_conversationAction_deleteConversation_title">حذف المحادثة والاتصال</string>
+    <string name="bubbles_conversationAction_markAsRead">وضع علامة كمقروء</string>
+    <string name="bubbles_conversationScreen_notReadyMessage">لقد قمت بدعوة %s إلى تبادل آمن.\n\nبمجرد قبول جهة الاتصال هذه للدعوة، يمكنكما الدردشة معًا بطريقة مشفرة وآمنة تمامًا.</string>
+    <string name="bubbles_conversationScreen_waitingForResponse">في انتظار استجابة %s</string>
+    <string name="bubbles_conversations">المحادثات</string>
+    <string name="bubbles_createContactScreen_fromInvitation_title">إضافة جهة اتصال</string>
+    <string name="bubbles_createContactScreen_fromScratch_invite">يدعو</string>
+    <string name="bubbles_createContactScreen_fromScratch_title">جهة اتصال جديدة</string>
+    <string name="bubbles_createContactScreen_messageSharingMode">وضع مشاركة الرسائل</string>
+    <string name="bubbles_createContactScreen_messageSharingMode_archiveFile">ملف الأرشيف</string>
+    <string name="bubbles_createContactScreen_messageSharingMode_archiveFile_description">آمن للغاية ولكنه أقل مرونة. سيتعين على جهة الاتصال الخاصة بك استيراد الأرشيف إلى OneSafe، أو استخدام OneSafe K.</string>
+    <string name="bubbles_createContactScreen_messageSharingMode_deeplink">الروابط العميقة</string>
+    <string name="bubbles_createContactScreen_messageSharingMode_deeplink_description">أكثر مرونة، ستتم إعادة توجيه المتصل تلقائياً إلى OneSafe</string>
+    <string name="bubbles_createContactScreen_messageSharingMode_encryptedText">نص عادي</string>
+    <string name="bubbles_createContactScreen_messageSharingMode_encryptedText_description">أكثر أماناً ولكن أقل مرونة. سيتعين على الشخص الذي تتحدث إليه نسخ/لصق رسائله في OneSafe، أو استخدام OneSafe K</string>
+    <string name="bubbles_createContactScreen_textFieldLabel">الاسم أو اللقب</string>
+    <string name="bubbles_decrypMessageScreen_accessibility_erase">امسح النص</string>
+    <string name="bubbles_decrypMessageScreen_decryptButton">فك</string>
+    <string name="bubbles_decrypMessageScreen_placeholder">الصق الرسالة المشفرة التي تلقيتها هنا</string>
+    <string name="bubbles_decrypMessageScreen_title">فك تشفير رسالة</string>
+    <string name="bubbles_decryptMessage">فك تشفير رسالة</string>
+    <string name="bubbles_decryptMessage_archive_error">لم أستطع فك شفرة الرسالة هل كانت موجهة إليك؟</string>
+    <string name="bubbles_decryptMessage_archive_messageAdded">إضافة إلى المحادثة</string>
+    <string name="bubbles_emptyContactCard_description">قبل أن تتمكن من الدردشة في فقاعات فائقة الأمان، تحتاج إلى إضافة جهات اتصالك الأولى في OneSafe.</string>
+    <string name="bubbles_emptyContactCard_title">جهات الاتصال الخاصة بك</string>
+    <string name="bubbles_error_alreadyDecrypted">تم بالفعل فك تشفير هذه الرسالة</string>
+    <string name="bubbles_error_decryptOwnMessage">أنت تحاول فك تشفير رسالة أرسلتها</string>
+    <string name="bubbles_error_noMatchingContact">لا يوجد اتصال يتطابق مع الرسالة المشفرة</string>
+    <string name="bubbles_invitationResponseScreen_explanation">اجعل %s يمسح رمز الاستجابة السريعة هذا لإكمال الإضافة إلى جهات الاتصال الخاصة بك</string>
+    <string name="bubbles_invitationResponseScreen_share">شارك الرد</string>
+    <string name="bubbles_invitationResponseScreen_shareDescription">أو أرسل له / لها استجابة الدعوة.</string>
+    <string name="bubbles_invitationResponseScreen_title">استجابة دعوة</string>
+    <string name="bubbles_invitationScreen_continueButton">يكمل</string>
+    <string name="bubbles_invitationScreen_description">أو أرسل لها رابط الدعوة</string>
+    <string name="bubbles_invitationScreen_explanation">اجعل %s يمسح رمز الاستجابة السريعة هذا ضوئيًا لإضافته إلى جهات الاتصال الخاصة بك</string>
+    <string name="bubbles_invitationScreen_share">شارك بالدعوة</string>
+    <string name="bubbles_invitationScreen_title">دعوة</string>
+    <string name="bubbles_inviteContact">إضافة جهة اتصال</string>
+    <string name="bubbles_inviteContact_description">ليس لديك اتصال بعد 😊</string>
+    <string name="bubbles_knowMore">تعرف أكثر</string>
+    <string name="bubbles_knowMore_description">Bubbles هي ميزة OneSafe للتبادل في أي تطبيق جوال بطريقة آمنة للغاية مع جهات الاتصال الخاصة بك في “فقاعة مشفرة“.</string>
+    <string name="bubbles_message_subtitle_receivedItem">العنصر %s reçu</string>
+    <string name="bubbles_message_subtitle_sharedItem">العنصر %s مشترك</string>
+    <string name="bubbles_noContact_subtitle">قبل إجراء المحادثات هنا، عليك دعوة جهات الاتصال.</string>
+    <string name="bubbles_noContact_title">أضف جهة اتصال أولاً!</string>
+    <string name="bubbles_notActivated_activateButton">تفعيل الفقاعات</string>
+    <string name="bubbles_notActivated_message">لقد تلقيت للتو رسالة مشفرة. لتتمكن من استخدام هذه الميزة ، قم بتنشيط ميزة “Bubbles“ في الإعدادات</string>
+    <string name="bubbles_resendDelay_24Hours">لمدة 24 ساعة</string>
+    <string name="bubbles_resendDelay_48Hours">لمدة 48 ساعة</string>
+    <string name="bubbles_resendDelay_always">دائماً</string>
+    <string name="bubbles_resendDelay_fiveDays">لمدة 5 أيام</string>
+    <string name="bubbles_scan">مسح</string>
+    <string name="bubbles_scan_description">يمكنك أيضًا قبول دعوة شخص ما عن طريق مسح رمز الاستجابة السريعة الخاص به</string>
+    <string name="bubbles_scanQRCode">امسح رمز الاستجابة السريعة ضوئيًا</string>
+    <string name="bubbles_scanbarcodeScreen_description">قم بمسح رمز الاستجابة السريعة المقدم من جهة الاتصال الخاصة بك</string>
+    <string name="bubbles_scanbarcodeScreen_permission_deniedFeedback">مطلوب إذن الكاميرا لمسح الدعوة</string>
+    <string name="bubbles_scanbarcodeScreen_permission_rationale_message">مطلوب إذن لاستخدام الكاميرا لمسح رمز الاستجابة السريعة للدعوة</string>
+    <string name="bubbles_scanbarcodeScreen_permission_rationale_title">مسح رمز الاستجابة السريعة</string>
+    <string name="bubbles_shareItem_itemDescription_noChildren">حدد محادثة الفقاعات لإرسال **%s** إليها.</string>
+    <string name="bubbles_shareItem_itemDescription_withChildren">حدد محادثة الفقاعات التي تريد إرسال **%1$s** إليها وعناصرها الفرعية %2$s</string>
+    <string name="bubbles_shareItem_successMessage">لقد تم إرسال العنصر إلى المحادثة بنجاح</string>
+    <string name="bubbles_title">فقاعات</string>
+    <string name="bubbles_welcomeScreen_description">يسمح لك تطبيق OneSafe Bubbles بالتواصل بطريقة آمنة للغاية مع جهات الاتصال الخاصة بك، عبر جميع تطبيقات الهاتف المحمول التي تحبها (مثل تيليجرام وإنستجرام وتطبيق البريد الخاص بك، إلخ).\n\nتستفيد Bubbles من بروتوكول Double Ratchet فائق القوة لتأمين كل رسائلك.</string>
+    <string name="bubbles_welcomeScreen_startButton">يبدأ</string>
+    <string name="bubbles_welcomeScreen_title">نقوم بتأمين جميع محادثاتك، عبر جميع تطبيقات المراسلة.</string>
+    <string name="bubbles_writeMessageScreen_accessibility_hideConversation">إخفاء المحادثة</string>
+    <string name="bubbles_writeMessageScreen_accessibility_showConversation">اعرض المحادثة</string>
+    <string name="bubbles_writeMessageScreen_action_deleteAllMessages">احذف كل الرسائل</string>
+    <string name="bubbles_writeMessageScreen_action_seeContact">رؤية جهة الاتصال</string>
+    <string name="bubbles_writeMessageScreen_conversationReset">إعادة تعيين الأمان</string>
+    <string name="bubbles_writeMessageScreen_copyLabel">رسالة</string>
+    <string name="bubbles_writeMessageScreen_deleteDialog_message">أنت على وشك حذف كافة رسائل هذه المحادثة. هل تؤكد؟</string>
+    <string name="bubbles_writeMessageScreen_deleteMessage">احذف الرسالة</string>
+    <string name="bubbles_writeMessageScreen_deleteMessage_message">هل تريد حقا حذف هذه الرسالة؟</string>
+    <string name="bubbles_writeMessageScreen_hideConversation">إخفاء المحادثة</string>
+    <string name="bubbles_writeMessageScreen_resend">إعادة إرسال</string>
+    <string name="bubbles_writeMessageScreen_reset_description">لإعادة تعيين أمان هذه المحادثة، عليك إرسال رسالة خاصة إلى %s. سيتعين عليك انتظار الرد لمتابعة المحادثة.</string>
+    <string name="bubbles_writeMessageScreen_reset_send">إرسال</string>
+    <string name="bubbles_writeMessageScreen_showConversation">اعرض المحادثة</string>
+    <string name="bubbles_writeMessageScreen_tooOldMessage">هذه الرسالة قديمة جدًا بحيث لا يمكن الاستياء منها</string>
+    <string name="bubbles_writeMessageScreen_unknownSharingStatus_alertTitle">أخبرنا</string>
+    <string name="bubbles_writeMessageScreen_unknownSharingStatus_message">في بعض الحالات النادرة، لا يمكننا اكتشاف ما إذا كنت قد قمت بالفعل بمشاركة الرسالة مع المستلم، وسيتم مطالبتك بالتأكيد.</string>
+    <string name="bubbles_writeMessageScreen_unknownSharingStatus_notSent">لا، لم يتم الإرسال</string>
+    <string name="bubbles_writeMessageScreen_unknownSharingStatus_sent">نعم لقد ارسلته</string>
+    <string name="bubbles_writeMessageScreen_unknownSharingStatus_snackbarTitle">هل أرسلت هذه الرسالة؟</string>
+    <string name="bubblesSettings_changeResendDelayScreen_description">يمكنك إعادة إرسال رسالة مشفرة…</string>
+    <string name="bubblesSettings_changeResendDelayScreen_title">تحديد المدة</string>
+    <string name="bubblesSettings_displayPreview">عرض معاينة مشفرة للرسالة أثناء الكتابة</string>
+    <string name="bubblesSettings_resendMessage">القدرة على إعادة إرسال رسالة مشفرة</string>
+    <string name="byChangingAppAutolockScreen_footer_title">عند التبديل من تطبيق oneSafe إلى تطبيق آخر ، ما هي المدة التي تريد أن يقفلها oneSafe؟</string>
+    <string name="byChangingAppAutolockScreen_header_title">قفل تلقائي عند التبديل بين التطبيقات</string>
+    <string name="byChangingAppAutolockScreen_title">قفل تلقائي</string>
+    <string name="camera_mode_hdr">وضع تقرير التنمية البشرية</string>
+    <string name="camera_mode_night">الوضع الليلي</string>
+    <string name="camera_mode_normal">الوضع العادي</string>
+    <string name="camera_mode_portrait">وضع عمودي</string>
+    <string name="cameraScreen_audioPermissionError_message">مطلوب إذن الصوت لتمكين الصوت</string>
+    <string name="cameraScreen_fileMaxSize_message">لا يمكن أن يتجاوز الفيديو %dMb</string>
+    <string name="cameraScreen_security_explanation">الصور الملتقطة عبر تطبيق oneSafe آمنة. ولن يتم حفظها على جهازك أو مشاركتها مع أي خدمة.</string>
+    <string name="cameraScreen_timer_paused">تم الإيقاف المؤقت %1$s - %2$s</string>
+    <string name="cameraScreen_timer_recording">%1$s - %2$s</string>
+    <string name="cgu_title">CGU</string>
+    <string name="cgu_url">https://showy-tadpole-fbf.notion.site/Our-manifesto-oneSafe-6-c9f27668a7274d609a80525fae39aa25</string>
+    <string name="changePassword_error_passwordAlreadyUsed">كلمة المرور مستخدمة بالفعل</string>
+    <string name="changePassword_error_samePasswordAsOtherSafe">يجب أن تكون كلمة المرور مختلفة عن خزناتك الأخرى</string>
+    <string name="changePassword_error_samePasswordAsPrevious">يجب أن تكون كلمة المرور الجديدة مختلفة عن السابقة.</string>
+    <string name="changePassword_fastIdScreen_sectionMessage_android">يلزم إعادة تمكين القياسات الحيوية بعد تحديث كلمة المرور.</string>
+    <string name="changePassword_passwordConfirmationScreen_loading">إنها تسخن… 🔥</string>
+    <string name="changePassword_passwordCreationScreen_sectionTitle">أدخل كلمة مرورك الرئيسية الجديدة 🔐</string>
+    <string name="changePassword_error_samePasswordAsOtherOrPreviousSafe">يجب أن تكون كلمة المرور الجديدة مختلفة عن كلمة المرور السابقة وعن خزائنك الأخرى إذا كانت موجودة.</string>
+    <string name="cipherRecover_keyCard_keyField_error">يبدو أن المفتاح غير صحيح 😬</string>
+    <string name="cipherRecover_keyCard_keyField_label">مفتاح التشفير الزائد</string>
+    <string name="cipherRecover_keyCard_lostKeyButton">لقد فقدت المفتاح</string>
+    <string name="cipherRecover_keyCard_message">أنت تستخدم التشفير الزائد لقاعدة البيانات.الرجاء إدخال المفتاح للوصول إلى الخزنة الخاصة بك.</string>
+    <string name="cipherRecover_keyCard_title">فك تشفير قاعدة البيانات</string>
+    <string name="cipherRecover_keyCard_whyButton">لماذا يطلب مني المفتاح؟</string>
+    <string name="cipherRecover_keycard_error_badFormat">تنسيق المفتاح غير صحيح</string>
+    <string name="cipherRecover_keycard_error_wrongKey">المفتاح الخطا</string>
+    <string name="clipboard_overrideText">تم تأمين محتوى الحافظة بواسطة oneSafe. يمكنك تغيير السلوك من خلال الانتقال إلى الإعدادات / خيارات الأمان.</string>
+    <string name="common_accessibility_back">ارجع إلى الشاشة السابقة</string>
+    <string name="common_accessibility_continue">يكمل</string>
+    <string name="common_accessibility_dialog_cancel">يلغي</string>
+    <string name="common_accessibility_dialog_ok">التحقق من صحة</string>
+    <string name="common_accessibility_dismissCta">لا تظهر هذه الرسالة مرة آخرى</string>
+    <string name="common_accessibility_done">منتهي</string>
+    <string name="common_accessibility_edit">قم بتحرير العنصر</string>
+    <plurals name="common_accessibility_elementCount">
+        <item quantity="zero">%d عنصر</item>
+        <item quantity="one">%d عنصر</item>
+        <item quantity="two">%d عنصر</item>
+        <item quantity="other">%d عنصر</item>
+        <item quantity="many">%d عنصر</item>
+        <item quantity="few">%d عنصر</item>
+    </plurals>
+    <string name="common_accessibility_hidePassword">اخفاء كلمة المرور</string>
+    <string name="common_accessibility_loadingInProgress">جاري التحميل…</string>
+    <string name="common_accessibility_moreAction">المزيد من الإجراءات</string>
+    <string name="common_accessibility_popup_dismiss">تجاهل النافذة المنبثقة</string>
+    <string name="common_accessibility_retry">أعد العملية</string>
+    <string name="common_accessibility_save">يحفظ</string>
+    <string name="common_accessibility_selected">المحدد</string>
+    <string name="common_accessibility_showPassword">عرض كلمة المرور</string>
+    <string name="common_alert_information">معلومة</string>
+    <string name="common_allRight">حسنًا</string>
+    <string name="common_askForHelpOndiscord">اطلب المساعدة في Discord</string>
+    <string name="common_back">خلف</string>
+    <string name="common_beta">بيتا</string>
+    <string name="common_bin">سلة مهملات</string>
+    <string name="common_breadcrumb">مسار التنقل</string>
+    <string name="common_cancel">يلغي</string>
+    <string name="common_close">يغلق</string>
+    <string name="common_coming">قريباً</string>
+    <string name="common_confirm">يتأكد</string>
+    <string name="common_continue">يكمل</string>
+    <string name="common_copy">ينسخ</string>
+    <string name="common_copy_error">فشل نسخ %s</string>
+    <string name="common_copy_success">تم نسخ %s</string>
+    <string name="common_copyErrorMessage_feedback">تم نسخ الخطأ</string>
+    <string name="common_copyErrorMessage_label">انسخ الخطأ</string>
+    <string name="common_corrupted">صعب الفهم</string>
+    <string name="common_delay_immediately">في الحال</string>
+    <string name="common_delay_minute1">بعد دقيقة واحدة</string>
+    <string name="common_delay_minutes10">بعد 10 دقائق</string>
+    <string name="common_delay_minutes2">بعد دقيقتين</string>
+    <string name="common_delay_minutes5">بعد 5 دقائق</string>
+    <string name="common_delay_never">أبداً</string>
+    <string name="common_delay_seconds10">بعد 10 ثوانٍ</string>
+    <string name="common_delay_seconds30">بعد 30 ثانية</string>
+    <string name="common_delay_seconds5">بعد 5 ثوان</string>
+    <string name="common_delete">يمسح</string>
+    <string name="common_disable">إبطال</string>
+    <string name="common_edit">يحرر</string>
+    <string name="common_error_network_message">هل لديك الإنترنت؟</string>
+    <string name="common_error_network_title">خطأ في الشبكة</string>
+    <string name="common_error_noFileManager">لا يوجد مدير ملفات متاح</string>
+    <string name="common_error_unknown">خطأ غير معروف</string>
+    <string name="common_exit">مخرج</string>
+    <string name="common_favorites">مفضلتي</string>
+    <string name="common_field">مجال</string>
+    <string name="common_finish">ينهي</string>
+    <string name="common_home">بيت</string>
+    <string name="common_itemDeleted">تم حذف العنصر</string>
+    <string name="common_later">لاحقاً</string>
+    <string name="common_loading">تحميل</string>
+    <string name="common_loading_backupinProgress">تشغيل النسخ الاحتياطي</string>
+    <string name="common_modify">يُعدِّل</string>
+    <string name="common_navigate">التنقل</string>
+    <string name="common_next">التالي</string>
+    <string name="common_no">لا</string>
+    <string name="common_noCancel">لا، إلغاء</string>
+    <string name="common_noName">بدون اسم</string>
+    <string name="common_noNamePlaceholder">-</string>
+    <string name="common_ok">نعم</string>
+    <string name="common_open">يفتح</string>
+    <string name="common_openSettings">أفتح الإعدادات</string>
+    <string name="common_or">أو</string>
+    <string name="common_other">آخر</string>
+    <string name="common_pending">قيد الانتظار</string>
+    <string name="common_photo">صورة</string>
+    <string name="common_previous">سابق</string>
+    <string name="common_restore">يعيد</string>
+    <string name="common_retry">أعد المحاولة</string>
+    <string name="common_save">يحفظ</string>
+    <string name="common_see">يرى</string>
+    <string name="common_seeAll">اظهار الكل</string>
+    <string name="common_share">يشارك</string>
+    <string name="common_skip">يتخطى</string>
+    <string name="common_start">يبدأ</string>
+    <string name="common_tips">💡 نصائح</string>
+    <string name="common_tips_gotIt">فهمتها</string>
+    <string name="common_undefined">غير معرف</string>
+    <string name="common_video">فيديو</string>
+    <string name="common_voiceOver_feedback_addedToFavorites">تمت إضافة العنصر بنجاح إلى المفضلة.</string>
+    <string name="common_voiceOver_feedback_removedFromFavorites">تمت إزالة العنصر بنجاح من المفضلة.</string>
+    <string name="common_warning">تحذير!</string>
+    <string name="common_yes">نعم</string>
+    <string name="common_yesDisable">نعم، تعطيل</string>
+    <string name="common_yesLetsGo">نعم هيا بنا!</string>
+    <string name="common_corruptedPlaceholder">!</string>
+    <string name="common_new">جديد</string>
+    <string name="common_pause">يوقف</string>
+    <string name="common_play">يلعب</string>
+    <string name="createItem_accessibility_button">خلق العنصر</string>
+    <string name="createItem_template_accessibility_button">أنشئ عنصرًا من النوع %s</string>
+    <string name="createItem_template_applicationElement">طلب</string>
+    <string name="createItem_template_creditCardElement">بطاقة إئتمان</string>
+    <string name="createItem_template_customElement">مخصص</string>
+    <string name="createItem_template_file">ملف</string>
+    <string name="createItem_template_folderElement">مجلد</string>
+    <string name="createItem_template_fromClipboard">من %s</string>
+    <string name="createItem_template_medias">صورة أو فيديو</string>
+    <string name="createItem_template_medias_camera">من الكاميرا</string>
+    <string name="createItem_template_medias_files">من الملفات</string>
+    <string name="createItem_template_medias_library">من المكتبة</string>
+    <string name="createItem_template_noteElement">ملحوظة</string>
+    <string name="createItem_template_photo">صورة</string>
+    <string name="createItem_template_websiteElement">موقع إلكتروني</string>
+    <string name="creditsScreen_thanksCard_message">لم يكن لهذا المشروع أن يوجد بدون مشاركة وتعاون قيم من قبل العديد من الجهات الفاعلة.\n\n**شكراً جزيلاً** للمطورين والمصممين ومديري المشاريع والرسامين وقبل كل شيء مستخدمي oneSafe ، الذين ساهموا جميعًا في إنشاء هذا التطبيق وتحسينه.</string>
+    <string name="creditsScreen_thanksCard_people">فرانسوا ، ريمي ^ 2 ، أوليف ، نيكو ، أليكس ، فلوريان ، توم ^ 2 ، بينوا ، جيريمي ، هوغو ، جيريمي ، كولين ، جوليان ، و **أنت** ❤️</string>
+    <string name="creditsScreen_thanksCard_title">شكرًا</string>
+    <string name="creditsScreen_title">الاعتمادات</string>
+    <string name="deleteFeedback_plural_successMessage">تم حذف العناصر بنجاح.</string>
+    <string name="deleteFeedback_singular_successMessage">تم حذف العنصر بنجاح.</string>
+    <string name="error_android_keystoreKeyPermanentlyInvalidate">تم مسح مخزن مفاتيح Android بشكل غير متوقع</string>
+    <string name="error_crypto_fileNotFound">لم يتم العثور على الملف</string>
+    <string name="error_defaultMessage">هناك خطأ ما</string>
+    <string name="error_defaultTitle">عفوًا</string>
+    <string name="error_file_batchImport_message">لا يمكن استيراد الملفات التالية. لاحظ أن الحد الأقصى للحجم المدعوم في oneSafe للملف هو %1$s:\n%2$s</string>
+    <string name="error_file_cannotOpen_message">تعذر فتح العنصر (%s)</string>
+    <string name="error_file_empty_message">لا يمكن استيراد الملف لأنه فارغ.</string>
+    <string name="error_file_empty_title">ملف فارغ</string>
+    <string name="error_file_tooBig_message">تعذر استيراد الملف لأن حجمه يتجاوز %dMB.\nيمكنك محاولة ضغطه قبل المحاولة مرة أخرى وإلا استخدم محرك أقراص مخصصًا 👍</string>
+    <string name="error_file_tooBig_title">ملف كبير جدا</string>
+    <string name="error_image_loading_message">لا يمكن تحميل الصورة.</string>
+    <string name="error_image_loading_title">التحميل فشل</string>
+    <string name="error_safeItem_twoFactorCodeNotSupported">رمز المصادقة ثنائي العامل غير مدعوم</string>
+    <string name="error_tryAgain">هناك خطأ ما. حاول مرة اخرى.</string>
+    <string name="export_backup_error_fileNotFound_description">حدث خطأ ما أثناء التصدير. هل ترغب في إعادة محاولة العملية؟</string>
+    <string name="export_backup_error_fileNotFound_title">لم يتم العثور على الملف</string>
+    <string name="export_backup_success_confirmation">تم حفظ الملف!</string>
+    <plurals name="export_progressCard_description">
+        <item quantity="zero">إنشاء ملف التصدير المشفر الذي يحتوي على **%d عنصر واحد آمن**.\n⚠️ الرجاء عدم الخروج من التطبيق.</item>
+        <item quantity="one">إنشاء ملف التصدير الآمن الذي يحتوي على **%d من عناصر oneSafe**.\n⚠️ يرجى عدم إغلاق التطبيق.</item>
+        <item quantity="two">إنشاء ملف التصدير الآمن الذي يحتوي على **%d العناصر الآمنة** الخاصة بك ، من فضلك لا تخرج من التطبيق.</item>
+        <item quantity="other">إنشاء ملف التصدير الآمن الذي يحتوي على **%d العناصر الآمنة** الخاصة بك ، من فضلك لا تخرج من التطبيق.</item>
+        <item quantity="many">إنشاء ملف التصدير الآمن الذي يحتوي على **%d العناصر الآمنة** الخاصة بك ، من فضلك لا تخرج من التطبيق.</item>
+        <item quantity="few">إنشاء ملف التصدير الآمن الذي يحتوي على **%d العناصر الآمنة** الخاصة بك ، من فضلك لا تخرج من التطبيق.</item>
+    </plurals>
+    <string name="export_progressCard_title">التصدير قيد التقدم …</string>
+    <plurals name="export_progressCard_withBubbles_bubblesDescription">
+        <item quantity="zero">%d فقاعات المحادثة</item>
+        <item quantity="one">%d فقاعات المحادثات</item>
+        <item quantity="two">%d فقاعات المحادثات</item>
+        <item quantity="other">%d فقاعات المحادثات</item>
+        <item quantity="many">%d فقاعات المحادثات</item>
+        <item quantity="few">%d فقاعات المحادثات</item>
+    </plurals>
+    <string name="export_progressCard_withBubbles_description">إنشاء ملف تصدير مشفر يحتوي على **%1$s و%2$s**.\n⚠️ الرجاء عدم الخروج من التطبيق.</string>
+    <plurals name="export_progressCard_withBubbles_itemDescription">
+        <item quantity="zero">%d عنصر واحد آمن واحد</item>
+        <item quantity="one">%d عنصر آمن واحد</item>
+        <item quantity="two">%d عنصر آمن واحد</item>
+        <item quantity="other">%d عنصر آمن واحد</item>
+        <item quantity="many">%d عنصر آمن واحد</item>
+        <item quantity="few">%d عنصر آمن واحد</item>
+    </plurals>
+    <string name="extension_autofillCard_actionDiscoverHow">اكتشف كيف تفعل ذلك!</string>
+    <string name="extension_autofillCard_actionEnableAutofill">تمكين في إعدادات الهاتف</string>
+    <string name="extension_autofillCard_description">ملء تلقائي للاتصال بموقع أو تطبيق</string>
+    <string name="extension_autofillCard_enableLabel">يُسمح بالملء التلقائي\n</string>
+    <string name="extension_autofillCard_list_1">1. إعدادات الهاتف</string>
+    <string name="extension_autofillCard_list_2">2. كلمات المرور</string>
+    <string name="extension_autofillCard_list_3">3. خيارات كلمة المرور</string>
+    <string name="extension_autofillCard_list_4">4. حدد “الملء المسبق لكلمات المرور“</string>
+    <string name="extension_autofillCard_list_5">5. حدد oneSafe 6</string>
+    <string name="extension_autofillCard_list_6">6. لتحسين سهولة الاستخدام ، نوصي بتعطيل كافة التطبيقات الأخرى</string>
+    <string name="extension_autofillCard_list_ok">حسنًا ، فهمت!</string>
+    <string name="extension_autofillCard_list_title">قم بتمكين الملء التلقائي في إعدادات iPhone الخاص بك:</string>
+    <string name="extension_autofillCard_title">الملء التلقائي لكلمات المرور</string>
+    <string name="extension_onesafeKCard_start">ابدأ تشغيل oneSafe K</string>
+    <string name="extension_screen_section_spotlight_allowSpotlight_title">اسمح لـ Spotlight بالبحث في oneSafe</string>
+    <string name="extension_screen_section_spotlight_allowUsername_title">إظهار اسم المستخدم في نتيجة البحث</string>
+    <string name="extension_screen_section_spotlight_footer_allowed">تتيح لك هذه الميزة الوصول إلى عناصر oneSafe من خلال وظيفة البحث Spotlight ، iOS.\n🔒 من خلال تفويض Spotlight ، فإنك تقيد Spotlight للوصول فقط إلى اسم العنصر الخاص بك ورمزه.</string>
+    <string name="extension_screen_section_spotlight_footer_allowedWithUsername">تتيح لك هذه الميزة الوصول إلى عناصر oneSafe من خلال وظيفة البحث Spotlight ، iOS.\n🔒 من خلال تفويض Spotlight ، فأنت تقيد Spotlight بحيث يكون لها حق الوصول فقط إلى اسم العنصر الخاص بك ورمزه وحقل المعرف الخاص به (إذا تم تحديده).</string>
+    <string name="extension_screen_section_spotlight_footer_notAllowed">ستتيح لك هذه الميزة الوصول إلى عناصر oneSafe من خلال وظيفة البحث Spotlight ، iOS.\n🔒 من خلال تفويض Spotlight ، فإنك تقيد Spotlight للوصول فقط إلى اسم العنصر الخاص بك ورمزه (وبشكل اختياري إلى حقل المعرف الخاص به ، إذا تم تحديده).\nبدون إذن ، لا يقوم Spotlight بالوصول إلى أي بيانات متعلقة بعناصر oneSafe الخاصة بك أو تخزينها.</string>
+    <string name="extension_screen_section_spotlight_title">أضواء كاشفة</string>
+    <string name="extension_screen_title">ملحقات</string>
+    <string name="favorites_empty_card_description">عند إضافة عناصر إلى المفضلة ، ستظهر في هذا القسم.\n\nستتمكن من العثور عليهم بسهولة أكبر!</string>
+    <string name="favorites_empty_card_title">لا توجد مفضلات في الأفق</string>
+    <string name="fieldName_card_code">كود PIN</string>
+    <string name="fieldName_card_cvv">رمز الحماية</string>
+    <string name="fieldName_card_expiryDate">تاريخ الانتهاء</string>
+    <string name="fieldName_card_holderName">إسم صاحب البطاقة</string>
+    <string name="fieldName_card_number">رقم البطاقة</string>
+    <string name="fieldName_creditCardNumber">رقم البطاقة الائتمانية</string>
+    <string name="fieldName_date">تاريخ</string>
+    <string name="fieldName_dateAndTime">التاريخ و الوقت</string>
+    <string name="fieldName_elementName">عنوان</string>
+    <string name="fieldName_email">بريد إلكتروني</string>
+    <string name="fieldName_file">ملف ، صور</string>
+    <string name="fieldName_file_plural">ملفات</string>
+    <string name="fieldName_file_singular">ملف ، صور</string>
+    <string name="fieldName_iban">رقم الحساب بصيغة IBAN</string>
+    <string name="fieldName_informations">معلومات</string>
+    <string name="fieldName_media">صورة أو فيديو</string>
+    <string name="fieldName_monthYear">شهر سنة</string>
+    <string name="fieldName_note">ملحوظة</string>
+    <string name="fieldName_number">رقم</string>
+    <string name="fieldName_password">كلمة المرور</string>
+    <string name="fieldName_phone">هاتف</string>
+    <string name="fieldName_photo_count">صورة رقم%d</string>
+    <string name="fieldName_photo_label">صورة</string>
+    <string name="fieldName_photos">الصور</string>
+    <string name="fieldName_photosAndVideos">الصور ومقاطع الفيديو</string>
+    <string name="fieldName_securedNote">ملاحظة مؤمنة</string>
+    <string name="fieldName_socialSecurityNumber">رقم الضمان الاجتماعي</string>
+    <string name="fieldName_text">نص</string>
+    <string name="fieldName_time">وقت</string>
+    <string name="fieldName_twoFactor">2-كود العامل</string>
+    <string name="fieldName_url">URL</string>
+    <string name="fieldName_username">اسم المستخدم</string>
+    <string name="fieldName_video_count">الفيديو %d</string>
+    <string name="fileSize_bytes">%s بايت</string>
+    <string name="fileSize_giga">%s غيغا بايت</string>
+    <string name="fileSize_kilo">%s كيلو بايت</string>
+    <string name="fileSize_mega">%s ميغا بايت</string>
+    <string name="fileSize_tera">%s تيرا بايت</string>
+    <string name="finishSetupDatabase_canceledDialog_button_discord">التواصل على الديسكورد</string>
+    <string name="finishSetupDatabase_canceledDialog_button_login">المتابعة إلى oneSafe</string>
+    <string name="finishSetupDatabase_canceledDialog_title">فشل التشفير الزائد</string>
+    <string name="googleDrive_backup_description">تم تحميل النسخ الاحتياطي التلقائي بواسطة %1$s على %2$s</string>
+    <string name="help_overrideBackupDialog_message">سوف تقوم باستعادة نسخة احتياطية oneSafe. هل تؤكد؟</string>
+    <string name="help_overrideBackupDialog_title">استعادة القاعدة</string>
+    <string name="home_accessibility_picker_createNewItem_message">اختر نوع العنصر المراد إنشاؤه</string>
+    <string name="home_addItem_button_title">اضافة عنصر</string>
+    <string name="home_addItem_title">ما نوع العنصر الذي تريد إنشاءه؟</string>
+    <string name="home_addItem_upcomingAlert_dismissButton">نعم</string>
+    <string name="home_addItem_upcomingAlert_message">هذه الميزة غير متوفرة بعد ونحن نعمل عليها 💙\n\nإذا كنت حقًا في حاجة إليها ، يمكنك استخدام oneSafe 5 في هذه الأثناء.</string>
+    <string name="home_addItem_upcomingAlert_title">قادم قريبا!</string>
+    <string name="home_autoBackupCard_button">اقرأ أكثر</string>
+    <string name="home_autoBackupCard_message">👍 قم بتمكين النسخ الاحتياطية المشفرة تلقائيًا حتى لا تفقد أي شيء إذا فقدت هاتفك الذكي.</string>
+    <string name="home_autoBackupCard_title">مهم</string>
+    <string name="home_bubblesCard_button">اكتشف الفقاعات</string>
+    <string name="home_bubblesCard_message">مع Bubbles، قم بتأمين محادثاتك مع جهات الاتصال الخاصة بك، أثناء استخدام تطبيقات الهاتف المحمول المعتادة.</string>
+    <string name="home_bubblesCard_title">الفقاعات 🫧</string>
+    <string name="home_community_title">تعال وتحدث إلى المجتمع!</string>
+    <string name="home_discoverBottomSheet_create">يخلق</string>
+    <string name="home_discoverBottomSheet_items_description">العناصر التي تحتوي على شروحات لاكتشاف oneSafe 6.</string>
+    <string name="home_discoverBottomSheet_items_title">العناصر التعليمية</string>
+    <string name="home_discoverBottomSheet_prefill_description">المجلدات المحددة مسبقًا والتي يمكنك من خلالها تجميع العناصر الخاصة بك حسب الموضوع.</string>
+    <string name="home_discoverBottomSheet_prefill_title">المجلدات</string>
+    <string name="home_discoverBottomSheet_title">ماذا تريد أن تصنع؟</string>
+    <string name="home_displayOptions_grid">تظهر كشبكة</string>
+    <string name="home_displayOptions_list">تظهر كقائمة</string>
+    <string name="home_displayOptions_sorting_byConsultationDate">آخر مفتوح</string>
+    <string name="home_displayOptions_sorting_byDateAdded">تم إضافة التاريخ</string>
+    <string name="home_displayOptions_sorting_byTitle">عنوان</string>
+    <string name="home_displayOptions_sorting_contentDescription">تغيير ترتيب العناصر</string>
+    <string name="home_displayOptions_sorting_default">تقصير</string>
+    <string name="home_displayOptions_sorting_title">فرز العناصر حسب</string>
+    <string name="home_searchBar_placeholder">يبحث…</string>
+    <string name="home_section_allItems_title">جميع المواد</string>
+    <plurals name="home_section_andAllOther">
+        <item quantity="zero">و %d أخرى</item>
+        <item quantity="one">و %d آخرون</item>
+        <item quantity="two">و %d أخرى</item>
+        <item quantity="other">و %d أخرى</item>
+        <item quantity="many">و %d أخرى</item>
+        <item quantity="few">و %d أخرى</item>
+    </plurals>
+    <string name="home_section_bin_andAllOther_accessibility">انظر قائمة العناصر المتبقية في الحاوية</string>
+    <string name="home_section_bin_seeAll_accessibility">شاهد كل ما تبذلونه من العناصر المحذوفة</string>
+    <string name="home_section_bubbles_title">المحادثات</string>
+    <string name="home_section_bubbles_title_accessibility">شاهد جميع محادثاتك</string>
+    <string name="home_section_elements_empty">لا توجد عناصر. ماذا عن إضافة أول واحد لك؟</string>
+    <string name="home_section_favorites_andAllOther_accessibility">افتح قائمة جميع العناصر المفضلة</string>
+    <string name="home_section_favorites_empty">على عنصر ما ، ما عليك سوى النقر على “إضافة إلى المفضلة“ للحصول عليه هنا 😍</string>
+    <string name="home_section_favorites_seeAll_accessibility">شاهد كل ما تفضله</string>
+    <string name="home_section_items_empty">لا توجد عناصر. ماذا عن إضافة الخاص بك الأول؟</string>
+    <string name="home_section_myElements_title">أشيائي</string>
+    <string name="home_section_welcome_addItem_accessibility_description">أضف العنصر الأول الخاص بك باستخدام الزر “إضافة عنصر جديد“ ، أو عبر الإجراءات المخصصة في العنوان.</string>
+    <string name="home_section_welcome_addItem_description">أضف أول عنصر مؤمن لك في oneSafe بالزر</string>
+    <string name="home_section_welcome_addItem_title">مرحباً</string>
+    <string name="home_section_welcome_description">مرحبًا بكم في تطبيق oneSafe 6 الجديد!\n\n🔒 يمكنك إضافة العنصر الأول الخاص بك ، والذي سيتم تأمينه بنسبة 100٪ في خزنتك.</string>
+    <string name="home_section_welcome_emptyTab_discover_button">يكتشف</string>
+    <string name="home_section_welcome_emptyTab_discover_title">الاكتشاف 👋</string>
+    <string name="home_section_welcome_emptyTab_import_button">يستورد</string>
+    <string name="home_section_welcome_emptyTab_import_message">إذا كان لديك نسخة احتياطية من OneSafe 6 ، فيمكنك استيرادها الآن!</string>
+    <string name="home_section_welcome_emptyTab_import_title">استيراد نسخة احتياطية</string>
+    <string name="home_section_welcome_emptyTab_migrate_button">الانتقال من oneSafe 5</string>
+    <string name="home_section_welcome_emptyTab_migrate_message">أنت أحد مستخدمي oneSafe 5 😍! يمكنك ترحيل عناصر oneSafe 5 الخاصة بك الآن. تأكد من حصولك على أحدث إصدار من oneSafe 5 من قبل.</string>
+    <string name="home_section_welcome_emptyTab_migrate_title">الترحيل من OneSafe 5</string>
+    <string name="home_section_welcome_emptyTab_welcome_message">يمكنك إضافة أول عنصر مؤمن لك في oneSafe 6 باستخدام الزر “+“.</string>
+    <string name="home_section_welcome_emptyTab_welcome_title">مرحبًا 👋</string>
+    <string name="home_section_welcome_emptyTab_welcomeAndDiscover_message">يمكننا إنشاء عناصر لاكتشاف oneSafe 6، ولكن يمكننا أيضًا إنشاء مجلدات محددة مسبقًا لإلهامك بشأن ما يمكنك وضعه في خزانتك.</string>
+    <string name="home_section_welcome_emptyTab_welcomeAndDiscover_title">مرحبًا 👋</string>
+    <string name="home_section_welcome_title">مرحبا 👋</string>
+    <string name="home_settings_title">إعدادات</string>
+    <string name="home_smartViews_recent_title">حديث</string>
+    <string name="home_translate_help_button">مساعدة في الخلاف</string>
+    <string name="home_translate_help_description">هل رأيت أي ترجمات تحتاج إلى تحسين؟ لا تتردد في توصيلها إلينا على Discord oneSafe! يمكننا أن نجعل oneSafe تطبيقًا رائعًا بلغتك بمساعدتك 💪</string>
+    <string name="home_translate_help_title">ساعدنا لنتحسن!</string>
+    <string name="home_translate_menu_title">مساعدة في الترجمة</string>
+    <string name="home_tutorialDialog_discover_accessibility_feedback_inProgress">سيستغرق إنشاء العناصر بضع ثوانٍ</string>
+    <string name="home_tutorialDialog_discover_button">يكتشف</string>
+    <string name="home_tutorialDialog_discover_text">يمكننا إنشاء بعض العناصر في خزنتك لاكتشاف oneSafe 6:</string>
+    <string name="home_tutorialDialog_text">ليس لديك شيء حتى الآن في oneSafe.\nأضف العنصر الأول الخاص بك الآن (كلمات المرور ، بطاقة الائتمان ، …)</string>
+    <string name="home_verifyPassword_title">اكد كلمة المرور</string>
+    <string name="imagePicker_error_captureNotFound_message">غير قادر على استعادة الصورة الملتقطة</string>
+    <string name="imagePicker_error_captureNotFound_title">فشل الالتقاط</string>
+    <string name="imagePicker_permission_rationale_deniedFeedback">مطلوب إذن الكاميرا للحصول على صورة</string>
+    <string name="imagePicker_permission_rationale_message">مطلوب إذن لاستخدام الكاميرا للحصول على صورة من الكاميرا</string>
+    <string name="imagePicker_permission_rationale_title">التقاط صورة</string>
+    <string name="import_authentication_progress">جارٍ فك التشفير …</string>
+    <string name="import_backup_parent_name">يستورد %s</string>
+    <string name="import_bubblesWarning_confirmButton">أفهم</string>
+    <string name="import_bubblesWarning_description">تأكد من أن لديك أحدث إصدار من بيانات Bubbles في هذه النسخة الاحتياطية.\n\n👉 إذا لم تكن متأكدًا، في الحالة السابقة لـ Bubbles، فيرجى إجراء نسخة احتياطية آمنة أخرى، واستيرادها هنا مرة أخرى، والتوقف عن استخدام Bubbles عليها.\n\n👉 ولكن إذا لم تتمكن من الحصول على أحدث نسخة احتياطية، فيمكنك إرسال رسائل إلى كل جهة اتصال لديك لإعادة تعيين الأمان.</string>
+    <string name="import_bubblesWarning_import">حسناً، الاستيراد</string>
+    <string name="import_bubblesWarning_title">تعمل الفقاعات على جهاز واحد فقط في كل مرة للحصول على أفضل مستوى من الأمان</string>
+    <string name="import_button_accessibility_complete_label">تم تنفيذ الاستيراد ، اضغط للإنهاء.</string>
+    <string name="import_button_complete">يغلق</string>
+    <string name="import_configuration_error">حدث خطأ أثناء الاستيراد. حاول مرة اخرى.</string>
+    <string name="import_configuration_progress_add">استيراد العناصر …</string>
+    <string name="import_configuration_progress_done">اكتمل الاستيراد! 🥳</string>
+    <string name="import_configuration_progress_replacement">استيراد العناصر …</string>
+    <string name="import_configuration_startAgain">إبدأ من جديد</string>
+    <string name="import_decryptImportCard_description">هذا الملف محمي بكلمة المرور الخاصة بك.</string>
+    <string name="import_decryptImportCard_descriptionSharing">هذا الملف محمي بكلمة مرور.\nتم إنشاؤه عندما تم إنشاء الملف.\n\n☝️ إذا لم يكن لديك كلمة المرور ، فاتصل بمنشئ الملف.\n</string>
+    <string name="import_decryptImportCard_errorMessage">يبدو أن كلمة مرورك غير صحيحة 😬</string>
+    <string name="import_decryptImportCard_errorMessageOSPlus">يبدو أن كلمة مرورك غير صحيحة 😬</string>
+    <string name="import_decryptImportCard_passwordFieldLabel">كلمة السر الرئيسية</string>
+    <string name="import_decryptImportCard_passwordFieldLabelOsPlus">كلمة المرور</string>
+    <string name="import_decryptImportCard_passwordHint">تلميح: إنها كلمة المرور الرئيسية التي كانت نشطة على %s.\n</string>
+    <string name="import_decryptImportCard_passwordHint_dateFormat">MMMM dd ، yyyy</string>
+    <string name="import_decryptImportCard_specificPassword">ما هي كلمة المرور التي تم توفيرها / أو تعيينها عند إنشاء هذا الملف؟</string>
+    <string name="import_decryptImportCard_title">المصادقة</string>
+    <string name="import_noFile_button">ليس لدي نسخة احتياطية</string>
+    <string name="import_notFullySupportedArchive_warning_message">التنسيق أحدث من ذلك الذي يدعمه إصدار oneSafe الخاص بك. سنحاول استيراد أكبر عدد ممكن، وسنبلغك بكل عنصر في حالة تعذر استيراد أي حقول.</string>
+    <string name="import_oneSafe5_button_import">استيراد نسخة احتياطية</string>
+    <string name="import_oneSafe5_button_notNow">لا تستورد</string>
+    <string name="import_oneSafe5_message">تم استلام ملف النسخ الاحتياطي للتو. يأتي من oneSafe 5. هل تريد استيراد محتوياته؟</string>
+    <string name="import_oneSafe5_title">يا!</string>
+    <plurals name="import_progressCard_description_plural">
+        <item quantity="zero">يتم استيراد **%d عناصر** من الملف.\n⚠️ يرجى عدم إغلاق التطبيق.</item>
+        <item quantity="one">يتم استيراد **%d عناصر** من الملف.\n⚠️ يرجى عدم إغلاق التطبيق.</item>
+        <item quantity="two">يتم استيراد **%d عناصر** من الملف.\n⚠️ يرجى عدم إغلاق التطبيق.</item>
+        <item quantity="other">يتم استيراد **%d عناصر** من الملف.\n⚠️ يرجى عدم إغلاق التطبيق.</item>
+        <item quantity="many">يتم استيراد **%d عناصر** من الملف.\n⚠️ يرجى عدم إغلاق التطبيق.</item>
+        <item quantity="few">يتم استيراد **%d عناصر** من الملف.\n⚠️ يرجى عدم إغلاق التطبيق.</item>
+    </plurals>
+    <string name="import_progressCard_description_singular">جاري استيراد عنصر الملف.\n⚠️ يرجى عدم إغلاق التطبيق.</string>
+    <string name="import_progressCard_title">الاستيراد قيد التقدم …</string>
+    <string name="import_selectData_bubbles_description">إذا كان لديك بالفعل نسخة احتياطية واحدة منSafe Bubbles، فسيتم استبدال محتواها بمحتوى هذه النسخة الاحتياطية</string>
+    <string name="import_selectData_bubbles_label">الفقاعات (جهات الاتصال + المحادثات)</string>
+    <string name="import_selectData_confirmAction">يستورد</string>
+    <plurals name="import_selectData_items_description">
+        <item quantity="zero">%d عنصر</item>
+        <item quantity="one">%d عناصر</item>
+        <item quantity="two">%d عناصر</item>
+        <item quantity="other">%d عناصر</item>
+        <item quantity="many">%d عناصر</item>
+        <item quantity="few">%d عناصر</item>
+    </plurals>
+    <string name="import_selectData_items_label">العناصر الآمنة</string>
+    <string name="import_selectData_title">ماذا تريد استيراده؟</string>
+    <string name="import_selectFile_button">حدد النسخة الاحتياطية</string>
+    <string name="import_selectFile_description">حدد ملف النسخ الاحتياطي الذي تريد استيراده إلى OneSafe. يجب أن يكون نسخة احتياطية تم تصديرها في OneSafe 6.</string>
+    <string name="import_selectFile_error_backupNotFound">لم يتم العثور على نسخة احتياطية بالمعرف المقدم</string>
+    <string name="import_selectFile_error_missingBackupId">معرف النسخة الاحتياطية مفقود في uri</string>
+    <string name="import_selectFile_error_selectAnotherOne">حدد ملفًا آخر</string>
+    <string name="import_selectFile_error_wrongFileSelected">لا يبدو أن العنصر المحدد نسخة احتياطية واحدة آمنة</string>
+    <string name="import_selectFile_internalStorageChooser_title">فتح باستخدام مدير الملفات</string>
+    <string name="import_selectFile_onboardingDescription">الآن بعد أن تم إنشاء خزنتك، يمكننا استيراد النسخة الاحتياطية الخاصة بك!</string>
+    <string name="import_selectFile_progress">نقوم باسترجاع الملف …</string>
+    <string name="import_selectFile_title">استيراد نسخة احتياطية</string>
+    <plurals name="import_settings_description">
+        <item quantity="zero">قمنا بفك تشفير عنصر **%d** في الملف. ماذا تريد أن تفعل بهذا العنصر؟</item>
+        <item quantity="one">قمنا بفك تشفير **%d** عناصر في الملف. ماذا تريد أن تفعل بهذه العناصر؟</item>
+        <item quantity="two">قمنا بفك تشفير **%d** عناصر في الملف. ماذا تريد أن تفعل بهذه العناصر؟</item>
+        <item quantity="other">قمنا بفك تشفير **%d** عناصر في الملف. ماذا تريد أن تفعل بهذه العناصر؟</item>
+        <item quantity="many">قمنا بفك تشفير **%d** عناصر في الملف. ماذا تريد أن تفعل بهذه العناصر؟</item>
+        <item quantity="few">قمنا بفك تشفير **%d** عناصر في الملف. ماذا تريد أن تفعل بهذه العناصر؟</item>
+    </plurals>
+    <string name="import_settings_description_fallback">قمنا بفك تشفير محتويات ملفك. ماذا تتمنى ان تفعل؟</string>
+    <plurals name="import_settings_description_share">
+        <item quantity="zero">قمنا بفك تشفير عنصر **%d** في الملف. يرجى الانتظار بينما نقوم باستيراده.</item>
+        <item quantity="one">قمنا بفك تشفير **%d** عناصر في الملف. يرجى الانتظار بينما نقوم باستيرادها.</item>
+        <item quantity="two">قمنا بفك تشفير **%d** عناصر في الملف. يرجى الانتظار بينما نقوم باستيرادها.</item>
+        <item quantity="other">قمنا بفك تشفير **%d** عناصر في الملف. يرجى الانتظار بينما نقوم باستيرادها.</item>
+        <item quantity="many">قمنا بفك تشفير **%d** عناصر في الملف. يرجى الانتظار بينما نقوم باستيرادها.</item>
+        <item quantity="few">قمنا بفك تشفير **%d** عناصر في الملف. يرجى الانتظار بينما نقوم باستيرادها.</item>
+    </plurals>
+    <string name="import_settings_or">أو</string>
+    <string name="import_settings_progressFinish_sharing">انتهى الاستيراد!</string>
+    <string name="import_sharing_button_import">يستورد</string>
+    <string name="import_sharing_loading_message">تحميل…</string>
+    <string name="import_sharing_message">يوجد ملف oneSafe معلق لاستيراده. هل تريد الاستمرار؟</string>
+    <string name="import_success_message">تم استيراد النسخة الاحتياطية وهي متاحة على شاشتك الرئيسية</string>
+    <plurals name="import_successCard_message_plural">
+        <item quantity="zero">لقد نجحنا في فك تشفير ملفك.\nسيتم استيراد عناصر **%d** الخاصة بك قريبًا.\n\nالآن ، دعنا نصنع خزنتك معًا.</item>
+        <item quantity="one">لقد نجحنا في فك تشفير ملفك.\nسيتم استيراد عناصر **%d** الخاصة بك قريبًا.\n\nالآن ، دعنا نصنع خزنتك معًا.</item>
+        <item quantity="two">لقد نجحنا في فك تشفير ملفك.\nسيتم استيراد عناصر **%d** الخاصة بك قريبًا.\n\nالآن ، دعنا نصنع خزنتك معًا.</item>
+        <item quantity="other">لقد نجحنا في فك تشفير ملفك.\nسيتم استيراد عناصر **%d** الخاصة بك قريبًا.\n\nالآن ، دعنا نصنع خزنتك معًا.</item>
+        <item quantity="many">لقد نجحنا في فك تشفير ملفك.\nسيتم استيراد عناصر **%d** الخاصة بك قريبًا.\n\nالآن ، دعنا نصنع خزنتك معًا.</item>
+        <item quantity="few">لقد نجحنا في فك تشفير ملفك.\nسيتم استيراد عناصر **%d** الخاصة بك قريبًا.\n\nالآن ، دعنا نصنع خزنتك معًا.</item>
+    </plurals>
+    <string name="import_successCard_message_singular">لقد نجحنا في فك تشفير ملفك.\nسيتم استيراد العنصر الخاص بك قريبا.\n\nالآن ، دعنا نصنع خزنتك معًا.</string>
+    <string name="import_successCard_messageFallback">لقد نجحنا في فك تشفير ملفك.\nسيتم قريبا استيراد محتواها.\n\nالآن ، دعنا نصنع خزنتك معًا.</string>
+    <string name="import_successCard_title">نجح فك التشفير</string>
+    <string name="importSettings_card_addButton">استيراد إلى مجلد</string>
+    <string name="importSettings_card_home">استيراد إلى الصفحة الرئيسية</string>
+    <plurals name="importSettings_card_message">
+        <item quantity="zero">أنت على وشك استيراد عنصر **%d** ، ماذا تريد أن تفعل؟</item>
+        <item quantity="one">أنت على وشك استيراد عناصر **%d** ، ماذا تريد أن تفعل؟</item>
+        <item quantity="two">أنت على وشك استيراد عناصر **%d** ، ماذا تريد أن تفعل؟</item>
+        <item quantity="other">أنت على وشك استيراد عناصر **%d** ، ماذا تريد أن تفعل؟</item>
+        <item quantity="many">أنت على وشك استيراد عناصر **%d** ، ماذا تريد أن تفعل؟</item>
+        <item quantity="few">أنت على وشك استيراد عناصر **%d** ، ماذا تريد أن تفعل؟</item>
+    </plurals>
+    <plurals name="importSettings_card_message_accessibility">
+        <item quantity="zero">أنت على وشك استيراد %s عنصر ، ماذا تريد أن تفعل؟</item>
+        <item quantity="one">أنت على وشك استيراد%s عناصر ، ماذا تريد أن تفعل؟</item>
+        <item quantity="two">أنت على وشك استيراد%s عناصر ، ماذا تريد أن تفعل؟</item>
+        <item quantity="other">أنت على وشك استيراد%s عناصر ، ماذا تريد أن تفعل؟</item>
+        <item quantity="many">أنت على وشك استيراد%s عناصر ، ماذا تريد أن تفعل؟</item>
+        <item quantity="few">أنت على وشك استيراد%s عناصر ، ماذا تريد أن تفعل؟</item>
+    </plurals>
+    <string name="importSettings_card_overrideButton">تجاوز المحتوى الموجود</string>
+    <string name="importSettings_card_title">حدد كيفية الاستيراد</string>
+    <string name="importSettings_overrideDialog_confirmButton">نعم ، أؤكد</string>
+    <string name="importSettings_overrideDialog_message">ستفقد جميع عناصرك الحالية ، هل أنت متأكد أنك تريد المتابعة؟</string>
+    <string name="importSettings_overrideDialog_title">تحذير</string>
+    <string name="importSettings_share_card_title">الاستيراد قيد التقدم</string>
+    <string name="inactivityAutolockScreen_footer_title">عندما تظل غير نشط في oneSafe ، ما هي المدة التي تريد قفل خزنتك خلالها؟</string>
+    <string name="inactivityAutolockScreen_header_title">قفل تلقائي في حالة عدم النشاط</string>
+    <string name="inactivityAutolockScreen_title">قفل تلقائي</string>
+    <string name="itemCreation_addPicture_accessibility">أضف صورة</string>
+    <string name="itemCreation_colorChoice_button_accessibility">حدد لونًا مخصصًا</string>
+    <string name="itemCreation_colorChoice_title">اختر لونًا مخصصًا</string>
+    <string name="itemCreation_editPicture_accessibility">تحرير الصورة</string>
+    <string name="itemCreation_picture_choice_delete">حذف الصورة</string>
+    <string name="itemCreation_picture_choice_fromCamera">أضف من الكاميرا</string>
+    <string name="itemCreation_picture_choice_fromGallery">أضف من المعرض</string>
+    <string name="itemCreation_picture_choice_pickEmoji">اختر رمزًا تعبيريًا</string>
+    <string name="itemCreation_picture_fromUrl">الجلب تلقائيًا من عنوان url</string>
+    <string name="itemDetails_fields_file_saveSuccess">تم حفظ الملف بنجاح</string>
+    <string name="itemForm_action_dontUseAsIdentifier">توقف عن استخدام المعرف</string>
+    <string name="itemForm_action_rename">أعد تسمية الملصق</string>
+    <string name="itemForm_action_renameFile">إعادة تسمية الملف</string>
+    <string name="itemForm_action_showFieldAction_accessibility">الإجراء في الحقل %s</string>
+    <string name="itemForm_action_useAsIdentifier">استخدم كمعرف</string>
+    <string name="itemForm_action_useAsItemIcon">استخدم كرمز</string>
+    <string name="itemForm_actionCard_accessibility">قائمة الإجراءات على البند</string>
+    <string name="itemForm_deleteField_dialog_confirmButton">نعم ، احذف</string>
+    <string name="itemForm_deleteField_dialog_message">حذف الحقل نهائي.\nهل تؤكد الحذف؟</string>
+    <string name="itemForm_dontUseFieldAsIdentifier_accessibility_feedback">الحقل %1$s (%2$s) لم يعد معرف العنصر بعد الآن</string>
+    <plurals name="itemForm_fieldCard_accessibility">
+        <item quantity="zero">قائمة الحقول المرفقة بالعنصر (حقل %d)</item>
+        <item quantity="one">قائمة الحقول المرفقة بالعنصر (%d حقل)</item>
+        <item quantity="two">قائمة الحقول المرفقة بالعنصر (%d حقل)</item>
+        <item quantity="other">قائمة الحقول المرفقة بالعنصر (%d حقل)</item>
+        <item quantity="many">قائمة الحقول المرفقة بالعنصر (%d حقل)</item>
+        <item quantity="few">قائمة الحقول المرفقة بالعنصر (%d حقل)</item>
+    </plurals>
+    <plurals name="itemForm_fileCard_accessibility">
+        <item quantity="zero">قائمة الملفات المرفقة بالعنصر (ملفات %d)</item>
+        <item quantity="one">قائمة الملفات المرفقة بالعنصر (ملفات %d)</item>
+        <item quantity="two">قائمة الملفات المرفقة بالعنصر (ملفات %d)</item>
+        <item quantity="other">قائمة الملفات المرفقة بالعنصر (ملفات %d)</item>
+        <item quantity="many">قائمة الملفات المرفقة بالعنصر (ملفات %d)</item>
+        <item quantity="few">قائمة الملفات المرفقة بالعنصر (ملفات %d)</item>
+    </plurals>
+    <string name="itemForm_identifier_accessibility_action_knownMore">معرفة المزيد عن معرف العنصر</string>
+    <string name="itemForm_identifier_knownMore_accessibility_clickLabel">تعرف أكثر</string>
+    <string name="itemForm_identifierInfo_description">يحتوي معرف العنصر على استخدامين:\n- يتم استخدامه مع **الملء التلقائي** عند الاتصال بموقع أو تطبيق آخر.\n- يسمح لك **بتمييز العناصر المتشابهة**.\n\nيظهر في وصف العنصر عند عرضه في وضع القائمة.</string>
+    <string name="itemForm_identifierInfo_title">معرّف العنصر</string>
+    <string name="itemForm_identifierLabel">👑 تستخدم كمعرف عنصر</string>
+    <string name="itemForm_identifierLabel_accessibility">الحقل %1$s (%2$s) هو معرف العنصر</string>
+    <string name="itemForm_itemNameCard_accessibility">اسم العنصر</string>
+    <plurals name="itemForm_mediaCard_accessibility">
+        <item quantity="zero">قائمة الوسائط المرفقة بالعنصر (%d وسائط)</item>
+        <item quantity="one">قائمة الوسائط المرفقة بالعنصر (%d وسائط)</item>
+        <item quantity="two">قائمة الوسائط المرفقة بالعنصر (%d وسائط)</item>
+        <item quantity="other">قائمة الوسائط المرفقة بالعنصر (%d وسائط)</item>
+        <item quantity="many">قائمة الوسائط المرفقة بالعنصر (%d وسائط)</item>
+        <item quantity="few">قائمة الوسائط المرفقة بالعنصر (%d وسائط)</item>
+    </plurals>
+    <string name="itemForm_removeField_accessibility_feedback">تمت إزالة الحقل %s</string>
+    <string name="itemForm_renameAlert_description">كيف تريد إعادة تسمية التصنيف “%s“؟</string>
+    <string name="itemForm_renameAlert_textField">تسمية جديدة</string>
+    <string name="itemForm_renameField_accessibility_feedback">تمت إعادة تسمية الحقل “%1$s“ إلى “%2$s“</string>
+    <string name="itemForm_tips_title_emoji">ابدأ العنوان بابتسامة 🙂 لتوضيح العنصر الخاص بك.</string>
+    <string name="itemForm_tips_url_autoFetch">اكتب أو الصق عنوان URL الخاص بك، وسيحاول OneSafe جلب رمز ولون رئيسي واسم عنصر.</string>
+    <string name="itemForm_useFieldAsIdentifier_accessibility_feedback">أصبح الحقل %1$s (%2$s) الآن هو معرف العنصر</string>
+    <string name="librariesScreen_title">المكتبات</string>
+    <string name="login_firstLogin_message">هذا هو الباب الآمن oneSafe ، قم بتسجيل الدخول لأول مرة!</string>
+    <string name="login_notSignedUp_title">اختر كلمة مرور</string>
+    <string name="login_passwordField_errorMessage">كلمة مرور خاطئة</string>
+    <string name="lostKey_accessBackupCard_googleDriveSaves">النسخ الاحتياطية في جوجل درايف</string>
+    <string name="lostKey_accessBackupCard_importFile">استيراد ملف</string>
+    <string name="lostKey_accessBackupCard_localSaves">النسخ الاحتياطية المحلية</string>
+    <string name="lostKey_accessBackupCard_title">الوصول إلى النسخ الاحتياطية</string>
+    <string name="lostKey_explanationCard_message">إذا فقدت مفتاح التشفير الزائد، يمكنك استيراد نسخة احتياطية.\nسيتم إلغاء تنشيط التشفير الزائد تلقائيًا.\nيمكنك تفعيله مرة أخرى في الإعدادات.</string>
+    <string name="lostKey_title">مفتاح ضائع</string>
+    <string name="lostKeyExplain_card_message">يتم تشفير مفاتيح التشفير التي يستخدمها oneSafe بواسطة Android Keystore، وهي منطقة آمنة على هاتفك الذكي.\n\nومع ذلك، يمكن لنظام Android حذف محتوى Keystore هذا في ظل ظروف معينة، بما في ذلك الانتقال من هاتف ذكي إلى آخر (ولكن ليس فقط).\n\nتم حذف Keystore الخاص بك بواسطة Android. ولذلك يجب إدخال المفتاح المقدم في وقت التشفير الزائد مرة أخرى.</string>
+    <string name="lostKeyExplain_title">لماذا؟</string>
+    <string name="migration_permission_deniedFeedback">إذن مطلوب لترحيل البيانات</string>
+    <string name="migration_permission_rationale_message">يلزم الحصول على إذن للسماح لـ oneSafe 6 بترحيل البيانات من oneSafe 5.</string>
+    <string name="migration_permission_rationale_title">الهجرة</string>
+    <string name="move_dialog_confirmButton">نعم تحرك</string>
+    <string name="move_dialog_message">هل تريد نقل العنصر الخاص بك إلى %s ؟</string>
+    <string name="move_includeChildrenDialog_description">ماذا تريد أن تنتقل من “%s”؟</string>
+    <string name="move_includeChildrenDialog_includeButton">الكل ، بما في ذلك العناصر الفرعية</string>
+    <string name="move_includeChildrenDialog_onlyItemButton">هذا العنصر فقط</string>
+    <string name="move_includeChildrenDialog_title">يتحرك</string>
+    <string name="move_nextAction_backToParent">انتقل إلى العنصر الأصل</string>
+    <string name="move_nextAction_description">ماذا تريد بعد نقل “%s“؟</string>
+    <string name="move_nextAction_descriptionIncludeChildren">ماذا تريد أن تفعل بعد نقل “%s“؟</string>
+    <string name="move_nextAction_homeDescription">ماذا تريد أن تفعل بعد نقل هذا العنصر إلى الصفحة الرئيسية؟</string>
+    <string name="move_nextAction_homeDescriptionIncludeChildren">ماذا تريد أن تفعل بعد نقل هذا العنصر إلى الصفحة الرئيسية؟</string>
+    <string name="move_nextAction_stayInItem">ابق في هذا العنصر</string>
+    <string name="move_nextAction_title">يتحرك</string>
+    <string name="move_selectDestination_accessibility_moveHere">الإنتقال إلى %s</string>
+    <string name="move_selectDestination_homeMessageCard">انتقل من خلال العناصر الخاصة بك لاختيار وجهة **%s**</string>
+    <string name="move_selectDestination_message">تصفح شجرة العناصر الخاصة بك لاختيار وجهة **%s**.</string>
+    <string name="move_selectDestination_moveHereButton">تحرك هنا</string>
+    <string name="move_selectDestination_moveIntoCorrupt_warning">لا يمكنك نقل عنصر إلى عنصر تالف</string>
+    <string name="move_selectDestination_moveIntoItself_warning">لا يمكنك نقل عنصر إلى نفسه ، اختر وجهة أخرى</string>
+    <string name="move_selectDestination_noSubItemLabel">لا يوجد عنصر فرعي</string>
+    <string name="move_selectDestination_title">يتحرك</string>
+    <string name="move_subItems_itemAndSubItems">كل شيء مع العناصر الفرعية</string>
+    <string name="move_subItems_onlyItem">هذا العنصر فقط</string>
+    <string name="move_success_message">تم نقل العنصر</string>
+    <string name="move_success_messageHome">تم نقل العنصر في المنزل</string>
+    <string name="multiSafe_congratulationScreen_goButton">رائع، دعنا نذهب!</string>
+    <string name="multiSafe_congratulationScreen_sectionMessage">انت انتهيت!\nلفتح هذه الخزنة الجديدة، ما عليك سوى إدخال كلمة المرور الرئيسية الخاصة بها!</string>
+    <string name="multiSafe_congratulationScreen_sectionTitle">كل شيء على ما يرام 👌</string>
+    <string name="multiSafe_congratulationScreen_title">تهانينا 🥳</string>
+    <string name="multiSafe_fastIdScreen_sectionMessage_android">⚠️ **يرجى ملاحظة**: يمكن للقياسات الحيوية فتح واحدة فقط من خزائنك. إذا قررت استخدام القياسات الحيوية لهذه الخزنة الجديدة، فلن تفتح خزنتك الأخرى بعد الآن.</string>
+    <string name="multiSafe_fastIdScreen_sectionSwitch">استخدم %s لهذا المربع الجديد</string>
+    <string name="multiSafe_fastIdScreen_sectionTitle">هل ترغب في تفعيل القياسات الحيوية على هذه الخزنة؟</string>
+    <string name="multiSafe_passwordConfirmationScreen_loading">إنها مستمرة… 🔥</string>
+    <string name="multiSafe_passwordConfirmationScreen_sectionTitle">تأكيد كلمة المرور الرئيسية</string>
+    <string name="multiSafeOnBoarding_passwordCreationScreen_message">يجب أن تكون كلمة المرور الرئيسية لهذه الخزنة مختلفة عن الخزائن الأخرى!</string>
+    <string name="multiSafeOnBoarding_passwordCreationScreen_sectionTitle">كلمة المرور الرئيسية</string>
+    <string name="multiSafeOnBoarding_presentation_button">إنشاء خزنة جديدة</string>
+    <string name="multiSafeOnBoarding_presentation_message">💡 مثالية إذا كنت تريد فصل العناصر الخاصة بك، أو إذا كانت بعض العناصر أكثر سرية من غيرها\n \n👉 يمكن الوصول إلى جميع خزائنك في التطبيق\n\n🤙 إدارة مستقلة لكل خزنة\n\n👀 ووجودهم مخفي. الطريقة الوحيدة لمعرفة وجود الخزنة هي الاتصال بها باستخدام كلمة المرور الرئيسية الخاصة بها</string>
+    <string name="multiSafeOnBoarding_presentation_sectionTitle">الصندوق المتعدد</string>
+    <string name="notification_autobackup_error_message">حدث خطأ ما أثناء النسخ الاحتياطي التلقائي. يرجى فتح oneSafe لإعادة تهيئة النسخ الاحتياطي التلقائي.\nخطأ %s</string>
+    <string name="notification_autobackup_error_title">⚠️ فشل النسخ الاحتياطي oneSafe</string>
+    <string name="notification_autobackup_progress_title">النسخ الاحتياطي التلقائي قيد التقدم</string>
+    <string name="notification_channel_backup_description">النسخ الاحتياطي قيد التقدم</string>
+    <string name="notification_channel_backup_name">دعم</string>
+    <string name="notification_channel_messaging_description">الإخطارات المتعلقة بالرسائل المشفرة</string>
+    <string name="notification_channel_messaging_name">مراسلة oneSafe</string>
+    <string name="notification_messaging_enqueued_description">تم وضع رسالة جديدة في قائمة الانتظار</string>
+    <string name="notification_messaging_processed_description">رسالة جديدة تم فك تشفيرها</string>
+    <string name="notification_permission_rationale_message">مطلوب إذن لإظهار الإخطارات لتتبع تقدم التصدير في الخلفية</string>
+    <string name="notification_permission_rationale_title">إشعارات</string>
+    <string name="onBoarding_congratulationScreen_goButton">دعنا نذهب!</string>
+    <string name="onBoarding_congratulationScreen_sectionMessage">اكتمل الإعداد!\nيمكنك الآن فتح خزنتك 👍</string>
+    <string name="onBoarding_congratulationScreen_sectionTitle">كل شيء جيد 👌</string>
+    <string name="onBoarding_congratulationScreen_title">مبروك</string>
+    <string name="onBoarding_fastIdScreen_acceptButton">يقبل</string>
+    <string name="onBoarding_fastIdScreen_noButton">ًلا شكرا</string>
+    <string name="onBoarding_fastIdScreen_popupBiometric_message_face">ضع وجهك أمام هاتفك للسماح بذلك</string>
+    <string name="onBoarding_fastIdScreen_popupBiometric_message_fingerprint">اضغط على قارئ بصمات الأصابع للتصريح.</string>
+    <string name="onBoarding_fastIdScreen_popupBiometric_name_face">معرّف الوجه</string>
+    <string name="onBoarding_fastIdScreen_popupBiometric_name_fingerprint">بصمة الإصبع</string>
+    <string name="onBoarding_fastIdScreen_popupBiometric_name_iris">القزحية</string>
+    <string name="onBoarding_fastIdScreen_popupBiometric_title">السماح بتسجيل الدخول البيومتري</string>
+    <string name="onBoarding_fastIdScreen_sectionMessage_android">قم بتمكين القياسات الحيوية لتسجيل الدخول بسرعة إلى oneSafe ، مع الحفاظ على الأمان.</string>
+    <string name="onBoarding_fastIdScreen_sectionTitle">مصادقة سريعة</string>
+    <string name="onBoarding_fastIdScreen_title">حماية</string>
+    <string name="onBoarding_passwordCreationScreen_criteria_figure">1 شخصية</string>
+    <string name="onBoarding_passwordCreationScreen_criteria_lowercase">1 صغير</string>
+    <string name="onBoarding_passwordCreationScreen_criteria_minChar">12 حرفًا</string>
+    <string name="onBoarding_passwordCreationScreen_criteria_specialChar">شخصية خاصة واحدة</string>
+    <string name="onBoarding_passwordCreationScreen_criteria_uppercase">1 الأحرف الكبيرة</string>
+    <string name="onBoarding_passwordCreationScreen_level_medium">متوسط</string>
+    <string name="onBoarding_passwordCreationScreen_level_strong">قوي</string>
+    <string name="onBoarding_passwordCreationScreen_level_veryStrong">قوي جداً 🏆</string>
+    <string name="onBoarding_passwordCreationScreen_level_veryWeak">ضعيف جداً</string>
+    <string name="onBoarding_passwordCreationScreen_level_weak">ضعيف</string>
+    <string name="onBoarding_passwordCreationScreen_loadingLabel">جاري إنشاء المفتاح الرئيسي</string>
+    <string name="onBoarding_passwordCreationScreen_message">🔒 سيسمح لك بفتح خزنتك بطريقة آمنة للغاية.\n\n💪 يجب أن تكون مختلفة عن كلمات المرور المعتادة، وأن تكون “قوية“ بدرجة كافية.</string>
+    <string name="onBoarding_passwordCreationScreen_passwordLabel">كلمة السر الرئيسية</string>
+    <string name="onBoarding_passwordCreationScreen_sectionMessage">تحتاج مساعدة؟ فيما يلي المعايير التي نوصي بها (ولكنها ليست إلزامية):</string>
+    <string name="onBoarding_passwordCreationScreen_sectionTitle">كلمة مرورك الرئيسية 🔐</string>
+    <string name="onBoarding_passwordCreationScreen_strength">القوة: %s</string>
+    <string name="onBoarding_vaultCreationScreen_title">إنشاء الخزنة</string>
+    <string name="onboarding_alreadyOneSafe_message">أولاً ، قم بتعيين كلمة مرور رئيسية. ثم يمكنك استيراد النسخة الاحتياطية OneSafe الخاصة بك.</string>
+    <string name="onboarding_alreadyOneSafe_title">إعدادات</string>
+    <string name="onboarding_fastIdScreen_openSettingsButton">أفتح الإعدادات</string>
+    <string name="onboarding_fastIdScreen_sectionMessage_refusedBiometry">لقد رفضت القياسات الحيوية في الماضي. لقبولها ، قم بتنشيطها في إعدادات جهازك.</string>
+    <string name="onboarding_importFile_cardMesage">إذا كنت بالفعل أحد مستخدمي oneSafe ، فيجب أن يكون لديك نسخة احتياطية.\n\nدعونا نستوردها معًا.</string>
+    <string name="onboarding_importFile_importButtonLabel">استيراد النسخة الاحتياطية الخاصة بي</string>
+    <string name="onboarding_importFile_noBackupLabel">في الواقع ، ليس لدي نسخة احتياطية 🫣</string>
+    <string name="onboarding_importLastStep_button">اكتشف oneSafe</string>
+    <string name="onboarding_importLastStep_cardMessageError">حدث خطأ أثناء استعادة ملفاتك. حاول مرة اخرى.</string>
+    <string name="onboarding_importLastStep_cardMessageFinish">اكتمل الإعداد! يمكنك الآن اكتشاف خزنة oneSafe الخاصة بك 👍</string>
+    <string name="onboarding_importLastStep_cardMessageProgress">جاري إنشاء مساحة oneSafe الخاصة بك ، وجاري استيراد ملفاتك ، يرجى الانتظار …</string>
+    <string name="onboarding_importLastStep_cardTitle">إنشاء مساحة واحدة آمنة</string>
+    <string name="onboarding_importLastStep_errorContinueButton">استمر بدون الاستيراد</string>
+    <string name="onboarding_importLastStep_progressFinishMessage">إنه جاهز ⏲</string>
+    <string name="onboarding_importLastStep_progressMessage">إضافة العناصر المستوردة إلى مساحتك ..</string>
+    <string name="onboarding_passwordConfirmationScreen_errorMessage">كلمتا المرور اللتان تم إدخالهما غير متطابقتين. حاول مرة أخرى أو قم بتغيير الأولى بالرجوع إلى الشاشة السابقة.</string>
+    <string name="onboarding_passwordConfirmationScreen_sectionTitle">تأكيد 🔐</string>
+    <string name="oneSafeK_accessibilityService_description">يسمح لك OneSafe K بتشفير وفك تشفير رسائلك الأكثر سرية في جميع تطبيقاتك ، وخاصة تطبيقات المراسلة. لحياة رقمية أكثر أمانًا.</string>
+    <string name="oneSafeK_accessibilityService_label">oneSafe ك</string>
+    <string name="oneSafeK_biometric_description">يمكنك فتح oneSafe K باستخدام القياسات الحيوية لهاتفك الذكي</string>
+    <string name="oneSafeK_biometric_title">التحقق البيومتري…</string>
+    <string name="oneSafeK_byChangingAppAutolockScreen_footer_title">عند إغلاق oneSafe K، ما المدة التي تريد قفل oneSafe K بعدها؟</string>
+    <string name="oneSafeK_byChangingAppAutolockScreen_header_title">القفل تلقائيًا عند إغلاق oneSafe K</string>
+    <string name="oneSafeK_changeRecipientButton_label">يتغير</string>
+    <string name="oneSafeK_channel_oneSafeSharing">مشاركة واحدة آمنة</string>
+    <string name="oneSafeK_channel_unknown">oneSafe</string>
+    <string name="oneSafeK_composeMessageCard_label">اكتب رسالتك المشفرة هنا</string>
+    <string name="oneSafeK_contact_infoCard_description">حدد محادثة لتبادل الرسائل المشفرة.</string>
+    <string name="oneSafeK_contact_manageButton">إدارة جهات الاتصال الخاصة بي</string>
+    <string name="oneSafeK_conversationScreen_snackbar_moreOptions">انتقل إلى محادثة oneSafe لمزيد من الخيارات</string>
+    <string name="oneSafeK_conversationScreen_title">المحادثات</string>
+    <string name="oneSafeK_extension_configuration_accessibility">خدمة الوصول</string>
+    <string name="oneSafeK_extension_configuration_autolock_hidden">يتم القفل تلقائيًا عند إخفاء oneSafe K</string>
+    <string name="oneSafeK_extension_configuration_autolock_inactivity">قفل تلقائيا في حالة عدم النشاط</string>
+    <string name="oneSafeK_extension_configuration_keyboardSelected">تم تحديد لوحة مفاتيح oneSafe K</string>
+    <string name="oneSafeK_extension_configuration_notificationEnabled">تمكين الإخطارات</string>
+    <string name="oneSafeK_extension_startOnBoarding">اكتشف وقم بتهيئة oneSafe K</string>
+    <string name="oneSafeK_extension_startOnBoarding_footer">باستخدام oneSafe K (لوحة المفاتيح)، يمكنك استخدام oneSafe Bubbles مباشرة في لوحة المفاتيح لديك، في أي تطبيق جوال.</string>
+    <string name="oneSafeK_extension_title">لوحة مفاتيح oneSafe K</string>
+    <string name="oneSafeK_ime_actionDecryptDatabase">فك تشفير قاعدة البيانات</string>
+    <string name="oneSafeK_ime_status_databaseError_description">غير قادر على فتح قاعدة البيانات المشفرة</string>
+    <string name="oneSafeK_ime_status_login_description">تم تسجيل دخول oneSafe</string>
+    <string name="oneSafeK_ime_status_logout_description">تم قفل OneSafe</string>
+    <string name="oneSafeK_ime_status_love_description">تتوفر رسالة قابلة للفك</string>
+    <string name="oneSafeK_ime_status_secured_description">OneSafe مؤمن</string>
+    <string name="oneSafeK_imeTopBar_lock_contentDescription">قفل لوحة المفاتيح OneSafe</string>
+    <string name="oneSafeK_imeTopBar_unlock_contentDescription">فتح لوحة المفاتيح oneSafe</string>
+    <string name="oneSafeK_inactivityAutolockScreen_footer_title">عندما تظل غير نشط على oneSafe K، إلى متى تريد قفل الخزنة الخاصة بك؟</string>
+    <string name="oneSafeK_inactivityAutolockScreen_header_title">قفل تلقائي في حالة عدم النشاط</string>
+    <string name="oneSafeK_lock">قفل</string>
+    <string name="oneSafeK_messageDate_pattern">MMMM dd</string>
+    <string name="oneSafeK_messageDate_today">اليوم</string>
+    <string name="oneSafeK_messageRow_timeChannelLabel">%1$s عبر%2$s</string>
+    <string name="oneSafeK_onboarding_accessibility_ctaButton">اختر واحدة آمنة ك</string>
+    <string name="oneSafeK_onboarding_accessibility_description">للعمل ، يحتاج oneSafe K إلى خدمة الوصول إلى Android.\n\nلتنشيطه ، اختر oneSafe K من القائمة التي سيظهرها لك Android بعد الضغط على:</string>
+    <string name="oneSafeK_onboarding_accessibility_title">1. تمكين الوصول</string>
+    <string name="oneSafeK_onboarding_finish_button">حسنا عظيم</string>
+    <string name="oneSafeK_onboarding_finish_cardDescription">يمكنك البدء في استخدام OneSafe K الآن باستخدام **نفس كلمة المرور الرئيسية لـ Safe 6 ✌️**</string>
+    <string name="oneSafeK_onboarding_finish_cardTitle">تهاني</string>
+    <string name="oneSafeK_onboarding_keyboardSelection_chooseButton">اختر واحدة آمنة ك</string>
+    <string name="oneSafeK_onboarding_keyboardSelection_description">لكي تظهر لوحة مفاتيح oneSafe K ، يجب عليك التبديل إليها في الشاشة التي سيظهرها لك Android بعد الضغط على:</string>
+    <string name="oneSafeK_onboarding_keyboardSelection_enableButton">قم بتمكين oneSafe K</string>
+    <string name="oneSafeK_onboarding_keyboardSelection_title">قم بالتبديل إلى لوحة مفاتيح oneSafe K.</string>
+    <string name="oneSafeK_onboarding_notification_ctaTitle">تمكين الإخطارات</string>
+    <string name="oneSafeK_onboarding_notification_description">لتتمكن من فك تشفير رسالة من إحدى جهات الاتصال الخاصة بك ، ستقوم بإضافتها إلى الحافظة الخاصة بك عن طريق نسخها.\n\nسوف يخطرك oneSafe عندما تكون الرسالة متاحة.</string>
+    <string name="oneSafeK_onboarding_notification_title">قبول الإخطارات</string>
+    <string name="oneSafeK_onboarding_presentation_ctaButton">قم بتكوين oneSafe K</string>
+    <string name="oneSafeK_onboarding_presentation_description">باستخدام oneSafe K (لوحة المفاتيح)، يمكنك التواصل عبر أي تطبيق جوال مع جهات الاتصال الخاصة بك في “فقاعة مشفرة“، مباشرة من لوحة المفاتيح.\n\nيجب عليك الآن تكوين oneSafe K من خلال **خطوتين سريعتين**.</string>
+    <string name="oneSafeK_onboarding_presentation_title">oneSafe K مثل لوحة المفاتيح</string>
+    <string name="oneSafeK_open">يفتح</string>
+    <string name="oneSafeK_recipientLabel">ل:</string>
+    <string name="oneSafeK_selectContact_description">ابدأ فقاعة آمنة وتبادل الرسائل المشفرة باستخدام:</string>
+    <string name="oneSafeK_selectContact_title">اختر جهة اتصال</string>
+    <string name="oneSafeK_tutorial_lock_description">يمكنك قفل oneSafe K وقتما تشاء بالضغط على هذا الزر. اعتمادًا على تفضيلاتك المحددة في oneSafe، سيكون لديك أيضًا قفل تلقائي.</string>
+    <string name="oneSafeK_tutorial_lock_title">💡 قفل</string>
+    <string name="oneSafeK_tutorial_open_description">افتح oneSafe K لإرسال رسالتك المشفرة الأولى!</string>
+    <string name="oneSafeK_tutorial_open_title">💡 افتح oneSafe K</string>
+    <string name="oneSafeK_writeMessage_emptyCard_description">يمكنك إرسال رسالتك الأولى إلى %s 🚀!\nويمكنك استرداد رسائله المشفرة هنا عبر التطبيقات المختلفة التي تستخدمها للتواصل ، وذلك ببساطة عن طريق نسخها إلى الحافظة الخاصة بك.</string>
+    <string name="oneSafeK_writeMessage_emptyCard_helpButton">ساعدني</string>
+    <string name="oneSafeK_writeMessage_title">رسالة جديدة</string>
+    <string name="overEncryption_title">التشفير الفائق</string>
+    <string name="overEncryptionBackup_mainCard_message">لكي تكون في الجانب الآمن، نوصيك بعمل نسخة احتياطية محلية قبل تفعيل التشفير الزائد</string>
+    <string name="overEncryptionBackup_toggleCard_message_disable">قم بعمل نسخة احتياطية قبل فك التشفير</string>
+    <string name="overEncryptionBackup_toggleCard_message_enable">قم بعمل نسخة احتياطية قبل التشفير</string>
+    <string name="overEncryptionEnabled_confirmDialog_message">أنت على وشك تعطيل تشفير قاعدة البيانات، هل تريد المتابعة؟</string>
+    <string name="overEncryptionEnabled_errorCard_message">فشل تعطيل التشفير المزدوج. تم الاحتفاظ بقاعدة البيانات الخاصة بك دون تعديلات.\nالخطأ: %s</string>
+    <string name="overEncryptionEnabled_loadingCard_decryptionProgress">فك التشفير قيد التقدم</string>
+    <string name="overEncryptionEnabled_loadingCard_message">ستتم إعادة تشغيل oneSafe في نهاية المناورة</string>
+    <string name="overEncryptionEnabled_loadingCard_title">إلغاء تنشيط التشفير الزائد للمحطة الأساسية الحالية، وإبقاء التطبيق مفتوحاً</string>
+    <string name="overEncryptionEnabled_mainCard_message">تم تنشيط Overencryption على جهازك.\n\nيمكنك إلغاء تنشيطه في أي وقت.</string>
+    <string name="overEncryptionExplanation_mainCard_message">تتوفر طبقة ثانية من الأمان. وهو يتألف من تشفير قاعدة البيانات الخاصة بك بمفتاح ثانٍ.</string>
+    <string name="overEncryptionExplanation_warningCard_message">⚠️ كن حذرًا، سيؤدي هذا الأمان المزدوج إلى إبطاء أداء تطبيقك بنسبة 20%% على الأقل (كلما كان آمنًا، كلما استغرق فك التشفير وقتًا أطول)</string>
+    <string name="overEncryptionKey_confirmationDialog_message">سيتم إعادة تشغيل التطبيق الخاص بك.\nهل قمت بحفظ هذا المفتاح بشكل صحيح؟ لن تتمكن من العثور عليه بمجرد بدء التشفير.</string>
+    <string name="overEncryptionKey_errorCard_message">فشل التشفير الزائد. تم الاحتفاظ بقاعدة بياناتك بدون تعديل.\nخطأ: %s</string>
+    <string name="overEncryptionKey_keyCard_keyLabel">مفتاح قاعدة البيانات</string>
+    <string name="overEncryptionKey_keyCard_message">سيتم تشفير خزنتك بمفتاح ثانٍ.\nقم بتخزين هذا المفتاح بعناية خارج OneSafe! قد يطلب منك ذلك مرة أخرى.</string>
+    <string name="overEncryptionKey_loadingCard_encryptionProgress">تشغيل التشفير</string>
+    <string name="overEncryptionKey_loadingCard_message">ستتم إعادة تشغيل oneSafe عند اكتمال تشفير قاعدة البيانات</string>
+    <string name="overEncryptionKey_loadingCard_title">التشفير قيد التنفيذ، أبقِ التطبيق مفتوحاً</string>
+    <string name="panicdestruction_settings_action_disabled">التفعيل والتثبيت</string>
+    <string name="panicdestruction_settings_action_enabled">تعطيل وضع الذعر</string>
+    <string name="panicdestruction_settings_action_installedAndDisabled">تنشيط وضع الذعر</string>
+    <string name="panicdestruction_settings_description_disabled">أداة “وضع الذعر“: إذا نقرت 5 أضعاف على الأداة في الزاوية اليمنى السفلية الملونة في الأسفل، سيتم حذف جميع محتويات OneSafe.</string>
+    <string name="panicdestruction_settings_description_enabled">تم تمكين “وضع الذعر“ في الأداة.\n\nإذا قمت بالضغط 5 أضعاف على الأداة في الزاوية الملونة اليمنى السفلية الملونة، فسيتم حذف كل محتوى OneSafe.</string>
+    <string name="panicdestruction_settings_destruction_installedAndDisabled">لم يتم تمكين “وضع الذعر“ في الأداة.\n\nبمجرد التمكين، إذا قمت بالنقر 5 أضعاف على الأداة في الزاوية الملونة اليمنى السفلية الملونة، سيتم حذف كل محتوى OneSafe.</string>
+    <string name="panicdestruction_settings_warning">⚠️ **تحذير، لم تقم بتفعيل النسخ الاحتياطية التلقائية الآمنة. يوصى بتفعيلها قبل إعداد هذه الأداة! **</string>
+    <string name="passwordGenerator_accessibility_criteria_length">عدد الشخصيات</string>
+    <string name="passwordGenerator_accessibility_criteria_lowercase">أحرف صغيرة</string>
+    <string name="passwordGenerator_accessibility_criteria_number">رقم</string>
+    <string name="passwordGenerator_accessibility_criteria_symbol">رمز</string>
+    <string name="passwordGenerator_accessibility_criteria_uppercase">الأحرف الكبيرة</string>
+    <string name="passwordGenerator_accessibility_reGenerate_button">أنشئ كلمة مرور جديدة</string>
+    <string name="passwordGenerator_criteria_length">عدد الأحرف: %d\u0020</string>
+    <string name="passwordGenerator_criteria_lowerCase">من الألف إلى الياء</string>
+    <string name="passwordGenerator_criteria_number">0–9</string>
+    <string name="passwordGenerator_criteria_symbol">؟ -!</string>
+    <string name="passwordGenerator_criteria_upperCase">من الألف إلى الياء</string>
+    <string name="passwordGenerator_overrideDialog_confirmButton">نعم ، استبدل</string>
+    <string name="passwordGenerator_overrideDialog_message">لقد قمت بالفعل بإدخال كلمة المرور. هل أنت متأكد أنك تريد استبدالها بكلمة المرور التي تم إنشاؤها؟</string>
+    <string name="passwordGenerator_title">توليد كلمة المرور</string>
+    <string name="passwordStrength_bulletProof">القوة: رهيبة 🏋️</string>
+    <string name="passwordStrength_good">القوة: جيد 👍</string>
+    <string name="passwordStrength_masterPassword_bulletProof">القوة: رائعة 🏋️</string>
+    <string name="passwordStrength_masterPassword_good">القوة: جيد 👍</string>
+    <string name="passwordStrength_masterPassword_strong">القوة : قوية 💪</string>
+    <string name="passwordStrength_masterPassword_veryStrong">القوة : قوية جداً 🏆</string>
+    <string name="passwordStrength_masterPassword_veryWeak">القوة : ضعيفة جداً 🤒</string>
+    <string name="passwordStrength_masterPassword_weak">القوة : ضعيفة 😵‍💫</string>
+    <string name="passwordStrength_strong">القوة: قوية 💪</string>
+    <string name="passwordStrength_veryStrong">القوة: قوية جدا 🏆</string>
+    <string name="passwordStrength_veryWeak">القوة: ضعيفة جدا 🤒</string>
+    <string name="passwordStrength_weak">القوة: ضعيفة 😵‍💫</string>
+    <string name="proximity_snackbar_confirmation_message">لقد أدت إيماءتك الموجودة أعلى الشاشة إلى قفل oneSafe!</string>
+    <string name="proximityLockOption_instant">قفل على الفور</string>
+    <string name="proximityLockOption_never">لا يوجد قفل تحوم</string>
+    <string name="proximityLockOption_slightDelay">قفل مع تأخير طفيف</string>
+    <string name="proximityLockScreen_footer_title">من خلال لفتة المرور أعلى الشاشة، يمكنك قفل oneSafe على الفور أو مع تأخير بسيط.</string>
+    <string name="proximityLockScreen_header_title">قفل تحوم</string>
+    <string name="restoreFeedback_successMessage">تمت استعادة العنصر بنجاح</string>
+    <string name="rightPassword_card_description">تذكّر كلمة المرور الرئيسية\n\nرائع!</string>
+    <string name="rightPassword_card_finishButton">يغلق</string>
+    <string name="rightPassword_card_title">🤩 أحسنت صنعًا</string>
+    <string name="safeItem_defaultDuplicatedName">%s (نسخة)</string>
+    <string name="safeItem_form_accessibility_addNewField">أضف حقلاً من النوع %s</string>
+    <string name="safeItem_form_accessibility_deleteFieldAction">حذف الحقل</string>
+    <string name="safeItem_form_accessibility_generatePassword">أنشئ كلمة مرور آمنة</string>
+    <string name="safeItem_form_accessibility_tapToEdit">انقر مرتين للتعديل</string>
+    <string name="safeItemDetail_accessibility_edit">قم بتحرير العنصر</string>
+    <string name="safeItemDetail_accessibility_showDatePicker">اختر التاريخ</string>
+    <string name="safeItemDetail_accessibility_showTimePicker">اختر الوقت</string>
+    <string name="safeItemDetail_actionCard_addToFavorites">اضافة الى المفضلة</string>
+    <string name="safeItemDetail_actionCard_delete">الانتقال إلى سلة المهملات</string>
+    <string name="safeItemDetail_actionCard_duplicate">ينسخ</string>
+    <string name="safeItemDetail_actionCard_header">الإجراءات على %s</string>
+    <string name="safeItemDetail_actionCard_header_accessibility">قائمة الإجراءات على %s</string>
+    <string name="safeItemDetail_actionCard_move">يتحرك</string>
+    <string name="safeItemDetail_actionCard_remove">الحذف بشكل نهائي</string>
+    <string name="safeItemDetail_actionCard_removeFromFavorites">إزالة من المفضلة</string>
+    <string name="safeItemDetail_actionCard_restore">يعيد</string>
+    <string name="safeItemDetail_actionCard_sendViaBubbles">إرسال عبر الفقاعات</string>
+    <string name="safeItemDetail_actionCard_share">شارك مع التشفير</string>
+    <string name="safeItemDetail_addField_alert_title">اختر نوع الحقل المناسب لمعلوماتك الجديدة</string>
+    <string name="safeItemDetail_addField_buttonTitle">أضف معلومات</string>
+    <string name="safeItemDetail_addFile">إضافة ملفات)</string>
+    <string name="safeItemDetail_addFile_buttonTitle">إضافة محتوى الوسائط المتعددة</string>
+    <string name="safeItemDetail_addImage_menu_camera">تصوير</string>
+    <string name="safeItemDetail_addImage_menu_delete">احذف الصورة</string>
+    <string name="safeItemDetail_addImage_menu_files">الاستيراد من الملفات</string>
+    <string name="safeItemDetail_addImage_menu_library">اختر في المكتبة</string>
+    <string name="safeItemDetail_addImage_title">أضف صورة</string>
+    <string name="safeItemDetail_addMedia_bottomsheet_menu_camera">كاميرا</string>
+    <string name="safeItemDetail_addMedia_bottomsheet_menu_files">الملفات</string>
+    <string name="safeItemDetail_addMedia_bottomsheet_menu_gallery">معرض الصور</string>
+    <string name="safeItemDetail_addMedia_bottomsheet_menu_title">إضافة عنصر وسائط متعددة من</string>
+    <string name="safeItemDetail_addMedia_menu_camera">من الكاميرا</string>
+    <string name="safeItemDetail_addMedia_menu_photoLibrary">من المعرض</string>
+    <string name="safeItemDetail_cancelAlert_message">ستفقد تعديلاتك الحالية. ماذا تريد أن تفعل؟</string>
+    <string name="safeItemDetail_cancelAlert_title">إغلاق بدون حفظ</string>
+    <string name="safeItemDetail_cancelAlert_yes">نعم أنا متأكد</string>
+    <string name="safeItemDetail_card_cvc_placeholder">كود التحقق من البطاقة</string>
+    <string name="safeItemDetail_card_expirationDate_placeholder">تاريخ انتهاء الصلاحية</string>
+    <string name="safeItemDetail_card_number_placeholder">رقم البطاقة</string>
+    <string name="safeItemDetail_card_owner_placeholder">أسم المالك</string>
+    <string name="safeItemDetail_card_pinCode_placeholder">كود PIN</string>
+    <string name="safeItemDetail_color_change">غير اللون</string>
+    <string name="safeItemDetail_color_delete">احذف اللون</string>
+    <string name="safeItemDetail_color_menu_title">ماذا تريد أن تفعل؟</string>
+    <string name="safeItemDetail_color_picker_title">اختيار اللون</string>
+    <string name="safeItemDetail_colorExtract_confirmation_message">تم اكتشاف لون رئيسي جديد من الصورة المحددة. هل ترغب في تطبيقه على الموضوع الحالي؟</string>
+    <string name="safeItemDetail_common_login_placeholder">اسم المستخدم</string>
+    <string name="safeItemDetail_common_password_placeholder">كلمة المرور</string>
+    <string name="safeItemDetail_contentCard_elements_empty">يمكنك إضافة عناصر فرعية في “%s“ من خلال النقر على الزر + (الزاوية اليمنى السفلية).</string>
+    <string name="safeItemDetail_contentCard_elements_emptyCorruptedDeleted">لا توجد عناصر</string>
+    <string name="safeItemDetail_contentCard_elements_emptyDeleted">لا يوجد عنصر في “%s“</string>
+    <string name="safeItemDetail_contentCard_elements_voiceOver_empty">يمكنك إضافة عناصر فرعية في %s من خلال الإجراءات الموجودة في الرأس.</string>
+    <string name="safeItemDetail_contentCard_informations_accessibility_actionCopy">نسخ %s</string>
+    <string name="safeItemDetail_contentCard_informations_accessibility_actionCopyNote">انسخ قيمة الحقل %s</string>
+    <string name="safeItemDetail_contentCard_informations_accessibility_actionCopySecured">نسخ القيمة المحمية</string>
+    <string name="safeItemDetail_contentCard_informations_accessibility_actionReadSecured">اقرأ القيمة المحمية</string>
+    <string name="safeItemDetail_contentCard_informations_accessibility_emptyField">لا توجد قيمة</string>
+    <string name="safeItemDetail_contentCard_informations_accessibility_fieldLabel">مجال %s</string>
+    <string name="safeItemDetail_contentCard_informations_accessibility_fieldSecondaryText">(%s)</string>
+    <string name="safeItemDetail_contentCard_informations_accessibility_fieldText">القيمة هي: %s</string>
+    <string name="safeItemDetail_contentCard_informations_accessibility_fullScreen">إظهار في وضع ملء الشاشة</string>
+    <string name="safeItemDetail_contentCard_informations_accessibility_noteFieldLabelEditVoiceOver">ملاحظة ميدانية. انقر نقرًا مزدوجًا لفتح الملاحظة وتعديلها.</string>
+    <string name="safeItemDetail_contentCard_informations_accessibility_noteFieldLabelVoiceOver">ملاحظة ميدانية. انقر نقرًا مزدوجًا لفتح الملاحظة وقراءتها بالكامل.</string>
+    <string name="safeItemDetail_contentCard_informations_accessibility_noteFieldTextEditVoiceOver">ها هي بداية الملاحظة:%s … انقر نقرًا مزدوجًا لفتح الملاحظة وتحريرها.</string>
+    <string name="safeItemDetail_contentCard_informations_accessibility_noteFieldTextVoiceOver">ها هي بداية الملاحظة: %s … انقر نقرًا مزدوجًا لفتح الملاحظة وقراءتها بالكامل.</string>
+    <string name="safeItemDetail_contentCard_informations_accessibility_securedValue">القيمة مخفية</string>
+    <string name="safeItemDetail_contentCard_informations_accessibility_securedValue_actionHide">إخفاء القيمة المضمونة</string>
+    <string name="safeItemDetail_contentCard_informations_accessibility_securedValue_actionShow">إظهار القيمة المضمونة</string>
+    <string name="safeItemDetail_contentCard_informations_corrupted">المعلومات الموجودة في هذا العنصر غير قابلة للفك.</string>
+    <string name="safeItemDetail_contentCard_informations_empty">لإضافة معلومات، قم بتحرير العنصر (الزاوية اليمنى العليا).</string>
+    <string name="safeItemDetail_contentCard_informations_emptyDeleted">لا توجد معلومات في هذا البند.</string>
+    <string name="safeItemDetail_contentCard_informations_securedValue">••••••••••••</string>
+    <string name="safeItemDetail_contentCard_informations_voiceOver_empty">لإضافة معلومات إلى هذا العنصر ، حدد “تحرير“ في الإجراءات الخاصة بالعنصر.</string>
+    <string name="safeItemDetail_contentCard_loading">جارٍ فك التشفير…</string>
+    <string name="safeItemDetail_contentCard_more_label_creationDate">تاريخ الإنشاء</string>
+    <string name="safeItemDetail_contentCard_more_label_deletionDate">تاريخ الحذف</string>
+    <string name="safeItemDetail_contentCard_more_label_updateAt">تم التحديث في</string>
+    <plurals name="safeItemDetail_contentCard_tab_elements">
+        <item quantity="zero">العنصر (%d)</item>
+        <item quantity="one">العناصر (%d)</item>
+        <item quantity="two">العناصر (%d)</item>
+        <item quantity="other">العناصر (%d)</item>
+        <item quantity="many">العناصر (%d)</item>
+        <item quantity="few">العناصر (%d)</item>
+    </plurals>
+    <plurals name="safeItemDetail_contentCard_tab_elements_accessibility">
+        <item quantity="zero">عنصر. لديك %d.</item>
+        <item quantity="one">عناصر. لديك%d.</item>
+        <item quantity="two">عناصر. لديك%d.</item>
+        <item quantity="other">عناصر. لديك%d.</item>
+        <item quantity="many">عناصر. لديك%d.</item>
+        <item quantity="few">عناصر. لديك%d.</item>
+    </plurals>
+    <string name="safeItemDetail_contentCard_tab_informations">معلومات</string>
+    <string name="safeItemDetail_contentCard_tab_more">أكثر</string>
+    <string name="safeItemDetail_corrupted_addItemMessage">إنشاء عنصر فرعي أمر مستحيل في عنصر غير قابل للفك.</string>
+    <string name="safeItemDetail_corruptedCard_button">يتعلم أكثر</string>
+    <string name="safeItemDetail_corruptedCard_message">بعض المعلومات الموجودة في هذا العنصر غير قابلة للفك.</string>
+    <string name="safeItemDetail_corruptedCard_title">خطأ في فك التشفير ⚠️</string>
+    <string name="safeItemDetail_delete_alert_button_confirm">نعم ، انتقل إلى سلة المهملات</string>
+    <string name="safeItemDetail_delete_alert_button_deleteIncludingChildren">الكل ، بما في ذلك العناصر الفرعية</string>
+    <string name="safeItemDetail_delete_alert_button_deleteKeepingChildren">هذا العنصر فقط</string>
+    <plurals name="safeItemDetail_delete_alert_message_corruptedItemWithChildren">
+        <item quantity="zero">أنت على وشك نقل العنصر غير القابل للفك و %d عنصر فرعي إلى سلة المهملات الخاصة بك.\nهل تريد الاستمرار؟</item>
+        <item quantity="one">أنت على وشك نقل العنصر الذي لا يمكن فك تشفيره وعناصره الفرعية%d إلى سلة المهملات الخاصة بك.\nهل تريد الاستمرار؟</item>
+        <item quantity="two">أنت على وشك نقل العنصر الذي لا يمكن فك تشفيره وعناصره الفرعية%d إلى سلة المهملات الخاصة بك.\nهل تريد الاستمرار؟</item>
+        <item quantity="other">أنت على وشك نقل العنصر الذي لا يمكن فك تشفيره وعناصره الفرعية%d إلى سلة المهملات الخاصة بك.\nهل تريد الاستمرار؟</item>
+        <item quantity="many">أنت على وشك نقل العنصر الذي لا يمكن فك تشفيره وعناصره الفرعية%d إلى سلة المهملات الخاصة بك.\nهل تريد الاستمرار؟</item>
+        <item quantity="few">أنت على وشك نقل العنصر الذي لا يمكن فك تشفيره وعناصره الفرعية%d إلى سلة المهملات الخاصة بك.\nهل تريد الاستمرار؟</item>
+    </plurals>
+    <string name="safeItemDetail_delete_alert_message_corruptedWithChildren">هل تريد نقل جميع العناصر الفرعية إلى سلة المهملات أيضًا؟</string>
+    <string name="safeItemDetail_delete_alert_message_corruptedWithoutChildren">أنت على وشك نقل العنصر غير القابل للفك إلى سلة المهملات.\nهل تريد الاستمرار؟</string>
+    <plurals name="safeItemDetail_delete_alert_message_itemWithChildren">
+        <item quantity="zero">ستقوم بحذف العنصر “%2$s“ والعنصر الفرعي %1$d.\nهل تؤكد؟</item>
+        <item quantity="one">ستقوم بحذف العنصر “%2$s“ وعناصره الفرعية%1$d.\nهل تؤكد؟</item>
+        <item quantity="two">ستقوم بحذف العنصر “%2$s“ وعناصره الفرعية%1$d.\nهل تؤكد؟</item>
+        <item quantity="other">ستقوم بحذف العنصر “%2$s“ وعناصره الفرعية%1$d.\nهل تؤكد؟</item>
+        <item quantity="many">ستقوم بحذف العنصر “%2$s“ وعناصره الفرعية%1$d.\nهل تؤكد؟</item>
+        <item quantity="few">ستقوم بحذف العنصر “%2$s“ وعناصره الفرعية%1$d.\nهل تؤكد؟</item>
+    </plurals>
+    <string name="safeItemDetail_delete_alert_message_withChildren">ما الذي تريد نقله إلى سلة المهملات الخاصة بك “%s“؟</string>
+    <string name="safeItemDetail_delete_alert_message_withoutChildren">أنت على وشك نقل العنصر “%s“ إلى سلة المهملات.\nهل تريد الاستمرار ؟</string>
+    <string name="safeItemDetail_delete_alert_title">يمسح</string>
+    <string name="safeItemDetail_delete_success">انتقل إلى بن!</string>
+    <string name="safeItemDetail_delete_success_message">تمت إزالة العنصر بشكل دائم</string>
+    <string name="safeItemDetail_deleteField_alert_message">هل أنت متأكد أنك تريد حذف هذا الحقل؟\nلا يمكنك التراجع عن ذلك.</string>
+    <string name="safeItemDetail_deleteField_alert_title">هل تريد حذف الحقل %s؟</string>
+    <string name="safeItemDetail_deletedCard_action">يعيد</string>
+    <plurals name="safeItemDetail_deletedCard_message">
+        <item quantity="zero">⚠️ هذا العنصر في سلة المهملات الخاصة بك. سيتم حذفه خلال %d يوم. هل تريد استعادته؟</item>
+        <item quantity="one">⚠️ هذا العنصر في سلة المهملات الخاصة بك. سيتم حذفه خلال%d يوم. هل تريد استعادته؟</item>
+        <item quantity="two">⚠️ هذا العنصر في سلة المهملات الخاصة بك. سيتم حذفه خلال%d يوم. هل تريد استعادته؟</item>
+        <item quantity="other">⚠️ هذا العنصر في سلة المهملات الخاصة بك. سيتم حذفه خلال%d يوم. هل تريد استعادته؟</item>
+        <item quantity="many">⚠️ هذا العنصر في سلة المهملات الخاصة بك. سيتم حذفه خلال%d يوم. هل تريد استعادته؟</item>
+        <item quantity="few">⚠️ هذا العنصر في سلة المهملات الخاصة بك. سيتم حذفه خلال%d يوم. هل تريد استعادته؟</item>
+    </plurals>
+    <string name="safeItemDetail_duplicateDialog_childrenMessage">أنت على وشك تكرار العنصر “%1$s“ وجميع عناصره الفرعية. سيكون هذا العنصر الجديد مرئيًا في العنصر الأصلي “%2$s“. هل تريد الاستمرار؟</string>
+    <string name="safeItemDetail_duplicateDialog_childrenMessage_withoutChildren">أنت على وشك تكرار العنصر “%1$s“. سيكون هذا العنصر الجديد مرئيًا في العنصر الأصلي “%2$s“. هل تريد الاستمرار؟</string>
+    <string name="safeItemDetail_duplicateDialog_ok">نعم ، مكرر</string>
+    <string name="safeItemDetail_duplicateDialog_rootMessage">أنت على وشك تكرار العنصر “%s“ وجميع عناصره الفرعية. هل تريد الاستمرار؟</string>
+    <string name="safeItemDetail_duplicateDialog_rootMessage_withoutChildren">أنت على وشك تكرار العنصر “%1$s“. هل تريد الاستمرار؟</string>
+    <string name="safeItemDetail_duplicateDialog_title">ينسخ</string>
+    <string name="safeItemDetail_duplicateFeedback_ongoingMessage">تكرار العنصر…</string>
+    <string name="safeItemDetail_duplicateFeedback_successAction">انظر النسخة</string>
+    <string name="safeItemDetail_duplicateFeedback_successMessage">تم تكرار العنصر بنجاح</string>
+    <string name="safeItemDetail_editItem_accessibility_disabled_save">لا توجد تعديلات للحفظ حتى الآن</string>
+    <string name="safeItemDetail_editItem_accessibility_enabled_save">احفظ التعديل</string>
+    <string name="safeItemDetail_fields_file_noViewer">ملف بدون معاينة في oneSafe. لمشاهدته، قم بتحميله</string>
+    <string name="safeItemDetail_fields_file_see">انظر في oneSafe</string>
+    <string name="safeItemDetail_fields_image_viewerError">❌ غير قادر على معاينة الصورة. قد يكون الملف تالفًا.</string>
+    <string name="safeItemDetail_fields_pdf_viewer_corruptedError">❌ الملف ليس بصيغة PDF أو تالف</string>
+    <string name="safeItemDetail_fields_pdf_viewer_protectedError">🔓 ملف PDF محمي بكلمة مرور</string>
+    <string name="safeItemDetail_file_errorLabel">لم يتم العثور على الملف</string>
+    <string name="safeItemDetail_icon_delete">رمز الحذف</string>
+    <string name="safeItemDetail_icon_import_camera">من الكاميرا</string>
+    <string name="safeItemDetail_icon_import_cloud">من ملف السحابة</string>
+    <string name="safeItemDetail_icon_import_fetchAutomatically">من حقل URL الخاص بالعنصر</string>
+    <string name="safeItemDetail_icon_import_fromUrl">من URL إلى الصورة</string>
+    <string name="safeItemDetail_icon_import_fromUrl_dialog_label">رابط للصورة</string>
+    <string name="safeItemDetail_icon_import_fromUrl_dialog_title">أدخل الرابط</string>
+    <string name="safeItemDetail_icon_import_gallery">من المعرض</string>
+    <string name="safeItemDetail_icon_import_photoLibrary">من مكتبة الصور</string>
+    <string name="safeItemDetail_icon_import_title">من أين تريد استيراد صورة من؟</string>
+    <string name="safeItemDetail_iconRemoteImageFetching_errorDescription">من المستحيل تنزيل صورة على عنوان url هذا.</string>
+    <string name="safeItemDetail_menu_modifyItem">يُعدِّل\nالمعلومات</string>
+    <string name="safeItemDetail_menu_modifyStruct">تعديل الهيكل</string>
+    <string name="safeItemDetail_moveIntoBin_success_message">تم نقل العنصر إلى الحاوية.</string>
+    <string name="safeItemDetail_newItem_accessibility_disabled_save">أكمل النموذج لحفظ العنصر الخاص بك</string>
+    <string name="safeItemDetail_newItem_accessibility_enabled_save">حفظ عنصر جديد</string>
+    <string name="safeItemDetail_newItem_title">عنصر جديد</string>
+    <string name="safeItemDetail_notSupportedFields_message">في هذا العنصر، إليك أنواع الحقول التي لم نتمكن من استيرادها (نتيجة الاستيراد من إصدار أحدث من oneSafe): %s</string>
+    <string name="safeItemDetail_notSupportedFields_title">⚠️ الحقول غير مدعومة</string>
+    <string name="safeItemDetail_remove_alert_button_confirm">نعم ، قم بإزالته نهائيًا</string>
+    <plurals name="safeItemDetail_remove_alert_message_corruptedItemWithChildren">
+        <item quantity="zero">أنت على وشك حذف العنصر الذي لا يمكن فك تشفيره والعنصر الفرعي %d\u0020\u0020نهائيًا.\nهل تريد الاستمرار؟</item>
+        <item quantity="one">أنت على وشك حذف العنصر الذي لا يمكن فك تشفيره وعناصره الفرعية %d نهائيًا.\nهل تريد الاستمرار؟</item>
+        <item quantity="two">أنت على وشك حذف العنصر الذي لا يمكن فك تشفيره وعناصره الفرعية %d\u0020\u0020نهائيًا.\nهل تريد الاستمرار؟</item>
+        <item quantity="other">أنت على وشك حذف العنصر الذي لا يمكن فك تشفيره وعناصره الفرعية %d\u0020\u0020نهائيًا.\nهل تريد الاستمرار؟</item>
+        <item quantity="many">أنت على وشك حذف العنصر الذي لا يمكن فك تشفيره وعناصره الفرعية %d\u0020\u0020نهائيًا.\nهل تريد الاستمرار؟</item>
+        <item quantity="few">أنت على وشك حذف العنصر الذي لا يمكن فك تشفيره وعناصره الفرعية %d\u0020\u0020نهائيًا.\nهل تريد الاستمرار؟</item>
+    </plurals>
+    <string name="safeItemDetail_remove_alert_message_corruptedWithChildren">هل تريد حذف كل العناصر الفرعية للعنصر غير القابل للفك بشكل دائم؟</string>
+    <string name="safeItemDetail_remove_alert_message_corruptedWithoutChildren">أنت على وشك حذف العنصر الذي لا يمكن فك تشفيره نهائيًا.\nهل تريد الاستمرار؟</string>
+    <plurals name="safeItemDetail_remove_alert_message_itemWithChildren">
+        <item quantity="zero">ستقوم بحذف العنصر “%2$s“ والعنصر الفرعي %1$d.\nهل تؤكد؟</item>
+        <item quantity="one">ستقوم بحذف العنصر “%2$s“ وعناصره الفرعية%1$d.\nهل تؤكد؟</item>
+        <item quantity="two">ستقوم بحذف العنصر “%2$s“ وعناصره الفرعية%1$d.\nهل تؤكد؟</item>
+        <item quantity="other">ستقوم بحذف العنصر “%2$s“ وعناصره الفرعية%1$d.\nهل تؤكد؟</item>
+        <item quantity="many">ستقوم بحذف العنصر “%2$s“ وعناصره الفرعية%1$d.\nهل تؤكد؟</item>
+        <item quantity="few">ستقوم بحذف العنصر “%2$s“ وعناصره الفرعية%1$d.\nهل تؤكد؟</item>
+    </plurals>
+    <string name="safeItemDetail_remove_alert_message_withChildren">هل تريد حذف كل العناصر الفرعية لـ “%s“ نهائيًا؟</string>
+    <string name="safeItemDetail_remove_alert_message_withoutChildren">أنت على وشك حذف العنصر “%s“ نهائيًا.\nهل تريد الاستمرار؟</string>
+    <string name="safeItemDetail_remove_alert_title">الحذف بشكل نهائي</string>
+    <string name="safeItemDetail_reorder">إعادة ترتيب المعلومات</string>
+    <string name="safeItemDetail_reorder_accessibility_longClickLabel">نقل العنصر</string>
+    <string name="safeItemDetail_reorder_accessibility_newPosition">انتقل إلى الموضع %d</string>
+    <string name="safeItemDetail_reorder_accessibility_rowText">%1$s (%2$s) في الموضع %3$d من %4$d</string>
+    <string name="safeItemDetail_reorder_save_accessibility">التحقق من صحة النظام الجديد</string>
+    <string name="safeItemDetail_snackbar_anotherPhoto">📷 التقاط صورة أو فيديو آخر؟</string>
+    <string name="safeItemDetail_tips_edit">قم بتحرير العنصر لتحديثه، وإضافة العديد من المعلومات الأخرى، مثل عنوان URL والأرقام وكلمات المرور والملاحظات والصور والنصوص والملفات وما إلى ذلك.</string>
+    <string name="safeItemDetail_title_empty_errorLabel">تحتاج إلى تسمية العنصر قبل الحفظ</string>
+    <string name="safeItemDetail_title_placeholder">عنوان البند</string>
+    <string name="safeItemDetail_url_link_placeholder">URL</string>
+    <string name="safeItemDetail_urlFetching_errorDescription">من المستحيل الحصول على رمز في عنوان url هذا.</string>
+    <string name="safeItemDetail_yearMonth_errorLabel">التاريخ غير صحيح</string>
+    <string name="safeItemDetail_cancelAlert_close">إغلاق بدون حفظ</string>
+    <string name="safeItemType_app">برنامج</string>
+    <string name="safeItemType_creditCard">بطاقة إئتمان</string>
+    <string name="safeItemType_custom">مخصص</string>
+    <string name="safeItemType_document">وثيقة</string>
+    <string name="safeItemType_folder">مجلد</string>
+    <string name="safeItemType_fromPasteboardUrl">من رابط في الحافظة</string>
+    <string name="safeItemType_twoFactor">من كود 2FA</string>
+    <string name="safeItemType_website">موقع إلكتروني</string>
+    <string name="searchScreen_recent_emptyText">لا يوجد بحث حديث</string>
+    <string name="searchScreen_recent_items_title">تمت استشارته مؤخرًا</string>
+    <string name="searchScreen_recent_search_title">عمليات البحث التي أجريتها مؤخرًا</string>
+    <string name="searchScreen_result_bin_title">نتائج من الحاوية (%d)</string>
+    <string name="searchScreen_result_noItem">لا يوجد لديك عناصر للبحث.</string>
+    <string name="searchScreen_result_noResult_description">لا نتيجة</string>
+    <string name="searchScreen_result_noResult_title">عفوا 😥</string>
+    <string name="searchScreen_result_title">النتائج (%d)</string>
+    <plurals name="searchScreen_search_placeholder">
+        <item quantity="zero">البحث بين %d عنصر</item>
+        <item quantity="one">البحث بين%d عناصر</item>
+        <item quantity="two">البحث بين%d عناصر</item>
+        <item quantity="other">البحث بين%d عناصر</item>
+        <item quantity="many">البحث بين%d عناصر</item>
+        <item quantity="few">البحث بين%d عناصر</item>
+    </plurals>
+    <string name="searchScreen_title">يبحث</string>
+    <string name="setFavorite_success_message">تمت إضافة %s إلى المفضلة لديك</string>
+    <string name="settings_advancedSettingsCard_reindexAllItems">إعادة فهرسة كافة العناصر</string>
+    <string name="settings_advancedSettingsCard_reindexing">جارٍ إعادة فهرسة العناصر…</string>
+    <string name="settings_advancedSettingsCard_title">إعدادات متقدمة</string>
+    <string name="settings_autoBackup_frequency_everyDay_title">كل يوم</string>
+    <string name="settings_autoBackup_frequency_everyMonth_title">كل 30 يوم</string>
+    <string name="settings_autoBackup_frequency_everyWeek_title">كل 7 أيام</string>
+    <string name="settings_autoBackup_maxNumber_five">آخر 5</string>
+    <string name="settings_autoBackup_maxNumber_forty">آخر 40</string>
+    <string name="settings_autoBackup_maxNumber_ten">آخر 10</string>
+    <string name="settings_autoBackup_maxNumber_twenty">آخر 20</string>
+    <string name="settings_autoBackupFrequencyScreen_title">تردد النسخ الاحتياطية التلقائية</string>
+    <string name="settings_autoBackupMaxNumberScreen_description">يحتفظ OneSafe بالنسخ الاحتياطية الأخيرة ويحذف النسخ الاحتياطية الأقدم عند إنشاء نسخ احتياطية جديدة.</string>
+    <string name="settings_autoBackupMaxNumberScreen_title">عدد النسخ الاحتياطية المحفوظة</string>
+    <string name="settings_autoBackupScreen_allowAutoBackup_title">السماح بالنسخ الاحتياطي التلقائي</string>
+    <string name="settings_autoBackupScreen_allowAutoBackupOnGoogleDrive_title">النسخ الاحتياطي إلى جوجل درايف</string>
+    <string name="settings_autoBackupScreen_allowAutoBackupOnICloud_subtitle">سيتم أيضًا تخزين نسختك الاحتياطية المشفرة في حساب iCloud Drive الخاص بك</string>
+    <string name="settings_autoBackupScreen_allowAutoBackupOnICloud_title">النسخ الاحتياطي إلى iCloud Drive</string>
+    <string name="settings_autoBackupScreen_autoBackup_footer">يحتفظ oneSafe بآخر %d نسخ احتياطية ويحذف الأقدم منها عند إنشاء نسخ احتياطية جديدة.\nهام: إذا قمت بحذف التطبيق، فسيتم حذف النسخ الاحتياطية المحلية أيضًا.</string>
+    <string name="settings_autoBackupScreen_autoBackup_footerCloud">يقوم oneSafe بحماية %d من أحدث الإجراءات الاحتياطية وتكملة الإجراءات القديمة بالفرو وقياس الإجراءات الاحتياطية الجديدة.</string>
+    <string name="settings_autoBackupScreen_autoBackupFrequency_title">تردد النسخ الاحتياطي</string>
+    <string name="settings_autoBackupScreen_autoBackupMaxNumber_title">عدد النسخ الاحتياطية المحفوظة</string>
+    <string name="settings_autoBackupScreen_cloudAutoBackupSize">الوزن الإجمالي للنسخ الاحتياطية على السحابة</string>
+    <string name="settings_autoBackupScreen_dialog_disableLocalBackup_message">أنت على وشك تعطيل النسخ الاحتياطية المحلية وإزالة النسخ الاحتياطية الموجودة من وحدة تخزين التطبيقات الداخلية</string>
+    <string name="settings_autoBackupScreen_dialog_disableLocalBackup_title">تعطيل النسخ الاحتياطي المحلي</string>
+    <string name="settings_autoBackupScreen_error_driveBackupNotFound">لم يتم العثور على النسخة الاحتياطية على Google Drive</string>
+    <string name="settings_autoBackupScreen_error_unexpectedNullAccount">حدث خطأ ما أثناء اختيار الحساب</string>
+    <string name="settings_autoBackupScreen_error_wrongAuthenticationErrorCause">غير قادر على تشغيل مصادقة Google Drive</string>
+    <string name="settings_autoBackupScreen_informations_noBackups">لا توجد نسخ احتياطية حتى الآن</string>
+    <string name="settings_autoBackupScreen_informations_title">معلومات</string>
+    <string name="settings_autoBackupScreen_keepAutoBackupOnLocal_subtitle">سيتم أيضًا تخزين نسختك الاحتياطية في هاتفك</string>
+    <string name="settings_autoBackupScreen_keepAutoBackupOnLocal_title">احتفظ بنسخة محلية</string>
+    <string name="settings_autoBackupScreen_lastAutoBackupDate_title">تاريخ آخر نسخة احتياطية</string>
+    <string name="settings_autoBackupScreen_lastCloudAutoBackupDate_title">تاريخ آخر نسخة احتياطية على Google Drive</string>
+    <string name="settings_autoBackupScreen_lastLocalAutoBackupDate_title">تاريخ آخر نسخة احتياطية محلية</string>
+    <string name="settings_autoBackupScreen_localAutoBackupSize">الوزن الإجمالي للنسخ الاحتياطية على هاتفك</string>
+    <string name="settings_autoBackupScreen_restore_button">استعادة آخر حفظ</string>
+    <string name="settings_autoBackupScreen_restore_noBackupMessage">لا توجد نسخة احتياطية لاستعادة</string>
+    <string name="settings_autoBackupScreen_restore_title">يعيد</string>
+    <string name="settings_autoBackupScreen_saveAccess_GoogleDriveSaves">النسخ الاحتياطية في جوجل درايف</string>
+    <string name="settings_autoBackupScreen_saveAccess_iCloudSaves">نسخ iCloud Drive الاحتياطية</string>
+    <string name="settings_autoBackupScreen_saveAccess_localSaves">النسخ الاحتياطية المحلية</string>
+    <string name="settings_autoBackupScreen_saveAccess_title">الوصول إلى النسخ الاحتياطي</string>
+    <string name="settings_autoBackupScreen_settings_title">إعدادات</string>
+    <string name="settings_autoBackupScreen_title">نسخ إحتياطي آلي</string>
+    <string name="settings_backupCard_autoBackupLabel">نسخ إحتياطي آلي</string>
+    <string name="settings_backupCard_exportLabel">تصدير نسخة احتياطية</string>
+    <string name="settings_backupCard_importLabel">استيراد نسخة احتياطية</string>
+    <string name="settings_backupCard_synchronization">التزامن</string>
+    <string name="settings_backupCard_title">دعم</string>
+    <string name="settings_bubbles">فقاعات oneSafe وoneSafe K</string>
+    <string name="settings_bubbles_action">استخدم فقاعات واحدة آمنة</string>
+    <string name="settings_bubbles_footer">تجريبي / تجريبي - يسمح لك تطبيق OneSafe Bubbles بالتواصل الآمن مع جهات الاتصال الخاصة بك.\nبمجرد التفعيل، ستجد على الشاشة الرئيسية في أعلى اليمين زرًا لإضافة جهات اتصال Bubbles الخاصة بك.</string>
+    <string name="settings_bubbles_title">فقاعات OneSafe</string>
+    <string name="settings_multiSafe_autoBackupScreen_allowAutoBackup_title">تفويض عمليات النسخ الاحتياطي التلقائي لصندوق الودائع الآمن هذا</string>
+    <string name="settings_multiSafe_card_message">هذه الإعدادات هنا مرتبطة بالخزنة. إذا كان لديك العديد من الخزنات، ستحتاج إلى تعديل الإعدادات بشكل فردي.</string>
+    <string name="settings_multiSafe_card_title">خزائن مستقلة</string>
+    <string name="settings_multiSafe_deleteSafe">احذف هذه الخزنة</string>
+    <string name="settings_multiSafe_newSafe">إنشاء خزنة جديدة</string>
+    <string name="settings_panicDestruction_disabled">تكوين أداة وضع الذعر</string>
+    <string name="settings_panicDestruction_enabled">تم تثبيت الأداة الذكية وتم تمكين وضع الذعر</string>
+    <string name="settings_panicDestruction_installedAndDisabled">تم تثبيت الأداة الذكية وتعطيل وضع الذعر</string>
+    <string name="settings_passwordVerification_title">الرجاء إدخال كلمة مرورك الرئيسية للتصريح</string>
+    <string name="settings_personalization_appName_chess">شطرنج</string>
+    <string name="settings_personalization_appName_headphones">التجارب</string>
+    <string name="settings_personalization_cameraSystem_inApp_title">كاميرا واحدة آمنة</string>
+    <string name="settings_personalization_cameraSystem_system_description">المزيد من المزايا.\nيعتمد الأمان والخصوصية على كاميرا النظام لديك.</string>
+    <string name="settings_personalization_cameraSystem_title">اختيار الكاميرا</string>
+    <string name="settings_personalization_iconAndName_bottomsheet_subtitle">هذا هو الشكل الذي سيبدو عليه تطبيق oneSafe في هاتفك.\n⚠️ يرجى ملاحظة أن اسم التطبيق سيتغير أيضًا على شاشتك الرئيسية!\n⚠️ سيتم إيقاف التطبيق</string>
+    <string name="settings_personalization_iconAndName_bottomsheet_title">تحرير الاسم والرمز</string>
+    <string name="settings_personalization_iconAndName_subtitle">يمكنك تغيير رمز التطبيق الخاص بك (وكذلك اسم التطبيق لبعض هذه الخيارات).</string>
+    <string name="settings_personalization_iconAndName_title">رمز التطبيق واسمه</string>
+    <string name="settings_personalization_section_automation_fetchIconLabel">باستخدام عنوان URL الذي تضيفه إلى أحد العناصر، يمكنك السماح بالاسترداد التلقائي للأسماء والشعارات من موقع الويب.</string>
+    <string name="settings_personalization_section_automation_fetchIconTitle">جلب الشعار والعنوان</string>
+    <string name="settings_personalization_section_automation_haptic_subtitle">تقديم ردود فعل لمسية في التطبيق</string>
+    <string name="settings_personalization_section_automation_haptic_title">ردود الفعل اللمسية</string>
+    <string name="settings_personalization_section_automation_proximity_subtitle">حرك يدك أمام الشاشة في الأعلى لإغلاق الخزنة</string>
+    <string name="settings_personalization_section_automation_proximity_title">إغلاق بإيماءة القرب</string>
+    <string name="settings_personalization_section_automation_proximity_unavailable_ipad">غير متوفر على الايباد</string>
+    <string name="settings_personalization_section_automationTitle">أتمتة</string>
+    <string name="settings_personalization_section_materialYou_label">استخدم موضوع “MaterialYou“ لهاتفك الذكي</string>
+    <string name="settings_personalization_section_materialYou_title">سمة</string>
+    <string name="settings_personalization_title">إضفاء الطابع الشخصي</string>
+    <string name="settings_section_changePassword_feedback">تم إجراء التغيير!</string>
+    <string name="settings_section_changePassword_label">قم بتغيير كلمة المرور</string>
+    <string name="settings_section_importJson_confirm_button">قم باستيراد نسخة احتياطية من الإصدار السابق من oneSafe</string>
+    <string name="settings_section_importJson_confirm_title">قم بتأكيد الاستيراد</string>
+    <string name="settings_section_importJson_success">تمت إضافة العناصر بنجاح! 😍</string>
+    <string name="settings_section_onesafe_aboutLabel">عن</string>
+    <string name="settings_section_onesafe_extensions">ملحقات</string>
+    <string name="settings_section_onesafe_lock">قفل الخزنة</string>
+    <string name="settings_section_onesafe_rateUsLabel">قيمنا</string>
+    <string name="settings_section_personalization_label">التخصيص</string>
+    <string name="settings_section_safeAction_accountDeletion">حذف الحساب</string>
+    <string name="settings_section_safeAction_accountDeletion_alert_confirm">نعم احذف</string>
+    <string name="settings_section_safeAction_accountDeletion_alert_message">أنت على وشك حذف جميع العناصر المخزنة محليًا في هذه الخزنة. لا يمكن التراجع عنه! هل تؤكد؟</string>
+    <string name="settings_section_security_extension_label">ملحقات</string>
+    <string name="settings_section_security_option_label">خيارات الأمان</string>
+    <string name="settings_section_security_title">الأمان والتخصيص</string>
+    <string name="settings_section_vault_extensions">ملحقات</string>
+    <string name="settings_security_biometryError_locked_message">تم قفل القياسات الحيوية نظرًا لوجود عدد كبير جدًا من محاولات القياس الحيوي الفاشلة. يمكنك فتحه برمز المرور الخاص بك.</string>
+    <string name="settings_security_biometryError_notAvailable_message">لقد رفضت القياسات الحيوية في الماضي. لتفويضه ، قم بتنشيطه في إعدادات جهازك.</string>
+    <string name="settings_security_biometryError_notEnrolled_message">لم تقم بتنشيط القياسات الحيوية حتى الآن. يمكنك تمكينه في إعدادات جهازك.</string>
+    <string name="settings_security_section_autodestruction">إعداد التدمير التلقائي</string>
+    <string name="settings_security_section_autodestruction_enabled">تفعيل التدمير الذاتي</string>
+    <string name="settings_security_section_autodestruction_title">التدمير التلقائي</string>
+    <string name="settings_security_section_autolock_allowScreenshot_label">السماح بلقطات الشاشة</string>
+    <string name="settings_security_section_autolock_appChange_title">عن طريق تغيير التطبيق</string>
+    <string name="settings_security_section_autolock_inactivity_title">في حالة الخمول</string>
+    <string name="settings_security_section_autolock_title">قفل تلقائي</string>
+    <string name="settings_security_section_clipboard_clear">واضح</string>
+    <string name="settings_security_section_clipboard_information">عندما تقوم بالتبديل من oneSafe إلى تطبيق آخر ، بعد ما هي المدة التي تريد أن يتم فيها مسح بياناتك من الحافظة؟</string>
+    <string name="settings_security_section_clipboard_title">امسح الحافظة</string>
+    <string name="settings_security_section_fastId_title">مصادقة سريعة</string>
+    <string name="settings_security_section_fastId_useBiometric_info">لا يمكن تفعيل القياسات الحيوية إلا على واحدة فقط من خزائنك.</string>
+    <string name="settings_security_section_fastId_useBiometric_label">استخدم البيومترية</string>
+    <string name="settings_security_section_fastId_usefaceid_label">استخدم Face ID</string>
+    <string name="settings_security_section_fastId_usetouchid_label">استخدم Touch ID</string>
+    <string name="settings_security_section_overEncryption_status_disabled">تكوين التشفير المزدوج</string>
+    <string name="settings_security_section_overEncryption_status_enabled">تم تمكين التشفير الفائق</string>
+    <string name="settings_security_section_overEncryption_title">زيادة الأمن الآمن</string>
+    <string name="settings_security_section_save_footer">بشكل افتراضي، تقوم Apple بعمل نسخة احتياطية من التطبيقات ومحتواها على iCloud (مشفرة في حالة oneSafe 6). ⚠️ سيؤدي إلغاء تنشيطه إلى استحالة ترحيل محتوى oneSafe 6 من جهاز iPhone القديم إلى جهاز جديد.</string>
+    <string name="settings_security_section_save_message">النسخ الاحتياطي لتطبيق iCloud</string>
+    <string name="settings_security_section_save_title">نسخ iCloud الاحتياطية</string>
+    <string name="settings_security_section_shake_lock">سيؤدي هز هاتفك الذكي إلى قفل الخزنة</string>
+    <string name="settings_security_section_shake_title">هز للقفل</string>
+    <string name="settings_security_section_verifyPassword_description">كم مرة تريد منا أن نطلب منك التحقق من كلمة المرور الخاصة بك؟</string>
+    <string name="settings_security_section_verifyPassword_footer">تأكد من عدم نسيان كلمة المرور الرئيسية الخاصة بك مع هذا التذكير. لن نتمكن من مساعدتك إذا نسيتها!</string>
+    <string name="settings_security_section_verifyPassword_row">يؤكد</string>
+    <string name="settings_security_section_verifyPassword_title">اكد كلمة المرور</string>
+    <string name="settings_security_title">خيارات الأمان</string>
+    <string name="settings_tab_app">جنرال لواء</string>
+    <string name="settings_tab_safe">هذا الصندوق</string>
+    <string name="settings_title">إعدادات</string>
+    <string name="settings_warning_backup_description">لم تقم بعمل نسخة احتياطية من خزينتك منذ أكثر من شهر. إذا فقدت هاتفك أو قمت بتغييره، فقد تفقد البيانات.\nانقر لتعديل</string>
+    <string name="settings_warning_backup_title">احتفظ بنسخة احتياطية من بياناتك!</string>
+    <string name="settings_warning_bottomsheet_createBackup_action">إنشاء نسخة احتياطية</string>
+    <string name="settings_warning_bottomsheet_enableAutoBackup_action">تمكين النسخ الاحتياطي التلقائي</string>
+    <string name="settings_warning_bottomsheet_passwordVerification_action">تمكين التحقق من كلمة المرور</string>
+    <string name="settings_warning_password_description">قمت بإلغاء تنشيط التذكير للتحقق من أنك تتذكر كلمة المرور الرئيسية الخاصة بك. قد تنساها!</string>
+    <string name="settings_warning_password_title">لا تنسى كلمة المرور الخاصة بك!</string>
+    <string name="settings_warning_passwordAndBackup_description">في حالة فقدان هاتفك أو تغييره، قد تواجه صعوبة في استعادة بياناتك أو فتح الخزنة.\n\nتوصياتنا\n1- قم بتفعيل التذكير للتحقق من أنك تتذكر كلمة مرورك الرئيسية.\n2- قم بعمل نسخة احتياطية لخزنتك: آخر نسخة احتياطية كانت منذ أكثر من شهر!\n\nانقر لتعديل</string>
+    <string name="settings_warning_passwordAndBackup_title">كلمة المرور والنسخ الاحتياطي</string>
+    <string name="settings_security_section_other_options">خيارات أخرى</string>
+    <string name="share_accessibility_sharePasswordContentDescription">شارك كلمة المرور</string>
+    <string name="share_encryptCard_error_description">حدث خطأ ما أثناء التصدير. هل ترغب في إعادة محاولة العملية؟</string>
+    <plurals name="share_encryptCard_message">
+        <item quantity="zero">إنشاء ملف المشاركة الآمن الذي يحتوي على **%d عنصر واحد آمن**.\n⚠️ يرجى عدم إغلاق التطبيق.</item>
+        <item quantity="one">إنشاء ملف المشاركة الآمنة الذي يحتوي على عناصر **%d oneSafe**.\n⚠️ يرجى عدم إغلاق التطبيق.</item>
+        <item quantity="two">إنشاء ملف المشاركة الآمنة الذي يحتوي على **عناصر OneSafe**.\n⚠️ يرجى عدم إغلاق التطبيق.</item>
+        <item quantity="other">إنشاء ملف المشاركة الآمنة الذي يحتوي على **عناصر OneSafe**.\n⚠️ يرجى عدم إغلاق التطبيق.</item>
+        <item quantity="many">إنشاء ملف المشاركة الآمنة الذي يحتوي على **عناصر OneSafe**.\n⚠️ يرجى عدم إغلاق التطبيق.</item>
+        <item quantity="few">إنشاء ملف المشاركة الآمنة الذي يحتوي على **عناصر OneSafe**.\n⚠️ يرجى عدم إغلاق التطبيق.</item>
+    </plurals>
+    <string name="share_encryptCard_title">تشفير …</string>
+    <string name="share_exportView_title">مشاركة آمنة</string>
+    <string name="share_fileCard_actionLabel">شارك الملف</string>
+    <plurals name="share_fileCard_fileSize">
+        <item quantity="zero">%1$s %2$d - عنصر</item>
+        <item quantity="one">%1$s -%2$d عنصر</item>
+        <item quantity="two">%1$s -%2$d عنصر</item>
+        <item quantity="other">%1$s -%2$d عنصر</item>
+        <item quantity="many">%1$s -%2$d عنصر</item>
+        <item quantity="few">%1$s -%2$d عنصر</item>
+    </plurals>
+    <string name="share_fileCard_message">يستخدم **قناة أخرى غير كلمة المرور** لإرسال ملف المشاركة المشفر إليه. على سبيل المثال ، أحدهما عبر رسالة نصية ، والآخر عبر البريد الإلكتروني أو تطبيق المراسلة الفورية.</string>
+    <string name="share_fileCard_title">الخطوة 2: ملف آمن للمشاركة</string>
+    <plurals name="share_import_message">
+        <item quantity="zero">قمنا بفك تشفير%d عنصر في الملف. يرجى الانتظار أثناء الإضافة.</item>
+        <item quantity="one">قمنا بفك تشفير%d عنصر في الملف. يرجى الانتظار أثناء الإضافة.</item>
+        <item quantity="two">قمنا بفك تشفير%d عنصر في الملف. يرجى الانتظار أثناء الإضافة.</item>
+        <item quantity="other">قمنا بفك تشفير%d عنصر في الملف. يرجى الانتظار أثناء الإضافة.</item>
+        <item quantity="many">قمنا بفك تشفير%d عنصر في الملف. يرجى الانتظار أثناء الإضافة.</item>
+        <item quantity="few">قمنا بفك تشفير%d عنصر في الملف. يرجى الانتظار أثناء الإضافة.</item>
+    </plurals>
+    <plurals name="share_itemWithChildrenDialog_includeChildrenButton">
+        <item quantity="zero">هذا العنصر و%d عنصر فرعي</item>
+        <item quantity="one">الكل ، بما في ذلك%d عناصر فرعية</item>
+        <item quantity="two">الكل ، بما في ذلك%d عناصر فرعية</item>
+        <item quantity="other">الكل ، بما في ذلك%d عناصر فرعية</item>
+        <item quantity="many">الكل ، بما في ذلك%d عناصر فرعية</item>
+        <item quantity="few">الكل ، بما في ذلك%d عناصر فرعية</item>
+    </plurals>
+    <string name="share_itemWithChildrenDialog_message">ماذا تريد أن تشارك؟</string>
+    <string name="share_itemWithChildrenDialog_onlyItemButton">هذا العنصر فقط</string>
+    <string name="share_itemWithChildrenDialog_title">يشارك</string>
+    <string name="share_passwordCard_message">الملف مؤمن بكلمة المرور التي أنشأناها للتو.\n**أرسله إلى جهة الاتصال الخاصة بك**، سيُطلب منك الاستيراد في ون سيف 6.</string>
+    <string name="share_passwordCard_title">الخطوة 1: كلمة المرور للمشاركة</string>
+    <string name="share_safeItemDetail_actions_accessibility_title">ماذا تريد أن تفعل بكلمة المرور؟</string>
+    <string name="share_sendFileWarningDialog_acknowledgeButton">ذُكر</string>
+    <string name="share_sendFileWarningDialog_dontRemindButton">لا تذكرني</string>
+    <string name="share_sendFileWarningDialog_message">💡 لأقصى قدر من الأمان ، لا تنقل الملف على نفس القناة مثل كلمة المرور!</string>
+    <string name="share_success_message">تم استيراد العناصر بنجاح</string>
+    <string name="signInScreen_accessibility_biometric">استخدام البيومترية</string>
+    <string name="signInScreen_accessibility_connect">لتسجيل الدخول</string>
+    <string name="signInScreen_accessibility_hint">أدخل كلمة المرور الخاصة بك لتسجيل الدخول أو استخدام القياسات الحيوية</string>
+    <string name="signInScreen_accessibility_newSafe">إنشاء خزنة جديدة</string>
+    <string name="signInScreen_firstTime_welcome">مرحبًا بك في oneSafe 🥳</string>
+    <string name="signInScreen_form_password_error">يبدو أن كلمة مرورك غير صحيحة 😬</string>
+    <string name="signInScreen_form_password_title">كلمة السر الرئيسية</string>
+    <string name="signInScreen_popupBiometric_cancel">استخدم كلمة المرور</string>
+    <string name="signInScreen_popupBiometric_message">لذا ، دعنا نتحقق من أنك أنت حقًا.</string>
+    <string name="signInScreen_popupBiometric_refuse">رفض</string>
+    <string name="signInScreen_popupBiometric_title">تسجيل الدخول باستخدام القياسات الحيوية</string>
+    <string name="signInScreen_popupBiometric_title_ios">تسجيل الدخول مع %s</string>
+    <string name="signInScreen_welcome">سعيد لرؤيتك مرة أخرى</string>
+    <string name="supportUs_bottomSheet_description">OneSafe هو تطبيق نوفره لك مجانًا لتأمين الحياة الرقمية لأكبر عدد ممكن من الأشخاص.\n\nلذلك إذا كنت تحب oneSafe ، فهناك شيئان يمكنك القيام بهما 🤩: تحدث عن الأمر من حولك ، وأخبرنا برأيك! 💙</string>
+    <string name="supportUs_bottomSheet_iOS_love">أحبه 😍</string>
+    <string name="supportUs_bottomSheet_iOS_meh">لا بأس</string>
+    <string name="supportUs_bottomSheet_rateButton">قيم OneSafe</string>
+    <string name="supportUs_bottomSheet_title">ادعمنا ❤️</string>
+    <string name="supportUs_card_description">هل تحب oneSafe وترغب في دعمنا؟ يمكنك أن تعطينا ملاحظة على المتجر وأن تكتب تعليقًا لطيفًا ✌️</string>
+    <string name="supportUs_card_knowMoreButton">أخبرنا!</string>
+    <string name="supportUs_card_title">ادعمنا ❤️</string>
+    <string name="tabBar_accessibility_tapToSwitch">انقر مرتين للتبديل إلى علامة التبويب هذه</string>
+    <string name="tip_emojiIconTip_message">إذا بدأت عنوان العنصر بواسطة رمز تعبيري ، فسيتم عرضه كرمز العنصر!</string>
+    <string name="tip_emojiIconTip_title">الرموز التعبيرية كرمز</string>
+    <string name="tip_urlAutofillTip_message">املأ حقل عنوان URL أولاً ، وسنحاول العثور على العنوان والأيقونة لك!</string>
+    <string name="tip_urlAutofillTip_title">معلومات موقع الملء التلقائي</string>
+    <string name="twoFactor_scan_title">امسح رمز QR ثنائي العامل ضوئيًا</string>
+    <string name="unsetFavorite_success_message">تمت إزالة %s من المفضلة لديك</string>
+    <string name="update_store_note_android">العديد من الميزات الجديدة: 1) الخزنة المتعددة لتنظيم أغراضك في خزائن مختلفة، 2) مشاركة الأغراض عبر Bubbles إلى جهات الاتصال الخاصة بك، 3) بيانات Bubbles والتشفير في النسخة الاحتياطية الخاصة بك، 4) والآن كلمة مرور خاصة للتدمير الذاتي للخزنة، 5) تحذير للتأكد من تفعيل تذكير كلمة المرور لديك، وأنك قمت بعمل نسخة احتياطية في آخر 30 يومًا.</string>
+    <string name="update_store_note_androidbeta">شكرًا لكونك أحد مختبري الإصدار التجريبي من OneSafe 6 💙! في هذا الإصدار، لديك تقارير الأعطال عبر Firebase، حتى نتمكن من التحقيق في المشكلات وإصلاحها. لا توجد تحليلات، تقارير الأعطال فقط، لخصوصيتك.</string>
+    <string name="update_store_note_ios">تحسينات على “OneSafe Bubbles“، أفضل طريقة للتواصل الآمن مع جهات الاتصال الخاصة بك، عبر جميع تطبيقات الهاتف المحمول التي تحبها.</string>
+    <string name="verifyPassword_bottomSheet_description">بفضل القياسات الحيوية لفتح oneSafe ، ربما تكون قد نسيت كلمة مرورك الرئيسية.\n\nلماذا لا تتحقق الآن من أنك ما زلت تتذكره؟ 🤓</string>
+    <string name="verifyPassword_bottomSheet_laterButton">لاحقاً</string>
+    <string name="verifyPassword_bottomSheet_title">اكد كلمة المرور</string>
+    <string name="verifyPassword_bottomSheet_verifyButton">يؤكد</string>
+    <string name="verifyPassword_inputCard_description">أدخل كلمة مرورك الرئيسية للتأكد من أنك ما زلت تتذكرها!</string>
+    <string name="verifyPassword_inputCard_title">اكد كلمة المرور</string>
+    <string name="verifyPassword_interval_everyMonth">كل شهر</string>
+    <string name="verifyPassword_interval_everySixMonths">كل ستة اشهر</string>
+    <string name="verifyPassword_interval_everyTwoMonths">كل شهرين</string>
+    <string name="verifyPassword_interval_everyTwoWeeks">كل أسبوعين</string>
+    <string name="verifyPassword_interval_never">أبداً</string>
+    <string name="verifyPassword_interval_weekly">أسبوعياً</string>
+    <string name="widget_auto_destruction_description">تتيح لك هذه الأداة تشغيل OneSafe واستخدام وضع الذعر لحذف بعض الخزائن الخاصة بك.</string>
+    <string name="writeMessageScreen_previewInfo_description">هذه معاينة لما سترسله إلى جهة الاتصال الخاصة بك. الهدف هو توضيح نوع الرسالة المشفرة التي سترسلها.\n\nتستفيد oneSafe Bubbles من بروتوكول السقاطة المزدوجة لتشفير هذه الرسائل: سيتم إنشاء المفاتيح النهائية المستخدمة لتشفير هذه الرسالة في اللحظة الأخيرة عندما تقرر إرسال هذه الرسالة. لذلك ستكون الرسالة النهائية المشفرة مختلفة عن هذه المعاينة.</string>
+    <string name="writeMessageScreen_previewInfo_title">معلومة</string>
+    <string name="wrongPassword_card_changePasswordButton">تغيير كلمة المرور الخاصة بي</string>
+    <string name="wrongPassword_card_description">إنها ليست كلمة المرور الرئيسية الصحيحة. إذا نسيتها، فلا يزال بإمكانك تغييرها!</string>
+    <string name="wrongPassword_card_retryButton">أعد المحاولة</string>
+    <string name="wrongPassword_card_title">كلمة مرور خاطئة 😬</string>
+</resources>

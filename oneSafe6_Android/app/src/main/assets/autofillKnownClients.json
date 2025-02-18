@@ -1,0 +1,52 @@
+[
+    {
+        "name": "Facebook",
+        "domains": [
+            "m.facebook.com",
+            "facebook.com"
+        ],
+        "appPackages": "com.facebook.katana"
+    },
+    {
+        "name": "Instagram",
+        "domains": [
+            "instagram.com"
+        ],
+        "appPackage": "com.instagram.android"
+    },
+    {
+        "name": "LinkedIn",
+        "domains": [
+            "linkedin.com"
+        ],
+        "appPackage": "com.linkedin.android"
+    },
+    {
+        "name": "Netflix",
+        "domains": [
+            "netflix.com"
+        ],
+        "appPackage": "com.netflix.mediaclient"
+    },
+    {
+        "name": "My Canal",
+        "domains": [
+            "canalplus.com"
+        ],
+        "appPackage": "com.canal.android.canal"
+    },
+    {
+        "name": "Welcome Originals",
+        "domains": [
+            "welcomeoriginals.com"
+        ],
+        "appPackage": "co.welcometothejungle.welcomeoriginals.android"
+    },
+    {
+        "name": "6 Play",
+        "domains": [
+            "6play.fr"
+        ],
+        "appPackage": "fr.m6.m6replay"
+    }
+]
