@@ -562,7 +562,6 @@ class ImportEngineImpl @Inject constructor(
         importCacheDataSource.migratedSearchIndexToImport += fieldIndexEntries
     }
 
-    // TODO make sure every icon file has an item, and every item with icon has an icon file
     private suspend fun finishIdsMigration(archiveExtractedDirectory: File) {
         if (importCacheDataSource.isItemDataImported) {
             val archiveContent = importCacheDataSource.archiveContent!!
@@ -579,21 +578,37 @@ class ImportEngineImpl @Inject constructor(
                 .orEmpty()
             // First, we gather all the already used ids.
             @OptIn(CrossSafeData::class)
-            val existingIconsIds: List<String> = iconRepository.getAllIcons().map { it.nameWithoutExtension }
-            val migratedIconIdsToImport = importCacheDataSource.migratedIconsToImport.map { it.nameWithoutExtension }
+            val existingIconsIds: List<String> = iconRepository.getAllIcons().map { it.nameWithoutExtension.lowercase() }
+            val migratedIconIdsToImport = importCacheDataSource.migratedIconsToImport.map { it.nameWithoutExtension.lowercase() }
 
             // We iterate over all the items.
             safeItemsToImport.mapTo(importCacheDataSource.migratedSafeItemsToImport) { item ->
                 // Re-generate and map icon ids to avoid collision with existing icons (double import)
-                item.iconId?.takeIf { migratedIconIdsToImport.contains(it.toString()) }?.let { oldIconId ->
+                val iconId = item.iconId
+                if (iconId != null && migratedIconIdsToImport.contains(iconId.toString())) {
                     // Keep new icon id as UUID to let Room handle mapping later.
                     var newIconId: UUID = iconIdProvider()
                     // We create the new icon id.
-                    while (existingIconsIds.contains(newIconId.toString())) newIconId = iconIdProvider()
+                    while (existingIconsIds.contains(newIconId.toString().lowercase())) newIconId = iconIdProvider()
                     // We store the old and new ids into the mapping dictionary.
-                    importCacheDataSource.newIconIdsByOldOnes[oldIconId] = newIconId
+                    importCacheDataSource.newIconIdsByOldOnes[iconId] = newIconId
                     item.copy(iconId = newIconId)
-                } ?: item.copy(iconId = null)
+                } else if (iconId != null) {
+                    log.e("File not found for icon $iconId referenced in item")
+                    item.copy(iconId = null)
+                } else {
+                    item.copy(iconId = null)
+                }
+            }
+
+            // Remove potential orphan icons from importCacheDataSource.migratedIconsToImport list
+            val oldItemIconsId = importCacheDataSource.newIconIdsByOldOnes.keys.map { it.toString().lowercase() }
+            importCacheDataSource.migratedIconsToImport = importCacheDataSource.migratedIconsToImport.filter { file ->
+                oldItemIconsId.contains(file.nameWithoutExtension).also { exist ->
+                    if (!exist) {
+                        log.e("Orphan icon file ${file.name} in archive (file exist but is not referenced by item)")
+                    }
+                }
             }
 
             importCacheDataSource.migratedSafeItemFieldsToImport = safeItemFieldsToImport.mapNotNull { field ->
@@ -610,7 +625,7 @@ class ImportEngineImpl @Inject constructor(
                     )
                 }.apply {
                     if (this == null) {
-                        log.e("Field as no associated SafeItem")
+                        log.e("Field has no associated SafeItem")
                     }
                 }
             }

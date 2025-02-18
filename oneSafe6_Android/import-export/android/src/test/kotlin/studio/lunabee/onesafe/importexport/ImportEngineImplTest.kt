@@ -37,12 +37,12 @@ import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.compose.androidtest.helper.LbcFolderResource
 import studio.lunabee.compose.androidtest.helper.LbcResourcesHelper
 import studio.lunabee.di.CryptoConstantsTestModule
-import studio.lunabee.onesafe.cryptography.android.CryptoConstants
-import studio.lunabee.onesafe.cryptography.android.PBKDF2JceHashEngine
-import studio.lunabee.onesafe.cryptography.android.PasswordHashEngine
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.messaging.domain.repository.ConversationRepository
 import studio.lunabee.messaging.domain.repository.MessageRepository
+import studio.lunabee.onesafe.cryptography.android.CryptoConstants
+import studio.lunabee.onesafe.cryptography.android.PBKDF2JceHashEngine
+import studio.lunabee.onesafe.cryptography.android.PasswordHashEngine
 import studio.lunabee.onesafe.domain.Constant
 import studio.lunabee.onesafe.domain.model.importexport.ImportMetadata
 import studio.lunabee.onesafe.domain.model.importexport.ImportMode
@@ -57,14 +57,15 @@ import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
 import studio.lunabee.onesafe.domain.usecase.item.SortItemNameUseCase
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemFieldUseCase
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemUseCase
+import studio.lunabee.onesafe.domain.utils.CrossSafeData
 import studio.lunabee.onesafe.error.OSImportExportError
-import studio.lunabee.onesafe.importexport.engine.ImportEngine
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltUnitTest
 import studio.lunabee.onesafe.test.assertFailure
 import studio.lunabee.onesafe.test.assertSuccess
 import studio.lunabee.onesafe.test.assertThrows
 import studio.lunabee.onesafe.test.firstSafeId
+import studio.lunabee.onesafe.test.testUUIDs
 import java.io.File
 import java.nio.ByteBuffer
 import java.util.UUID
@@ -76,11 +77,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
-private val logger = LBLogger.get<ImportEngineTest>()
+private val logger = LBLogger.get<ImportEngineImplTest>()
 
 @HiltAndroidTest
 @UninstallModules(CryptoConstantsTestModule::class)
-class ImportEngineTest : OSHiltUnitTest() {
+class ImportEngineImplTest : OSHiltUnitTest() {
     @get:Rule
     override val hiltRule: HiltAndroidRule = HiltAndroidRule(this)
 
@@ -90,7 +91,7 @@ class ImportEngineTest : OSHiltUnitTest() {
     @Inject @ApplicationContext
     lateinit var context: Context
 
-    @Inject lateinit var importEngine: ImportEngine
+    @Inject lateinit var importEngine: ImportEngineImpl
 
     @Inject lateinit var safeItemRepository: SafeItemRepository
 
@@ -346,6 +347,46 @@ class ImportEngineTest : OSHiltUnitTest() {
             }
             assertEquals(OSImportExportError.Code.METADATA_FILE_NOT_FOUND, error.code)
         }
+    }
+
+    @OptIn(CrossSafeData::class)
+    @Test
+    fun import_orphan_icon_test() {
+        runTest {
+            val testFolder = File(context.cacheDir, "testArchiveExtracted")
+            LbcResourcesHelper.copyFolderResourceToDeviceFile(
+                folderResources = ResourcesToCopy,
+                context = context,
+                deviceDestinationFile = testFolder,
+            )
+            val iconDir = File(testFolder, IconFolder)
+            val expectedIconsCount = iconDir.list()?.size
+            val orphanIconId = testUUIDs.last()
+            val orphanIcon = File(iconDir, orphanIconId.toString())
+            orphanIcon.writeBytes(ByteArray(50) { it.toByte() })
+
+            val importResult = importFlow(testFolder)
+            assertSuccess(importResult)
+
+            val actualIconsCount = iconRepository.getAllIcons().size
+            assertEquals(expectedIconsCount, actualIconsCount)
+        }
+    }
+
+    private suspend fun importFlow(testFolder: File): LBFlowResult<UUID?> {
+        importEngine.authenticateAndExtractData(
+            archiveExtractedDirectory = testFolder,
+            password = "a".toCharArray(),
+        ).last()
+
+        importEngine.setDataToImport(importBubbles = true, importItems = true)
+        importEngine.prepareDataForImport(
+            archiveExtractedDirectory = testFolder,
+            mode = ImportMode.Replace,
+        ).last()
+
+        val saveImportDataResult = importEngine.saveImportData(mode = ImportMode.Replace).last()
+        return saveImportDataResult
     }
 
     companion object {
