@@ -16,6 +16,7 @@
 
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
+    alias(libs.plugins.lbDokka)
 }
 
 group = "studio.lunabee.messaging"

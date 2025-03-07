@@ -27,7 +27,7 @@ dependencies {
     implementation(libs.lbcore)
     implementation(libs.lblogger)
 
-    api(projects.domainJvm)
     implementation(projects.commonJvm)
+    api(projects.domainJvm)
     implementation(projects.oneSafe6KMP.error)
 }

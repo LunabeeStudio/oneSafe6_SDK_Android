@@ -65,16 +65,13 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(platform(libs.compose.bom))
     implementation(platform(libs.lunabee.bom))
 
     ksp(libs.dagger.hilt.compiler)
 
-    androidTestImplementation(libs.compose.ui.test.junit4)
-    androidTestImplementation(libs.mockk.android)
-    api(libs.florisboard)
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
-    debugImplementation(libs.compose.ui.tooling)
     implementation(libs.activity.ktx)
     implementation(libs.biometric)
     implementation(libs.coil.compose)
@@ -83,6 +80,7 @@ dependencies {
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.doubleratchet)
+    api(libs.florisboard)
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.lbccore)
@@ -97,7 +95,6 @@ dependencies {
     implementation(libs.startup.runtime)
     implementation(libs.work.runtime)
 
-    androidTestImplementation(projects.commonTestAndroid)
     implementation(project(":app:help"))
     implementation(project(":app:login"))
     implementation(project(":app:migration"))
@@ -111,4 +108,10 @@ dependencies {
     implementation(projects.domainJvm)
     implementation(projects.oneSafe6KMP.error)
     implementation(projects.oneSafe6KMP.messagingDomain)
+
+    debugImplementation(libs.compose.ui.tooling)
+
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(projects.commonTestAndroid)
 }

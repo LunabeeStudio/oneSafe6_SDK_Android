@@ -303,6 +303,8 @@ class DecryptIncomingMessageUseCase @Inject constructor(
             null
         } catch (e: IllegalArgumentException) {
             null
+        } catch (e: IndexOutOfBoundsException) {
+            null
         }
     }
 
@@ -317,6 +319,8 @@ class DecryptIncomingMessageUseCase @Inject constructor(
             null
         } catch (e: IllegalArgumentException) {
             null
+        } catch (e: IndexOutOfBoundsException) {
+            null
         }
     }
 
@@ -329,6 +333,8 @@ class DecryptIncomingMessageUseCase @Inject constructor(
         } catch (e: SerializationException) {
             null
         } catch (e: IllegalArgumentException) {
+            null
+        } catch (e: IndexOutOfBoundsException) {
             null
         }
     }

@@ -1,0 +1,9 @@
+"🤖 Android":
+- changed-files:
+  - any-glob-to-any-file: ['oneSafe6_Android/**']
+"🍎 iOS":
+- changed-files:
+  - any-glob-to-any-file: ['oneSafe6_iOS/**']
+"🫏 KMP":
+- changed-files:
+  - any-glob-to-any-file: ['oneSafe6_KMP/**']

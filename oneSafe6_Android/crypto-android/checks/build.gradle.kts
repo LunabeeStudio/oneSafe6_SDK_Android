@@ -27,11 +27,11 @@ description = "Lint rules for oneSafe crypto"
 dependencies {
     compileOnly(libs.lint.api)
     compileOnly(libs.lint.checks)
+
     testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlinx.coroutines.core)
     testImplementation(libs.lint.api)
     testImplementation(libs.lint.tests)
-
     testImplementation(projects.domainJvm)
 }
 

@@ -88,7 +88,7 @@ class DummySafeRepository(initSafeId: SafeId? = firstSafeId) : SafeRepository {
         return safeIdFlow
     }
 
-    override suspend fun getCurrentSubKey(subKeyType: SubKeyType): ByteArray? {
+    override suspend fun getSubKey(safeId: SafeId, subKeyType: SubKeyType): ByteArray? {
         return null
     }
 
@@ -168,7 +168,7 @@ class DummySafeRepository(initSafeId: SafeId? = firstSafeId) : SafeRepository {
         /* no-op */
     }
 
-    override suspend fun getSafeCrypto(safeId: SafeId): SafeCrypto? {
+    override suspend fun getSafeCrypto(safeId: SafeId): SafeCrypto {
         return SafeCrypto(
             id = bioMap.keys.first(),
             salt = byteArrayOf(),

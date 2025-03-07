@@ -97,13 +97,12 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(platform(libs.lunabee.bom))
 
     ksp(libs.room.compiler)
 
-    androidTestImplementation(libs.kotlinx.coroutines.test)
-    androidTestImplementation(libs.room.testing)
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.androidx.core.ktx)
     implementation(libs.datastore)
     implementation(libs.doubleratchet)
@@ -119,19 +118,9 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.room.paging)
     implementation(libs.sqlcipher.android)
-    kspAndroidTest(libs.dagger.hilt.compiler)
-    kspTest(libs.dagger.hilt.compiler)
-    testImplementation(libs.compose.ui.test.junit4)
-    testImplementation(libs.hilt.android.testing)
-    testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.room.testing)
 
-    androidTestImplementation(projects.commonTestAndroid)
-    androidTestImplementation(projects.dependencyInjection.testComponent)
-    androidTestImplementation(projects.oneSafe6KMP.shared)
     implementation(project(":crypto-android"))
     implementation(project(":import-export-repository"))
-    implementation(project(":repository"))
     implementation(projects.commonJvm)
     implementation(projects.domainJvm)
     implementation(projects.importExportDomain)
@@ -141,16 +130,26 @@ dependencies {
     implementation(projects.oneSafe6KMP.error)
     implementation(projects.oneSafe6KMP.messagingDomain)
     implementation(projects.oneSafe6KMP.messagingRepository)
+    implementation(project(":repository"))
+
+    kspAndroidTest(libs.dagger.hilt.compiler)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(projects.commonTestAndroid)
+    androidTestImplementation(projects.dependencyInjection.testComponent)
+    androidTestImplementation(projects.oneSafe6KMP.shared)
+    androidTestImplementation(libs.room.testing)
+
     testImplementation(project(":common-test-robolectric"))
+    testImplementation(libs.compose.ui.test.junit4)
+    kspTest(libs.dagger.hilt.compiler)
+    testImplementation(libs.hilt.android.testing)
+    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(projects.dependencyInjection.testComponent)
     testImplementation(projects.oneSafe6KMP.shared)
+    testImplementation(libs.room.testing)
 }
 
-tasks.register("cleanProtobuf") {
-    doLast {
-        delete(file("build/generated/source/proto/"))
-    }
-}
+tasks.register<CleanProtoTask>("cleanProtobuf")
 
 tasks.getByName("clean") {
     dependsOn("cleanProtobuf")

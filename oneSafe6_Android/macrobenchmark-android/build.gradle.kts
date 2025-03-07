@@ -56,9 +56,10 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(platform(libs.lunabee.bom))
 
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.androidx.test.ext.junit)
     implementation(libs.androidx.test.uiautomator)
     implementation(libs.benchmark.macro.junit4)

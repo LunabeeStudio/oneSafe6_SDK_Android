@@ -7,26 +7,24 @@
 [plugins]
 
 aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutlibraries" }
-androidLibrary = { id = "com.android.library", version.ref = "android-gradle-plugin" }
-androidx-benchmark = { id = "androidx.benchmark", version.ref = "benchmark" }
 crashlyticslink = { id = "co.touchlab.crashkios.crashlyticslink", version.ref = "crashkios" }
-dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger-hilt" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger-hilt" }
-kotlin-android = { id = "kotlin-android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+lbAndroidApplication = { id = "studio.lunabee.plugins.android.application", version.ref = "lbAndroidApplication" }
+lbDetekt = { id = "studio.lunabee.plugins.detekt", version.ref = "lbDetekt" }
+lbDokka = { id = "studio.lunabee.plugins.dokka", version.ref = "lbDokka" }
+lbResources = { id = "studio.lunabee.plugins.resources", version.ref = "lbResources" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin" }
 skie = { id = "co.touchlab.skie", version.ref = "skie" }
 
 [versions]
 
-aboutlibraries = "11.4.0"
-android-gradle-plugin = "8.8.0"
-android-tools-desugar_jdk_libs = "2.1.4"
-androidx-activity = "1.9.3"
+aboutlibraries = "11.6.3"
+android-gradle-plugin = "8.9.0"
+android-tools-desugar_jdk_libs = "2.1.5"
+androidx-activity = "1.10.1"
 androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.0"
 androidx-autofill = "1.1.0"
@@ -41,7 +39,7 @@ androidx-hilt = "1.2.0"
 androidx-hilt-navigation-compose = "1.2.0"
 androidx-lifecycle = "2.8.7"
 androidx-media3 = "1.5.1"
-androidx-paging = "3.3.5"
+androidx-paging = "3.3.6"
 androidx-paging-compose = "3.3.2"
 androidx-palette = "1.0.0"
 androidx-preference = "1.2.1"
@@ -51,79 +49,79 @@ androidx-slice-builders-ktx = "1.0.0-alpha08"
 androidx-sqlite = "2.4.0"
 androidx-startup = "1.2.0"
 androidx-test-core = "1.6.1"
-androidx-test-espresso = "3.6.0-beta01"
 androidx-test-ext-junit = "1.2.1"
 androidx-test-rules = "1.6.1"
 androidx-test-runner = "1.6.2"
 androidx-test-uiautomator = "2.3.0"
 androidx-tracing = "1.2.0"
 androidx-work = "2.10.0"
-benchmark = "1.3.3"
 bouncycastle = "1.80"
 bouquet = "1.1.3"
 camerax = "1.4.1"
 coil-kt = "2.7.0"
 compose-bom-alpha = "2024.02.00-alpha02"
-compose-bom-stable = "2024.12.01"
-compose-shimmer = "1.3.1"
+compose-bom-stable = "2025.02.00"
+compose-shimmer = "1.3.2"
 conscrypt = "2.5.3"
 conscrypt-openjdk-uber = "2.5.2"
 crashkios = "0.9.0"
 dagger-hilt = "2.55"
-detekt = "1.23.7"
-doubleratchet = "0.1.6"
+doubleratchet = "1.0.0"
 espresso-core = "3.6.1"
-exifinterface = "1.3.7"
-firebase-bom = "33.7.0"
+exifinterface = "1.4.0"
+firebase-bom = "33.10.0"
 # FIXME 3.0.0+ Requires play services to be applied
 firebase-crashlytics-gradle = "2.9.9"
 florisboard-library = "0.4.5-1.0.2"
 glance = "1.1.1"
-google-accompanist = "0.37.0"
+google-accompanist = "0.37.2"
 google-android-material = "1.12.0"
-google-api-client = "2.7.1"
-google-api-services-drive = "v3-rev20241206-2.0.0"
-##⬆ = "31.9.0-alpha09"
+google-api-client = "2.7.2"
+google-api-services-drive = "v3-rev20250216-2.0.0"
 javapoet = "1.13.0"
 javax-inject = "1"
 junit-jupiter = "5.11.4"
 junit4 = "4.13.2"
-koin = "4.0.1"
-kotlin = "2.1.0"
+koin = "4.0.2"
+kotlin = "2.1.10"
 kotlinx-collections-immutable = "0.3.8"
 kotlinx-coroutines = "1.10.1"
-kotlinx-datetime = "0.6.1"
+kotlinx-datetime = "0.6.2"
 kotlinx-serialization = "1.8.0"
-ksp = "2.1.0-1.0.29"
-ktor = "3.0.3"
-lbcaccessibility = "1.9.0-315-SNAPSHOT"
-lbcandroidtest = "1.6.0-315-SNAPSHOT"
-lbccore = "1.6.0-315-SNAPSHOT"
-lbcglance = "1.0.0"
-lbchaptic = "1.3.0-315-SNAPSHOT"
-lbctheme = "1.5.0-315-SNAPSHOT"
-lint = "31.8.0"
-logback-classic = "1.5.16"
-lottie = "6.6.2"
+ksp = "2.1.10-1.0.31"
+ktor = "3.1.1"
+lbAndroidApplication = "0.9.1"
+lbDetekt = "1.0.1"
+lbDokka = "0.9.2"
+lbResources = "1.0.0"
+lbcaccessibility = "1.11.0"
+lbcandroidtest = "1.10.0"
+lbccore = "1.8.0"
+lbcglance = "1.3.0"
+lbchaptic = "1.5.0"
+lbctheme = "1.7.0"
+lint = "31.9.0"
+logback-classic = "1.5.17"
+lottie = "6.6.3"
 lunabee-library = "4.2.0-190-develop-SNAPSHOT"
-mockk = "1.13.16"
-navigation-compose = "2.8.5"
+mockk = "1.13.17"
+navigation-compose = "2.8.8"
 nbvcxz = "1.5.1"
 play-services-auth-base = "18.1.0"
 play-services-base = "18.5.0"
 process-phoenix = "3.0.0"
-protobuf = "4.29.3"
+protobuf = "4.30.0"
 protobuf-plugin = "0.9.4"
 review = "2.0.2"
 robolectric = "4.14.1"
 seismic = "1.0.3"
-skie = "0.10.0"
+skie = "0.10.1"
 skydoves-colorpicker = "1.1.2"
-slf4j-simple = "2.0.16"
+slf4j-simple = "2.0.17"
 sqlcipher-android = "4.6.1"
 threeten-extra = "1.8.0"
 tink-android = "1.16.0"
-zoomable = "2.0.0"
+zoomable = "2.2.0"
 zxing-android-embedded = "4.3.0"
 
 [libraries]
@@ -183,7 +181,6 @@ datastore = { group = "androidx.datastore", name = "datastore", version.ref = "a
 datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidx-datastore" }
 datastore-preferences-core = { group = "androidx.datastore", name = "datastore-preferences-core", version.ref = "androidx-datastore" }
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "android-tools-desugar_jdk_libs" }
-detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
 doubleratchet = { group = "studio.lunabee.doubleratchet", name = "doubleratchet", version.ref = "doubleratchet" }
 emoji2 = { group = "androidx.emoji2", name = "emoji2", version.ref = "androidx-emoji2" }
 emoji2-bundled = { group = "androidx.emoji2", name = "emoji2-bundled", version.ref = "androidx-emoji2" }
@@ -204,7 +201,6 @@ javapoet = { group = "com.squareup", name = "javapoet", version.ref = "javapoet"
 javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "javax-inject" }
 journeyappszxing = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxing-android-embedded" }
 # KMP
-junit = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-jupiter" }
 junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }

@@ -41,20 +41,22 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(platform(libs.lunabee.bom))
 
-    androidTestImplementation(libs.kotlinx.coroutines.test)
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.bouncycastle)
     implementation(libs.doubleratchet)
     implementation(libs.lbcore)
     implementation(libs.lblogger)
 
-    androidTestImplementation(project(":common-test"))
-    androidTestImplementation(projects.oneSafe6KMP.bubblesRepository)
     implementation(project(":crypto-android"))
     implementation(projects.commonJvm)
     implementation(projects.domainJvm)
     implementation(projects.oneSafe6KMP.bubblesDomain)
     implementation(projects.oneSafe6KMP.error)
+
+    androidTestImplementation(project(":common-test"))
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(projects.oneSafe6KMP.bubblesRepository)
 }

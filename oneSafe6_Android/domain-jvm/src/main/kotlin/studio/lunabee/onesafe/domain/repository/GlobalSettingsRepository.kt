@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2023 Lunabee Studio
+ * Copyright (c) 2025 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,9 +12,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Created by Lunabee Studio / Date - 3/7/2025 - for the oneSafe6 SDK.
+ * Last modified 3/7/25, 12:05 PM
  */
 
-object EnvConfig {
-    const val ENV_ARTIFACTORY_USER: String = "ARTIFACTORY_USER"
-    const val ENV_ARTIFACTORY_API_KEY: String = "ARTIFACTORY_API_KEY"
+package studio.lunabee.onesafe.domain.repository
+
+interface GlobalSettingsRepository {
+    suspend fun getAppVersion(): Int?
+    suspend fun setAppVersion(version: Int)
 }

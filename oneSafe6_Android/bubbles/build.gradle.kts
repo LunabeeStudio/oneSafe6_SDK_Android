@@ -54,13 +54,13 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(platform(libs.compose.bom))
     implementation(platform(libs.lunabee.bom))
 
     ksp(libs.dagger.hilt.compiler)
 
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
-    debugImplementation(libs.compose.ui.tooling)
     implementation(libs.accompanist.permissions)
     implementation(libs.android.material)
     implementation(libs.androidx.core.ktx)
@@ -82,16 +82,19 @@ dependencies {
     implementation(libs.lblogger)
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.palette.ktx)
-    kspAndroidTest(libs.dagger.hilt.compiler)
 
-    androidTestImplementation(projects.commonTestAndroid)
-    api(projects.oneSafe6KMP.bubblesDomain)
     implementation(project(":crypto-android"))
     implementation(projects.app.commonUi)
     implementation(projects.app.coreUi)
     implementation(projects.app.settings)
     implementation(projects.commonJvm)
     implementation(projects.domainJvm)
+    api(projects.oneSafe6KMP.bubblesDomain)
     implementation(projects.oneSafe6KMP.error)
     implementation(projects.oneSafe6KMP.messagingDomain)
+
+    debugImplementation(libs.compose.ui.tooling)
+
+    kspAndroidTest(libs.dagger.hilt.compiler)
+    androidTestImplementation(projects.commonTestAndroid)
 }

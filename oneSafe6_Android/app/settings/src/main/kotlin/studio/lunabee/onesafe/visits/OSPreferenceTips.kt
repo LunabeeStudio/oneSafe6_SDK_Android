@@ -21,6 +21,7 @@ package studio.lunabee.onesafe.visits
 
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 
 sealed class OSPreferenceTips<T>(
     internal val preferencesKey: Preferences.Key<T>,
@@ -40,8 +41,14 @@ sealed class OSPreferenceTips<T>(
         preferencesKey = hasDoneTutorialLockOskKey,
         defaultValue = AppVisitConstants.hasDoneTutorialLockOskDefault,
     )
+
+    data object AppVersion : OSPreferenceTips<Int>(
+        preferencesKey = appVersionKey,
+        defaultValue = AppVisitConstants.appVersionDefault,
+    )
 }
 
 private val hasVisitedLoginKey = booleanPreferencesKey(AppVisitConstants.hasVisitedLoginKey)
 private val hasDoneTutorialOpenOskKey = booleanPreferencesKey(AppVisitConstants.hasDoneTutorialOpenOsk)
 private val hasDoneTutorialLockOskKey = booleanPreferencesKey(AppVisitConstants.hasDoneTutorialLockOsk)
+internal val appVersionKey = intPreferencesKey(AppVisitConstants.appVersion)

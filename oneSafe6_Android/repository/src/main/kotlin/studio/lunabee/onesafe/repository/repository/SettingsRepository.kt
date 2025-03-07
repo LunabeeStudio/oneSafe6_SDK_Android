@@ -30,6 +30,7 @@ import studio.lunabee.onesafe.domain.model.safeitem.ItemLayout
 import studio.lunabee.onesafe.domain.model.safeitem.ItemOrder
 import studio.lunabee.onesafe.domain.model.verifypassword.VerifyPasswordInterval
 import studio.lunabee.onesafe.domain.repository.AppVisitRepository
+import studio.lunabee.onesafe.domain.repository.GlobalSettingsRepository
 import studio.lunabee.onesafe.domain.repository.ItemSettingsRepository
 import studio.lunabee.onesafe.domain.repository.SafeSettingsRepository
 import studio.lunabee.onesafe.domain.repository.SecuritySettingsRepository
@@ -42,7 +43,12 @@ import kotlin.time.Duration
 class SettingsRepository @Inject constructor(
     private val safeDataSource: SafeSettingsLocalDataSource,
     private val globalDataSource: GlobalSettingsLocalDataSource,
-) : SafeSettingsRepository, SecuritySettingsRepository, ItemSettingsRepository, AppVisitRepository, MessagingSettingsRepository {
+) : SafeSettingsRepository,
+    SecuritySettingsRepository,
+    ItemSettingsRepository,
+    AppVisitRepository,
+    MessagingSettingsRepository,
+    GlobalSettingsRepository {
 
     override fun materialYou(safeId: SafeId): Flow<Boolean> =
         safeDataSource.materialYou(safeId).filterNotNull()
@@ -311,5 +317,13 @@ class SettingsRepository @Inject constructor(
 
     override suspend fun setPreventionWarningCtaState(safeId: SafeId, ctaState: CtaState) {
         safeDataSource.setPreventionWarningCtaState(safeId, ctaState)
+    }
+
+    override suspend fun getAppVersion(): Int? {
+        return globalDataSource.getAppVersion()
+    }
+
+    override suspend fun setAppVersion(version: Int) {
+        globalDataSource.setAppVersion(version)
     }
 }

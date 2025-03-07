@@ -51,10 +51,11 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     ksp(libs.androidx.hilt.compiler)
     ksp(libs.dagger.hilt.compiler)
 
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.glance.widget)
     implementation(libs.hilt.android)
     implementation(libs.hilt.work)
@@ -62,8 +63,9 @@ dependencies {
     implementation(libs.lbcglance)
     implementation(libs.lbcore)
     implementation(libs.work.runtime)
-    kspAndroidTest(libs.dagger.hilt.compiler)
 
     implementation(projects.app.commonUi)
     implementation(projects.domainJvm)
+
+    kspAndroidTest(libs.dagger.hilt.compiler)
 }

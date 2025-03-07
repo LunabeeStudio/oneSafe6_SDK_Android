@@ -58,11 +58,10 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(platform(libs.lunabee.bom))
 
-    androidTestImplementation(libs.junit4)
-    androidTestImplementation(libs.room.testing)
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.datastore.preferences)
     implementation(libs.doubleratchet)
     implementation(libs.hilt.android)
@@ -72,17 +71,11 @@ dependencies {
     implementation(libs.lbextensions)
     implementation(libs.lblogger)
     implementation(libs.sqlite.ktx)
-    kspAndroidTest(libs.dagger.hilt.compiler)
-    kspTest(libs.dagger.hilt.compiler)
-    testImplementation(libs.hilt.android.testing)
+    implementation(libs.work.runtime)
 
-    androidTestImplementation(projects.commonTestAndroid)
-    androidTestImplementation(projects.dependencyInjection.testComponent)
-    androidTestImplementation(projects.oneSafe6KMP.shared)
     implementation(project(":bubbles"))
     implementation(project(":common-protobuf"))
     implementation(project(":crypto-android"))
-    implementation(project(":repository"))
     implementation(projects.app.settings)
     implementation(projects.commonJvm)
     implementation(projects.domainJvm)
@@ -90,7 +83,18 @@ dependencies {
     implementation(projects.importExportDomain)
     implementation(projects.localAndroid)
     implementation(projects.oneSafe6KMP.error)
+    implementation(project(":repository"))
+
+    kspAndroidTest(libs.dagger.hilt.compiler)
+    androidTestImplementation(libs.junit4)
+    androidTestImplementation(projects.commonTestAndroid)
+    androidTestImplementation(projects.dependencyInjection.testComponent)
+    androidTestImplementation(projects.oneSafe6KMP.shared)
+    androidTestImplementation(libs.room.testing)
+
     testImplementation(project(":common-test-robolectric"))
+    kspTest(libs.dagger.hilt.compiler)
+    testImplementation(libs.hilt.android.testing)
     testImplementation(projects.dependencyInjection.testComponent)
     testImplementation(projects.oneSafe6KMP.shared)
 }

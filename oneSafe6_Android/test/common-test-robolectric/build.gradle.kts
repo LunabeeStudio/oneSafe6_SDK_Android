@@ -52,10 +52,11 @@ android {
 }
 
 dependencies {
-    api(libs.robolectric)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(libs.conscrypt.openjdk.uber)
     implementation(libs.hilt.android.testing)
+    api(libs.robolectric)
 
     // https://github.com/google/conscrypt/issues/649
     api(projects.commonTestAndroid) { exclude(group = "org.conscrypt", module = "conscrypt-android") }

@@ -28,7 +28,6 @@ description = "Business layer of oneSafe"
 dependencies {
     implementation(platform(libs.lunabee.bom))
 
-    api(libs.paging.common.ktx)
     implementation(libs.doubleratchet)
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines.core)
@@ -37,11 +36,13 @@ dependencies {
     implementation(libs.lbextensions)
     implementation(libs.lblogger)
     implementation(libs.nbvcxz)
-    testImplementation(libs.mockk)
+    api(libs.paging.common.ktx)
 
-    api(projects.oneSafe6KMP.domain)
     implementation(projects.commonJvm)
     implementation(projects.oneSafe6KMP.bubblesDomain)
+    api(projects.oneSafe6KMP.domain)
     implementation(projects.oneSafe6KMP.error)
+
     testImplementation(project(":common-test"))
+    testImplementation(libs.mockk)
 }

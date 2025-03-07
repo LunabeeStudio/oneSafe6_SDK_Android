@@ -43,9 +43,10 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(platform(libs.lunabee.bom))
 
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.accompanist.permissions)
     implementation(libs.activity.ktx)
     implementation(libs.androidx.core.ktx)

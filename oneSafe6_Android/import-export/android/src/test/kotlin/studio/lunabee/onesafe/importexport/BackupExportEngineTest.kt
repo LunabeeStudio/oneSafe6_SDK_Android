@@ -68,7 +68,7 @@ class BackupExportEngineTest : OSHiltUnitTest() {
     @BackupType(BackupType.Type.Foreground)
     lateinit var exportEngine: BackupExportEngine
 
-    override val initialTestState: InitialTestState = InitialTestState.Home()
+    override val initialTestState: InitialTestState = InitialTestState.SignedUp {}
 
     @Test
     fun backup_export_engine_empty_test(): TestResult = runTest {

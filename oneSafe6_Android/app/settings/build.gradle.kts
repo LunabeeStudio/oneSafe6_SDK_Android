@@ -33,9 +33,10 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(platform(libs.lunabee.bom))
 
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.datastore)
     implementation(libs.datastore.preferences)
     implementation(libs.kotlinx.serialization.protobuf)
@@ -43,8 +44,8 @@ dependencies {
     implementation(libs.lbextensions)
     implementation(libs.lblogger)
 
-    implementation(project(":repository"))
     implementation(projects.commonJvm)
     implementation(projects.domainJvm)
     implementation(projects.oneSafe6KMP.error)
+    implementation(project(":repository"))
 }

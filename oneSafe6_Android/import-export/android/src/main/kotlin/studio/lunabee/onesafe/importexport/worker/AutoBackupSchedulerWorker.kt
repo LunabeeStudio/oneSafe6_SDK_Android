@@ -101,7 +101,7 @@ class AutoBackupSchedulerWorker @AssistedInject constructor(
 
             val workManager = WorkManager.getInstance(applicationContext)
             val inputData = Data.Builder()
-                .putByteArray(EXPORT_WORKER_SAFE_ID_DATA, safeId.toByteArray())
+                .putByteArray(AutoBackupChainWorker.AUTO_BACKUP_CHAIN_WORKER_SAFE_ID_DATA, safeId.toByteArray())
                 .build()
             val periodicBuilder = PeriodicWorkRequestBuilder<AutoBackupChainWorker>(
                 repeatInterval = frequency.repeat.toJavaDuration(),

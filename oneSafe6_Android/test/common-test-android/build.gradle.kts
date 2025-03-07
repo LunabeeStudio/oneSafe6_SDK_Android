@@ -55,13 +55,11 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(platform(libs.compose.bom))
     implementation(platform(libs.lunabee.bom))
 
-    api(libs.hilt.work)
-    api(libs.lbcandroidtest)
-    api(libs.mockk.android)
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.androidx.test.core.ktx)
     implementation(libs.androidx.test.runner)
     implementation(libs.androidx.test.uiautomator)
@@ -71,21 +69,24 @@ dependencies {
     implementation(libs.datastore.preferences)
     implementation(libs.emoji2)
     implementation(libs.emoji2.bundled)
+    implementation(libs.espresso.core)
     implementation(libs.hilt.android.testing)
+    api(libs.hilt.work)
+    api(libs.lbcandroidtest)
     implementation(libs.lbcore)
     implementation(libs.lbextensions.android)
     implementation(libs.lblogger)
+    api(libs.mockk.android)
     implementation(libs.protobuf.kotlinlite)
     implementation(libs.room.ktx)
     implementation(libs.work.testing)
-    implementation(libs.espresso.core)
 
     api(project(":common-test"))
     api(project(":crypto-android"))
-    api(projects.localAndroid)
+    implementation(projects.app.coreUi)
     implementation(projects.app.settings)
     implementation(projects.domainJvm)
-    implementation(projects.app.coreUi)
+    api(projects.localAndroid)
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {

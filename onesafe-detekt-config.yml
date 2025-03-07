@@ -9,7 +9,6 @@ comments:
       - '**/app/common-ui/**'
       - '**/app/login/**'
       - '**/app/help/**'
-      - '**/Commons_Android/**'
       - '**/macrobenchmark-android/**'
       - '**/mockos5/*'
       - '**/oneSafe6_iOS/*'
