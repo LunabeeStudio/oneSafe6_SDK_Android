@@ -32,5 +32,6 @@ dependencies {
 
     api(projects.oneSafe6KMP.common)
     implementation(projects.oneSafe6KMP.error)
+
     testImplementation(project(":common-test"))
 }

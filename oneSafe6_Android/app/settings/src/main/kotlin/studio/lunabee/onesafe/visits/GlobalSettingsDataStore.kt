@@ -22,12 +22,11 @@ package studio.lunabee.onesafe.visits
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import kotlinx.coroutines.flow.Flow
-import studio.lunabee.onesafe.jvm.get
+import kotlinx.coroutines.flow.firstOrNull
 import studio.lunabee.onesafe.jvm.getAsFlow
 import studio.lunabee.onesafe.jvm.store
 import studio.lunabee.onesafe.repository.datasource.GlobalSettingsLocalDataSource
 import javax.inject.Inject
-import kotlin.properties.ReadOnlyProperty
 
 class GlobalSettingsDataStore @Inject constructor(
     private val dataStore: DataStore<Preferences>,
@@ -36,12 +35,12 @@ class GlobalSettingsDataStore @Inject constructor(
         dataStore.store(value = value, preferencesKey = preferencesTips.preferencesKey)
     }
 
-    private fun <T> getAsFlow(preferencesTips: OSPreferenceTips<T>): Flow<T> {
-        return dataStore.getAsFlow(preferencesKey = preferencesTips.preferencesKey, defaultValue = preferencesTips.defaultValue)
+    private suspend fun <T> get(preferencesTips: OSPreferenceTips<T>): T? {
+        return getAsFlow(preferencesTips).firstOrNull()
     }
 
-    private fun <T, Output> get(preferencesTips: OSPreferenceTips<Output>): ReadOnlyProperty<T, Output> {
-        return dataStore.get(preferencesKey = preferencesTips.preferencesKey, defaultValue = preferencesTips.defaultValue)
+    private fun <T> getAsFlow(preferencesTips: OSPreferenceTips<T>): Flow<T> {
+        return dataStore.getAsFlow(preferencesKey = preferencesTips.preferencesKey, defaultValue = preferencesTips.defaultValue)
     }
 
     override fun hasVisitedLogin(): Flow<Boolean> {
@@ -66,5 +65,13 @@ class GlobalSettingsDataStore @Inject constructor(
 
     override suspend fun setHasDoneTutorialLockOsk(value: Boolean) {
         store(true, OSPreferenceTips.HasDoneTutorialLockOsk)
+    }
+
+    override suspend fun getAppVersion(): Int? {
+        return get(OSPreferenceTips.AppVersion).takeIf { it != OSPreferenceTips.AppVersion.defaultValue }
+    }
+
+    override suspend fun setAppVersion(version: Int) {
+        store(version, OSPreferenceTips.AppVersion)
     }
 }

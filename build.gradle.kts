@@ -18,6 +18,7 @@
  */
 
 import org.gradle.kotlin.dsl.support.uppercaseFirstChar
+import java.net.URI
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
@@ -25,6 +26,7 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
     }
 }
 
@@ -35,6 +37,8 @@ val artifactoryPassword: String = project.findProperty("artifactory_consumer_api
 
 allprojects {
     repositories {
+        google()
+        mavenCentral()
         mavenLocal()
         maven {
             url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
@@ -72,35 +76,48 @@ allprojects {
                 snapshotsOnly()
             }
         }
+        maven {
+            url = URI("https://artifactory.lunabee.studio/artifactory/libs-release-local")
+            credentials {
+                username = artifactoryUsername
+                password = artifactoryPassword
+            }
+            mavenContent {
+                releasesOnly()
+            }
+        }
+        maven {
+            url = URI("https://artifactory.lunabee.studio/artifactory/libs-snapshot-local")
+            credentials {
+                username = artifactoryUsername
+                password = artifactoryPassword
+            }
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
     }
 }
 
 plugins {
-    alias(libs.plugins.detekt)
+    alias(libs.plugins.lbDetekt)
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.aboutlibraries) apply false
 }
 
-// Detekt config
-apply("Commons_Android/gradle/pr-code-analysis-project.gradle")
-tasks.withType<io.gitlab.arturbosch.detekt.Detekt> {
-    exclude("**/build/**")
+lbDetekt {
+    config.setFrom(files(lunabeeConfig, "$projectDir/onesafe-detekt-config.yml"))
 }
-detekt {
-    config.setFrom(files("$projectDir/Commons_Android/lunabee-detekt-config.yml", "$projectDir/onesafe-detekt-config.yml"))
-}
-
-apply("Commons_Android/gradle/lunabee-root.gradle.kts")
 
 // TODO to improve if possible
 //  Ideally, everything should be handle with external scripts on CI side
-tasks.create("allTests") {
+tasks.register("allTests") {
     group = "verification"
     description = "Run all gradle unit tests of application and every modules"
 }
 
-tasks.create("allConnectedTests") {
+tasks.register("allConnectedTests") {
     group = "verification"
     description = "Run all Android connected test of application and every modules"
 }
@@ -108,7 +125,6 @@ tasks.create("allConnectedTests") {
 val allTestsTask: Task? = tasks.findByName("allTests")
 val allConnectedTestsTask: Task? = tasks.findByName("allConnectedTests")
 val excludedTestProjects: List<String> = listOf(
-    "Commons_Android",
     "Commons_OS6",
     "common-test-android",
     "benchmark-android",

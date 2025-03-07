@@ -25,15 +25,15 @@ plugins {
 dependencies {
     implementation(platform(libs.lunabee.bom))
 
+    implementation(libs.annotation)
     api(libs.junit4)
+    implementation(libs.kotlin.reflect)
     api(libs.kotlin.test)
     api(libs.kotlinx.coroutines.test)
-    api(libs.threeten.extra)
-    implementation(libs.annotation)
-    implementation(libs.kotlin.reflect)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.lbcore)
     implementation(libs.mockk)
+    api(libs.threeten.extra)
 
     implementation(projects.domainJvm)
     implementation(projects.importExportDomain)

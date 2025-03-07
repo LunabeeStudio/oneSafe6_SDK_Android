@@ -32,7 +32,7 @@ dependencies {
     implementation(libs.lbcore)
     implementation(libs.lblogger)
 
-    implementation(project(":repository"))
     implementation(projects.domainJvm)
     implementation(projects.oneSafe6KMP.error)
+    implementation(project(":repository"))
 }

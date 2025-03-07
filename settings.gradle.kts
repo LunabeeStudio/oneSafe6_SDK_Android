@@ -19,25 +19,45 @@
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
+@Suppress("VariableNaming")
 pluginManagement {
+    val artifactory_consumer_username: String? by settings
+    val artifactory_consumer_api_key: String? by settings
+
+    val artifactoryUsername: String = artifactory_consumer_username
+        ?: "library-consumer-public"
+    val artifactoryPassword: String = artifactory_consumer_api_key
+        ?: "AKCp8k8PbuxYXoLgvNpc5Aro1ytENk3rSyXCwQ71BA4byg3h7iuMyQ6Sd4ZmJtSJcr7XjwMej"
+
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
+        maven {
+            url = uri("https://artifactory.lunabee.studio/artifactory/lunabee-gradle-plugin/")
+            credentials {
+                username = artifactoryUsername
+                password = artifactoryPassword
+            }
+            mavenContent {
+                releasesOnly()
+            }
+        }
+        mavenLocal()
     }
 }
 
 plugins {
     // See https://jmfayard.github.io/refreshVersions
     id("de.fayard.refreshVersions") version "0.60.5"
+    id("studio.lunabee.plugins.cache") version "0.9.0"
 }
 
 rootProject.name = "oneSafe6"
 
-include(":Commons_Android")
-project(":Commons_Android").projectDir = File("Commons_Android/gradle")
 include(":Commons_OS6")
 project(":Commons_OS6").projectDir = File("oneSafe6_common")
+include(":docs")
 include("app")
 project(":app").projectDir = File("oneSafe6_Android/app")
 include("app:core-ui")
@@ -118,7 +138,9 @@ project(":ime-android").projectDir = File("oneSafe6_Android/ime/android")
 include(":ime-domain")
 project(":ime-domain").projectDir = File("oneSafe6_Android/ime/domain")
 
-// include(":mockos5") // mockos5 apk is embedded for tests
+// mockos5 apk is embedded for tests
+// include(":mockos5")
+// project(":mockos5").projectDir = File("oneSafe6_Android/mockos5")
 
 // KMP
 include(":oneSafe6_KMP:bubbles-domain")

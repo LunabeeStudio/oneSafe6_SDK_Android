@@ -68,36 +68,33 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     androidTestImplementation(platform(libs.lunabee.bom))
+
+    implementation(libs.hilt.android)
 
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.benchmark.junit4)
+    androidTestImplementation(project(":bubbles-crypto-android"))
+    androidTestImplementation(project(":crypto-android"))
+    kspAndroidTest(libs.dagger.hilt.compiler)
     androidTestImplementation(libs.datastore)
     androidTestImplementation(libs.datastore.preferences)
+    androidTestImplementation(project(":dependency-injection"))
     androidTestImplementation(libs.doubleratchet)
+    androidTestImplementation(projects.commonTestAndroid) { exclude(group = "io.mockk") }
+    androidTestImplementation(project(":import-export-core"))
+    androidTestImplementation(project(":import-export-repository"))
     androidTestImplementation(libs.junit4)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.ktor.client.android)
     androidTestImplementation(libs.lbcore)
     androidTestImplementation(libs.lblogger)
-    androidTestImplementation(libs.room.ktx)
-    androidTestImplementation(libs.room.testing)
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
-    implementation(libs.hilt.android)
-    kspAndroidTest(libs.dagger.hilt.compiler)
-
-    androidTestImplementation(project(":bubbles-crypto-android"))
-    androidTestImplementation(project(":crypto-android"))
-    androidTestImplementation(project(":dependency-injection"))
-    androidTestImplementation(project(":import-export-core"))
-    androidTestImplementation(project(":import-export-repository"))
-    androidTestImplementation(project(":remote"))
-    androidTestImplementation(project(":repository"))
     androidTestImplementation(projects.app.coreUi)
     androidTestImplementation(projects.app.settings)
-    androidTestImplementation(projects.commonTestAndroid) { exclude(group = "io.mockk") }
     androidTestImplementation(projects.dependencyInjection.testComponent)
     androidTestImplementation(projects.domainJvm)
     androidTestImplementation(projects.importExportDomain)
@@ -108,4 +105,8 @@ dependencies {
     androidTestImplementation(projects.oneSafe6KMP.messagingDomain)
     androidTestImplementation(projects.oneSafe6KMP.messagingRepository)
     androidTestImplementation(projects.oneSafe6KMP.shared)
+    androidTestImplementation(project(":remote"))
+    androidTestImplementation(project(":repository"))
+    androidTestImplementation(libs.room.ktx)
+    androidTestImplementation(libs.room.testing)
 }

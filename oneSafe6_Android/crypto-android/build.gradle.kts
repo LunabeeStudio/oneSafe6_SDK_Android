@@ -106,11 +106,11 @@ val tinkImplementation: Configuration by configurations
 val jceImplementation: Configuration by configurations
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(platform(libs.lunabee.bom))
 
-    androidTestImplementation(libs.biometric) // used to check if device has biometric
-    androidTestImplementation(libs.mockk.android)
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
+    implementation(libs.preference.ktx) { exclude("androidx.lifecycle", "lifecycle-viewmodel-ktx") }
     implementation(libs.bouncycastle)
     implementation(libs.conscrypt.android) // Used for chachapoly in Jce flavor & as fallback for Rsa
     implementation(libs.datastore)
@@ -121,22 +121,11 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.lbextensions.android)
     implementation(libs.lblogger)
-    implementation(libs.preference.ktx) { exclude("androidx.lifecycle", "lifecycle-viewmodel-ktx") }
     implementation(libs.protobuf.kotlinlite)
     implementation(libs.tink.android) // Used for HKDF
-    kspAndroidTest(libs.dagger.hilt.compiler)
-    kspTest(libs.dagger.hilt.compiler)
-    testImplementation(libs.biometric) // used to check if device has biometric
-    testImplementation(libs.compose.ui.test.junit4)
-    testImplementation(libs.conscrypt.openjdk.uber)
-    testImplementation(libs.hilt.android.testing)
-    testImplementation(libs.mockk.android)
     tinkImplementation(libs.tink.android)
 
-    androidTestImplementation(projects.commonTestAndroid)
-    androidTestImplementation(projects.dependencyInjection.testComponent)
-    androidTestImplementation(projects.oneSafe6KMP.bubblesDomain)
-    androidTestImplementation(projects.oneSafe6KMP.shared)
+    lintChecks(project(":crypto-android:checks"))
     implementation(projects.commonJvm)
     implementation(projects.domainJvm)
     implementation(projects.importExportDomain)
@@ -146,16 +135,26 @@ dependencies {
     implementation(projects.oneSafe6KMP.error)
     implementation(projects.oneSafe6KMP.messagingDomain)
     implementation(projects.oneSafe6KMP.shared)
-    lintChecks(project(":crypto-android:checks"))
+
+    androidTestImplementation(libs.biometric) // used to check if device has biometric
+    kspAndroidTest(libs.dagger.hilt.compiler)
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(projects.commonTestAndroid)
+    androidTestImplementation(projects.dependencyInjection.testComponent)
+    androidTestImplementation(projects.oneSafe6KMP.bubblesDomain)
+    androidTestImplementation(projects.oneSafe6KMP.shared)
+
+    testImplementation(libs.biometric) // used to check if device has biometric
     testImplementation(project(":common-test-robolectric"))
+    testImplementation(libs.compose.ui.test.junit4)
+    testImplementation(libs.conscrypt.openjdk.uber)
+    kspTest(libs.dagger.hilt.compiler)
+    testImplementation(libs.hilt.android.testing)
+    testImplementation(libs.mockk.android)
     testImplementation(projects.dependencyInjection.testComponent)
 }
 
-tasks.register("cleanProtobuf") {
-    doLast {
-        delete(file("build/generated/source/proto/"))
-    }
-}
+tasks.register<CleanProtoTask>("cleanProtobuf")
 
 tasks.getByName("clean") {
     dependsOn("cleanProtobuf")

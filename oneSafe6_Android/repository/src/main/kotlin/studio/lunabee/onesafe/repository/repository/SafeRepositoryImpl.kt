@@ -81,8 +81,7 @@ class SafeRepositoryImpl @Inject constructor(
         return cacheDataSource.getSafeIdFlow()
     }
 
-    override suspend fun getCurrentSubKey(subKeyType: SubKeyType): ByteArray? {
-        val safeId = currentSafeId()
+    override suspend fun getSubKey(safeId: SafeId, subKeyType: SubKeyType): ByteArray? {
         return when (subKeyType) {
             SubKeyType.SearchIndex -> localDataSource.getIndexKey(safeId)
             SubKeyType.ItemEdition -> localDataSource.getItemEditionKey(safeId)

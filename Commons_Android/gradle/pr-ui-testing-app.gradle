@@ -1,7 +1,0 @@
-apply plugin: 'shot'
-
-android {
-    testOptions {
-        animationsDisabled true
-    }
-}

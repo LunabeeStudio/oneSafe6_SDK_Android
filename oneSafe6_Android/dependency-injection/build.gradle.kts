@@ -56,11 +56,12 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(platform(libs.lunabee.bom))
 
     ksp(libs.dagger.hilt.compiler)
 
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.datastore)
     implementation(libs.datastore.preferences)
     implementation(libs.doubleratchet)
@@ -73,14 +74,11 @@ dependencies {
     implementation(libs.lblogger)
     implementation(libs.room.ktx)
 
-    androidTestImplementation(projects.commonTestAndroid)
     implementation(project(":app:migration"))
     implementation(project(":bubbles-crypto-android"))
     implementation(project(":crypto-android"))
     implementation(project(":import-export-core"))
     implementation(project(":import-export-repository"))
-    implementation(project(":remote"))
-    implementation(project(":repository"))
     implementation(projects.app.settings)
     implementation(projects.domainJvm)
     implementation(projects.importExportDomain)
@@ -90,4 +88,8 @@ dependencies {
     implementation(projects.oneSafe6KMP.bubblesRepository)
     implementation(projects.oneSafe6KMP.messagingDomain)
     implementation(projects.oneSafe6KMP.messagingRepository)
+    implementation(project(":remote"))
+    implementation(project(":repository"))
+
+    androidTestImplementation(projects.commonTestAndroid)
 }

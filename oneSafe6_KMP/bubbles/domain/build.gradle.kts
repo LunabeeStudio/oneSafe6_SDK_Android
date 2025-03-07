@@ -16,6 +16,7 @@
 
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
+    alias(libs.plugins.lbDokka)
 }
 
 group = "studio.lunabee.bubbles"
@@ -36,8 +37,8 @@ kotlin {
             implementation(libs.lbcore)
             implementation(libs.lblogger)
 
-            api(project(":oneSafe6_KMP:domain"))
             implementation(project(":oneSafe6_KMP:common"))
+            api(project(":oneSafe6_KMP:domain"))
             implementation(project(":oneSafe6_KMP:error"))
         }
     }

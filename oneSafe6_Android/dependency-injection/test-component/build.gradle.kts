@@ -54,12 +54,13 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(platform(libs.compose.bom))
     implementation(platform(libs.lunabee.bom))
 
     ksp(libs.dagger.hilt.compiler)
 
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.androidx.test.core.ktx)
     implementation(libs.androidx.test.runner)
     implementation(libs.compose.ui.test)
@@ -80,14 +81,12 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.work.testing)
 
-    api(project(":common-test"))
     implementation(project(":app:migration"))
     implementation(project(":bubbles-crypto-android"))
+    api(project(":common-test"))
     implementation(project(":crypto-android"))
     implementation(project(":dependency-injection"))
     implementation(project(":import-export-core"))
-    implementation(project(":remote"))
-    implementation(project(":repository"))
     implementation(projects.app.commonUi)
     implementation(projects.app.settings)
     implementation(projects.commonJvm)
@@ -100,4 +99,6 @@ dependencies {
     implementation(projects.oneSafe6KMP.error)
     implementation(projects.oneSafe6KMP.messagingDomain)
     implementation(projects.oneSafe6KMP.messagingRepository)
+    implementation(project(":remote"))
+    implementation(project(":repository"))
 }

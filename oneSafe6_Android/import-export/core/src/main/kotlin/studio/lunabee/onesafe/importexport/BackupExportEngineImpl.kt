@@ -63,12 +63,12 @@ class BackupExportEngineImpl @Inject constructor(
         safeId: SafeId,
     ): Flow<LBFlowResult<Unit>> {
         return flow {
-            val exportInfoResult = OSError.runCatching {
+            val exportInfoResult: LBResult<ExportInfo> = OSError.runCatching {
                 ExportInfo(
                     archiveMasterKey = null,
                     fromPlatformVersion = backupInfoProvider(),
                     exportSalt = safeRepository.getSalt(safeId),
-                    encBubblesMasterKey = safeRepository.getCurrentSubKey(SubKeyType.Bubbles),
+                    encBubblesMasterKey = safeRepository.getSubKey(safeId, SubKeyType.Bubbles),
                 )
             }
             when (exportInfoResult) {

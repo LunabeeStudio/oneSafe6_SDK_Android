@@ -28,4 +28,7 @@ object AppVisitConstants {
 
     const val hasDoneTutorialLockOsk: String = "ef1d7a93-b1fd-45f3-aa55-e39e32ddf201"
     const val hasDoneTutorialLockOskDefault: Boolean = false
+
+    const val appVersion: String = "d434166a-5b59-44c7-a8b0-8455dd570f4f"
+    const val appVersionDefault: Int = -1
 }

@@ -65,11 +65,7 @@ sourceSets {
     }
 }
 
-tasks.register("cleanProtobuf") {
-    doLast {
-        delete(file("build/generated/source/proto/"))
-    }
-}
+tasks.register<CleanProtoTask>("cleanProtobuf")
 
 tasks.getByName("clean") {
     dependsOn("cleanProtobuf")

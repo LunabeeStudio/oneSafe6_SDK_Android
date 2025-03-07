@@ -28,7 +28,6 @@ import org.junit.Test
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSignUpUseCase
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSDomainError
-import studio.lunabee.onesafe.error.OSStorageError
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltUnitTest
 import studio.lunabee.onesafe.test.assertFailure
@@ -83,7 +82,7 @@ class LoginAndMigrateUseCaseTest : OSHiltUnitTest() {
         logout()
         assertSuccess(loginUseCase("password".toCharArray()))
         val error = assertFailure(loginUseCase("password".toCharArray())).throwable
-        assertIs<OSStorageError>(error)
-        assertEquals(OSStorageError.Code.SAFE_ID_ALREADY_LOADED, error.code)
+        assertIs<OSCryptoError>(error)
+        assertEquals(OSCryptoError.Code.MASTER_KEY_ALREADY_LOADED, error.code)
     }
 }

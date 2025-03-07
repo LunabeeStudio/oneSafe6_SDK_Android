@@ -17,10 +17,11 @@
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
     id("com.android.library")
-    alias(libs.plugins.dagger.hilt)
+    alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.skie)
     alias(libs.plugins.crashlyticslink)
+    alias(libs.plugins.lbDokka)
 }
 
 android {
@@ -80,6 +81,7 @@ kotlin {
         }
         iosMain.dependencies {
             implementation(libs.koin.core)
+
             if (activateCrashlytics) {
                 implementation(project(":oneSafe6_KMP:crashlytics"))
             } else {

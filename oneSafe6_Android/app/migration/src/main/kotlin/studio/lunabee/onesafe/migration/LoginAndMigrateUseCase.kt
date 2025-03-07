@@ -170,6 +170,12 @@ class LoginAndMigrateUseCase @Inject constructor(
 
         if (failure == null) {
             safeRepository.setSafeVersion(migrationSafeData0.id, MigrationConstant.LastVersion)
+
+            safeRepository.currentSafeIdOrNull()?.let {
+                logger.e("Unexpected safe id loaded before login. Clearing it")
+                safeRepository.clearSafeId()
+            }
+
             loadSafeUseCase(migrationSafeData0.id)
             mainCryptoRepository.loadMasterKey(migrationSafeData0.masterKey)
 

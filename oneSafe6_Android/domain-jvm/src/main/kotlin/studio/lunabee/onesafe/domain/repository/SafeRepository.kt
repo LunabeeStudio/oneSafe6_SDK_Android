@@ -46,7 +46,7 @@ interface SafeRepository {
 
     fun currentSafeIdFlow(): Flow<SafeId?>
 
-    suspend fun getCurrentSubKey(subKeyType: SubKeyType): ByteArray?
+    suspend fun getSubKey(safeId: SafeId, subKeyType: SubKeyType): ByteArray?
     suspend fun hasSafe(): Boolean
     suspend fun getSalt(safeId: SafeId): ByteArray
     suspend fun getCurrentSalt(): ByteArray

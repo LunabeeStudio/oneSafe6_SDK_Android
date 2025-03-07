@@ -35,6 +35,7 @@ import studio.lunabee.onesafe.domain.repository.AutoLockRepository
 import studio.lunabee.onesafe.domain.repository.ClipboardRepository
 import studio.lunabee.onesafe.domain.repository.FileRepository
 import studio.lunabee.onesafe.domain.repository.ForceUpgradeRepository
+import studio.lunabee.onesafe.domain.repository.GlobalSettingsRepository
 import studio.lunabee.onesafe.domain.repository.IconRepository
 import studio.lunabee.onesafe.domain.repository.IndexWordEntryRepository
 import studio.lunabee.onesafe.domain.repository.ItemSettingsRepository
@@ -146,6 +147,9 @@ interface RepositoryModule {
 
     @Binds
     fun bindsMessagingSettingsRepository(settingsRepository: SettingsRepository): MessagingSettingsRepository
+
+    @Binds
+    fun bindGlobalSettingsRepository(settingsRepository: SettingsRepository): GlobalSettingsRepository
 
     @Binds
     fun bindsBubblesSafeRepository(bubblesSafeRepositoryImpl: BubblesSafeRepositoryImpl): BubblesSafeRepository

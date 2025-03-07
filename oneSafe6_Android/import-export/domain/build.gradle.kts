@@ -28,13 +28,14 @@ dependencies {
     implementation(libs.doubleratchet)
     implementation(libs.lbcore)
     implementation(libs.lblogger)
-    testImplementation(libs.mockk)
 
-    api(projects.domainJvm)
     implementation(projects.commonJvm)
+    api(projects.domainJvm)
     implementation(projects.oneSafe6KMP.bubblesDomain)
     implementation(projects.oneSafe6KMP.bubblesRepository)
     implementation(projects.oneSafe6KMP.error)
     implementation(projects.oneSafe6KMP.messagingDomain)
+
     testImplementation(project(":common-test"))
+    testImplementation(libs.mockk)
 }

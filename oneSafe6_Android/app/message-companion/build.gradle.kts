@@ -49,10 +49,10 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(platform(libs.lunabee.bom))
 
-    androidTestImplementation(libs.room.testing)
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.android.material)
     implementation(libs.androidx.core.ktx)
     implementation(libs.appcompat)
@@ -60,23 +60,21 @@ dependencies {
     implementation(libs.lblogger)
     implementation(libs.protobuf.kotlinlite)
 
+    implementation(projects.domainJvm)
+    implementation(projects.oneSafe6KMP.bubblesDomain)
+    implementation(projects.oneSafe6KMP.error)
+
     androidTestImplementation(project(":crypto-android"))
-    androidTestImplementation(project(":remote"))
-    androidTestImplementation(project(":repository"))
     androidTestImplementation(projects.commonTestAndroid)
     androidTestImplementation(projects.dependencyInjection.testComponent)
     androidTestImplementation(projects.localAndroid)
     androidTestImplementation(projects.oneSafe6KMP.shared)
-    implementation(projects.domainJvm)
-    implementation(projects.oneSafe6KMP.bubblesDomain)
-    implementation(projects.oneSafe6KMP.error)
+    androidTestImplementation(project(":remote"))
+    androidTestImplementation(project(":repository"))
+    androidTestImplementation(libs.room.testing)
 }
 
-tasks.register("cleanProtobuf") {
-    doLast {
-        delete(file("build/generated/source/proto/"))
-    }
-}
+tasks.register<CleanProtoTask>("cleanProtobuf")
 
 tasks.getByName("clean") {
     dependsOn("cleanProtobuf")

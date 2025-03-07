@@ -65,11 +65,6 @@ android {
             buildConfigField("Boolean", "IS_BETA", "false")
         }
     }
-
-    compileOptions {
-        sourceCompatibility = ProjectConfig.JDK_VERSION
-        targetCompatibility = ProjectConfig.JDK_VERSION
-    }
 }
 
 androidComponents {

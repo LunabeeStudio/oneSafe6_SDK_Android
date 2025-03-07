@@ -123,6 +123,8 @@ class ManageIncomingMessageUseCase @Inject constructor(
             false
         } catch (e: NullPointerException) {
             false
+        } catch (e: IndexOutOfBoundsException) {
+            false
         }
     }
 }

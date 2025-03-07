@@ -23,15 +23,14 @@ import studio.lunabee.onesafe.domain.qualifier.BuildNumber
 import studio.lunabee.onesafe.domain.qualifier.VersionName
 import javax.inject.Inject
 
+private const val Platform: String = "android"
+
 class CreateBackupInfoUseCase @Inject constructor(
     @VersionName private val versionName: String,
     @BuildNumber private val buildNumber: Int,
 ) {
+
     operator fun invoke(): String {
         return "$Platform-$versionName-$buildNumber"
-    }
-
-    companion object {
-        private const val Platform: String = "android"
     }
 }

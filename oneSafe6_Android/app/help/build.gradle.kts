@@ -2,7 +2,7 @@ plugins {
     `android-library`
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
-    alias(libs.plugins.kotlin.compose)
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -44,25 +44,13 @@ hilt {
 val devImplementation: Configuration by configurations
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(platform(libs.compose.bom))
     implementation(platform(libs.lunabee.bom))
 
     ksp(libs.dagger.hilt.compiler)
 
-    androidTestImplementation(libs.compose.ui.test.junit4)
-    androidTestImplementation(libs.datastore.preferences)
-    androidTestImplementation(libs.espresso.core)
-    androidTestImplementation(libs.hilt.android.testing)
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
-    debugImplementation(libs.compose.ui.test.manifest)
-    debugImplementation(libs.compose.ui.tooling)
-    devImplementation(libs.accompanist.permissions)
-    devImplementation(libs.android.material)
-    devImplementation(libs.datastore.preferences)
-    devImplementation(libs.kotlin.reflect)
-    devImplementation(libs.play.services.base)
-    devImplementation(libs.room.ktx)
-    devImplementation(libs.work.runtime)
     implementation(libs.compose.material3)
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.tooling.preview)
@@ -76,21 +64,37 @@ dependencies {
     implementation(libs.lblogger)
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.process.phoenix)
-    kspAndroidTest(libs.androidx.hilt.compiler)
 
-    androidTestImplementation(projects.app.settings)
-    androidTestImplementation(projects.commonTestAndroid)
-    androidTestImplementation(projects.dependencyInjection.testComponent)
-    androidTestImplementation(projects.localAndroid)
-    androidTestImplementation(projects.oneSafe6KMP.shared)
+    implementation(projects.app.commonUi)
+    implementation(projects.app.coreUi)
+    implementation(projects.domainJvm)
+    implementation(projects.importExportAndroid)
+
+    devImplementation(libs.accompanist.permissions)
+    devImplementation(libs.android.material)
+    devImplementation(libs.datastore.preferences)
+    devImplementation(libs.kotlin.reflect)
+    devImplementation(libs.play.services.base)
     devImplementation(projects.app.settings)
     devImplementation(projects.importExportDrive)
     devImplementation(projects.localAndroid)
     devImplementation(projects.oneSafe6KMP.bubblesDomain)
     devImplementation(projects.oneSafe6KMP.error)
     devImplementation(projects.oneSafe6KMP.messagingDomain)
-    implementation(projects.app.commonUi)
-    implementation(projects.app.coreUi)
-    implementation(projects.domainJvm)
-    implementation(projects.importExportAndroid)
+    devImplementation(libs.room.ktx)
+    devImplementation(libs.work.runtime)
+
+    debugImplementation(libs.compose.ui.test.manifest)
+    debugImplementation(libs.compose.ui.tooling)
+
+    kspAndroidTest(libs.androidx.hilt.compiler)
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    androidTestImplementation(libs.datastore.preferences)
+    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.hilt.android.testing)
+    androidTestImplementation(projects.app.settings)
+    androidTestImplementation(projects.commonTestAndroid)
+    androidTestImplementation(projects.dependencyInjection.testComponent)
+    androidTestImplementation(projects.localAndroid)
+    androidTestImplementation(projects.oneSafe6KMP.shared)
 }
