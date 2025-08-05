@@ -68,10 +68,13 @@ class SafeItemRawDaoTest {
     private lateinit var itemA: RoomSafeItem
     private lateinit var itemB: RoomSafeItem
     private lateinit var itemA1: RoomSafeItem
+    private lateinit var itemMultipleId: RoomSafeItem
 
     private lateinit var fieldA: SafeItemField
     private lateinit var fieldB: SafeItemField
     private lateinit var fieldA1: SafeItemField
+    private lateinit var fieldMultipleId1: SafeItemField
+    private lateinit var fieldMultipleId2: SafeItemField
 
     @Inject internal lateinit var safeDao: SafeDao
 
@@ -97,22 +100,38 @@ class SafeItemRawDaoTest {
             isFavorite = true,
             updatedAt = Instant.ofEpochMilli(3),
         )
+        itemMultipleId = CommonTestUtils.roomSafeItem(
+            position = 2.0,
+            indexAlpha = 4.0,
+            updatedAt = Instant.ofEpochMilli(4),
+        )
 
         fieldA = OSTestUtils.createSafeItemField(itemId = itemA.id, isItemIdentifier = true)
         fieldB = OSTestUtils.createSafeItemField(itemId = itemB.id, isItemIdentifier = true)
         fieldA1 = OSTestUtils.createSafeItemField(itemId = itemA1.id, isItemIdentifier = true)
+        fieldMultipleId1 = OSTestUtils.createSafeItemField(itemId = itemMultipleId.id, isItemIdentifier = true)
+        // isItemIdentifier = true on purpose to test the query with multiple ids
+        fieldMultipleId2 = OSTestUtils.createSafeItemField(itemId = itemMultipleId.id, isItemIdentifier = true)
 
         runTest {
             safeDao.insert(CommonTestUtils.roomSafe())
-            safeItemDao.insert(listOf(itemA, itemB, itemA1))
-            safeItemFieldDao.insert(listOf(fieldA, fieldB, fieldA1).map(RoomSafeItemField::fromSafeItemField))
+            safeItemDao.insert(listOf(itemA, itemB, itemA1, itemMultipleId))
+            safeItemFieldDao.insert(
+                listOf(
+                    fieldA,
+                    fieldB,
+                    fieldA1,
+                    fieldMultipleId1,
+                    fieldMultipleId2,
+                ).map(RoomSafeItemField::fromSafeItemField),
+            )
         }
     }
 
     @Test
     fun findByParentId_test(): TestResult = runTest {
         ItemOrder.entries.forEach { itemOrder ->
-            val expectedNull = listOf(itemA, itemB).sortedBy(itemOrder)
+            val expectedNull = listOf(itemA, itemB, itemMultipleId).sortedBy(itemOrder)
             val actualNull = rawDao.getItems(SafeItemRawDao.findByParentIdQuery(null, itemOrder, firstSafeId))
 
             assertContentEquals(expectedNull, actualNull, itemOrder)
@@ -152,7 +171,7 @@ class SafeItemRawDaoTest {
     @Test
     fun findByParentIdAsPagingSource_test(): TestResult = runTest {
         ItemOrder.entries.forEach { itemOrder ->
-            val expectedNull = listOf(itemA, itemB).sortedBy(itemOrder)
+            val expectedNull = listOf(itemA, itemB, itemMultipleId).sortedBy(itemOrder)
             val actualNull = rawDao.getPagedItems(SafeItemRawDao.findByParentIdQuery(null, itemOrder, firstSafeId))
                 .data()
             assertContentEquals(expectedNull, actualNull, itemOrder)
@@ -169,7 +188,7 @@ class SafeItemRawDaoTest {
     @Test
     fun getAllSafeItemsWithIdentifierAsPagingSource_test(): TestResult = runTest {
         ItemOrder.entries.forEach { itemOrder ->
-            val expected = listOf(itemA, itemA1).sortedBy(itemOrder)
+            val expected = listOf(itemA, itemA1, itemMultipleId).sortedBy(itemOrder)
             val actual = rawDao.getPagedSafeItemsWithIdentifier(
                 SafeItemRawDao.getAllSafeItemsWithIdentifierQuery(
                     idsToExclude = listOf(itemB.id),
@@ -295,7 +314,7 @@ class SafeItemRawDaoTest {
     @Test
     fun findByParentIdWithIdentifierQuery_test(): TestResult = runTest {
         ItemOrder.entries.forEach { itemOrder ->
-            val expected = listOf(itemA, itemB).sortedBy(itemOrder)
+            val expected = listOf(itemA, itemB, itemMultipleId).sortedBy(itemOrder)
             val actual = rawDao.getSafeItemsWithIdentifierFlow(
                 SafeItemRawDao.findByParentIdWithIdentifierQuery(null, itemOrder, firstSafeId),
             ).first()
