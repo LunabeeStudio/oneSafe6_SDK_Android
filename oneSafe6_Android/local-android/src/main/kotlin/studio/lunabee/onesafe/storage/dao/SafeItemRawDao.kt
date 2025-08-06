@@ -79,13 +79,22 @@ interface SafeItemRawDao {
                                 SafeItem.icon_id as iconId,
                                 SafeItem.enc_color as encColor,
                                 SafeItem.deleted_at as deletedAt,
-                                SafeItemField.enc_value as encIdentifier,
-                                SafeItemField.enc_kind as encIdentifierKind,
-                                SafeItemField.enc_secure_display_mask as encSecuredDisplayMask,
+                                identifier.enc_value as encIdentifier,
+                                identifier.enc_kind as encIdentifierKind,
+                                identifier.enc_secure_display_mask as encSecuredDisplayMask,
                                 SafeItem.position as position,
                                 SafeItem.updated_at as updatedAt
                             FROM SafeItem
-                            LEFT JOIN SafeItemField ON SafeItemField.item_id = SafeItem.id AND SafeItemField.is_item_identifier = 1 
+                            LEFT JOIN (
+                                SELECT
+                                    item_id,
+                                    enc_value,
+                                    enc_kind,
+                                    enc_secure_display_mask
+                                FROM SafeItemField
+                                WHERE is_item_identifier = 1
+                                GROUP BY item_id
+                            ) identifier ON identifier.item_id = SafeItem.id
                             WHERE SafeItem.id NOT IN ($placeHolder) AND encIdentifier IS NOT NULL AND safe_id IS ?
                             ${order.orderBy}
                         """,
@@ -127,13 +136,22 @@ interface SafeItemRawDao {
                                 SafeItem.icon_id as iconId,
                                 SafeItem.enc_color as encColor,
                                 SafeItem.deleted_at as deletedAt,
-                                SafeItemField.enc_value as encIdentifier,
-                                SafeItemField.enc_kind as encIdentifierKind,
-                                SafeItemField.enc_secure_display_mask as encSecuredDisplayMask,
+                                identifier.enc_value as encIdentifier,
+                                identifier.enc_kind as encIdentifierKind,
+                                identifier.enc_secure_display_mask as encSecuredDisplayMask,
                                 SafeItem.position as position,
                                 SafeItem.updated_at as updatedAt
                             FROM SafeItem
-                            LEFT JOIN SafeItemField ON SafeItemField.item_id = SafeItem.id AND SafeItemField.is_item_identifier = 1 
+                            LEFT JOIN (
+                                SELECT
+                                    item_id,
+                                    enc_value,
+                                    enc_kind,
+                                    enc_secure_display_mask
+                                FROM SafeItemField
+                                WHERE is_item_identifier = 1
+                                GROUP BY item_id
+                            ) identifier ON identifier.item_id = SafeItem.id
                             WHERE $whereClause
                             ${order.orderBy}
                         """,
@@ -186,7 +204,8 @@ interface SafeItemRawDao {
                             enc_kind,
                             enc_secure_display_mask
                         FROM SafeItemField  
-                        WHERE is_item_identifier = 1 AND enc_value IS NOT NULL GROUP BY item_id
+                        WHERE is_item_identifier = 1 AND enc_value IS NOT NULL
+                        GROUP BY item_id
                     ) identifier on identifier.item_id  = SafeItem.id
                     WHERE SafeItem.id IN ($placeHolder)
                     ${order.orderBy}
