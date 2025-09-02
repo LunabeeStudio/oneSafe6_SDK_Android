@@ -16,6 +16,7 @@ message ArchiveMetadata {
   int32 items_count = 6;
   ArchiveKind archive_kind = 7;
   int32 bubbles_contacts_count = 8;
+  optional bytes cryptoToken = 9;
 };
 
 message Archive {

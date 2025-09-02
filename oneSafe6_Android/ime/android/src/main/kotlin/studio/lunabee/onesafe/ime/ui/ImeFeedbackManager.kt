@@ -42,7 +42,7 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.minutes
 
 class ImeFeedbackManager @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val osNotificationManager: OSNotificationManager,
 ) {
     fun sendIncomingMessageFeedback(result: LBResult<IncomingMessageState>) {

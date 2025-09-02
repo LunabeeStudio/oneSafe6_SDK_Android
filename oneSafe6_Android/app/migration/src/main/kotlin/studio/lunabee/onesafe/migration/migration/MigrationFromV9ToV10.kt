@@ -47,7 +47,7 @@ class MigrationFromV9ToV10 @Inject constructor(
     private val safeItemFieldRepository: SafeItemFieldRepository,
     private val safeItemKeyRepository: SafeItemKeyRepository,
     private val cryptoDataMapper: AndroidCryptoDataMapper,
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val migrationCryptoV1UseCase: MigrationCryptoV1UseCase,
 ) : AppMigration0(9, 10) {
     override suspend fun migrate(migrationSafeData: MigrationSafeData0): LBResult<Unit> {

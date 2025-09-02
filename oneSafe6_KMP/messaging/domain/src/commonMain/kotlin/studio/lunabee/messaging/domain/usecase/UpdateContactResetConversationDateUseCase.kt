@@ -19,7 +19,7 @@
 
 package studio.lunabee.messaging.domain.usecase
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import studio.lunabee.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.bubbles.domain.repository.ContactKeyRepository
 import studio.lunabee.bubbles.domain.repository.ContactRepository

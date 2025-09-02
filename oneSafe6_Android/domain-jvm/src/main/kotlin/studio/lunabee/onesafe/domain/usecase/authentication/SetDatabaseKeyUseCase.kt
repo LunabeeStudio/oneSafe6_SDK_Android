@@ -24,7 +24,6 @@ import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
 import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
 import studio.lunabee.onesafe.domain.repository.DatabaseKeyRepository
 import studio.lunabee.onesafe.error.OSError
-import studio.lunabee.onesafe.getOrThrow
 import javax.inject.Inject
 
 /**

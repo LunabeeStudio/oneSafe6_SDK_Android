@@ -35,8 +35,8 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.datetime.toJavaInstant
-import kotlinx.datetime.toKotlinInstant
+import kotlin.time.toJavaInstant
+import kotlin.time.toKotlinInstant
 import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.bubbles.domain.usecase.GetAllContactsUseCase
 import studio.lunabee.compose.core.LbcTextSpec
@@ -60,7 +60,6 @@ import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.usecase.item.CountSafeItemUseCase
 import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
 import studio.lunabee.onesafe.domain.usecase.item.SecureGetItemUseCase
-import studio.lunabee.onesafe.getOrThrow
 import studio.lunabee.onesafe.messaging.senditem.model.FileShareData
 import studio.lunabee.onesafe.messaging.senditem.model.SharedItemInfo
 import studio.lunabee.onesafe.messaging.usecase.CreateMessageWithItemSharedUseCase

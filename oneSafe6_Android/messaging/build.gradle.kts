@@ -68,7 +68,7 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.lbccore)
     implementation(libs.lbcore)
-    implementation(libs.lbloading.compose)
+    implementation(libs.lbloading.hilt)
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.paging.compose)
 

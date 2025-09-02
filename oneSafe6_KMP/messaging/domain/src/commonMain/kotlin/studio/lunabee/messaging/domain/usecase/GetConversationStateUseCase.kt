@@ -26,7 +26,6 @@ import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.error.BubblesMessagingError
 import studio.lunabee.doubleratchet.model.Conversation
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
-import studio.lunabee.messaging.domain.extension.getOrThrow
 import studio.lunabee.messaging.domain.model.ConversationState
 import studio.lunabee.messaging.domain.repository.ConversationRepository
 

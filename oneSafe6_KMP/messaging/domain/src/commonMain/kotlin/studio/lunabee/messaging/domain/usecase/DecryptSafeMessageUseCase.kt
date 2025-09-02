@@ -19,7 +19,7 @@
 
 package studio.lunabee.messaging.domain.usecase
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID

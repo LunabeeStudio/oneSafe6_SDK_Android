@@ -19,7 +19,7 @@
 
 package studio.lunabee.messaging.domain.model
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import studio.lunabee.doubleratchet.model.DRMessageKey
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.messaging.domain.MessagingConstant

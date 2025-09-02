@@ -19,16 +19,10 @@
 
 package studio.lunabee.messaging.domain.extension
 
-import com.lunabee.lbcore.model.LBResult
-import studio.lunabee.onesafe.error.BubblesDoubleRatchetError
 import studio.lunabee.doubleratchet.model.DoubleRatchetError
+import studio.lunabee.onesafe.error.BubblesDoubleRatchetError
 
 fun DoubleRatchetError.asBubblesError(): BubblesDoubleRatchetError {
     val code: BubblesDoubleRatchetError.Code = BubblesDoubleRatchetError.Code.valueOf(type.name)
     return BubblesDoubleRatchetError(code)
-}
-
-fun <T> LBResult<T>.getOrThrow(defaultMessage: String? = null): T = when (this) {
-    is LBResult.Failure -> throw this.throwable ?: Exception(defaultMessage ?: "Failed without exception")
-    is LBResult.Success -> this.successData
 }

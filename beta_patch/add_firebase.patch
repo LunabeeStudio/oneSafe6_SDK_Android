@@ -1,0 +1,29 @@
+diff --git forkSrcPrefix/oneSafe6_Android/app/src/main/AndroidManifest.xml forkDstPrefix/oneSafe6_Android/app/src/main/AndroidManifest.xml
+index 8a6fce72347618f742a4662fcc9fb10c2840145a..948b176f69658da5b2154a320716650bb5eb79d3 100644
+--- forkSrcPrefix/oneSafe6_Android/app/src/main/AndroidManifest.xml
++++ forkDstPrefix/oneSafe6_Android/app/src/main/AndroidManifest.xml
+@@ -228,6 +228,11 @@
+             android:windowSoftInputMode="adjustResize"
+             tools:ignore="DiscouragedApi,LockedOrientationActivity" />
+ 
++        <provider
++            android:name="com.google.firebase.provider.FirebaseInitProvider"
++            android:authorities="${applicationId}.firebaseinitprovider"
++            tools:node="remove" />
++
+     </application>
+ 
+ </manifest>
+diff --git forkSrcPrefix/oneSafe6_Android/app/build.gradle.kts forkDstPrefix/oneSafe6_Android/app/build.gradle.kts
+index 75b076b5705119be5c2459630b67a60e4ed9928e..5b2ad2e812ece37f2d40f917f9e25509988ccec2 100644
+--- forkSrcPrefix/oneSafe6_Android/app/build.gradle.kts
++++ forkDstPrefix/oneSafe6_Android/app/build.gradle.kts
+@@ -8,6 +8,8 @@ plugins {
+     alias(libs.plugins.hilt)
+     alias(libs.plugins.kotlin.serialization)
+     alias(libs.plugins.aboutlibraries)
++    alias(libs.plugins.google.services)
++    alias(libs.plugins.firebase.crashlytics)
+ }
+ 
+ android {

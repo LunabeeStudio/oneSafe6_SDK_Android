@@ -29,7 +29,7 @@ import studio.lunabee.onesafe.domain.repository.DatabaseKeyRepository
 import javax.inject.Inject
 
 class DatabaseKeyRepositoryImpl @Inject constructor(
-    @DatastoreEngineProvider(type = DataStoreType.Encrypted) private val dataStore: DatastoreEngine,
+    @param:DatastoreEngineProvider(type = DataStoreType.Encrypted) private val dataStore: DatastoreEngine,
     private val keyProvider: RandomKeyProvider,
 ) : DatabaseKeyRepository {
     override fun generateKey(): DatabaseKey {

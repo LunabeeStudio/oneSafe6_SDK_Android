@@ -49,8 +49,8 @@ pluginManagement {
 
 plugins {
     // See https://jmfayard.github.io/refreshVersions
-    id("de.fayard.refreshVersions") version "0.60.5"
-    id("studio.lunabee.plugins.cache") version "0.9.0"
+    id("de.fayard.refreshVersions") version "0.60.6"
+    id("studio.lunabee.plugins.cache") version "1.0.0"
 }
 
 rootProject.name = "oneSafe6"

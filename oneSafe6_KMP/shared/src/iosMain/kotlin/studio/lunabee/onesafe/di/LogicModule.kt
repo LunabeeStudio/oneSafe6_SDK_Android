@@ -16,7 +16,7 @@
 
 package studio.lunabee.onesafe.di
 
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import studio.lunabee.bubbles.domain.crypto.BubblesCryptoEngine

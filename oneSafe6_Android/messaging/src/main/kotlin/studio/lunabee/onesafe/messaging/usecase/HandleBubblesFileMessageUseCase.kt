@@ -41,7 +41,7 @@ import java.io.InputStream
 import javax.inject.Inject
 
 class HandleBubblesFileMessageUseCase @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val isSafeReadyUseCase: IsSafeReadyUseCase,
     private val unzipUseCase: ArchiveUnzipUseCase,
     private val decryptBubblesSafeItemMessageUseCase: DecryptBubblesSafeItemMessageUseCase,

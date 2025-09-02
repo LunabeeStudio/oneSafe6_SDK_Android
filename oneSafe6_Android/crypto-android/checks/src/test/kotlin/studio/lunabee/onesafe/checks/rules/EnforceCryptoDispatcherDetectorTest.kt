@@ -80,6 +80,7 @@ class EnforceCryptoDispatcherDetectorTest {
                 """,
             ).indented(),
         )
+            .allowMissingSdk()
             .issues(EnforceCryptoDispatcherDetector.SuspendCryptoDispatcherIssue)
             .run()
             .expect("No warnings.")
@@ -110,6 +111,7 @@ class EnforceCryptoDispatcherDetectorTest {
             ).indented(),
         )
             .issues(EnforceCryptoDispatcherDetector.SuspendCryptoDispatcherIssue)
+            .allowMissingSdk()
             .run()
             .expect(
                 """
@@ -141,6 +143,7 @@ class EnforceCryptoDispatcherDetectorTest {
             ).indented(),
         )
             .issues(EnforceCryptoDispatcherDetector.SuspendCryptoDispatcherIssue)
+            .allowMissingSdk()
             .run()
             .expect("No warnings.")
     }
@@ -173,6 +176,7 @@ class EnforceCryptoDispatcherDetectorTest {
             ).indented(),
         )
             .issues(EnforceCryptoDispatcherDetector.FlowCryptoDispatcherIssue)
+            .allowMissingSdk()
             .run()
             .expect("No warnings.")
     }
@@ -207,6 +211,7 @@ class EnforceCryptoDispatcherDetectorTest {
             ).indented(),
         )
             .issues(EnforceCryptoDispatcherDetector.FlowCryptoDispatcherIssue)
+            .allowMissingSdk()
             .run()
             .expect(
                 """

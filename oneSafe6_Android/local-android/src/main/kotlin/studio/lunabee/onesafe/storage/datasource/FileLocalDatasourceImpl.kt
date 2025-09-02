@@ -38,8 +38,8 @@ import javax.inject.Inject
 
 // TODO rework/align cache directories injection to avoid using the app context directly (also see @ImageCacheDirectory)
 class FileLocalDatasourceImpl @Inject constructor(
-    @ApplicationContext private val appContext: Context,
-    @FileDispatcher private val fileDispatcher: CoroutineDispatcher,
+    @param:ApplicationContext private val appContext: Context,
+    @param:FileDispatcher private val fileDispatcher: CoroutineDispatcher,
     private val dao: SafeFileDao,
     private val transactionProvider: TransactionProvider<MainDatabase>,
 ) : FileLocalDatasource {

@@ -24,8 +24,10 @@ import com.lunabee.lbcore.model.LBResult
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -126,7 +128,9 @@ class BackupLocalDataSourceImplTest {
         }
         assertEquals(OSStorageError.Code.UNKNOWN_FILE_ERROR, error.code)
 
-        val count = mainDatabase.query("SELECT * FROM Backup", null).count
+        val count = withContext(Dispatchers.IO) {
+            mainDatabase.query("SELECT * FROM Backup", null).count
+        }
         assertEquals(0, count)
     }
 

@@ -20,7 +20,7 @@
 package studio.lunabee.bubbles.domain.usecase
 
 import com.lunabee.lbcore.model.LBResult
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import studio.lunabee.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.bubbles.domain.repository.ContactKeyRepository
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID

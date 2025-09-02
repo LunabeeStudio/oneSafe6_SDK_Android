@@ -50,7 +50,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -63,7 +62,6 @@ import androidx.compose.ui.platform.WindowInfo
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.map
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -210,7 +208,9 @@ class OSFlorisImeService : FlorisImeService() {
         navController?.currentBackStackEntry?.let { entry ->
             val isOneSafeUiVisible = isOneSafeUiVisibleFlow.value
             val forceDark = entry.destination.route == WriteMessageDestination.route && isOneSafeUiVisible
-            themeManager.updateActiveTheme(forceNight = forceDark)
+            lifecycleScope.launch {
+                themeManager.updateActiveTheme(forceNight = forceDark)
+            }
         }
     }
 
@@ -333,9 +333,8 @@ class OSFlorisImeService : FlorisImeService() {
 
             // Observe the keyboard config night mode to set the correct content color and provide the information to compose tree. Do not
             // rely on system dark mode as the keyboard theme might be forced to light or dark.
-            val isNightTheme by themeManager.activeThemeInfo
-                .map { it.config.isNightTheme }
-                .observeAsState(false)
+            val activeThemeInfo by themeManager.activeThemeInfo.collectAsStateWithLifecycle()
+            val isNightTheme = activeThemeInfo.config.isNightTheme
 
             val contentColor = if (isNightTheme) {
                 LocalColorPalette.current.Neutral00

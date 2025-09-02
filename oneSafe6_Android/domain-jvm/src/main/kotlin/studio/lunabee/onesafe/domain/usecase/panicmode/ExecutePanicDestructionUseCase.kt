@@ -21,8 +21,10 @@ package studio.lunabee.onesafe.domain.usecase.panicmode
 
 import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.di.Inject
+import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.DeleteSafeUseCase
+import studio.lunabee.onesafe.error.OSError
 
 class ExecutePanicDestructionUseCase @Inject constructor(
     private val safeRepository: SafeRepository,
@@ -30,8 +32,9 @@ class ExecutePanicDestructionUseCase @Inject constructor(
 ) {
 
     suspend operator fun invoke(): LBResult<Unit> {
+        val currentSafeId: SafeId? = OSError.runCatching { safeRepository.currentSafeId() }.data
         return safeRepository.getSafeToDestroy().map {
-            deleteSafeUseCase(it)
+            deleteSafeUseCase(it, currentSafeId == it)
         }.lastOrNull() ?: LBResult.Success(Unit)
     }
 }

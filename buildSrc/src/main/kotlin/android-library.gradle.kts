@@ -29,7 +29,6 @@ group = ProjectConfig.GROUP_ID
 
 android {
     compileSdk = AndroidConfig.COMPILE_SDK
-    buildToolsVersion = AndroidConfig.BUILD_TOOLS_VERSION
 
     defaultConfig {
         minSdk = AndroidConfig.MIN_LIB_SDK
@@ -42,8 +41,10 @@ android {
         sourceCompatibility = ProjectConfig.JDK_VERSION
         targetCompatibility = ProjectConfig.JDK_VERSION
     }
+}
 
-    kotlinOptions.freeCompilerArgs += "-Xcontext-receivers"
+kotlin {
+    compilerOptions.freeCompilerArgs.add("-Xcontext-receivers")
 }
 
 // FIXME workaround https://github.com/gradle/gradle/issues/15383#issuecomment-779893192
@@ -66,5 +67,6 @@ dependencies {
 kotlin {
     compilerOptions {
         jvmTarget.set(ProjectConfig.JVM_TARGET)
+        freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
     }
 }

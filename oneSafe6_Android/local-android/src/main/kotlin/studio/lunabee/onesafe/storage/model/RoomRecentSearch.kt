@@ -46,7 +46,7 @@ data class RoomRecentSearch(
     val encSearch: ByteArray,
     @ColumnInfo(name = "timestamp_ms")
     val timestampMs: Long,
-    @ColumnInfo(name = "safe_id")
+    @ColumnInfo(name = "safe_id", index = true)
     val safeId: SafeId,
 ) {
     override fun equals(other: Any?): Boolean {

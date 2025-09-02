@@ -32,8 +32,8 @@ import java.time.Instant
 import javax.inject.Inject
 
 class LocalBackupFileCacheDataSource @Inject constructor(
-    @InternalDir(InternalDir.Type.Cache) private val cacheDir: File,
-    @FileDispatcher private val dispatcher: CoroutineDispatcher,
+    @param:InternalDir(InternalDir.Type.Cache) private val cacheDir: File,
+    @param:FileDispatcher private val dispatcher: CoroutineDispatcher,
 ) : LocalBackupCacheDataSource {
     override suspend fun addBackup(inputStream: InputStream, date: Instant): File {
         val file = withContext(dispatcher) {

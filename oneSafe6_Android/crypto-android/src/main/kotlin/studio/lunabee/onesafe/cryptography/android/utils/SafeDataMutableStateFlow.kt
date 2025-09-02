@@ -19,10 +19,12 @@
 
 package studio.lunabee.onesafe.cryptography.android.utils
 
+import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.randomize
 
+@OptIn(ExperimentalForInheritanceCoroutinesApi::class)
 class SafeDataMutableStateFlow private constructor(
     private val overrideCode: OSCryptoError.Code,
     private val nullableCode: OSCryptoError.Code,

@@ -28,7 +28,7 @@ import javax.inject.Inject
  * Rename datastore
  */
 class RenameLegacyDatastore @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
 ) {
     operator fun invoke(legacyFilename: String, newFilename: String) {
         val legacyFile = context.dataStoreFile(legacyFilename)

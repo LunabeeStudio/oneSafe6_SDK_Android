@@ -7,7 +7,6 @@ android {
     namespace = "com.lunabee.onesafe"
 
     compileSdk = AndroidConfig.COMPILE_SDK
-    buildToolsVersion = AndroidConfig.BUILD_TOOLS_VERSION
 
     defaultConfig {
         minSdk = AndroidConfig.MIN_APP_SDK
