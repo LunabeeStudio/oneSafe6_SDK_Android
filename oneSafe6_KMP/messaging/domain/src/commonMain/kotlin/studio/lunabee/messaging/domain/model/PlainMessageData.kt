@@ -20,7 +20,7 @@
 package studio.lunabee.messaging.domain.model
 
 import com.lunabee.lbcore.model.LBResult
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 
 sealed class PlainMessageData(

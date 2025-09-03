@@ -32,7 +32,6 @@ import studio.lunabee.onesafe.domain.usecase.authentication.LoginUseCase
 import studio.lunabee.onesafe.domain.usecase.settings.SetSecuritySettingUseCase
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.error.OSMigrationError
-import studio.lunabee.onesafe.getOrThrow
 import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.migration.migration.AppMigration0
 import studio.lunabee.onesafe.migration.migration.AppMigration15

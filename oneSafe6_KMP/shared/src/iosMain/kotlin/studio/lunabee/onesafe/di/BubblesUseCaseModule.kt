@@ -22,6 +22,7 @@ import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
+import studio.lunabee.bubbles.domain.usecase.ContactLocalEncryptUseCase
 import studio.lunabee.bubbles.domain.usecase.CreateContactUseCase
 import studio.lunabee.bubbles.domain.usecase.DecryptContactNameUseCase
 import studio.lunabee.bubbles.domain.usecase.DecryptContactSharingModeUseCase
@@ -37,6 +38,7 @@ import studio.lunabee.messaging.domain.usecase.GetResetMessageUseCase
 
 val bubblesUseCaseModule: Module = module {
     singleOf(::ContactLocalDecryptUseCase)
+    singleOf(::ContactLocalEncryptUseCase)
     singleOf(::CreateContactUseCase)
     singleOf(::GetAllContactsUseCase)
     singleOf(::GetContactUseCase)
@@ -53,6 +55,7 @@ val bubblesUseCaseModule: Module = module {
 
 class BubblesUseCases : KoinComponent {
     val contactLocalDecryptUseCase: ContactLocalDecryptUseCase by inject()
+    val contactLocalEncryptUseCase: ContactLocalEncryptUseCase by inject()
     val createContactUseCase: CreateContactUseCase by inject()
     val getAllContactsUseCase: GetAllContactsUseCase by inject()
     val getContactUseCase: GetContactUseCase by inject()

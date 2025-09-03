@@ -49,7 +49,7 @@ data class OSCryptoError(
         BIOMETRIC_IV_ALREADY_GENERATED("A IV have already been generated for biometric"),
         KEYSTORE_KEY_NOT_GENERATED("try to retrieve Key not generated"),
         KEYSTORE_KEY_ERROR_CREATION_ERROR("error during key store key creation"),
-        SALT_ALREADY_GENERATED("A Master salt has already beed generated"),
+        SALT_ALREADY_GENERATED("A Master salt has already been generated"),
         PROTO_DATASTORE_READ_ERROR("Cannot read datastore proto"),
         SEARCH_INDEX_KEY_ALREADY_GENERATED("Search index key have already been generated"),
         ITEM_EDITION_KEY_ALREADY_GENERATED("item edition key have already been generated"),

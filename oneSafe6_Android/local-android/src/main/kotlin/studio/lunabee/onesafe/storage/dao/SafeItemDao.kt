@@ -345,7 +345,7 @@ interface SafeItemDao {
     suspend fun getItemNameWithIndexAt(index: Int, safeId: SafeId): ItemNameWithIndex?
 
     @Query(
-        "SELECT MIN(index_alpha) AS first, MAX(index_alpha) AS last FROM SafeItem WHERE $SAFE_ID_IS_PARAM",
+        "SELECT MIN(index_alpha) AS 'first', MAX(index_alpha) AS 'last' FROM SafeItem WHERE $SAFE_ID_IS_PARAM",
     )
     suspend fun getAlphaIndexRange(safeId: SafeId): RoomDoubleRange
 }

@@ -29,7 +29,6 @@ import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.error.BubblesMessagingError
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
-import studio.lunabee.messaging.domain.extension.getOrThrow
 import studio.lunabee.messaging.domain.model.proto.ProtoInvitationMessage
 
 class GetInvitationMessageUseCase @Inject constructor(

@@ -41,8 +41,15 @@ class DeleteSafeUseCase @Inject constructor(
     private val fileRepository: FileRepository,
 ) {
 
-    suspend operator fun invoke(safeId: SafeId): LBResult<Unit> = OSError.runCatching(logger) {
-        lockAppUseCase(true)
+    /**
+     * @param safeId The safe to delete
+     * @param lockSafe If true, the current safe will be locked
+     */
+    suspend operator fun invoke(safeId: SafeId, lockSafe: Boolean): LBResult<Unit> = OSError.runCatching(logger) {
+        // In case of auto-destruction with same password as another safe, we don't want to lock the other safe
+        if (lockSafe) {
+            lockAppUseCase(true)
+        }
         // Delete files (files, icons, backups)
         iconRepository.deleteAll(safeId)
         fileRepository.deleteAll(safeId)
@@ -59,7 +66,7 @@ class DeleteSafeUseCase @Inject constructor(
         val result: LBResult<SafeId> = OSError.runCatching { safeRepository.currentSafeId() }
         return when (result) {
             is LBResult.Failure -> LBResult.Failure(result.throwable)
-            is LBResult.Success -> invoke(result.successData)
+            is LBResult.Success -> invoke(result.successData, true)
         }
     }
 }

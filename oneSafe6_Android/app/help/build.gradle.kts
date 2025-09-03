@@ -60,7 +60,7 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
     implementation(libs.lbccore)
     implementation(libs.lbcore)
-    implementation(libs.lbloading.compose)
+    implementation(libs.lbloading.hilt)
     implementation(libs.lblogger)
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.process.phoenix)

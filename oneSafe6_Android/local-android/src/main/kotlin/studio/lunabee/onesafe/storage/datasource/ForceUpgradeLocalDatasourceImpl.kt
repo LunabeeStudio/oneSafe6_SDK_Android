@@ -36,9 +36,9 @@ import studio.lunabee.onesafe.storage.copy
 import javax.inject.Inject
 
 class ForceUpgradeLocalDatasourceImpl @Inject constructor(
-    @BuildNumber private val buildNumber: Int,
+    @param:BuildNumber private val buildNumber: Int,
     private val dataStore: DataStore<ForceUpgradeProtoData>,
-    @FileDispatcher private val fileDispatcher: CoroutineDispatcher,
+    @param:FileDispatcher private val fileDispatcher: CoroutineDispatcher,
 ) : ForceUpgradeLocalDatasource {
 
     override fun getForceUpgradeData(): Flow<ForceUpgradeData?> = dataStore.data.map { data ->

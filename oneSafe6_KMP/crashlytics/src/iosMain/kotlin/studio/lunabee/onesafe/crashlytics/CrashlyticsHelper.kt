@@ -16,6 +16,7 @@
 
 package studio.lunabee.onesafe.crashlytics
 
+import co.touchlab.crashkios.crashlytics.enableCrashlytics
 import co.touchlab.crashkios.crashlytics.setCrashlyticsUnhandledExceptionHook
 import co.touchlab.kermit.Logger
 import com.lunabee.lblogger.LBCrashlyticsLogWriter
@@ -24,6 +25,7 @@ object CrashlyticsHelper {
 
     fun setupCrashlytics() {
         Logger.addLogWriter(LBCrashlyticsLogWriter())
+        enableCrashlytics()
         setCrashlyticsUnhandledExceptionHook()
     }
 }

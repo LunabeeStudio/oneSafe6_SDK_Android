@@ -29,7 +29,7 @@ import studio.lunabee.onesafe.use
 import javax.inject.Inject
 
 class HKDFTinkHashEngine @Inject constructor(
-    @CryptoDispatcher private val dispatcher: CoroutineDispatcher,
+    @param:CryptoDispatcher private val dispatcher: CoroutineDispatcher,
 ) : PasswordHashEngine {
     override suspend fun deriveKey(password: CharArray, salt: ByteArray): ByteArray =
         withContext(dispatcher) {

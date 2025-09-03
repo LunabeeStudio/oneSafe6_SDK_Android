@@ -33,7 +33,6 @@ import studio.lunabee.onesafe.domain.usecase.DeleteIconUseCase
 import studio.lunabee.onesafe.domain.usecase.SetIconUseCase
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemUseCase
 import studio.lunabee.onesafe.error.OSError
-import studio.lunabee.onesafe.getOrThrow
 import java.time.Clock
 import java.time.Instant
 import java.util.UUID

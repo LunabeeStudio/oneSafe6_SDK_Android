@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Lunabee Studio
+ * Copyright (c) 2025 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 9/4/2024 - for the oneSafe6 SDK.
- * Last modified 9/4/24, 11:15 AM
+ * Created by Lunabee Studio / Date - 8/26/2025 - for the oneSafe6 SDK.
+ * Last modified 6/25/25, 10:43 AM
  */
 
-package studio.lunabee.onesafe
+plugins {
+    id("kmp-library-common-convention")
+}
 
-import com.lunabee.lbcore.model.LBResult
-
-fun <T> LBResult<T>.getOrThrow(defaultMessage: String? = null): T = when (this) {
-    is LBResult.Failure -> throw this.throwable ?: Exception(defaultMessage ?: "Failed without exception")
-    is LBResult.Success -> this.successData
+kotlin {
+    jvm()
 }

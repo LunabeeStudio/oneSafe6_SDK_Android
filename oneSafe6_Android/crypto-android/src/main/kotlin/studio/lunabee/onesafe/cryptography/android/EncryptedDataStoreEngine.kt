@@ -49,11 +49,11 @@ import javax.inject.Inject
 @Suppress("ObsoleteSdkInt")
 @RequiresApi(Build.VERSION_CODES.M)
 class EncryptedDataStoreEngine @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val androidKeyStoreEngine: AndroidKeyStoreEngine,
     private val ivProvider: IVProvider,
-    @FileDispatcher private val fileDispatcher: CoroutineDispatcher,
-    @CryptoDispatcher private val cryptoDispatcher: CoroutineDispatcher,
+    @param:FileDispatcher private val fileDispatcher: CoroutineDispatcher,
+    @param:CryptoDispatcher private val cryptoDispatcher: CoroutineDispatcher,
     dataStore: DataStore<ProtoData>,
 ) : DatastoreEngine(dataStore) {
 

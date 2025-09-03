@@ -55,7 +55,7 @@ data class RoomLocalBackup(
     @PrimaryKey val id: String,
     @ColumnInfo(name = "local_file") val localFile: File,
     @ColumnInfo(name = "date") val date: Instant,
-    @ColumnInfo(name = "safe_id") val safeId: SafeId,
+    @ColumnInfo(name = "safe_id", index = true) val safeId: SafeId,
 ) {
     fun toBackup(): LocalBackup = LocalBackup(
         date = date,

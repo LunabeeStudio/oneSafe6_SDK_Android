@@ -47,8 +47,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.datetime.toJavaInstant
-import kotlinx.datetime.toKotlinInstant
+import kotlin.time.toJavaInstant
+import kotlin.time.toKotlinInstant
 import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.bubbles.domain.repository.ContactRepository
 import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase

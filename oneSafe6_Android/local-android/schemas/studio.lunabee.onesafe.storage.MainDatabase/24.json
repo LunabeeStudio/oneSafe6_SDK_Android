@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 24,
-    "identityHash": "c1008d4f4419c972f29e3206d5a9e846",
+    "identityHash": "3db9ffa24188bef6bfb6bc13213fc1b2",
     "entities": [
       {
         "tableName": "SafeItem",
@@ -17,14 +17,12 @@
           {
             "fieldPath": "encName",
             "columnName": "enc_name",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "parentId",
             "columnName": "parent_id",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "isFavorite",
@@ -53,32 +51,27 @@
           {
             "fieldPath": "iconId",
             "columnName": "icon_id",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "encColor",
             "columnName": "enc_color",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "deletedAt",
             "columnName": "deleted_at",
-            "affinity": "INTEGER",
-            "notNull": false
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "deletedParentId",
             "columnName": "deleted_parent_id",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "consultedAt",
             "columnName": "consulted_at",
-            "affinity": "INTEGER",
-            "notNull": false
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "indexAlpha",
@@ -204,8 +197,7 @@
           {
             "fieldPath": "encName",
             "columnName": "enc_name",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "position",
@@ -222,14 +214,12 @@
           {
             "fieldPath": "encPlaceholder",
             "columnName": "enc_placeholder",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "encValue",
             "columnName": "enc_value",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "showPrediction",
@@ -240,8 +230,7 @@
           {
             "fieldPath": "encKind",
             "columnName": "enc_kind",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "updatedAt",
@@ -258,14 +247,12 @@
           {
             "fieldPath": "encFormattingMask",
             "columnName": "enc_formatting_mask",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "encSecureDisplayMask",
             "columnName": "enc_secure_display_mask",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "isSecured",
@@ -277,7 +264,6 @@
             "fieldPath": "encThumbnailFileName",
             "columnName": "enc_thumbnail_file_name",
             "affinity": "BLOB",
-            "notNull": false,
             "defaultValue": "null"
           }
         ],
@@ -337,8 +323,7 @@
           {
             "fieldPath": "fieldMatch",
             "columnName": "field_match",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "safeId",
@@ -441,7 +426,6 @@
             "id"
           ]
         },
-        "indices": [],
         "foreignKeys": [
           {
             "table": "SafeItem",
@@ -475,8 +459,7 @@
           {
             "fieldPath": "encSharedKey",
             "columnName": "enc_shared_key",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "updatedAt",
@@ -500,7 +483,6 @@
             "fieldPath": "consultedAt",
             "columnName": "consulted_at",
             "affinity": "INTEGER",
-            "notNull": false,
             "defaultValue": "null"
           },
           {
@@ -513,7 +495,6 @@
             "fieldPath": "encResetConversationDate",
             "columnName": "enc_reset_conversation_date",
             "affinity": "BLOB",
-            "notNull": false,
             "defaultValue": "null"
           }
         ],
@@ -591,14 +572,12 @@
           {
             "fieldPath": "encChannel",
             "columnName": "enc_channel",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "encSafeId",
             "columnName": "encSafeId",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "isRead",
@@ -675,7 +654,6 @@
             "contact_id"
           ]
         },
-        "indices": [],
         "foreignKeys": [
           {
             "table": "Contact",
@@ -709,8 +687,7 @@
           {
             "fieldPath": "encChannel",
             "columnName": "enc_channel",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           }
         ],
         "primaryKey": {
@@ -729,8 +706,7 @@
             "orders": [],
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_EnqueuedMessage_enc_message` ON `${TABLE_NAME}` (`enc_message`)"
           }
-        ],
-        "foreignKeys": []
+        ]
       },
       {
         "tableName": "DoubleRatchetKey",
@@ -754,9 +730,7 @@
           "columnNames": [
             "id"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       },
       {
         "tableName": "DoubleRatchetConversation",
@@ -795,32 +769,27 @@
           {
             "fieldPath": "encRootKey",
             "columnName": "encRootKey",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "encSendingChainKey",
             "columnName": "encSendingChainKey",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "encReceiveChainKey",
             "columnName": "encReceiveChainKey",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "encLastContactPublicKey",
             "columnName": "encLastContactPublicKey",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "encReceivedLastMessageNumber",
             "columnName": "encReceivedLastMessageNumber",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           }
         ],
         "primaryKey": {
@@ -829,7 +798,6 @@
             "id"
           ]
         },
-        "indices": [],
         "foreignKeys": [
           {
             "table": "Contact",
@@ -863,14 +831,12 @@
           {
             "fieldPath": "encOneSafePrivateKey",
             "columnName": "encOneSafePrivateKey",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "encOneSafePublicKey",
             "columnName": "encOneSafePublicKey",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           }
         ],
         "primaryKey": {
@@ -879,7 +845,6 @@
             "conversation_local_id"
           ]
         },
-        "indices": [],
         "foreignKeys": [
           {
             "table": "Contact",
@@ -990,14 +955,12 @@
           {
             "fieldPath": "remoteId",
             "columnName": "remote_id",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "localFile",
             "columnName": "local_file",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "date",
@@ -1008,14 +971,12 @@
           {
             "fieldPath": "safeId",
             "columnName": "safe_id",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "name",
             "columnName": "name",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -1120,14 +1081,12 @@
           {
             "fieldPath": "crypto.biometricCryptoMaterial",
             "columnName": "crypto_biometric_crypto_material",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "crypto.autoDestructionKey",
             "columnName": "crypto_auto_destruction_key",
             "affinity": "BLOB",
-            "notNull": false,
             "defaultValue": "NULL"
           },
           {
@@ -1194,7 +1153,6 @@
             "fieldPath": "settings.lastExportDate",
             "columnName": "setting_last_export_date",
             "affinity": "INTEGER",
-            "notNull": false,
             "defaultValue": "NULL"
           },
           {
@@ -1278,8 +1236,7 @@
           {
             "fieldPath": "settings.bubblesHomeCardCtaState.timestamp",
             "columnName": "setting_bubbles_home_card_cta_timestamp",
-            "affinity": "INTEGER",
-            "notNull": false
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "settings.preventionWarningCtaState.state",
@@ -1290,26 +1247,22 @@
           {
             "fieldPath": "settings.preventionWarningCtaState.timestamp",
             "columnName": "setting_prevention_warning_cta_timestamp",
-            "affinity": "INTEGER",
-            "notNull": false
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "settings.driveSettings.selectedAccount",
             "columnName": "setting_drive_selected_account",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "settings.driveSettings.folderId",
             "columnName": "setting_drive_folder_id",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "settings.driveSettings.folderUrl",
             "columnName": "setting_drive_folder_url",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "settings.enableAutoBackupCtaState.state",
@@ -1320,8 +1273,7 @@
           {
             "fieldPath": "settings.enableAutoBackupCtaState.timestamp",
             "columnName": "setting_enable_auto_backup_cta_timestamp",
-            "affinity": "INTEGER",
-            "notNull": false
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "settings.independentSafeInfoCtaState.state",
@@ -1332,8 +1284,7 @@
           {
             "fieldPath": "settings.independentSafeInfoCtaState.timestamp",
             "columnName": "setting_independent_safe_info_cta_timestamp",
-            "affinity": "INTEGER",
-            "notNull": false
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "appVisit.hasFinishOneSafeKOnBoarding",
@@ -1395,8 +1346,7 @@
             "orders": [],
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Safe_open_order` ON `${TABLE_NAME}` (`open_order`)"
           }
-        ],
-        "foreignKeys": []
+        ]
       },
       {
         "tableName": "AutoBackupError",
@@ -1423,8 +1373,7 @@
           {
             "fieldPath": "message",
             "columnName": "message",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "source",
@@ -1554,7 +1503,17 @@
             "safe_id"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_RecentSearch_safe_id",
+            "unique": false,
+            "columnNames": [
+              "safe_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_RecentSearch_safe_id` ON `${TABLE_NAME}` (`safe_id`)"
+          }
+        ],
         "foreignKeys": [
           {
             "table": "Safe",
@@ -1570,10 +1529,9 @@
         ]
       }
     ],
-    "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c1008d4f4419c972f29e3206d5a9e846')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3db9ffa24188bef6bfb6bc13213fc1b2')"
     ]
   }
 }

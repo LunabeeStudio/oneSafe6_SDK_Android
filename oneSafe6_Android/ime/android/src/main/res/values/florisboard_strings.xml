@@ -19,5 +19,7 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="florisboard__service_classname" translatable="false">studio.lunabee.onesafe.ime.OSFlorisImeService</string>
-    <string name="floris_app_name" translatable="false" tools:ignore="UnusedResources">oneSafe K by FlorisBoard</string>
+    <string name="floris_real_title" translatable="false" tools:ignore="UnusedResources">oneSafe K</string>
+    <!-- Override Florisboard name -->
+    <string name="floris_app_name" translatable="false" tools:ignore="UnusedResources">Based on FlorisBoard</string>
 </resources>

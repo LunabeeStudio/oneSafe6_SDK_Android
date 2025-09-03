@@ -18,6 +18,7 @@
  */
 
 import org.gradle.accessors.dm.LibrariesForLibs
+import org.gradle.kotlin.dsl.implementation
 
 plugins {
     id("java-library")
@@ -32,6 +33,7 @@ val libs: LibrariesForLibs = the<LibrariesForLibs>()
 
 dependencies {
     implementation(libs.javax.inject)
+    testImplementation(platform(libs.kotlinx.coroutines.bom))
     testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.logback.classic)
@@ -40,6 +42,7 @@ dependencies {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
     compilerOptions {
         jvmTarget.set(ProjectConfig.JVM_TARGET)
+        freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
     }
 }
 

@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="QuickLookArchivePreview" type="AppleAppExtensionRunConfiguration" factoryName="AppleAppExtension" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="oneSafe" TARGET_NAME="oneSafe" CONFIG_NAME="Debug" IS_LOCATION_SIMULATION_SUPPORTED="true" SCHEME_NAME="QuickLookArchivePreview" IS_LOCATION_SIMULATION_ALLOWED="true" APPLICATION_LANGUAGE="IDELaunchSchemeLanguageUseSystemLanguage" APPLICATION_REGION="" DEVELOPMENT_TEAM="${TEAM_ID}" MAKE_ACTIVE="TRUE" SHOULD_DEBUG_EXTENSIONS="true" APP_EXTENSION_TARGET="QuickLookArchivePreview" EXTENSION_BUNDLE_ID="studio.lunabee.oneSafe.ios.quicklook-archive-preview" EXTENSION_TYPE_ID="com.apple.quicklook.preview">
+    <embedded_app_extension_list>
+      <app_extension BUNDLE_ID="studio.lunabee.oneSafe.ios.thumbnail-archive" EXTENSION_TYPE_ID="com.apple.quicklook.thumbnail" />
+      <app_extension BUNDLE_ID="studio.lunabee.oneSafe.ios.auto-fill-credential-provider" EXTENSION_TYPE_ID="com.apple.authentication-services-credential-provider-ui" />
+      <app_extension BUNDLE_ID="studio.lunabee.oneSafe.ios.share" EXTENSION_TYPE_ID="com.apple.share-services" />
+      <app_extension BUNDLE_ID="studio.lunabee.oneSafe.ios.quicklook-archive-preview" EXTENSION_TYPE_ID="com.apple.quicklook.preview" />
+    </embedded_app_extension_list>
+    <method v="2">
+      <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+    </method>
+  </configuration>
+</component>

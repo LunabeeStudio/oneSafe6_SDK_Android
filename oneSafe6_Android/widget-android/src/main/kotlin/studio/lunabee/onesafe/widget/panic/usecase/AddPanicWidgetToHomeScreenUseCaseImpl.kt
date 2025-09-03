@@ -30,7 +30,7 @@ import studio.lunabee.onesafe.widget.panic.PanicButtonWidgetReceiver
 import javax.inject.Inject
 
 internal class AddPanicWidgetToHomeScreenUseCaseImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
 ) : AddPanicWidgetToHomeScreenUseCase {
     private val pinWidgetToHomeScreenHelper by lazy {
         PinWidgetToHomeScreenHelper(context)

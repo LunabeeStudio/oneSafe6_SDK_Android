@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.toKotlinInstant
+import kotlin.time.toKotlinInstant
 import org.junit.Rule
 import org.junit.Test
 import studio.lunabee.bubbles.domain.model.MessageSharingMode

@@ -25,7 +25,7 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import studio.lunabee.doubleratchet.model.DRMessageKey
 import studio.lunabee.doubleratchet.model.DRPublicKey
 import studio.lunabee.doubleratchet.model.MessageHeader

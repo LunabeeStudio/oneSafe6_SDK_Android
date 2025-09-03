@@ -33,7 +33,7 @@ import javax.inject.Inject
 
 class PasswordGeneratorConfigLocalDataSourceImpl @Inject constructor(
     private val dataStore: DataStore<OSPasswordGeneratorConfigProto.PasswordGeneratorConfigProto>,
-    @FileDispatcher private val fileDispatcher: CoroutineDispatcher,
+    @param:FileDispatcher private val fileDispatcher: CoroutineDispatcher,
 ) : PasswordGeneratorConfigLocalDataSource {
     override fun getConfig(): Flow<PasswordConfig> {
         return dataStore.data.map { proto ->

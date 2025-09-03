@@ -27,7 +27,6 @@ import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.jvm.get
-import studio.lunabee.onesafe.getOrThrow
 import javax.inject.Inject
 import kotlin.math.ceil
 import kotlin.math.floor

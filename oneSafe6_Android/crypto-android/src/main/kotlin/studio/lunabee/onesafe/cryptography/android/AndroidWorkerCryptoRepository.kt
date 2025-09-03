@@ -41,7 +41,7 @@ import javax.inject.Inject
 @RequiresApi(Build.VERSION_CODES.M)
 class AndroidWorkerCryptoRepository @Inject constructor(
     private val androidKeyStoreEngine: AndroidKeyStoreEngine,
-    @CryptoDispatcher private val cryptoDispatcher: CoroutineDispatcher,
+    @param:CryptoDispatcher private val cryptoDispatcher: CoroutineDispatcher,
     private val ivProvider: IVProvider,
 ) : WorkerCryptoRepository {
 

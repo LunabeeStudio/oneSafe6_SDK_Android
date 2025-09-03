@@ -37,7 +37,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class UrlMetadataRemoteDataSourceImpl @Inject constructor(
     private val urlMetadataApi: UrlMetadataApi,
-    @RemoteDispatcher
+    @param:RemoteDispatcher
     private val dispatcher: CoroutineDispatcher,
 ) : UrlMetadataRemoteDataSource {
     private val htmlPageFetchTimeout = 6.seconds

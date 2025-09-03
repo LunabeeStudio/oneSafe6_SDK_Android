@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id("org.jetbrains.kotlin.multiplatform")
+    `kmp-library-jvm-convention`
     alias(libs.plugins.lbDokka)
 }
 
@@ -32,7 +32,6 @@ kotlin {
             implementation(project.dependencies.platform(libs.lunabee.bom))
 
             implementation(libs.doubleratchet)
-            implementation(libs.kotlinx.coroutines.core)
             implementation(libs.lbcore)
             implementation(libs.lblogger)
         }

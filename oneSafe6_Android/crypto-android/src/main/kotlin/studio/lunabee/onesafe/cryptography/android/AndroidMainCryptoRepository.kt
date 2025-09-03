@@ -77,7 +77,7 @@ class AndroidMainCryptoRepository @Inject constructor(
     private val biometricEngine: BiometricEngine,
     private val randomKeyProvider: RandomKeyProvider,
     private val mapper: AndroidCryptoDataMapper,
-    @CryptoDispatcher private val dispatcher: CoroutineDispatcher,
+    @param:CryptoDispatcher private val dispatcher: CoroutineDispatcher,
     private val safeRepository: SafeRepository,
 ) : MainCryptoRepository, BubblesMainCryptoRepository {
 

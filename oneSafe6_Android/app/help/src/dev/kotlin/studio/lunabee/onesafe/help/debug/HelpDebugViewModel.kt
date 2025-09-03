@@ -65,7 +65,7 @@ internal class HelpDebugViewModel @Inject constructor(
     private val fileRepository: FileRepository,
     private val loadingManager: LoadingManager,
     private val databaseKeyRepository: DatabaseKeyRepository,
-    @Suppress("StaticFieldLeak") @ApplicationContext private val context: Context,
+    @Suppress("StaticFieldLeak") @param:ApplicationContext private val context: Context,
     private val safeRepository: SafeRepository,
 ) : ViewModel() {
 

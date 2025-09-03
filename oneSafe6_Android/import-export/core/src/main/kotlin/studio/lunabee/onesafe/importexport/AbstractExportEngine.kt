@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.datetime.toJavaInstant
+import kotlin.time.toJavaInstant
 import studio.lunabee.bubbles.domain.model.contact.Contact
 import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
 import studio.lunabee.messaging.domain.model.EncConversation

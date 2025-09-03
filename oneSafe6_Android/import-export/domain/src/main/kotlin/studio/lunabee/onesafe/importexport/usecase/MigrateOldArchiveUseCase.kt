@@ -36,7 +36,7 @@ class MigrateOldArchiveUseCase @Inject constructor(
     private val importEngine: ImportEngine,
     private val archiveUnzipUseCase: ArchiveUnzipUseCase,
     private val migrationCryptoRepository: MigrationCryptoRepository,
-    @ArchiveCacheDir(type = ArchiveCacheDir.Type.Migration) private val archiveDir: File,
+    @param:ArchiveCacheDir(type = ArchiveCacheDir.Type.Migration) private val archiveDir: File,
 ) {
     operator fun invoke(importMode: ImportMode, inputStream: InputStream, encPassword: ByteArray): Flow<LBFlowResult<Unit>> = flow {
         var result = archiveUnzipUseCase(inputStream, archiveDir).last()

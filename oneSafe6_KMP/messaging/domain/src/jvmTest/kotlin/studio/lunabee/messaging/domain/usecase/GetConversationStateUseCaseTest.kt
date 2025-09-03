@@ -24,7 +24,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import studio.lunabee.bubbles.domain.model.contact.Contact
 import studio.lunabee.bubbles.domain.model.contactkey.ContactSharedKey
 import studio.lunabee.bubbles.domain.repository.ContactRepository

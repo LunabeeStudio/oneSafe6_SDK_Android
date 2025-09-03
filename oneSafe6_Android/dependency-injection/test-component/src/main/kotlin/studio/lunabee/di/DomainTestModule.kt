@@ -29,7 +29,7 @@ import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import studio.lunabee.doubleratchet.DoubleRatchetEngine
 import studio.lunabee.doubleratchet.crypto.DoubleRatchetKeyRepository
 import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
@@ -134,7 +134,7 @@ object DomainTestModule {
 
     @Provides
     @Singleton
-    fun providesKotlinClock(): kotlinx.datetime.Clock = object : kotlinx.datetime.Clock {
+    fun providesKotlinClock(): kotlin.time.Clock = object : kotlin.time.Clock {
         override fun now(): Instant {
             return Instant.fromEpochMilliseconds(0)
         }

@@ -24,7 +24,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.onesafe.error.BubblesCryptoError
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID

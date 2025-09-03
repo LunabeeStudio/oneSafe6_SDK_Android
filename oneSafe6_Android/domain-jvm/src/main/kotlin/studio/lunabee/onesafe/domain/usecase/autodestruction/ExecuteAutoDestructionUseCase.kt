@@ -40,7 +40,7 @@ class ExecuteAutoDestructionUseCase @Inject constructor(
         safeRepository.getAllSafeOrderByLastOpenAsc().forEach { safeCrypto ->
             safeCrypto.autoDestructionKey?.let { key ->
                 if (mainCryptoRepository.derivePassword(safeCrypto.salt, password.toCharArray()).contentEquals(key)) {
-                    deleteSafeUseCase(safeCrypto.id)
+                    deleteSafeUseCase(safeId = safeCrypto.id, lockSafe = false)
                 }
             }
         }

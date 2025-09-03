@@ -22,8 +22,8 @@ package studio.lunabee.onesafe.storage.datasource
 import com.lunabee.lbextensions.mapValues
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.Instant
-import kotlinx.datetime.toJavaInstant
+import kotlin.time.Instant
+import kotlin.time.toJavaInstant
 import studio.lunabee.bubbles.domain.model.contact.Contact
 import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
 import studio.lunabee.bubbles.domain.model.contactkey.ContactSharedKey

@@ -38,7 +38,7 @@ import java.util.zip.ZipOutputStream
 import javax.inject.Inject
 
 class ArchiveZipUseCase @Inject constructor(
-    @FileDispatcher private val fileDispatcher: CoroutineDispatcher,
+    @param:FileDispatcher private val fileDispatcher: CoroutineDispatcher,
 ) {
     /**
      * Zip a file to a specific directory.

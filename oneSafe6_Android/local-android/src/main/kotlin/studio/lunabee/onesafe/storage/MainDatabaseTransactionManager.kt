@@ -30,8 +30,8 @@ import javax.inject.Inject
 
 class MainDatabaseTransactionManager @Inject constructor(
     private val mainDatabase: MainDatabase,
-    @ApplicationContext private val context: Context,
-    @FileDispatcher private val dispatcher: CoroutineDispatcher,
+    @param:ApplicationContext private val context: Context,
+    @param:FileDispatcher private val dispatcher: CoroutineDispatcher,
 ) : StorageManager {
     override suspend fun withTransaction(block: suspend () -> Unit) {
         mainDatabase.withTransaction(block)

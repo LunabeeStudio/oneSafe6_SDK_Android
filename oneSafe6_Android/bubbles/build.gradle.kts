@@ -78,7 +78,7 @@ dependencies {
     implementation(libs.lbchaptic)
     implementation(libs.lbcore)
     implementation(libs.lbextensions)
-    implementation(libs.lbloading.compose)
+    implementation(libs.lbloading.hilt)
     implementation(libs.lblogger)
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.palette.ktx)

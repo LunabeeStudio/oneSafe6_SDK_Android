@@ -31,7 +31,7 @@ import javax.inject.Inject
 
 class PlainDatastoreEngine @Inject constructor(
     dataStore: DataStore<ProtoData>,
-    @FileDispatcher private val fileDispatcher: CoroutineDispatcher,
+    @param:FileDispatcher private val fileDispatcher: CoroutineDispatcher,
 ) : DatastoreEngine(dataStore) {
     override suspend fun insertValue(key: String, value: ByteArray, override: Boolean) {
         withContext(fileDispatcher) {
