@@ -29,9 +29,9 @@ import java.time.ZonedDateTime
 import javax.inject.Inject
 
 class AndroidCloudBackupDescriptionProvider @Inject constructor(
-    @ApplicationContext private val context: Context,
-    @VersionName private val versionName: String,
-    @BuildNumber private val versionCode: Int,
+    @param:ApplicationContext private val context: Context,
+    @param:VersionName private val versionName: String,
+    @param:BuildNumber private val versionCode: Int,
     private val clock: Clock,
 ) : CloudBackupDescriptionProvider {
     override operator fun invoke(): String {

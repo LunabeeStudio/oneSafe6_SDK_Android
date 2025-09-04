@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id("org.jetbrains.kotlin.multiplatform")
+    `kmp-library-jvm-convention`
 }
 
 group = "studio.lunabee.onesafe"

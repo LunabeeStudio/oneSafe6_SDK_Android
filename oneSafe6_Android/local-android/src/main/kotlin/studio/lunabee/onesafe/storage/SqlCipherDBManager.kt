@@ -52,10 +52,10 @@ private val logger = LBLogger.get<SqlCipherDBManager>()
  * @see <a href=https://www.notion.so/lunabeestudio/SQLCipher-over-encryption-7854bb3449f64ba8ad76d71a08847a04>Notion</a>
  */
 class SqlCipherDBManager @Inject constructor(
-    @FileDispatcher private val dispatcher: CoroutineDispatcher,
-    @ApplicationContext private val context: Context,
-    @DatabaseName(DatabaseName.Type.Main) private val databaseName: String,
-    @DatabaseName(DatabaseName.Type.CipherTemp) private val tempDbName: String,
+    @param:FileDispatcher private val dispatcher: CoroutineDispatcher,
+    @param:ApplicationContext private val context: Context,
+    @param:DatabaseName(DatabaseName.Type.Main) private val databaseName: String,
+    @param:DatabaseName(DatabaseName.Type.CipherTemp) private val tempDbName: String,
 ) : DatabaseEncryptionManager {
 
     init {

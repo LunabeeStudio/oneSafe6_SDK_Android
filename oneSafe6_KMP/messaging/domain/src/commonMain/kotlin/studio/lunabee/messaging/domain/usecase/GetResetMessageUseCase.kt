@@ -20,7 +20,7 @@
 package studio.lunabee.messaging.domain.usecase
 
 import com.lunabee.lbcore.model.LBResult
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
@@ -30,7 +30,6 @@ import studio.lunabee.bubbles.domain.repository.ContactRepository
 import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
-import studio.lunabee.messaging.domain.extension.getOrThrow
 import studio.lunabee.messaging.domain.model.proto.ProtoResetInvitationMessage
 import studio.lunabee.messaging.domain.model.proto.ProtoTimestamp
 import studio.lunabee.onesafe.di.Inject

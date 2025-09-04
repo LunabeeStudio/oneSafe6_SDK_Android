@@ -43,7 +43,7 @@ import javax.inject.Inject
  */
 class StoreExternalBackupUseCase @Inject constructor(
     private val backupRepository: LocalBackupRepository,
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val clock: Clock,
     private val safeRepository: SafeRepository,
 ) {

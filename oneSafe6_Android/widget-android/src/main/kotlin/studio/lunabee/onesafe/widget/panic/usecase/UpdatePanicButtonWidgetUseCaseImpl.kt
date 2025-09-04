@@ -29,7 +29,7 @@ import studio.lunabee.onesafe.widget.panic.worker.MainPanicWidgetWorker
 import javax.inject.Inject
 
 class UpdatePanicButtonWidgetUseCaseImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val workManager: WorkManager,
 ) : UpdatePanicButtonWidgetUseCase {
     override suspend operator fun invoke() {

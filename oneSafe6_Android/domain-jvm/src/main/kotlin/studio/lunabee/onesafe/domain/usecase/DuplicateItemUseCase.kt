@@ -47,7 +47,6 @@ import studio.lunabee.onesafe.domain.utils.SafeItemBuilder
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.error.OSStorageError
-import studio.lunabee.onesafe.getOrThrow
 import java.time.Clock
 import java.time.Instant
 import java.util.UUID

@@ -18,7 +18,7 @@
  */
 
 plugins {
-    id("org.jetbrains.kotlin.multiplatform")
+    `kmp-library-jvm-convention`
     alias(libs.plugins.lbDokka)
 }
 

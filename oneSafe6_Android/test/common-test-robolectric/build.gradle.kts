@@ -26,7 +26,6 @@ android {
     namespace = "studio.lunabee.onesafe.test.robolectric"
 
     compileSdk = AndroidConfig.COMPILE_SDK
-    buildToolsVersion = AndroidConfig.BUILD_TOOLS_VERSION
 
     defaultConfig {
         minSdk = AndroidConfig.MIN_LIB_SDK
@@ -44,11 +43,13 @@ android {
         }
     }
 
-    kotlinOptions.freeCompilerArgs += "-Xcontext-receivers"
-
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
     }
+}
+
+kotlin {
+    compilerOptions.freeCompilerArgs.add("-Xcontext-receivers")
 }
 
 dependencies {

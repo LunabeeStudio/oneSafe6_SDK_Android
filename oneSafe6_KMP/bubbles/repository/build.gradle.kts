@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id("org.jetbrains.kotlin.multiplatform")
+    `kmp-library-jvm-convention`
     alias(libs.plugins.lbDokka)
 }
 
@@ -30,7 +30,6 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.doubleratchet)
-            implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)
 
             implementation(project(":oneSafe6_KMP:bubbles-domain"))

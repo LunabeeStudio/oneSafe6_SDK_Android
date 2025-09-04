@@ -39,7 +39,7 @@ class AddAndRemoveFileUseCase @Inject constructor(
     private val safeItemKeyRepository: SafeItemKeyRepository,
     private val cryptoRepository: MainCryptoRepository,
     private val fileRepository: FileRepository,
-    @FileDispatcher private val dispatcher: CoroutineDispatcher,
+    @param:FileDispatcher private val dispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
         item: SafeItem,

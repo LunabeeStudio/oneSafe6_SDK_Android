@@ -19,7 +19,7 @@
 
 package studio.lunabee.messaging.domain.model.proto
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber

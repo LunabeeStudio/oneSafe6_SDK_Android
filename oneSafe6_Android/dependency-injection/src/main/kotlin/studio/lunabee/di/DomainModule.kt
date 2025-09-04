@@ -81,7 +81,7 @@ object DomainModule {
     fun providesClock(): Clock = Clock.systemDefaultZone()
 
     @Provides
-    fun providesKotlinClock(): kotlinx.datetime.Clock = kotlinx.datetime.Clock.System
+    fun providesKotlinClock(): kotlin.time.Clock = kotlin.time.Clock.System
 
     @Provides
     @InternalDir(InternalDir.Type.Backups)

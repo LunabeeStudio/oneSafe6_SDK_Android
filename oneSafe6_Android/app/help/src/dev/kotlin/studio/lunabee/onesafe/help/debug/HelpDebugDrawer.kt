@@ -60,7 +60,7 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.color.DynamicColors
 import com.lunabee.lbcore.model.LBResult
-import com.lunabee.lbloading.rememberLoadingManager
+import com.lunabee.lbloading.hilt.rememberLoadingManager
 import com.lunabee.lblogger.LBLogger
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

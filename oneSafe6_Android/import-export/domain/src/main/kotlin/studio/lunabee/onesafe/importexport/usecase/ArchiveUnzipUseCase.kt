@@ -36,7 +36,7 @@ import java.util.zip.ZipFile
 import javax.inject.Inject
 
 class ArchiveUnzipUseCase @Inject constructor(
-    @FileDispatcher private val fileDispatcher: CoroutineDispatcher,
+    @param:FileDispatcher private val fileDispatcher: CoroutineDispatcher,
 ) {
     /**
      * Unzip a file to a specific directory.

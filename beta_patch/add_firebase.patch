@@ -1,0 +1,13 @@
+diff --git forkSrcPrefix/oneSafe6_Android/app/build.gradle.kts forkDstPrefix/oneSafe6_Android/app/build.gradle.kts
+index 21ad2b34ae9d7de8f91e69591f626f45a91211cb..9f60213b6bafab0fb1c93d9e7241965ddce14b5c 100644
+--- forkSrcPrefix/oneSafe6_Android/app/build.gradle.kts
++++ forkDstPrefix/oneSafe6_Android/app/build.gradle.kts
+@@ -8,6 +8,8 @@ plugins {
+     alias(libs.plugins.hilt)
+     alias(libs.plugins.kotlin.serialization)
+     alias(libs.plugins.aboutlibraries)
++    alias(libs.plugins.google.services)
++    alias(libs.plugins.firebase.crashlytics)
+ }
+ 
+ android {

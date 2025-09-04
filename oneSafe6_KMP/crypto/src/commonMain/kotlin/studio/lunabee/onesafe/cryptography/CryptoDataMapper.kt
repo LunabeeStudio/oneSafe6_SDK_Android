@@ -16,7 +16,7 @@
 
 package studio.lunabee.onesafe.cryptography
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.doubleratchet.model.toDoubleRatchetUUID

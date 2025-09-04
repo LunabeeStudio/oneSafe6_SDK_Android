@@ -34,7 +34,7 @@ private val logger = LBLogger.get<MigrationFromV15ToV16>()
  * Remove recent search datastore (moved to Room)
  */
 class MigrationFromV16ToV17 @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
 ) : AppMigration15(16, 17) {
     override suspend fun migrate(migrationSafeData: MigrationSafeData15): LBResult<Unit> = OSError.runCatching(logger) {
         context.dataStoreFile(LegacyDatastoreFileName).delete()

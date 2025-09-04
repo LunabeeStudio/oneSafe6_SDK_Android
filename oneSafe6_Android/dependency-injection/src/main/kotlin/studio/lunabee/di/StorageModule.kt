@@ -123,6 +123,7 @@ import studio.lunabee.onesafe.storage.migration.RoomMigration15to16
 import studio.lunabee.onesafe.storage.migration.RoomMigration16to17
 import studio.lunabee.onesafe.storage.migration.RoomMigration19to20
 import studio.lunabee.onesafe.storage.migration.RoomMigration22to23
+import studio.lunabee.onesafe.storage.migration.RoomMigration24to25
 import studio.lunabee.onesafe.storage.migration.RoomMigration3to4
 import studio.lunabee.onesafe.storage.migration.RoomMigration8to9
 import studio.lunabee.onesafe.storage.migration.RoomMigration9to10
@@ -290,6 +291,7 @@ object DatabaseModule {
         migration16to17: RoomMigration16to17,
         migration19to20: RoomMigration19to20,
         migration22to23: RoomMigration22to23,
+        migration24to25: RoomMigration24to25,
         databaseKeyRepository: DatabaseKeyRepository,
         @DatabaseName(DatabaseName.Type.Main) dbName: String,
     ): MainDatabase {
@@ -308,6 +310,7 @@ object DatabaseModule {
                 migration16to17,
                 migration19to20,
                 migration22to23,
+                migration24to25,
             )
         }
     }

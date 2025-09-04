@@ -124,7 +124,7 @@ class SqlCipherDBManagerTest {
 
     @Test
     fun migrateToPlain_rollback_test(): TestResult = runTest {
-        val cipherDb: MainDatabase = cipherDbBuilder.build().insertDummySafe()
+        var cipherDb: MainDatabase = cipherDbBuilder.build().insertDummySafe()
         val expectedItem = CommonTestUtils.roomSafeItem(encName = byteArrayOf(1, 2, 3, 4))
         cipherDb.safeItemDao().insert(expectedItem)
 
@@ -149,6 +149,7 @@ class SqlCipherDBManagerTest {
         }.orEmpty()
         assertTrue(tempDbFiles.isEmpty())
 
+        cipherDb = cipherDbBuilder.build() // re-open
         val actualItem = cipherDb.safeItemDao().getAllSafeItems(firstSafeId).first()
         assertEquals(expectedItem, actualItem)
     }

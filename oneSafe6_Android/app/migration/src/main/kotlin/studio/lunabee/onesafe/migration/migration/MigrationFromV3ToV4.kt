@@ -30,7 +30,7 @@ import javax.inject.Inject
  * Delete backup notification channel to re-create it with IMPORTANCE_HIGH flag
  */
 class MigrationFromV3ToV4 @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
 ) : AppMigration0(3, 4) {
     override suspend fun migrate(migrationSafeData: MigrationSafeData0): LBResult<Unit> {
         val manager: NotificationManagerCompat = NotificationManagerCompat.from(context)

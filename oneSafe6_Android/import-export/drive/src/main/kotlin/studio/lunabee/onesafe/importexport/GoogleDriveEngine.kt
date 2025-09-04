@@ -81,12 +81,12 @@ private val logger = LBLogger.get<GoogleDriveEngine>()
 // TODO thumbnail? https://developers.google.com/drive/api/guides/create-file?hl=fr#upload_thumbnails
 @Singleton
 class GoogleDriveEngine @Inject constructor(
-    @ApplicationContext private val context: Context,
-    @RemoteDispatcher private val dispatcher: CoroutineDispatcher,
+    @param:ApplicationContext private val context: Context,
+    @param:RemoteDispatcher private val dispatcher: CoroutineDispatcher,
     private val drivePreferencesRepository: GoogleDrivePreferencesRepository,
     private val cloudBackupDescriptionProvider: CloudBackupDescriptionProvider,
-    @InternalBackupMimetype private val backupMimetype: String,
-    @RemoteDir(RemoteDir.Type.Backups) private val remoteDirName: String,
+    @param:InternalBackupMimetype private val backupMimetype: String,
+    @param:RemoteDir(RemoteDir.Type.Backups) private val remoteDirName: String,
     private val autoBackupErrorRepository: AutoBackupErrorRepository,
     private val clock: Clock,
     private val autoBackupSettingsRepository: AutoBackupSettingsRepository,

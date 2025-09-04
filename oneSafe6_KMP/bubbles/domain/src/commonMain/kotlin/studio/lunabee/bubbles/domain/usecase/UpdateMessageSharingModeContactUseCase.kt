@@ -20,7 +20,7 @@
 package studio.lunabee.bubbles.domain.usecase
 
 import com.lunabee.lbcore.model.LBResult
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey

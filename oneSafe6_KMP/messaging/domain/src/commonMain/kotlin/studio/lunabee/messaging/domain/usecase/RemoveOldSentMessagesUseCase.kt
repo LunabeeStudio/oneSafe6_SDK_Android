@@ -21,8 +21,8 @@ package studio.lunabee.messaging.domain.usecase
 
 import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID

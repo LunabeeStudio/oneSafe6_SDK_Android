@@ -20,7 +20,7 @@
 package studio.lunabee.messaging.domain.usecase
 
 import com.lunabee.lbcore.model.LBResult
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.bubbles.domain.repository.BubblesCryptoRepository

@@ -34,7 +34,6 @@ import studio.lunabee.onesafe.domain.model.importexport.ImportMode
 import studio.lunabee.onesafe.domain.qualifier.ArchiveCacheDir
 import studio.lunabee.onesafe.domain.utils.mkdirs
 import studio.lunabee.onesafe.error.OSError
-import studio.lunabee.onesafe.getOrThrow
 import studio.lunabee.onesafe.importexport.usecase.ArchiveUnzipUseCase
 import studio.lunabee.onesafe.importexport.usecase.ImportAuthUseCase
 import studio.lunabee.onesafe.importexport.usecase.ImportSaveDataUseCase

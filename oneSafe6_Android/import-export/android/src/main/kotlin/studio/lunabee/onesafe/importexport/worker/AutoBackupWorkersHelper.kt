@@ -54,7 +54,7 @@ import javax.inject.Inject
 private val logger = LBLogger.get<AutoBackupWorkersHelper>()
 
 class AutoBackupWorkersHelper @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val autoBackupSettingsRepository: AutoBackupSettingsRepository,
     private val osNotificationManager: OSNotificationManager,
     private val clock: Clock,

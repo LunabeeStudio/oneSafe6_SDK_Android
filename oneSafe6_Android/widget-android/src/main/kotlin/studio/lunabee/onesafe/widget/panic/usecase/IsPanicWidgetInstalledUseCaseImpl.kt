@@ -27,7 +27,7 @@ import studio.lunabee.onesafe.widget.panic.PanicButtonWidget
 import javax.inject.Inject
 
 internal class IsPanicWidgetInstalledUseCaseImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
 ) : IsPanicWidgetInstalledUseCase {
     override suspend operator fun invoke(): Boolean {
         val manager = GlanceAppWidgetManager(context)

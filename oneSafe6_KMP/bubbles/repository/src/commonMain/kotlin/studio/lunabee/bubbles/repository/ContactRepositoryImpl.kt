@@ -20,7 +20,7 @@
 package studio.lunabee.bubbles.repository
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import studio.lunabee.bubbles.domain.model.contact.Contact
 import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
 import studio.lunabee.bubbles.domain.model.contactkey.ContactSharedKey

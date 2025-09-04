@@ -19,7 +19,7 @@ package studio.lunabee.onesafe.di
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.usePinned
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import platform.Foundation.NSDate
 import platform.Foundation.create
 import platform.Foundation.timeIntervalSince1970

@@ -40,7 +40,7 @@ class AddFieldUseCase @Inject constructor(
     private val safeItemFieldRepository: SafeItemFieldRepository,
     private val encryptFieldsUseCase: EncryptFieldsUseCase,
     private val createIndexWordEntriesFromItemFieldUseCase: CreateIndexWordEntriesFromItemFieldUseCase,
-    @DefaultDispatcher private val dispatcher: CoroutineDispatcher,
+    @param:DefaultDispatcher private val dispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
         itemId: UUID,

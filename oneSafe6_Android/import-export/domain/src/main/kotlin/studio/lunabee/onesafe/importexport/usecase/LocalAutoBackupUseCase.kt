@@ -37,8 +37,8 @@ import javax.inject.Inject
 class LocalAutoBackupUseCase @Inject constructor(
     private val exportBackupUseCase: ExportBackupUseCase,
     private val backupRepository: LocalBackupRepository,
-    @BackupType(BackupType.Type.Auto) private val exportEngine: BackupExportEngine,
-    @ArchiveCacheDir(type = ArchiveCacheDir.Type.AutoBackup) private val archiveDir: File,
+    @param:BackupType(BackupType.Type.Auto) private val exportEngine: BackupExportEngine,
+    @param:ArchiveCacheDir(type = ArchiveCacheDir.Type.AutoBackup) private val archiveDir: File,
 ) {
     operator fun invoke(safeId: SafeId): Flow<LBFlowResult<Unit>> {
         return exportBackupUseCase(

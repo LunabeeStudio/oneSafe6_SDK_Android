@@ -20,7 +20,6 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.skie)
-    alias(libs.plugins.crashlyticslink)
     alias(libs.plugins.lbDokka)
 }
 
@@ -92,6 +91,10 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.hilt.android)
         }
+    }
+
+    compilerOptions {
+        freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
     }
 }
 

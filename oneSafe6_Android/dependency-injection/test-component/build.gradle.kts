@@ -76,7 +76,7 @@ dependencies {
     implementation(libs.ktor.client.mock)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.lbcore)
-    implementation(libs.lbloading.compose)
+    implementation(libs.lbloading.hilt)
     implementation(libs.lblogger)
     implementation(libs.room.ktx)
     implementation(libs.work.testing)

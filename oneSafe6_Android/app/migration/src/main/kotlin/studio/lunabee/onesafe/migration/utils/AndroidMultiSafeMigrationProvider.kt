@@ -64,8 +64,8 @@ class AndroidMultiSafeMigrationProvider @Inject constructor(
     private val preferencesDataStore: DataStore<Preferences>,
     private val defaultSafeSettingsProvider: DefaultSafeSettingsProvider,
     private val autoBackupErrorIdProvider: AutoBackupErrorIdProvider,
-    @ApplicationContext private val context: Context,
-    @DatastoreEngineProvider(DataStoreType.Encrypted) private val encDataStore: DatastoreEngine,
+    @param:ApplicationContext private val context: Context,
+    @param:DatastoreEngineProvider(DataStoreType.Encrypted) private val encDataStore: DatastoreEngine,
 ) : RoomMigration12to13.MultiSafeMigrationProvider {
     private val ctaDataStore = ProtoSerializer.dataStore(
         context = context,

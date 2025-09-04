@@ -5,6 +5,14 @@
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <uses-sdk tools:overrideLibrary="
+        dev.patrickgold.florisboard,
+        org.florisboard.lib.compose,
+        org.florisboard.lib.snygg,
+        org.florisboard.lib.color,
+        org.florisboard.lib.android,
+        org.florisboard.libnative" />
+
     <application>
         <activity
             android:name="dev.patrickgold.florisboard.app.FlorisAppActivity"
@@ -69,7 +77,8 @@
             android:name=".OSFlorisImeService"
             android:directBootAware="true"
             android:exported="true"
-            android:label="@string/floris_app_name"
+            android:enabled="@bool/ime_service_enabled"
+            android:label="@string/floris_real_title"
             android:permission="android.permission.BIND_INPUT_METHOD"
             android:process="${imeProcessName}">
             <intent-filter>
@@ -83,6 +92,7 @@
         <service
             android:name="dev.patrickgold.florisboard.FlorisSpellCheckerService"
             android:exported="true"
+            android:enabled="@bool/ime_service_enabled"
             android:permission="android.permission.BIND_TEXT_SERVICE"
             android:process="${imeProcessName}"
             tools:node="merge" />
