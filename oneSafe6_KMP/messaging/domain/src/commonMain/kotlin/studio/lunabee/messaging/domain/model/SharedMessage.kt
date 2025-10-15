@@ -19,8 +19,8 @@
 
 package studio.lunabee.messaging.domain.model
 
-import kotlin.time.Instant
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import kotlin.time.Instant
 
 /**
  * Plain message for sending and receiving messages

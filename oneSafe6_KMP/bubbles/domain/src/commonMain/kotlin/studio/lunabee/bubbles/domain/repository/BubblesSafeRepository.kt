@@ -24,6 +24,8 @@ import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 
 interface BubblesSafeRepository {
     suspend fun currentSafeId(): DoubleRatchetUUID
+
     fun currentSafeIdFlow(): Flow<DoubleRatchetUUID?>
+
     fun isSafeReady(): Flow<Boolean>
 }

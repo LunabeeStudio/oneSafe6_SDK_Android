@@ -26,12 +26,20 @@ import javax.crypto.Cipher
 
 interface EditCryptoRepository {
     suspend fun generateCryptographicData(password: CharArray)
+
     suspend fun checkCryptographicData(password: CharArray): Boolean
+
     fun initializeBiometric(cipher: Cipher)
+
     suspend fun setMainCryptographicData(): NewSafeCrypto
+
     suspend fun overrideMainCryptographicData(safeId: SafeId): NewSafeCrypto
+
     fun reset()
+
     suspend fun reEncryptItemKeys(itemKeys: List<SafeItemKey>)
+
     suspend fun checkPasswordUniqueness(password: CharArray): Boolean
+
     suspend fun deriveAutoDestructionKey(password: CharArray, safeSalt: ByteArray): ByteArray
 }

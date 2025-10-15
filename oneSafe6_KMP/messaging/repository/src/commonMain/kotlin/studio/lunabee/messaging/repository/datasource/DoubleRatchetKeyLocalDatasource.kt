@@ -23,6 +23,8 @@ import studio.lunabee.messaging.domain.model.EncDoubleRatchetKey
 
 interface DoubleRatchetKeyLocalDatasource {
     suspend fun insert(key: EncDoubleRatchetKey)
+
     suspend fun getById(id: String): ByteArray?
+
     suspend fun deleteById(id: String)
 }

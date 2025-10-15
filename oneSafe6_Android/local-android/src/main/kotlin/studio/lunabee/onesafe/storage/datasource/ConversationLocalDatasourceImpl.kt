@@ -33,7 +33,7 @@ class ConversationLocalDatasourceImpl @Inject constructor(
         conversationDao.insert(RoomDoubleRatchetConversation.fromEncConversation(conversation))
     }
 
-    override suspend fun getById(id: DoubleRatchetUUID): EncConversation? {
-        return conversationDao.getById(id.uuid)?.toEncConversation()
-    }
+    override suspend fun getById(id: DoubleRatchetUUID): EncConversation? = conversationDao
+        .getById(id.uuid)
+        ?.toEncConversation()
 }

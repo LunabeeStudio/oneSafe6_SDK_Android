@@ -23,13 +23,13 @@ import com.lunabee.lbcore.model.LBResult
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
-import studio.lunabee.onesafe.di.Inject
-import studio.lunabee.onesafe.error.BubblesDomainError
-import studio.lunabee.onesafe.error.OSError
-import studio.lunabee.onesafe.error.BubblesMessagingError
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
 import studio.lunabee.messaging.domain.model.proto.ProtoInvitationMessage
+import studio.lunabee.onesafe.di.Inject
+import studio.lunabee.onesafe.error.BubblesDomainError
+import studio.lunabee.onesafe.error.BubblesMessagingError
+import studio.lunabee.onesafe.error.OSError
 
 class GetInvitationMessageUseCase @Inject constructor(
     private val doubleRatchetLocalDatasource: DoubleRatchetLocalDatasource,

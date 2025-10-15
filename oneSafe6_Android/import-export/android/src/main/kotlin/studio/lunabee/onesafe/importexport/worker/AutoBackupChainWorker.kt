@@ -53,12 +53,13 @@ class AutoBackupChainWorker @AssistedInject constructor(
     private val workManager: WorkManager,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
-        val safeId = inputData.getByteArray(AUTO_BACKUP_CHAIN_WORKER_SAFE_ID_DATA)?.let { SafeId(it) }
+        val safeId = inputData.getByteArray(AutoBackupChainWorkerSafeIdData)?.let { SafeId(it) }
 
         return if (safeId == null) {
             logger.e("Missing SafeId param")
-            val data = Data.Builder()
-                .putString(AUTO_BACKUP_CHAIN_WORKER_SAFE_ID_ERROR_DATA, "Missing SafeId param")
+            val data = Data
+                .Builder()
+                .putString(AutoBackupChainWorkerSafeIdErrorData, "Missing SafeId param")
                 .build()
             Result.failure(data)
         } else {
@@ -85,16 +86,17 @@ class AutoBackupChainWorker @AssistedInject constructor(
                             safeId,
                         )
                         AutoBackupMode.Synchronized -> {
-                            val localWorkRequest = LocalBackupWorker.getWorkRequest(featureFlags.backupWorkerExpedited(), safeId)
+                            val localWorkRequest = LocalBackupWorker
+                                .getWorkRequest(featureFlags.backupWorkerExpedited(), safeId)
                             val cloudSyncWorkRequest = CloudSynchronizeBackupWorker.getWorkRequest(safeId)
 
-                            WorkManager.getInstance(applicationContext)
+                            WorkManager
+                                .getInstance(applicationContext)
                                 .beginUniqueWork(
                                     autoBackupUniqueChainWorkName(safeId),
                                     ExistingWorkPolicy.APPEND_OR_REPLACE,
                                     localWorkRequest,
-                                )
-                                .then(cloudSyncWorkRequest)
+                                ).then(cloudSyncWorkRequest)
                                 .enqueue()
                         }
                     }
@@ -114,7 +116,8 @@ class AutoBackupChainWorker @AssistedInject constructor(
 
     companion object {
         fun autoBackupUniqueChainWorkName(safeId: SafeId): String = "d725ac85-8742-46db-930d-7903470d05a6_$safeId"
-        const val AUTO_BACKUP_CHAIN_WORKER_SAFE_ID_DATA: String = "7f9b8871-ba76-4563-91d9-7a5aacd169e9"
-        internal const val AUTO_BACKUP_CHAIN_WORKER_SAFE_ID_ERROR_DATA = "14e547b1-1e07-42c8-b8cf-dc9aac5c30d6"
+
+        const val AutoBackupChainWorkerSafeIdData: String = "7f9b8871-ba76-4563-91d9-7a5aacd169e9"
+        internal const val AutoBackupChainWorkerSafeIdErrorData = "14e547b1-1e07-42c8-b8cf-dc9aac5c30d6"
     }
 }

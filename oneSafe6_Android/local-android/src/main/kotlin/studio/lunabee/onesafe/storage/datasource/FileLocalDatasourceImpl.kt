@@ -43,26 +43,22 @@ class FileLocalDatasourceImpl @Inject constructor(
     private val dao: SafeFileDao,
     private val transactionProvider: TransactionProvider<MainDatabase>,
 ) : FileLocalDatasource {
-    private val encFilesDir: File = File(appContext.filesDir, FILE_DIR)
-    private val encThumbnailsCacheDir: File = File(appContext.cacheDir, THUMBNAIL_DIR)
-    private val plainFilesCacheDir: File = File(appContext.cacheDir, FILE_DIR).also {
+    private val encFilesDir: File = File(appContext.filesDir, FileDir)
+    private val encThumbnailsCacheDir: File = File(appContext.cacheDir, ThumbnailDir)
+    private val plainFilesCacheDir: File = File(appContext.cacheDir, FileDir).also {
         it.deleteOnExit()
     }
 
     companion object {
-        private const val FILE_DIR: String = "files"
-        private const val LARGE_SIZE_DIR = "large"
-        private const val SMALL_SIZE_DIR = "small"
-        private const val THUMBNAIL_DIR = "thumbnail"
+        private const val FileDir: String = "files"
+        private const val LargeSizeDir = "large"
+        private const val SmallSizeDir = "small"
+        private const val ThumbnailDir = "thumbnail"
     }
 
-    override fun getPlainFile(itemId: UUID, fieldId: UUID, filename: String): File {
-        return File(plainFilesCacheDir, "$itemId/$fieldId/$filename")
-    }
+    override fun getPlainFile(itemId: UUID, fieldId: UUID, filename: String): File = File(plainFilesCacheDir, "$itemId/$fieldId/$filename")
 
-    override fun getFile(filename: String): File {
-        return File(encFilesDir, filename)
-    }
+    override fun getFile(filename: String): File = File(encFilesDir, filename)
 
     override suspend fun createFile(fileId: String, safeId: SafeId): File {
         val file = File(encFilesDir, fileId)
@@ -104,9 +100,7 @@ class FileLocalDatasourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAllFiles(safeId: SafeId): List<File> {
-        return dao.getAllFiles(safeId, encFilesDir.path)
-    }
+    override suspend fun getAllFiles(safeId: SafeId): List<File> = dao.getAllFiles(safeId, encFilesDir.path)
 
     override suspend fun copyAndDeleteFile(newFile: File, fileId: UUID, safeId: SafeId) {
         val target = File(encFilesDir, fileId.toString())
@@ -119,9 +113,10 @@ class FileLocalDatasourceImpl @Inject constructor(
         }
     }
 
-    override fun getFiles(filesId: List<String>): List<File> {
-        return encFilesDir.listFiles()?.filter { filesId.contains(it.name) }.orEmpty()
-    }
+    override fun getFiles(filesId: List<String>): List<File> = encFilesDir
+        .listFiles()
+        ?.filter { filesId.contains(it.name) }
+        .orEmpty()
 
     /**
      * Save plain file in cacheDir/files/[itemId]/[fieldId]/[filename]
@@ -163,7 +158,7 @@ class FileLocalDatasourceImpl @Inject constructor(
     }
 
     override fun getThumbnailFile(thumbnailFileName: String, isFullWidth: Boolean): File {
-        val size = if (isFullWidth) LARGE_SIZE_DIR else SMALL_SIZE_DIR
+        val size = if (isFullWidth) LargeSizeDir else SmallSizeDir
         val file = File(encThumbnailsCacheDir, "$size/$thumbnailFileName")
         file.parentFile?.mkdirs()
         return file

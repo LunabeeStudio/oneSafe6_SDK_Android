@@ -110,19 +110,18 @@ class BackupsProvider : DocumentsProvider() {
         )
 
         fun authority(appId: String): String = appId + BuildConfig.BACKUPS_PROVIDER_AUTHORITY_SUFFIX
-        const val ROOT_ID: String = "root"
+
+        const val RootId: String = "root"
     }
 
-    override fun onCreate(): Boolean {
-        return true
-    }
+    override fun onCreate(): Boolean = true
 
     /**
      * @return The [File] that corresponds to the document ID supplied by [getDocumentId]
      */
     private fun getFile(documentId: String): File {
-        if (documentId.startsWith(ROOT_ID)) {
-            val file = baseDirectory.resolve(documentId.drop(ROOT_ID.length + 1))
+        if (documentId.startsWith(RootId)) {
+            val file = baseDirectory.resolve(documentId.drop(RootId.length + 1))
             if (!file.exists()) {
                 throw FileNotFoundException(
                     "${file.absolutePath} ($documentId) not found",
@@ -137,16 +136,18 @@ class BackupsProvider : DocumentsProvider() {
     /**
      * @return A unique ID for the provided [File]
      */
-    private fun getDocumentId(file: File): String {
-        return "$ROOT_ID/${file.toRelativeString(baseDirectory)}"
-    }
+    private fun getDocumentId(file: File): String = "$RootId/${file.toRelativeString(baseDirectory)}"
 
     override fun queryRoots(projection: Array<out String>?): Cursor {
         val cursor = MatrixCursor(projection ?: DEFAULT_ROOT_PROJECTION)
 
         cursor.newRow().apply {
-            add(DocumentsContract.Root.COLUMN_ROOT_ID, ROOT_ID)
-            add(DocumentsContract.Root.COLUMN_SUMMARY, context!!.getString(OSString.settings_autoBackupScreen_saveAccess_localSaves))
+            add(DocumentsContract.Root.COLUMN_ROOT_ID, RootId)
+            add(
+                DocumentsContract.Root.COLUMN_SUMMARY,
+                context!!
+                    .getString(OSString.settings_autoBackupScreen_saveAccess_localSaves),
+            )
             add(
                 DocumentsContract.Root.COLUMN_FLAGS,
                 DocumentsContract.Root.FLAG_SUPPORTS_CREATE or
@@ -167,9 +168,9 @@ class BackupsProvider : DocumentsProvider() {
         return includeFile(cursor, documentId, null)
     }
 
-    override fun isChildDocument(parentDocumentId: String?, documentId: String?): Boolean {
-        return documentId?.startsWith(parentDocumentId!!) ?: false
-    }
+    override fun isChildDocument(parentDocumentId: String?, documentId: String?): Boolean = documentId?.startsWith(
+        parentDocumentId!!,
+    ) ?: false
 
     private fun includeFile(cursor: MatrixCursor, documentId: String?, file: File?): MatrixCursor {
         val localDocumentId = documentId ?: file?.let { getDocumentId(it) }
@@ -195,12 +196,10 @@ class BackupsProvider : DocumentsProvider() {
         return cursor
     }
 
-    private fun getTypeForFile(file: File): Any {
-        return if (file.isDirectory) {
-            DocumentsContract.Document.MIME_TYPE_DIR
-        } else {
-            internalBackupMimetype
-        }
+    private fun getTypeForFile(file: File): Any = if (file.isDirectory) {
+        DocumentsContract.Document.MIME_TYPE_DIR
+    } else {
+        internalBackupMimetype
     }
 
     override fun queryChildDocuments(
@@ -211,12 +210,13 @@ class BackupsProvider : DocumentsProvider() {
         var cursor = MatrixCursor(projection ?: DEFAULT_DOCUMENT_PROJECTION)
 
         val parent = getFile(parentDocumentId!!)
-        parent.listFiles { _, name ->
-            name.endsWith(ImportExportConstant.ExtensionOs6Backup)
-        }?.forEach { file ->
-            // TODO <multisafe> filter backups depending on current loaded safe id (compare list of backup files vs backup in DB)
-            cursor = includeFile(cursor, null, file)
-        }
+        parent
+            .listFiles { _, name ->
+                name.endsWith(ImportExportConstant.ExtensionOs6Backup)
+            }?.forEach { file ->
+                // TODO <multisafe> filter backups depending on current loaded safe id (compare list of backup files vs backup in DB)
+                cursor = includeFile(cursor, null, file)
+            }
 
         return cursor
     }

@@ -46,6 +46,7 @@ import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsReposito
 import studio.lunabee.onesafe.importexport.usecase.ClearAutoBackupErrorUseCase
 import studio.lunabee.onesafe.importexport.usecase.StoreAutoBackupErrorUseCase
 import studio.lunabee.onesafe.importexport.utils.AutoBackupErrorIdProvider
+import studio.lunabee.onesafe.importexport.worker.AutoBackupWorkersHelper.Companion.RetriesBeforeShowError
 import studio.lunabee.onesafe.jvm.toByteArray
 import java.time.Clock
 import java.time.ZonedDateTime
@@ -69,9 +70,10 @@ class AutoBackupWorkersHelper @Inject constructor(
         safeId: SafeId? = null,
     ) {
         val backupSafeId = safeId ?: safeRepository.currentSafeId()
-        val data = Data.Builder()
-            .putBoolean(AutoBackupSchedulerWorker.SYNCHRONIZE_CLOUD_FIRST_DATA, synchronizeCloudFirst)
-            .putByteArray(AutoBackupSchedulerWorker.EXPORT_WORKER_SAFE_ID_DATA, backupSafeId.id.toByteArray())
+        val data = Data
+            .Builder()
+            .putBoolean(AutoBackupSchedulerWorker.SynchronizeCloudFirstData, synchronizeCloudFirst)
+            .putByteArray(AutoBackupSchedulerWorker.ExportWorkerSafeIdData, backupSafeId.id.toByteArray())
             .build()
 
         val workRequest = OneTimeWorkRequestBuilder<AutoBackupSchedulerWorker>()
@@ -80,7 +82,7 @@ class AutoBackupWorkersHelper @Inject constructor(
             .build()
 
         workManager
-            .enqueueUniqueWork(AUTO_BACKUP_SCHEDULER_WORK_NAME, ExistingWorkPolicy.APPEND_OR_REPLACE, workRequest)
+            .enqueueUniqueWork(AutoBackupSchedulerWorkName, ExistingWorkPolicy.APPEND_OR_REPLACE, workRequest)
     }
 
     suspend fun cancel(
@@ -90,13 +92,11 @@ class AutoBackupWorkersHelper @Inject constructor(
         workManager.cancelAllWorkByTag(ImportExportAndroidConstants.autoBackupWorkerTag(backupSafeId))
     }
 
-    private suspend fun isScheduled(safeId: SafeId): Boolean {
-        return workManager
-            .getWorkInfosForUniqueWorkFlow(AutoBackupSchedulerWorker.autoBackupChainWorkName(safeId))
-            .first()
-            .firstOrNull()
-            ?.state in listOf(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING)
-    }
+    private suspend fun isScheduled(safeId: SafeId): Boolean = workManager
+        .getWorkInfosForUniqueWorkFlow(AutoBackupSchedulerWorker.autoBackupChainWorkName(safeId))
+        .first()
+        .firstOrNull()
+        ?.state in listOf(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING)
 
     suspend fun ensureAutoBackupScheduled() {
         autoBackupSettingsRepository.getSafeAutoBackupEnabled().forEach { backupEnabledStatus ->
@@ -108,21 +108,21 @@ class AutoBackupWorkersHelper @Inject constructor(
     }
 
     /**
+     * TODO permission should be add by the module if it needs it
      * Handle backup worker error
-     *  • set backup error and send notification if [runAttemptCount] reaches [RETRIES_BEFORE_SHOW_ERROR]
+     *  • set backup error and send notification if [runAttemptCount] reaches [RetriesBeforeShowError]
      *  • compute worker result depending on the [error] and [runAttemptCount]
      *
      * @param error Error caught in backup worker
      * @param runAttemptCount see ListenableWorker.getRunAttemptCount
      * @return The worker [Result]
      */
-    // TODO permission should be add by the module if it needs it
     @SuppressLint("MissingPermission")
     suspend fun onBackupWorkerFails(error: Throwable?, runAttemptCount: Int, errorSource: AutoBackupMode, safeId: SafeId): Result {
         logger.e("fail #$runAttemptCount", error)
         val canRetry = canRetry(error)
 
-        if (runAttemptCount == RETRIES_BEFORE_SHOW_ERROR || !canRetry) {
+        if (runAttemptCount == RetriesBeforeShowError || !canRetry) {
             // Store error
             val autoBackupError = AutoBackupError(
                 id = autoBackupErrorIdProvider(),
@@ -136,14 +136,15 @@ class AutoBackupWorkersHelper @Inject constructor(
             // Notify
             if (osNotificationManager.areNotificationsEnabled(OSNotificationChannelId.BACKUP_CHANNEL_ID)) {
                 val title = context.getString(OSString.notification_autobackup_error_title)
-                val message = context.getString(OSString.notification_autobackup_error_message, error.codeText().string(context))
+                val message = context
+                    .getString(OSString.notification_autobackup_error_message, error.codeText().string(context))
                 val notificationBuilder = osNotificationManager.backupNotificationBuilder
                     .setContentTitle(title)
                     .setStyle(
-                        NotificationCompat.BigTextStyle()
+                        NotificationCompat
+                            .BigTextStyle()
                             .bigText(message),
-                    )
-                    .setTicker(title)
+                    ).setTicker(title)
                     .setAutoCancel(true)
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
@@ -158,7 +159,7 @@ class AutoBackupWorkersHelper @Inject constructor(
                 }
 
                 osNotificationManager.manager.notify(
-                    OSNotificationManager.AUTO_BACKUP_ERROR_WORKER_NOTIFICATION_ID,
+                    OSNotificationManager.AutoBackupErrorWorkerNotificationId,
                     notificationBuilder.build(),
                 )
             }
@@ -192,13 +193,13 @@ class AutoBackupWorkersHelper @Inject constructor(
     }
 
     suspend fun onBackupWorkerSucceed(backupMode: AutoBackupMode, safeId: SafeId): Result {
-        osNotificationManager.manager.cancel(OSNotificationManager.AUTO_BACKUP_ERROR_WORKER_NOTIFICATION_ID)
+        osNotificationManager.manager.cancel(OSNotificationManager.AutoBackupErrorWorkerNotificationId)
         clearAutoBackupErrorUseCase.ifNeeded(safeId, backupMode)
         return Result.success()
     }
 
     companion object {
-        private const val AUTO_BACKUP_SCHEDULER_WORK_NAME = "1d35209a-c713-439b-80a1-f83791018682"
-        private const val RETRIES_BEFORE_SHOW_ERROR = 3
+        private const val AutoBackupSchedulerWorkName = "1d35209a-c713-439b-80a1-f83791018682"
+        private const val RetriesBeforeShowError = 3
     }
 }

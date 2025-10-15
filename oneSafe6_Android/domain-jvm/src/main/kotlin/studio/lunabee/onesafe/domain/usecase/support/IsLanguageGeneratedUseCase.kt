@@ -23,7 +23,6 @@ import java.util.Locale
 import javax.inject.Inject
 
 class IsLanguageGeneratedUseCase @Inject constructor() {
-    operator fun invoke(currentLocale: String): Boolean {
-        return currentLocale != Locale.FRENCH.language && currentLocale != Locale.ENGLISH.language
-    }
+    operator fun invoke(currentLocale: String): Boolean =
+        currentLocale != Locale.FRENCH.language && currentLocale != Locale.ENGLISH.language
 }

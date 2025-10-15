@@ -30,8 +30,14 @@ class SafeItemKeyRepositoryImpl @Inject constructor(
     private val safeItemKeyLocalDataSource: SafeItemKeyLocalDataSource,
 ) : SafeItemKeyRepository {
     override suspend fun save(itemKey: SafeItemKey) = safeItemKeyLocalDataSource.save(itemKey)
+
     override suspend fun update(itemKeys: List<SafeItemKey>) = safeItemKeyLocalDataSource.update(itemKeys)
+
     override suspend fun getSafeItemKey(id: UUID): SafeItemKey = safeItemKeyLocalDataSource.getSafeItemKey(id)
-    override suspend fun getSafeItemKeys(ids: List<UUID>): List<SafeItemKey> = safeItemKeyLocalDataSource.getSafeItemKeys(ids)
-    override suspend fun getAllSafeItemKeys(safeId: SafeId): List<SafeItemKey> = safeItemKeyLocalDataSource.getAllSafeItemKeys(safeId)
+
+    override suspend fun getSafeItemKeys(ids: List<UUID>): List<SafeItemKey> = safeItemKeyLocalDataSource
+        .getSafeItemKeys(ids)
+
+    override suspend fun getAllSafeItemKeys(safeId: SafeId): List<SafeItemKey> = safeItemKeyLocalDataSource
+        .getAllSafeItemKeys(safeId)
 }

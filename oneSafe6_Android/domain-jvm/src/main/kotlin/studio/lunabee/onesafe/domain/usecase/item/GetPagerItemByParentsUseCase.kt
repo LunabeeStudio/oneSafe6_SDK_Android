@@ -45,28 +45,26 @@ class GetPagerItemByParentsUseCase @Inject constructor(
         pagingConfig: PagingConfig,
         parentId: UUID?,
         isDeleted: Boolean,
-    ): Flow<PagingData<SafeItem>> {
-        return safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
-            safeId?.let {
-                itemSettingsRepository.itemOrdering(safeId).flatMapLatest { itemOrder ->
-                    if (isDeleted) {
-                        safeItemDeletedRepository.getPagerItemByParentIdDeleted(
-                            config = pagingConfig,
-                            parentId = parentId,
-                            order = itemOrder,
-                            safeId = safeId,
-                        )
-                    } else {
-                        safeItemRepository.getPagerItemByParents(
-                            config = pagingConfig,
-                            parentId = parentId,
-                            order = itemOrder,
-                            safeId = safeId,
-                        )
-                    }
+    ): Flow<PagingData<SafeItem>> = safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+        safeId?.let {
+            itemSettingsRepository.itemOrdering(safeId).flatMapLatest { itemOrder ->
+                if (isDeleted) {
+                    safeItemDeletedRepository.getPagerItemByParentIdDeleted(
+                        config = pagingConfig,
+                        parentId = parentId,
+                        order = itemOrder,
+                        safeId = safeId,
+                    )
+                } else {
+                    safeItemRepository.getPagerItemByParents(
+                        config = pagingConfig,
+                        parentId = parentId,
+                        order = itemOrder,
+                        safeId = safeId,
+                    )
                 }
-            } ?: flowOf(PagingData.empty())
-        }
+            }
+        } ?: flowOf(PagingData.empty())
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -74,27 +72,25 @@ class GetPagerItemByParentsUseCase @Inject constructor(
         pagingConfig: PagingConfig,
         parentId: UUID?,
         isDeleted: Boolean,
-    ): Flow<PagingData<SafeItemWithIdentifier>> {
-        return safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
-            safeId?.let {
-                itemSettingsRepository.itemOrdering(safeId).flatMapLatest { itemOrder ->
-                    if (isDeleted) {
-                        safeItemDeletedRepository.getPagerItemByParentIdDeletedWithIdentifier(
-                            config = pagingConfig,
-                            parentId = parentId,
-                            order = itemOrder,
-                            safeId = safeId,
-                        )
-                    } else {
-                        safeItemRepository.getPagerItemByParentsWithIdentifier(
-                            config = pagingConfig,
-                            parentId = parentId,
-                            order = itemOrder,
-                            safeId = safeId,
-                        )
-                    }
+    ): Flow<PagingData<SafeItemWithIdentifier>> = safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+        safeId?.let {
+            itemSettingsRepository.itemOrdering(safeId).flatMapLatest { itemOrder ->
+                if (isDeleted) {
+                    safeItemDeletedRepository.getPagerItemByParentIdDeletedWithIdentifier(
+                        config = pagingConfig,
+                        parentId = parentId,
+                        order = itemOrder,
+                        safeId = safeId,
+                    )
+                } else {
+                    safeItemRepository.getPagerItemByParentsWithIdentifier(
+                        config = pagingConfig,
+                        parentId = parentId,
+                        order = itemOrder,
+                        safeId = safeId,
+                    )
                 }
-            } ?: flowOf(PagingData.empty())
-        }
+            }
+        } ?: flowOf(PagingData.empty())
     }
 }

@@ -20,13 +20,13 @@
 package studio.lunabee.messaging.domain.usecase
 
 import com.lunabee.lbcore.model.LBResult
-import studio.lunabee.onesafe.di.Inject
-import studio.lunabee.messaging.domain.extension.asBubblesError
-import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.doubleratchet.DoubleRatchetEngine
 import studio.lunabee.doubleratchet.model.DoubleRatchetError
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.doubleratchet.model.SendMessageData
+import studio.lunabee.messaging.domain.extension.asBubblesError
+import studio.lunabee.onesafe.di.Inject
+import studio.lunabee.onesafe.error.OSError
 
 class GetSendMessageDataUseCase @Inject constructor(
     private val doubleRatchetEngine: DoubleRatchetEngine,

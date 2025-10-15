@@ -38,13 +38,17 @@ data class SafeItemEditInfo(
         if (encName != null) {
             if (other.encName == null) return false
             if (!encName.contentEquals(other.encName)) return false
-        } else if (other.encName != null) return false
+        } else if (other.encName != null) {
+            return false
+        }
         if (iconId != other.iconId) return false
         if (encSafeItemFields != other.encSafeItemFields) return false
         if (encColor != null) {
             if (other.encColor == null) return false
             if (!encColor.contentEquals(other.encColor)) return false
-        } else if (other.encColor != null) return false
+        } else if (other.encColor != null) {
+            return false
+        }
 
         return true
     }

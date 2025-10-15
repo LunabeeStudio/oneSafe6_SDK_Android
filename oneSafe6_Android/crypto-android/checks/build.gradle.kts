@@ -36,6 +36,6 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = ProjectConfig.JDK_VERSION
-    targetCompatibility = ProjectConfig.JDK_VERSION
+    sourceCompatibility = ProjectConfig.JdkVersion
+    targetCompatibility = ProjectConfig.JdkVersion
 }

@@ -25,7 +25,6 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import kotlin.time.Clock
 import studio.lunabee.doubleratchet.model.DRMessageKey
 import studio.lunabee.doubleratchet.model.DRPublicKey
 import studio.lunabee.doubleratchet.model.MessageHeader
@@ -35,6 +34,7 @@ import studio.lunabee.messaging.domain.bubblesAssertSuccess
 import studio.lunabee.messaging.domain.testUUID
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
+import kotlin.time.Clock
 
 class GetInvitationResponseMessageUseCaseTest {
 

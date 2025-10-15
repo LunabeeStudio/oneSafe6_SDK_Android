@@ -50,7 +50,9 @@ class AddAndRemoveFileUseCase @Inject constructor(
             when (data) {
                 is FileSavingData.ToRemove -> {
                     data.encThumbnailFileName?.let {
-                        val fileName = cryptoRepository.decrypt(key, DecryptEntry(data.encThumbnailFileName, UUID::class)).toString()
+                        val fileName = cryptoRepository
+                            .decrypt(key, DecryptEntry(data.encThumbnailFileName, UUID::class))
+                            .toString()
                         fileRepository.getThumbnailFile(fileName, isFullWidth = true).delete()
                         fileRepository.getThumbnailFile(fileName, isFullWidth = false).delete()
                     }

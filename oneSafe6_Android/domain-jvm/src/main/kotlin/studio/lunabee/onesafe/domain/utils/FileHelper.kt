@@ -24,13 +24,11 @@ import studio.lunabee.onesafe.domain.Constant
 object FileHelper {
     fun String.getValidFileName(
         extension: String,
-    ): String {
-        return if (this.endsWith(".$extension")) {
-            this
-        } else {
-            "$this.$extension"
-        }.replace(Constant.ForbiddenCharacterFileName, "_")
-    }
+    ): String = if (this.endsWith(".$extension")) {
+        this
+    } else {
+        "$this.$extension"
+    }.replace(Constant.ForbiddenCharacterFileName, "_")
 
     fun String.clearExtension(): String = this.substringBeforeLast('.').ifBlank { this }
 

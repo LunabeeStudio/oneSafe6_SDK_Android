@@ -70,7 +70,7 @@ fun ContactListCell(
             maxLines = NameMaxLine,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1.0f),
-            color = if (isSystemInDarkTheme()) LocalColorPalette.current.Neutral10 else Color.Unspecified,
+            color = if (isSystemInDarkTheme()) LocalColorPalette.current.neutral10 else Color.Unspecified,
         )
         if (!uiBubblesContactInfo.isConversationReady) {
             OSRegularSpacer()

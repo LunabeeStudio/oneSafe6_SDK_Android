@@ -38,29 +38,27 @@ class RemoveDeletedItemUseCase @Inject constructor(
 
     suspend operator fun invoke(
         safeItem: SafeItem,
-    ): LBResult<Unit> {
-        return OSError.runCatching(
-            mapErr = { e -> OSDomainError(OSDomainError.Code.SAFE_ITEM_REMOVE_FAILURE, cause = e) },
-        ) {
-            // Get original children to update them
-            val siblingChildrenItems = safeItemDeletedRepository.getSiblingOriginalChildren(
-                parentId = safeItem.id,
-                order = ItemOrder.Position,
-            )
-            siblingChildrenItems.forEach { siblingChild ->
-                reorderChildrenAtParentLastPositionUseCase(siblingChild)
-            }
-            safeItemDeletedRepository.updateSiblingOriginalChildrenParentId(
-                parentId = safeItem.id,
-                newParentId = safeItem.parentId,
-            )
-
-            val deletedItemsToRemove = safeItemDeletedRepository.findDeletedByIdWithDeletedDescendants(safeItem.id)
-            val idsToRemove = deletedItemsToRemove.map { it.id }
-            deleteFileAssociatedWithItemsUseCase(idsToRemove)
-
-            deleteIconUseCase.invoke(deletedItemsToRemove)
-            safeItemDeletedRepository.removeItems(idsToRemove)
+    ): LBResult<Unit> = OSError.runCatching(
+        mapErr = { e -> OSDomainError(OSDomainError.Code.SAFE_ITEM_REMOVE_FAILURE, cause = e) },
+    ) {
+        // Get original children to update them
+        val siblingChildrenItems = safeItemDeletedRepository.getSiblingOriginalChildren(
+            parentId = safeItem.id,
+            order = ItemOrder.Position,
+        )
+        siblingChildrenItems.forEach { siblingChild ->
+            reorderChildrenAtParentLastPositionUseCase(siblingChild)
         }
+        safeItemDeletedRepository.updateSiblingOriginalChildrenParentId(
+            parentId = safeItem.id,
+            newParentId = safeItem.parentId,
+        )
+
+        val deletedItemsToRemove = safeItemDeletedRepository.findDeletedByIdWithDeletedDescendants(safeItem.id)
+        val idsToRemove = deletedItemsToRemove.map { it.id }
+        deleteFileAssociatedWithItemsUseCase(idsToRemove)
+
+        deleteIconUseCase.invoke(deletedItemsToRemove)
+        safeItemDeletedRepository.removeItems(idsToRemove)
     }
 }

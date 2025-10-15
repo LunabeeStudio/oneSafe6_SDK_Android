@@ -32,5 +32,7 @@ data class WriteContactInfo(
 )
 
 enum class WriteConversationState {
-    WaitingForReply, Reset, Ready
+    WaitingForReply,
+    Reset,
+    Ready,
 }

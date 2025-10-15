@@ -25,13 +25,13 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
-import kotlin.test.Test
 import studio.lunabee.onesafe.cryptography.android.AndroidMainCryptoRepository
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.test.OSHiltTest
 import studio.lunabee.onesafe.test.testUUIDs
 import javax.inject.Inject
+import kotlin.test.Test
 
 @HiltAndroidTest
 class AndroidMainCryptoRepositoryBenchmark : OSHiltTest() {

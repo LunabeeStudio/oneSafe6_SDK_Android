@@ -1,63 +1,63 @@
 {
-  "project_info": {
-    "project_number": "874555585125",
-    "project_id": "onesafe-revival",
-    "storage_bucket": "onesafe-revival.firebasestorage.app"
-  },
-  "client": [
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:874555585125:android:3a9f446ab5ba07abd58c8c",
-        "android_client_info": {
-          "package_name": "studio.lunabee.onesafe"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBHVwouiVMi8rpSQrtxBXvRqhH-gjVrFHw"
-        },
-        {
-          "current_key": "AIzaSyC62w8PFJyx6qbR9s-tTnVVX0_B7OhexNI"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
+    "project_info": {
+        "project_number": "874555585125",
+        "project_id": "onesafe-revival",
+        "storage_bucket": "onesafe-revival.firebasestorage.app"
     },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:874555585125:android:7475d5fb91f686aad58c8c",
-        "android_client_info": {
-          "package_name": "studio.lunabee.onesafe.dev"
-        }
-      },
-      "oauth_client": [
+    "client": [
         {
-          "client_id": "874555585125-fnsavp18vqt12hrd2bhohjre8725b32k.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "studio.lunabee.onesafe.dev",
-            "certificate_hash": "c6b939e125d7b698489caecd44427b896d47bd03"
-          }
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBHVwouiVMi8rpSQrtxBXvRqhH-gjVrFHw"
+            "client_info": {
+                "mobilesdk_app_id": "1:874555585125:android:3a9f446ab5ba07abd58c8c",
+                "android_client_info": {
+                    "package_name": "studio.lunabee.onesafe"
+                }
+            },
+            "oauth_client": [],
+            "api_key": [
+                {
+                    "current_key": "AIzaSyBHVwouiVMi8rpSQrtxBXvRqhH-gjVrFHw"
+                },
+                {
+                    "current_key": "AIzaSyC62w8PFJyx6qbR9s-tTnVVX0_B7OhexNI"
+                }
+            ],
+            "services": {
+                "appinvite_service": {
+                    "other_platform_oauth_client": []
+                }
+            }
         },
         {
-          "current_key": "AIzaSyC62w8PFJyx6qbR9s-tTnVVX0_B7OhexNI"
+            "client_info": {
+                "mobilesdk_app_id": "1:874555585125:android:7475d5fb91f686aad58c8c",
+                "android_client_info": {
+                    "package_name": "studio.lunabee.onesafe.dev"
+                }
+            },
+            "oauth_client": [
+                {
+                    "client_id": "874555585125-fnsavp18vqt12hrd2bhohjre8725b32k.apps.googleusercontent.com",
+                    "client_type": 1,
+                    "android_info": {
+                        "package_name": "studio.lunabee.onesafe.dev",
+                        "certificate_hash": "c6b939e125d7b698489caecd44427b896d47bd03"
+                    }
+                }
+            ],
+            "api_key": [
+                {
+                    "current_key": "AIzaSyBHVwouiVMi8rpSQrtxBXvRqhH-gjVrFHw"
+                },
+                {
+                    "current_key": "AIzaSyC62w8PFJyx6qbR9s-tTnVVX0_B7OhexNI"
+                }
+            ],
+            "services": {
+                "appinvite_service": {
+                    "other_platform_oauth_client": []
+                }
+            }
         }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    }
-  ],
-  "configuration_version": "1"
+    ],
+    "configuration_version": "1"
 }

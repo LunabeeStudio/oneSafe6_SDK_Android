@@ -25,6 +25,7 @@ import studio.lunabee.onesafe.domain.model.safe.SafeId
 interface RecentSearchRepository {
 
     fun getRecentSearch(safeId: SafeId): Flow<List<ByteArray>>
+
     suspend fun saveRecentSearch(
         safeId: SafeId,
         searchHash: ByteArray,

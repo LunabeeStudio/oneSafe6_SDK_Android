@@ -21,5 +21,6 @@ package studio.lunabee.onesafe.domain.repository
 
 interface GlobalSettingsRepository {
     suspend fun getAppVersion(): Int?
+
     suspend fun setAppVersion(version: Int)
 }

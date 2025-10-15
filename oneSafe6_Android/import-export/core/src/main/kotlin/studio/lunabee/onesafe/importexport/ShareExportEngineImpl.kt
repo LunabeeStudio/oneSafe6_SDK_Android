@@ -49,28 +49,26 @@ class ShareExportEngineImpl @Inject constructor(
     @DateFormatterType(type = DateFormatterType.Type.IsoInstant) dateTimeFormatter: DateTimeFormatter,
     private val backupInfoProvider: CreateBackupInfoUseCase,
 ) : AbstractExportEngine(
-    fileDispatcher = fileDispatcher,
-    dateTimeFormatter = dateTimeFormatter,
-),
+        fileDispatcher = fileDispatcher,
+        dateTimeFormatter = dateTimeFormatter,
+    ),
     ShareExportEngine {
     override val exportKey: ByteArray
         get() = exportInfo?.archiveMasterKey ?: throw OSImportExportError(OSImportExportError.Code.ENGINE_NOT_PREPARED)
 
     private var exportInfo: ExportInfo? = null
 
-    override fun buildExportInfo(password: CharArray): Flow<LBFlowResult<Unit>> {
-        return flow<LBFlowResult<Unit>> {
-            val keySaltPair = importExportCryptoRepository.createMasterKeyAndSalt(password)
-            exportInfo = ExportInfo(
-                archiveMasterKey = keySaltPair.first,
-                fromPlatformVersion = backupInfoProvider(),
-                exportSalt = keySaltPair.second,
-                encBubblesMasterKey = null,
-            )
-            emit(LBFlowResult.Success(Unit))
-        }.catch { e ->
-            emit(LBFlowResult.Failure(e))
-        }
+    override fun buildExportInfo(password: CharArray): Flow<LBFlowResult<Unit>> = flow<LBFlowResult<Unit>> {
+        val keySaltPair = importExportCryptoRepository.createMasterKeyAndSalt(password)
+        exportInfo = ExportInfo(
+            archiveMasterKey = keySaltPair.first,
+            fromPlatformVersion = backupInfoProvider(),
+            exportSalt = keySaltPair.second,
+            encBubblesMasterKey = null,
+        )
+        emit(LBFlowResult.Success(Unit))
+    }.catch { e ->
+        emit(LBFlowResult.Failure(e))
     }
 
     override fun createExportArchiveContent(

@@ -20,7 +20,6 @@
 package studio.lunabee.bubbles.repository
 
 import kotlinx.coroutines.flow.Flow
-import kotlin.time.Instant
 import studio.lunabee.bubbles.domain.model.contact.Contact
 import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
 import studio.lunabee.bubbles.domain.model.contactkey.ContactSharedKey
@@ -28,6 +27,7 @@ import studio.lunabee.bubbles.domain.repository.ContactRepository
 import studio.lunabee.bubbles.repository.datasource.ContactLocalDataSource
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.onesafe.di.Inject
+import kotlin.time.Instant
 
 class ContactRepositoryImpl @Inject constructor(
     private val localDataSource: ContactLocalDataSource,
@@ -35,7 +35,8 @@ class ContactRepositoryImpl @Inject constructor(
 
     override suspend fun save(contact: Contact, key: ContactLocalKey): Unit = localDataSource.saveContact(contact, key)
 
-    override fun getAllContactsFlow(safeId: DoubleRatchetUUID): Flow<List<Contact>> = localDataSource.getAllContactsFlow(safeId)
+    override fun getAllContactsFlow(safeId: DoubleRatchetUUID): Flow<List<Contact>> = localDataSource
+        .getAllContactsFlow(safeId)
 
     override fun getRecentContactsFlow(
         maxNumber: Int,
@@ -46,15 +47,18 @@ class ContactRepositoryImpl @Inject constructor(
     )
 
     override fun getContactFlow(id: DoubleRatchetUUID): Flow<Contact?> = localDataSource.getContactFlow(id)
-    override suspend fun getContact(id: DoubleRatchetUUID): Contact? {
-        return localDataSource.getContact(id)
-    }
 
-    override suspend fun getContactInSafe(id: DoubleRatchetUUID, safeId: DoubleRatchetUUID): Contact? {
-        return localDataSource.getContactInSafe(id, safeId)
-    }
+    override suspend fun getContact(id: DoubleRatchetUUID): Contact? = localDataSource.getContact(id)
 
-    override suspend fun getSharedKey(id: DoubleRatchetUUID): ContactSharedKey? = localDataSource.getContactSharedKey(id)
+    override suspend fun getContactInSafe(id: DoubleRatchetUUID, safeId: DoubleRatchetUUID): Contact? = localDataSource
+        .getContactInSafe(
+            id,
+            safeId,
+        )
+
+    override suspend fun getSharedKey(id: DoubleRatchetUUID): ContactSharedKey? = localDataSource
+        .getContactSharedKey(id)
+
     override suspend fun addContactSharedKey(id: DoubleRatchetUUID, sharedKey: ContactSharedKey) {
         localDataSource.addContactSharedKey(id, sharedKey)
     }
@@ -79,13 +83,9 @@ class ContactRepositoryImpl @Inject constructor(
         localDataSource.updateContactConsultedAt(id, consultedAt)
     }
 
-    override suspend fun getContactCount(safeId: DoubleRatchetUUID): Int {
-        return localDataSource.getContactCount(safeId)
-    }
+    override suspend fun getContactCount(safeId: DoubleRatchetUUID): Int = localDataSource.getContactCount(safeId)
 
-    override fun getContactCountFlow(safeId: DoubleRatchetUUID): Flow<Int> {
-        return localDataSource.getContactCountFlow(safeId)
-    }
+    override fun getContactCountFlow(safeId: DoubleRatchetUUID): Flow<Int> = localDataSource.getContactCountFlow(safeId)
 
     override suspend fun updateContactResetConversationDate(id: DoubleRatchetUUID, encResetConversationDate: ByteArray) {
         localDataSource.updateContactResetConversationDate(id, encResetConversationDate)

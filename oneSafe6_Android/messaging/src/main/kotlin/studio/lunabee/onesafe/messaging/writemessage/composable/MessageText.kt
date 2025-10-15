@@ -63,7 +63,8 @@ private fun buildAnnotatedStringWithClickableLink(
     text: String,
     linkColor: Color,
 ): AnnotatedString {
-    val regex = android.util.Patterns.WEB_URL.toRegex()
+    val regex = android.util.Patterns.WEB_URL
+        .toRegex()
     val matches: Sequence<MatchResult> = regex.findAll(text)
     return buildAnnotatedString {
         append(text)

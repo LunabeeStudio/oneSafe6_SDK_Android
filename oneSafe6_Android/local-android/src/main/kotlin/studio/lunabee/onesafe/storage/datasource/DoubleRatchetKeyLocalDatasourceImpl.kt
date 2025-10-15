@@ -32,9 +32,7 @@ class DoubleRatchetKeyLocalDatasourceImpl @Inject constructor(
         doubleRatchetKeyDao.insert(RoomDoubleRatchetKey.fromEncDoubleRatchetKey(key))
     }
 
-    override suspend fun getById(id: String): ByteArray? {
-        return doubleRatchetKeyDao.getById(id)
-    }
+    override suspend fun getById(id: String): ByteArray? = doubleRatchetKeyDao.getById(id)
 
     override suspend fun deleteById(id: String) {
         doubleRatchetKeyDao.deleteById(id)

@@ -28,17 +28,17 @@ import javax.inject.Inject
 class SortItemNameUseCase @Inject constructor(
     private val cleanForAlphaIndexingUseCase: CleanForAlphaIndexingUseCase,
 ) {
-    operator fun invoke(idNameList: List<Pair<UUID, String>>): List<Pair<UUID, Double>> {
-        return idNameList
-            .groupBy { cleanForAlphaIndexingUseCase(it.second) } // group to get equals index in case of equal clean name
-            .toSortedMap() // use natural asc order
-            .map { (_, value) ->
-                value.map { it.first }
-            } // map to list and keep id + index only
-            .flatMapIndexed { index, ids -> // iterate over group of ids
-                ids.map { id -> // iterate over ids
-                    id to index.toDouble()
-                }
+    operator fun invoke(idNameList: List<Pair<UUID, String>>): List<Pair<UUID, Double>> = idNameList
+        .groupBy { cleanForAlphaIndexingUseCase(it.second) } // group to get equals index in case of equal clean name
+        .toSortedMap() // use natural asc order
+        .map { (_, value) ->
+            value.map { it.first }
+        } // map to list and keep id + index only
+        .flatMapIndexed { index, ids ->
+            // iterate over group of ids
+            ids.map { id ->
+                // iterate over ids
+                id to index.toDouble()
             }
-    }
+        }
 }

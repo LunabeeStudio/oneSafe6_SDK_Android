@@ -36,7 +36,9 @@ internal class CameraScanPermissionRationaleDialogState(
             retry()
         },
     )
-    override val title: LbcTextSpec = LbcTextSpec.StringResource(OSString.bubbles_scanbarcodeScreen_permission_rationale_title)
-    override val message: LbcTextSpec = LbcTextSpec.StringResource(OSString.bubbles_scanbarcodeScreen_permission_rationale_message)
+    override val title: LbcTextSpec = LbcTextSpec
+        .StringResource(OSString.bubbles_scanbarcodeScreen_permission_rationale_title)
+    override val message: LbcTextSpec = LbcTextSpec
+        .StringResource(OSString.bubbles_scanbarcodeScreen_permission_rationale_message)
     override val customContent: (@Composable () -> Unit)? = null
 }

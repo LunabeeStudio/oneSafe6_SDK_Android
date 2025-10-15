@@ -32,8 +32,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import studio.lunabee.onesafe.cryptography.android.PBKDF2JceHashEngine
 import studio.lunabee.onesafe.cryptography.android.PasswordHashEngine
 import studio.lunabee.onesafe.cryptography.android.ProtoData
-import studio.lunabee.onesafe.domain.qualifier.CryptoDispatcher
 import studio.lunabee.onesafe.cryptography.android.utils.ProtoDataSerializer
+import studio.lunabee.onesafe.domain.qualifier.CryptoDispatcher
 
 @Module
 @TestInstallIn(

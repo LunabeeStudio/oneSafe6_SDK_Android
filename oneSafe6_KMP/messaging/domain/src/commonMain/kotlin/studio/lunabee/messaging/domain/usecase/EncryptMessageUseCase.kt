@@ -20,7 +20,6 @@
 package studio.lunabee.messaging.domain.usecase
 
 import com.lunabee.lbcore.model.LBResult
-import kotlin.time.Instant
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
@@ -41,6 +40,7 @@ import studio.lunabee.messaging.domain.repository.MessagingCryptoRepository
 import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.onesafe.error.BubblesMessagingError
 import studio.lunabee.onesafe.error.OSError
+import kotlin.time.Instant
 
 /**
  * Encrypt a message for a contact and encode it on base64
@@ -66,7 +66,8 @@ class EncryptMessageUseCase @Inject constructor(
         )
         val byteArrayMessage = ProtoBuf.encodeToByteArray(messageBody)
         // Encrypt the message body with the message Key
-        val encryptedMessageBody: ByteArray = messagingCryptoRepository.encryptMessage(byteArrayMessage, sendMessageData.messageKey)
+        val encryptedMessageBody: ByteArray = messagingCryptoRepository
+            .encryptMessage(byteArrayMessage, sendMessageData.messageKey)
         val handShakeDataRes: LBResult<HandShakeData?> = getHandShakeDataUseCase(contactId)
         when (handShakeDataRes) {
             is LBResult.Failure -> return LBResult.Failure(handShakeDataRes.throwable)

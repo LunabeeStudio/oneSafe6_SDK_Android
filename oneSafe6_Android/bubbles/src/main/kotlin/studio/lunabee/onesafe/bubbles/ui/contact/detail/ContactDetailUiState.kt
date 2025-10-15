@@ -48,14 +48,12 @@ sealed interface ContactDetailUiState {
         ;
 
         companion object {
-            fun fromConversationState(state: ConversationState): UIConversationState {
-                return when (state) {
-                    ConversationState.Running -> Running
-                    ConversationState.FullySetup -> FullySetup
-                    ConversationState.WaitingForReply -> WaitingForReply
-                    ConversationState.WaitingForFirstMessage -> WaitingForFirstMessage
-                    ConversationState.Reset -> Reset
-                }
+            fun fromConversationState(state: ConversationState): UIConversationState = when (state) {
+                ConversationState.Running -> Running
+                ConversationState.FullySetup -> FullySetup
+                ConversationState.WaitingForReply -> WaitingForReply
+                ConversationState.WaitingForFirstMessage -> WaitingForFirstMessage
+                ConversationState.Reset -> Reset
             }
         }
     }

@@ -34,20 +34,18 @@ class GetItemEditionInfoUseCase @Inject constructor(
     private val safeItemFieldRepository: SafeItemFieldRepository,
     private val safeItemRepository: SafeItemRepository,
 ) {
-    suspend operator fun invoke(itemId: UUID): LBResult<SafeItemEditInfo> {
-        return OSError.runCatching(log) {
-            val safeItem = safeItemRepository.getSafeItem(id = itemId)
-            val encSafeItemName = safeItem.encName
-            val encSafeIconId = safeItem.iconId
-            val encSafeItemFields = safeItemFieldRepository.getSafeItemFields(itemId = itemId)
-            val encColor = safeItem.encColor
-            SafeItemEditInfo(
-                id = itemId,
-                encName = encSafeItemName,
-                iconId = encSafeIconId,
-                encSafeItemFields = encSafeItemFields,
-                encColor = encColor,
-            )
-        }
+    suspend operator fun invoke(itemId: UUID): LBResult<SafeItemEditInfo> = OSError.runCatching(log) {
+        val safeItem = safeItemRepository.getSafeItem(id = itemId)
+        val encSafeItemName = safeItem.encName
+        val encSafeIconId = safeItem.iconId
+        val encSafeItemFields = safeItemFieldRepository.getSafeItemFields(itemId = itemId)
+        val encColor = safeItem.encColor
+        SafeItemEditInfo(
+            id = itemId,
+            encName = encSafeItemName,
+            iconId = encSafeIconId,
+            encSafeItemFields = encSafeItemFields,
+            encColor = encColor,
+        )
     }
 }

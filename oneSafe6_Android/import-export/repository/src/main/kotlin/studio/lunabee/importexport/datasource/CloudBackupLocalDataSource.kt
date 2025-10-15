@@ -25,12 +25,20 @@ import studio.lunabee.onesafe.importexport.model.CloudBackup
 
 interface CloudBackupLocalDataSource {
     suspend fun saveCloudBackup(backup: CloudBackup): CloudBackup
+
     suspend fun refreshCloudBackups(backups: List<CloudBackup>)
+
     suspend fun getCloudBackups(safeId: SafeId): List<CloudBackup>
+
     fun getCloudBackupsFlow(safeId: SafeId): Flow<List<CloudBackup>>
+
     suspend fun deleteCloudBackup(id: String)
+
     suspend fun getRemoteId(backupId: String): String?
+
     suspend fun getLatestBackup(safeId: SafeId): CloudBackup?
+
     fun getLatestBackupFlow(safeId: SafeId): Flow<CloudBackup?>
+
     suspend fun deleteAll(safeId: SafeId)
 }

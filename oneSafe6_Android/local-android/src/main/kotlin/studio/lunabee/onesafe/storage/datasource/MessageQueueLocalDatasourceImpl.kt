@@ -20,18 +20,16 @@
 package studio.lunabee.onesafe.storage.datasource
 
 import kotlinx.coroutines.flow.first
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.messaging.repository.datasource.MessageQueueLocalDatasource
 import studio.lunabee.onesafe.cryptography.android.DatastoreEngine
 import studio.lunabee.onesafe.cryptography.android.qualifier.DataStoreType
 import studio.lunabee.onesafe.cryptography.android.qualifier.DatastoreEngineProvider
+import studio.lunabee.onesafe.di.Inject
 
 class MessageQueueLocalDatasourceImpl @Inject constructor(
     @DatastoreEngineProvider(DataStoreType.Encrypted) private val dataStoreEngine: DatastoreEngine,
 ) : MessageQueueLocalDatasource {
-    override suspend fun retrieveValue(key: String): ByteArray? {
-        return dataStoreEngine.retrieveValue(key).first()
-    }
+    override suspend fun retrieveValue(key: String): ByteArray? = dataStoreEngine.retrieveValue(key).first()
 
     override suspend fun insertValue(key: String, value: ByteArray) {
         dataStoreEngine.insertValue(key, value)

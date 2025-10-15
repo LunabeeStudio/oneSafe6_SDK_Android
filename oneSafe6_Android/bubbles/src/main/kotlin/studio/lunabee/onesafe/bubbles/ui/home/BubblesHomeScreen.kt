@@ -36,7 +36,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
@@ -64,8 +64,8 @@ import studio.lunabee.onesafe.ui.theme.OSPreviewOnSurfaceTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
 import java.util.UUID
 
-context(BubblesHomeNavScope)
 @Composable
+context(BubblesHomeNavScope)
 fun BubblesHomeRoute(
     viewModel: BubblesHomeScreenViewModel = hiltViewModel(),
 ) {
@@ -79,8 +79,8 @@ fun BubblesHomeRoute(
     )
 }
 
-context(BubblesHomeNavScope)
 @Composable
+context(BubblesHomeNavScope)
 private fun BubblesHomeScreen(
     contacts: List<UIBubblesContactInfo>?,
     conversation: List<BubblesConversationInfo>?,

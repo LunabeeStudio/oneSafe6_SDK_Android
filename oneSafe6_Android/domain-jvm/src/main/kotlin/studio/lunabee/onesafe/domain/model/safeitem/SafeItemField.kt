@@ -48,36 +48,50 @@ data class SafeItemField(
         if (encName != null) {
             if (other.encName == null) return false
             if (!encName.contentEquals(other.encName)) return false
-        } else if (other.encName != null) return false
+        } else if (other.encName != null) {
+            return false
+        }
         if (position != other.position) return false
         if (itemId != other.itemId) return false
         if (encPlaceholder != null) {
             if (other.encPlaceholder == null) return false
             if (!encPlaceholder.contentEquals(other.encPlaceholder)) return false
-        } else if (other.encPlaceholder != null) return false
+        } else if (other.encPlaceholder != null) {
+            return false
+        }
         if (encValue != null) {
             if (other.encValue == null) return false
             if (!encValue.contentEquals(other.encValue)) return false
-        } else if (other.encValue != null) return false
+        } else if (other.encValue != null) {
+            return false
+        }
         if (showPrediction != other.showPrediction) return false
         if (encKind != null) {
             if (other.encKind == null) return false
             if (!encKind.contentEquals(other.encKind)) return false
-        } else if (other.encKind != null) return false
+        } else if (other.encKind != null) {
+            return false
+        }
         if (updatedAt != other.updatedAt) return false
         if (isItemIdentifier != other.isItemIdentifier) return false
         if (encFormattingMask != null) {
             if (other.encFormattingMask == null) return false
             if (!encFormattingMask.contentEquals(other.encFormattingMask)) return false
-        } else if (other.encFormattingMask != null) return false
+        } else if (other.encFormattingMask != null) {
+            return false
+        }
         if (encSecureDisplayMask != null) {
             if (other.encSecureDisplayMask == null) return false
             if (!encSecureDisplayMask.contentEquals(other.encSecureDisplayMask)) return false
-        } else if (other.encSecureDisplayMask != null) return false
+        } else if (other.encSecureDisplayMask != null) {
+            return false
+        }
         if (encThumbnailFileName != null) {
             if (other.encThumbnailFileName == null) return false
             if (!encThumbnailFileName.contentEquals(other.encThumbnailFileName)) return false
-        } else if (other.encThumbnailFileName != null) return false
+        } else if (other.encThumbnailFileName != null) {
+            return false
+        }
         if (isSecured != other.isSecured) return false
 
         return true
@@ -104,7 +118,8 @@ data class SafeItemField(
     companion object {
         fun equalsForThumbnails(olds: List<SafeItemField>, news: List<SafeItemField>): Boolean {
             if (olds.size != news.size) return false
-            return olds.asSequence()
+            return olds
+                .asSequence()
                 .zip(news.asSequence()) { old, new -> equalsForThumbnail(old, new) }
                 .all { it }
         }
@@ -115,25 +130,35 @@ data class SafeItemField(
             if (old.encName != null) {
                 if (new.encName == null) return false
                 if (!old.encName.contentEquals(new.encName)) return false
-            } else if (new.encName != null) return false
+            } else if (new.encName != null) {
+                return false
+            }
             if (old.position != new.position) return false
             if (old.itemId != new.itemId) return false
             if (old.encValue != null) {
                 if (new.encValue == null) return false
                 if (!old.encValue.contentEquals(new.encValue)) return false
-            } else if (new.encValue != null) return false
+            } else if (new.encValue != null) {
+                return false
+            }
             if (old.encKind != null) {
                 if (new.encKind == null) return false
                 if (!old.encKind.contentEquals(new.encKind)) return false
-            } else if (new.encKind != null) return false
+            } else if (new.encKind != null) {
+                return false
+            }
             if (old.encFormattingMask != null) {
                 if (new.encFormattingMask == null) return false
                 if (!old.encFormattingMask.contentEquals(new.encFormattingMask)) return false
-            } else if (new.encFormattingMask != null) return false
+            } else if (new.encFormattingMask != null) {
+                return false
+            }
             if (old.encSecureDisplayMask != null) {
                 if (new.encSecureDisplayMask == null) return false
                 if (!old.encSecureDisplayMask.contentEquals(new.encSecureDisplayMask)) return false
-            } else if (new.encSecureDisplayMask != null) return false
+            } else if (new.encSecureDisplayMask != null) {
+                return false
+            }
             if (old.isSecured != new.isSecured) return false
 
             return true

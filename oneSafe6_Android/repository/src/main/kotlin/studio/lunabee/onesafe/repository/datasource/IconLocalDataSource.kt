@@ -26,13 +26,19 @@ import java.util.UUID
 
 interface IconLocalDataSource {
     fun getIcon(filename: String): File
+
     suspend fun addIcon(filename: String, icon: ByteArray, safeId: SafeId): File
+
     suspend fun deleteIcon(filename: String): Boolean
 
     @CrossSafeData
     fun getAllIcons(): List<File>
+
     suspend fun getIcons(safeId: SafeId): List<File>
+
     suspend fun copyAndDeleteIconFile(newIconFile: File, iconId: UUID, safeId: SafeId)
+
     fun getIcons(iconsId: List<String>): List<File>
+
     suspend fun deleteAll(safeId: SafeId)
 }

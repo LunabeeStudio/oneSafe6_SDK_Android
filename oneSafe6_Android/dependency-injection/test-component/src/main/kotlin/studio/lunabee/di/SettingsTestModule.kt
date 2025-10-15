@@ -48,11 +48,9 @@ object SettingsTestModule {
     @Singleton
     fun providePreferenceDataStore(
         @ApplicationContext context: Context,
-    ): DataStore<Preferences> {
-        return PreferenceDataStoreFactory.create {
-            context.preferencesDataStoreFile("datastore_settings_" + datastoreIncSuffix++).also {
-                it.delete()
-            }
+    ): DataStore<Preferences> = PreferenceDataStoreFactory.create {
+        context.preferencesDataStoreFile("datastore_settings_" + datastoreIncSuffix++).also {
+            it.delete()
         }
     }
 }

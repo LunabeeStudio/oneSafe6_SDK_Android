@@ -24,27 +24,46 @@ import studio.lunabee.onesafe.domain.model.safe.SafeId
 
 interface AppVisitRepository {
     fun hasVisitedLogin(): Flow<Boolean>
+
     fun hasDoneTutorialOpenOsk(): Flow<Boolean>
+
     fun hasDoneTutorialLockOsk(): Flow<Boolean>
+
     fun hasFinishOneSafeKOnBoardingFlow(safeId: SafeId): Flow<Boolean>
+
     fun hasDoneOnBoardingBubblesFlow(safeId: SafeId): Flow<Boolean>
+
     fun hasHiddenCameraTipsFlow(safeId: SafeId): Flow<Boolean>
+
     fun hasSeenItemEditionUrlToolTipFlow(safeId: SafeId): Flow<Boolean>
+
     fun hasSeenItemEditionEmojiToolTipFlow(safeId: SafeId): Flow<Boolean>
+
     fun hasSeenItemReadEditToolTipFlow(safeId: SafeId): Flow<Boolean>
 
     suspend fun hasSeenDialogMessageSaveConfirmation(safeId: SafeId): Boolean
+
     suspend fun hasSeenItemEditionUrlToolTip(safeId: SafeId): Boolean
+
     suspend fun hasSeenItemEditionEmojiToolTip(safeId: SafeId): Boolean
 
     suspend fun setHasSeenDialogMessageSaveConfirmation(safeId: SafeId)
+
     suspend fun setHasVisitedLogin(value: Boolean)
+
     suspend fun setHasDoneTutorialOpenOsk(value: Boolean)
+
     suspend fun setHasDoneTutorialLockOsk(value: Boolean)
+
     suspend fun setHasFinishOneSafeKOnBoarding(safeId: SafeId, value: Boolean)
+
     suspend fun setHasDoneOnBoardingBubbles(safeId: SafeId, value: Boolean)
+
     suspend fun setHasHiddenCameraTips(safeId: SafeId, value: Boolean)
+
     suspend fun setHasSeenItemEditionUrlToolTip(safeId: SafeId, value: Boolean)
+
     suspend fun setHasSeenItemEditionEmojiToolTip(safeId: SafeId, value: Boolean)
+
     suspend fun setHasSeenItemReadEditToolTip(safeId: SafeId, value: Boolean)
 }

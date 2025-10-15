@@ -40,13 +40,12 @@ class OSCryptoInputStream(
         super.read(b, off, len)
     }
 
-    private inline fun <T : Any> safeRead(read: () -> T): T {
-        return try {
-            read()
-        } catch (e: GeneralSecurityException) {
-            throw OSCryptoError.Code.DECRYPT_STREAM_CRYPTO_FAILURE.get(cause = e)
-        } catch (e: IOException) { // might happen when the stream produce corrupted data
-            throw OSCryptoError.Code.DECRYPT_STREAM_IO_FAILURE.get(cause = e)
-        }
+    private inline fun <T : Any> safeRead(read: () -> T): T = try {
+        read()
+    } catch (e: GeneralSecurityException) {
+        throw OSCryptoError.Code.DECRYPT_STREAM_CRYPTO_FAILURE.get(cause = e)
+    } catch (e: IOException) {
+        // might happen when the stream produce corrupted data
+        throw OSCryptoError.Code.DECRYPT_STREAM_IO_FAILURE.get(cause = e)
     }
 }

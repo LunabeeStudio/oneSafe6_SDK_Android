@@ -22,7 +22,6 @@ package studio.lunabee.messaging.domain.usecase
 import com.lunabee.lbcore.model.LBResult
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlin.time.Clock
 import studio.lunabee.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.bubbles.domain.repository.BubblesSafeRepository
 import studio.lunabee.bubbles.domain.repository.ContactKeyRepository
@@ -39,6 +38,7 @@ import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.error.BubblesMessagingError
 import studio.lunabee.onesafe.error.OSError
+import kotlin.time.Clock
 
 /**
  * Encrypt & store a plain message associated with a contact
@@ -86,7 +86,8 @@ class SaveMessageUseCase @Inject constructor(
                 encSafeItemId = encSafeItemId,
             )
 
-            val orderResult: MessageOrderCalculator.OrderResult = messageOrderCalculator.invoke(plainMessage.date, contactId, key)
+            val orderResult: MessageOrderCalculator.OrderResult = messageOrderCalculator
+                .invoke(plainMessage.date, contactId, key)
 
             return@withLock when (orderResult) {
                 is MessageOrderCalculator.OrderResult.Found -> {
@@ -97,7 +98,8 @@ class SaveMessageUseCase @Inject constructor(
                 is MessageOrderCalculator.OrderResult.Duplicated -> {
                     // If we have 2 messages with the same sentAt value, make sure this is a duplicate and return a failure (or save it)
                     val dupMessage = messageRepository.getByContactByOrder(contactId, orderResult.duplicatedOrder)
-                    val dupContent = bubblesCryptoRepository.localDecrypt(key, DecryptEntry(dupMessage.encContent, String::class))
+                    val dupContent = bubblesCryptoRepository
+                        .localDecrypt(key, DecryptEntry(dupMessage.encContent, String::class))
 
                     if (dupContent == plainMessage.content) {
                         throw BubblesMessagingError(BubblesMessagingError.Code.DUPLICATED_MESSAGE)

@@ -24,5 +24,6 @@ import studio.lunabee.onesafe.domain.model.forceupgrade.ForceUpgradeStrings
 
 interface ForceUpdateRemoteDatasource {
     suspend fun fetchForceUpgradeInfo(): ForceUpgradeInfo?
+
     suspend fun fetchForceUpgradeStrings(languageFileUrl: String): ForceUpgradeStrings?
 }

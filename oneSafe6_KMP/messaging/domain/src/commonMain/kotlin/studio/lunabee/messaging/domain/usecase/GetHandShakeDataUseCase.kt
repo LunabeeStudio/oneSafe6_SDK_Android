@@ -20,11 +20,11 @@
 package studio.lunabee.messaging.domain.usecase
 
 import com.lunabee.lbcore.model.LBResult
-import studio.lunabee.onesafe.di.Inject
+import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.messaging.domain.model.HandShakeData
 import studio.lunabee.messaging.domain.repository.HandShakeDataRepository
+import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.onesafe.error.OSError
-import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 
 class GetHandShakeDataUseCase @Inject constructor(
     private val handShakeDataRepository: HandShakeDataRepository,

@@ -26,7 +26,9 @@ import studio.lunabee.onesafe.domain.model.forceupgrade.ForceUpgradeStrings
 
 interface ForceUpgradeRepository {
     suspend fun fetchForceUpgradeInfo(): ForceUpgradeInfo?
+
     fun getForceUpgradeData(): Flow<ForceUpgradeData?>
+
     suspend fun fetchForceUpgradeStrings(languageFileUrl: String): ForceUpgradeStrings?
 
     suspend fun saveForceUpgradeData(forceUpgradeData: ForceUpgradeData)

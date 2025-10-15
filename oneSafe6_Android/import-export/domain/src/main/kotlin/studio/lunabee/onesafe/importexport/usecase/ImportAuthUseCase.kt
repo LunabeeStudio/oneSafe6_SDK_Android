@@ -32,10 +32,8 @@ class ImportAuthUseCase @Inject constructor(
 ) {
     operator fun invoke(
         password: CharArray,
-    ): Flow<LBFlowResult<Unit>> {
-        return importEngine.authenticateAndExtractData(
-            archiveExtractedDirectory = archiveExtractedDirectory,
-            password = password,
-        )
-    }
+    ): Flow<LBFlowResult<Unit>> = importEngine.authenticateAndExtractData(
+        archiveExtractedDirectory = archiveExtractedDirectory,
+        password = password,
+    )
 }

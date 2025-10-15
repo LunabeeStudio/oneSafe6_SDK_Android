@@ -65,8 +65,7 @@ class MigrationFromV9ToV10 @Inject constructor(
                             cryptoDataMapper(null, plainKind, SafeItemFieldKind::class)
                         }
                         fieldKind == SafeItemFieldKind.Photo
-                    }
-                    .forEach { field ->
+                    }.forEach { field ->
                         field.encValue?.let { encValue ->
                             val plainValue = migrationCryptoV1UseCase.decrypt(encValue, plainKey)
                             val filenameExt = cryptoDataMapper(null, plainValue, String::class)

@@ -23,5 +23,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface IsAppBlockedUseCase {
     fun flow(): Flow<Boolean>
+
     suspend operator fun invoke(): Boolean
 }

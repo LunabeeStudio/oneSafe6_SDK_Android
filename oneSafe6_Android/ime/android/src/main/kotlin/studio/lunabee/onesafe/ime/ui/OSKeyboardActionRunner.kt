@@ -53,6 +53,6 @@ class OSKeyboardActionRunner(
     }
 
     override fun defaultKeyboardAction(imeAction: ImeAction) {
-        /* no-op */
+        // no-op
     }
 }

@@ -30,8 +30,8 @@ android {
     val backupProviderAuthoritySuffix = ".importexport.backupprovider"
 
     defaultConfig {
-        minSdk = AndroidConfig.MIN_APP_SDK
-        missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
+        minSdk = AndroidConfig.MinAppSdk
+        missingDimensionStrategy("crypto", AndroidConfig.CryptoBackendFlavorDefault)
 
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
         buildConfigField("String", "BACKUPS_PROVIDER_AUTHORITY_SUFFIX", "\"$backupProviderAuthoritySuffix\"")

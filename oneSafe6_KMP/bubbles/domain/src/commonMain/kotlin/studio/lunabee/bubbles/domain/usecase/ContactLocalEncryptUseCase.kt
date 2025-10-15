@@ -44,10 +44,9 @@ class ContactLocalEncryptUseCase @Inject constructor(
      *
      * @return Encrypted data wrapped in a [LBResult]
      */
-    suspend operator fun <Data : Any> invoke(data: Data, contactId: DoubleRatchetUUID): LBResult<ByteArray> {
-        return OSError.runCatching {
+    suspend operator fun <Data : Any> invoke(data: Data, contactId: DoubleRatchetUUID): LBResult<ByteArray> = OSError
+        .runCatching {
             val key = contactKeyRepository.getContactLocalKey(contactId)
             bubblesCryptoRepository.localEncrypt(key, EncryptEntry(data))
         }
-    }
 }

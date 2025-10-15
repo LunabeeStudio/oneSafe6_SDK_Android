@@ -30,9 +30,7 @@ object SearchStringUtils {
         return listText.mapNotNull { it.takeIf { it.length >= Constant.MinimumCharForSearch } }
     }
 
-    private fun clearStringForSearch(source: String): String {
-        return source
-            .transformForSearch()
-            .replace(",", " ")
-    }
+    private fun clearStringForSearch(source: String): String = source
+        .transformForSearch()
+        .replace(",", " ")
 }

@@ -22,10 +22,6 @@ package studio.lunabee.onesafe.protobuf
 import com.google.protobuf.ByteString
 import com.google.protobuf.kotlin.toByteString
 
-fun ByteString.toByteArrayOrNull(): ByteArray? {
-    return this.takeUnless { it.isEmpty }?.toByteArray()
-}
+fun ByteString.toByteArrayOrNull(): ByteArray? = this.takeUnless { it.isEmpty }?.toByteArray()
 
-fun ByteArray?.byteStringOrEmpty(): ByteString {
-    return (this ?: byteArrayOf()).toByteString()
-}
+fun ByteArray?.byteStringOrEmpty(): ByteString = (this ?: byteArrayOf()).toByteString()

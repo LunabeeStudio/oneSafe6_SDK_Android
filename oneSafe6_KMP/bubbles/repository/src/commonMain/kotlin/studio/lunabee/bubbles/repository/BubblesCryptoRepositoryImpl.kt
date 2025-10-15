@@ -22,12 +22,12 @@ package studio.lunabee.bubbles.repository
 import studio.lunabee.bubbles.domain.crypto.BubblesCryptoEngine
 import studio.lunabee.bubbles.domain.crypto.BubblesDataHashEngine
 import studio.lunabee.bubbles.domain.crypto.BubblesRandomKeyProvider
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
 import studio.lunabee.bubbles.domain.model.contactkey.ContactSharedKey
 import studio.lunabee.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.onesafe.cryptography.CryptoDataMapper
+import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.error.BubblesCryptoError
@@ -41,11 +41,9 @@ class BubblesCryptoRepositoryImpl @Inject constructor(
     private val hkdfHashEngine: BubblesDataHashEngine,
 ) : BubblesCryptoRepository {
 
-    override suspend fun generateLocalKeyForContact(): ContactLocalKey {
-        return randomKeyProvider.invoke().use { plainKey ->
-            val encKey = mainCryptoRepository.encryptBubbles(plainKey)
-            ContactLocalKey(encKey)
-        }
+    override suspend fun generateLocalKeyForContact(): ContactLocalKey = randomKeyProvider.invoke().use { plainKey ->
+        val encKey = mainCryptoRepository.encryptBubbles(plainKey)
+        ContactLocalKey(encKey)
     }
 
     override suspend fun <Data : Any> localEncrypt(key: ContactLocalKey, encryptEntry: EncryptEntry<Data>): ByteArray {
@@ -58,8 +56,13 @@ class BubblesCryptoRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun <Data : Any> localEncrypt(key: ContactLocalKey, encryptEntries: List<EncryptEntry<Data>?>): List<ByteArray?> {
-        return mainCryptoRepository.decryptBubbles(key.encKey).use { rawKey ->
+    override suspend fun <Data : Any> localEncrypt(
+        key: ContactLocalKey,
+        encryptEntries: List<EncryptEntry<Data>?>,
+    ): List<ByteArray?> = mainCryptoRepository
+        .decryptBubbles(
+            key.encKey,
+        ).use { rawKey ->
             encryptEntries.map { encryptEntry ->
                 encryptEntry?.let {
                     val data = encryptEntry.data
@@ -70,7 +73,6 @@ class BubblesCryptoRepositoryImpl @Inject constructor(
                 }
             }
         }
-    }
 
     override suspend fun <Data : Any> localDecrypt(key: ContactLocalKey, decryptEntry: DecryptEntry<Data>): Data {
         val rawData = mainCryptoRepository.decryptBubbles(key.encKey).use { rawKey ->
@@ -119,11 +121,9 @@ class BubblesCryptoRepositoryImpl @Inject constructor(
             ?: throw BubblesCryptoError(BubblesCryptoError.Code.BUBBLES_DECRYPTION_FAILED_WRONG_CONTACT_KEY)
     }
 
-    override suspend fun deriveUUIDToKey(uuid: DoubleRatchetUUID, keyLength: Int): ByteArray {
-        return hkdfHashEngine.deriveKey(
-            uuid.toByteArray(),
-            uuid.toByteArray(),
-            keyLength,
-        )
-    }
+    override suspend fun deriveUUIDToKey(uuid: DoubleRatchetUUID, keyLength: Int): ByteArray = hkdfHashEngine.deriveKey(
+        uuid.toByteArray(),
+        uuid.toByteArray(),
+        keyLength,
+    )
 }

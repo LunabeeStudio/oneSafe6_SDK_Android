@@ -29,7 +29,7 @@ android {
     namespace = "studio.lunabee.onesafe.widget"
 
     defaultConfig {
-        minSdk = AndroidConfig.MIN_APP_SDK
+        minSdk = AndroidConfig.MinAppSdk
     }
 
     packaging {

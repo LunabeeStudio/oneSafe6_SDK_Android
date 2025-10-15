@@ -19,11 +19,11 @@
 
 package studio.lunabee.onesafe.domain.model.crypto
 
-import kotlin.test.Test
-import studio.lunabee.onesafe.test.assertThrows
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.test.assertDoesNotThrow
+import studio.lunabee.onesafe.test.assertThrows
 import kotlin.random.Random
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 

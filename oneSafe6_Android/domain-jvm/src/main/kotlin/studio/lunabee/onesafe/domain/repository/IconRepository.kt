@@ -27,13 +27,19 @@ import java.util.UUID
 // TODO suspend + IO dispatcher
 interface IconRepository {
     fun getIcon(iconId: String): File
+
     fun getIcons(iconsId: List<String>): List<File>
+
     suspend fun addIcon(iconId: UUID, icon: ByteArray, safeId: SafeId): File
+
     suspend fun deleteIcon(iconId: UUID): Boolean
 
     @CrossSafeData
     fun getAllIcons(): List<File>
+
     suspend fun getIcons(safeId: SafeId): List<File>
+
     suspend fun copyAndDeleteIconFile(iconFile: File, iconId: UUID, safeId: SafeId)
+
     suspend fun deleteAll(safeId: SafeId)
 }

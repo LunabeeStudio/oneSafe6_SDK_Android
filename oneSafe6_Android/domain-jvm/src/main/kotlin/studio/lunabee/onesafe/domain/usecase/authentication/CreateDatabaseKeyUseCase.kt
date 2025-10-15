@@ -29,7 +29,5 @@ import javax.inject.Inject
 class CreateDatabaseKeyUseCase @Inject constructor(
     private val databaseCryptoRepository: DatabaseKeyRepository,
 ) {
-    operator fun invoke(): DatabaseKey {
-        return databaseCryptoRepository.generateKey()
-    }
+    operator fun invoke(): DatabaseKey = databaseCryptoRepository.generateKey()
 }

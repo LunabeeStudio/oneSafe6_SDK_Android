@@ -85,13 +85,14 @@ class ImeFeedbackManager @Inject constructor(
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .build()
 
-            osNotificationManager.manager.notify(OSNotificationManager.NEW_MESSAGE_NOTIFICATION_ID, notification)
+            osNotificationManager.manager.notify(OSNotificationManager.NewMessageNotificationId, notification)
         } else {
-            Toast.makeText(
-                context,
-                description ?: title ?: context.getString(OSString.common_error_unknown),
-                Toast.LENGTH_SHORT,
-            ).show()
+            Toast
+                .makeText(
+                    context,
+                    description ?: title ?: context.getString(OSString.common_error_unknown),
+                    Toast.LENGTH_SHORT,
+                ).show()
         }
     }
 
@@ -105,8 +106,9 @@ class ImeFeedbackManager @Inject constructor(
             } else {
                 BubblesHomeDestination.route
             }
-            data = Uri.Builder()
-                .scheme(CommonUiConstants.Deeplink.MAIN_NAV_SCHEME)
+            data = Uri
+                .Builder()
+                .scheme(CommonUiConstants.Deeplink.MainNavScheme)
                 .authority(route)
                 .build()
         }

@@ -20,12 +20,12 @@
 package studio.lunabee.messaging.domain.usecase
 
 import com.lunabee.lbcore.model.LBResult
-import kotlin.time.Clock
-import studio.lunabee.messaging.domain.MessagingConstant
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.doubleratchet.model.SendMessageData
+import studio.lunabee.messaging.domain.MessagingConstant
 import studio.lunabee.messaging.domain.model.SharedMessage
+import studio.lunabee.onesafe.di.Inject
+import kotlin.time.Clock
 
 /**
  * Generate the response to an invitation and store it if needed (only store the response once)
@@ -47,18 +47,16 @@ class GetInvitationResponseMessageUseCase @Inject constructor(
     private suspend fun getAndSaveMessageIfNeeded(
         contactId: DoubleRatchetUUID,
         messageData: LBResult.Success<SendMessageData>,
-    ): LBResult<ByteArray> {
-        return encryptMessageUseCase(
-            plainMessage = MessagingConstant.FirstMessageData,
-            contactId = contactId,
-            sentAt = clock.now(),
-            sendMessageData = messageData.successData,
-        ).also { message ->
-            if (message is LBResult.Success) {
-                val isFirstMessage = messageData.successData.messageHeader.messageNumber == 0
-                if (isFirstMessage) {
-                    saveMessageInDatabase(message.successData, contactId)
-                }
+    ): LBResult<ByteArray> = encryptMessageUseCase(
+        plainMessage = MessagingConstant.FirstMessageData,
+        contactId = contactId,
+        sentAt = clock.now(),
+        sendMessageData = messageData.successData,
+    ).also { message ->
+        if (message is LBResult.Success) {
+            val isFirstMessage = messageData.successData.messageHeader.messageNumber == 0
+            if (isFirstMessage) {
+                saveMessageInDatabase(message.successData, contactId)
             }
         }
     }

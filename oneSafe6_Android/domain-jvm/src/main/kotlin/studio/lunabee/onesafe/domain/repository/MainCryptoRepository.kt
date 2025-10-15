@@ -35,6 +35,7 @@ import kotlin.time.Duration
 
 interface MainCryptoRepository {
     suspend fun <Data : Any> decrypt(key: SafeItemKey, decryptEntry: DecryptEntry<Data>): Data
+
     suspend fun decrypt(key: SafeItemKey, decryptEntries: List<DecryptEntry<out Any>?>): List<Any?>
 
     suspend fun <Data : Any?, Output : Any> decryptWithData(
@@ -43,17 +44,29 @@ interface MainCryptoRepository {
     ): List<Pair<Data, Output?>>
 
     suspend fun <Data : Any> decrypt(file: File, key: SafeItemKey, clazz: KClass<Data>, mapper: (ByteArray.() -> Data)? = null): Data
+
     suspend fun <Data : Any> encrypt(key: SafeItemKey, encryptEntry: EncryptEntry<Data>): ByteArray
+
     suspend fun <Data : Any> encrypt(key: SafeItemKey, encryptEntries: List<EncryptEntry<Data>?>): List<ByteArray?>
+
     suspend fun getDecryptStream(cipherFile: File, key: SafeItemKey): InputStream
+
     suspend fun getEncryptStream(cipherFile: File, key: SafeItemKey): OutputStream
+
     suspend fun getFileEditionEncryptStream(plainFile: File): OutputStream
+
     suspend fun getFileEditionDecryptStream(encFile: File): InputStream
+
     suspend fun encrypt(outputStream: OutputStream, key: ByteArray): OutputStream
+
     suspend fun encryptIndexWord(words: List<String>): List<ByteArray>
+
     suspend fun decryptIndexWord(encWords: List<ByteArray>): List<String>
+
     suspend fun generateKeyForItemId(itemId: UUID): SafeItemKey
+
     suspend fun importItemKey(rawKeyValue: ByteArray, keyId: UUID): SafeItemKey
+
     suspend fun unloadMasterKeys()
 
     /**
@@ -72,11 +85,17 @@ interface MainCryptoRepository {
     suspend fun testCurrentPassword(password: CharArray)
 
     suspend fun enableBiometric(biometricCipher: Cipher, key: ByteArray? = null): BiometricCryptoMaterial
+
     suspend fun reEncryptItemKey(itemKey: SafeItemKey, key: ByteArray)
+
     fun isCryptoDataInMemoryFlow(): Flow<Boolean>
+
     suspend fun loadMasterKey(masterKey: ByteArray)
+
     suspend fun decryptRecentSearch(encRecentSearch: List<ByteArray>): List<String>
+
     suspend fun encryptRecentSearch(plainRecentSearch: String): ByteArray
+
     suspend fun derivePassword(salt: ByteArray, password: CharArray): ByteArray
 
     /**
@@ -89,6 +108,6 @@ interface MainCryptoRepository {
 
     companion object {
         // TODO <multisafe> move somewhere
-        const val MASTER_KEY_TEST_VALUE: String = "44c5dac9-17ba-4690-9275-c7471b2e0582"
+        const val MasterKeyTestValue: String = "44c5dac9-17ba-4690-9275-c7471b2e0582"
     }
 }

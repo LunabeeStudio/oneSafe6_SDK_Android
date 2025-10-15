@@ -27,6 +27,8 @@ import java.io.File
 interface UrlMetadataRemoteDataSource {
     @Throws(OSRemoteError::class)
     suspend fun getPageHtmlCode(url: String): String
+
     fun downloadFavIcon(baseUrl: String, targetFile: File): Flow<LBFlowResult<File>>
+
     fun downloadImage(url: String, targetFile: File): Flow<LBFlowResult<File>>
 }

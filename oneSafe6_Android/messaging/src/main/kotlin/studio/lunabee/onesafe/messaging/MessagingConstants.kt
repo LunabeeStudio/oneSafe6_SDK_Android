@@ -23,5 +23,6 @@ object MessagingConstants {
     const val MessageTextFieldMaxLines: Int = 3
     private const val FileProviderAuthoritySuffix: String = "messagingprovider"
     const val MessageArchiveMimeType: String = "application/zip"
+
     fun getAuthority(packageName: String): String = "$packageName.$FileProviderAuthoritySuffix"
 }

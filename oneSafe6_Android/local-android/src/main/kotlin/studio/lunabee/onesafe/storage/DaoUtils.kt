@@ -20,17 +20,17 @@
 package studio.lunabee.onesafe.storage
 
 internal object DaoUtils {
-    const val FIELD_ORDER_BY_POSITION = "ORDER BY position ASC"
-    const val IS_NOT_DELETED = "deleted_at IS NULL"
-    const val IS_DELETED = "deleted_at IS NOT NULL"
-    const val IS_FAVORITE = "is_favorite = 1"
+    const val FieldOrderByPosition = "ORDER BY position ASC"
+    const val IsNotDeleted = "deleted_at IS NULL"
+    const val IsDeleted = "deleted_at IS NOT NULL"
+    const val IsFavorite = "is_favorite = 1"
 
-    const val ITEM_ORDER_BY_POSITION = "ORDER BY SafeItem.position ASC, SafeItem.index_alpha ASC"
-    const val ITEM_ORDER_BY_INDEX_ALPHA = "ORDER BY SafeItem.index_alpha ASC, SafeItem.position ASC"
-    const val ITEM_ORDER_BY_UPDATED_AT = "ORDER BY SafeItem.updated_at DESC, SafeItem.index_alpha ASC, SafeItem.position ASC"
-    const val ITEM_ORDER_BY_DELETED_AT = "ORDER BY SafeItem.deleted_at ASC, SafeItem.index_alpha ASC, SafeItem.position ASC"
-    const val ITEM_ORDER_BY_CONSULTED_AT = "ORDER BY SafeItem.consulted_at DESC, SafeItem.index_alpha ASC, SafeItem.position ASC"
-    const val ITEM_ORDER_BY_CREATED_AT = "ORDER BY SafeItem.created_at ASC, SafeItem.index_alpha ASC, SafeItem.position ASC"
+    const val ItemOrderByPosition = "ORDER BY SafeItem.position ASC, SafeItem.index_alpha ASC"
+    const val ItemOrderByIndexAlpha = "ORDER BY SafeItem.index_alpha ASC, SafeItem.position ASC"
+    const val ItemOrderByUpdatedAt = "ORDER BY SafeItem.updated_at DESC, SafeItem.index_alpha ASC, SafeItem.position ASC"
+    const val ItemOrderByDeletedAt = "ORDER BY SafeItem.deleted_at ASC, SafeItem.index_alpha ASC, SafeItem.position ASC"
+    const val ItemOrderByConsultedAt = "ORDER BY SafeItem.consulted_at DESC, SafeItem.index_alpha ASC, SafeItem.position ASC"
+    const val ItemOrderByCreatedAt = "ORDER BY SafeItem.created_at ASC, SafeItem.index_alpha ASC, SafeItem.position ASC"
 
-    const val SAFE_ID_IS_PARAM = "SafeItem.safe_id IS :safeId"
+    const val SafeIdIsParam = "SafeItem.safe_id IS :safeId"
 }

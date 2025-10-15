@@ -36,8 +36,8 @@ import studio.lunabee.onesafe.commonui.dialog.rememberDialogState
 import studio.lunabee.onesafe.model.OSItemIllustration
 import java.util.UUID
 
-context(ContactFormNavScope)
 @Composable
+context(ContactFormNavScope)
 fun ContactFormRoute(
     type: ContactFormType,
     viewModel: ContactFormViewModel,
@@ -47,16 +47,17 @@ fun ContactFormRoute(
     val icon by remember {
         derivedStateOf {
             state.name.let { name ->
-                OSNameProvider.fromName(
-                    name = name,
-                    hasIcon = false,
-                ).let {
-                    if (it is EmojiNameProvider) {
-                        OSItemIllustration.Emoji(it.placeholderName, null)
-                    } else {
-                        OSItemIllustration.Text(it.placeholderName, null)
+                OSNameProvider
+                    .fromName(
+                        name = name,
+                        hasIcon = false,
+                    ).let {
+                        if (it is EmojiNameProvider) {
+                            OSItemIllustration.Emoji(it.placeholderName, null)
+                        } else {
+                            OSItemIllustration.Text(it.placeholderName, null)
+                        }
                     }
-                }
             }
         }
     }

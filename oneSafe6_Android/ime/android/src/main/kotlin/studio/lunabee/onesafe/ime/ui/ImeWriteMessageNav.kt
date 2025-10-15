@@ -26,10 +26,10 @@ import java.util.UUID
 
 class ImeWriteMessageNav(dismissUi: () -> Unit, context: Context) : WriteMessageNavScope {
     override val navigationToInvitation: (UUID) -> Unit = {
-        /* no-op */
+        // no-op
     }
     override val navigateToContactDetail: (UUID) -> Unit = {
-        /* no-op */
+        // no-op
     }
     override val navigateBack: () -> Unit = dismissUi
 

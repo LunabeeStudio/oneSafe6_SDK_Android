@@ -41,20 +41,23 @@ class SetSecuritySettingUseCase @Inject constructor(
     private val safeRepository: SafeRepository,
     private val clock: Clock,
 ) {
-    suspend fun setAutoLockInactivityDelay(delay: Duration, currentSafeId: SafeId? = null): LBResult<Unit> = OSError.runCatching(logger) {
-        val safeId = currentSafeId ?: safeRepository.currentSafeId()
-        securitySettingsRepository.setAutoLockInactivityDelay(safeId, delay)
-    }
+    suspend fun setAutoLockInactivityDelay(delay: Duration, currentSafeId: SafeId? = null): LBResult<Unit> = OSError
+        .runCatching(logger) {
+            val safeId = currentSafeId ?: safeRepository.currentSafeId()
+            securitySettingsRepository.setAutoLockInactivityDelay(safeId, delay)
+        }
 
-    suspend fun setAutoLockAppChangeDelay(delay: Duration, currentSafeId: SafeId? = null): LBResult<Unit> = OSError.runCatching(logger) {
-        val safeId = currentSafeId ?: safeRepository.currentSafeId()
-        securitySettingsRepository.setAutoLockAppChangeDelay(safeId, delay)
-    }
+    suspend fun setAutoLockAppChangeDelay(delay: Duration, currentSafeId: SafeId? = null): LBResult<Unit> = OSError
+        .runCatching(logger) {
+            val safeId = currentSafeId ?: safeRepository.currentSafeId()
+            securitySettingsRepository.setAutoLockAppChangeDelay(safeId, delay)
+        }
 
-    suspend fun setClipboardClearDelay(delay: Duration, currentSafeId: SafeId? = null): LBResult<Unit> = OSError.runCatching(logger) {
-        val safeId = currentSafeId ?: safeRepository.currentSafeId()
-        securitySettingsRepository.setClipboardClearDelay(safeId, delay)
-    }
+    suspend fun setClipboardClearDelay(delay: Duration, currentSafeId: SafeId? = null): LBResult<Unit> = OSError
+        .runCatching(logger) {
+            val safeId = currentSafeId ?: safeRepository.currentSafeId()
+            securitySettingsRepository.setClipboardClearDelay(safeId, delay)
+        }
 
     suspend fun setVerifyPasswordInterval(
         passwordInterval: VerifyPasswordInterval,
@@ -74,10 +77,11 @@ class SetSecuritySettingUseCase @Inject constructor(
         securitySettingsRepository.setLastPasswordVerification(safeId, instant)
     }
 
-    suspend fun setBubblesResendMessageDelay(delay: Duration, currentSafeId: SafeId? = null): LBResult<Unit> = OSError.runCatching(logger) {
-        val safeId = currentSafeId ?: safeRepository.currentSafeId()
-        securitySettingsRepository.setBubblesResendMessageDelay(safeId, delay)
-    }
+    suspend fun setBubblesResendMessageDelay(delay: Duration, currentSafeId: SafeId? = null): LBResult<Unit> = OSError
+        .runCatching(logger) {
+            val safeId = currentSafeId ?: safeRepository.currentSafeId()
+            securitySettingsRepository.setBubblesResendMessageDelay(safeId, delay)
+        }
 
     suspend fun setAutoLockOSKInactivityDelay(
         delay: Duration,
@@ -87,10 +91,11 @@ class SetSecuritySettingUseCase @Inject constructor(
         securitySettingsRepository.setAutoLockOSKInactivityDelay(safeId, delay)
     }
 
-    suspend fun setAutoLockOSKHiddenDelay(delay: Duration, currentSafeId: SafeId? = null): LBResult<Unit> = OSError.runCatching(logger) {
-        val safeId = currentSafeId ?: safeRepository.currentSafeId()
-        securitySettingsRepository.setAutoLockOSKHiddenDelay(safeId, delay)
-    }
+    suspend fun setAutoLockOSKHiddenDelay(delay: Duration, currentSafeId: SafeId? = null): LBResult<Unit> = OSError
+        .runCatching(logger) {
+            val safeId = currentSafeId ?: safeRepository.currentSafeId()
+            securitySettingsRepository.setAutoLockOSKHiddenDelay(safeId, delay)
+        }
 
     suspend fun toggleShakeToLock(currentSafeId: SafeId? = null) {
         val safeId = currentSafeId ?: safeRepository.currentSafeId()

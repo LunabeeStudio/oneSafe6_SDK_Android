@@ -20,25 +20,28 @@
 package studio.lunabee.messaging.repository
 
 import kotlinx.coroutines.flow.Flow
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.messaging.domain.model.SafeMessage
 import studio.lunabee.messaging.domain.repository.MessageRepository
 import studio.lunabee.messaging.repository.datasource.MessageLocalDataSource
+import studio.lunabee.onesafe.di.Inject
 
 class MessageRepositoryImpl @Inject constructor(
     private val datasource: MessageLocalDataSource,
 ) : MessageRepository {
     override suspend fun save(message: SafeMessage, order: Float): Unit = datasource.save(message, order)
-    override suspend fun getAllByContact(contactId: DoubleRatchetUUID): List<SafeMessage> = datasource.getAllByContact(contactId)
-    override suspend fun getLastMessage(contactId: DoubleRatchetUUID): Flow<SafeMessage?> {
-        return datasource.getLastMessage(contactId)
-    }
 
-    override suspend fun getByContactByOrder(contactId: DoubleRatchetUUID, order: Float): SafeMessage = datasource.getByContactByOrder(
-        contactId,
-        order,
-    )
+    override suspend fun getAllByContact(contactId: DoubleRatchetUUID): List<SafeMessage> = datasource
+        .getAllByContact(contactId)
+
+    override suspend fun getLastMessage(contactId: DoubleRatchetUUID): Flow<SafeMessage?> = datasource
+        .getLastMessage(contactId)
+
+    override suspend fun getByContactByOrder(contactId: DoubleRatchetUUID, order: Float): SafeMessage = datasource
+        .getByContactByOrder(
+            contactId,
+            order,
+        )
 
     override suspend fun deleteAllMessages(contactId: DoubleRatchetUUID) {
         datasource.deleteAllMessages(contactId)

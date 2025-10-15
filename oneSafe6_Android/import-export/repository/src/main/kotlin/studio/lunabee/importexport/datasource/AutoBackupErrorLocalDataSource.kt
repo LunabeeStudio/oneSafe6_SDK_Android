@@ -26,6 +26,8 @@ import java.util.UUID
 
 interface AutoBackupErrorLocalDataSource {
     fun getLastError(safeId: SafeId): Flow<AutoBackupError?>
+
     suspend fun addError(error: AutoBackupError)
+
     suspend fun removeError(errorId: UUID)
 }

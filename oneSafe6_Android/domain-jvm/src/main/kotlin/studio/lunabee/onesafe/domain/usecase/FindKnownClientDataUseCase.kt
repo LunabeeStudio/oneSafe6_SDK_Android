@@ -28,7 +28,5 @@ class FindKnownClientDataUseCase @Inject constructor() {
         clientPackage: String?,
         clientDomain: String?,
         knownApps: List<AfClientData>,
-    ): AfClientData? {
-        return knownApps.firstOrNull { it.appPackage == clientPackage || it.domains.contains(clientDomain) }
-    }
+    ): AfClientData? = knownApps.firstOrNull { it.appPackage == clientPackage || it.domains.contains(clientDomain) }
 }

@@ -23,13 +23,11 @@ import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.commonui.ErrorNameProvider
 import studio.lunabee.onesafe.commonui.OSNameProvider
 
-fun LBResult<String>.getNameProvider(): OSNameProvider {
-    return if (this is LBResult.Failure) {
-        ErrorNameProvider
-    } else {
-        OSNameProvider.fromName(
-            name = this.data,
-            hasIcon = false,
-        )
-    }
+fun LBResult<String>.getNameProvider(): OSNameProvider = if (this is LBResult.Failure) {
+    ErrorNameProvider
+} else {
+    OSNameProvider.fromName(
+        name = this.data,
+        hasIcon = false,
+    )
 }

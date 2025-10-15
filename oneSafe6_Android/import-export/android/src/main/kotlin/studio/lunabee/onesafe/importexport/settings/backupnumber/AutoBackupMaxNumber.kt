@@ -30,14 +30,12 @@ enum class AutoBackupMaxNumber(val value: Int, val text: LbcTextSpec) {
     ;
 
     companion object {
-        fun valueForInt(value: Int): AutoBackupMaxNumber {
-            return when (value) {
-                5 -> FIVE
-                10 -> TEN
-                20 -> TWENTY
-                40 -> FORTY
-                else -> throw IllegalArgumentException("Unknown value: $value")
-            }
+        fun valueForInt(value: Int): AutoBackupMaxNumber = when (value) {
+            5 -> FIVE
+            10 -> TEN
+            20 -> TWENTY
+            40 -> FORTY
+            else -> throw IllegalArgumentException("Unknown value: $value")
         }
     }
 }

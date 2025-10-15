@@ -31,8 +31,10 @@ class SaveMessageConfirmationDialogState(
     onConfirm: () -> Unit,
     override val dismiss: () -> Unit,
 ) : DialogState {
-    override val title: LbcTextSpec = LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_unknownSharingStatus_alertTitle)
-    override val message: LbcTextSpec = LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_unknownSharingStatus_message)
+    override val title: LbcTextSpec = LbcTextSpec
+        .StringResource(OSString.bubbles_writeMessageScreen_unknownSharingStatus_alertTitle)
+    override val message: LbcTextSpec = LbcTextSpec
+        .StringResource(OSString.bubbles_writeMessageScreen_unknownSharingStatus_message)
     override val customContent: @Composable (() -> Unit)? = null
     override val actions: List<DialogAction> = listOf(
         DialogAction(

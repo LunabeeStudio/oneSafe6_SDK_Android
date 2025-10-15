@@ -35,6 +35,7 @@ class RoomMigration13to14 @Inject constructor(
      */
     override fun migrate(db: SupportSQLiteDatabase) {
         val default = defaultSafeSettingsProvider()
-        db.execSQL("ALTER TABLE Safe ADD COLUMN setting_shake_to_lock INTEGER NOT NULL DEFAULT ${default.shakeToLock.compareTo(false)}")
+        db
+            .execSQL("ALTER TABLE Safe ADD COLUMN setting_shake_to_lock INTEGER NOT NULL DEFAULT ${default.shakeToLock.compareTo(false)}")
     }
 }

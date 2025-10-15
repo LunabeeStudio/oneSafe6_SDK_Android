@@ -24,10 +24,12 @@ import java.util.UUID
 
 class IncrementalIdProvider : UuidProvider {
     private var idx = 0
+
     override fun invoke(): UUID = testUUIDs[idx++]
 }
 
 object StaticIdProvider : UuidProvider {
     lateinit var id: UUID
+
     override fun invoke(): UUID = id
 }

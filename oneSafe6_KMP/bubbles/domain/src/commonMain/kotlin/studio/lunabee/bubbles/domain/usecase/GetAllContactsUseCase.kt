@@ -23,21 +23,19 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.bubbles.domain.model.contact.Contact
 import studio.lunabee.bubbles.domain.repository.BubblesSafeRepository
 import studio.lunabee.bubbles.domain.repository.ContactRepository
+import studio.lunabee.onesafe.di.Inject
 
 class GetAllContactsUseCase @Inject constructor(
     private val bubblesSafeRepository: BubblesSafeRepository,
     private val bubblesContactRepository: ContactRepository,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(): Flow<List<Contact>> {
-        return bubblesSafeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
-            safeId?.let {
-                bubblesContactRepository.getAllContactsFlow(safeId)
-            } ?: flowOf(emptyList())
-        }
+    operator fun invoke(): Flow<List<Contact>> = bubblesSafeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+        safeId?.let {
+            bubblesContactRepository.getAllContactsFlow(safeId)
+        } ?: flowOf(emptyList())
     }
 }

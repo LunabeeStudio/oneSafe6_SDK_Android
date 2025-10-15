@@ -35,26 +35,25 @@ class GetAutoBackupModeUseCase @Inject constructor(
     private val settingsRepository: AutoBackupSettingsRepository,
     private val safeRepository: SafeRepository,
 ) {
-    suspend operator fun invoke(safeId: SafeId): AutoBackupMode {
-        return if (settingsRepository.autoBackupEnabledFlow(safeId).first()) {
-            val cloudBackupEnabled = settingsRepository.cloudBackupEnabled(safeId).first()
-            when {
-                cloudBackupEnabled && settingsRepository.keepLocalBackupEnabled(safeId).first() -> AutoBackupMode.Synchronized
-                cloudBackupEnabled -> AutoBackupMode.CloudOnly
-                else -> AutoBackupMode.LocalOnly
-            }
-        } else {
-            AutoBackupMode.Disabled
+    suspend operator fun invoke(safeId: SafeId): AutoBackupMode = if (settingsRepository
+            .autoBackupEnabledFlow(safeId)
+            .first()
+    ) {
+        val cloudBackupEnabled = settingsRepository.cloudBackupEnabled(safeId).first()
+        when {
+            cloudBackupEnabled && settingsRepository.keepLocalBackupEnabled(safeId).first() -> AutoBackupMode.Synchronized
+            cloudBackupEnabled -> AutoBackupMode.CloudOnly
+            else -> AutoBackupMode.LocalOnly
         }
+    } else {
+        AutoBackupMode.Disabled
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun flow(currentSafeId: SafeId? = null): Flow<AutoBackupMode> {
-        return currentSafeId?.let { autoBackupModeFlow(currentSafeId) }
-            ?: safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
-                safeId?.let { autoBackupModeFlow(safeId) } ?: flowOf()
-            }
-    }
+    fun flow(currentSafeId: SafeId? = null): Flow<AutoBackupMode> = currentSafeId?.let { autoBackupModeFlow(currentSafeId) }
+        ?: safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+            safeId?.let { autoBackupModeFlow(safeId) } ?: flowOf()
+        }
 
     private fun autoBackupModeFlow(currentSafeId: SafeId) = combine(
         settingsRepository.autoBackupEnabledFlow(currentSafeId),

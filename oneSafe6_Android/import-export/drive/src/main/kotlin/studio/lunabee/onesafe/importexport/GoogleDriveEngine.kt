@@ -54,7 +54,6 @@ import studio.lunabee.onesafe.domain.qualifier.InternalBackupMimetype
 import studio.lunabee.onesafe.domain.qualifier.RemoteDir
 import studio.lunabee.onesafe.domain.qualifier.RemoteDispatcher
 import studio.lunabee.onesafe.error.OSDriveError
-import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.error.osCode
 import studio.lunabee.onesafe.importexport.data.GoogleDrivePreferencesRepository
 import studio.lunabee.onesafe.importexport.model.AutoBackupError
@@ -66,6 +65,7 @@ import studio.lunabee.onesafe.importexport.repository.AutoBackupErrorRepository
 import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsRepository
 import studio.lunabee.onesafe.importexport.utils.AutoBackupErrorIdProvider
 import studio.lunabee.onesafe.importexport.utils.CloudBackupDescriptionProvider
+import studio.lunabee.onesafe.jvm.get
 import java.io.InputStream
 import java.net.URI
 import java.time.Clock
@@ -126,12 +126,12 @@ class GoogleDriveEngine @Inject constructor(
     }
 
     private fun setupDriveInstance(accountCredential: GoogleAccountCredential, safeId: SafeId) {
-        driveClients[safeId] = Drive.Builder(
-            NetHttpTransport.Builder().build(),
-            GsonFactory.getDefaultInstance(),
-            accountCredential,
-        )
-            .setApplicationName(context.applicationInfo.name)
+        driveClients[safeId] = Drive
+            .Builder(
+                NetHttpTransport.Builder().build(),
+                GsonFactory.getDefaultInstance(),
+                accountCredential,
+            ).setApplicationName(context.applicationInfo.name)
             .build()!!
 
         logger.i("Google drive engine for ${accountCredential.selectedAccountName} successfully initialized")
@@ -146,28 +146,31 @@ class GoogleDriveEngine @Inject constructor(
         return accountCredential
     }
 
-    private suspend fun getGoogleAccount(accountName: String? = null, safeId: SafeId): Account? {
-        return (accountName ?: drivePreferencesRepository.selectedAccount(safeId))?.let { name ->
-            val am = AccountManager.get(context)
-            am.accounts.firstOrNull { account ->
-                account.name == name
-            } ?: throw OSDriveError(OSDriveError.Code.DRIVE_UNEXPECTED_NULL_ACCOUNT)
-        }
+    private suspend fun getGoogleAccount(accountName: String? = null, safeId: SafeId): Account? = (
+        accountName ?: drivePreferencesRepository.selectedAccount(
+            safeId,
+        )
+    )?.let { name ->
+        val am = AccountManager.get(context)
+        am.accounts.firstOrNull { account ->
+            account.name == name
+        } ?: throw OSDriveError(OSDriveError.Code.DRIVE_UNEXPECTED_NULL_ACCOUNT)
     }
 
     override fun fetchBackupList(safeId: SafeId): Flow<LBFlowResult<List<CloudBackup>>> = flow {
         withDriveClient(safeId) { driveClient ->
-            val query = driveClient.files().list()
+            val query = driveClient
+                .files()
+                .list()
                 .setQ(
                     "mimeType='$backupMimetype' and " +
                         "trashed=false and " +
-                        appPropertiesIsOneSafe,
-                )
-                .setFields("files(id,name,mimeType,appProperties($appPropertiesOs6Date,$appPropertiesOs6SafeId))")
+                        AppPropertiesIsOneSafe,
+                ).setFields("files(id,name,mimeType,appProperties($AppPropertiesOs6Date,$AppPropertiesOs6SafeId))")
             query.executeAsFlow().mapResult { fileList ->
                 fileList.files.mapNotNull { driveFile ->
-                    val timestamp = driveFile.appProperties[appPropertiesOs6Date]?.toLong()
-                    val backupSafeId = driveFile.appProperties[appPropertiesOs6SafeId]?.let(::SafeId)
+                    val timestamp = driveFile.appProperties[AppPropertiesOs6Date]?.toLong()
+                    val backupSafeId = driveFile.appProperties[AppPropertiesOs6SafeId]?.let(::SafeId)
                     if (timestamp != null) {
                         CloudBackup(
                             remoteId = driveFile.id,
@@ -176,7 +179,7 @@ class GoogleDriveEngine @Inject constructor(
                             safeId = backupSafeId.takeIf { it == safeId },
                         )
                     } else {
-                        logger.e("Missing property $appPropertiesOs6Date on backup, ignore the backup")
+                        logger.e("Missing property $AppPropertiesOs6Date on backup, ignore the backup")
                         null
                     }
                 }
@@ -240,33 +243,36 @@ class GoogleDriveEngine @Inject constructor(
     }
 
     override fun uploadBackup(localBackup: LocalBackup): Flow<LBFlowResult<CloudBackup>> =
-        getOneSafeFolder(localBackup.safeId).transformResult { getOneSafeFolderResult ->
-            val file = File().apply {
-                parents = listOf(getOneSafeFolderResult.successData)
-                name = localBackup.file.name
-                mimeType = backupMimetype
-                appProperties = mutableMapOf(
-                    appPropertiesOs6AutoBackup to "true",
-                    appPropertiesOs6Date to localBackup.date.toEpochMilli().toString(),
-                    appPropertiesOs6SafeId to localBackup.safeId.toString(),
-                )
-                this.description = cloudBackupDescriptionProvider()
-            }
-            val content = FileContent(backupMimetype, localBackup.file)
-            withDriveClient(localBackup.safeId) { driveClient ->
-                driveClient.files().create(file, content)
-                    .setFields("id")
-                    .executeAsFlow()
-                    .mapResult { driveFile ->
-                        CloudBackup(
-                            remoteId = driveFile.id,
-                            name = localBackup.file.name,
-                            date = localBackup.date,
-                            safeId = localBackup.safeId,
-                        )
-                    }
-            }
-        }.flowOn(dispatcher)
+        getOneSafeFolder(localBackup.safeId)
+            .transformResult { getOneSafeFolderResult ->
+                val file = File().apply {
+                    parents = listOf(getOneSafeFolderResult.successData)
+                    name = localBackup.file.name
+                    mimeType = backupMimetype
+                    appProperties = mutableMapOf(
+                        AppPropertiesOs6AutoBackup to "true",
+                        AppPropertiesOs6Date to localBackup.date.toEpochMilli().toString(),
+                        AppPropertiesOs6SafeId to localBackup.safeId.toString(),
+                    )
+                    this.description = cloudBackupDescriptionProvider()
+                }
+                val content = FileContent(backupMimetype, localBackup.file)
+                withDriveClient(localBackup.safeId) { driveClient ->
+                    driveClient
+                        .files()
+                        .create(file, content)
+                        .setFields("id")
+                        .executeAsFlow()
+                        .mapResult { driveFile ->
+                            CloudBackup(
+                                remoteId = driveFile.id,
+                                name = localBackup.file.name,
+                                date = localBackup.date,
+                                safeId = localBackup.safeId,
+                            )
+                        }
+                }
+            }.flowOn(dispatcher)
 
     override fun getInputStream(remoteId: String, safeId: SafeId): Flow<LBFlowResult<InputStream>> = flow {
         withDriveClient(safeId) { driveClient ->
@@ -278,7 +284,11 @@ class GoogleDriveEngine @Inject constructor(
         val safeId = cloudBackup.safeId
         safeId?.let {
             withDriveClient(safeId) { driveClient ->
-                driveClient.files().delete(cloudBackup.remoteId).executeAsFlow().unit()
+                driveClient
+                    .files()
+                    .delete(cloudBackup.remoteId)
+                    .executeAsFlow()
+                    .unit()
             }
         } ?: emit(LBFlowResult.Failure(OSDriveError.Code.DRIVE_CANNOT_DELETE_BACKUP_WITHOUT_SAFE_ID.get()))
     }.flowOn(dispatcher)
@@ -288,7 +298,9 @@ class GoogleDriveEngine @Inject constructor(
             val folderId = drivePreferencesRepository.folderId(safeId)
             withDriveClient(safeId) { driveClient ->
                 if (folderId != null) {
-                    driveClient.files().get(folderId)
+                    driveClient
+                        .files()
+                        .get(folderId)
                         .setFields("trashed")
                         .executeAsFlow()
                         .transformResult(
@@ -321,44 +333,47 @@ class GoogleDriveEngine @Inject constructor(
 
     private fun retrieveOrCreateOneSafeFolder(safeId: SafeId): Flow<LBFlowResult<String>> = flow {
         withDriveClient(safeId) { driveClient ->
-            val query = driveClient.files().list()
+            val query = driveClient
+                .files()
+                .list()
                 .setQ(
-                    "mimeType='$folderMimeType' and " +
+                    "mimeType='$FolderMimeType' and " +
                         "name='$remoteDirName' and " +
                         "trashed=false and " +
-                        appPropertiesIsOneSafe,
-                )
-                .setFields("files($folderInfoFields)")
+                        AppPropertiesIsOneSafe,
+                ).setFields("files($FolderInfoFields)")
 
-            query.executeAsFlow().transformResult { getFolderResult ->
-                val folder: File? = getFolderResult.successData.files.firstOrNull()
-                if (folder != null) {
-                    logger.v("Found drive oneSafe folder ${folder.id}")
-                    emit(LBFlowResult.Success(folder))
-                } else {
-                    logger.v("No drive oneSafe folder found, create new one")
-                    emitAll(createOneSafeFolder(safeId))
+            query
+                .executeAsFlow()
+                .transformResult { getFolderResult ->
+                    val folder: File? = getFolderResult.successData.files.firstOrNull()
+                    if (folder != null) {
+                        logger.v("Found drive oneSafe folder ${folder.id}")
+                        emit(LBFlowResult.Success(folder))
+                    } else {
+                        logger.v("No drive oneSafe folder found, create new one")
+                        emitAll(createOneSafeFolder(safeId))
+                    }
+                }.mapResult { folder ->
+                    logger.v("Save folder in prefs ${folder.webViewLink}")
+                    drivePreferencesRepository.setFolderId(safeId, folder.id)
+                    drivePreferencesRepository.setFolderUrl(safeId, folder.webViewLink)
+                    folder.id
                 }
-            }.mapResult { folder ->
-                logger.v("Save folder in prefs ${folder.webViewLink}")
-                drivePreferencesRepository.setFolderId(safeId, folder.id)
-                drivePreferencesRepository.setFolderUrl(safeId, folder.webViewLink)
-                folder.id
-            }
         }
     }.flowOn(dispatcher)
 
     private fun createOneSafeFolder(safeId: SafeId): Flow<LBFlowResult<File>> = flow {
         val newFolder = File().apply {
             name = remoteDirName
-            mimeType = folderMimeType
+            mimeType = FolderMimeType
             appProperties = mutableMapOf(
-                appPropertiesOs6AutoBackup to "true",
+                AppPropertiesOs6AutoBackup to "true",
             )
             description = "oneSafe 6 auto backups directory"
         }
         withDriveClient(safeId) { driveClient ->
-            val query = driveClient.files().create(newFolder).setFields(folderInfoFields)
+            val query = driveClient.files().create(newFolder).setFields(FolderInfoFields)
             query.executeAsFlow().mapResult { driveFile ->
                 driveFile
             }
@@ -371,22 +386,23 @@ class GoogleDriveEngine @Inject constructor(
         val file = accounts.firstNotNullOfOrNull { account ->
             if (account.type == GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE) {
                 val accountCredential = googleAccountCredential(account)
-                val drive = Drive.Builder(
-                    NetHttpTransport.Builder().build(),
-                    GsonFactory.getDefaultInstance(),
-                    accountCredential,
-                )
-                    .setApplicationName(context.applicationInfo.name)
+                val drive = Drive
+                    .Builder(
+                        NetHttpTransport.Builder().build(),
+                        GsonFactory.getDefaultInstance(),
+                        accountCredential,
+                    ).setApplicationName(context.applicationInfo.name)
                     .build()
 
-                val query = drive.files().list()
+                val query = drive
+                    .files()
+                    .list()
                     .setQ(
-                        "mimeType='$folderMimeType' and " +
+                        "mimeType='$FolderMimeType' and " +
                             "name='$remoteDirName' and " +
                             "trashed=false and " +
-                            appPropertiesIsOneSafe,
-                    )
-                    .setFields("files($folderInfoFields)")
+                            AppPropertiesIsOneSafe,
+                    ).setFields("files($FolderInfoFields)")
 
                 withContext(dispatcher) {
                     query.execute().files.firstOrNull()
@@ -399,12 +415,12 @@ class GoogleDriveEngine @Inject constructor(
     }
 
     companion object {
-        private const val folderMimeType = "application/vnd.google-apps.folder"
-        private const val folderInfoFields = "id,webViewLink"
+        private const val FolderMimeType = "application/vnd.google-apps.folder"
+        private const val FolderInfoFields = "id,webViewLink"
 
-        private const val appPropertiesOs6AutoBackup = "os6AutoBackup"
-        private const val appPropertiesOs6Date = "os6Date"
-        private const val appPropertiesIsOneSafe = "appProperties has { key='$appPropertiesOs6AutoBackup' and value='true' }"
-        private const val appPropertiesOs6SafeId = "os6SafeId"
+        private const val AppPropertiesOs6AutoBackup = "os6AutoBackup"
+        private const val AppPropertiesOs6Date = "os6Date"
+        private const val AppPropertiesIsOneSafe = "appProperties has { key='$AppPropertiesOs6AutoBackup' and value='true' }"
+        private const val AppPropertiesOs6SafeId = "os6SafeId"
     }
 }

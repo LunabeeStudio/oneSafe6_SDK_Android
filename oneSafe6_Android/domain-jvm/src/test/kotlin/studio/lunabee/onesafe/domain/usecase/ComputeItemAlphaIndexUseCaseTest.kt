@@ -30,8 +30,8 @@ import studio.lunabee.onesafe.domain.usecase.item.ComputeItemAlphaIndexUseCase
 import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSDomainError
-import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.error.osCode
+import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.test.assertFailure
 import studio.lunabee.onesafe.test.firstSafeId
 import studio.lunabee.onesafe.test.testUUIDs

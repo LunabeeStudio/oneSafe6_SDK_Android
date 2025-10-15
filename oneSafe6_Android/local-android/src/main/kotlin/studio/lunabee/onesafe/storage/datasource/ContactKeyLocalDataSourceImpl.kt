@@ -29,7 +29,8 @@ import javax.inject.Inject
 class ContactKeyLocalDataSourceImpl @Inject constructor(
     private val dao: ContactKeyDao,
 ) : ContactKeyLocalDataSource {
-    override suspend fun getContactLocalKey(contactId: DoubleRatchetUUID): ContactLocalKey = dao.getById(contactId.uuid)
+    override suspend fun getContactLocalKey(contactId: DoubleRatchetUUID): ContactLocalKey = dao
+        .getById(contactId.uuid)
         ?.let(::ContactLocalKey)
         ?: throw OSStorageError(OSStorageError.Code.CONTACT_KEY_NOT_FOUND)
 }

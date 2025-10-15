@@ -75,23 +75,24 @@ class CloudBackupWorker @AssistedInject constructor(
     private val featureFlags: FeatureFlags,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
-        val safeId = SafeId(inputData.getByteArray(EXPORT_WORKER_SAFE_ID_DATA)!!.toUUID())
+        val safeId = SafeId(inputData.getByteArray(ExportWorkerSafeIdData)!!.toUUID())
 
         if (featureFlags.backupWorkerExpedited()) {
             setForegroundSafe(getForegroundInfo())
         }
 
-        val flowResult = cloudAutoBackupUseCase(safeId).transformResult {
-            emitAll(deleteOldBackupsUseCase.invoke(safeId))
-        }.catch { error ->
-            emit(LBFlowResult.Failure(error))
-        }.onEach { result ->
-            if (result is LBFlowResult.Loading) {
-                logger.v("Progress ${result.progress}")
+        val flowResult = cloudAutoBackupUseCase(safeId)
+            .transformResult {
+                emitAll(deleteOldBackupsUseCase.invoke(safeId))
+            }.catch { error ->
+                emit(LBFlowResult.Failure(error))
+            }.onEach { result ->
+                if (result is LBFlowResult.Loading) {
+                    logger.v("Progress ${result.progress}")
+                }
+            }.first {
+                it !is LBFlowResult.Loading
             }
-        }.first {
-            it !is LBFlowResult.Loading
-        }
 
         return when (val result = flowResult.asResult()) {
             is LBResult.Failure -> autoBackupWorkersHelper.onBackupWorkerFails(
@@ -116,18 +117,18 @@ class CloudBackupWorker @AssistedInject constructor(
             .build()
 
         return ForegroundInfoCompat.foregroundInfoDataSync(
-            notificationId = OSNotificationManager.AUTO_BACKUP_WORKER_NOTIFICATION_ID,
+            notificationId = OSNotificationManager.AutoBackupWorkerNotificationId,
             notification = notification,
         )
     }
 
     companion object {
-        private const val EXPORT_WORKER_SAFE_ID_DATA = "ef8b01f3-15c0-4d64-af7a-03fd8d00fb2c"
+        private const val ExportWorkerSafeIdData = "ef8b01f3-15c0-4d64-af7a-03fd8d00fb2c"
 
         private fun getWorkRequest(setExpedited: Boolean, safeId: SafeId): OneTimeWorkRequest {
             val data = Data
                 .Builder()
-                .putByteArray(EXPORT_WORKER_SAFE_ID_DATA, safeId.id.toByteArray())
+                .putByteArray(ExportWorkerSafeIdData, safeId.id.toByteArray())
                 .build()
             val workRequestBuilder = OneTimeWorkRequestBuilder<CloudBackupWorker>()
                 .addTag(ImportExportAndroidConstants.autoBackupWorkerTag(safeId))

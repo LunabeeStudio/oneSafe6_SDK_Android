@@ -36,6 +36,8 @@ import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.importexport.model.AutoBackupError
 import studio.lunabee.onesafe.importexport.model.AutoBackupMode
 import studio.lunabee.onesafe.importexport.model.GoogleDriveSettings
+import studio.lunabee.onesafe.jvm.toByteArray
+import studio.lunabee.onesafe.jvm.toUUID
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.migration.RoomMigration12to13
 import studio.lunabee.onesafe.storage.model.RoomAppVisit
@@ -46,8 +48,6 @@ import studio.lunabee.onesafe.test.OSTestUtils
 import studio.lunabee.onesafe.test.assertThrows
 import studio.lunabee.onesafe.test.firstSafeId
 import studio.lunabee.onesafe.test.testUUIDs
-import studio.lunabee.onesafe.jvm.toByteArray
-import studio.lunabee.onesafe.jvm.toUUID
 import java.io.File
 import java.time.ZonedDateTime
 import kotlin.test.Test
@@ -233,8 +233,8 @@ internal class DummySafeMigrationProvider : RoomMigration12to13.MultiSafeMigrati
         null
     }
 
-    override suspend fun getSafeCrypto(db: SupportSQLiteDatabase): RoomMigration12to13.SafeCryptoMigration {
-        return RoomMigration12to13.SafeCryptoMigration(
+    override suspend fun getSafeCrypto(db: SupportSQLiteDatabase): RoomMigration12to13.SafeCryptoMigration = RoomMigration12to13
+        .SafeCryptoMigration(
             id = SafeId(safeId),
             salt = salt,
             encTest = encTest,
@@ -243,14 +243,17 @@ internal class DummySafeMigrationProvider : RoomMigration12to13.MultiSafeMigrati
             encItemEditionKey = encItemEditionKey,
             biometricCryptoMaterial = biometricCryptoMaterial,
         )
-    }
 
     override suspend fun getAppVisit(): RoomAppVisit = CommonTestUtils.roomAppVisit()
+
     override suspend fun getDriveSettings(): GoogleDriveSettings = OSTestUtils.driveSettings()
+
     override suspend fun getAutoBackupError(): RoomMigration12to13.AutoBackupErrorMigration? = autoBackupError
+
     override suspend fun getFilesAndIcons(): List<File> = emptyList() // TODO <multisafe> Add some data for test
 
     override suspend fun onMigrationDone() {}
 
-    override suspend fun getSafeSettings(): RoomMigration12to13.SafeSettingsMigration = CommonTestUtils.safeSettingsMigration()
+    override suspend fun getSafeSettings(): RoomMigration12to13.SafeSettingsMigration = CommonTestUtils
+        .safeSettingsMigration()
 }

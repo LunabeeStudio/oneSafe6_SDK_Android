@@ -35,8 +35,11 @@ class DownloadItemIconFromUrlUseCase @Inject constructor(
     private val urlMetadataRepository: UrlMetadataRepository,
     private val getUrlMetadataUseCase: GetUrlMetadataUseCase,
 ) {
-    operator fun invoke(url: String, iconFile: File): Flow<LBFlowResult<UrlMetadata>> {
-        return urlMetadataRepository.downloadImage(url, iconFile).transformResult(
+    operator fun invoke(url: String, iconFile: File): Flow<LBFlowResult<UrlMetadata>> = urlMetadataRepository
+        .downloadImage(
+            url,
+            iconFile,
+        ).transformResult(
             transform = {
                 val urlMetadata = UrlMetadata(url = url, iconFile = it.successData, title = null, force = true)
                 emit(LBFlowResult.Success(urlMetadata))
@@ -51,5 +54,4 @@ class DownloadItemIconFromUrlUseCase @Inject constructor(
                 emit(metadataResult.asFlowResult())
             },
         )
-    }
 }

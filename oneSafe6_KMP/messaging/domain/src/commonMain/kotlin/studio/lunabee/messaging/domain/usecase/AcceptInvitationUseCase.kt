@@ -22,12 +22,10 @@ package studio.lunabee.messaging.domain.usecase
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.bubbles.domain.model.contact.PlainContact
 import studio.lunabee.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.bubbles.domain.usecase.CreateContactUseCase
-import studio.lunabee.onesafe.error.BubblesDomainError
 import studio.lunabee.doubleratchet.DoubleRatchetEngine
 import studio.lunabee.doubleratchet.crypto.DoubleRatchetKeyRepository
 import studio.lunabee.doubleratchet.model.DRPublicKey
@@ -36,6 +34,8 @@ import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.doubleratchet.model.createRandomUUID
 import studio.lunabee.messaging.domain.model.HandShakeData
 import studio.lunabee.messaging.domain.model.proto.ProtoInvitationMessage
+import studio.lunabee.onesafe.di.Inject
+import studio.lunabee.onesafe.error.BubblesDomainError
 
 class AcceptInvitationUseCase @Inject constructor(
     private val doubleRatchetEngine: DoubleRatchetEngine,

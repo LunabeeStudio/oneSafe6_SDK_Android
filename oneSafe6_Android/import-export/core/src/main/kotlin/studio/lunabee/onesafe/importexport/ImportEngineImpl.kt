@@ -32,7 +32,6 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.withContext
-import kotlin.time.toKotlinInstant
 import studio.lunabee.bubbles.domain.model.contact.Contact
 import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
 import studio.lunabee.bubbles.domain.model.contactkey.ContactSharedKey
@@ -91,6 +90,7 @@ import java.time.format.FormatStyle
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.toKotlinInstant
 
 private val log = LBLogger.get<ImportEngineImpl>()
 
@@ -147,11 +147,9 @@ class ImportEngineImpl @Inject constructor(
         }
     }
 
-    override fun getMetadataFromCache(): LBResult<ImportMetadata> {
-        return importCacheDataSource.importMetadata?.let {
-            LBResult.Success(it)
-        } ?: LBResult.Failure(OSImportExportError(code = OSImportExportError.Code.METADATA_NOT_IN_CACHE))
-    }
+    override fun getMetadataFromCache(): LBResult<ImportMetadata> = importCacheDataSource.importMetadata?.let {
+        LBResult.Success(it)
+    } ?: LBResult.Failure(OSImportExportError(code = OSImportExportError.Code.METADATA_NOT_IN_CACHE))
 
     override fun authenticateAndExtractData(
         archiveExtractedDirectory: File,
@@ -161,7 +159,8 @@ class ImportEngineImpl @Inject constructor(
             try {
                 val dataFile = File(archiveExtractedDirectory, ArchiveConstants.DataFile)
                 if (!dataFile.exists()) {
-                    log.e("Data file does not exist in the archive build from ${importCacheDataSource.importMetadata?.fromPlatform}")
+                    log
+                        .e("Data file does not exist in the archive build from ${importCacheDataSource.importMetadata?.fromPlatform}")
                     emit(LBFlowResult.Failure(OSImportExportError(code = OSImportExportError.Code.DATA_FILE_NOT_FOUND)))
                     return@flow
                 }
@@ -207,73 +206,69 @@ class ImportEngineImpl @Inject constructor(
         emit(LBFlowResult.Failure(e))
     }
 
-    override fun prepareDataForImport(archiveExtractedDirectory: File, mode: ImportMode): Flow<LBFlowResult<Unit>> {
-        return flow {
-            try {
-                val safeId = safeRepository.currentSafeId()
-                if (importCacheDataSource.isItemDataImported) {
-                    generateNewIdsForSafeItemsAndFields(safeId)
-                    generateNewIdsForFiles()
-                    mapAndReEncryptSafeItemKeyFromArchive(mode = mode, safeId = safeId)
-                }
-                if (importCacheDataSource.isBubblesDataImported) {
-                    generateNewIdsForContactAndMessages()
-                    mapAndReEncryptContactKeyFromArchive()
-                }
-                finishIdsMigration(archiveExtractedDirectory = archiveExtractedDirectory)
-                emit(LBFlowResult.Success(Unit))
-            } catch (e: Exception) {
-                importCacheDataSource.newItemIdsByOldOnes.clear()
-                importCacheDataSource.newIconIdsByOldOnes.clear()
-                importCacheDataSource.newFieldIdsByOldOnes.clear()
-                importCacheDataSource.reEncryptedSafeItemKeys.clear()
-                importCacheDataSource.migratedIconsToImport = emptyList()
-                importCacheDataSource.migratedSafeItemsToImport.clear()
-                importCacheDataSource.migratedSafeItemFieldsToImport = emptyList()
-                importCacheDataSource.migratedSearchIndexToImport.clear()
-                importCacheDataSource.allItemAlphaIndices.clear()
-                importCacheDataSource.rootItemData = null
-                importCacheDataSource.migratedConversation = emptyList()
-                importCacheDataSource.migratedContacts = emptyList()
-                importCacheDataSource.migratedSafeMessage = emptyMap()
-                importCacheDataSource.reEncryptedContactKeys = mutableMapOf()
-                importCacheDataSource.oldContactKeys = mutableMapOf()
-                emit(LBFlowResult.Failure(OSImportExportError(OSImportExportError.Code.UNEXPECTED_ERROR, cause = e)))
-            }
-        }.onStart { emit(LBFlowResult.Loading()) }
-    }
-
-    override fun saveImportData(mode: ImportMode): Flow<LBFlowResult<UUID?>> {
-        return flow {
+    override fun prepareDataForImport(archiveExtractedDirectory: File, mode: ImportMode): Flow<LBFlowResult<Unit>> = flow {
+        try {
             val safeId = safeRepository.currentSafeId()
-            try {
-                val safeItems = mutableListOf<SafeItem>()
-                if (importCacheDataSource.isItemDataImported) {
-                    saveItemsData(
-                        mode = mode,
-                        safeItems = safeItems,
-                        safeId = safeId,
-                    )
-                }
-                if (importCacheDataSource.isBubblesDataImported) {
-                    importExportContactRepository.save(
-                        contacts = importCacheDataSource.migratedContacts,
-                        contactsKey = importCacheDataSource.reEncryptedContactKeys,
-                        messages = importCacheDataSource.migratedSafeMessage,
-                        conversations = importCacheDataSource.migratedConversation,
-                        safeId = safeRepository.currentSafeId(),
-                    )
-                }
-
-                importCacheDataSource.clearAll()
-                val parentItemId = safeItems.firstOrNull().let { it?.parentId ?: it?.id }
-                emit(LBFlowResult.Success(parentItemId))
-            } catch (e: Exception) {
-                // Nothing to clean in failure state as retry is possible.
-                emit(LBFlowResult.Failure(e))
+            if (importCacheDataSource.isItemDataImported) {
+                generateNewIdsForSafeItemsAndFields(safeId)
+                generateNewIdsForFiles(File(archiveExtractedDirectory, ArchiveConstants.FileFolder))
+                mapAndReEncryptSafeItemKeyFromArchive(mode = mode, safeId = safeId)
             }
-        }.onStart { emit(LBFlowResult.Loading()) }
-    }
+            if (importCacheDataSource.isBubblesDataImported) {
+                generateNewIdsForContactAndMessages()
+                mapAndReEncryptContactKeyFromArchive()
+            }
+            finishIdsMigration(archiveExtractedDirectory = archiveExtractedDirectory)
+            emit(LBFlowResult.Success(Unit))
+        } catch (e: Exception) {
+            importCacheDataSource.newItemIdsByOldOnes.clear()
+            importCacheDataSource.newIconIdsByOldOnes.clear()
+            importCacheDataSource.newFieldIdsByOldOnes.clear()
+            importCacheDataSource.reEncryptedSafeItemKeys.clear()
+            importCacheDataSource.migratedIconsToImport = emptyList()
+            importCacheDataSource.migratedSafeItemsToImport.clear()
+            importCacheDataSource.migratedSafeItemFieldsToImport = emptyList()
+            importCacheDataSource.migratedSearchIndexToImport.clear()
+            importCacheDataSource.allItemAlphaIndices.clear()
+            importCacheDataSource.rootItemData = null
+            importCacheDataSource.migratedConversation = emptyList()
+            importCacheDataSource.migratedContacts = emptyList()
+            importCacheDataSource.migratedSafeMessage = emptyMap()
+            importCacheDataSource.reEncryptedContactKeys = mutableMapOf()
+            importCacheDataSource.oldContactKeys = mutableMapOf()
+            emit(LBFlowResult.Failure(OSImportExportError(OSImportExportError.Code.UNEXPECTED_ERROR, cause = e)))
+        }
+    }.onStart { emit(LBFlowResult.Loading()) }
+
+    override fun saveImportData(mode: ImportMode): Flow<LBFlowResult<UUID?>> = flow {
+        val safeId = safeRepository.currentSafeId()
+        try {
+            val safeItems = mutableListOf<SafeItem>()
+            if (importCacheDataSource.isItemDataImported) {
+                saveItemsData(
+                    mode = mode,
+                    safeItems = safeItems,
+                    safeId = safeId,
+                )
+            }
+            if (importCacheDataSource.isBubblesDataImported) {
+                importExportContactRepository.save(
+                    contacts = importCacheDataSource.migratedContacts,
+                    contactsKey = importCacheDataSource.reEncryptedContactKeys,
+                    messages = importCacheDataSource.migratedSafeMessage,
+                    conversations = importCacheDataSource.migratedConversation,
+                    safeId = safeRepository.currentSafeId(),
+                )
+            }
+
+            importCacheDataSource.clearAll()
+            val parentItemId = safeItems.firstOrNull().let { it?.parentId ?: it?.id }
+            emit(LBFlowResult.Success(parentItemId))
+        } catch (e: Exception) {
+            // Nothing to clean in failure state as retry is possible.
+            emit(LBFlowResult.Failure(e))
+        }
+    }.onStart { emit(LBFlowResult.Loading()) }
 
     override fun setDataToImport(importBubbles: Boolean, importItems: Boolean) {
         importCacheDataSource.isBubblesDataImported = importBubbles
@@ -321,7 +316,7 @@ class ImportEngineImpl @Inject constructor(
             }
 
             ImportMode.Append -> {
-                /* No op */
+                // No op
                 // No need to clear everything or to create a folder as above
             }
         }
@@ -331,7 +326,8 @@ class ImportEngineImpl @Inject constructor(
             val oldIconId = icon.nameWithoutExtension.let(UUID::fromString)
             importCacheDataSource.newIconIdsByOldOnes[oldIconId]?.let { newIconId ->
                 iconRepository.copyAndDeleteIconFile(iconFile = icon, iconId = newIconId, safeId = safeId)
-            } ?: throw OSImportExportError.Code.MISSING_MAPPED_BACKUP_ICON.get("Cannot find icon id $oldIconId in new icon id map")
+            } ?: throw OSImportExportError.Code.MISSING_MAPPED_BACKUP_ICON
+                .get("Cannot find icon id $oldIconId in new icon id map")
         }
 
         // We iterate over all the file urls to rename them using the new file ids.
@@ -339,10 +335,15 @@ class ImportEngineImpl @Inject constructor(
             val oldFileId = file.nameWithoutExtension.let(UUID::fromString)
             importCacheDataSource.newFileIdsByOldOnes[oldFileId]?.let { newFileId ->
                 fileRepository.copyAndDeleteFile(file = file, fileId = newFileId, safeId = safeId)
-            } ?: throw OSImportExportError.Code.MISSING_MAPPED_BACKUP_FILE.get("Cannot find file id $oldFileId in new file id map")
+            } ?: throw OSImportExportError.Code.MISSING_MAPPED_BACKUP_FILE
+                .get("Cannot find file id $oldFileId in new file id map")
         }
 
-        safeItems.addAll(SortedAncestors(safeItemsNotSorted = importCacheDataSource.migratedSafeItemsToImport).sortByAncestors())
+        safeItems
+            .addAll(
+                SortedAncestors(safeItemsNotSorted = importCacheDataSource.migratedSafeItemsToImport)
+                    .sortByAncestors(),
+            )
 
         itemRepository.save(
             items = safeItems,
@@ -393,7 +394,7 @@ class ImportEngineImpl @Inject constructor(
         }
     }
 
-    private suspend fun generateNewIdsForFiles() {
+    private suspend fun generateNewIdsForFiles(filesFolder: File) {
         val itemFieldList = importCacheDataSource.archiveContent?.fieldsList.orEmpty()
         itemFieldList.forEach { archiveSafeItemField ->
             val encKey = importCacheDataSource.archiveContent?.keysList?.firstOrNull { it.id == archiveSafeItemField.itemId }
@@ -403,10 +404,11 @@ class ImportEngineImpl @Inject constructor(
                 key = importCacheDataSource.archiveMasterKey!!,
             )
             val itemFieldKind = SafeItemFieldKind.fromString(
-                importCryptoRepository.decrypt(
-                    cipherData = archiveSafeItemField.encKind.toByteArray(),
-                    key = decryptedKey,
-                ).decodeToString(),
+                importCryptoRepository
+                    .decrypt(
+                        cipherData = archiveSafeItemField.encKind.toByteArray(),
+                        key = decryptedKey,
+                    ).decodeToString(),
             )
             val fieldId = UUID.fromString(archiveSafeItemField.id)
             importCacheDataSource.thumbnails[fieldId] = importCryptoRepository.encrypt(
@@ -414,10 +416,11 @@ class ImportEngineImpl @Inject constructor(
                 decryptedKey,
             )
             if (SafeItemFieldKind.isKindFile(itemFieldKind)) {
-                val decryptedValue = importCryptoRepository.decrypt(
-                    cipherData = archiveSafeItemField.encValue.toByteArray(),
-                    key = decryptedKey,
-                ).decodeToString()
+                val decryptedValue = importCryptoRepository
+                    .decrypt(
+                        cipherData = archiveSafeItemField.encValue.toByteArray(),
+                        key = decryptedKey,
+                    ).decodeToString()
                 val fileId = decryptedValue.substringBefore(Constant.FileTypeExtSeparator)
                 val newId = fileIdProvider()
                 val newValue = decryptedValue.replace(fileId, newId.toString())
@@ -426,6 +429,24 @@ class ImportEngineImpl @Inject constructor(
                 importCacheDataSource.newFileIdsByOldOnes[UUID.fromString(fileId)] = newId
             }
         }
+
+        /*
+         * FIXME workaround missing mapped id during files import
+         *  Investigate missing file id mapping during import. One cause could be a field containing a file but with a wrong kind so the
+         *  fileName is not mapped to new one.
+         */
+        runCatching {
+            val unreferencedFiles = filesFolder
+                .list()
+                ?.mapNotNull { id ->
+                    UUID.fromString(id).takeIf { !importCacheDataSource.newFileIdsByOldOnes.contains(it) }
+                }.orEmpty()
+
+            if (unreferencedFiles.isNotEmpty()) {
+                log.e("Found ${unreferencedFiles.size} unreferenced files in archive")
+                unreferencedFiles.associateWithTo(importCacheDataSource.newFileIdsByOldOnes) { fileIdProvider() }
+            }
+        }.onFailure { log.e(it) }
     }
 
     /**
@@ -434,11 +455,13 @@ class ImportEngineImpl @Inject constructor(
      *   - Use the plain safe item name to compute the alphabetic index
      */
     private suspend fun mapAndReEncryptSafeItemKeyFromArchive(mode: ImportMode, safeId: SafeId) {
-        val currentPlainItemsName = itemRepository.getAllSafeItemIdName(safeId)
+        val currentPlainItemsName = itemRepository
+            .getAllSafeItemIdName(safeId)
             .associate { itemIdName ->
-                itemIdName.id to itemIdName.encName?.let {
-                    itemDecryptUseCase(it, itemIdName.id, String::class).getOrThrow()
-                }.orEmpty()
+                itemIdName.id to itemIdName.encName
+                    ?.let {
+                        itemDecryptUseCase(it, itemIdName.id, String::class).getOrThrow()
+                    }.orEmpty()
             }
 
         val plainItemsName = mutableListOf<Pair<UUID, String>>()
@@ -489,7 +512,10 @@ class ImportEngineImpl @Inject constructor(
             ?.contactKeysList
             .orEmpty()
             .associateTo(importCacheDataSource.oldContactKeys) { archiveContactKey ->
-                DoubleRatchetUUID.fromString(archiveContactKey.contactId) to ContactLocalKey(archiveContactKey.encLocalKey.toByteArray())
+                DoubleRatchetUUID.fromString(archiveContactKey.contactId) to ContactLocalKey(
+                    archiveContactKey.encLocalKey
+                        .toByteArray(),
+                )
             }
         importCacheDataSource
             .archiveContent
@@ -521,10 +547,11 @@ class ImportEngineImpl @Inject constructor(
 
         // Search index for item
         val item = importCacheDataSource.archiveContent!!.itemsList.first { it.id == safeItemId }
-        val plainName = importCryptoRepository.decrypt(
-            cipherData = item.encName.toByteArray(),
-            key = oldRawItemKeyValue,
-        ).decodeToString()
+        val plainName = importCryptoRepository
+            .decrypt(
+                cipherData = item.encName.toByteArray(),
+                key = oldRawItemKeyValue,
+            ).decodeToString()
         val itemIndexEntries = createIndexWordEntriesFromItemUseCase(name = plainName, id = newItemId)
         importCacheDataSource.migratedSearchIndexToImport += itemIndexEntries
 
@@ -543,10 +570,11 @@ class ImportEngineImpl @Inject constructor(
                 val newFieldId = importCacheDataSource.newFieldIdsByOldOnes[oldFieldIdKey]!!
                 // Filter empty value
                 if (!archiveSafeItemField.encValue.isEmpty) {
-                    val plainValue = importCryptoRepository.decrypt(
-                        cipherData = archiveSafeItemField.encValue.toByteArray(),
-                        key = oldRawItemKeyValue,
-                    ).decodeToString()
+                    val plainValue = importCryptoRepository
+                        .decrypt(
+                            cipherData = archiveSafeItemField.encValue.toByteArray(),
+                            key = oldRawItemKeyValue,
+                        ).decodeToString()
                     ItemFieldDataToIndex(
                         value = plainValue,
                         isSecured = archiveSafeItemField.isSecured,
@@ -569,16 +597,21 @@ class ImportEngineImpl @Inject constructor(
             val safeItemsToImport = mapSafeItemsFromArchive(archiveSafeItems = archiveContent.itemsList)
             val safeItemFieldsToImport = mapSafeItemFieldsFromArchive(archiveSafeFieldItems = archiveContent.fieldsList)
 
-            importCacheDataSource.migratedIconsToImport = File(archiveExtractedDirectory, ArchiveConstants.IconFolder).listFiles()
+            importCacheDataSource.migratedIconsToImport = File(archiveExtractedDirectory, ArchiveConstants.IconFolder)
+                .listFiles()
                 ?.toList()
                 .orEmpty()
-            importCacheDataSource.migratedFilesToImport = File(archiveExtractedDirectory, ArchiveConstants.FileFolder).listFiles()
+            importCacheDataSource.migratedFilesToImport = File(archiveExtractedDirectory, ArchiveConstants.FileFolder)
+                .listFiles()
                 ?.toList()
                 .orEmpty()
             // First, we gather all the already used ids.
             @OptIn(CrossSafeData::class)
             val existingIconsIds: List<String> = iconRepository.getAllIcons().map { it.nameWithoutExtension.lowercase() }
-            val migratedIconIdsToImport = importCacheDataSource.migratedIconsToImport.map { it.nameWithoutExtension.lowercase() }
+            val migratedIconIdsToImport = importCacheDataSource.migratedIconsToImport.map {
+                it.nameWithoutExtension
+                    .lowercase()
+            }
 
             // We iterate over all the items.
             safeItemsToImport.mapTo(importCacheDataSource.migratedSafeItemsToImport) { item ->
@@ -615,18 +648,19 @@ class ImportEngineImpl @Inject constructor(
                 val newItemFieldId = newSafeItemFieldIdsByOldOnes.getValue(key = oldItemFieldId)
                 val thumbnail = importCacheDataSource.thumbnails[oldItemFieldId]
                 val newItemFieldEncryptedValue = importCacheDataSource.newEncryptedValue[oldItemFieldId] ?: field.encValue
-                newSafeItemIdsByOldOnes[field.itemId]?.let { itemId ->
-                    field.copy(
-                        id = newItemFieldId,
-                        itemId = itemId,
-                        encValue = newItemFieldEncryptedValue,
-                        encThumbnailFileName = thumbnail,
-                    )
-                }.apply {
-                    if (this == null) {
-                        log.e("Field has no associated SafeItem")
+                newSafeItemIdsByOldOnes[field.itemId]
+                    ?.let { itemId ->
+                        field.copy(
+                            id = newItemFieldId,
+                            itemId = itemId,
+                            encValue = newItemFieldEncryptedValue,
+                            encThumbnailFileName = thumbnail,
+                        )
+                    }.apply {
+                        if (this == null) {
+                            log.e("Field has no associated SafeItem")
+                        }
                     }
-                }
             }
         }
         if (importCacheDataSource.isBubblesDataImported) {
@@ -649,7 +683,10 @@ class ImportEngineImpl @Inject constructor(
             SafeItem(
                 id = newItemId,
                 encName = archiveSafeItem.encName.toByteArrayOrNull(),
-                parentId = archiveSafeItem.parentId.ifEmpty { null }?.let(UUID::fromString)?.let(newSafeItemIdsByOldOnes::get),
+                parentId = archiveSafeItem.parentId
+                    .ifEmpty { null }
+                    ?.let(UUID::fromString)
+                    ?.let(newSafeItemIdsByOldOnes::get),
                 isFavorite = archiveSafeItem.isFavorite,
                 updatedAt = Instant.parse(archiveSafeItem.updatedAt),
                 position = archiveSafeItem.position,
@@ -670,29 +707,29 @@ class ImportEngineImpl @Inject constructor(
         }
     }
 
-    private fun mapSafeItemFieldsFromArchive(archiveSafeFieldItems: List<ArchiveSafeItemField>): List<SafeItemField> {
-        return archiveSafeFieldItems.map { archiveSafeItemField ->
-            SafeItemField(
-                id = UUID.fromString(archiveSafeItemField.id),
-                encName = archiveSafeItemField.encName.toByteArrayOrNull(),
-                position = archiveSafeItemField.position,
-                itemId = UUID.fromString(archiveSafeItemField.itemId),
-                encPlaceholder = archiveSafeItemField.encPlaceholder.toByteArrayOrNull(),
-                encValue = archiveSafeItemField.encValue.toByteArrayOrNull(),
-                showPrediction = archiveSafeItemField.showPrediction,
-                encKind = archiveSafeItemField.encKind.toByteArrayOrNull(),
-                updatedAt = Instant.parse(archiveSafeItemField.updatedAt),
-                isItemIdentifier = archiveSafeItemField.isItemIdentifier,
-                encFormattingMask = archiveSafeItemField.formattingMask.toByteArrayOrNull(),
-                encSecureDisplayMask = archiveSafeItemField.secureDisplayMask.toByteArrayOrNull(),
-                isSecured = archiveSafeItemField.isSecured,
-                encThumbnailFileName = null,
-            )
-        }
+    private fun mapSafeItemFieldsFromArchive(
+        archiveSafeFieldItems: List<ArchiveSafeItemField>,
+    ): List<SafeItemField> = archiveSafeFieldItems.map { archiveSafeItemField ->
+        SafeItemField(
+            id = UUID.fromString(archiveSafeItemField.id),
+            encName = archiveSafeItemField.encName.toByteArrayOrNull(),
+            position = archiveSafeItemField.position,
+            itemId = UUID.fromString(archiveSafeItemField.itemId),
+            encPlaceholder = archiveSafeItemField.encPlaceholder.toByteArrayOrNull(),
+            encValue = archiveSafeItemField.encValue.toByteArrayOrNull(),
+            showPrediction = archiveSafeItemField.showPrediction,
+            encKind = archiveSafeItemField.encKind.toByteArrayOrNull(),
+            updatedAt = Instant.parse(archiveSafeItemField.updatedAt),
+            isItemIdentifier = archiveSafeItemField.isItemIdentifier,
+            encFormattingMask = archiveSafeItemField.formattingMask.toByteArrayOrNull(),
+            encSecureDisplayMask = archiveSafeItemField.secureDisplayMask.toByteArrayOrNull(),
+            isSecured = archiveSafeItemField.isSecured,
+            encThumbnailFileName = null,
+        )
     }
 
-    private suspend fun mapContactFromArchive(archiveContacts: List<OSExportProto.ArchiveBubblesContact>): List<Contact> {
-        return archiveContacts.map { contact ->
+    private suspend fun mapContactFromArchive(archiveContacts: List<OSExportProto.ArchiveBubblesContact>): List<Contact> = archiveContacts
+        .map { contact ->
             val oldContactId = DoubleRatchetUUID.fromString(contact.id)
             val newContactId = importCacheDataSource.newContactIdsByOldOnes[oldContactId]!!
             Contact(
@@ -707,10 +744,11 @@ class ImportEngineImpl @Inject constructor(
                 encResetConversationDate = contact.encResetConversationDate.toByteArrayOrNull(),
             )
         }
-    }
 
-    private fun mapConversationFromArchive(archiveConversations: List<OSExportProto.ArchiveBubblesConversation>): List<EncConversation> {
-        return archiveConversations.map { conversation ->
+    private fun mapConversationFromArchive(
+        archiveConversations: List<OSExportProto.ArchiveBubblesConversation>,
+    ): List<EncConversation> = archiveConversations
+        .map { conversation ->
             val oldContactId = DoubleRatchetUUID.fromString(conversation.id)
             val newConversationId = importCacheDataSource.newContactIdsByOldOnes[oldContactId]!!
             EncConversation(
@@ -726,10 +764,11 @@ class ImportEngineImpl @Inject constructor(
                 encReceivedLastMessageNumber = conversation.encReceivedLastMessageNumber.toByteArrayOrNull(),
             )
         }
-    }
 
-    private suspend fun mapSafeMessageFromArchive(archiveSafeMessages: List<OSExportProto.ArchiveBubblesMessage>): Map<Float, SafeMessage> {
-        return archiveSafeMessages.associate { safeMessage ->
+    private suspend fun mapSafeMessageFromArchive(
+        archiveSafeMessages: List<OSExportProto.ArchiveBubblesMessage>,
+    ): Map<Float, SafeMessage> = archiveSafeMessages
+        .associate { safeMessage ->
             val oldContactId = DoubleRatchetUUID.fromString(safeMessage.fromContactId)
             val newContactId = importCacheDataSource.newContactIdsByOldOnes[oldContactId]!!
             val oldMessageId = DoubleRatchetUUID.fromString(safeMessage.id)
@@ -755,7 +794,6 @@ class ImportEngineImpl @Inject constructor(
                 },
             )
         }
-    }
 
     private suspend fun reEncryptMessageItemId(
         encSafeItemId: ByteArray,

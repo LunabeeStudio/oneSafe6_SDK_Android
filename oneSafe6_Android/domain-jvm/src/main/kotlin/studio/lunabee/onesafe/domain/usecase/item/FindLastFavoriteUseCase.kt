@@ -35,17 +35,15 @@ class FindLastFavoriteUseCase @Inject constructor(
     private val safeRepository: SafeRepository,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(limit: Int): Flow<List<SafeItem>> {
-        return safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
-            safeId?.let {
-                itemSettingsRepository.itemOrdering(safeId).flatMapLatest { itemOrder ->
-                    safeItemRepository.findLastFavorite(
-                        limit,
-                        itemOrder,
-                        safeId,
-                    )
-                }
-            } ?: flowOf(emptyList())
-        }
+    operator fun invoke(limit: Int): Flow<List<SafeItem>> = safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+        safeId?.let {
+            itemSettingsRepository.itemOrdering(safeId).flatMapLatest { itemOrder ->
+                safeItemRepository.findLastFavorite(
+                    limit,
+                    itemOrder,
+                    safeId,
+                )
+            }
+        } ?: flowOf(emptyList())
     }
 }

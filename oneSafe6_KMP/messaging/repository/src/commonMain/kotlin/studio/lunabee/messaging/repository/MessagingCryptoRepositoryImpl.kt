@@ -21,11 +21,11 @@ package studio.lunabee.messaging.repository
 
 import studio.lunabee.bubbles.domain.crypto.BubblesCryptoEngine
 import studio.lunabee.bubbles.domain.crypto.BubblesRandomKeyProvider
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.doubleratchet.model.DRMessageKey
 import studio.lunabee.messaging.domain.repository.MessagingCryptoRepository
 import studio.lunabee.messaging.repository.datasource.MessageQueueLocalDatasource
 import studio.lunabee.onesafe.cryptography.CryptoDataMapper
+import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.error.BubblesCryptoError
@@ -37,44 +37,45 @@ class MessagingCryptoRepositoryImpl @Inject constructor(
     private val cryptoDataMapper: CryptoDataMapper,
     private val messageQueueLocalDatasource: MessageQueueLocalDatasource,
 ) : MessagingCryptoRepository {
-    override suspend fun <Data : Any> queueEncrypt(encryptEntry: EncryptEntry<Data>): ByteArray {
-        return getOrCreateQueueKey().use { key ->
+    override suspend fun <Data : Any> queueEncrypt(encryptEntry: EncryptEntry<Data>): ByteArray = getOrCreateQueueKey()
+        .use { key ->
             val data = encryptEntry.data
             val mapBlock = encryptEntry.mapBlock
             val rawData = cryptoDataMapper(mapBlock, data)
             bubblesCryptoEngine.bubblesEncrypt(rawData, key, null)
                 ?: throw BubblesCryptoError(BubblesCryptoError.Code.BUBBLES_ENCRYPTION_FAILED_QUEUE_KEY)
         }
+
+    override suspend fun <Data : Any> queueDecrypt(decryptEntry: DecryptEntry<Data>): Data = getOrCreateQueueKey().use { key ->
+        val rawData = bubblesCryptoEngine.bubblesDecrypt(decryptEntry.data, key, null)
+            ?: throw BubblesCryptoError(BubblesCryptoError.Code.BUBBLES_DECRYPTION_FAILED_QUEUE_KEY)
+        cryptoDataMapper(decryptEntry.mapBlock, rawData, decryptEntry.clazz)
     }
 
-    override suspend fun <Data : Any> queueDecrypt(decryptEntry: DecryptEntry<Data>): Data {
-        return getOrCreateQueueKey().use { key ->
-            val rawData = bubblesCryptoEngine.bubblesDecrypt(decryptEntry.data, key, null)
-                ?: throw BubblesCryptoError(BubblesCryptoError.Code.BUBBLES_DECRYPTION_FAILED_QUEUE_KEY)
-            cryptoDataMapper(decryptEntry.mapBlock, rawData, decryptEntry.clazz)
-        }
-    }
+    override suspend fun decryptMessage(data: ByteArray, key: DRMessageKey): ByteArray = bubblesCryptoEngine.bubblesDecrypt(
+        data,
+        key.value,
+        null,
+    )
+        ?: throw BubblesCryptoError(BubblesCryptoError.Code.BUBBLES_DECRYPTION_FAILED_WRONG_MESSAGE_KEY)
 
-    override suspend fun decryptMessage(data: ByteArray, key: DRMessageKey): ByteArray {
-        return bubblesCryptoEngine.bubblesDecrypt(data, key.value, null)
-            ?: throw BubblesCryptoError(BubblesCryptoError.Code.BUBBLES_DECRYPTION_FAILED_WRONG_MESSAGE_KEY)
-    }
-
-    override suspend fun encryptMessage(data: ByteArray, key: DRMessageKey): ByteArray {
-        return bubblesCryptoEngine.bubblesEncrypt(data, key.value, null)
-            ?: throw BubblesCryptoError(BubblesCryptoError.Code.BUBBLES_ENCRYPTION_FAILED_BAD_CONTACT_KEY)
-    }
+    override suspend fun encryptMessage(data: ByteArray, key: DRMessageKey): ByteArray = bubblesCryptoEngine.bubblesEncrypt(
+        data,
+        key.value,
+        null,
+    )
+        ?: throw BubblesCryptoError(BubblesCryptoError.Code.BUBBLES_ENCRYPTION_FAILED_BAD_CONTACT_KEY)
 
     private suspend fun getOrCreateQueueKey(): ByteArray {
-        var key = messageQueueLocalDatasource.retrieveValue(QUEUE_KEY_ALIAS)
+        var key = messageQueueLocalDatasource.retrieveValue(QueueKeyAlias)
         if (key == null) {
             key = randomKeyProvider.invoke()
-            messageQueueLocalDatasource.insertValue(QUEUE_KEY_ALIAS, key)
+            messageQueueLocalDatasource.insertValue(QueueKeyAlias, key)
         }
         return key
     }
 
     companion object {
-        private const val QUEUE_KEY_ALIAS = "bfe3f6a9-918a-4bf6-af38-786679fa0c82"
+        private const val QueueKeyAlias = "bfe3f6a9-918a-4bf6-af38-786679fa0c82"
     }
 }

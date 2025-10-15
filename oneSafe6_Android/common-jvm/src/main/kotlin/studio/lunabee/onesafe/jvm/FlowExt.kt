@@ -27,8 +27,9 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
-fun <T : Any, R : Any> Flow<PagingData<T>>.mapPagingValues(transform: suspend (T) -> R): Flow<PagingData<R>> {
-    return map { it.map(transform) }
+fun <T : Any, R : Any> Flow<PagingData<T>>.mapPagingValues(transform: suspend (T) -> R): Flow<PagingData<R>> = map {
+    it
+        .map(transform)
 }
 
 /**
@@ -43,20 +44,20 @@ fun <T : Any, R : Any> Flow<PagingData<T>>.mapPagingValues(transform: suspend (T
  * @receiver list of flow to combine
  * @return combined flow of result
  */
-fun <T> List<Flow<LBFlowResult<T>>>.combine(): Flow<LBFlowResult<List<T?>>> {
-    return if (isEmpty()) {
-        flowOf(LBFlowResult.Success(emptyList()))
-    } else {
-        kotlinx.coroutines.flow.combine(this) { results ->
-            val loading = (size - results.count { it is LBFlowResult.Loading }) / size.toFloat()
-            val data = results.map { it.data }
-            val error = results.filterIsInstance<LBFlowResult.Failure<List<T>>>().firstOrNull()?.throwable
-            when {
-                loading < 1f -> LBFlowResult.Loading(partialData = data, progress = loading)
-                results.any { it is LBFlowResult.Failure } -> LBFlowResult.Failure(throwable = error, failureData = data)
-                results.all { it is LBFlowResult.Success } -> LBFlowResult.Success(successData = data)
-                else -> LBFlowResult.Loading()
-            }
+fun <T> List<Flow<LBFlowResult<T>>>.combine(): Flow<LBFlowResult<List<T?>>> = if (isEmpty()) {
+    flowOf(LBFlowResult.Success(emptyList()))
+} else {
+    kotlinx.coroutines.flow.combine(this) { results ->
+        val loading = (size - results.count { it is LBFlowResult.Loading }) / size.toFloat()
+        val data = results.map { it.data }
+        val error = results.filterIsInstance<LBFlowResult.Failure<List<T>>>().firstOrNull()?.throwable
+        when {
+            loading < 1f -> LBFlowResult.Loading(partialData = data, progress = loading)
+            results.any { it is LBFlowResult.Failure } ->
+                LBFlowResult
+                    .Failure(throwable = error, failureData = data)
+            results.all { it is LBFlowResult.Success } -> LBFlowResult.Success(successData = data)
+            else -> LBFlowResult.Loading()
         }
     }
 }

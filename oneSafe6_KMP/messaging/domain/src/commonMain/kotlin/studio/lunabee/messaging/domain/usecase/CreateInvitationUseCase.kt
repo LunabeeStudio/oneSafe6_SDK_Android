@@ -19,7 +19,6 @@
 
 package studio.lunabee.messaging.domain.usecase
 
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.bubbles.domain.model.contact.PlainContact
 import studio.lunabee.bubbles.domain.repository.BubblesCryptoRepository
@@ -31,6 +30,7 @@ import studio.lunabee.doubleratchet.model.DRSharedSecret
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.doubleratchet.model.createRandomUUID
 import studio.lunabee.messaging.domain.model.HandShakeData
+import studio.lunabee.onesafe.di.Inject
 
 class CreateInvitationUseCase @Inject constructor(
     private val doubleRatchetEngine: DoubleRatchetEngine,

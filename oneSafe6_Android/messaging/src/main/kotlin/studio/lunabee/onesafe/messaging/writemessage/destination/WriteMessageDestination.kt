@@ -31,7 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.navigation.NavBackStackEntry
@@ -66,22 +66,24 @@ object WriteMessageDestination : OSDestination {
 
     fun getRouteFromDecryptResult(
         decryptResult: DecryptResult,
-    ): String {
-        return Uri.Builder().apply {
+    ): String = Uri
+        .Builder()
+        .apply {
             path(Path)
             appendQueryParameter(ContactIdArg, decryptResult.contactId.uuidString())
             decryptResult.error?.let { appendQueryParameter(ErrorArg, it.name) }
-        }.build().toString()
-    }
+        }.build()
+        .toString()
 
     fun getRouteFromContactId(
         contactId: UUID,
-    ): String {
-        return Uri.Builder().apply {
+    ): String = Uri
+        .Builder()
+        .apply {
             path(Path)
             appendQueryParameter(ContactIdArg, contactId.toString())
-        }.build().toString()
-    }
+        }.build()
+        .toString()
 }
 
 context(WriteMessageNavScope)
@@ -156,7 +158,11 @@ fun NavGraphBuilder.writeMessageScreen(
             resendMessage = { messageToSend, sharingMode ->
                 when (sharingMode) {
                     MessageSharingMode.Deeplink ->
-                        messageToSend.getDeepLinkFromMessage(sharingMode).let { context.getTextSharingIntent(it).let(launcher::launch) }
+                        messageToSend.getDeepLinkFromMessage(sharingMode).let {
+                            context
+                                .getTextSharingIntent(it)
+                                .let(launcher::launch)
+                        }
                     MessageSharingMode.CypherText ->
                         context.getTextSharingIntent(messageToSend).let(launcher::launch)
                     MessageSharingMode.Archive -> {

@@ -32,8 +32,8 @@ enum class AutoBackupFrequency(val repeat: Duration, val flex: Duration, val tex
     ;
 
     companion object {
-        fun valueForDuration(delay: Duration): AutoBackupFrequency {
-            return AutoBackupFrequency.entries.reversed().firstOrNull { delay >= it.repeat } ?: DAILY
-        }
+        fun valueForDuration(delay: Duration): AutoBackupFrequency = AutoBackupFrequency.entries.reversed().firstOrNull {
+            delay >= it.repeat
+        } ?: DAILY
     }
 }

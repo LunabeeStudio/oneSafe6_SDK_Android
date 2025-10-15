@@ -45,39 +45,36 @@ import studio.lunabee.onesafe.repository.datasource.UrlMetadataRemoteDataSource
 @InstallIn(SingletonComponent::class)
 object RemoteModule {
     @Provides
-    fun provideKtorHttpClient(): HttpClient {
-        return HttpClient(engine = Android.create()) {
-            install(ContentNegotiation) {
-                json(
-                    Json {
-                        prettyPrint = true
-                        isLenient = true
-                        ignoreUnknownKeys = true
-                    },
-                )
-            }
-            install(plugin = Logging) {
-                level = LogLevel.ALL
+    fun provideKtorHttpClient(): HttpClient = HttpClient(engine = Android.create()) {
+        install(ContentNegotiation) {
+            json(
+                Json {
+                    prettyPrint = true
+                    isLenient = true
+                    ignoreUnknownKeys = true
+                },
+            )
+        }
+        install(plugin = Logging) {
+            level = LogLevel.ALL
 
-                this.logger = object : Logger {
-                    private val delegate = LBLogger.get("HttpClient")
-                    override fun log(message: String) {
-                        delegate.v(message)
-                    }
+            this.logger = object : Logger {
+                private val delegate = LBLogger.get("HttpClient")
+
+                override fun log(message: String) {
+                    delegate.v(message)
                 }
             }
-            install(HttpTimeout)
         }
+        install(HttpTimeout)
     }
 
     @Provides
     fun provideForceUpdateRemoteDatasource(
         forceUpgradeApi: ForceUpgradeApi,
-    ): ForceUpdateRemoteDatasource {
-        return ForceUpdateRemoteDatasourceImpl(
-            forceUpgradeApi = forceUpgradeApi,
-        )
-    }
+    ): ForceUpdateRemoteDatasource = ForceUpdateRemoteDatasourceImpl(
+        forceUpgradeApi = forceUpgradeApi,
+    )
 }
 
 @Module
@@ -94,12 +91,10 @@ abstract class RemoteModuleBinds {
 object RemoteUrlDatasourceModule {
     @ValidUrlStartList
     @Provides
-    fun providesValidUrlStartList(): List<String> {
-        return listOf(
-            "",
-            "https://",
-            "www.",
-            "https://www.",
-        )
-    }
+    fun providesValidUrlStartList(): List<String> = listOf(
+        "",
+        "https://",
+        "www.",
+        "https://www.",
+    )
 }

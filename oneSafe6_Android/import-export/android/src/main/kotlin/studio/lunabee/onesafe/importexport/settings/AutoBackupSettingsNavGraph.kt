@@ -36,8 +36,9 @@ fun NavGraphBuilder.autoBackupSettingsNavGraph(
         autoBackupSettingsScreen(
             navigateBack = navigateBack,
             navigateToRestoreBackup = { backupId ->
-                val uri = Uri.Builder()
-                    .scheme(ImportExportAndroidConstants.AUTO_BACKUP_SCHEME)
+                val uri = Uri
+                    .Builder()
+                    .scheme(ImportExportAndroidConstants.AutoBackupScheme)
                     .path(backupId)
                     .build()
                 navigateToRestoreBackup(uri)

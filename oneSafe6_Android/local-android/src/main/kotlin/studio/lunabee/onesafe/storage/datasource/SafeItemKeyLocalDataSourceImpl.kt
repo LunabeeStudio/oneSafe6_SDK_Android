@@ -31,14 +31,18 @@ import javax.inject.Inject
 class SafeItemKeyLocalDataSourceImpl @Inject constructor(
     private val safeItemKeyDao: SafeItemKeyDao,
 ) : SafeItemKeyLocalDataSource {
-    override suspend fun getSafeItemKey(id: UUID): SafeItemKey {
-        return (safeItemKeyDao.findById(id) ?: throw OSStorageError(OSStorageError.Code.ITEM_KEY_NOT_FOUND)).toSafeItemKey()
-    }
+    override suspend fun getSafeItemKey(id: UUID): SafeItemKey = (
+        safeItemKeyDao.findById(
+            id,
+        ) ?: throw OSStorageError(OSStorageError.Code.ITEM_KEY_NOT_FOUND)
+    ).toSafeItemKey()
 
-    override suspend fun getSafeItemKeys(ids: List<UUID>): List<SafeItemKey> {
-        return safeItemKeyDao.findByIds(ids).map { it.toSafeItemKey() }.takeIf { it.size == ids.size }
-            ?: throw OSStorageError(OSStorageError.Code.ITEM_KEY_NOT_FOUND)
-    }
+    override suspend fun getSafeItemKeys(ids: List<UUID>): List<SafeItemKey> = safeItemKeyDao
+        .findByIds(
+            ids,
+        ).map { it.toSafeItemKey() }
+        .takeIf { it.size == ids.size }
+        ?: throw OSStorageError(OSStorageError.Code.ITEM_KEY_NOT_FOUND)
 
     override suspend fun save(itemKey: SafeItemKey) {
         safeItemKeyDao.insert(RoomSafeItemKey.fromSafeItemKey(itemKey))
@@ -48,7 +52,8 @@ class SafeItemKeyLocalDataSourceImpl @Inject constructor(
         safeItemKeyDao.update(itemKeys.map(RoomSafeItemKey::fromSafeItemKey))
     }
 
-    override suspend fun getAllSafeItemKeys(safeId: SafeId): List<SafeItemKey> {
-        return safeItemKeyDao.getAllSafeItemKeys(safeId).map { it.toSafeItemKey() }
-    }
+    override suspend fun getAllSafeItemKeys(safeId: SafeId): List<SafeItemKey> = safeItemKeyDao
+        .getAllSafeItemKeys(
+            safeId,
+        ).map { it.toSafeItemKey() }
 }

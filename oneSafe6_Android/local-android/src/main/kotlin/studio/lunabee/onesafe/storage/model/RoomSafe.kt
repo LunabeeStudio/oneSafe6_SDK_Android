@@ -52,18 +52,16 @@ data class RoomSafe(
     val isPanicDestructionEnabled: Boolean,
 ) {
 
-    fun toSafeCrypto(): SafeCrypto {
-        return SafeCrypto(
-            id = this.id,
-            salt = this.crypto.salt,
-            encTest = this.crypto.encTest,
-            encIndexKey = this.crypto.encIndexKey,
-            encBubblesKey = this.crypto.encBubblesKey,
-            encItemEditionKey = this.crypto.encItemEditionKey,
-            biometricCryptoMaterial = this.crypto.biometricCryptoMaterial,
-            autoDestructionKey = this.crypto.autoDestructionKey,
-        )
-    }
+    fun toSafeCrypto(): SafeCrypto = SafeCrypto(
+        id = this.id,
+        salt = this.crypto.salt,
+        encTest = this.crypto.encTest,
+        encIndexKey = this.crypto.encIndexKey,
+        encBubblesKey = this.crypto.encBubblesKey,
+        encItemEditionKey = this.crypto.encItemEditionKey,
+        biometricCryptoMaterial = this.crypto.biometricCryptoMaterial,
+        autoDestructionKey = this.crypto.autoDestructionKey,
+    )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

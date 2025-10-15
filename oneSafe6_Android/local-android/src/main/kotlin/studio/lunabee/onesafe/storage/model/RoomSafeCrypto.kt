@@ -67,7 +67,9 @@ data class RoomSafeCrypto(
         if (autoDestructionKey != null) {
             if (other.autoDestructionKey == null) return false
             if (!autoDestructionKey.contentEquals(other.autoDestructionKey)) return false
-        } else if (other.autoDestructionKey != null) return false
+        } else if (other.autoDestructionKey != null) {
+            return false
+        }
 
         return true
     }

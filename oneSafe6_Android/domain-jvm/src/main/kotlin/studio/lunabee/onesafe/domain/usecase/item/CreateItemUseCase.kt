@@ -23,8 +23,8 @@ import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.domain.common.ItemIdProvider
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
-import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.usecase.search.CreateIndexWordEntriesFromItemUseCase
 import studio.lunabee.onesafe.domain.utils.SafeItemBuilder
 import studio.lunabee.onesafe.error.OSError
@@ -53,32 +53,30 @@ class CreateItemUseCase @Inject constructor(
         icon: ByteArray?,
         color: String?,
         position: Double? = null,
-    ): LBResult<SafeItem> {
-        return OSError.runCatching {
-            val safeId = safeRepository.currentSafeId()
-            val itemPosition = position ?: safeItemRepository.getHighestChildPosition(parentId, safeId)?.let { pos ->
-                floor(pos + 1)
-            } ?: 0.0
+    ): LBResult<SafeItem> = OSError.runCatching {
+        val safeId = safeRepository.currentSafeId()
+        val itemPosition = position ?: safeItemRepository.getHighestChildPosition(parentId, safeId)?.let { pos ->
+            floor(pos + 1)
+        } ?: 0.0
 
-            val now = Instant.now(clock)
-            val (itemKey, item) = safeItemBuilder.build(
-                SafeItemBuilder.Data(
-                    name = name,
-                    parentId = parentId,
-                    isFavorite = isFavorite,
-                    icon = icon,
-                    color = color,
-                    id = itemIdProvider(),
-                    position = itemPosition,
-                    updatedAt = now,
-                    indexAlpha = computeItemAlphaIndexUseCase(name).getOrThrow("Failed to compute item alpha index"),
-                    createdAt = now,
-                ),
-            )
+        val now = Instant.now(clock)
+        val (itemKey, item) = safeItemBuilder.build(
+            SafeItemBuilder.Data(
+                name = name,
+                parentId = parentId,
+                isFavorite = isFavorite,
+                icon = icon,
+                color = color,
+                id = itemIdProvider(),
+                position = itemPosition,
+                updatedAt = now,
+                indexAlpha = computeItemAlphaIndexUseCase(name).getOrThrow("Failed to compute item alpha index"),
+                createdAt = now,
+            ),
+        )
 
-            val indexWordEntries: List<IndexWordEntry>? = name?.let { createIndexWordEntriesFromItemUseCase(name, item.id) }
-            safeItemRepository.save(item, itemKey, indexWordEntries)
-            item
-        }
+        val indexWordEntries: List<IndexWordEntry>? = name?.let { createIndexWordEntriesFromItemUseCase(name, item.id) }
+        safeItemRepository.save(item, itemKey, indexWordEntries)
+        item
     }
 }

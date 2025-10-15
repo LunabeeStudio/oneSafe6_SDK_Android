@@ -31,13 +31,14 @@ import javax.inject.Inject
 class UrlMetadataRepositoryImpl @Inject constructor(
     private val remoteDataSource: UrlMetadataRemoteDataSource,
 ) : UrlMetadataRepository {
-    override suspend fun getHtmlPageCode(url: String): String {
-        return remoteDataSource.getPageHtmlCode(url = url)
-    }
+    override suspend fun getHtmlPageCode(url: String): String = remoteDataSource.getPageHtmlCode(url = url)
 
-    override suspend fun downloadFavIcon(baseUrl: String, targetFile: File): LBResult<File> {
-        return remoteDataSource.downloadFavIcon(baseUrl = baseUrl, targetFile = targetFile).last().asResult()
-    }
+    override suspend fun downloadFavIcon(baseUrl: String, targetFile: File): LBResult<File> = remoteDataSource
+        .downloadFavIcon(
+            baseUrl = baseUrl,
+            targetFile = targetFile,
+        ).last()
+        .asResult()
 
     override fun downloadImage(url: String, targetFile: File): Flow<LBFlowResult<File>> =
         remoteDataSource.downloadImage(url, targetFile)

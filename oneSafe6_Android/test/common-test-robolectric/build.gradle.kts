@@ -25,11 +25,11 @@ plugins {
 android {
     namespace = "studio.lunabee.onesafe.test.robolectric"
 
-    compileSdk = AndroidConfig.COMPILE_SDK
+    compileSdk = AndroidConfig.CompileSdk
 
     defaultConfig {
-        minSdk = AndroidConfig.MIN_LIB_SDK
-        missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
+        minSdk = AndroidConfig.MinLibSdk
+        missingDimensionStrategy("crypto", AndroidConfig.CryptoBackendFlavorDefault)
     }
 
     packaging {
@@ -65,12 +65,12 @@ dependencies {
 
 kotlin {
     compilerOptions {
-        jvmTarget.set(ProjectConfig.JVM_TARGET)
+        jvmTarget.set(ProjectConfig.JvmTarget)
     }
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(ProjectConfig.JDK_VERSION.toString()))
+        languageVersion.set(JavaLanguageVersion.of(ProjectConfig.JdkVersion.toString()))
     }
 }

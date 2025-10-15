@@ -30,9 +30,7 @@ internal fun <T> dataStoreValueDelegate(
     key: String,
     datastoreEngine: DatastoreEngine,
     errorCodeIfOverrideExistingValue: OSCryptoError.Code,
-): ReadWriteProperty<T, ByteArray?> {
-    return DataStoreValueDelegate(key, datastoreEngine, errorCodeIfOverrideExistingValue)
-}
+): ReadWriteProperty<T, ByteArray?> = DataStoreValueDelegate(key, datastoreEngine, errorCodeIfOverrideExistingValue)
 
 /**
  * Property delegate of datastore which:
@@ -44,9 +42,7 @@ private class DataStoreValueDelegate<T>(
     private val errorCodeIfOverrideExistingValue: OSCryptoError.Code,
 ) : ReadWriteProperty<T, ByteArray?> {
 
-    override fun getValue(thisRef: T, property: KProperty<*>): ByteArray? {
-        return getValueInDataStore()
-    }
+    override fun getValue(thisRef: T, property: KProperty<*>): ByteArray? = getValueInDataStore()
 
     @Throws(OSCryptoError::class)
     override fun setValue(thisRef: T, property: KProperty<*>, value: ByteArray?) {

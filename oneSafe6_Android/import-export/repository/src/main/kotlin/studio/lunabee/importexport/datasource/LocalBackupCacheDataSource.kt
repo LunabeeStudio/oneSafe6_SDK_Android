@@ -26,5 +26,6 @@ import java.time.Instant
 
 interface LocalBackupCacheDataSource {
     suspend fun addBackup(inputStream: InputStream, date: Instant): File
+
     suspend fun removeBackup(localBackup: LocalBackup): Boolean
 }

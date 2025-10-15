@@ -47,7 +47,8 @@ class SynchronizeCloudBackupsUseCase @Inject constructor(
 ) {
     operator fun invoke(safeId: SafeId): Flow<LBFlowResult<Unit>> {
         // 1. Refresh cloud backup list
-        return cloudBackupRepository.refreshBackupList(safeId)
+        return cloudBackupRepository
+            .refreshBackupList(safeId)
             .transformResult { backupsResult ->
                 val backupsToUpload = (backupsResult.successData + getAllLocalBackupsUseCase(safeId, true))
                     .sortedDescending()
@@ -56,7 +57,8 @@ class SynchronizeCloudBackupsUseCase @Inject constructor(
                 log.v("Found ${backupsToUpload.size} to upload")
 
                 // 2. Upload the latest locals backups
-                val uploadAndDeleteFlow = cloudBackupRepository.uploadBackup(backupsToUpload)
+                val uploadAndDeleteFlow = cloudBackupRepository
+                    .uploadBackup(backupsToUpload)
                     .transformResult {
                         // 3. Delete oldest cloud backups
                         emitAll(deleteOldCloudBackupsUseCase(safeId, cloudBackupRepository.getBackups(safeId)))

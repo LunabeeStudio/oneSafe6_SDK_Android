@@ -86,22 +86,30 @@ data class RoomSafeItemField(
         if (encName != null) {
             if (other.encName == null) return false
             if (!encName.contentEquals(other.encName)) return false
-        } else if (other.encName != null) return false
+        } else if (other.encName != null) {
+            return false
+        }
         if (position != other.position) return false
         if (itemId != other.itemId) return false
         if (encPlaceholder != null) {
             if (other.encPlaceholder == null) return false
             if (!encPlaceholder.contentEquals(other.encPlaceholder)) return false
-        } else if (other.encPlaceholder != null) return false
+        } else if (other.encPlaceholder != null) {
+            return false
+        }
         if (encValue != null) {
             if (other.encValue == null) return false
             if (!encValue.contentEquals(other.encValue)) return false
-        } else if (other.encValue != null) return false
+        } else if (other.encValue != null) {
+            return false
+        }
         if (showPrediction != other.showPrediction) return false
         if (encKind != null) {
             if (other.encKind == null) return false
             if (!encKind.contentEquals(other.encKind)) return false
-        } else if (other.encKind != null) return false
+        } else if (other.encKind != null) {
+            return false
+        }
         if (updatedAt != other.updatedAt) return false
         if (isItemIdentifier != other.isItemIdentifier) return false
         if (encFormattingMask.contentEquals(other.encFormattingMask)) return false
@@ -129,23 +137,21 @@ data class RoomSafeItemField(
     }
 
     companion object {
-        fun fromSafeItemField(itemField: SafeItemField): RoomSafeItemField {
-            return RoomSafeItemField(
-                id = itemField.id,
-                encName = itemField.encName,
-                position = itemField.position,
-                itemId = itemField.itemId,
-                encPlaceholder = itemField.encPlaceholder,
-                encValue = itemField.encValue,
-                showPrediction = itemField.showPrediction,
-                encKind = itemField.encKind,
-                updatedAt = itemField.updatedAt,
-                isItemIdentifier = itemField.isItemIdentifier,
-                encFormattingMask = itemField.encFormattingMask,
-                encSecureDisplayMask = itemField.encSecureDisplayMask,
-                isSecured = itemField.isSecured,
-                encThumbnailFileName = itemField.encThumbnailFileName,
-            )
-        }
+        fun fromSafeItemField(itemField: SafeItemField): RoomSafeItemField = RoomSafeItemField(
+            id = itemField.id,
+            encName = itemField.encName,
+            position = itemField.position,
+            itemId = itemField.itemId,
+            encPlaceholder = itemField.encPlaceholder,
+            encValue = itemField.encValue,
+            showPrediction = itemField.showPrediction,
+            encKind = itemField.encKind,
+            updatedAt = itemField.updatedAt,
+            isItemIdentifier = itemField.isItemIdentifier,
+            encFormattingMask = itemField.encFormattingMask,
+            encSecureDisplayMask = itemField.encSecureDisplayMask,
+            isSecured = itemField.isSecured,
+            encThumbnailFileName = itemField.encThumbnailFileName,
+        )
     }
 }

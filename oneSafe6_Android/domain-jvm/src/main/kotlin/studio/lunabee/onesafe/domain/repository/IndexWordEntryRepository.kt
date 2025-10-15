@@ -26,5 +26,6 @@ import java.util.UUID
 
 interface IndexWordEntryRepository {
     fun getAll(safeId: SafeId): Flow<List<IndexWordEntry>>
+
     suspend fun deleteNameIndexFromItemId(itemId: UUID)
 }

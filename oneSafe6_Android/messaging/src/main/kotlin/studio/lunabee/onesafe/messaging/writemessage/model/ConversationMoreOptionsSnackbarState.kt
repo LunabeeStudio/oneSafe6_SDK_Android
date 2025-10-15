@@ -31,13 +31,14 @@ import studio.lunabee.onesafe.commonui.snackbar.SnackbarState
 class ConversationMoreOptionsSnackbarState(
     private val deeplinkBubblesWriteMessage: () -> Unit,
 ) : SnackbarState(
-    SnackbarAction.Default(
-        onClick = deeplinkBubblesWriteMessage,
-        actionLabel = LbcTextSpec.StringResource(OSString.common_open),
-        onDismiss = {},
-    ),
-) {
-    override val message: LbcTextSpec = LbcTextSpec.StringResource(OSString.oneSafeK_conversationScreen_snackbar_moreOptions)
+        SnackbarAction.Default(
+            onClick = deeplinkBubblesWriteMessage,
+            actionLabel = LbcTextSpec.StringResource(OSString.common_open),
+            onDismiss = {},
+        ),
+    ) {
+    override val message: LbcTextSpec = LbcTextSpec
+        .StringResource(OSString.oneSafeK_conversationScreen_snackbar_moreOptions)
 
     @Composable
     fun SnackBar(snackbarHostState: SnackbarHostState) {

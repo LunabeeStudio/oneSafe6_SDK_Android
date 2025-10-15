@@ -19,6 +19,4 @@
 
 package studio.lunabee.onesafe.domain.utils
 
-fun String.hasMatchRegex(regex: String): Boolean {
-    return regex.toRegex().containsMatchIn(this)
-}
+fun String.hasMatchRegex(regex: String): Boolean = regex.toRegex().containsMatchIn(this)

@@ -36,10 +36,8 @@ class EnableBiometricUseCase @Inject constructor(
     private val cryptoRepository: MainCryptoRepository,
     private val safeRepository: SafeRepository,
 ) {
-    suspend operator fun invoke(cipher: Cipher): LBResult<Unit> {
-        return OSError.runCatching(log) {
-            val biometricCryptoMaterial = cryptoRepository.enableBiometric(cipher)
-            safeRepository.setBiometricMaterial(safeRepository.currentSafeId(), biometricCryptoMaterial)
-        }
+    suspend operator fun invoke(cipher: Cipher): LBResult<Unit> = OSError.runCatching(log) {
+        val biometricCryptoMaterial = cryptoRepository.enableBiometric(cipher)
+        safeRepository.setBiometricMaterial(safeRepository.currentSafeId(), biometricCryptoMaterial)
     }
 }

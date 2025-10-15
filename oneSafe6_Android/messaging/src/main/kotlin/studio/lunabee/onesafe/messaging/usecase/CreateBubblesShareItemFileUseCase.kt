@@ -46,34 +46,38 @@ class CreateBubblesShareItemFileUseCase @Inject constructor(
         archiveDir.mkdirs(override = true)
         val fileName = UUID.randomUUID().toString()
         val archiveFile = File(archiveDir, fileName)
-        exportEngine.buildExportInfo(
-            password = messageKey.value.toCharArray(),
-        ).collect { prepareSharingResult ->
-            when (prepareSharingResult) {
-                is LBFlowResult.Success -> {
-                    exportShareUseCase(
-                        exportEngine = exportEngine,
-                        itemToShare = itemId,
-                        includeChildren = includeChildren,
-                        archiveExtractedDirectory = archiveFile,
-                    ).collect { result ->
-                        when (result) {
-                            is LBFlowResult.Success -> {
-                                val file = result.data
-                                if (file != null) {
-                                    emit(LBFlowResult.Success(file))
-                                } else {
-                                    emit(LBFlowResult.Failure(OSImportExportError(OSImportExportError.Code.EXPORT_DATA_FAILURE)))
+        exportEngine
+            .buildExportInfo(
+                password = messageKey.value.toCharArray(),
+            ).collect { prepareSharingResult ->
+                when (prepareSharingResult) {
+                    is LBFlowResult.Success -> {
+                        exportShareUseCase(
+                            exportEngine = exportEngine,
+                            itemToShare = itemId,
+                            includeChildren = includeChildren,
+                            archiveExtractedDirectory = archiveFile,
+                        ).collect { result ->
+                            when (result) {
+                                is LBFlowResult.Success -> {
+                                    val file = result.data
+                                    if (file != null) {
+                                        emit(LBFlowResult.Success(file))
+                                    } else {
+                                        emit(
+                                            LBFlowResult
+                                                .Failure(OSImportExportError(OSImportExportError.Code.EXPORT_DATA_FAILURE)),
+                                        )
+                                    }
                                 }
+                                is LBFlowResult.Failure -> emit(LBFlowResult.Failure(result.throwable))
+                                is LBFlowResult.Loading -> emit(LBFlowResult.Loading())
                             }
-                            is LBFlowResult.Failure -> emit(LBFlowResult.Failure(result.throwable))
-                            is LBFlowResult.Loading -> emit(LBFlowResult.Loading())
                         }
                     }
+                    is LBFlowResult.Failure -> emit(LBFlowResult.Failure(prepareSharingResult.throwable))
+                    is LBFlowResult.Loading -> emit(LBFlowResult.Loading())
                 }
-                is LBFlowResult.Failure -> emit(LBFlowResult.Failure(prepareSharingResult.throwable))
-                is LBFlowResult.Loading -> emit(LBFlowResult.Loading())
             }
-        }
     }
 }

@@ -70,12 +70,13 @@ class AutoBackupSchedulerWorker @AssistedInject constructor(
     private val autoBackupWorkersHelper: AutoBackupWorkersHelper,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
-        val safeId = inputData.getByteArray(EXPORT_WORKER_SAFE_ID_DATA)?.let { SafeId(it) }
+        val safeId = inputData.getByteArray(ExportWorkerSafeIdData)?.let { SafeId(it) }
 
         return if (safeId == null) {
             logger.e("Missing SafeId param")
-            val data = Data.Builder()
-                .putString(ERROR_OUTPUT_KEY, "Missing SafeId param")
+            val data = Data
+                .Builder()
+                .putString(ErrorOutputKey, "Missing SafeId param")
                 .build()
             Result.failure(data)
         } else if (safeRepository.getSafeVersion(safeId) == null) {
@@ -85,7 +86,7 @@ class AutoBackupSchedulerWorker @AssistedInject constructor(
         } else {
             val durationBeforeBackupOutdated = getDurationBeforeBackupOutdatedUseCase(safeId)
             val frequency = AutoBackupFrequency.valueForDuration(settings.autoBackupFrequency(safeId))
-            val synchronizeCloudFirst = inputData.getBoolean(SYNCHRONIZE_CLOUD_FIRST_DATA, false)
+            val synchronizeCloudFirst = inputData.getBoolean(SynchronizeCloudFirstData, false)
             val islastBackupOutdated = durationBeforeBackupOutdated <= Duration.ZERO
 
             // Trigger a cloud sync if requested before scheduling the backup worker chain, except if we know that the chain worker will run
@@ -95,24 +96,24 @@ class AutoBackupSchedulerWorker @AssistedInject constructor(
                     .onCompletion { error ->
                         // Ignore error, let the scheduled backup synchronize later
                         error?.let(logger::e)
-                    }
-                    .collect()
+                    }.collect()
             }
 
             val workManager = WorkManager.getInstance(applicationContext)
-            val inputData = Data.Builder()
-                .putByteArray(AutoBackupChainWorker.AUTO_BACKUP_CHAIN_WORKER_SAFE_ID_DATA, safeId.toByteArray())
+            val inputData = Data
+                .Builder()
+                .putByteArray(AutoBackupChainWorker.AutoBackupChainWorkerSafeIdData, safeId.toByteArray())
                 .build()
             val periodicBuilder = PeriodicWorkRequestBuilder<AutoBackupChainWorker>(
                 repeatInterval = frequency.repeat.toJavaDuration(),
                 flexTimeInterval = frequency.flex.toJavaDuration(),
-            )
-                .addTag(ImportExportAndroidConstants.autoBackupWorkerTag(safeId))
+            ).addTag(ImportExportAndroidConstants.autoBackupWorkerTag(safeId))
                 .setInputData(inputData)
 
             if (islastBackupOutdated) {
-                val data = Data.Builder()
-                    .putByteArray(AutoBackupChainWorker.AUTO_BACKUP_CHAIN_WORKER_SAFE_ID_DATA, safeId.id.toByteArray())
+                val data = Data
+                    .Builder()
+                    .putByteArray(AutoBackupChainWorker.AutoBackupChainWorkerSafeIdData, safeId.id.toByteArray())
                     .build()
                 // Trigger asap if the backup is outdated
                 val workRequest = OneTimeWorkRequestBuilder<AutoBackupChainWorker>()
@@ -126,7 +127,8 @@ class AutoBackupSchedulerWorker @AssistedInject constructor(
                 // it might does nothing
                 // TODO <AutoBackup> does not work as expected, trigger manually if durationBeforeBackupOutdated == 0 or if no backup
                 //  at all yet
-                periodicBuilder.setNextScheduleTimeOverride(clock.millis() + durationBeforeBackupOutdated.inWholeMilliseconds)
+                periodicBuilder
+                    .setNextScheduleTimeOverride(clock.millis() + durationBeforeBackupOutdated.inWholeMilliseconds)
             }
 
             workManager
@@ -142,9 +144,11 @@ class AutoBackupSchedulerWorker @AssistedInject constructor(
 
     companion object {
         internal fun autoBackupChainWorkName(safeId: SafeId): String = "32183d09-7402-407f-b492-7be45f3a148c${safeId.id}"
+
         private fun autoBackupInitialChainWorkName(safeId: SafeId): String = "3163c4a1-5157-43dd-ada9-611114e0ca41_${safeId.id}"
-        internal const val SYNCHRONIZE_CLOUD_FIRST_DATA: String = "373ad937-98c8-4b42-9dea-43df44985d00"
-        internal const val EXPORT_WORKER_SAFE_ID_DATA = "bfa2d4da-ebfe-4231-87ee-29b012109f7b"
-        private const val ERROR_OUTPUT_KEY: String = "594b6598-9871-443e-ba1e-1ea408da49e2"
+
+        internal const val SynchronizeCloudFirstData: String = "373ad937-98c8-4b42-9dea-43df44985d00"
+        internal const val ExportWorkerSafeIdData = "bfa2d4da-ebfe-4231-87ee-29b012109f7b"
+        private const val ErrorOutputKey: String = "594b6598-9871-443e-ba1e-1ea408da49e2"
     }
 }

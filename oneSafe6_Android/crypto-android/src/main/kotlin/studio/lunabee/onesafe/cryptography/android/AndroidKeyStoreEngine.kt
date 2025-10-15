@@ -34,7 +34,7 @@ import javax.inject.Inject
 class AndroidKeyStoreEngine @Inject constructor() {
 
     private val keyStore: KeyStore
-        get() = KeyStore.getInstance(provider).apply { this.load(null) }
+        get() = KeyStore.getInstance(Provider).apply { this.load(null) }
 
     @Throws(OSCryptoError::class)
     fun retrieveSecretKeyFromKeyStore(keyName: String): SecretKey {
@@ -47,7 +47,7 @@ class AndroidKeyStoreEngine @Inject constructor() {
         try {
             val keyGenerator = KeyGenerator.getInstance(
                 KeyProperties.KEY_ALGORITHM_AES,
-                provider,
+                Provider,
             )
             keyGenerator.init(keyGenParameterSpec)
             return keyGenerator.generateKey()
@@ -56,12 +56,10 @@ class AndroidKeyStoreEngine @Inject constructor() {
         }
     }
 
-    fun retrieveOrGenerateSecretKey(keyName: String, keyGenParameterSpec: KeyGenParameterSpec): SecretKey {
-        return try {
-            retrieveSecretKeyFromKeyStore(keyName)
-        } catch (e: OSCryptoError) {
-            generateSecretKey(keyGenParameterSpec)
-        }
+    fun retrieveOrGenerateSecretKey(keyName: String, keyGenParameterSpec: KeyGenParameterSpec): SecretKey = try {
+        retrieveSecretKeyFromKeyStore(keyName)
+    } catch (e: OSCryptoError) {
+        generateSecretKey(keyGenParameterSpec)
     }
 
     fun removeSecretKey(keyName: String) {
@@ -69,6 +67,6 @@ class AndroidKeyStoreEngine @Inject constructor() {
     }
 
     companion object {
-        private const val provider = "AndroidKeyStore"
+        private const val Provider = "AndroidKeyStore"
     }
 }

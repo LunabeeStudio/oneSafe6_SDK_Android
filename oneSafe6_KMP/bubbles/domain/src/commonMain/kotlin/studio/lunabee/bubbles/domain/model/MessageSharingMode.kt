@@ -26,13 +26,11 @@ enum class MessageSharingMode(val id: String) {
     ;
 
     companion object {
-        fun fromString(raw: String): MessageSharingMode {
-            return when (raw) {
-                DeeplinkId -> Deeplink
-                CypherTextId -> CypherText
-                ArchiveId -> Archive
-                else -> CypherText
-            }
+        fun fromString(raw: String): MessageSharingMode = when (raw) {
+            DeeplinkId -> Deeplink
+            CypherTextId -> CypherText
+            ArchiveId -> Archive
+            else -> CypherText
         }
     }
 }

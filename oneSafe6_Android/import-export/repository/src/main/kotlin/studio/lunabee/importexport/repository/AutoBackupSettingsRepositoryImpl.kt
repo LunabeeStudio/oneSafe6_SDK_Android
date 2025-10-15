@@ -50,9 +50,7 @@ class AutoBackupSettingsRepositoryImpl @Inject constructor(
     override fun enableAutoBackupCtaState(safeId: SafeId): Flow<CtaState> =
         dataSource.enableAutoBackupCtaState(safeId).filterNotNull()
 
-    override suspend fun getSafeAutoBackupEnabled(): List<SafeAutoBackupEnabled> {
-        return dataSource.getSafeAutoBackupEnabled()
-    }
+    override suspend fun getSafeAutoBackupEnabled(): List<SafeAutoBackupEnabled> = dataSource.getSafeAutoBackupEnabled()
 
     override suspend fun autoBackupFrequency(safeId: SafeId): Duration =
         dataSource.autoBackupFrequency(safeId)

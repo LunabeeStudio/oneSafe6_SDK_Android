@@ -55,9 +55,9 @@ fun PublishingExtension.setupMavenRepository() {
     repositories {
         maven {
             authentication {
-                credentials.username = System.getenv(EnvConfig.ENV_ARTIFACTORY_USER)
+                credentials.username = System.getenv(EnvConfig.EnvArtifactoryUser)
                     ?: project.properties["artifactory_deployer_release_username"] as? String
-                credentials.password = System.getenv(EnvConfig.ENV_ARTIFACTORY_API_KEY)
+                credentials.password = System.getenv(EnvConfig.EnvArtifactoryApiKey)
                     ?: project.properties["artifactory_deployer_release_api_key"] as? String
             }
             val repository = if (version.toString().endsWith("SNAPSHOT")) {
@@ -81,7 +81,7 @@ fun PublicationContainer.setPublication() {
     this.create<MavenPublication>(project.name) {
         setProjectDetails()
         when {
-            isCryptoModule -> setAndroidArtifacts(project, AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
+            isCryptoModule -> setAndroidArtifacts(project, AndroidConfig.CryptoBackendFlavorDefault)
             isAndroidLibrary -> setAndroidArtifacts(project)
             else -> setJavaArtifacts(project)
         }
@@ -92,12 +92,12 @@ fun PublicationContainer.setPublication() {
 
 /**
  * Set project details:
- * - groupId will be [ProjectConfig.GROUP_ID]
+ * - groupId will be [ProjectConfig.GroupId]
  * - artifactId will take the name of the current project
  * - version will be set in each submodule gradle file
  */
 fun MavenPublication.setProjectDetails() {
-    groupId = ProjectConfig.GROUP_ID
+    groupId = ProjectConfig.GroupId
     artifactId = project.name
     version = project.version.toString()
 }
@@ -109,7 +109,7 @@ fun MavenPublication.setPom() {
     pom {
         name.set(project.name.capitalized())
         description.set(project.description)
-        url.set(ProjectConfig.LIBRARY_URL)
+        url.set(ProjectConfig.LibraryUrl)
 
         scm {
             connection.set("git@github.com:LunabeeStudio/oneSafeRevival_Android.git")

@@ -25,7 +25,10 @@ import java.security.PublicKey
 
 interface RsaCryptoEngine {
     fun getKeyPair(): KeyPair
+
     fun getPublicKey(key: ByteArray): PublicKey
+
     fun encrypt(key: PublicKey, data: ByteArray): ByteArray
+
     fun decrypt(key: PrivateKey, data: ByteArray): ByteArray
 }

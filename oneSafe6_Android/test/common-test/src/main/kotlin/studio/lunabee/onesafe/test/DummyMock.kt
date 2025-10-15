@@ -27,7 +27,9 @@ import studio.lunabee.onesafe.importexport.repository.AutoBackupSettingsReposito
 // FIXME https://github.com/mockk/mockk/issues/1073
 //  cannot mockk suspend functions which returns a value class (-> Duration)
 open class MockAutoBackupSettingsRepository(mock: AutoBackupSettingsRepository = mockk()) : AutoBackupSettingsRepository by mock
+
 open class MockSecuritySettingsRepository(mock: SecuritySettingsRepository = mockk()) : SecuritySettingsRepository by mock
+
 open class MockAutoLockInactivityGetRemainingTimeUseCase(
     mock: AutoLockInactivityGetRemainingTimeUseCase = mockk(),
 ) : AutoLockInactivityGetRemainingTimeUseCase by mock

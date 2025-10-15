@@ -52,7 +52,8 @@ internal fun AutoBackupMaxNumberBottomSheetContent(
         OSText(
             text = LbcTextSpec.StringResource(OSString.settings_autoBackupMaxNumberScreen_title),
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(horizontal = OSDimens.SystemSpacing.Regular, vertical = OSDimens.SystemSpacing.Small),
+            modifier = Modifier
+                .padding(horizontal = OSDimens.SystemSpacing.Regular, vertical = OSDimens.SystemSpacing.Small),
         )
         OSText(
             text = LbcTextSpec.StringResource(OSString.settings_autoBackupMaxNumberScreen_description),

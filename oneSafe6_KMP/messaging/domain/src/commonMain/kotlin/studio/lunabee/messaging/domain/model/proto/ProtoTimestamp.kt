@@ -19,10 +19,10 @@
 
 package studio.lunabee.messaging.domain.model.proto
 
-import kotlin.time.Instant
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
+import kotlin.time.Instant
 
 @Serializable
 @OptIn(ExperimentalSerializationApi::class)
@@ -33,16 +33,12 @@ class ProtoTimestamp(
     val nanos: Int,
 ) {
 
-    fun toInstant(): Instant {
-        return Instant.fromEpochSeconds(seconds, nanos)
-    }
+    fun toInstant(): Instant = Instant.fromEpochSeconds(seconds, nanos)
 
     companion object {
-        fun fromInstant(instant: Instant): ProtoTimestamp {
-            return ProtoTimestamp(
-                seconds = instant.epochSeconds,
-                nanos = instant.nanosecondsOfSecond,
-            )
-        }
+        fun fromInstant(instant: Instant): ProtoTimestamp = ProtoTimestamp(
+            seconds = instant.epochSeconds,
+            nanos = instant.nanosecondsOfSecond,
+        )
     }
 }

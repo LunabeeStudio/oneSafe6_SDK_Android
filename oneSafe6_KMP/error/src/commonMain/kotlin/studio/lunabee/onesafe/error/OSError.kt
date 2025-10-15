@@ -40,31 +40,29 @@ sealed class OSError(
             noinline mapErr: ((OSError) -> OSError)? = null,
             noinline failureData: ((OSError) -> R?)? = null,
             block: () -> R,
-        ): LBResult<R> {
-            return try {
-                LBResult.Success(block())
-            } catch (e: OSError) {
-                val error = mapErr?.invoke(e) ?: e
+        ): LBResult<R> = try {
+            LBResult.Success(block())
+        } catch (e: OSError) {
+            val error = mapErr?.invoke(e) ?: e
+            logger?.e(e)
+            LBResult.Failure(throwable = error, failureData = failureData?.invoke(error))
+        } catch (e: Exception) {
+            // iOS key can be unloaded just after calling KMP code resulting in a crash
+            // that we need to catch because we currently can't cancel a coroutine
+            if (e::class.qualifiedName == "kotlin.native.internal.ObjCErrorException") {
+                val error = mapErr?.invoke(BubblesCryptoError(BubblesCryptoError.Code.BUBBLES_MASTER_KEY_NOT_LOADED, cause = e)) ?: e
                 logger?.e(e)
-                LBResult.Failure(throwable = error, failureData = failureData?.invoke(error))
-            } catch (e: Exception) {
-                // iOS key can be unloaded just after calling KMP code resulting in a crash
-                // that we need to catch because we currently can't cancel a coroutine
-                if (e::class.qualifiedName == "kotlin.native.internal.ObjCErrorException") {
-                    val error = mapErr?.invoke(BubblesCryptoError(BubblesCryptoError.Code.BUBBLES_MASTER_KEY_NOT_LOADED, cause = e)) ?: e
-                    logger?.e(e)
-                    LBResult.Failure(
-                        throwable = error,
-                        failureData = failureData?.invoke(
-                            BubblesCryptoError(
-                                BubblesCryptoError.Code.BUBBLES_MASTER_KEY_NOT_LOADED,
-                                cause = e,
-                            ),
+                LBResult.Failure(
+                    throwable = error,
+                    failureData = failureData?.invoke(
+                        BubblesCryptoError(
+                            BubblesCryptoError.Code.BUBBLES_MASTER_KEY_NOT_LOADED,
+                            cause = e,
                         ),
-                    )
-                } else {
-                    throw e
-                }
+                    ),
+                )
+            } else {
+                throw e
             }
         }
     }

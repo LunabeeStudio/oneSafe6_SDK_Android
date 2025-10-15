@@ -16,14 +16,17 @@
 
 package studio.lunabee.bubbles.domain.usecase
 
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.onesafe.di.Inject
 
 class DecryptContactSharingModeUseCase @Inject constructor(
     private val contactLocalDecryptUseCase: ContactLocalDecryptUseCase,
 ) {
-    suspend operator fun invoke(encSharingMode: ByteArray, contactId: DoubleRatchetUUID): MessageSharingMode? {
-        return contactLocalDecryptUseCase.invoke(encSharingMode, contactId, MessageSharingMode::class).data
-    }
+    suspend operator fun invoke(encSharingMode: ByteArray, contactId: DoubleRatchetUUID): MessageSharingMode? = contactLocalDecryptUseCase
+        .invoke(
+            encSharingMode,
+            contactId,
+            MessageSharingMode::class,
+        ).data
 }

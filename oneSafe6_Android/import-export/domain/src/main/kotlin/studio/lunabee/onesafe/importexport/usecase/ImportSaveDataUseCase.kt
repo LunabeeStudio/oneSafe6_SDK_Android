@@ -37,14 +37,13 @@ class ImportSaveDataUseCase @Inject constructor(
     operator fun invoke(
         archiveExtractedDirectory: File,
         mode: ImportMode,
-    ): Flow<LBFlowResult<UUID?>> {
-        return importEngine.prepareDataForImport(archiveExtractedDirectory = archiveExtractedDirectory, mode = mode)
-            .transformLatest { result ->
-                when (result) {
-                    is LBFlowResult.Failure -> emit(LBFlowResult.Failure(throwable = result.throwable))
-                    is LBFlowResult.Loading -> emit(LBFlowResult.Loading(progress = result.progress))
-                    is LBFlowResult.Success -> emitAll(importEngine.saveImportData(mode = mode))
-                }
+    ): Flow<LBFlowResult<UUID?>> = importEngine
+        .prepareDataForImport(archiveExtractedDirectory = archiveExtractedDirectory, mode = mode)
+        .transformLatest { result ->
+            when (result) {
+                is LBFlowResult.Failure -> emit(LBFlowResult.Failure(throwable = result.throwable))
+                is LBFlowResult.Loading -> emit(LBFlowResult.Loading(progress = result.progress))
+                is LBFlowResult.Success -> emitAll(importEngine.saveImportData(mode = mode))
             }
-    }
+        }
 }

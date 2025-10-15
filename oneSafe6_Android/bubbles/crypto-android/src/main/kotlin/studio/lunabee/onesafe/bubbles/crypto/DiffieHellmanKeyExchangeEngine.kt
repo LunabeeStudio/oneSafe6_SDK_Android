@@ -31,8 +31,8 @@ import javax.inject.Inject
 
 class DiffieHellmanKeyExchangeEngine @Inject constructor() : BubblesKeyExchangeEngine {
     override fun generateKeyPair(): BubblesKeyPair {
-        val ecSpec = ECGenParameterSpec(NAMED_CURVE_SPEC)
-        val keyPairGenerator = KeyPairGenerator.getInstance(ALGORITHM_EC)
+        val ecSpec = ECGenParameterSpec(NamedCurveSpec)
+        val keyPairGenerator = KeyPairGenerator.getInstance(AlgorithmEc)
         keyPairGenerator.initialize(ecSpec)
         val javaKeyPair = keyPairGenerator.generateKeyPair()
         return BubblesKeyPair(publicKey = javaKeyPair.public.encoded, privateKey = javaKeyPair.private.encoded)
@@ -40,10 +40,10 @@ class DiffieHellmanKeyExchangeEngine @Inject constructor() : BubblesKeyExchangeE
 
     override fun createSharedSecret(publicKey: ByteArray, privateKey: ByteArray, size: Int): ByteArray {
         val out = ByteArray(size)
-        val keyFactory = KeyFactory.getInstance(ALGORITHM_EC)
+        val keyFactory = KeyFactory.getInstance(AlgorithmEc)
         val contactPublicKey = keyFactory.generatePublic(X509EncodedKeySpec(publicKey))
         val localPrivateKey = keyFactory.generatePrivate(PKCS8EncodedKeySpec(privateKey))
-        val keyAgreement = KeyAgreement.getInstance(ALGORITHM_EC_DH)
+        val keyAgreement = KeyAgreement.getInstance(AlgorithmEcDh)
         keyAgreement.init(localPrivateKey)
         keyAgreement.doPhase(contactPublicKey, true)
         keyAgreement.generateSecret(out, 0)
@@ -51,8 +51,8 @@ class DiffieHellmanKeyExchangeEngine @Inject constructor() : BubblesKeyExchangeE
     }
 
     private companion object {
-        private const val NAMED_CURVE_SPEC = "secp256r1"
-        private const val ALGORITHM_EC = "EC"
-        private const val ALGORITHM_EC_DH = "ECDH"
+        private const val NamedCurveSpec = "secp256r1"
+        private const val AlgorithmEc = "EC"
+        private const val AlgorithmEcDh = "ECDH"
     }
 }

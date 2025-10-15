@@ -42,38 +42,28 @@ class DummySafeRepository(initSafeId: SafeId? = firstSafeId) : SafeRepository {
         lastSafeId = safeId
     }
 
-    override suspend fun currentSafeId(): SafeId {
-        return safeIdFlow.value!!
-    }
+    override suspend fun currentSafeId(): SafeId = safeIdFlow.value!!
 
-    override fun lastSafeIdLoaded(): SafeId? {
-        return lastSafeId
-    }
+    override fun lastSafeIdLoaded(): SafeId? = lastSafeId
 
-    override suspend fun currentSafeIdOrNull(): SafeId? {
-        return safeIdFlow.value
-    }
+    override suspend fun currentSafeIdOrNull(): SafeId? = safeIdFlow.value
 
-    override suspend fun getAllSafeId(): List<SafeId> {
-        return listOfNotNull(safeIdFlow.value)
-    }
+    override suspend fun getAllSafeId(): List<SafeId> = listOfNotNull(safeIdFlow.value)
 
-    override suspend fun getAllSafeOrderByLastOpenAsc(): List<SafeCrypto> {
-        return listOfNotNull(
-            safeIdFlow.value?.let {
-                SafeCrypto(
-                    it,
-                    byteArrayOf(),
-                    byteArrayOf(),
-                    byteArrayOf(),
-                    byteArrayOf(),
-                    byteArrayOf(),
-                    null,
-                    null,
-                )
-            },
-        )
-    }
+    override suspend fun getAllSafeOrderByLastOpenAsc(): List<SafeCrypto> = listOfNotNull(
+        safeIdFlow.value?.let {
+            SafeCrypto(
+                it,
+                byteArrayOf(),
+                byteArrayOf(),
+                byteArrayOf(),
+                byteArrayOf(),
+                byteArrayOf(),
+                null,
+                null,
+            )
+        },
+    )
 
     override suspend fun insertSafe(safeCrypto: SafeCrypto, safeSettings: SafeSettings, appVisit: AppVisit) {
     }
@@ -84,40 +74,26 @@ class DummySafeRepository(initSafeId: SafeId? = firstSafeId) : SafeRepository {
     override suspend fun deleteSafe(safeId: SafeId) {
     }
 
-    override fun currentSafeIdFlow(): Flow<SafeId?> {
-        return safeIdFlow
-    }
+    override fun currentSafeIdFlow(): Flow<SafeId?> = safeIdFlow
 
-    override suspend fun getSubKey(safeId: SafeId, subKeyType: SubKeyType): ByteArray? {
-        return null
-    }
+    override suspend fun getSubKey(safeId: SafeId, subKeyType: SubKeyType): ByteArray? = null
 
-    override suspend fun hasSafe(): Boolean {
-        return safeIdFlow.value != null
-    }
+    override suspend fun hasSafe(): Boolean = safeIdFlow.value != null
 
-    override suspend fun getSalt(safeId: SafeId): ByteArray {
-        return byteArrayOf()
-    }
+    override suspend fun getSalt(safeId: SafeId): ByteArray = byteArrayOf()
 
-    override suspend fun getCurrentSalt(): ByteArray {
-        return byteArrayOf()
-    }
+    override suspend fun getCurrentSalt(): ByteArray = byteArrayOf()
 
     override suspend fun clearSafeId() {
         safeIdFlow.value = null
     }
 
-    override suspend fun getSafeVersion(safeId: SafeId): Int? {
-        return null
-    }
+    override suspend fun getSafeVersion(safeId: SafeId): Int? = null
 
     override suspend fun setSafeVersion(safeId: SafeId, version: Int) {
     }
 
-    override suspend fun isSafeIdInMemory(timeout: Duration): Boolean {
-        return safeIdFlow.value != null
-    }
+    override suspend fun isSafeIdInMemory(timeout: Duration): Boolean = safeIdFlow.value != null
 
     override suspend fun setBiometricMaterial(safeId: SafeId, biometricCryptoMaterial: BiometricCryptoMaterial) {
         bioMap.clear()
@@ -131,69 +107,49 @@ class DummySafeRepository(initSafeId: SafeId? = firstSafeId) : SafeRepository {
         bioMap.clear()
     }
 
-    override suspend fun getBiometricSafe(): SafeCrypto {
-        return SafeCrypto(
-            id = bioMap.keys.first(),
-            salt = byteArrayOf(),
-            encTest = byteArrayOf(),
-            encIndexKey = byteArrayOf(),
-            encBubblesKey = byteArrayOf(),
-            encItemEditionKey = byteArrayOf(),
-            biometricCryptoMaterial = BiometricCryptoMaterial(ByteArray(16), ByteArray(32)),
-            autoDestructionKey = null,
-        )
-    }
+    override suspend fun getBiometricSafe(): SafeCrypto = SafeCrypto(
+        id = bioMap.keys.first(),
+        salt = byteArrayOf(),
+        encTest = byteArrayOf(),
+        encIndexKey = byteArrayOf(),
+        encBubblesKey = byteArrayOf(),
+        encItemEditionKey = byteArrayOf(),
+        biometricCryptoMaterial = BiometricCryptoMaterial(ByteArray(16), ByteArray(32)),
+        autoDestructionKey = null,
+    )
 
-    override fun hasBiometricSafe(): Flow<Boolean> {
-        return flowOf(bioMap.isNotEmpty())
-    }
+    override fun hasBiometricSafe(): Flow<Boolean> = flowOf(bioMap.isNotEmpty())
 
-    override fun isBiometricEnabledForSafeFlow(safeId: SafeId): Flow<Boolean> {
-        return flowOf(bioMap.containsKey(safeId))
-    }
+    override fun isBiometricEnabledForSafeFlow(safeId: SafeId): Flow<Boolean> = flowOf(bioMap.containsKey(safeId))
 
-    override suspend fun isAutoDestructionEnabledForSafe(safeId: SafeId): Boolean {
-        return false
-    }
+    override suspend fun isAutoDestructionEnabledForSafe(safeId: SafeId): Boolean = false
 
-    override fun isAutoDestructionEnabledForSafeFlow(safeId: SafeId): Flow<Boolean> {
-        return flowOf(false)
-    }
+    override fun isAutoDestructionEnabledForSafeFlow(safeId: SafeId): Flow<Boolean> = flowOf(false)
 
-    override suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean {
-        return bioMap.containsKey(safeId)
-    }
+    override suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean = bioMap.containsKey(safeId)
 
     override suspend fun setLastOpen(safeId: SafeId) {
-        /* no-op */
+        // no-op
     }
 
-    override suspend fun getSafeCrypto(safeId: SafeId): SafeCrypto {
-        return SafeCrypto(
-            id = bioMap.keys.first(),
-            salt = byteArrayOf(),
-            encTest = byteArrayOf(),
-            encIndexKey = byteArrayOf(),
-            encBubblesKey = byteArrayOf(),
-            encItemEditionKey = byteArrayOf(),
-            biometricCryptoMaterial = null,
-            autoDestructionKey = null,
-        )
-    }
+    override suspend fun getSafeCrypto(safeId: SafeId): SafeCrypto = SafeCrypto(
+        id = bioMap.keys.first(),
+        salt = byteArrayOf(),
+        encTest = byteArrayOf(),
+        encIndexKey = byteArrayOf(),
+        encBubblesKey = byteArrayOf(),
+        encItemEditionKey = byteArrayOf(),
+        biometricCryptoMaterial = null,
+        autoDestructionKey = null,
+    )
 
-    override fun isPanicDestructionEnabledFlow(safeId: SafeId): Flow<Boolean> {
-        return isPanicDestructionEnabled
-    }
+    override fun isPanicDestructionEnabledFlow(safeId: SafeId): Flow<Boolean> = isPanicDestructionEnabled
 
     override suspend fun setIsPanicDestructionEnabled(safeId: SafeId, isEnabled: Boolean) {
         isPanicDestructionEnabled.value = isEnabled
     }
 
-    override suspend fun hasAnySafePanicWidgetEnabled(): Boolean {
-        return false
-    }
+    override suspend fun hasAnySafePanicWidgetEnabled(): Boolean = false
 
-    override suspend fun getSafeToDestroy(): List<SafeId> {
-        return listOf()
-    }
+    override suspend fun getSafeToDestroy(): List<SafeId> = listOf()
 }

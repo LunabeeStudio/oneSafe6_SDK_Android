@@ -55,49 +55,46 @@ class GetPreventionWarningCtaStateUseCase @Inject constructor(
     private val clock: Clock,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(): Flow<PreventionSettingsWarning?> {
-        return safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
-            safeId?.let {
-                settingRepository.preventionWarningCtaState(safeId = safeId).flatMapLatest { preventionWarningCtaState ->
-                    if (shouldDisplayCta(preventionWarningCtaState)) {
-                        safeItemRepository.getSafeItemsCountFlow(safeId = safeId).flatMapLatest { itemCount ->
-                            contactRepository.getContactCountFlow(DoubleRatchetUUID(safeId.id)).flatMapLatest { contactCount ->
-                                if (itemCount > 0 || contactCount > 0) {
-                                    checkSettingsConditions(safeId = safeId)
-                                } else {
-                                    flowOf(value = null)
-                                }
+    operator fun invoke(): Flow<PreventionSettingsWarning?> = safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+        safeId?.let {
+            settingRepository.preventionWarningCtaState(safeId = safeId).flatMapLatest { preventionWarningCtaState ->
+                if (shouldDisplayCta(preventionWarningCtaState)) {
+                    safeItemRepository.getSafeItemsCountFlow(safeId = safeId).flatMapLatest { itemCount ->
+                        contactRepository.getContactCountFlow(DoubleRatchetUUID(safeId.id)).flatMapLatest { contactCount ->
+                            if (itemCount > 0 || contactCount > 0) {
+                                checkSettingsConditions(safeId = safeId)
+                            } else {
+                                flowOf(value = null)
                             }
                         }
-                    } else {
-                        flowOf(value = null)
                     }
+                } else {
+                    flowOf(value = null)
                 }
-            } ?: flowOf(value = null)
-        }
+            }
+        } ?: flowOf(value = null)
     }
 
-    private fun checkSettingsConditions(safeId: SafeId): Flow<PreventionSettingsWarning?> {
-        return combine(
-            safeRepository.isBiometricEnabledForSafeFlow(safeId = safeId),
-            securitySettingsRepository.verifyPasswordIntervalFlow(safeId = safeId),
-            settingRepository.hasBackupSince(safeId = safeId, duration = Constant.PreventionWarningBackupAge),
-            settingRepository.hasExportSince(safeId = safeId, duration = Constant.PreventionWarningBackupAge),
-        ) { isBiometricEnabled, verifyPasswordInterval, hasBackupSinceOneMonth, hasExportSinceOneMonth ->
-            val shouldWarnAboutPasswordVerification = isBiometricEnabled && verifyPasswordInterval == VerifyPasswordInterval.NEVER
-            val shouldWarnAboutBackup = !hasBackupSinceOneMonth && !hasExportSinceOneMonth
-            when {
-                shouldWarnAboutBackup && shouldWarnAboutPasswordVerification -> PreventionSettingsWarning.PasswordVerificationAndBackup
-                shouldWarnAboutPasswordVerification -> PreventionSettingsWarning.PasswordVerification
-                shouldWarnAboutBackup -> PreventionSettingsWarning.Backup
-                else -> null
-            }
+    private fun checkSettingsConditions(safeId: SafeId): Flow<PreventionSettingsWarning?> = combine(
+        safeRepository.isBiometricEnabledForSafeFlow(safeId = safeId),
+        securitySettingsRepository.verifyPasswordIntervalFlow(safeId = safeId),
+        settingRepository.hasBackupSince(safeId = safeId, duration = Constant.PreventionWarningBackupAge),
+        settingRepository.hasExportSince(safeId = safeId, duration = Constant.PreventionWarningBackupAge),
+    ) { isBiometricEnabled, verifyPasswordInterval, hasBackupSinceOneMonth, hasExportSinceOneMonth ->
+        val shouldWarnAboutPasswordVerification = isBiometricEnabled && verifyPasswordInterval == VerifyPasswordInterval.NEVER
+        val shouldWarnAboutBackup = !hasBackupSinceOneMonth && !hasExportSinceOneMonth
+        when {
+            shouldWarnAboutBackup && shouldWarnAboutPasswordVerification -> PreventionSettingsWarning.PasswordVerificationAndBackup
+            shouldWarnAboutPasswordVerification -> PreventionSettingsWarning.PasswordVerification
+            shouldWarnAboutBackup -> PreventionSettingsWarning.Backup
+            else -> null
         }
     }
 
     private fun shouldDisplayCta(preventionWarningCtaState: CtaState?): Boolean {
         val lastDismissDate = (preventionWarningCtaState as? CtaState.DismissedAt)?.timestamp ?: return false
-        val dateToCompare = lastDismissDate.plus(Constant.DelayBeforeShowingCtaState, Constant.DelayUnitPreventionWarningCtaState)
+        val dateToCompare = lastDismissDate
+            .plus(Constant.DelayBeforeShowingCtaState, Constant.DelayUnitPreventionWarningCtaState)
         return dateToCompare < Instant.now(clock)
     }
 }

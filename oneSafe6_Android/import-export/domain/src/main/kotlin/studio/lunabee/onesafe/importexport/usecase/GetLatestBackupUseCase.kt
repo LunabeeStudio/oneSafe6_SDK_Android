@@ -65,12 +65,10 @@ class GetLatestBackupUseCase @Inject constructor(
      * Get a flow of all all distinct & sorted backups
      */
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun flow(currentSafeId: SafeId? = null): Flow<LatestBackups?> {
-        return currentSafeId?.let { safeId -> latestBackupsFlow(safeId) }
-            ?: safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
-                safeId?.let { latestBackupsFlow(safeId) } ?: flowOf(null)
-            }
-    }
+    fun flow(currentSafeId: SafeId? = null): Flow<LatestBackups?> = currentSafeId?.let { safeId -> latestBackupsFlow(safeId) }
+        ?: safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+            safeId?.let { latestBackupsFlow(safeId) } ?: flowOf(null)
+        }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun latestBackupsFlow(safeId: SafeId) = getAutoBackupModeUseCase.flow(safeId).flatMapLatest { mode ->

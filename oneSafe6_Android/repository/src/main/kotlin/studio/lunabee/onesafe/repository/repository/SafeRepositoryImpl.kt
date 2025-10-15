@@ -47,17 +47,14 @@ class SafeRepositoryImpl @Inject constructor(
         cacheDataSource.clearSafeId()
     }
 
-    override suspend fun getSafeVersion(safeId: SafeId): Int {
-        return localDataSource.getSafeVersion(safeId)
-    }
+    override suspend fun getSafeVersion(safeId: SafeId): Int = localDataSource.getSafeVersion(safeId)
 
     override suspend fun setSafeVersion(safeId: SafeId, version: Int) {
         localDataSource.setVersion(safeId, version)
     }
 
-    override suspend fun getAllSafeOrderByLastOpenAsc(): List<SafeCrypto> {
-        return localDataSource.getAllSafeCryptoOrderByLastOpenAsc()
-    }
+    override suspend fun getAllSafeOrderByLastOpenAsc(): List<SafeCrypto> = localDataSource
+        .getAllSafeCryptoOrderByLastOpenAsc()
 
     override suspend fun insertSafe(
         safeCrypto: SafeCrypto,
@@ -77,54 +74,34 @@ class SafeRepositoryImpl @Inject constructor(
         localDataSource.updateSafeCrypto(safeCrypto)
     }
 
-    override fun currentSafeIdFlow(): Flow<SafeId?> {
-        return cacheDataSource.getSafeIdFlow()
+    override fun currentSafeIdFlow(): Flow<SafeId?> = cacheDataSource.getSafeIdFlow()
+
+    override suspend fun getSubKey(safeId: SafeId, subKeyType: SubKeyType): ByteArray? = when (subKeyType) {
+        SubKeyType.SearchIndex -> localDataSource.getIndexKey(safeId)
+        SubKeyType.ItemEdition -> localDataSource.getItemEditionKey(safeId)
+        SubKeyType.Bubbles -> localDataSource.getBubblesKey(safeId)
     }
 
-    override suspend fun getSubKey(safeId: SafeId, subKeyType: SubKeyType): ByteArray? {
-        return when (subKeyType) {
-            SubKeyType.SearchIndex -> localDataSource.getIndexKey(safeId)
-            SubKeyType.ItemEdition -> localDataSource.getItemEditionKey(safeId)
-            SubKeyType.Bubbles -> localDataSource.getBubblesKey(safeId)
-        }
-    }
+    override suspend fun hasSafe(): Boolean = localDataSource.hasSafe()
 
-    override suspend fun hasSafe(): Boolean {
-        return localDataSource.hasSafe()
-    }
+    override suspend fun getSalt(safeId: SafeId): ByteArray = localDataSource.getSalt(safeId)
 
-    override suspend fun getSalt(safeId: SafeId): ByteArray {
-        return localDataSource.getSalt(safeId)
-    }
+    override suspend fun getCurrentSalt(): ByteArray = getSalt(currentSafeId())
 
-    override suspend fun getCurrentSalt(): ByteArray {
-        return getSalt(currentSafeId())
-    }
+    override suspend fun currentSafeId(): SafeId = cacheDataSource.getSafeId()
+        ?: throw OSRepositoryError.Code.SAFE_ID_NOT_LOADED.get()
 
-    override suspend fun currentSafeId(): SafeId {
-        return cacheDataSource.getSafeId()
-            ?: throw OSRepositoryError.Code.SAFE_ID_NOT_LOADED.get()
-    }
+    override fun lastSafeIdLoaded(): SafeId? = cacheDataSource.getLastSafeId()
 
-    override fun lastSafeIdLoaded(): SafeId? {
-        return cacheDataSource.getLastSafeId()
-    }
+    override suspend fun currentSafeIdOrNull(): SafeId? = cacheDataSource.getSafeId()
 
-    override suspend fun currentSafeIdOrNull(): SafeId? {
-        return cacheDataSource.getSafeId()
-    }
-
-    override suspend fun getAllSafeId(): List<SafeId> {
-        return localDataSource.getAllSafeId()
-    }
+    override suspend fun getAllSafeId(): List<SafeId> = localDataSource.getAllSafeId()
 
     override suspend fun deleteSafe(safeId: SafeId) {
         localDataSource.deleteSafe(safeId)
     }
 
-    override suspend fun isSafeIdInMemory(timeout: Duration): Boolean {
-        return cacheDataSource.getSafeId() != null
-    }
+    override suspend fun isSafeIdInMemory(timeout: Duration): Boolean = cacheDataSource.getSafeId() != null
 
     override suspend fun setBiometricMaterial(safeId: SafeId, biometricCryptoMaterial: BiometricCryptoMaterial) {
         localDataSource.setBiometricKey(safeId, biometricCryptoMaterial)
@@ -138,51 +115,41 @@ class SafeRepositoryImpl @Inject constructor(
         localDataSource.removeAllBiometricKeys()
     }
 
-    override suspend fun getBiometricSafe(): SafeCrypto {
-        return localDataSource.getBiometricSafe() ?: throw OSRepositoryError.Code.NO_BIOMETRIC_SAFE_FOUND.get()
-    }
+    override suspend fun getBiometricSafe(): SafeCrypto =
+        localDataSource.getBiometricSafe() ?: throw OSRepositoryError.Code.NO_BIOMETRIC_SAFE_FOUND.get()
 
-    override fun hasBiometricSafe(): Flow<Boolean> {
-        return localDataSource.hasBiometricSafe()
-    }
+    override fun hasBiometricSafe(): Flow<Boolean> = localDataSource.hasBiometricSafe()
 
-    override fun isBiometricEnabledForSafeFlow(safeId: SafeId): Flow<Boolean> {
-        return localDataSource.isBiometricEnabledForSafeFlow(safeId)
-    }
+    override fun isBiometricEnabledForSafeFlow(safeId: SafeId): Flow<Boolean> = localDataSource
+        .isBiometricEnabledForSafeFlow(safeId)
 
-    override suspend fun isAutoDestructionEnabledForSafe(safeId: SafeId): Boolean {
-        return localDataSource.isAutoDestructionEnabledForSafe(safeId)
-    }
+    override suspend fun isAutoDestructionEnabledForSafe(safeId: SafeId): Boolean = localDataSource
+        .isAutoDestructionEnabledForSafe(safeId)
 
-    override fun isAutoDestructionEnabledForSafeFlow(safeId: SafeId): Flow<Boolean> {
-        return localDataSource.isAutoDestructionEnabledForSafeFlow(safeId)
-    }
+    override fun isAutoDestructionEnabledForSafeFlow(safeId: SafeId): Flow<Boolean> = localDataSource
+        .isAutoDestructionEnabledForSafeFlow(
+            safeId,
+        )
 
-    override suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean {
-        return localDataSource.isBiometricEnabledForSafe(safeId)
-    }
+    override suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean = localDataSource
+        .isBiometricEnabledForSafe(safeId)
 
     override suspend fun setLastOpen(safeId: SafeId) {
         localDataSource.setLastOpen(safeId)
     }
 
-    override suspend fun getSafeCrypto(safeId: SafeId): SafeCrypto? {
-        return localDataSource.getSafeCrypto(safeId)
-    }
+    override suspend fun getSafeCrypto(safeId: SafeId): SafeCrypto? = localDataSource.getSafeCrypto(safeId)
 
-    override fun isPanicDestructionEnabledFlow(safeId: SafeId): Flow<Boolean> {
-        return localDataSource.isPanicDestructionEnabledFlow(safeId)
-    }
+    override fun isPanicDestructionEnabledFlow(safeId: SafeId): Flow<Boolean> = localDataSource
+        .isPanicDestructionEnabledFlow(safeId)
 
-    override suspend fun setIsPanicDestructionEnabled(safeId: SafeId, isEnabled: Boolean) {
-        return localDataSource.setIsPanicDestructionEnabled(safeId, isEnabled)
-    }
+    override suspend fun setIsPanicDestructionEnabled(safeId: SafeId, isEnabled: Boolean) = localDataSource
+        .setIsPanicDestructionEnabled(
+            safeId,
+            isEnabled,
+        )
 
-    override suspend fun hasAnySafePanicWidgetEnabled(): Boolean {
-        return localDataSource.hasAnySafePanicWidgetEnabled()
-    }
+    override suspend fun hasAnySafePanicWidgetEnabled(): Boolean = localDataSource.hasAnySafePanicWidgetEnabled()
 
-    override suspend fun getSafeToDestroy(): List<SafeId> {
-        return localDataSource.getSafeToDestroy()
-    }
+    override suspend fun getSafeToDestroy(): List<SafeId> = localDataSource.getSafeToDestroy()
 }

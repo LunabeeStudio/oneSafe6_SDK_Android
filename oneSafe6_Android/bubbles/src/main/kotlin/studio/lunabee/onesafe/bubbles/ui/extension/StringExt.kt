@@ -28,34 +28,31 @@ import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.onesafe.bubbles.ui.BubblesUiConstants
 import studio.lunabee.onesafe.commonui.CommonUiConstants
 
-fun String.toBarcodeBitmap(): ImageBitmap? {
-    return try {
-        val barcodeEncoder = BarcodeEncoder()
-        val bitmap = barcodeEncoder.encodeBitmap(
-            this,
-            BarcodeFormat.QR_CODE,
-            BubblesUiConstants.BarcodeSize,
-            BubblesUiConstants.BarcodeSize,
-        )
-        bitmap.asImageBitmap()
-    } catch (e: Exception) {
-        null
-    }
+fun String.toBarcodeBitmap(): ImageBitmap? = try {
+    val barcodeEncoder = BarcodeEncoder()
+    val bitmap = barcodeEncoder.encodeBitmap(
+        this,
+        BarcodeFormat.QR_CODE,
+        BubblesUiConstants.BarcodeSize,
+        BubblesUiConstants.BarcodeSize,
+    )
+    bitmap.asImageBitmap()
+} catch (e: Exception) {
+    null
 }
 
-fun String.getDeepLinkFromMessage(messageSharingMode: MessageSharingMode): String {
-    return if (messageSharingMode == MessageSharingMode.Deeplink) {
-        CommonUiConstants.Deeplink.BubblesDeeplinkUrl.buildUpon()
-            .fragment(this)
-            .build()
-            .toString()
-    } else {
-        Uri.decode(this)
-    }
+fun String.getDeepLinkFromMessage(messageSharingMode: MessageSharingMode): String = if (messageSharingMode == MessageSharingMode.Deeplink) {
+    CommonUiConstants.Deeplink.BubblesDeeplinkUrl
+        .buildUpon()
+        .fragment(this)
+        .build()
+        .toString()
+} else {
+    Uri.decode(this)
 }
 
-fun String.getBase64FromMessage(): String {
-    return this.substringAfter("${CommonUiConstants.Deeplink.BubblesDeeplinkUrl}#").let(Uri::decode)
-}
+fun String.getBase64FromMessage(): String = this
+    .substringAfter("${CommonUiConstants.Deeplink.BubblesDeeplinkUrl}#")
+    .let(Uri::decode)
 
 fun Uri.getBase64FromMessage(): String = Uri.decode(fragment)

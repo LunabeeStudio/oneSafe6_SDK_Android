@@ -35,8 +35,8 @@ class PasswordGeneratorConfigLocalDataSourceImpl @Inject constructor(
     private val dataStore: DataStore<OSPasswordGeneratorConfigProto.PasswordGeneratorConfigProto>,
     @param:FileDispatcher private val fileDispatcher: CoroutineDispatcher,
 ) : PasswordGeneratorConfigLocalDataSource {
-    override fun getConfig(): Flow<PasswordConfig> {
-        return dataStore.data.map { proto ->
+    override fun getConfig(): Flow<PasswordConfig> = dataStore.data
+        .map { proto ->
             if (proto.length != 0) {
                 PasswordConfig(
                     length = proto.length,
@@ -49,12 +49,12 @@ class PasswordGeneratorConfigLocalDataSourceImpl @Inject constructor(
                 PasswordConfig.default()
             }
         }.flowOn(fileDispatcher)
-    }
 
     override suspend fun setConfig(config: PasswordConfig) {
         withContext(fileDispatcher) {
             dataStore.updateData {
-                OSPasswordGeneratorConfigProto.PasswordGeneratorConfigProto.newBuilder()
+                OSPasswordGeneratorConfigProto.PasswordGeneratorConfigProto
+                    .newBuilder()
                     .setLength(config.length)
                     .setIncludeUpperCase(config.includeUpperCase)
                     .setIncludeLowerCase(config.includeLowerCase)

@@ -33,9 +33,10 @@ class ForceUpgradeRepositoryImpl @Inject constructor(
     private val forceUpgradeRemoteDatasource: ForceUpdateRemoteDatasource,
 ) : ForceUpgradeRepository {
 
-    override suspend fun fetchForceUpgradeStrings(languageFileUrl: String): ForceUpgradeStrings? {
-        return forceUpgradeRemoteDatasource.fetchForceUpgradeStrings(languageFileUrl)
-    }
+    override suspend fun fetchForceUpgradeStrings(languageFileUrl: String): ForceUpgradeStrings? = forceUpgradeRemoteDatasource
+        .fetchForceUpgradeStrings(
+            languageFileUrl,
+        )
 
     override suspend fun saveForceUpgradeData(forceUpgradeData: ForceUpgradeData) {
         forceUpgradeLocalDatasource.saveForceUpgradeData(forceUpgradeData)
@@ -43,9 +44,8 @@ class ForceUpgradeRepositoryImpl @Inject constructor(
 
     override suspend fun cleanForceUpgradeData(): Unit = forceUpgradeLocalDatasource.cleanForceUpgradeData()
 
-    override suspend fun fetchForceUpgradeInfo(): ForceUpgradeInfo? {
-        return forceUpgradeRemoteDatasource.fetchForceUpgradeInfo()
-    }
+    override suspend fun fetchForceUpgradeInfo(): ForceUpgradeInfo? = forceUpgradeRemoteDatasource
+        .fetchForceUpgradeInfo()
 
     override fun getForceUpgradeData(): Flow<ForceUpgradeData?> = forceUpgradeLocalDatasource.getForceUpgradeData()
 }

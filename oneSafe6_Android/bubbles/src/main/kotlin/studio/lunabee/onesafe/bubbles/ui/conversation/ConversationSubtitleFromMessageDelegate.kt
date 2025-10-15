@@ -40,10 +40,14 @@ class ConversationSubtitleFromMessageDelegate @Inject constructor(
     suspend operator fun invoke(message: SafeMessage): ConversationSubtitle {
         val plainMessageContentData = decryptSafeMessageUseCase.content(message)
         val messageContent = when (plainMessageContentData) {
-            PlainMessageContentData.AcceptedInvitation -> LbcTextSpec.StringResource(OSString.bubbles_acceptedInvitation)
+            PlainMessageContentData.AcceptedInvitation ->
+                LbcTextSpec
+                    .StringResource(OSString.bubbles_acceptedInvitation)
             is PlainMessageContentData.Default -> {
                 when (val plainContent = plainMessageContentData.content) {
-                    is LBResult.Failure -> LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_corruptedMessage)
+                    is LBResult.Failure ->
+                        LbcTextSpec
+                            .StringResource(OSString.bubbles_writeMessageScreen_corruptedMessage)
                     is LBResult.Success -> LbcTextSpec.Raw(plainContent.successData)
                 }
             }
@@ -53,11 +57,17 @@ class ConversationSubtitleFromMessageDelegate @Inject constructor(
                 val name = item?.encName?.let { itemDecryptUseCase(it, item.id, String::class).data }
                 val label = name?.let(LbcTextSpec::Raw) ?: LbcTextSpec.StringResource(OSString.common_noName)
                 when (message.direction) {
-                    MessageDirection.SENT -> LbcTextSpec.StringResource(OSString.bubbles_message_subtitle_sharedItem, label)
-                    MessageDirection.RECEIVED -> LbcTextSpec.StringResource(OSString.bubbles_message_subtitle_receivedItem, label)
+                    MessageDirection.SENT ->
+                        LbcTextSpec
+                            .StringResource(OSString.bubbles_message_subtitle_sharedItem, label)
+                    MessageDirection.RECEIVED ->
+                        LbcTextSpec
+                            .StringResource(OSString.bubbles_message_subtitle_receivedItem, label)
                 }
             }
-            PlainMessageContentData.ResetConversation -> LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_conversationReset)
+            PlainMessageContentData.ResetConversation ->
+                LbcTextSpec
+                    .StringResource(OSString.bubbles_writeMessageScreen_conversationReset)
         }
         return ConversationSubtitle.Message(content = messageContent)
     }

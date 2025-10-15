@@ -24,7 +24,7 @@ import studio.lunabee.onesafe.cryptography.android.BiometricEngine
 import studio.lunabee.onesafe.cryptography.android.PasswordHashEngine
 import studio.lunabee.onesafe.domain.model.safe.SafeCrypto
 import studio.lunabee.onesafe.domain.model.safe.SafeId
-import studio.lunabee.onesafe.domain.repository.MainCryptoRepository.Companion.MASTER_KEY_TEST_VALUE
+import studio.lunabee.onesafe.domain.repository.MainCryptoRepository.Companion.MasterKeyTestValue
 import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.DisableBiometricUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSignUpUseCase
@@ -83,32 +83,31 @@ class MigrationGetSafeCryptoUseCase @Inject constructor(
     private suspend fun testAndGetCrypto(
         safeCrypto: SafeCrypto,
         key: ByteArray,
-    ): MigrationSafeData0? {
-        return try {
-            val version = getCurrentVersion(safeCrypto.id)
-            val plainMasterKeyTest = migrationCryptoUseCase.decrypt(safeCrypto.encTest, key, version)
-                .decodeToString()
-            if (plainMasterKeyTest == MASTER_KEY_TEST_VALUE) {
-                MigrationSafeData0(
-                    masterKey = key,
-                    version = version,
-                    id = safeCrypto.id,
-                    salt = safeCrypto.salt,
-                    encTest = safeCrypto.encTest,
-                    encIndexKey = safeCrypto.encIndexKey.takeUnless { it.contentEquals(byteArrayOf(0)) },
-                    encBubblesKey = safeCrypto.encBubblesKey.takeUnless { it.contentEquals(byteArrayOf(0)) },
-                    encItemEditionKey = safeCrypto.encItemEditionKey.takeUnless { it.contentEquals(byteArrayOf(0)) },
-                    biometricCryptoMaterial = safeCrypto.biometricCryptoMaterial,
-                )
-            } else {
-                null
-            }
-        } catch (e: OSMigrationError) {
-            if (e.code == OSMigrationError.Code.DECRYPT_FAIL) {
-                null
-            } else {
-                throw (e)
-            }
+    ): MigrationSafeData0? = try {
+        val version = getCurrentVersion(safeCrypto.id)
+        val plainMasterKeyTest = migrationCryptoUseCase
+            .decrypt(safeCrypto.encTest, key, version)
+            .decodeToString()
+        if (plainMasterKeyTest == MasterKeyTestValue) {
+            MigrationSafeData0(
+                masterKey = key,
+                version = version,
+                id = safeCrypto.id,
+                salt = safeCrypto.salt,
+                encTest = safeCrypto.encTest,
+                encIndexKey = safeCrypto.encIndexKey.takeUnless { it.contentEquals(byteArrayOf(0)) },
+                encBubblesKey = safeCrypto.encBubblesKey.takeUnless { it.contentEquals(byteArrayOf(0)) },
+                encItemEditionKey = safeCrypto.encItemEditionKey.takeUnless { it.contentEquals(byteArrayOf(0)) },
+                biometricCryptoMaterial = safeCrypto.biometricCryptoMaterial,
+            )
+        } else {
+            null
+        }
+    } catch (e: OSMigrationError) {
+        if (e.code == OSMigrationError.Code.DECRYPT_FAIL) {
+            null
+        } else {
+            throw (e)
         }
     }
 

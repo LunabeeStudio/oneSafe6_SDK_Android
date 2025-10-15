@@ -51,8 +51,11 @@ object SettingsDefaults {
     val ItemOrderingDefault: ItemOrder = ItemOrder.Alphabetic
     val ItemLayoutDefault: ItemLayout = ItemLayout.Grid
     val EnableAutoBackupCtaState: CtaState = CtaState.Hidden
+
     fun lastPasswordVerificationDefault(clock: Clock): Instant = Instant.now(clock)
+
     fun independentSafeInfoCtaState(clock: Clock): CtaState = CtaState.VisibleSince(Instant.now(clock))
+
     fun preventionWarningCtaState(clock: Clock): CtaState = CtaState.DismissedAt(
         Instant.now(clock).minus(Constant.InitialDelay, Constant.DelayUnitPreventionWarningCtaState),
     )

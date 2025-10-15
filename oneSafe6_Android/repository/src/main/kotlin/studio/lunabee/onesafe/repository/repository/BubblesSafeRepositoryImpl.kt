@@ -21,25 +21,27 @@ package studio.lunabee.onesafe.repository.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.bubbles.domain.repository.BubblesSafeRepository
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.onesafe.domain.usecase.authentication.IsSafeReadyUseCase
-import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.error.OSRepositoryError
+import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.repository.datasource.SafeIdCacheDataSource
 
 class BubblesSafeRepositoryImpl @Inject constructor(
     private val cacheDataSource: SafeIdCacheDataSource,
     private val isSafeReadyUseCase: IsSafeReadyUseCase,
 ) : BubblesSafeRepository {
-    override suspend fun currentSafeId(): DoubleRatchetUUID {
-        return cacheDataSource.getSafeId()?.let { DoubleRatchetUUID(it.id) }
-            ?: throw OSRepositoryError.Code.SAFE_ID_NOT_LOADED.get()
-    }
+    override suspend fun currentSafeId(): DoubleRatchetUUID = cacheDataSource.getSafeId()?.let { DoubleRatchetUUID(it.id) }
+        ?: throw OSRepositoryError.Code.SAFE_ID_NOT_LOADED.get()
 
-    override fun currentSafeIdFlow(): Flow<DoubleRatchetUUID?> {
-        return cacheDataSource.getSafeIdFlow().map { it?.let { DoubleRatchetUUID(it.id) } }
+    override fun currentSafeIdFlow(): Flow<DoubleRatchetUUID?> = cacheDataSource.getSafeIdFlow().map {
+        it?.let {
+            DoubleRatchetUUID(
+                it.id,
+            )
+        }
     }
 
     override fun isSafeReady(): Flow<Boolean> = isSafeReadyUseCase.flow()

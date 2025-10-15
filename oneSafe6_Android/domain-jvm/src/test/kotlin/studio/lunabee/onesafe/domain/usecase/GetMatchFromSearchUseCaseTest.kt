@@ -70,28 +70,22 @@ class GetMatchFromSearchUseCaseTest {
         PlainIndexWordEntry("aaaa", testUUIDs[0], null),
         PlainIndexWordEntry("bbbb", testUUIDs[0], null),
         PlainIndexWordEntry("field aabb", testUUIDs[0], testUUIDs[10]),
-
         PlainIndexWordEntry("aaaa", testUUIDs[1], testUUIDs[11]),
         PlainIndexWordEntry("cccc", testUUIDs[1], null),
         PlainIndexWordEntry("dddd", testUUIDs[1], null),
-
         PlainIndexWordEntry("zzzz", testUUIDs[2], null),
         PlainIndexWordEntry("yyyy", testUUIDs[2], null),
         PlainIndexWordEntry("xxxx", testUUIDs[2], null),
-
         PlainIndexWordEntry("zzzz", testUUIDs[3], null),
         PlainIndexWordEntry("yyyy", testUUIDs[3], null),
-
         PlainIndexWordEntry("zzzz", testUUIDs[4], null),
         PlainIndexWordEntry("zzzz", testUUIDs[4], null),
         PlainIndexWordEntry("zzzz", testUUIDs[4], null),
         PlainIndexWordEntry("yyyy", testUUIDs[4], null),
         PlainIndexWordEntry("yyyy", testUUIDs[4], null),
         PlainIndexWordEntry("yyyy", testUUIDs[4], null),
-
         PlainIndexWordEntry("zzzz", testUUIDs[8], null),
         PlainIndexWordEntry("yyyy", testUUIDs[8], null),
-
         PlainIndexWordEntry("zzzz", testUUIDs[9], null),
         PlainIndexWordEntry("yyyy", testUUIDs[9], null),
         PlainIndexWordEntry("xxxx", testUUIDs[9], null),

@@ -63,7 +63,8 @@ class GetDurationBeforeBackupOutdatedUseCase @Inject constructor(
                 cloudBackupRepository.getBackups(safeId).maxOrNull()?.date?.let { latestCloud ->
                     getAllLocalBackupsUseCase(safeId).maxOrNull()?.date?.let { latestLocal ->
                         val durationSinceLatest = minOf(latestCloud, latestLocal)
-                            .until(Instant.now(clock), ChronoUnit.SECONDS).seconds
+                            .until(Instant.now(clock), ChronoUnit.SECONDS)
+                            .seconds
                         settingsRepository.autoBackupFrequency(safeId) - durationSinceLatest
                     }
                 }

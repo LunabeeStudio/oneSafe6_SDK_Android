@@ -32,15 +32,16 @@ private val log = LBLogger.get<DecryptIndexWordUseCase>()
 class DecryptIndexWordUseCase @Inject constructor(
     private val cryptoRepository: MainCryptoRepository,
 ) {
-    suspend operator fun invoke(encIndexWordEntry: List<IndexWordEntry>): LBResult<List<PlainIndexWordEntry>> = OSError.runCatching(log) {
-        val encWords = encIndexWordEntry.map { it.encWord }
-        val plainWords = cryptoRepository.decryptIndexWord(encWords)
-        encIndexWordEntry.zip(plainWords) { indexWordEntry, plainWord ->
-            PlainIndexWordEntry(
-                word = plainWord,
-                itemMatch = indexWordEntry.itemMatch,
-                fieldMatch = indexWordEntry.fieldMatch,
-            )
+    suspend operator fun invoke(encIndexWordEntry: List<IndexWordEntry>): LBResult<List<PlainIndexWordEntry>> = OSError
+        .runCatching(log) {
+            val encWords = encIndexWordEntry.map { it.encWord }
+            val plainWords = cryptoRepository.decryptIndexWord(encWords)
+            encIndexWordEntry.zip(plainWords) { indexWordEntry, plainWord ->
+                PlainIndexWordEntry(
+                    word = plainWord,
+                    itemMatch = indexWordEntry.itemMatch,
+                    fieldMatch = indexWordEntry.fieldMatch,
+                )
+            }
         }
-    }
 }

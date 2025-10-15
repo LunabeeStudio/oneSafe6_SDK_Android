@@ -37,8 +37,8 @@ import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
 import studio.lunabee.onesafe.domain.qualifier.DatabaseName
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
 import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
-import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.error.OSStorageError
+import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.jvm.use
 import java.io.File
 import javax.inject.Inject
@@ -59,7 +59,7 @@ class SqlCipherDBManager @Inject constructor(
 ) : DatabaseEncryptionManager {
 
     init {
-        System.loadLibrary(sqlCipherLibrary)
+        System.loadLibrary(SqlCipherLibrary)
         logger.i("SQL Cipher loaded")
     }
 
@@ -70,7 +70,7 @@ class SqlCipherDBManager @Inject constructor(
                 mainDbFile.absolutePath,
                 byteArrayOf(),
                 null,
-                openFlags,
+                OpenFlags,
                 null,
                 null,
             )
@@ -87,7 +87,7 @@ class SqlCipherDBManager @Inject constructor(
                 mainDbFile.absolutePath,
                 key.raw,
                 null,
-                openFlags,
+                OpenFlags,
                 null,
             )
             cipherDb.use {
@@ -196,7 +196,7 @@ class SqlCipherDBManager @Inject constructor(
         val parentFile = dbFile.parentFile
             ?: throw OSStorageError.Code.DATABASE_CANNOT_ACCESS_DIR.get()
         val backupFiles = parentFile.listFiles { _, name ->
-            name.startsWith(dbFile.nameWithoutExtension) && name.endsWith(backupSuffix)
+            name.startsWith(dbFile.nameWithoutExtension) && name.endsWith(BackupSuffix)
         } ?: throw OSStorageError.Code.DATABASE_CANNOT_ACCESS_FILES.get()
 
         backupFiles.forEach { it.delete() }
@@ -206,14 +206,14 @@ class SqlCipherDBManager @Inject constructor(
         val parentFile = dbFile.parentFile
             ?: throw OSStorageError.Code.DATABASE_CANNOT_ACCESS_DIR.get()
         val databaseFiles = parentFile.listFiles { _, name ->
-            name.startsWith(dbFile.nameWithoutExtension) && !name.endsWith(backupSuffix)
+            name.startsWith(dbFile.nameWithoutExtension) && !name.endsWith(BackupSuffix)
         } ?: throw OSStorageError.Code.DATABASE_CANNOT_ACCESS_FILES.get()
         val backupFiles = parentFile.listFiles { _, name ->
-            name.startsWith(dbFile.nameWithoutExtension) && name.endsWith(backupSuffix)
+            name.startsWith(dbFile.nameWithoutExtension) && name.endsWith(BackupSuffix)
         } ?: throw OSStorageError.Code.DATABASE_CANNOT_ACCESS_FILES.get()
 
         databaseFiles.forEach { file -> file.delete() }
-        backupFiles.forEach { file -> file.renameTo(File(file.name.removeSuffix(backupSuffix))) }
+        backupFiles.forEach { file -> file.renameTo(File(file.name.removeSuffix(BackupSuffix))) }
     }
 
     override fun checkDatabaseAccess(key: DatabaseKey?) {
@@ -223,21 +223,22 @@ class SqlCipherDBManager @Inject constructor(
     private fun checkDatabaseAccess(key: DatabaseKey?, dbFile: File) {
         var error: Throwable? = null
         try {
-            SQLCipherDatabase.openDatabase(
-                dbFile.absolutePath,
-                key?.raw,
-                null,
-                SQLCipherDatabase.ENABLE_WRITE_AHEAD_LOGGING,
-                null,
-                null,
-            ).use { database ->
-                // https://www.sqlite.org/pragma.html#pragma_integrity_check
-                val checkCursor = database.query("PRAGMA integrity_check")
-                checkCursor.moveToFirst()
-                if (checkCursor.getString(0) != "ok") {
-                    error = OSStorageError.Code.DATABASE_CORRUPTED.get(message = "integrity_check failed")
+            SQLCipherDatabase
+                .openDatabase(
+                    dbFile.absolutePath,
+                    key?.raw,
+                    null,
+                    SQLCipherDatabase.ENABLE_WRITE_AHEAD_LOGGING,
+                    null,
+                    null,
+                ).use { database ->
+                    // https://www.sqlite.org/pragma.html#pragma_integrity_check
+                    val checkCursor = database.query("PRAGMA integrity_check")
+                    checkCursor.moveToFirst()
+                    if (checkCursor.getString(0) != "ok") {
+                        error = OSStorageError.Code.DATABASE_CORRUPTED.get(message = "integrity_check failed")
+                    }
                 }
-            }
         } catch (e: SQLiteCantOpenDatabaseException) {
             error = OSStorageError.Code.DATABASE_NOT_FOUND.get(cause = e)
         } catch (e: SQLiteDatabaseCorruptException) {
@@ -256,9 +257,9 @@ class SqlCipherDBManager @Inject constructor(
         error is SQLiteException && error.message?.contains("code 26") == true
 
     companion object {
-        private const val sqlCipherLibrary: String = "sqlcipher"
-        private const val backupSuffix: String = ".backup"
-        private const val openFlags = SQLCipherDatabase.ENABLE_WRITE_AHEAD_LOGGING or // enable WAL like Room does
+        private const val SqlCipherLibrary: String = "sqlcipher"
+        private const val BackupSuffix: String = ".backup"
+        private const val OpenFlags = SQLCipherDatabase.ENABLE_WRITE_AHEAD_LOGGING or // enable WAL like Room does
             SQLCipherDatabase.CREATE_IF_NECESSARY // allow export db creation
     }
 }

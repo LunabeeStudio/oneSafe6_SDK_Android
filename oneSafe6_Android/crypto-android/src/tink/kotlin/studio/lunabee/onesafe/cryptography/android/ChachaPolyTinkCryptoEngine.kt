@@ -40,44 +40,40 @@ class ChachaPolyTinkCryptoEngine @Inject constructor(
         logger.i("Initialize ${javaClass.simpleName} using Google Tink")
     }
 
-    override fun encrypt(plainData: ByteArray, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
-        return runCatching {
-            val cipher = InsecureNonceChaCha20Poly1305(key)
-            val nonce = ivProvider(NONCE_LENGTH)
-            val output = ByteBuffer.allocate(NONCE_LENGTH + plainData.size + Poly1305.MAC_TAG_SIZE_IN_BYTES)
-            output.put(nonce)
-            cipher.encrypt(output, nonce, plainData, associatedData)
-            output.array()
-        }
+    override fun encrypt(plainData: ByteArray, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> = runCatching {
+        val cipher = InsecureNonceChaCha20Poly1305(key)
+        val nonce = ivProvider(NonceLength)
+        val output = ByteBuffer.allocate(NonceLength + plainData.size + Poly1305.MAC_TAG_SIZE_IN_BYTES)
+        output.put(nonce)
+        cipher.encrypt(output, nonce, plainData, associatedData)
+        output.array()
     }
 
-    override fun decrypt(cipherData: ByteArray, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
-        return runCatching {
-            ChaCha20Poly1305(key).decrypt(cipherData, associatedData)
-        }
+    override fun decrypt(cipherData: ByteArray, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> = runCatching {
+        ChaCha20Poly1305(key).decrypt(cipherData, associatedData)
     }
 
     // This implementation does not scale well for large data
-    override fun decrypt(cipherFile: AtomicFile, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
-        return runCatching {
-            val cipherData = cipherFile.readFully()
-            ChaCha20Poly1305(key).decrypt(cipherData, associatedData)
-        }
+    override fun decrypt(cipherFile: AtomicFile, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> = runCatching {
+        val cipherData = cipherFile.readFully()
+        ChaCha20Poly1305(key).decrypt(cipherData, associatedData)
     }
 
-    override fun getEncryptStream(file: File, key: ByteArray, associatedData: ByteArray?): OutputStream {
-        throw NotImplementedError("Use JCE implementation instead")
-    }
+    override fun getEncryptStream(file: File, key: ByteArray, associatedData: ByteArray?): OutputStream = throw NotImplementedError(
+        "Use JCE implementation instead",
+    )
 
-    override fun getDecryptStream(cipherFile: AtomicFile, key: ByteArray, associatedData: ByteArray?): InputStream {
-        throw NotImplementedError("Use JCE implementation instead")
-    }
+    override fun getDecryptStream(
+        cipherFile: AtomicFile,
+        key: ByteArray,
+        associatedData: ByteArray?,
+    ): InputStream = throw NotImplementedError(
+        "Use JCE implementation instead",
+    )
 
-    override fun getCipherOutputStream(outputStream: OutputStream, key: ByteArray, associatedData: ByteArray?): OutputStream {
-        return outputStream
-    }
+    override fun getCipherOutputStream(outputStream: OutputStream, key: ByteArray, associatedData: ByteArray?): OutputStream = outputStream
 
     companion object {
-        private const val NONCE_LENGTH = 12
+        private const val NonceLength = 12
     }
 }

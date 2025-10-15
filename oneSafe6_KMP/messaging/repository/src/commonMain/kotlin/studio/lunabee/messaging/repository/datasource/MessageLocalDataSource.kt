@@ -26,14 +26,24 @@ import studio.lunabee.messaging.domain.model.SafeMessage
 
 interface MessageLocalDataSource {
     suspend fun save(message: SafeMessage, order: Float)
+
     suspend fun getAllByContact(contactId: DoubleRatchetUUID): List<SafeMessage>
+
     suspend fun getLastMessage(contactId: DoubleRatchetUUID): Flow<SafeMessage?>
+
     suspend fun getLastByContact(contactId: DoubleRatchetUUID, exceptIds: List<DoubleRatchetUUID>): MessageOrder?
+
     suspend fun getFirstByContact(contactId: DoubleRatchetUUID, exceptIds: List<DoubleRatchetUUID>): MessageOrder?
+
     suspend fun countByContact(contactId: DoubleRatchetUUID, exceptIds: List<DoubleRatchetUUID>): Int
+
     suspend fun getAtByContact(position: Int, contactId: DoubleRatchetUUID, exceptIds: List<DoubleRatchetUUID>): MessageOrder?
+
     suspend fun getByContactByOrder(contactId: DoubleRatchetUUID, order: Float): SafeMessage
+
     suspend fun deleteAllMessages(contactId: DoubleRatchetUUID)
+
     suspend fun deleteMessage(messageId: DoubleRatchetUUID)
+
     suspend fun markMessagesAsRead(contactId: DoubleRatchetUUID)
 }

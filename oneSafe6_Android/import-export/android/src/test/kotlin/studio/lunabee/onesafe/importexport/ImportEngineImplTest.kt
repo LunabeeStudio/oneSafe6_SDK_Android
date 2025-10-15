@@ -27,6 +27,8 @@ import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
+import io.mockk.every
+import io.mockk.mockkObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.last
@@ -140,10 +142,11 @@ class ImportEngineImplTest : OSHiltUnitTest() {
 
             val authResult: LBFlowResult<Unit>
             val authExecTime = measureTimeMillis {
-                authResult = importEngine.authenticateAndExtractData(
-                    archiveExtractedDirectory = testFolder,
-                    password = "a".toCharArray(),
-                ).last()
+                authResult = importEngine
+                    .authenticateAndExtractData(
+                        archiveExtractedDirectory = testFolder,
+                        password = "a".toCharArray(),
+                    ).last()
             }
             logger.d("[authenticateAndExtractData] $authExecTime ms")
             assertSuccess(authResult)
@@ -152,10 +155,11 @@ class ImportEngineImplTest : OSHiltUnitTest() {
 
             val prepareDataImportResult: LBFlowResult<Unit>
             val prepareDataExecTime = measureTimeMillis {
-                prepareDataImportResult = importEngine.prepareDataForImport(
-                    archiveExtractedDirectory = testFolder,
-                    mode = ImportMode.Replace,
-                ).last()
+                prepareDataImportResult = importEngine
+                    .prepareDataForImport(
+                        archiveExtractedDirectory = testFolder,
+                        mode = ImportMode.Replace,
+                    ).last()
             }
             logger.d("[prepareDataForImport] $prepareDataExecTime ms")
             assertSuccess(prepareDataImportResult)
@@ -212,7 +216,8 @@ class ImportEngineImplTest : OSHiltUnitTest() {
                     safeItemField.encKind?.let {
                         val kind = decryptUseCase(it, safeItem.id, String::class).data
                         if (isKindFile(SafeItemFieldKind.fromString(kind!!))) {
-                            val file = fileRepository.getFile(fileId = value.substringBefore(Constant.FileTypeExtSeparator))
+                            val file = fileRepository
+                                .getFile(fileId = value.substringBefore(Constant.FileTypeExtSeparator))
                             file.inputStream().use { inputStream ->
                                 assertSuccess(decryptUseCase(inputStream.readBytes(), safeItem.id, ByteArray::class))
                             }
@@ -281,10 +286,11 @@ class ImportEngineImplTest : OSHiltUnitTest() {
             )
             importEngine.getMetadata(testFolder)
 
-            val authResult: LBFlowResult<Unit> = importEngine.authenticateAndExtractData(
-                archiveExtractedDirectory = testFolder,
-                password = "a".toCharArray(),
-            ).last()
+            val authResult: LBFlowResult<Unit> = importEngine
+                .authenticateAndExtractData(
+                    archiveExtractedDirectory = testFolder,
+                    password = "a".toCharArray(),
+                ).last()
 
             assertSuccess(authResult)
         }
@@ -301,10 +307,11 @@ class ImportEngineImplTest : OSHiltUnitTest() {
             )
             importEngine.getMetadata(testFolder)
 
-            val authResultPassword: LBFlowResult<Unit> = importEngine.authenticateAndExtractData(
-                archiveExtractedDirectory = testFolder,
-                password = "b".toCharArray(),
-            ).last()
+            val authResultPassword: LBFlowResult<Unit> = importEngine
+                .authenticateAndExtractData(
+                    archiveExtractedDirectory = testFolder,
+                    password = "b".toCharArray(),
+                ).last()
 
             assertFailure(authResultPassword)
         }
@@ -322,10 +329,11 @@ class ImportEngineImplTest : OSHiltUnitTest() {
             File(testFolder, ArchiveConstants.DataFile).delete()
             importEngine.getMetadata(testFolder)
 
-            val authResult = importEngine.authenticateAndExtractData(
-                archiveExtractedDirectory = testFolder,
-                password = "b".toCharArray(),
-            ).last()
+            val authResult = importEngine
+                .authenticateAndExtractData(
+                    archiveExtractedDirectory = testFolder,
+                    password = "b".toCharArray(),
+                ).last()
 
             val error = assertFailure(authResult).throwable as OSImportExportError
             assertEquals(OSImportExportError.Code.DATA_FILE_NOT_FOUND, error.code)
@@ -373,17 +381,75 @@ class ImportEngineImplTest : OSHiltUnitTest() {
         }
     }
 
+    @Test
+    fun import_file_orphan_test() {
+        runTest {
+            val testFolder = File(context.cacheDir, "testArchiveExtracted")
+            LbcResourcesHelper.copyFolderResourceToDeviceFile(
+                folderResources = ResourcesToCopy,
+                context = context,
+                deviceDestinationFile = testFolder,
+            )
+            val fileDir = File(testFolder, FileFolder)
+
+            val expectedFilesCount = fileDir.list()?.size?.plus(1)
+            val orphanFileId = testUUIDs.last()
+            val orphanFile = File(fileDir, orphanFileId.toString())
+            orphanFile.writeBytes(ByteArray(50) { it.toByte() }) // create an orphan file (file without field associated)
+
+            val importResult = importFlow(testFolder)
+            assertSuccess(importResult)
+
+            val encFilesDir = File(context.filesDir, "files")
+            val actualFilesCount = encFilesDir.listFiles()?.count() ?: 0
+            assertEquals(expectedFilesCount, actualFilesCount)
+        }
+    }
+
+    @Test
+    fun import_file_wrong_kind_test() {
+        mockkObject(SafeItemFieldKind.Companion)
+
+        every { SafeItemFieldKind.fromString(any()) } answers {
+            if (args[0] == SafeItemFieldKind.Photo.id) {
+                SafeItemFieldKind.Unknown("unknown_id") // replace photo kind by Unknown
+            } else {
+                callOriginal()
+            }
+        }
+
+        runTest {
+            val testFolder = File(context.cacheDir, "testArchiveExtracted")
+            LbcResourcesHelper.copyFolderResourceToDeviceFile(
+                folderResources = ResourcesToCopy,
+                context = context,
+                deviceDestinationFile = testFolder,
+            )
+            val fileDir = File(testFolder, FileFolder)
+
+            val expectedFilesCount = fileDir.list()?.size
+            val importResult = importFlow(testFolder)
+            assertSuccess(importResult)
+
+            val encFilesDir = File(context.filesDir, "files")
+            val actualFilesCount = encFilesDir.listFiles()?.count() ?: 0
+            assertEquals(expectedFilesCount, actualFilesCount)
+        }
+    }
+
     private suspend fun importFlow(testFolder: File): LBFlowResult<UUID?> {
-        importEngine.authenticateAndExtractData(
-            archiveExtractedDirectory = testFolder,
-            password = "a".toCharArray(),
-        ).last()
+        importEngine
+            .authenticateAndExtractData(
+                archiveExtractedDirectory = testFolder,
+                password = "a".toCharArray(),
+            ).last()
 
         importEngine.setDataToImport(importBubbles = true, importItems = true)
-        importEngine.prepareDataForImport(
-            archiveExtractedDirectory = testFolder,
-            mode = ImportMode.Replace,
-        ).last()
+        importEngine
+            .prepareDataForImport(
+                archiveExtractedDirectory = testFolder,
+                mode = ImportMode.Replace,
+            ).last()
 
         val saveImportDataResult = importEngine.saveImportData(mode = ImportMode.Replace).last()
         return saveImportDataResult

@@ -63,7 +63,8 @@ class ContactDetailViewModel @Inject constructor(
     private val resetConversationUseCase: ResetConversationUseCase,
     isSafeReadyUseCase: IsSafeReadyUseCase,
 ) : ViewModel() {
-    val contactId: DoubleRatchetUUID = savedStateHandle.get<String>(ContactDetailDestination.ContactIdArg)
+    val contactId: DoubleRatchetUUID = savedStateHandle
+        .get<String>(ContactDetailDestination.ContactIdArg)
         ?.let { DoubleRatchetUUID.fromString(it) }
         ?: error("Missing contact id in args")
 

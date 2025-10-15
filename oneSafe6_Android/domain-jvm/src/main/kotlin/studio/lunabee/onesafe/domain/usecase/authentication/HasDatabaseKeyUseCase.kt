@@ -27,7 +27,5 @@ import javax.inject.Inject
 class HasDatabaseKeyUseCase @Inject constructor(
     private val databaseKeyRepository: DatabaseKeyRepository,
 ) {
-    operator fun invoke(): Flow<Boolean> {
-        return databaseKeyRepository.getKeyFlow().map { it != null }
-    }
+    operator fun invoke(): Flow<Boolean> = databaseKeyRepository.getKeyFlow().map { it != null }
 }

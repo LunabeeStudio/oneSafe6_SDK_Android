@@ -52,12 +52,10 @@ class AndroidEditCryptoRepository @Inject constructor(
         this.key = hashEngine.deriveKey(password, salt)
     }
 
-    override suspend fun checkCryptographicData(password: CharArray): Boolean {
-        return password.use {
-            val salt = this.salt ?: throw OSCryptoError(OSCryptoError.Code.ONBOARDING_SALT_NOT_LOADED)
-            hashEngine.deriveKey(password, salt).use { checkKey ->
-                checkKey.contentEquals(this.key)
-            }
+    override suspend fun checkCryptographicData(password: CharArray): Boolean = password.use {
+        val salt = this.salt ?: throw OSCryptoError(OSCryptoError.Code.ONBOARDING_SALT_NOT_LOADED)
+        hashEngine.deriveKey(password, salt).use { checkKey ->
+            checkKey.contentEquals(this.key)
         }
     }
 
@@ -69,20 +67,18 @@ class AndroidEditCryptoRepository @Inject constructor(
 
     override suspend fun overrideMainCryptographicData(safeId: SafeId): NewSafeCrypto = loadMainCryptographicData(safeId)
 
-    private suspend fun loadMainCryptographicData(overrideSafeId: SafeId?): NewSafeCrypto {
-        return try {
-            val salt = this.salt ?: throw OSCryptoError(OSCryptoError.Code.ONBOARDING_SALT_NOT_LOADED)
-            val key = this.key ?: throw OSCryptoError(OSCryptoError.Code.ONBOARDING_KEY_NOT_LOADED)
+    private suspend fun loadMainCryptographicData(overrideSafeId: SafeId?): NewSafeCrypto = try {
+        val salt = this.salt ?: throw OSCryptoError(OSCryptoError.Code.ONBOARDING_SALT_NOT_LOADED)
+        val key = this.key ?: throw OSCryptoError(OSCryptoError.Code.ONBOARDING_KEY_NOT_LOADED)
 
-            if (overrideSafeId != null) {
-                mainCryptoRepository.regenerateAndOverrideLoadedCrypto(key, salt, biometricCipher)
-            } else {
-                mainCryptoRepository.generateCrypto(key, salt, biometricCipher)
-            }
-        } finally {
-            this.key?.randomize()
-            reset()
+        if (overrideSafeId != null) {
+            mainCryptoRepository.regenerateAndOverrideLoadedCrypto(key, salt, biometricCipher)
+        } else {
+            mainCryptoRepository.generateCrypto(key, salt, biometricCipher)
         }
+    } finally {
+        this.key?.randomize()
+        reset()
     }
 
     override fun reset() {
@@ -102,16 +98,20 @@ class AndroidEditCryptoRepository @Inject constructor(
         val safes = safeRepository.getAllSafeOrderByLastOpenAsc()
         return safes.none { safe ->
             hashEngine.deriveKey(password, safe.salt).use { key ->
-                cryptoEngine.decrypt(
-                    cipherData = safe.encTest,
-                    key = key,
-                    associatedData = null,
-                ).getOrNull()?.decodeToString() == MainCryptoRepository.MASTER_KEY_TEST_VALUE
+                cryptoEngine
+                    .decrypt(
+                        cipherData = safe.encTest,
+                        key = key,
+                        associatedData = null,
+                    ).getOrNull()
+                    ?.decodeToString() == MainCryptoRepository.MasterKeyTestValue
             }
         }
     }
 
-    override suspend fun deriveAutoDestructionKey(password: CharArray, safeSalt: ByteArray): ByteArray {
-        return hashEngine.deriveKey(password, safeSalt)
-    }
+    override suspend fun deriveAutoDestructionKey(password: CharArray, safeSalt: ByteArray): ByteArray = hashEngine
+        .deriveKey(
+            password,
+            safeSalt,
+        )
 }

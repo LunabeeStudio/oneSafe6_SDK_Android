@@ -26,6 +26,7 @@ sealed class Backup : Comparable<Backup> {
     abstract val date: Instant
     abstract val id: String
     abstract val safeId: SafeId?
+
     override fun compareTo(other: Backup): Int {
         val result = date.compareTo(other.date)
         return when {

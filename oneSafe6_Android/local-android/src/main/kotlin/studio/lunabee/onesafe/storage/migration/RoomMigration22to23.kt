@@ -99,14 +99,17 @@ class RoomMigration22to23 @Inject constructor(
                 "PRIMARY KEY(`id`))",
         )
 
-        val duration = Instant.now(clock).minus(Constant.InitialDelay, Constant.DelayUnitPreventionWarningCtaState).toEpochMilli()
+        val duration = Instant
+            .now(clock)
+            .minus(Constant.InitialDelay, Constant.DelayUnitPreventionWarningCtaState)
+            .toEpochMilli()
         // Insert open_order value in Safe_Old table
         db.execSQL("ALTER TABLE Safe_old ADD `$SettingPreventionWarningCtaState` TEXT")
         db.execSQL("ALTER TABLE Safe_old ADD `$SettingPreventionWarningCtaTimestamp` INTEGER")
         db.execSQL(
             """
-                UPDATE Safe_Old
-                SET `$SettingPreventionWarningCtaState` = 'DismissedAt', `$SettingPreventionWarningCtaTimestamp` = $duration
+            UPDATE Safe_Old
+            SET `$SettingPreventionWarningCtaState` = 'DismissedAt', `$SettingPreventionWarningCtaTimestamp` = $duration
             """.trimIndent(),
         )
 

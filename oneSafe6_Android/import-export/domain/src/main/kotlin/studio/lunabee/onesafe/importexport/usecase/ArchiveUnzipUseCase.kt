@@ -71,22 +71,23 @@ class ArchiveUnzipUseCase @Inject constructor(
                                 }
                             }
                         }
-                        emit(LBFlowResult.Loading(progress = ((++currentUnzippedEntries).toFloat() / numberOfEntriesInZip.toFloat())))
+                        emit(
+                            LBFlowResult
+                                .Loading(progress = ((++currentUnzippedEntries).toFloat() / numberOfEntriesInZip.toFloat())),
+                        )
                     }
                 }
                 emit(LBFlowResult.Success(Unit))
             } finally {
                 sourceFile.delete()
             }
-        }
-            .catch { error ->
-                if (error is OSDomainError) {
-                    emit(LBFlowResult.Failure(error))
-                } else {
-                    emit(LBFlowResult.Failure(OSDomainError(code = OSDomainError.Code.UNZIP_FAILURE, cause = error)))
-                }
+        }.catch { error ->
+            if (error is OSDomainError) {
+                emit(LBFlowResult.Failure(error))
+            } else {
+                emit(LBFlowResult.Failure(OSDomainError(code = OSDomainError.Code.UNZIP_FAILURE, cause = error)))
             }
-            .onStart { emit(LBFlowResult.Loading()) }
+        }.onStart { emit(LBFlowResult.Loading()) }
             .flowOn(fileDispatcher)
     }
 }

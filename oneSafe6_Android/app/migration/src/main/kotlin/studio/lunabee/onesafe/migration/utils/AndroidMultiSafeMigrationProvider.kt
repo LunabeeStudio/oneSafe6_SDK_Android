@@ -70,19 +70,19 @@ class AndroidMultiSafeMigrationProvider @Inject constructor(
     private val ctaDataStore = ProtoSerializer.dataStore(
         context = context,
         default = LegacyLocalCtaStateMap(emptyMap()),
-        fileName = ctaDataStoreFilename,
+        fileName = CtaDataStoreFilename,
     )
     private val encFilesDir: File = File(context.filesDir, "files")
     private val iconDir: File = File(context.filesDir, "icons")
 
     override suspend fun getSafeCrypto(db: SupportSQLiteDatabase): RoomMigration12to13.SafeCryptoMigration? {
         val data = encodedDataStore.data.firstOrNull()?.dataMap
-        val masterSalt = data?.get(datastoreMasterSalt)?.toByteArrayOrNull()
+        val masterSalt = data?.get(DatastoreMasterSalt)?.toByteArrayOrNull()
         return if (masterSalt != null) {
-            val testValue = data[datastoreMasterKeyTest]?.toByteArrayOrNull()!!
-            val searchIndexKey = data[datastoreSearchIndexKey]?.toByteArrayOrNull()
-            val itemEditionKey = data[datastoreItemEditionKey]?.toByteArrayOrNull()
-            val bubblesKey = data[datastoreBubblesContactKey]?.toByteArrayOrNull()
+            val testValue = data[DatastoreMasterKeyTest]?.toByteArrayOrNull()!!
+            val searchIndexKey = data[DatastoreSearchIndexKey]?.toByteArrayOrNull()
+            val itemEditionKey = data[DatastoreItemEditionKey]?.toByteArrayOrNull()
+            val bubblesKey = data[DatastoreBubblesContactKey]?.toByteArrayOrNull()
             val encBiometricMasterKey = encDataStore.retrieveValue(BiometricDataStoreIvKey).firstOrNull()?.use { iv ->
                 encDataStore.retrieveValue(BiometricDataStoreMasterKeyKey).firstOrNull()?.use { key ->
                     BiometricCryptoMaterial(iv, key)
@@ -161,87 +161,83 @@ class AndroidMultiSafeMigrationProvider @Inject constructor(
         }
     }
 
-    override suspend fun getAppVisit(): RoomAppVisit {
-        return try {
-            val hasFinishOneSafeKOnBoardingKey = booleanPreferencesKey(HasFinishOneSafeKOnBoarding)
-            val hasDoneOnBoardingBubblesKey = booleanPreferencesKey(HasDoneOnBoardingBubbles)
-            val hasHiddenCameraTipsKey = booleanPreferencesKey(HasHiddenCameraTips)
-            val hasSeenItemEditionUrlToolTipKey = booleanPreferencesKey(HasSeenItemEditionUrlToolTip)
-            val hasSeenItemEditionEmojiToolTipKey = booleanPreferencesKey(HasSeenItemEditionEmojiToolTip)
-            val hasSeenItemReadEditToolTipKey = booleanPreferencesKey(HasSeenItemReadEditToolTip)
-            val prefs = preferencesDataStore.data.firstOrNull()
-            RoomAppVisit(
-                hasFinishOneSafeKOnBoarding = prefs?.get(hasFinishOneSafeKOnBoardingKey) ?: HasFinishOneSafeKOnBoardingDefault,
-                hasDoneOnBoardingBubbles = prefs?.get(hasDoneOnBoardingBubblesKey) ?: HasDoneOnBoardingBubblesDefault,
-                hasHiddenCameraTips = prefs?.get(hasHiddenCameraTipsKey) ?: HasHiddenCameraTipsDefault,
-                hasSeenItemEditionUrlToolTip = prefs?.get(hasSeenItemEditionUrlToolTipKey) ?: HasSeenItemEditionUrlToolTipDefault,
-                hasSeenItemEditionEmojiToolTip = prefs?.get(hasSeenItemEditionEmojiToolTipKey) ?: HasSeenItemEditionEmojiToolTipDefault,
-                hasSeenItemReadEditToolTip = prefs?.get(hasSeenItemReadEditToolTipKey) ?: HasSeenItemReadEditToolTipDefault,
-                hasSeenDialogMessageSaveConfirmation = false,
+    override suspend fun getAppVisit(): RoomAppVisit = try {
+        val hasFinishOneSafeKOnBoardingKey = booleanPreferencesKey(HasFinishOneSafeKOnBoarding)
+        val hasDoneOnBoardingBubblesKey = booleanPreferencesKey(HasDoneOnBoardingBubbles)
+        val hasHiddenCameraTipsKey = booleanPreferencesKey(HasHiddenCameraTips)
+        val hasSeenItemEditionUrlToolTipKey = booleanPreferencesKey(HasSeenItemEditionUrlToolTip)
+        val hasSeenItemEditionEmojiToolTipKey = booleanPreferencesKey(HasSeenItemEditionEmojiToolTip)
+        val hasSeenItemReadEditToolTipKey = booleanPreferencesKey(HasSeenItemReadEditToolTip)
+        val prefs = preferencesDataStore.data.firstOrNull()
+        RoomAppVisit(
+            hasFinishOneSafeKOnBoarding = prefs?.get(hasFinishOneSafeKOnBoardingKey) ?: HasFinishOneSafeKOnBoardingDefault,
+            hasDoneOnBoardingBubbles = prefs?.get(hasDoneOnBoardingBubblesKey) ?: HasDoneOnBoardingBubblesDefault,
+            hasHiddenCameraTips = prefs?.get(hasHiddenCameraTipsKey) ?: HasHiddenCameraTipsDefault,
+            hasSeenItemEditionUrlToolTip = prefs?.get(hasSeenItemEditionUrlToolTipKey) ?: HasSeenItemEditionUrlToolTipDefault,
+            hasSeenItemEditionEmojiToolTip = prefs?.get(hasSeenItemEditionEmojiToolTipKey) ?: HasSeenItemEditionEmojiToolTipDefault,
+            hasSeenItemReadEditToolTip = prefs?.get(hasSeenItemReadEditToolTipKey) ?: HasSeenItemReadEditToolTipDefault,
+            hasSeenDialogMessageSaveConfirmation = false,
+        )
+    } catch (t: Throwable) {
+        logger.e("AppVisit migration failed", t)
+        RoomAppVisit(
+            hasFinishOneSafeKOnBoarding = HasFinishOneSafeKOnBoardingDefault,
+            hasDoneOnBoardingBubbles = HasDoneOnBoardingBubblesDefault,
+            hasHiddenCameraTips = HasHiddenCameraTipsDefault,
+            hasSeenItemEditionUrlToolTip = HasSeenItemEditionUrlToolTipDefault,
+            hasSeenItemEditionEmojiToolTip = HasSeenItemEditionEmojiToolTipDefault,
+            hasSeenItemReadEditToolTip = HasSeenItemReadEditToolTipDefault,
+            hasSeenDialogMessageSaveConfirmation = false,
+        )
+    }
+
+    override suspend fun getDriveSettings(): GoogleDriveSettings? = try {
+        preferencesDataStore.data.firstOrNull()?.let { pref ->
+            GoogleDriveSettings(
+                selectedAccount = pref[stringPreferencesKey(DriveSelectedAccountKey)],
+                folderId = pref[stringPreferencesKey(DriveFolderIdKey)],
+                folderUrl = pref[stringPreferencesKey(DriveFolderUrlKey)],
             )
-        } catch (t: Throwable) {
-            logger.e("AppVisit migration failed", t)
-            RoomAppVisit(
-                hasFinishOneSafeKOnBoarding = HasFinishOneSafeKOnBoardingDefault,
-                hasDoneOnBoardingBubbles = HasDoneOnBoardingBubblesDefault,
-                hasHiddenCameraTips = HasHiddenCameraTipsDefault,
-                hasSeenItemEditionUrlToolTip = HasSeenItemEditionUrlToolTipDefault,
-                hasSeenItemEditionEmojiToolTip = HasSeenItemEditionEmojiToolTipDefault,
-                hasSeenItemReadEditToolTip = HasSeenItemReadEditToolTipDefault,
-                hasSeenDialogMessageSaveConfirmation = false,
+        }
+    } catch (t: Throwable) {
+        logger.e("DriveSettings migration failed", t)
+        null
+    }
+
+    override suspend fun getAutoBackupError(): RoomMigration12to13.AutoBackupErrorMigration? = try {
+        val defaultError = LegacyLocalAutoBackupError()
+        val autoBackupErrorDataStore = ProtoSerializer
+            .dataStore(context, defaultError, BackupErrorDataStoreFilename)
+        val localAutoBackupError = autoBackupErrorDataStore.data.firstOrNull().takeIf { it != defaultError }
+
+        localAutoBackupError?.let {
+            RoomMigration12to13.AutoBackupErrorMigration(
+                id = autoBackupErrorIdProvider(),
+                date = ZonedDateTime.parse(it.date),
+                code = it.code,
+                message = it.message,
+                source = it.source,
             )
         }
+    } catch (t: Throwable) {
+        logger.e("AutoBackupError migration failed", t)
+        null
     }
 
-    override suspend fun getDriveSettings(): GoogleDriveSettings? {
-        return try {
-            preferencesDataStore.data.firstOrNull()?.let { pref ->
-                GoogleDriveSettings(
-                    selectedAccount = pref[stringPreferencesKey(DriveSelectedAccountKey)],
-                    folderId = pref[stringPreferencesKey(DriveFolderIdKey)],
-                    folderUrl = pref[stringPreferencesKey(DriveFolderUrlKey)],
-                )
-            }
-        } catch (t: Throwable) {
-            logger.e("DriveSettings migration failed", t)
-            null
-        }
-    }
-
-    override suspend fun getAutoBackupError(): RoomMigration12to13.AutoBackupErrorMigration? {
-        return try {
-            val defaultError = LegacyLocalAutoBackupError()
-            val autoBackupErrorDataStore = ProtoSerializer.dataStore(context, defaultError, backupErrorDataStoreFilename)
-            val localAutoBackupError = autoBackupErrorDataStore.data.firstOrNull().takeIf { it != defaultError }
-
-            localAutoBackupError?.let {
-                RoomMigration12to13.AutoBackupErrorMigration(
-                    id = autoBackupErrorIdProvider(),
-                    date = ZonedDateTime.parse(it.date),
-                    code = it.code,
-                    message = it.message,
-                    source = it.source,
-                )
-            }
-        } catch (t: Throwable) {
-            logger.e("AutoBackupError migration failed", t)
-            null
-        }
-    }
-
-    override suspend fun getFilesAndIcons(): List<File> {
-        return encFilesDir.listFiles()?.toList().orEmpty() + iconDir.listFiles()?.toList().orEmpty()
-    }
+    override suspend fun getFilesAndIcons(): List<File> =
+        encFilesDir.listFiles()?.toList().orEmpty() + iconDir.listFiles()?.toList().orEmpty()
 
     override suspend fun onMigrationDone() {
         encodedDataStore.updateData {
-            it.toBuilder().apply {
-                removeData(datastoreMasterSalt)
-                removeData(datastoreMasterKeyTest)
-                removeData(datastoreSearchIndexKey)
-                removeData(datastoreItemEditionKey)
-                removeData(datastoreBubblesContactKey)
-            }.build()
+            it
+                .toBuilder()
+                .apply {
+                    removeData(DatastoreMasterSalt)
+                    removeData(DatastoreMasterKeyTest)
+                    removeData(DatastoreSearchIndexKey)
+                    removeData(DatastoreItemEditionKey)
+                    removeData(DatastoreBubblesContactKey)
+                }.build()
         }
 
         encDataStore.removeValue(BiometricDataStoreIvKey)
@@ -284,20 +280,20 @@ class AndroidMultiSafeMigrationProvider @Inject constructor(
                 remove(stringPreferencesKey(DriveFolderUrlKey))
             }
         }
-        context.dataStoreFile(ctaDataStoreFilename).delete()
-        context.dataStoreFile(backupErrorDataStoreFilename).delete()
+        context.dataStoreFile(CtaDataStoreFilename).delete()
+        context.dataStoreFile(BackupErrorDataStoreFilename).delete()
     }
 
     companion object {
-        private const val ctaDataStoreFilename: String = "64ed5309-0f38-4dac-8451-473247a6ea41"
-        private const val backupErrorDataStoreFilename: String = "14e3ca9b-b9e9-4c2e-a836-cad49db25952"
+        private const val CtaDataStoreFilename: String = "64ed5309-0f38-4dac-8451-473247a6ea41"
+        private const val BackupErrorDataStoreFilename: String = "14e3ca9b-b9e9-4c2e-a836-cad49db25952"
 
         // Legacy datastore keys
-        private const val datastoreMasterSalt = "b282a019-4337-45a3-8bf6-da657ad39a6c"
-        private const val datastoreMasterKeyTest = "f9e3fa44-2f54-4246-8ba6-2784a18b63ea"
-        private const val datastoreSearchIndexKey = "f0ab7671-5314-41dc-9f57-3c689180ab33"
-        private const val datastoreItemEditionKey = "6f596059-24b8-429e-bfe4-daea05310de8"
-        private const val datastoreBubblesContactKey = "2b96478c-cbd4-4150-b591-6fe5a4dffc5f"
+        private const val DatastoreMasterSalt = "b282a019-4337-45a3-8bf6-da657ad39a6c"
+        private const val DatastoreMasterKeyTest = "f9e3fa44-2f54-4246-8ba6-2784a18b63ea"
+        private const val DatastoreSearchIndexKey = "f0ab7671-5314-41dc-9f57-3c689180ab33"
+        private const val DatastoreItemEditionKey = "6f596059-24b8-429e-bfe4-daea05310de8"
+        private const val DatastoreBubblesContactKey = "2b96478c-cbd4-4150-b591-6fe5a4dffc5f"
 
         private const val BiometricDataStoreIvKey = "56819b7d-e14a-4952-bb1d-5b8d5a06568a"
         private const val BiometricDataStoreMasterKeyKey = "d548d24f-8ea4-4457-8698-63622cb91db9"

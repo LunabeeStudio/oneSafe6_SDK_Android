@@ -88,7 +88,9 @@ class SafeItemBuilder @Inject constructor(
             if (icon != null) {
                 if (other.icon == null) return false
                 if (!icon.contentEquals(other.icon)) return false
-            } else if (other.icon != null) return false
+            } else if (other.icon != null) {
+                return false
+            }
             if (color != other.color) return false
             if (id != other.id) return false
             if (position != other.position) return false

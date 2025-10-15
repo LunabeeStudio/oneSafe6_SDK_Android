@@ -45,72 +45,73 @@ class AndroidWorkerCryptoRepository @Inject constructor(
     private val ivProvider: IVProvider,
 ) : WorkerCryptoRepository {
 
-    private fun getCipher() = Cipher.getInstance(TRANSFORMATION)
-    private fun getGcmParameterSpec(iv: ByteArray) = GCMParameterSpec(AES_GCM_TAG_LENGTH_IN_BITS, iv)
+    private fun getCipher() = Cipher.getInstance(Transformation)
+
+    private fun getGcmParameterSpec(iv: ByteArray) = GCMParameterSpec(AesGcmTagLengthInBits, iv)
 
     private fun getKeyGenParameterSpec(): KeyGenParameterSpec {
-        val builder = KeyGenParameterSpec.Builder(KEY_ALIAS, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
-        builder.setBlockModes(BLOCK_MODE)
-        builder.setEncryptionPaddings(PADDING)
+        val builder = KeyGenParameterSpec
+            .Builder(KeyAlias, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
+        builder.setBlockModes(BlockMode)
+        builder.setEncryptionPaddings(Padding)
         builder.setUserAuthenticationRequired(false)
         builder.setRandomizedEncryptionRequired(false)
         return builder.build()
     }
 
-    private fun getKey() = androidKeyStoreEngine.retrieveOrGenerateSecretKey(KEY_ALIAS, getKeyGenParameterSpec())
+    private fun getKey() = androidKeyStoreEngine.retrieveOrGenerateSecretKey(KeyAlias, getKeyGenParameterSpec())
 
     override suspend fun decrypt(data: ByteArray): ByteArray {
         try {
             return withContext(cryptoDispatcher) {
                 getKey().use { key ->
                     val cipher = getCipher()
-                    val iv: ByteArray = data.copyOfRange(0, AES_GCM_IV_LENGTH)
+                    val iv: ByteArray = data.copyOfRange(0, AesGcmIvLength)
                     val ivSpec = getGcmParameterSpec(iv)
                     cipher.init(Cipher.DECRYPT_MODE, key, ivSpec)
                     cipher.doFinal(
                         data,
-                        AES_GCM_IV_LENGTH,
-                        data.size - AES_GCM_IV_LENGTH,
+                        AesGcmIvLength,
+                        data.size - AesGcmIvLength,
                     )
                 }
             }
         } catch (e: Exception) {
-            when (e) {
+            val error = when (e) {
                 is KeyPermanentlyInvalidatedException,
                 is AEADBadTagException,
-                -> throw OSCryptoError(OSCryptoError.Code.ANDROID_KEYSTORE_KEY_PERMANENTLY_INVALIDATE, cause = e)
-                is IndexOutOfBoundsException -> throw OSCryptoError(OSCryptoError.Code.DECRYPTION_UNKNOWN_FAILURE, cause = e)
-                else -> throw e
+                -> OSCryptoError(OSCryptoError.Code.ANDROID_KEYSTORE_KEY_PERMANENTLY_INVALIDATE, cause = e)
+                is IndexOutOfBoundsException -> OSCryptoError(OSCryptoError.Code.DECRYPTION_UNKNOWN_FAILURE, cause = e)
+                else -> e
             }
+            throw error
         }
     }
 
-    override suspend fun encrypt(data: ByteArray): ByteArray {
-        return withContext(cryptoDispatcher) {
-            getKey().use { key ->
-                val bos = ByteArrayOutputStream()
-                val cipher = getCipher()
-                val iv = ivProvider(AES_GCM_IV_LENGTH)
-                cipher.init(Cipher.ENCRYPT_MODE, key, getGcmParameterSpec(iv))
-                bos.write(iv)
-                CipherOutputStream(bos, cipher).use { cos ->
-                    data.inputStream().use { input ->
-                        input.copyTo(cos)
-                    }
+    override suspend fun encrypt(data: ByteArray): ByteArray = withContext(cryptoDispatcher) {
+        getKey().use { key ->
+            val bos = ByteArrayOutputStream()
+            val cipher = getCipher()
+            val iv = ivProvider(AesGcmIvLength)
+            cipher.init(Cipher.ENCRYPT_MODE, key, getGcmParameterSpec(iv))
+            bos.write(iv)
+            CipherOutputStream(bos, cipher).use { cos ->
+                data.inputStream().use { input ->
+                    input.copyTo(cos)
                 }
-                bos.toByteArray()
             }
+            bos.toByteArray()
         }
     }
 
     companion object {
-        private const val KEY_ALIAS: String = "7882c556-7589-47a1-b6db-8fd51704db7d"
+        private const val KeyAlias: String = "7882c556-7589-47a1-b6db-8fd51704db7d"
 
-        private const val AES_GCM_IV_LENGTH = 12
-        private const val AES_GCM_TAG_LENGTH_IN_BITS = 128
-        private const val ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
-        private const val BLOCK_MODE = KeyProperties.BLOCK_MODE_GCM
-        private const val PADDING = KeyProperties.ENCRYPTION_PADDING_NONE
-        private const val TRANSFORMATION = "$ALGORITHM/$BLOCK_MODE/$PADDING"
+        private const val AesGcmIvLength = 12
+        private const val AesGcmTagLengthInBits = 128
+        private const val Algorithm = KeyProperties.KEY_ALGORITHM_AES
+        private const val BlockMode = KeyProperties.BLOCK_MODE_GCM
+        private const val Padding = KeyProperties.ENCRYPTION_PADDING_NONE
+        private const val Transformation = "$Algorithm/$BlockMode/$Padding"
     }
 }

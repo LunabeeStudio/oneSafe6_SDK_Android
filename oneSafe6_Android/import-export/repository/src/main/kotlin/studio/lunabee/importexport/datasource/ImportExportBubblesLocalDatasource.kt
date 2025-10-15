@@ -36,7 +36,10 @@ interface ImportExportBubblesLocalDatasource {
     )
 
     suspend fun getAllContactIds(): List<DoubleRatchetUUID>
+
     suspend fun getAllMessageIds(): List<DoubleRatchetUUID>
+
     suspend fun getAllMessageByContactList(contactIds: List<DoubleRatchetUUID>): List<SafeMessage>
+
     suspend fun getEncConversations(ids: List<DoubleRatchetUUID>): List<EncConversation>
 }

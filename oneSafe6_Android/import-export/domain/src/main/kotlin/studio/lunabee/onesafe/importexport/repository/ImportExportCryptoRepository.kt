@@ -24,10 +24,15 @@ import java.util.UUID
 
 interface ImportExportCryptoRepository {
     suspend fun deriveKey(password: CharArray, salt: ByteArray): ByteArray
+
     suspend fun createMasterKeyAndSalt(password: CharArray): Pair<ByteArray, ByteArray>
+
     suspend fun decryptRawItemKey(cipherData: ByteArray, key: ByteArray): ByteArray
+
     suspend fun decrypt(cipherData: ByteArray, key: ByteArray): ByteArray
+
     suspend fun encrypt(plainData: ByteArray, key: ByteArray): ByteArray
+
     suspend fun createSafeItemKeyFromRaw(
         itemId: UUID,
         rawItemKey: ByteArray,

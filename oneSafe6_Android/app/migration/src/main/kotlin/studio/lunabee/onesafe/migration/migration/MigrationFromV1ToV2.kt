@@ -25,8 +25,8 @@ import javax.inject.Inject
 
 class MigrationFromV1ToV2 @Inject constructor() :
     AppMigration0(1, 2) {
-    override suspend fun migrate(migrationSafeData: MigrationSafeData0): LBResult<Unit> {
-        // Deprecated migration due to datastore to room migration
-        return LBResult.Success(Unit)
+        override suspend fun migrate(migrationSafeData: MigrationSafeData0): LBResult<Unit> {
+            // Deprecated migration due to datastore to room migration
+            return LBResult.Success(Unit)
+        }
     }
-}

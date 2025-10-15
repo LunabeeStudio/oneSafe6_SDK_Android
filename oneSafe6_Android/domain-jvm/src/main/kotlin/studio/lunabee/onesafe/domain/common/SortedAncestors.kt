@@ -42,8 +42,7 @@ class SortedAncestors(
             } else {
                 item
             }
-        }
-        .sortedWith(compareBy({ it.parentId }, { it.id }))
+        }.sortedWith(compareBy({ it.parentId }, { it.id }))
         .groupBy { it.parentId }
 
     /**
@@ -51,14 +50,10 @@ class SortedAncestors(
      * Consult [studio.lunabee.onesafe.domain.utils.SortedAncestorsTest] and explanations here:
      * https://stackoverflow.com/questions/61021088/kotlin-sort-list-of-objects-by-their-id-and-parentid
      */
-    fun sortByAncestors(): List<SafeItem> {
-        return groupedSafeItem[null]?.flatMap(::sort).orEmpty()
-    }
+    fun sortByAncestors(): List<SafeItem> = groupedSafeItem[null]?.flatMap(::sort).orEmpty()
 
-    private fun sort(item: SafeItem): List<SafeItem> {
-        return buildList {
-            add(item)
-            addAll(groupedSafeItem.getOrDefault(item.id, emptyList()).flatMap(::sort))
-        }
+    private fun sort(item: SafeItem): List<SafeItem> = buildList {
+        add(item)
+        addAll(groupedSafeItem.getOrDefault(item.id, emptyList()).flatMap(::sort))
     }
 }

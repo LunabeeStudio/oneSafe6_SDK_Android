@@ -25,5 +25,6 @@ package studio.lunabee.onesafe.domain.repository
  */
 interface WorkerCryptoRepository {
     suspend fun decrypt(data: ByteArray): ByteArray
+
     suspend fun encrypt(data: ByteArray): ByteArray
 }

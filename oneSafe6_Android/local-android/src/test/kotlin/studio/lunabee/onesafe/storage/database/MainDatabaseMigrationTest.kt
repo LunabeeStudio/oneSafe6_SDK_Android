@@ -32,6 +32,7 @@ import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import studio.lunabee.onesafe.jvm.toByteArray
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.dao.SafeDao
 import studio.lunabee.onesafe.storage.migration.RoomMigration15to16
@@ -41,7 +42,6 @@ import studio.lunabee.onesafe.storage.migration.RoomMigration9to10
 import studio.lunabee.onesafe.storage.utils.toSqlBlobString
 import studio.lunabee.onesafe.test.OSTestConfig
 import studio.lunabee.onesafe.test.testUUIDs
-import studio.lunabee.onesafe.jvm.toByteArray
 import javax.inject.Inject
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -160,9 +160,12 @@ class MainDatabaseMigrationTest {
         val id2 = testUUIDs[2].toByteArray().toSqlBlobString()
 
         helper.createDatabase(dbName, 9).use { db ->
-            db.execSQL("INSERT INTO SafeItem VALUES ($id0, NULL, $id0, false, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 0)")
-            db.execSQL("INSERT INTO SafeItem VALUES ($id1, NULL, NULL, false, 0, 0, 0, NULL, NULL, NULL, $id1, NULL, 0)")
-            db.execSQL("INSERT INTO SafeItem VALUES ($id2, NULL, $id2, false, 0, 0, 0, NULL, NULL, NULL, $id2, NULL, 0)")
+            db
+                .execSQL("INSERT INTO SafeItem VALUES ($id0, NULL, $id0, false, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 0)")
+            db
+                .execSQL("INSERT INTO SafeItem VALUES ($id1, NULL, NULL, false, 0, 0, 0, NULL, NULL, NULL, $id1, NULL, 0)")
+            db
+                .execSQL("INSERT INTO SafeItem VALUES ($id2, NULL, $id2, false, 0, 0, 0, NULL, NULL, NULL, $id2, NULL, 0)")
         }
 
         val db = helper.runMigrationsAndValidate(dbName, 10, true, migration9to10)
@@ -187,10 +190,6 @@ class MainDatabaseMigrationTest {
     }
 }
 
-internal fun Cursor.getBlob(columnName: String): ByteArray {
-    return getBlob(getColumnIndex(columnName))
-}
+internal fun Cursor.getBlob(columnName: String): ByteArray = getBlob(getColumnIndex(columnName))
 
-internal fun Cursor.getString(columnName: String): String? {
-    return getStringOrNull(getColumnIndex(columnName))
-}
+internal fun Cursor.getString(columnName: String): String? = getStringOrNull(getColumnIndex(columnName))

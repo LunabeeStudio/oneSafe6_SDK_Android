@@ -23,5 +23,6 @@ import java.util.UUID
 
 interface LoadFileCancelAllUseCase {
     suspend operator fun invoke(itemId: UUID)
+
     suspend operator fun invoke()
 }

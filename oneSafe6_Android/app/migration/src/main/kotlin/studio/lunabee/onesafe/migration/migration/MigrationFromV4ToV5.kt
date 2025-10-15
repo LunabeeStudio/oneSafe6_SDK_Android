@@ -54,7 +54,7 @@ class MigrationFromV4ToV5 @Inject constructor(
     private val safeRepository: SafeRepository,
     private val migrationGetSafeIdBeforeV14UseCase: MigrationGetSafeIdBeforeV14UseCase,
 ) : AppMigration0(4, 5) {
-    private val backupsDir: File = File(context.filesDir, backupDir)
+    private val backupsDir: File = File(context.filesDir, BackupDir)
 
     override suspend fun migrate(migrationSafeData: MigrationSafeData0): LBResult<Unit> {
         val safeId = migrationGetSafeIdBeforeV14UseCase()
@@ -95,7 +95,7 @@ class MigrationFromV4ToV5 @Inject constructor(
     }
 
     companion object {
-        const val backupDir: String = "backups"
+        const val BackupDir: String = "backups"
         const val ExtensionOs6Backup: String = "os6lsb"
         const val ArchiveFilePrefix: String = "oneSafe"
         const val ArchiveFileSeparator: String = "-"

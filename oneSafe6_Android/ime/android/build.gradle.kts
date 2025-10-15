@@ -28,7 +28,7 @@ android {
     namespace = "studio.lunabee.onesafe.ime"
 
     defaultConfig {
-        minSdk = AndroidConfig.MIN_APP_SDK
+        minSdk = AndroidConfig.MinAppSdk
     }
 
     buildFeatures {
@@ -38,7 +38,7 @@ android {
 
     defaultConfig {
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
-        missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
+        missingDimensionStrategy("crypto", AndroidConfig.CryptoBackendFlavorDefault)
 
         val imeProcessName = ":ime"
         buildConfigField("String", "IME_PROCESS_NAME", "\"$imeProcessName\"")

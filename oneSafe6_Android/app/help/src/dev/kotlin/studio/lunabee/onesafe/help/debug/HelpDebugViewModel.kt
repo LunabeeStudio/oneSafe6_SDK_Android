@@ -69,7 +69,8 @@ internal class HelpDebugViewModel @Inject constructor(
     private val safeRepository: SafeRepository,
 ) : ViewModel() {
 
-    private val databaseKeyFlow = databaseKeyRepository.getKeyFlow()
+    private val databaseKeyFlow = databaseKeyRepository
+        .getKeyFlow()
         .map { it != null }
         .catch { err ->
             logger.e(err)
@@ -147,8 +148,8 @@ internal class HelpDebugViewModel @Inject constructor(
         }
     }
 
-    private suspend fun dumpDatabaseKey(): Boolean {
-        return kotlin.runCatching {
+    private suspend fun dumpDatabaseKey(): Boolean = kotlin
+        .runCatching {
             val databaseKey = databaseKeyRepository.getKeyFlow().firstOrNull()
             databaseKey?.let {
                 // FIXME The raw key export should be able the database with DBBrowser for SQLite, but it does not work
@@ -160,7 +161,6 @@ internal class HelpDebugViewModel @Inject constructor(
 
             databaseKey != null
         }.getOrNull() ?: false
-    }
 
     fun createContact() {
         viewModelScope.launch {

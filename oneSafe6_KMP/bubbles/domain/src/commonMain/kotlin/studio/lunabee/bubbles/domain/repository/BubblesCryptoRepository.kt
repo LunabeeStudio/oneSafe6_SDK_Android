@@ -27,11 +27,18 @@ import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 
 interface BubblesCryptoRepository {
     suspend fun generateLocalKeyForContact(): ContactLocalKey
+
     suspend fun <Data : Any> localEncrypt(key: ContactLocalKey, encryptEntry: EncryptEntry<Data>): ByteArray
+
     suspend fun <Data : Any> localEncrypt(key: ContactLocalKey, encryptEntries: List<EncryptEntry<Data>?>): List<ByteArray?>
+
     suspend fun <Data : Any> localDecrypt(key: ContactLocalKey, decryptEntry: DecryptEntry<Data>): Data
+
     suspend fun localDecrypt(key: ContactLocalKey, decryptEntries: List<DecryptEntry<out Any>?>): List<Any?>
+
     suspend fun sharedEncrypt(data: ByteArray, localKey: ContactLocalKey, sharedKey: ContactSharedKey): ByteArray
+
     suspend fun sharedDecrypt(data: ByteArray, localKey: ContactLocalKey, sharedKey: ContactSharedKey): ByteArray
+
     suspend fun deriveUUIDToKey(uuid: DoubleRatchetUUID, keyLength: Int): ByteArray
 }

@@ -22,8 +22,6 @@ package studio.lunabee.onesafe.storage.datasource
 import com.lunabee.lbextensions.mapValues
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlin.time.Instant
-import kotlin.time.toJavaInstant
 import studio.lunabee.bubbles.domain.model.contact.Contact
 import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
 import studio.lunabee.bubbles.domain.model.contactkey.ContactSharedKey
@@ -37,6 +35,8 @@ import studio.lunabee.onesafe.storage.model.RoomContactKey
 import studio.lunabee.onesafe.storage.utils.TransactionProvider
 import studio.lunabee.onesafe.storage.utils.runSQL
 import javax.inject.Inject
+import kotlin.time.Instant
+import kotlin.time.toJavaInstant
 
 class ContactLocalDataSourceImpl @Inject constructor(
     private val dao: ContactDao,
@@ -53,7 +53,8 @@ class ContactLocalDataSourceImpl @Inject constructor(
         }
     }
 
-    override fun getAllContactsFlow(safeId: DoubleRatchetUUID): Flow<List<Contact>> = dao.getAllInFlow(safeId.uuid)
+    override fun getAllContactsFlow(safeId: DoubleRatchetUUID): Flow<List<Contact>> = dao
+        .getAllInFlow(safeId.uuid)
         .mapValues { it.toContact() }
 
     override fun getRecentContactsFlow(maxNumber: Int, safeId: DoubleRatchetUUID): Flow<List<Contact>> =
@@ -61,19 +62,18 @@ class ContactLocalDataSourceImpl @Inject constructor(
 
     override fun getContactFlow(id: DoubleRatchetUUID): Flow<Contact?> = dao.getByIdFlow(id.uuid).map { it?.toContact() }
 
-    override fun getContactCountFlow(safeId: DoubleRatchetUUID): Flow<Int> {
-        return dao.getContactCountFlow(safeId.uuid)
-    }
+    override fun getContactCountFlow(safeId: DoubleRatchetUUID): Flow<Int> = dao.getContactCountFlow(safeId.uuid)
 
-    override suspend fun getContact(id: DoubleRatchetUUID): Contact? {
-        return dao.getById(id.uuid).let { it?.toContact() }
-    }
+    override suspend fun getContact(id: DoubleRatchetUUID): Contact? = dao.getById(id.uuid).let { it?.toContact() }
 
-    override suspend fun getContactInSafe(id: DoubleRatchetUUID, safeId: DoubleRatchetUUID): Contact? {
-        return dao.getByIdInSafe(id.uuid, safeId.uuid).let { it?.toContact() }
-    }
+    override suspend fun getContactInSafe(id: DoubleRatchetUUID, safeId: DoubleRatchetUUID): Contact? = dao
+        .getByIdInSafe(
+            id.uuid,
+            safeId.uuid,
+        ).let { it?.toContact() }
 
-    override suspend fun getContactSharedKey(id: DoubleRatchetUUID): ContactSharedKey? = dao.getContactSharedKey(id.uuid)
+    override suspend fun getContactSharedKey(id: DoubleRatchetUUID): ContactSharedKey? = dao
+        .getContactSharedKey(id.uuid)
         ?.let(::ContactSharedKey)
 
     override suspend fun addContactSharedKey(id: DoubleRatchetUUID, sharedKey: ContactSharedKey) {
@@ -100,9 +100,7 @@ class ContactLocalDataSourceImpl @Inject constructor(
         dao.updateContactConsultedAt(id.uuid, consultedAt.toJavaInstant())
     }
 
-    override suspend fun getContactCount(safeId: DoubleRatchetUUID): Int {
-        return dao.getContactCount(safeId.uuid)
-    }
+    override suspend fun getContactCount(safeId: DoubleRatchetUUID): Int = dao.getContactCount(safeId.uuid)
 
     override suspend fun updateContactResetConversationDate(id: DoubleRatchetUUID, encResetConversationDate: ByteArray) {
         dao.updateContactResetConversationDate(id.uuid, encResetConversationDate)

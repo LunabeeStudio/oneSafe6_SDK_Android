@@ -30,19 +30,18 @@ fun CharArray.randomize(): CharArray {
     random.nextBytes(randomBytes)
     val byteBuffer = ByteBuffer.wrap(randomBytes)
     val charBuffer = Charsets.UTF_16.decode(byteBuffer)
-    return Arrays.copyOfRange(
-        charBuffer.array(),
-        charBuffer.position(),
-        charBuffer.limit(),
-    ).copyInto(this, endIndex = this.size)
+    return Arrays
+        .copyOfRange(
+            charBuffer.array(),
+            charBuffer.position(),
+            charBuffer.limit(),
+        ).copyInto(this, endIndex = this.size)
 }
 
-inline fun <T> CharArray.use(block: (CharArray) -> T): T {
-    return try {
-        block(this)
-    } finally {
-        this.randomize()
-    }
+inline fun <T> CharArray.use(block: (CharArray) -> T): T = try {
+    block(this)
+} finally {
+    this.randomize()
 }
 
 // https://stackoverflow.com/a/9670279

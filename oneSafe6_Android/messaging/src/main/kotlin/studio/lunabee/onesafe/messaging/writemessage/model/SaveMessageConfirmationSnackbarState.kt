@@ -27,11 +27,12 @@ import studio.lunabee.onesafe.commonui.snackbar.SnackbarState
 class SaveMessageConfirmationSnackbarState(
     onClick: () -> Unit,
 ) : SnackbarState(
-    SnackbarAction.Default(
-        actionLabel = LbcTextSpec.StringResource(OSString.common_yes),
-        onClick = onClick,
-        onDismiss = {},
-    ),
-) {
-    override val message: LbcTextSpec = LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_unknownSharingStatus_snackbarTitle)
+        SnackbarAction.Default(
+            actionLabel = LbcTextSpec.StringResource(OSString.common_yes),
+            onClick = onClick,
+            onDismiss = {},
+        ),
+    ) {
+    override val message: LbcTextSpec = LbcTextSpec
+        .StringResource(OSString.bubbles_writeMessageScreen_unknownSharingStatus_snackbarTitle)
 }

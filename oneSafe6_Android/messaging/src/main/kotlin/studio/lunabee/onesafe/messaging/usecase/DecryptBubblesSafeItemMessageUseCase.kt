@@ -95,19 +95,21 @@ class DecryptBubblesSafeItemMessageUseCase @Inject constructor(
     private suspend fun importSafeFromFile(
         attachmentFile: File,
         messageKey: DRMessageKey,
-    ): LBResult<UUID?> {
-        return OSError.runCatching {
-            unzipUseCase.invoke(attachmentFile.inputStream(), importArchiveDir)
-                .first { it !is LBFlowResult.Loading }
-                .asResult()
-                .getOrThrow()
-            importAuthUseCase.invoke(messageKey.value.toCharArray())
-                .first { it !is LBFlowResult.Loading }
-                .asResult()
-                .getOrThrow()
-            importSaveDataUseCase.invoke(importArchiveDir, ImportMode.Append)
-                .first { it !is LBFlowResult.Loading }
-                .asResult().getOrThrow()
-        }
+    ): LBResult<UUID?> = OSError.runCatching {
+        unzipUseCase
+            .invoke(attachmentFile.inputStream(), importArchiveDir)
+            .first { it !is LBFlowResult.Loading }
+            .asResult()
+            .getOrThrow()
+        importAuthUseCase
+            .invoke(messageKey.value.toCharArray())
+            .first { it !is LBFlowResult.Loading }
+            .asResult()
+            .getOrThrow()
+        importSaveDataUseCase
+            .invoke(importArchiveDir, ImportMode.Append)
+            .first { it !is LBFlowResult.Loading }
+            .asResult()
+            .getOrThrow()
     }
 }

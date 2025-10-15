@@ -49,12 +49,11 @@ class ItemDecryptUseCase @Inject constructor(
      *
      * @return Plain data wrapped in a [LBResult]
      */
-    suspend operator fun <Data : Any> invoke(data: ByteArray, itemId: UUID, clazz: KClass<Data>): LBResult<Data> {
-        return OSError.runCatching {
+    suspend operator fun <Data : Any> invoke(data: ByteArray, itemId: UUID, clazz: KClass<Data>): LBResult<Data> = OSError
+        .runCatching {
             val key = safeItemKeyRepository.getSafeItemKey(itemId)
             decrypt(data, clazz, key)
         }
-    }
 
     /**
      * Decrypt the raw encrypted data to type [Data]. If the crypto stuff is not loaded, wait 500ms before returning an error.
@@ -65,11 +64,10 @@ class ItemDecryptUseCase @Inject constructor(
      *
      * @return Plain data wrapped in a [LBResult]
      */
-    suspend operator fun <Data : Any> invoke(data: ByteArray, key: SafeItemKey, clazz: KClass<Data>): LBResult<Data> {
-        return OSError.runCatching {
+    suspend operator fun <Data : Any> invoke(data: ByteArray, key: SafeItemKey, clazz: KClass<Data>): LBResult<Data> = OSError
+        .runCatching {
             decrypt(data, clazz, key)
         }
-    }
 
     private suspend fun <Data : Any> decrypt(data: ByteArray, clazz: KClass<Data>, key: SafeItemKey): Data {
         isSafeReadyUseCase.wait(500.milliseconds)

@@ -36,13 +36,11 @@ class SetupAndSyncCloudBackupUseCase @Inject constructor(
     private val cloudBackupRepository: CloudBackupRepository,
     private val safeRepository: SafeRepository,
 ) {
-    operator fun invoke(accountName: String): Flow<LBFlowResult<List<CloudBackup>>> {
-        return flow {
-            val safeId = safeRepository.currentSafeId()
-            val flow = cloudBackupRepository.setupAccount(accountName, safeId).transformResult {
-                emitAll(cloudBackupRepository.refreshBackupList(safeId))
-            }
-            emitAll(flow)
+    operator fun invoke(accountName: String): Flow<LBFlowResult<List<CloudBackup>>> = flow {
+        val safeId = safeRepository.currentSafeId()
+        val flow = cloudBackupRepository.setupAccount(accountName, safeId).transformResult {
+            emitAll(cloudBackupRepository.refreshBackupList(safeId))
         }
+        emitAll(flow)
     }
 }

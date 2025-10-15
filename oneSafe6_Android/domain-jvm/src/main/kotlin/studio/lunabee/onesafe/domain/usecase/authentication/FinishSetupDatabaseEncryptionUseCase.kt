@@ -30,11 +30,10 @@ import kotlinx.coroutines.flow.flow
 import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
 import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
 import studio.lunabee.onesafe.domain.repository.DatabaseKeyRepository
-import studio.lunabee.onesafe.domain.usecase.authentication.FinishSetupDatabaseEncryptionUseCase.SuccessState
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSDomainError
-import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.error.osCode
+import studio.lunabee.onesafe.jvm.get
 import javax.inject.Inject
 
 /**

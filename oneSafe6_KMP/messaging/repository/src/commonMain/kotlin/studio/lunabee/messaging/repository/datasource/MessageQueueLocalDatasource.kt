@@ -21,5 +21,6 @@ package studio.lunabee.messaging.repository.datasource
 
 interface MessageQueueLocalDatasource {
     suspend fun retrieveValue(key: String): ByteArray?
+
     suspend fun insertValue(key: String, value: ByteArray)
 }

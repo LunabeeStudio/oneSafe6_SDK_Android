@@ -31,11 +31,17 @@ class FileRepositoryImpl @Inject constructor(
     private val fileLocalDatasource: FileLocalDatasource,
 ) : FileRepository {
     override fun getFile(fileId: String): File = fileLocalDatasource.getFile(fileId)
-    override suspend fun createFile(fileId: String, safeId: SafeId): File = fileLocalDatasource.createFile(fileId, safeId)
+
+    override suspend fun createFile(fileId: String, safeId: SafeId): File = fileLocalDatasource
+        .createFile(fileId, safeId)
+
     override fun createTempFile(fileId: String): File = fileLocalDatasource.createTempFile(fileId)
-    override fun getPlainFile(itemId: UUID, fieldId: UUID, filename: String): File {
-        return fileLocalDatasource.getPlainFile(itemId = itemId, fieldId = fieldId, filename = filename)
-    }
+
+    override fun getPlainFile(itemId: UUID, fieldId: UUID, filename: String): File = fileLocalDatasource.getPlainFile(
+        itemId = itemId,
+        fieldId = fieldId,
+        filename = filename,
+    )
 
     override fun getFiles(filesId: List<String>): List<File> = fileLocalDatasource.getFiles(filesId)
 
@@ -57,17 +63,21 @@ class FileRepositoryImpl @Inject constructor(
         fileLocalDatasource.deleteItemDir(itemId)
     }
 
-    override suspend fun savePlainFile(inputStream: InputStream, filename: String, itemId: UUID, fieldId: UUID): File {
-        return fileLocalDatasource.savePlainFile(inputStream, filename, itemId, fieldId)
-    }
+    override suspend fun savePlainFile(inputStream: InputStream, filename: String, itemId: UUID, fieldId: UUID): File = fileLocalDatasource
+        .savePlainFile(
+            inputStream,
+            filename,
+            itemId,
+            fieldId,
+        )
 
-    override fun getThumbnailFile(thumbnailFileName: String, isFullWidth: Boolean): File {
-        return fileLocalDatasource.getThumbnailFile(thumbnailFileName, isFullWidth)
-    }
+    override fun getThumbnailFile(thumbnailFileName: String, isFullWidth: Boolean): File = fileLocalDatasource
+        .getThumbnailFile(
+            thumbnailFileName,
+            isFullWidth,
+        )
 
-    override suspend fun deleteAll(safeId: SafeId) {
-        return fileLocalDatasource.deleteAll(safeId)
-    }
+    override suspend fun deleteAll(safeId: SafeId) = fileLocalDatasource.deleteAll(safeId)
 
     override suspend fun deletePlainFilesCacheDir() {
         fileLocalDatasource.deletePlainFilesCacheDir()

@@ -58,7 +58,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.zIndex
 import androidx.core.app.ActivityCompat
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
@@ -227,21 +227,19 @@ private fun enableCloudBackupSettings(
 private fun rememberAccountLauncher(
     setupCloudBackup: (String) -> Unit,
     showError: (errorMessage: LbcTextSpec) -> Unit,
-): ManagedActivityResultLauncher<Intent, ActivityResult> {
-    return rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val accountName = result.data?.extras?.getString(AccountManager.KEY_ACCOUNT_NAME)
-                if (accountName != null) {
-                    setupCloudBackup(accountName)
-                } else {
-                    showError(LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_error_unexpectedNullAccount))
-                }
+): ManagedActivityResultLauncher<Intent, ActivityResult> = rememberLauncherForActivityResult(
+    contract = ActivityResultContracts.StartActivityForResult(),
+    onResult = { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val accountName = result.data?.extras?.getString(AccountManager.KEY_ACCOUNT_NAME)
+            if (accountName != null) {
+                setupCloudBackup(accountName)
+            } else {
+                showError(LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_error_unexpectedNullAccount))
             }
-        },
-    )
-}
+        }
+    },
+)
 
 @Composable
 private fun DriveAuthorize(authorizeDrive: AutoBackupSettingsDriveAuth) {
@@ -408,7 +406,7 @@ private fun requestNotificationPermission(
         PermissionStatus.Granted,
         null,
         -> {
-            /* no-op */
+            // no-op
         }
     }
 }

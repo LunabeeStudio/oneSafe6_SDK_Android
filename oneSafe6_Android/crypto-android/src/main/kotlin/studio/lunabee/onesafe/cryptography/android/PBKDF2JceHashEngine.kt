@@ -68,18 +68,21 @@ class PBKDF2JceHashEngine(
      * @see studio.lunabee.onesafe.benchmark.cryptography.PBKDF2JceHashEngineBenchmark
      */
     @Suppress("NOTHING_TO_INLINE")
-    private inline fun doHash(password: CharArray, salt: ByteArray): ByteArray {
-        return PBEKeySpec(password, salt, iterationNumber, DERIVED_KEY_LENGTH_BIT).use { pbeKeySpec ->
-            secretKeyFactory.generateSecret(pbeKeySpec).use { secretKey ->
-                secretKey.encoded
-            }
+    private inline fun doHash(password: CharArray, salt: ByteArray): ByteArray = PBEKeySpec(
+        password,
+        salt,
+        iterationNumber,
+        DerivedKeyLengthBit,
+    ).use { pbeKeySpec ->
+        secretKeyFactory.generateSecret(pbeKeySpec).use { secretKey ->
+            secretKey.encoded
         }
     }
 
-    private fun getFactory() = SecretKeyFactory.getInstance(ALGORITHM)
+    private fun getFactory() = SecretKeyFactory.getInstance(Algorithm)
 
     companion object {
-        private const val ALGORITHM = "PBKDF2withHmacSHA512"
-        private const val DERIVED_KEY_LENGTH_BIT = 256
+        private const val Algorithm = "PBKDF2withHmacSHA512"
+        private const val DerivedKeyLengthBit = 256
     }
 }

@@ -19,9 +19,9 @@
 
 package studio.lunabee.onesafe.domain.utils
 
-import kotlin.test.Test
 import studio.lunabee.onesafe.domain.utils.FileHelper.clearExtension
 import studio.lunabee.onesafe.domain.utils.FileHelper.getValidFileName
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class FileHelperTest {

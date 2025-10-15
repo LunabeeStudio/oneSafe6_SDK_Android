@@ -23,7 +23,9 @@ import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 
 sealed interface ImeContactUiState {
     object Initializing : ImeContactUiState
+
     object Empty : ImeContactUiState
+
     class Data(
         val contacts: List<UIBubblesContactInfo>,
     ) : ImeContactUiState

@@ -46,23 +46,19 @@ class RoomHandShakeData(
     val encOneSafePrivateKey: ByteArray?, // ByteArray
     val encOneSafePublicKey: ByteArray?, // ByteArray
 ) {
-    fun toHandShakeData(): EncHandShakeData {
-        return EncHandShakeData(
-            encConversationSharedId = encConversationSharedId,
-            encOneSafePrivateKey = encOneSafePrivateKey,
-            encOneSafePublicKey = encOneSafePublicKey,
-            conversationLocalId = DoubleRatchetUUID(conversationLocalId),
-        )
-    }
+    fun toHandShakeData(): EncHandShakeData = EncHandShakeData(
+        encConversationSharedId = encConversationSharedId,
+        encOneSafePrivateKey = encOneSafePrivateKey,
+        encOneSafePublicKey = encOneSafePublicKey,
+        conversationLocalId = DoubleRatchetUUID(conversationLocalId),
+    )
 
     companion object {
-        fun fromHandShakeData(handShakeData: EncHandShakeData): RoomHandShakeData {
-            return RoomHandShakeData(
-                conversationLocalId = handShakeData.conversationLocalId.uuid,
-                encConversationSharedId = handShakeData.encConversationSharedId,
-                encOneSafePrivateKey = handShakeData.encOneSafePrivateKey,
-                encOneSafePublicKey = handShakeData.encOneSafePublicKey,
-            )
-        }
+        fun fromHandShakeData(handShakeData: EncHandShakeData): RoomHandShakeData = RoomHandShakeData(
+            conversationLocalId = handShakeData.conversationLocalId.uuid,
+            encConversationSharedId = handShakeData.encConversationSharedId,
+            encOneSafePrivateKey = handShakeData.encOneSafePrivateKey,
+            encOneSafePublicKey = handShakeData.encOneSafePublicKey,
+        )
     }
 }

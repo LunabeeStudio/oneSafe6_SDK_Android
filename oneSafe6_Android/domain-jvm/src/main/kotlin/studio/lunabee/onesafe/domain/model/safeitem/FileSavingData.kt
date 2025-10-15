@@ -24,6 +24,7 @@ import java.util.UUID
 
 sealed interface FileSavingData {
     data class ToRemove(val fileId: UUID, val encThumbnailFileName: ByteArray?) : FileSavingData
+
     data class ToSave(
         val fileId: UUID,
         val getStream: suspend () -> InputStream?,

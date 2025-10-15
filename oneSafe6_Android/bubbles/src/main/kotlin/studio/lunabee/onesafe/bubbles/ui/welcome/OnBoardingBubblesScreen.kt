@@ -40,7 +40,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSExtraLargeSpacer
 import studio.lunabee.onesafe.atom.OSRegularSpacer
@@ -57,8 +57,8 @@ import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.OSPreviewBackgroundTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
 
-context(OnBoardingBubblesNavScope)
 @Composable
+context(OnBoardingBubblesNavScope)
 fun OnBoardingBubblesRoute(
     viewModel: OnBoardingBubblesViewModel = hiltViewModel(),
 ) {

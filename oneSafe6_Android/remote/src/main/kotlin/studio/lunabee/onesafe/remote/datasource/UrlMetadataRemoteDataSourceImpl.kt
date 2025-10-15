@@ -42,30 +42,30 @@ class UrlMetadataRemoteDataSourceImpl @Inject constructor(
 ) : UrlMetadataRemoteDataSource {
     private val htmlPageFetchTimeout = 6.seconds
 
-    override suspend fun getPageHtmlCode(url: String): String {
-        return try {
-            withTimeoutOrNull(htmlPageFetchTimeout) {
-                urlMetadataApi.getHtmlPageCode(url = url)
-            }
-        } catch (e: Exception) {
-            throw OSRemoteError(code = OSRemoteError.Code.UNKNOWN_HTTP_ERROR, cause = e)
-        } ?: throw OSRemoteError(code = OSRemoteError.Code.UNEXPECTED_TIMEOUT)
-    }
+    override suspend fun getPageHtmlCode(url: String): String = try {
+        withTimeoutOrNull(htmlPageFetchTimeout) {
+            urlMetadataApi.getHtmlPageCode(url = url)
+        }
+    } catch (e: Exception) {
+        throw OSRemoteError(code = OSRemoteError.Code.UNKNOWN_HTTP_ERROR, cause = e)
+    } ?: throw OSRemoteError(code = OSRemoteError.Code.UNEXPECTED_TIMEOUT)
 
     override fun downloadFavIcon(baseUrl: String, targetFile: File): Flow<LBFlowResult<File>> =
-        urlMetadataApi.downloadImage(url = DefaultFaviconUrlApi + baseUrl, targetFile).transformResult(
-            transformError = {
-                val fallbackFlow = urlMetadataApi.downloadImage(url = FallbackFaviconUrlApi + baseUrl, targetFile)
-                emitAll(fallbackFlow)
-            },
-        )
-            .flowOn(dispatcher)
+        urlMetadataApi
+            .downloadImage(url = DefaultFaviconUrlApi + baseUrl, targetFile)
+            .transformResult(
+                transformError = {
+                    val fallbackFlow = urlMetadataApi.downloadImage(url = FallbackFaviconUrlApi + baseUrl, targetFile)
+                    emitAll(fallbackFlow)
+                },
+            ).flowOn(dispatcher)
             .catch { throwable ->
                 emit(LBFlowResult.Failure(throwable, targetFile))
             }
 
     override fun downloadImage(url: String, targetFile: File): Flow<LBFlowResult<File>> =
-        urlMetadataApi.downloadImage(url, targetFile)
+        urlMetadataApi
+            .downloadImage(url, targetFile)
             .flowOn(dispatcher)
             .catch { throwable ->
                 emit(LBFlowResult.Failure(throwable, targetFile))

@@ -34,7 +34,8 @@ class UpdatePanicButtonWidgetUseCaseImpl @Inject constructor(
 ) : UpdatePanicButtonWidgetUseCase {
     override suspend operator fun invoke() {
         val manager = GlanceAppWidgetManager(context)
-        manager.getGlanceIds(PanicButtonWidget::class.java)
+        manager
+            .getGlanceIds(PanicButtonWidget::class.java)
             .map(manager::getAppWidgetId)
             .forEach { id ->
                 MainPanicWidgetWorker.start(

@@ -63,9 +63,9 @@ class MigrationFromV0ToV1 @Inject constructor(
     ) {
         val masterKey = migrationSafeData.masterKey
         val safeId = migrationGetSafeIdBeforeV14UseCase()
-        val username = dataStoreEngine.retrieveValue(DATASTORE_USERNAME).firstOrNull()
+        val username = dataStoreEngine.retrieveValue(DatastoreUsername).firstOrNull()
         if (username != null) {
-            val encMasterKeyTest = dataStoreEngine.retrieveValue(DATASTORE_MASTER_KEY_TEST).firstOrNull()
+            val encMasterKeyTest = dataStoreEngine.retrieveValue(DatastoreMasterKeyTest).firstOrNull()
                 ?: throw OSCryptoError(OSCryptoError.Code.MASTER_KEY_NOT_GENERATED)
 
             val plainMasterKeyTest = try {
@@ -73,7 +73,7 @@ class MigrationFromV0ToV1 @Inject constructor(
             } catch (e: Exception) {
                 throw OSCryptoError(OSCryptoError.Code.MASTER_KEY_WRONG_PASSWORD, cause = e)
             }
-            val isPasswordOk = plainMasterKeyTest == MASTER_KEY_TEST_VALUE
+            val isPasswordOk = plainMasterKeyTest == MasterKeyTestValue
 
             if (isPasswordOk) {
                 logger.i("Run migration from V0 to V1")
@@ -84,9 +84,10 @@ class MigrationFromV0ToV1 @Inject constructor(
                     val rawMigratedKey = migrationCryptoV1UseCase.encrypt(rawKey, masterKey)
                     rawMigratedKey.copyInto(roomSafeItemKey.encValue)
                 }
-                val migratedEncMasterKeyTest = migrationCryptoV1UseCase.encrypt(MASTER_KEY_TEST_VALUE.encodeToByteArray(), masterKey)
+                val migratedEncMasterKeyTest = migrationCryptoV1UseCase
+                    .encrypt(MasterKeyTestValue.encodeToByteArray(), masterKey)
 
-                val encIndexKey = dataStoreEngine.retrieveValue(DATASTORE_SEARCH_INDEX_KEY).firstOrNull()
+                val encIndexKey = dataStoreEngine.retrieveValue(DatastoreSearchIndexKey).firstOrNull()
                     ?: throw OSCryptoError(OSCryptoError.Code.MASTER_KEY_NOT_GENERATED)
                 val indexKey = migrationCryptoV0UseCase.decrypt(encIndexKey, masterKey, username)
                 val migratedEncIndexKey = migrationCryptoV1UseCase.encrypt(indexKey, masterKey)
@@ -94,7 +95,8 @@ class MigrationFromV0ToV1 @Inject constructor(
                 val roomIndexWorldEntries = indexWordEntryDao.getAll(safeId).first()
                 indexKey.use {
                     roomIndexWorldEntries.forEach { roomIndexWordEntry ->
-                        val rawIndexWordEntry = migrationCryptoV0UseCase.decrypt(roomIndexWordEntry.encWord, indexKey, username)
+                        val rawIndexWordEntry = migrationCryptoV0UseCase
+                            .decrypt(roomIndexWordEntry.encWord, indexKey, username)
                         val rawMigratedIndexWordEntry = migrationCryptoV1UseCase.encrypt(rawIndexWordEntry, indexKey)
                         rawMigratedIndexWordEntry.copyInto(roomIndexWordEntry.encWord)
                     }
@@ -105,11 +107,11 @@ class MigrationFromV0ToV1 @Inject constructor(
                 // Update index word entries
                 indexWordEntryDao.update(roomIndexWorldEntries)
                 // Update key test value
-                dataStoreEngine.insertValue(DATASTORE_MASTER_KEY_TEST, migratedEncMasterKeyTest)
+                dataStoreEngine.insertValue(DatastoreMasterKeyTest, migratedEncMasterKeyTest)
                 // Update index key
-                dataStoreEngine.insertValue(DATASTORE_SEARCH_INDEX_KEY, migratedEncIndexKey)
+                dataStoreEngine.insertValue(DatastoreSearchIndexKey, migratedEncIndexKey)
                 // Clear username
-                dataStoreEngine.removeValue(DATASTORE_USERNAME)
+                dataStoreEngine.removeValue(DatastoreUsername)
             } else {
                 throw OSCryptoError(
                     OSCryptoError.Code.MASTER_KEY_WRONG_PASSWORD,
@@ -121,9 +123,9 @@ class MigrationFromV0ToV1 @Inject constructor(
 
     companion object {
         // Copy of AndroidMainCryptoRepository to fix values as of v0
-        private const val DATASTORE_USERNAME = "792bb428-b9bd-45bd-9a10-5d68de628b61"
-        private const val DATASTORE_MASTER_KEY_TEST = "f9e3fa44-2f54-4246-8ba6-2784a18b63ea"
-        private const val MASTER_KEY_TEST_VALUE = "44c5dac9-17ba-4690-9275-c7471b2e0582"
-        private const val DATASTORE_SEARCH_INDEX_KEY = "f0ab7671-5314-41dc-9f57-3c689180ab33"
+        private const val DatastoreUsername = "792bb428-b9bd-45bd-9a10-5d68de628b61"
+        private const val DatastoreMasterKeyTest = "f9e3fa44-2f54-4246-8ba6-2784a18b63ea"
+        private const val MasterKeyTestValue = "44c5dac9-17ba-4690-9275-c7471b2e0582"
+        private const val DatastoreSearchIndexKey = "f0ab7671-5314-41dc-9f57-3c689180ab33"
     }
 }

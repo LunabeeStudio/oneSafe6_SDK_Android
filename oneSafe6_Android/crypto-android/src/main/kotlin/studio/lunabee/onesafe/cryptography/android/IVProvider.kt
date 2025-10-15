@@ -27,10 +27,8 @@ fun interface IVProvider {
 }
 
 class SecureIVProvider @Inject constructor() : IVProvider {
-    override operator fun invoke(size: Int): ByteArray {
-        return ByteArray(size).apply {
-            random.nextBytes(this)
-        }
+    override operator fun invoke(size: Int): ByteArray = ByteArray(size).apply {
+        random.nextBytes(this)
     }
 
     private companion object {

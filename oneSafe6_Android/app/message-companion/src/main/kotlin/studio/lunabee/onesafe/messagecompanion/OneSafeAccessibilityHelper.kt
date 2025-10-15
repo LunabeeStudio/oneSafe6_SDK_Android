@@ -23,12 +23,11 @@ import android.content.ComponentName
 import android.content.Context
 
 object OneSafeAccessibilityHelper {
-    fun parseOneSafeKAccessibilityEnabled(context: Context, activeImeIds: String): Boolean {
-        return activeImeIds.split(":")
-            .map { componentStr -> ComponentName.unflattenFromString(componentStr) }
-            .any {
-                it?.packageName == context.packageName
-                    && it?.className?.contains(OSAccessibilityService::class.simpleName.toString()) ?: false
-            }
-    }
+    fun parseOneSafeKAccessibilityEnabled(context: Context, activeImeIds: String): Boolean = activeImeIds
+        .split(":")
+        .map { componentStr -> ComponentName.unflattenFromString(componentStr) }
+        .any {
+            it?.packageName == context.packageName
+                && it?.className?.contains(OSAccessibilityService::class.simpleName.toString()) ?: false
+        }
 }

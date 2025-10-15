@@ -44,18 +44,17 @@ class CloudAutoBackupUseCase @Inject constructor(
     @BackupType(BackupType.Type.Auto) private val exportEngine: BackupExportEngine,
     @ArchiveCacheDir(type = ArchiveCacheDir.Type.AutoBackup) private val archiveDir: File,
 ) {
-    operator fun invoke(safeId: SafeId): Flow<LBFlowResult<CloudBackup>> {
-        return exportBackupUseCase(
-            exportEngine = exportEngine,
-            archiveExtractedDirectory = archiveDir,
-            safeId = safeId,
-        ).transformResult { result ->
-            val backup = result.successData
-            val uploadFlow = cloudBackupRepository.uploadBackup(backup)
-                .onCompletion {
-                    backup.file.delete()
-                }
-            emitAll(uploadFlow)
-        }
+    operator fun invoke(safeId: SafeId): Flow<LBFlowResult<CloudBackup>> = exportBackupUseCase(
+        exportEngine = exportEngine,
+        archiveExtractedDirectory = archiveDir,
+        safeId = safeId,
+    ).transformResult { result ->
+        val backup = result.successData
+        val uploadFlow = cloudBackupRepository
+            .uploadBackup(backup)
+            .onCompletion {
+                backup.file.delete()
+            }
+        emitAll(uploadFlow)
     }
 }

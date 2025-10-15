@@ -20,7 +20,6 @@
 package studio.lunabee.messaging.domain.usecase
 
 import com.lunabee.lbcore.model.LBResult
-import kotlin.time.Instant
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
@@ -36,6 +35,7 @@ import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.onesafe.error.BubblesDomainError
 import studio.lunabee.onesafe.error.BubblesMessagingError
 import studio.lunabee.onesafe.error.OSError
+import kotlin.time.Instant
 
 class GetResetMessageUseCase @Inject constructor(
     private val doubleRatchetLocalDatasource: DoubleRatchetLocalDatasource,

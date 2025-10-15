@@ -5,11 +5,11 @@ plugins {
 
 android {
     namespace = "studio.lunabee.onesafe.macrobenchmark"
-    compileSdk = AndroidConfig.COMPILE_SDK
+    compileSdk = AndroidConfig.CompileSdk
 
     defaultConfig {
-        minSdk = AndroidConfig.MIN_APP_SDK
-        targetSdk = AndroidConfig.TARGET_SDK
+        minSdk = AndroidConfig.MinAppSdk
+        targetSdk = AndroidConfig.TargetSdk
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -19,14 +19,14 @@ android {
     targetProjectPath = ":app"
     experimentalProperties["android.experimental.self-instrumenting"] = true
 
-    flavorDimensions += AndroidConfig.CRYPTO_BACKEND_FLAVOR_DIMENSION
+    flavorDimensions += AndroidConfig.CryptoBackendFlavorDimension
     productFlavors {
-        create(AndroidConfig.CRYPTO_BACKEND_FLAVOR_JCE) {
-            dimension = AndroidConfig.CRYPTO_BACKEND_FLAVOR_DIMENSION
+        create(AndroidConfig.CryptoBackendFlavorJce) {
+            dimension = AndroidConfig.CryptoBackendFlavorDimension
         }
 
-        create(AndroidConfig.CRYPTO_BACKEND_FLAVOR_TINK) {
-            dimension = AndroidConfig.CRYPTO_BACKEND_FLAVOR_DIMENSION
+        create(AndroidConfig.CryptoBackendFlavorTink) {
+            dimension = AndroidConfig.CryptoBackendFlavorDimension
         }
     }
 
@@ -49,8 +49,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = ProjectConfig.JDK_VERSION
-        targetCompatibility = ProjectConfig.JDK_VERSION
+        sourceCompatibility = ProjectConfig.JdkVersion
+        targetCompatibility = ProjectConfig.JdkVersion
         isCoreLibraryDesugaringEnabled = true
     }
 }
@@ -81,12 +81,12 @@ androidComponents {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
     compilerOptions {
-        jvmTarget.set(ProjectConfig.JVM_TARGET)
+        jvmTarget.set(ProjectConfig.JvmTarget)
     }
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(ProjectConfig.JDK_VERSION.toString()))
+        languageVersion.set(JavaLanguageVersion.of(ProjectConfig.JdkVersion.toString()))
     }
 }

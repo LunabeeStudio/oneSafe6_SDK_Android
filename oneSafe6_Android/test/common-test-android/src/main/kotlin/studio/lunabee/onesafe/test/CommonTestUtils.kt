@@ -89,81 +89,79 @@ object CommonTestUtils {
 
     fun roomSafe(
         id: SafeId = firstSafeId,
-    ): RoomSafe {
-        return RoomSafe(
-            id = id,
-            crypto = RoomSafeCrypto(
-                salt = byteArrayOf(),
-                encTest = byteArrayOf(),
-                encIndexKey = byteArrayOf(),
-                encBubblesKey = byteArrayOf(),
-                encItemEditionKey = byteArrayOf(),
-                biometricCryptoMaterial = BiometricCryptoMaterial(
-                    iv = OSTestConfig.random.nextBytes(16),
-                    key = OSTestConfig.random.nextBytes(48),
-                ),
-                null,
+    ): RoomSafe = RoomSafe(
+        id = id,
+        crypto = RoomSafeCrypto(
+            salt = byteArrayOf(),
+            encTest = byteArrayOf(),
+            encIndexKey = byteArrayOf(),
+            encBubblesKey = byteArrayOf(),
+            encItemEditionKey = byteArrayOf(),
+            biometricCryptoMaterial = BiometricCryptoMaterial(
+                iv = OSTestConfig.random.nextBytes(16),
+                key = OSTestConfig.random.nextBytes(48),
             ),
-            settings = RoomSafeSettings(
-                materialYou = false,
-                automation = false,
-                displayShareWarning = false,
-                allowScreenshot = false,
-                shakeToLock = false,
-                bubblesPreview = false,
-                cameraSystem = CameraSystem.InApp,
-                autoLockOSKHiddenDelay = Duration.ZERO,
-                verifyPasswordInterval = VerifyPasswordInterval.NEVER,
-                lastPasswordVerification = Instant.EPOCH,
-                bubblesHomeCardCtaState = RoomCtaState(
-                    state = RoomCtaState.State.Hidden,
-                    timestamp = null,
-                ),
-                autoLockInactivityDelay = Duration.ZERO,
-                autoLockAppChangeDelay = Duration.ZERO,
-                clipboardDelay = Duration.ZERO,
-                bubblesResendMessageDelay = Duration.ZERO,
-                autoLockOSKInactivityDelay = Duration.ZERO,
-                autoBackupEnabled = false,
-                autoBackupFrequency = Duration.ZERO,
-                autoBackupMaxNumber = 0,
-                cloudBackupEnabled = false,
-                keepLocalBackupEnabled = false,
-                itemOrdering = ItemOrder.Position,
-                itemLayout = ItemLayout.Grid,
-                driveSettings = RoomDriveSettings(
-                    selectedAccount = null,
-                    folderId = null,
-                    folderUrl = null,
-                ),
-                enableAutoBackupCtaState = RoomCtaState(
-                    state = RoomCtaState.State.Hidden,
-                    timestamp = null,
-                ),
-                independentSafeInfoCtaState = RoomCtaState(
-                    state = RoomCtaState.State.Hidden,
-                    timestamp = null,
-                ),
-                preventionWarningCtaState = RoomCtaState(
-                    state = RoomCtaState.State.Hidden,
-                    timestamp = null,
-                ),
-                lastExportDate = null,
+            null,
+        ),
+        settings = RoomSafeSettings(
+            materialYou = false,
+            automation = false,
+            displayShareWarning = false,
+            allowScreenshot = false,
+            shakeToLock = false,
+            bubblesPreview = false,
+            cameraSystem = CameraSystem.InApp,
+            autoLockOSKHiddenDelay = Duration.ZERO,
+            verifyPasswordInterval = VerifyPasswordInterval.NEVER,
+            lastPasswordVerification = Instant.EPOCH,
+            bubblesHomeCardCtaState = RoomCtaState(
+                state = RoomCtaState.State.Hidden,
+                timestamp = null,
             ),
-            appVisit = RoomAppVisit(
-                hasFinishOneSafeKOnBoarding = false,
-                hasDoneOnBoardingBubbles = false,
-                hasHiddenCameraTips = false,
-                hasSeenItemEditionUrlToolTip = false,
-                hasSeenItemEditionEmojiToolTip = false,
-                hasSeenItemReadEditToolTip = false,
-                hasSeenDialogMessageSaveConfirmation = false,
+            autoLockInactivityDelay = Duration.ZERO,
+            autoLockAppChangeDelay = Duration.ZERO,
+            clipboardDelay = Duration.ZERO,
+            bubblesResendMessageDelay = Duration.ZERO,
+            autoLockOSKInactivityDelay = Duration.ZERO,
+            autoBackupEnabled = false,
+            autoBackupFrequency = Duration.ZERO,
+            autoBackupMaxNumber = 0,
+            cloudBackupEnabled = false,
+            keepLocalBackupEnabled = false,
+            itemOrdering = ItemOrder.Position,
+            itemLayout = ItemLayout.Grid,
+            driveSettings = RoomDriveSettings(
+                selectedAccount = null,
+                folderId = null,
+                folderUrl = null,
             ),
-            version = 0,
-            openOrder = 0,
-            isPanicDestructionEnabled = false,
-        )
-    }
+            enableAutoBackupCtaState = RoomCtaState(
+                state = RoomCtaState.State.Hidden,
+                timestamp = null,
+            ),
+            independentSafeInfoCtaState = RoomCtaState(
+                state = RoomCtaState.State.Hidden,
+                timestamp = null,
+            ),
+            preventionWarningCtaState = RoomCtaState(
+                state = RoomCtaState.State.Hidden,
+                timestamp = null,
+            ),
+            lastExportDate = null,
+        ),
+        appVisit = RoomAppVisit(
+            hasFinishOneSafeKOnBoarding = false,
+            hasDoneOnBoardingBubbles = false,
+            hasHiddenCameraTips = false,
+            hasSeenItemEditionUrlToolTip = false,
+            hasSeenItemEditionEmojiToolTip = false,
+            hasSeenItemReadEditToolTip = false,
+            hasSeenDialogMessageSaveConfirmation = false,
+        ),
+        version = 0,
+        openOrder = 0,
+        isPanicDestructionEnabled = false,
+    )
 
     fun roomSafeItem(
         id: UUID = UUID.randomUUID(),
@@ -180,24 +178,22 @@ object CommonTestUtils {
         indexAlpha: Double = 0.0,
         createdAt: Instant = Instant.ofEpochMilli(0),
         safeId: SafeId = firstSafeId,
-    ): RoomSafeItem {
-        return RoomSafeItem(
-            id = id,
-            encName = encName,
-            parentId = parentId,
-            isFavorite = isFavorite,
-            updatedAt = updatedAt,
-            position = position,
-            iconId = iconId,
-            encColor = encColor,
-            deletedAt = deletedAt,
-            deletedParentId = deletedParentId,
-            consultedAt = consultedAt,
-            indexAlpha = indexAlpha,
-            createdAt = createdAt,
-            safeId = safeId,
-        )
-    }
+    ): RoomSafeItem = RoomSafeItem(
+        id = id,
+        encName = encName,
+        parentId = parentId,
+        isFavorite = isFavorite,
+        updatedAt = updatedAt,
+        position = position,
+        iconId = iconId,
+        encColor = encColor,
+        deletedAt = deletedAt,
+        deletedParentId = deletedParentId,
+        consultedAt = consultedAt,
+        indexAlpha = indexAlpha,
+        createdAt = createdAt,
+        safeId = safeId,
+    )
 
     fun safeSettingsMigration(
         version: Int = 0,

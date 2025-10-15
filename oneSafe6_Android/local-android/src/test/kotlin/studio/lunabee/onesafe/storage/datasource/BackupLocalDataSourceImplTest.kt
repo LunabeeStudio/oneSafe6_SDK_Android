@@ -36,9 +36,9 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.qualifier.InternalDir
-import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.error.OSStorageError
 import studio.lunabee.onesafe.importexport.model.LocalBackup
+import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.dao.BackupDao
 import studio.lunabee.onesafe.storage.dao.SafeDao
@@ -164,7 +164,8 @@ class BackupLocalDataSourceImplTest {
     fun delete_test(): TestResult = runTest {
         val backupFile = File(tempDir, testUUIDs[0].toString())
         backupFile.createNewFile()
-        val localBackup = backupLocalDataSource.addBackup(LocalBackup(Instant.now(clock), backupFile, SafeId(testUUIDs[0])))
+        val localBackup = backupLocalDataSource
+            .addBackup(LocalBackup(Instant.now(clock), backupFile, SafeId(testUUIDs[0])))
 
         assertTrue(backupLocalDataSource.getBackups(firstSafeId).isNotEmpty())
         assertTrue(localBackup.file.exists())

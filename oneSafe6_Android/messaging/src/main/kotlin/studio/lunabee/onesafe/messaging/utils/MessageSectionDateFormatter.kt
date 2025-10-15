@@ -50,7 +50,8 @@ class MessageSectionDateFormatter(
                 )
             }
             else -> LbcTextSpec.Raw(
-                date.atZone(ZoneId.systemDefault())
+                date
+                    .atZone(ZoneId.systemDefault())
                     .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale)),
             )
         }

@@ -37,26 +37,33 @@ import javax.inject.Inject
 class MessageLocalDataSourceImpl @Inject constructor(
     private val messageDao: MessageDao,
 ) : MessageLocalDataSource, MessagePagingLocalDataSource {
-    override suspend fun save(message: SafeMessage, order: Float): Unit = messageDao.insert(RoomMessage.fromMessage(message, order))
-    override suspend fun getAllByContact(contactId: DoubleRatchetUUID): List<SafeMessage> = messageDao.getAllByContact(contactId.uuid)
+    override suspend fun save(message: SafeMessage, order: Float): Unit = messageDao
+        .insert(RoomMessage.fromMessage(message, order))
+
+    override suspend fun getAllByContact(contactId: DoubleRatchetUUID): List<SafeMessage> = messageDao
+        .getAllByContact(contactId.uuid)
         .map { it.toMessage() }
 
-    override suspend fun getLastMessage(contactId: DoubleRatchetUUID): Flow<SafeMessage?> {
-        return messageDao.getLastMessage(contactId.uuid).map { it?.toMessage() }
-    }
+    override suspend fun getLastMessage(contactId: DoubleRatchetUUID): Flow<SafeMessage?> = messageDao
+        .getLastMessage(
+            contactId.uuid,
+        ).map { it?.toMessage() }
 
     override suspend fun getLastByContact(
         contactId: DoubleRatchetUUID,
         exceptIds: List<DoubleRatchetUUID>,
-    ): MessageOrder? = messageDao.getLastMessageOrderByContact(
-        contactId.uuid,
-        exceptIds.map { it.uuid },
-    )?.toMessageOrder()
+    ): MessageOrder? = messageDao
+        .getLastMessageOrderByContact(
+            contactId.uuid,
+            exceptIds.map { it.uuid },
+        )?.toMessageOrder()
 
     override suspend fun getFirstByContact(
         contactId: DoubleRatchetUUID,
         exceptIds: List<DoubleRatchetUUID>,
-    ): MessageOrder? = messageDao.getFirstMessageOrderByContact(contactId.uuid, exceptIds.map { it.uuid })?.toMessageOrder()
+    ): MessageOrder? = messageDao
+        .getFirstMessageOrderByContact(contactId.uuid, exceptIds.map { it.uuid })
+        ?.toMessageOrder()
 
     override suspend fun countByContact(
         contactId: DoubleRatchetUUID,
@@ -67,22 +74,22 @@ class MessageLocalDataSourceImpl @Inject constructor(
         position: Int,
         contactId: DoubleRatchetUUID,
         exceptIds: List<DoubleRatchetUUID>,
-    ): MessageOrder? = messageDao.getMessageOrderAtByContact(
-        position,
-        contactId.uuid,
-        exceptIds.map { it.uuid },
-    )?.toMessageOrder()
+    ): MessageOrder? = messageDao
+        .getMessageOrderAtByContact(
+            position,
+            contactId.uuid,
+            exceptIds.map { it.uuid },
+        )?.toMessageOrder()
 
     override suspend fun getByContactByOrder(
         contactId: DoubleRatchetUUID,
         order: Float,
     ): SafeMessage = messageDao.getByContactByOrder(contactId.uuid, order).toMessage()
 
-    override fun getAllPaged(config: PagingConfig, contactId: DoubleRatchetUUID): Flow<PagingData<SafeMessage>> {
-        return Pager(config = config) {
-            messageDao.getAllAsPagingSource(contactId.uuid)
-        }.flow.mapPagingValues(RoomMessage::toMessage)
-    }
+    override fun getAllPaged(config: PagingConfig, contactId: DoubleRatchetUUID): Flow<PagingData<SafeMessage>> = Pager(config = config) {
+        messageDao.getAllAsPagingSource(contactId.uuid)
+    }.flow
+        .mapPagingValues(RoomMessage::toMessage)
 
     override suspend fun deleteAllMessages(contactId: DoubleRatchetUUID) {
         messageDao.deleteAllMessages(contactId.uuid)

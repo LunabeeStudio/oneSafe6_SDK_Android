@@ -24,8 +24,12 @@ import studio.lunabee.onesafe.domain.model.safe.SafeId
 
 interface SafeIdCacheDataSource {
     fun loadSafeId(safeId: SafeId)
+
     fun clearSafeId()
+
     fun getSafeIdFlow(): Flow<SafeId?>
+
     suspend fun getSafeId(): SafeId?
+
     fun getLastSafeId(): SafeId?
 }

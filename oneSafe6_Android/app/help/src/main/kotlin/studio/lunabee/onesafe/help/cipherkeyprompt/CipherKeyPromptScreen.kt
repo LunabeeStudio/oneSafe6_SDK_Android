@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSImageSpec
@@ -35,8 +35,8 @@ import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import studio.lunabee.onesafe.ui.theme.OSTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
 
-context(CipherKeyPromptNavigation)
 @Composable
+context(CipherKeyPromptNavigation)
 fun CipherKeyPromptRoute(
     viewModel: CipherKeyPromptViewModel = hiltViewModel(),
 ) {
@@ -102,7 +102,8 @@ private fun CipherKeyPromptScreen(
                     keyValue = uiState.key,
                     onKeyChange = setKey,
                     focusRequester = remember { FocusRequester() },
-                    errorText = (uiState.openDatabaseResult as? CipherKeyPromptUiState.OpenDatabaseState.Error)?.description,
+                    errorText = (uiState.openDatabaseResult as? CipherKeyPromptUiState.OpenDatabaseState.Error)
+                        ?.description,
                     onConfirm = onConfirm,
                     isLoading = uiState.openDatabaseResult == CipherKeyPromptUiState.OpenDatabaseState.Loading,
                     onWhyClick = onWhyClick,

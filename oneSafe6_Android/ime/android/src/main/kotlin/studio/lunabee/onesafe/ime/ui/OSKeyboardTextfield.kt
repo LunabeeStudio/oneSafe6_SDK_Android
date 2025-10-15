@@ -207,7 +207,7 @@ private fun EditorInfo.update(imeOptions: ImeOptions, textFieldValue: TextFieldV
                 this.inputType = this.inputType or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
             }
             else -> {
-                /* do nothing */
+                // do nothing
             }
         }
         if (imeOptions.autoCorrect) {

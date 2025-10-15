@@ -41,28 +41,29 @@ class ForceUpgradeLocalDatasourceImpl @Inject constructor(
     @param:FileDispatcher private val fileDispatcher: CoroutineDispatcher,
 ) : ForceUpgradeLocalDatasource {
 
-    override fun getForceUpgradeData(): Flow<ForceUpgradeData?> = dataStore.data.map { data ->
-        if (data.buildNumber == buildNumber) {
-            ForceUpgradeData(
-                strings = ForceUpgradeStrings(
-                    forceUpgrade = ForceUpgradeTypeStrings(
-                        title = data.forceTitle,
-                        description = data.forceDescription,
-                        buttonLabel = data.softButtonLabel,
+    override fun getForceUpgradeData(): Flow<ForceUpgradeData?> = dataStore.data
+        .map { data ->
+            if (data.buildNumber == buildNumber) {
+                ForceUpgradeData(
+                    strings = ForceUpgradeStrings(
+                        forceUpgrade = ForceUpgradeTypeStrings(
+                            title = data.forceTitle,
+                            description = data.forceDescription,
+                            buttonLabel = data.softButtonLabel,
+                        ),
+                        softUpgrade = ForceUpgradeTypeStrings(
+                            title = data.softTitle,
+                            description = data.softDescription,
+                            buttonLabel = data.softButtonLabel,
+                        ),
                     ),
-                    softUpgrade = ForceUpgradeTypeStrings(
-                        title = data.softTitle,
-                        description = data.softDescription,
-                        buttonLabel = data.softButtonLabel,
-                    ),
-                ),
-                softBuildNumber = data.softBuildNumber,
-                forceBuildNumber = data.forceBuildNumber,
-            )
-        } else {
-            null
-        }
-    }.flowOn(fileDispatcher)
+                    softBuildNumber = data.softBuildNumber,
+                    forceBuildNumber = data.forceBuildNumber,
+                )
+            } else {
+                null
+            }
+        }.flowOn(fileDispatcher)
 
     override suspend fun cleanForceUpgradeData() {
         withContext(fileDispatcher) {

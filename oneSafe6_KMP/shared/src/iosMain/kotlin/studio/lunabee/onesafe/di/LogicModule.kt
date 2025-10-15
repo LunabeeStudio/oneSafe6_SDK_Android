@@ -16,7 +16,6 @@
 
 package studio.lunabee.onesafe.di
 
-import kotlin.time.Clock
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import studio.lunabee.bubbles.domain.crypto.BubblesCryptoEngine
@@ -36,6 +35,7 @@ import studio.lunabee.messaging.repository.datasource.MessageLocalDataSource
 import studio.lunabee.messaging.repository.datasource.MessageQueueLocalDatasource
 import studio.lunabee.messaging.repository.datasource.SentMessageLocalDatasource
 import studio.lunabee.onesafe.cryptography.CryptoDataMapper
+import kotlin.time.Clock
 
 @Suppress("LongParameterList")
 fun logicModule(

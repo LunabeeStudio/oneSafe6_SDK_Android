@@ -28,7 +28,5 @@ enum class ExportProgress {
     CopyIcons,
     ;
 
-    fun value(): Float {
-        return this.ordinal.toFloat() / ExportProgress.entries.size
-    }
+    fun value(): Float = this.ordinal.toFloat() / ExportProgress.entries.size
 }

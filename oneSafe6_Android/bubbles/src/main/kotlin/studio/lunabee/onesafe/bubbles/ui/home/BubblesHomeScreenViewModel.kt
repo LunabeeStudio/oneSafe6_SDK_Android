@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import kotlin.time.toJavaInstant
 import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.bubbles.domain.usecase.GetAllContactsUseCase
 import studio.lunabee.messaging.domain.model.ConversationState
@@ -43,6 +42,7 @@ import studio.lunabee.onesafe.bubbles.ui.model.ConversationSubtitle
 import studio.lunabee.onesafe.bubbles.ui.model.UIBubblesContactInfo
 import studio.lunabee.onesafe.domain.common.FeatureFlags
 import javax.inject.Inject
+import kotlin.time.toJavaInstant
 
 @HiltViewModel
 class BubblesHomeScreenViewModel @Inject constructor(

@@ -143,13 +143,14 @@ class AutoBackupSettingsScreenTest : LbcComposeTest() {
         block: ComposeUiTest.() -> Unit,
     ) {
         val viewModel = mockk<AutoBackupSettingsViewModel> {
-            every { uiState } returns driveUri.map {
-                autoBackupSettingsUiState(latestBackup, cloudBackupEnabledState, it)
-            }.stateIn(
-                CoroutineScope(Dispatchers.Main.immediate),
-                SharingStarted.Eagerly,
-                autoBackupSettingsUiState(latestBackup, cloudBackupEnabledState, driveUri.value),
-            )
+            every { uiState } returns driveUri
+                .map {
+                    autoBackupSettingsUiState(latestBackup, cloudBackupEnabledState, it)
+                }.stateIn(
+                    CoroutineScope(Dispatchers.Main.immediate),
+                    SharingStarted.Eagerly,
+                    autoBackupSettingsUiState(latestBackup, cloudBackupEnabledState, driveUri.value),
+                )
             every { authorizeDrive } returns MutableStateFlow(null)
             every { snackbarState } returns MutableStateFlow(errorSnackbarState)
             every { featureFlagCloudBackup } returns true

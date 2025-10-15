@@ -54,7 +54,7 @@ fun ConversationScreenMenu(
             endContent = {
                 Icon(
                     painter = painterResource(id = OSDrawable.ic_navigate_next),
-                    tint = LocalColorPalette.current.Neutral30,
+                    tint = LocalColorPalette.current.neutral30,
                     contentDescription = null,
                 )
             },
@@ -64,8 +64,7 @@ fun ConversationScreenMenu(
                     start = OSDimens.SystemSpacing.Small,
                     top = OSDimens.SystemSpacing.Small,
                     bottom = OSDimens.SystemSpacing.Small,
-                )
-                .padding(
+                ).padding(
                     LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
                         index = 0,
                         elementsCount = if (isOSKShown) 2 else 1,
@@ -83,7 +82,7 @@ fun ConversationScreenMenu(
                 endContent = {
                     Icon(
                         painter = painterResource(id = OSDrawable.ic_navigate_next),
-                        tint = LocalColorPalette.current.Neutral30,
+                        tint = LocalColorPalette.current.neutral30,
                         contentDescription = null,
                     )
                 },
@@ -93,8 +92,10 @@ fun ConversationScreenMenu(
                         start = OSDimens.SystemSpacing.Small,
                         top = OSDimens.SystemSpacing.Small,
                         bottom = OSDimens.SystemSpacing.Small,
-                    )
-                    .padding(LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(index = 1, elementsCount = 2)),
+                    ).padding(
+                        LocalDesignSystem.current
+                            .getRowClickablePaddingValuesDependingOnIndex(index = 1, elementsCount = 2),
+                    ),
             )
         }
     }

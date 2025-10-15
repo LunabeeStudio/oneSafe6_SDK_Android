@@ -48,15 +48,17 @@ value class DatabaseKey(val raw: ByteArray) : Closeable {
     companion object {
         private val hexArray = "0123456789ABCDEF".toCharArray()
         const val DatabaseKeyByteSize: Int = 32
-        const val hexPrefix: String = "0x"
+        const val HexPrefix: String = "0x"
 
         // https://stackoverflow.com/a/66614516/9994620
         private fun fromString(key: String): ByteArray {
-            val rawString = key.removePrefix(hexPrefix).remove(" ")
+            val rawString = key.removePrefix(HexPrefix).remove(" ")
             return try {
-                rawString.chunked(2)
+                rawString
+                    .chunked(2)
                     .map { it.toInt(16).toByte() }
-                    .toByteArray().also {
+                    .toByteArray()
+                    .also {
                         if (it.size != DatabaseKeyByteSize) throw OSDomainError.Code.DATABASE_KEY_BAD_FORMAT.get()
                     }
             } catch (e: NumberFormatException) {

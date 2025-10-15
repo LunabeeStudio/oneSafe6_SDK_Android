@@ -38,28 +38,24 @@ class DatabaseKeyRepositoryImpl @Inject constructor(
     }
 
     override suspend fun removeKey() {
-        removeKey(DATABASE_KEY_ALIAS)
+        removeKey(DatabaseKeyAlias)
     }
 
-    override fun getKeyFlow(): Flow<DatabaseKey?> {
-        return getKeyFlow(DATABASE_KEY_ALIAS)
-    }
+    override fun getKeyFlow(): Flow<DatabaseKey?> = getKeyFlow(DatabaseKeyAlias)
 
     override suspend fun setKey(key: DatabaseKey, override: Boolean) {
-        dataStore.insertValue(key = DATABASE_KEY_ALIAS, value = key.raw, override = override)
+        dataStore.insertValue(key = DatabaseKeyAlias, value = key.raw, override = override)
     }
 
-    override fun getBackupKeyFlow(): Flow<DatabaseKey?> {
-        return getKeyFlow(DATABASE_BACKUP_KEY_ALIAS)
-    }
+    override fun getBackupKeyFlow(): Flow<DatabaseKey?> = getKeyFlow(DatabaseBackupKeyAlias)
 
     override suspend fun removeBackupKey() {
-        removeKey(DATABASE_BACKUP_KEY_ALIAS)
+        removeKey(DatabaseBackupKeyAlias)
     }
 
     override suspend fun copyKeyToBackupKey() {
         getKeyFlow().firstOrNull()?.let { key ->
-            dataStore.insertValue(key = DATABASE_BACKUP_KEY_ALIAS, value = key.raw)
+            dataStore.insertValue(key = DatabaseBackupKeyAlias, value = key.raw)
         }
     }
 
@@ -68,7 +64,7 @@ class DatabaseKeyRepositoryImpl @Inject constructor(
     private suspend fun removeKey(alias: String) = dataStore.removeValue(alias)
 
     companion object {
-        private const val DATABASE_KEY_ALIAS = "fa8ea4fd-bea0-4705-be5c-78b5d9ec0d35"
-        private const val DATABASE_BACKUP_KEY_ALIAS = "788a5a8f-a412-468b-9b80-3aff37f214b7"
+        private const val DatabaseKeyAlias = "fa8ea4fd-bea0-4705-be5c-78b5d9ec0d35"
+        private const val DatabaseBackupKeyAlias = "788a5a8f-a412-468b-9b80-3aff37f214b7"
     }
 }

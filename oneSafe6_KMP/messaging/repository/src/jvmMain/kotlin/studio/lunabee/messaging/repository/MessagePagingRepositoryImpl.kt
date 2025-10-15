@@ -22,11 +22,11 @@ package studio.lunabee.messaging.repository
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.messaging.domain.model.SafeMessage
 import studio.lunabee.messaging.domain.repository.MessagePagingRepository
 import studio.lunabee.messaging.repository.datasource.MessagePagingLocalDataSource
+import studio.lunabee.onesafe.di.Inject
 
 class MessagePagingRepositoryImpl @Inject constructor(
     private val messagePagingLocalDataSource: MessagePagingLocalDataSource,

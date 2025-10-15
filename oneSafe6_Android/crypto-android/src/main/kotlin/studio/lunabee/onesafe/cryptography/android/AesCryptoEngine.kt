@@ -61,53 +61,47 @@ class AesCryptoEngine @Inject constructor(
         logger.i("Initialize ${javaClass.simpleName} using ${cipher.provider}")
     }
 
-    override fun encrypt(plainData: ByteArray, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
-        return runCatching {
-            val bos = ByteArrayOutputStream()
-            getCipherOutputStream(bos, key, null).use { cos ->
-                plainData.inputStream().use { input ->
-                    input.copyTo(cos)
-                }
+    override fun encrypt(plainData: ByteArray, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> = runCatching {
+        val bos = ByteArrayOutputStream()
+        getCipherOutputStream(bos, key, null).use { cos ->
+            plainData.inputStream().use { input ->
+                input.copyTo(cos)
             }
-            bos.toByteArray()
         }
+        bos.toByteArray()
     }
 
-    override fun decrypt(cipherData: ByteArray, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
-        return runCatching {
-            val cipher = getCipher()
-            val iv: ByteArray = try {
-                cipherData.copyOfRange(0, AES_GCM_IV_LENGTH)
-            } catch (e: IndexOutOfBoundsException) {
-                throw OSCryptoError(OSCryptoError.Code.DECRYPTION_UNKNOWN_FAILURE, cause = e)
-            }
-            val ivSpec = getGcmParameterSpec(iv)
-            val secretKey = getSecretKeySpec(key)
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec)
-            cipher.doFinal(
-                cipherData,
-                AES_GCM_IV_LENGTH,
-                cipherData.size - AES_GCM_IV_LENGTH,
-            )
+    override fun decrypt(cipherData: ByteArray, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> = runCatching {
+        val cipher = getCipher()
+        val iv: ByteArray = try {
+            cipherData.copyOfRange(0, AesGcmIvLength)
+        } catch (e: IndexOutOfBoundsException) {
+            throw OSCryptoError(OSCryptoError.Code.DECRYPTION_UNKNOWN_FAILURE, cause = e)
         }
+        val ivSpec = getGcmParameterSpec(iv)
+        val secretKey = getSecretKeySpec(key)
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec)
+        cipher.doFinal(
+            cipherData,
+            AesGcmIvLength,
+            cipherData.size - AesGcmIvLength,
+        )
     }
 
-    override fun decrypt(cipherFile: AtomicFile, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> {
-        return runCatching {
-            val secretKey = getSecretKeySpec(key)
+    override fun decrypt(cipherFile: AtomicFile, key: ByteArray, associatedData: ByteArray?): Result<ByteArray> = runCatching {
+        val secretKey = getSecretKeySpec(key)
 
-            val fis = cipherFile.openRead()
-            val cis = getCipherInputStream(fis, secretKey)
-            val bos = ByteArrayOutputStream()
+        val fis = cipherFile.openRead()
+        val cis = getCipherInputStream(fis, secretKey)
+        val bos = ByteArrayOutputStream()
 
-            bos.use { output ->
-                cis.use { cis ->
-                    cis.copyTo(output, STREAM_BUFFER_SIZE)
-                }
+        bos.use { output ->
+            cis.use { cis ->
+                cis.copyTo(output, StreamBufferSize)
             }
-
-            bos.toByteArray()
         }
+
+        bos.toByteArray()
     }
 
     override fun getEncryptStream(file: File, key: ByteArray, associatedData: ByteArray?): OutputStream {
@@ -140,7 +134,7 @@ class AesCryptoEngine @Inject constructor(
         IOException::class,
     )
     private fun getCipherInputStream(inputStream: InputStream, secretKey: SecretKeySpec): InputStream {
-        val iv = ByteArray(AES_GCM_IV_LENGTH)
+        val iv = ByteArray(AesGcmIvLength)
         inputStream.read(iv)
         val cipher = getCipher()
         val spec: AlgorithmParameterSpec = getGcmParameterSpec(iv)
@@ -151,26 +145,26 @@ class AesCryptoEngine @Inject constructor(
     override fun getCipherOutputStream(outputStream: OutputStream, key: ByteArray, associatedData: ByteArray?): OutputStream {
         val secretKey = getSecretKeySpec(key)
         val cipher = getCipher()
-        val iv = ivProvider(AES_GCM_IV_LENGTH)
+        val iv = ivProvider(AesGcmIvLength)
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, getGcmParameterSpec(iv))
         associatedData?.let(cipher::updateAAD)
         outputStream.write(iv)
         return CipherOutputStream(outputStream, cipher)
     }
 
-    private fun getGcmParameterSpec(iv: ByteArray) = GCMParameterSpec(AES_GCM_TAG_LENGTH_IN_BITS, iv)
+    private fun getGcmParameterSpec(iv: ByteArray) = GCMParameterSpec(AesGcmTagLengthInBits, iv)
 
-    private fun getCipher() = Cipher.getInstance(AES_GCM_CIPHER_TYPE)
+    private fun getCipher() = Cipher.getInstance(AesGcmCipherType)
 
-    private fun getSecretKeySpec(key: ByteArray) = SecretKeySpec(key, ALGORITHM_AES)
+    private fun getSecretKeySpec(key: ByteArray) = SecretKeySpec(key, AlgorithmAes)
 
     companion object {
-        private const val ALGORITHM_AES = "AES"
+        private const val AlgorithmAes = "AES"
 
-        private const val AES_GCM_CIPHER_TYPE = "AES/GCM/NoPadding"
-        private const val AES_GCM_IV_LENGTH = 12
-        private const val AES_GCM_TAG_LENGTH_IN_BITS = 128
+        private const val AesGcmCipherType = "AES/GCM/NoPadding"
+        private const val AesGcmIvLength = 12
+        private const val AesGcmTagLengthInBits = 128
 
-        private const val STREAM_BUFFER_SIZE = DEFAULT_BUFFER_SIZE
+        private const val StreamBufferSize = DEFAULT_BUFFER_SIZE
     }
 }

@@ -19,9 +19,9 @@
 
 package studio.lunabee.messaging.domain.usecase
 
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.messaging.domain.model.HandShakeData
 import studio.lunabee.messaging.domain.repository.HandShakeDataRepository
+import studio.lunabee.onesafe.di.Inject
 
 class InsertHandShakeDataUseCase @Inject constructor(
     private val handShakeDataRepository: HandShakeDataRepository,

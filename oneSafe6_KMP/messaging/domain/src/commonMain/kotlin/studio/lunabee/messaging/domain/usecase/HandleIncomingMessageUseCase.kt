@@ -32,38 +32,42 @@ class HandleIncomingMessageUseCase @Inject constructor(
     private val enqueueMessageUseCase: EnqueueMessageUseCase,
     private val saveMessageUseCase: SaveMessageUseCase,
 ) {
-    suspend operator fun invoke(message: ByteArray, channel: String?, isSafeReady: Boolean): LBResult<IncomingMessageState> {
-        return if (isSafeReady) {
-            when (val decryptResult = decryptIncomingMessageUseCase(message)) {
-                is LBResult.Success -> {
-                    val plainMessage = (decryptResult.successData as? DecryptIncomingMessageData.NewMessage)?.osPlainMessage
-                    val contactId = decryptResult.successData.contactId
-                    plainMessage?.let {
-                        val saveResult = saveMessageUseCase(
-                            plainMessage = plainMessage,
-                            contactId = contactId,
-                            channel = channel,
-                            id = createRandomUUID(),
-                            safeItemId = null,
-                        )
-                        when (saveResult) {
-                            is LBResult.Failure -> LBResult.Failure(saveResult.throwable)
-                            is LBResult.Success -> LBResult.Success(IncomingMessageState.Processed(contactId))
-                        }
-                    } ?: LBResult.Success(IncomingMessageState.Processed(contactId))
-                }
-                is LBResult.Failure -> LBResult.Failure(decryptResult.throwable)
+    suspend operator fun invoke(
+        message: ByteArray,
+        channel: String?,
+        isSafeReady: Boolean,
+    ): LBResult<IncomingMessageState> = if (isSafeReady) {
+        when (val decryptResult = decryptIncomingMessageUseCase(message)) {
+            is LBResult.Success -> {
+                val plainMessage = (decryptResult.successData as? DecryptIncomingMessageData.NewMessage)
+                    ?.osPlainMessage
+                val contactId = decryptResult.successData.contactId
+                plainMessage?.let {
+                    val saveResult = saveMessageUseCase(
+                        plainMessage = plainMessage,
+                        contactId = contactId,
+                        channel = channel,
+                        id = createRandomUUID(),
+                        safeItemId = null,
+                    )
+                    when (saveResult) {
+                        is LBResult.Failure -> LBResult.Failure(saveResult.throwable)
+                        is LBResult.Success -> LBResult.Success(IncomingMessageState.Processed(contactId))
+                    }
+                } ?: LBResult.Success(IncomingMessageState.Processed(contactId))
             }
-        } else {
-            when (val enqueueResult = enqueueMessageUseCase(message, channel)) {
-                is LBResult.Failure -> LBResult.Failure(enqueueResult.throwable)
-                is LBResult.Success -> LBResult.Success(IncomingMessageState.Enqueued)
-            }
+            is LBResult.Failure -> LBResult.Failure(decryptResult.throwable)
+        }
+    } else {
+        when (val enqueueResult = enqueueMessageUseCase(message, channel)) {
+            is LBResult.Failure -> LBResult.Failure(enqueueResult.throwable)
+            is LBResult.Success -> LBResult.Success(IncomingMessageState.Enqueued)
         }
     }
 }
 
 sealed interface IncomingMessageState {
     data object Enqueued : IncomingMessageState
+
     class Processed(val contactId: DoubleRatchetUUID) : IncomingMessageState
 }

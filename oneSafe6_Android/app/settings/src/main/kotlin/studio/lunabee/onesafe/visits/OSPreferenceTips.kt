@@ -29,26 +29,26 @@ sealed class OSPreferenceTips<T>(
 ) {
     data object HasVisitedLogin : OSPreferenceTips<Boolean>(
         preferencesKey = hasVisitedLoginKey,
-        defaultValue = AppVisitConstants.hasVisitedLoginDefault,
+        defaultValue = AppVisitConstants.HasVisitedLoginDefault,
     )
 
     data object HasDoneTutorialOpenOsk : OSPreferenceTips<Boolean>(
         preferencesKey = hasDoneTutorialOpenOskKey,
-        defaultValue = AppVisitConstants.hasDoneTutorialOpenOskDefault,
+        defaultValue = AppVisitConstants.HasDoneTutorialOpenOskDefault,
     )
 
     data object HasDoneTutorialLockOsk : OSPreferenceTips<Boolean>(
         preferencesKey = hasDoneTutorialLockOskKey,
-        defaultValue = AppVisitConstants.hasDoneTutorialLockOskDefault,
+        defaultValue = AppVisitConstants.HasDoneTutorialLockOskDefault,
     )
 
     data object AppVersion : OSPreferenceTips<Int>(
         preferencesKey = appVersionKey,
-        defaultValue = AppVisitConstants.appVersionDefault,
+        defaultValue = AppVisitConstants.AppVersionDefault,
     )
 }
 
-private val hasVisitedLoginKey = booleanPreferencesKey(AppVisitConstants.hasVisitedLoginKey)
-private val hasDoneTutorialOpenOskKey = booleanPreferencesKey(AppVisitConstants.hasDoneTutorialOpenOsk)
-private val hasDoneTutorialLockOskKey = booleanPreferencesKey(AppVisitConstants.hasDoneTutorialLockOsk)
-internal val appVersionKey = intPreferencesKey(AppVisitConstants.appVersion)
+private val hasVisitedLoginKey = booleanPreferencesKey(AppVisitConstants.HasVisitedLoginKey)
+private val hasDoneTutorialOpenOskKey = booleanPreferencesKey(AppVisitConstants.HasDoneTutorialOpenOsk)
+private val hasDoneTutorialLockOskKey = booleanPreferencesKey(AppVisitConstants.HasDoneTutorialLockOsk)
+internal val appVersionKey = intPreferencesKey(AppVisitConstants.AppVersion)

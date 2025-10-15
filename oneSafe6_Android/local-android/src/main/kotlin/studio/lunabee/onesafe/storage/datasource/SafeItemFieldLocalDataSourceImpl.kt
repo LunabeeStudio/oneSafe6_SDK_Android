@@ -41,13 +41,14 @@ class SafeItemFieldLocalDataSourceImpl @Inject constructor(
     private val searchIndexDao: IndexWordEntryDao,
     private val transactionProvider: TransactionProvider<MainDatabase>,
 ) : SafeItemFieldLocalDataSource {
-    override suspend fun getSafeItemField(fieldId: UUID): SafeItemField {
-        return safeItemFieldDao.getSafeItemField(fieldId).toSafeItemField()
-    }
+    override suspend fun getSafeItemField(fieldId: UUID): SafeItemField = safeItemFieldDao
+        .getSafeItemField(fieldId)
+        .toSafeItemField()
 
-    override suspend fun getSafeItemFields(itemId: UUID): List<SafeItemField> {
-        return safeItemFieldDao.getSafeItemFields(itemId).map(RoomSafeItemField::toSafeItemField)
-    }
+    override suspend fun getSafeItemFields(itemId: UUID): List<SafeItemField> = safeItemFieldDao
+        .getSafeItemFields(
+            itemId,
+        ).map(RoomSafeItemField::toSafeItemField)
 
     override suspend fun save(safeItemField: SafeItemField, indexWordEntries: List<IndexWordEntry>) {
         runSQL {
@@ -67,27 +68,29 @@ class SafeItemFieldLocalDataSourceImpl @Inject constructor(
         }
     }
 
-    override fun getSafeItemFieldsFlow(itemId: UUID): Flow<List<SafeItemField>> {
-        return safeItemFieldDao.getSafeItemFieldsAsFlow(itemId)
-            .distinctUntilChanged()
-            .mapValues(RoomSafeItemField::toSafeItemField)
-    }
+    override fun getSafeItemFieldsFlow(itemId: UUID): Flow<List<SafeItemField>> = safeItemFieldDao
+        .getSafeItemFieldsAsFlow(itemId)
+        .distinctUntilChanged()
+        .mapValues(RoomSafeItemField::toSafeItemField)
 
     override suspend fun deleteByItemId(itemId: UUID): Unit = safeItemFieldDao.deleteByItemId(itemId)
 
-    override suspend fun getAllSafeItemFieldIds(safeId: SafeId): List<UUID> {
-        return safeItemFieldDao.getAllSafeItemFieldIds(safeId)
-    }
+    override suspend fun getAllSafeItemFieldIds(safeId: SafeId): List<UUID> = safeItemFieldDao
+        .getAllSafeItemFieldIds(safeId)
 
-    override suspend fun getAllSafeItemFields(safeId: SafeId): List<SafeItemField> {
-        return safeItemFieldDao.getAllSafeItemFields(safeId).map { it.toSafeItemField() }
-    }
+    override suspend fun getAllSafeItemFields(safeId: SafeId): List<SafeItemField> = safeItemFieldDao
+        .getAllSafeItemFields(
+            safeId,
+        ).map { it.toSafeItemField() }
 
-    override suspend fun saveThumbnailFileName(fieldId: UUID, encThumbnailFileName: ByteArray?) {
-        return safeItemFieldDao.saveThumbnailFileName(fieldId, encThumbnailFileName)
-    }
+    override suspend fun saveThumbnailFileName(fieldId: UUID, encThumbnailFileName: ByteArray?) = safeItemFieldDao
+        .saveThumbnailFileName(
+            fieldId,
+            encThumbnailFileName,
+        )
 
-    override suspend fun getAllSafeItemFieldsOfItems(items: List<UUID>): List<SafeItemField> {
-        return safeItemFieldDao.getAllSafeItemFieldsOfItems(items).map { it.toSafeItemField() }
-    }
+    override suspend fun getAllSafeItemFieldsOfItems(items: List<UUID>): List<SafeItemField> = safeItemFieldDao
+        .getAllSafeItemFieldsOfItems(
+            items,
+        ).map { it.toSafeItemField() }
 }

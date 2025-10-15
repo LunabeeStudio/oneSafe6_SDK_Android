@@ -22,6 +22,4 @@ package studio.lunabee.onesafe.importexport.utils
 import studio.lunabee.onesafe.commonui.utils.FileDetails
 import studio.lunabee.onesafe.importexport.model.ImportExportConstant
 
-fun FileDetails?.isOsFile(): Boolean {
-    return this?.extension?.let { ImportExportConstant.isOS6Extension(it) } ?: false
-}
+fun FileDetails?.isOsFile(): Boolean = this?.extension?.let { ImportExportConstant.isOS6Extension(it) } ?: false

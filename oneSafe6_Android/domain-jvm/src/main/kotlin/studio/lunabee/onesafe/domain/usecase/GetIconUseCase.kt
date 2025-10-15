@@ -51,17 +51,15 @@ class GetIconUseCase @Inject constructor(
      *
      * @return Plain data wrapped in a [LBResult]
      */
-    suspend operator fun invoke(iconId: UUID, itemId: UUID): LBResult<ByteArray> {
-        return OSError.runCatching(log) {
-            val key = safeItemKeyRepository.getSafeItemKey(itemId)
-            val iconFile = iconRepository.getIcon(iconId.toString())
-            try {
-                cryptoRepository.decrypt(iconFile, key, ByteArray::class)
-            } catch (e: FileNotFoundException) {
-                // Avoid putting the whole item in "corrupt" mode just because icon file is not found.
-                safeItemRepository.updateIcon(itemId, null)
-                throw OSCryptoError(code = OSCryptoError.Code.DECRYPTION_FILE_NOT_FOUND, cause = e)
-            }
+    suspend operator fun invoke(iconId: UUID, itemId: UUID): LBResult<ByteArray> = OSError.runCatching(log) {
+        val key = safeItemKeyRepository.getSafeItemKey(itemId)
+        val iconFile = iconRepository.getIcon(iconId.toString())
+        try {
+            cryptoRepository.decrypt(iconFile, key, ByteArray::class)
+        } catch (e: FileNotFoundException) {
+            // Avoid putting the whole item in "corrupt" mode just because icon file is not found.
+            safeItemRepository.updateIcon(itemId, null)
+            throw OSCryptoError(code = OSCryptoError.Code.DECRYPTION_FILE_NOT_FOUND, cause = e)
         }
     }
 }

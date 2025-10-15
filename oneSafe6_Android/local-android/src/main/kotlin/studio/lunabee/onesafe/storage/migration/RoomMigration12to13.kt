@@ -61,11 +61,17 @@ class RoomMigration12to13 @Inject constructor(
      */
     interface MultiSafeMigrationProvider {
         suspend fun getSafeCrypto(db: SupportSQLiteDatabase): SafeCryptoMigration?
+
         suspend fun getSafeSettings(): SafeSettingsMigration
+
         suspend fun getAppVisit(): RoomAppVisit?
+
         suspend fun getDriveSettings(): GoogleDriveSettings?
+
         suspend fun getAutoBackupError(): AutoBackupErrorMigration?
+
         suspend fun getFilesAndIcons(): List<File>
+
         suspend fun onMigrationDone()
     }
 
@@ -109,7 +115,11 @@ class RoomMigration12to13 @Inject constructor(
             val driveSettings = safeMigrationProvider.getDriveSettings()
             val autoBackupError = safeMigrationProvider.getAutoBackupError()
             val files = safeMigrationProvider.getFilesAndIcons()
-            val safeId = safeCryptoMigration?.id?.id?.toByteArray()?.toSqlBlobString()
+            val safeId = safeCryptoMigration
+                ?.id
+                ?.id
+                ?.toByteArray()
+                ?.toSqlBlobString()
 
             val safeCrypto = safeCryptoMigration?.let {
                 SafeCrypto(
@@ -265,7 +275,11 @@ class RoomMigration12to13 @Inject constructor(
                 put("app_visit_has_seen_item_edition_emoji_tool_tip", appVisit.hasSeenItemEditionEmojiToolTip)
                 put("app_visit_has_seen_item_read_edit_tool_tip", appVisit.hasSeenItemReadEditToolTip)
                 put("setting_independent_safe_info_cta_state", roomIndependentSafeInfoCtaState.state.name)
-                put("setting_independent_safe_info_cta_timestamp", roomIndependentSafeInfoCtaState.timestamp?.toEpochMilli())
+                put(
+                    "setting_independent_safe_info_cta_timestamp",
+                    roomIndependentSafeInfoCtaState.timestamp
+                        ?.toEpochMilli(),
+                )
             }
             db.insert("Safe", SQLiteDatabase.CONFLICT_FAIL, values)
         }

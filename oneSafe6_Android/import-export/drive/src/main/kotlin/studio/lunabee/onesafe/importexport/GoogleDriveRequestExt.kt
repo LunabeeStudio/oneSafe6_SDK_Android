@@ -66,7 +66,9 @@ private fun GoogleJsonResponseException.toOSDriveError(): OSDriveError {
     return when {
         details.code == 404 &&
             details.errors.firstOrNull()?.location == "fileId" &&
-            details.errors.firstOrNull()?.reason == "notFound" -> OSDriveError.Code.DRIVE_BACKUP_REMOTE_ID_NOT_FOUND.get(cause = this)
+            details.errors.firstOrNull()?.reason == "notFound" ->
+            OSDriveError.Code.DRIVE_BACKUP_REMOTE_ID_NOT_FOUND
+                .get(cause = this)
         else -> OSDriveError.Code.DRIVE_REQUEST_EXECUTION_FAILED.get(cause = this, message = message)
     }
 }

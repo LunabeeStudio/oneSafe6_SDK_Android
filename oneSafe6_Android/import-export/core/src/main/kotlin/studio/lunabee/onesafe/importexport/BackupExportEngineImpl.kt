@@ -52,39 +52,37 @@ class BackupExportEngineImpl @Inject constructor(
     private val backupInfoProvider: CreateBackupInfoUseCase,
     private val safeRepository: SafeRepository,
 ) : AbstractExportEngine(
-    fileDispatcher = fileDispatcher,
-    dateTimeFormatter = dateTimeFormatter,
-),
+        fileDispatcher = fileDispatcher,
+        dateTimeFormatter = dateTimeFormatter,
+    ),
     BackupExportEngine {
     override fun createExportArchiveContent(
         dataHolderFolder: File,
         data: ExportData,
         archiveKind: OSArchiveKind,
         safeId: SafeId,
-    ): Flow<LBFlowResult<Unit>> {
-        return flow {
-            val exportInfoResult: LBResult<ExportInfo> = OSError.runCatching {
-                ExportInfo(
-                    archiveMasterKey = null,
-                    fromPlatformVersion = backupInfoProvider(),
-                    exportSalt = safeRepository.getSalt(safeId),
-                    encBubblesMasterKey = safeRepository.getSubKey(safeId, SubKeyType.Bubbles),
-                )
-            }
-            when (exportInfoResult) {
-                is LBResult.Failure -> emit(LBFlowResult.Failure(exportInfoResult.throwable))
-                is LBResult.Success -> {
-                    val exportArchiveContentFlow = super.createExportArchiveContent(
-                        dataHolderFolder = dataHolderFolder,
-                        data = data,
-                        archiveKind = archiveKind,
-                        exportInfo = exportInfoResult.successData,
-                    )
-                    emitAll(exportArchiveContentFlow)
-                }
-            }
-        }.catch {
-            emit(LBFlowResult.Failure(OSImportExportError(OSImportExportError.Code.UNEXPECTED_ERROR, cause = it)))
+    ): Flow<LBFlowResult<Unit>> = flow {
+        val exportInfoResult: LBResult<ExportInfo> = OSError.runCatching {
+            ExportInfo(
+                archiveMasterKey = null,
+                fromPlatformVersion = backupInfoProvider(),
+                exportSalt = safeRepository.getSalt(safeId),
+                encBubblesMasterKey = safeRepository.getSubKey(safeId, SubKeyType.Bubbles),
+            )
         }
+        when (exportInfoResult) {
+            is LBResult.Failure -> emit(LBFlowResult.Failure(exportInfoResult.throwable))
+            is LBResult.Success -> {
+                val exportArchiveContentFlow = super.createExportArchiveContent(
+                    dataHolderFolder = dataHolderFolder,
+                    data = data,
+                    archiveKind = archiveKind,
+                    exportInfo = exportInfoResult.successData,
+                )
+                emitAll(exportArchiveContentFlow)
+            }
+        }
+    }.catch {
+        emit(LBFlowResult.Failure(OSImportExportError(OSImportExportError.Code.UNEXPECTED_ERROR, cause = it)))
     }
 }

@@ -19,11 +19,11 @@
 
 package studio.lunabee.messaging.repository
 
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.messaging.domain.model.EncHandShakeData
 import studio.lunabee.messaging.domain.repository.HandShakeDataRepository
 import studio.lunabee.messaging.repository.datasource.HandShakeDataLocalDatasource
+import studio.lunabee.onesafe.di.Inject
 
 class HandShakeDataRepositoryImpl @Inject constructor(
     private val handShakeDataLocalDatasource: HandShakeDataLocalDatasource,
@@ -36,7 +36,8 @@ class HandShakeDataRepositoryImpl @Inject constructor(
         handShakeDataLocalDatasource.delete(conversationLocalId)
     }
 
-    override suspend fun getById(conversationLocalId: DoubleRatchetUUID): EncHandShakeData? {
-        return handShakeDataLocalDatasource.getById(conversationLocalId)
-    }
+    override suspend fun getById(conversationLocalId: DoubleRatchetUUID): EncHandShakeData? = handShakeDataLocalDatasource
+        .getById(
+            conversationLocalId,
+        )
 }

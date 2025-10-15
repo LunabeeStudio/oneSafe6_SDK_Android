@@ -20,16 +20,16 @@
 package studio.lunabee.bubbles.domain.usecase
 
 import com.lunabee.lbcore.model.LBResult
-import kotlin.time.Clock
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
 import studio.lunabee.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.bubbles.domain.repository.ContactKeyRepository
 import studio.lunabee.bubbles.domain.repository.ContactRepository
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.error.OSError
+import kotlin.time.Clock
 
 class UpdateMessageSharingModeContactUseCase @Inject constructor(
     private val contactRepository: ContactRepository,
@@ -37,12 +37,13 @@ class UpdateMessageSharingModeContactUseCase @Inject constructor(
     private val bubblesCryptoRepository: BubblesCryptoRepository,
     private val clock: Clock,
 ) {
-    suspend operator fun invoke(id: DoubleRatchetUUID, sharingMode: MessageSharingMode): LBResult<Unit> = OSError.runCatching {
-        val localKey: ContactLocalKey = contactKeyRepository.getContactLocalKey(id)
-        contactRepository.updateMessageSharingMode(
-            id = id,
-            encSharingMode = bubblesCryptoRepository.localEncrypt(localKey, EncryptEntry(sharingMode)),
-            updateAt = clock.now(),
-        )
-    }
+    suspend operator fun invoke(id: DoubleRatchetUUID, sharingMode: MessageSharingMode): LBResult<Unit> = OSError
+        .runCatching {
+            val localKey: ContactLocalKey = contactKeyRepository.getContactLocalKey(id)
+            contactRepository.updateMessageSharingMode(
+                id = id,
+                encSharingMode = bubblesCryptoRepository.localEncrypt(localKey, EncryptEntry(sharingMode)),
+                updateAt = clock.now(),
+            )
+        }
 }

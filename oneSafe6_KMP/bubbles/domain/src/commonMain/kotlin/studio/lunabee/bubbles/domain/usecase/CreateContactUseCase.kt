@@ -19,8 +19,6 @@
 
 package studio.lunabee.bubbles.domain.usecase
 
-import kotlin.time.Clock
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.bubbles.domain.model.contact.Contact
 import studio.lunabee.bubbles.domain.model.contact.PlainContact
 import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
@@ -28,7 +26,9 @@ import studio.lunabee.bubbles.domain.model.contactkey.ContactSharedKey
 import studio.lunabee.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.bubbles.domain.repository.BubblesSafeRepository
 import studio.lunabee.bubbles.domain.repository.ContactRepository
+import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
+import kotlin.time.Clock
 
 class CreateContactUseCase @Inject constructor(
     private val contactRepository: ContactRepository,

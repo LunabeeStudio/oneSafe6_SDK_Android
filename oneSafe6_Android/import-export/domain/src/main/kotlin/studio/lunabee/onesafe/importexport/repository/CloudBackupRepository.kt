@@ -30,17 +30,30 @@ import java.net.URI
 
 interface CloudBackupRepository {
     fun uploadBackup(backup: LocalBackup): Flow<LBFlowResult<CloudBackup>>
+
     fun uploadBackup(backups: List<LocalBackup>): Flow<LBFlowResult<List<CloudBackup?>>>
+
     fun refreshBackupList(safeId: SafeId): Flow<LBFlowResult<List<CloudBackup>>>
+
     fun deleteBackup(backup: CloudBackup): Flow<LBFlowResult<Unit>>
+
     fun deleteBackup(backups: List<CloudBackup>): Flow<LBFlowResult<Unit>>
+
     suspend fun getBackups(safeId: SafeId): List<CloudBackup>
+
     fun getBackupsFlow(safeId: SafeId): Flow<List<CloudBackup>>
+
     fun getInputStream(backupId: String, safeId: SafeId): Flow<LBFlowResult<InputStream>>
+
     suspend fun getLatestBackup(safeId: SafeId): CloudBackup?
+
     fun getLatestBackupFlow(safeId: SafeId): Flow<CloudBackup?>
+
     suspend fun clearBackupsLocally(safeId: SafeId)
+
     fun getCloudInfoFlow(safeId: SafeId): Flow<CloudInfo>
+
     fun setupAccount(accountName: String, safeId: SafeId): Flow<LBFlowResult<Unit>>
+
     suspend fun getFirstCloudFolderAvailable(): URI?
 }

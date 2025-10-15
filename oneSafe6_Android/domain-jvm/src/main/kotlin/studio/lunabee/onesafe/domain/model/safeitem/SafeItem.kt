@@ -55,8 +55,8 @@ data class SafeItem(
      *
      * @param now The current date
      */
-    fun daysBeforeRemove(now: Instant = Instant.now()): Int? {
-        return deletedAt?.let {
+    fun daysBeforeRemove(now: Instant = Instant.now()): Int? = deletedAt
+        ?.let {
             val removeAt = deletedAt.plus(Constant.DefinitiveItemRemoveAfterDays.toLong() + 1, ChronoUnit.DAYS)
             now.until(removeAt, ChronoUnit.DAYS).toInt()
         }?.also {
@@ -64,7 +64,6 @@ data class SafeItem(
                 log.e("daysBeforeRemove must > 1 (actual $it)")
             }
         }?.coerceAtLeast(1)
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -76,7 +75,9 @@ data class SafeItem(
         if (encName != null) {
             if (other.encName == null) return false
             if (!encName.contentEquals(other.encName)) return false
-        } else if (other.encName != null) return false
+        } else if (other.encName != null) {
+            return false
+        }
         if (parentId != other.parentId) return false
         if (isFavorite != other.isFavorite) return false
         if (updatedAt != other.updatedAt) return false
@@ -85,7 +86,9 @@ data class SafeItem(
         if (encColor != null) {
             if (other.encColor == null) return false
             if (!encColor.contentEquals(other.encColor)) return false
-        } else if (other.encColor != null) return false
+        } else if (other.encColor != null) {
+            return false
+        }
         if (deletedAt != other.deletedAt) return false
         if (deletedParentId != other.deletedParentId) return false
         if (indexAlpha != other.indexAlpha) return false

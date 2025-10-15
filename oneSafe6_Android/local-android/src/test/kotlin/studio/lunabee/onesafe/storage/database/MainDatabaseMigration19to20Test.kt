@@ -107,12 +107,22 @@ class MainDatabaseMigration19to20Test {
                 put("setting_keep_local_backup_enabled", OSTestConfig.random.nextBoolean())
                 put("setting_item_ordering", ItemOrder.entries.random(OSTestConfig.random).name)
                 put("setting_items_layout_setting", ItemLayout.entries.random(OSTestConfig.random).name)
-                put("setting_bubbles_home_card_cta_state", RoomCtaState.State.entries.random(OSTestConfig.random).name)
+                put(
+                    "setting_bubbles_home_card_cta_state",
+                    RoomCtaState.State.entries
+                        .random(OSTestConfig.random)
+                        .name,
+                )
                 put("setting_bubbles_home_card_cta_timestamp", OSTestConfig.random.nextInt())
                 put("setting_drive_selected_account", OSTestConfig.random.nextString())
                 put("setting_drive_folder_id", OSTestConfig.random.nextString())
                 put("setting_drive_folder_url", OSTestConfig.random.nextString())
-                put("setting_enable_auto_backup_cta_state", RoomCtaState.State.entries.random(OSTestConfig.random).name)
+                put(
+                    "setting_enable_auto_backup_cta_state",
+                    RoomCtaState.State.entries
+                        .random(OSTestConfig.random)
+                        .name,
+                )
                 put("setting_enable_auto_backup_cta_timestamp", OSTestConfig.random.nextInt())
                 put("app_visit_has_finish_one_safe_k_on_boarding", OSTestConfig.random.nextBoolean())
                 put("app_visit_has_done_on_boarding_bubbles", OSTestConfig.random.nextBoolean())
@@ -120,7 +130,12 @@ class MainDatabaseMigration19to20Test {
                 put("app_visit_has_seen_item_edition_url_tool_tip", OSTestConfig.random.nextBoolean())
                 put("app_visit_has_seen_item_edition_emoji_tool_tip", OSTestConfig.random.nextBoolean())
                 put("app_visit_has_seen_item_read_edit_tool_tip", OSTestConfig.random.nextBoolean())
-                put("setting_independent_safe_info_cta_state", RoomCtaState.State.entries.random(OSTestConfig.random).name)
+                put(
+                    "setting_independent_safe_info_cta_state",
+                    RoomCtaState.State.entries
+                        .random(OSTestConfig.random)
+                        .name,
+                )
                 put("setting_independent_safe_info_cta_timestamp", OSTestConfig.random.nextInt())
                 put("setting_shake_to_lock", OSTestConfig.random.nextBoolean())
                 put("open_order", OSTestConfig.random.nextInt())

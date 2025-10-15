@@ -21,7 +21,6 @@ package studio.lunabee.bubbles.repository
 
 import studio.lunabee.bubbles.domain.crypto.BubblesDataHashEngine
 import studio.lunabee.bubbles.domain.crypto.BubblesKeyExchangeEngine
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.doubleratchet.crypto.DoubleRatchetKeyRepository
 import studio.lunabee.doubleratchet.model.AsymmetricKeyPair
 import studio.lunabee.doubleratchet.model.DRChainKey
@@ -32,6 +31,7 @@ import studio.lunabee.doubleratchet.model.DRRootKey
 import studio.lunabee.doubleratchet.model.DRSharedSecret
 import studio.lunabee.doubleratchet.model.DerivedKeyMessagePair
 import studio.lunabee.doubleratchet.model.DerivedKeyRootPair
+import studio.lunabee.onesafe.di.Inject
 
 class DoubleRatchetKeyRepositoryImpl @Inject constructor(
     private val hashEngine: BubblesDataHashEngine,
@@ -51,11 +51,12 @@ class DoubleRatchetKeyRepositoryImpl @Inject constructor(
         privateKey: DRPrivateKey,
         out: DRSharedSecret,
     ): DRSharedSecret {
-        bubblesKeyExchangeEngine.createSharedSecret(
-            publicKey = publicKey.value,
-            privateKey = privateKey.value,
-            size = out.value.size,
-        ).copyInto(out.value)
+        bubblesKeyExchangeEngine
+            .createSharedSecret(
+                publicKey = publicKey.value,
+                privateKey = privateKey.value,
+                size = out.value.size,
+            ).copyInto(out.value)
         return out
     }
 

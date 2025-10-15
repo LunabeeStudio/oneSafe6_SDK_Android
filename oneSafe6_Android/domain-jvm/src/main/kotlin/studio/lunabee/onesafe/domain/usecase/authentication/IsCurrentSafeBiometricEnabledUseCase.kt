@@ -40,9 +40,7 @@ class IsCurrentSafeBiometricEnabledUseCase @Inject constructor(
         } ?: flowOf(false)
     }
 
-    suspend operator fun invoke(): Boolean {
-        return safeRepository.currentSafeIdOrNull()?.let { safeId ->
-            safeRepository.isBiometricEnabledForSafe(safeId)
-        } ?: false
-    }
+    suspend operator fun invoke(): Boolean = safeRepository.currentSafeIdOrNull()?.let { safeId ->
+        safeRepository.isBiometricEnabledForSafe(safeId)
+    } ?: false
 }

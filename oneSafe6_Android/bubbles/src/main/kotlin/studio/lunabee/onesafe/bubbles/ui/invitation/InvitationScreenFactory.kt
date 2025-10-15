@@ -63,7 +63,12 @@ object InvitationScreenFactory {
                         text = LbcTextSpec.StringResource(OSString.bubbles_invitationScreen_share),
                         onClick = onShareClick,
                         buttonColors = OSTextButtonDefaults.secondaryTextButtonColors(state = OSActionState.Enabled),
-                        leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = OSDrawable.ic_share)) },
+                        leadingIcon = {
+                            OSIconDecorationButton(
+                                image = OSImageSpec
+                                    .Drawable(drawable = OSDrawable.ic_share),
+                            )
+                        },
                         contentPadding = LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
                             index = 1,
                             elementsCount = 2,

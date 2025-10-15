@@ -20,5 +20,6 @@ interface ContactKey {
     val encKey: ByteArray
 
     fun contentEquals(other: ContactKey?): Boolean = encKey.contentEquals(other?.encKey)
+
     fun contentHashCode(): Int = encKey.contentHashCode()
 }

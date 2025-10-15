@@ -22,7 +22,7 @@ package studio.lunabee.onesafe.messaging.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavBackStackEntry
@@ -48,11 +48,11 @@ import studio.lunabee.onesafe.bubbles.ui.invitation.InvitationNavScope
 import studio.lunabee.onesafe.bubbles.ui.invitation.invitationScreen
 import studio.lunabee.onesafe.bubbles.ui.invitationresponse.InvitationResponseNavScope
 import studio.lunabee.onesafe.bubbles.ui.invitationresponse.invitationResponseScreen
-import studio.lunabee.onesafe.messaging.senditem.sendItemBubblesSelectContactScreen
 import studio.lunabee.onesafe.bubbles.ui.welcome.OnBoardingBubblesNavScope
 import studio.lunabee.onesafe.bubbles.ui.welcome.onBoardingBubblesScreen
 import studio.lunabee.onesafe.commonui.OSDestination
 import studio.lunabee.onesafe.messaging.senditem.SendItemBubblesSelectContactNavScope
+import studio.lunabee.onesafe.messaging.senditem.sendItemBubblesSelectContactScreen
 import studio.lunabee.onesafe.messaging.writemessage.destination.writeMessageScreen
 import studio.lunabee.onesafe.messaging.writemessage.screen.WriteMessageNavScope
 import studio.lunabee.onesafe.messaging.writemessage.viewmodel.MessagingViewModel

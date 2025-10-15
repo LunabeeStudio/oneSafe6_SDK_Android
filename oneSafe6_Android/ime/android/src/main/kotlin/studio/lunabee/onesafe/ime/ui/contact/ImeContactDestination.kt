@@ -20,9 +20,9 @@
 package studio.lunabee.onesafe.ime.ui.contact
 
 object SelectContactDestination {
-    const val route: String = "select_contact"
+    const val Route: String = "select_contact"
 }
 
 object ChangeContactDestination {
-    const val route: String = "change_contact"
+    const val Route: String = "change_contact"
 }

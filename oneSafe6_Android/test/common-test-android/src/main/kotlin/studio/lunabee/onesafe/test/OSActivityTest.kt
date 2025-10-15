@@ -72,12 +72,13 @@ abstract class OSActivityTest<A : FragmentActivity> : OSHiltTest() {
     protected fun onFailure(e: Throwable) {
         val suffix = LbcAndroidTestConstants.FailureSuffix + "_${e.javaClass.simpleName}"
         printRule.printWholeScreen(suffix, true)
-        val tree = kotlin.runCatching {
-            isRoot()
-                .waitUntilAtLeastOneExists(true)
-                .onFirst()
-                .printToString()
-        }.getOrNull()
+        val tree = kotlin
+            .runCatching {
+                isRoot()
+                    .waitUntilAtLeastOneExists(true)
+                    .onFirst()
+                    .printToString()
+            }.getOrNull()
 
         if (tree != null) {
             Logger.withTag("ON_FAILURE").e(tree)
@@ -106,11 +107,12 @@ abstract class OSActivityTest<A : FragmentActivity> : OSHiltTest() {
 
     fun getString(@StringRes id: Int, vararg args: Any): String = targetContext.getString(id, *args)
 
-    fun getQuantityString(@PluralsRes id: Int, quantity: Int, vararg args: Any): String = targetContext.getQuantityString(
-        id,
-        quantity,
-        *args,
-    )
+    fun getQuantityString(@PluralsRes id: Int, quantity: Int, vararg args: Any): String = targetContext
+        .getQuantityString(
+            id,
+            quantity,
+            *args,
+        )
 
     protected fun ComposeUiTest.login(password: String = testPassword) {
         val passwordFieldNode = hasTestTag(UiConstants.TestTag.Item.LoginPasswordTextField)

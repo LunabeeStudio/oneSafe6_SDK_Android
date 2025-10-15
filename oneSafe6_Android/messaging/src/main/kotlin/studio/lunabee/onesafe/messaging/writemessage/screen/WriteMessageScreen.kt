@@ -52,7 +52,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -110,8 +110,8 @@ import studio.lunabee.onesafe.utils.OsDefaultPreview
 import java.time.Instant
 import java.util.UUID
 
-context(WriteMessageNavScope)
 @Composable
+context(WriteMessageNavScope)
 fun WriteMessageRoute(
     onChangeRecipient: (() -> Unit)?,
     sendMessage: (data: SentMessageData?, messageToSend: String, sharingMode: MessageSharingMode) -> Unit,
@@ -133,7 +133,8 @@ fun WriteMessageRoute(
     val oneSafeKSnackbarHostState = remember { SnackbarHostState() }
     val viewModelSnackBarHostState = remember { SnackbarHostState() }
     var snackbarState: ConversationMoreOptionsSnackbarState? by remember { mutableStateOf(null) }
-    val viewModelSnackbarState: SnackbarState? by viewModel.snackbarState.collectAsStateWithLifecycle(initialValue = null)
+    val viewModelSnackbarState: SnackbarState? by viewModel.snackbarState
+        .collectAsStateWithLifecycle(initialValue = null)
     val composeMessageFocusRequester = remember { FocusRequester() }
 
     viewModelSnackbarState?.LaunchedSnackbarEffect(viewModelSnackBarHostState) {
@@ -242,9 +243,11 @@ fun WriteMessageRoute(
                         navigationToInvitation(viewModel.contactId.value!!.uuid)
                     },
                     onPlainMessageChange = viewModel::onPlainMessageChange,
-                    sendMessage = { // TODO <bubbles> fix flooding send button trigger many share sheets
+                    sendMessage = {
+                        // TODO <bubbles> fix flooding send button trigger many share sheets
                         coroutineScope.launch {
-                            val sentMessageData = viewModel.getSentMessageData(content = state.message.plainMessage.text)
+                            val sentMessageData = viewModel
+                                .getSentMessageData(content = state.message.plainMessage.text)
                             sentMessageData?.let {
                                 sendMessage(
                                     sentMessageData,
@@ -450,7 +453,7 @@ fun WriteMessageScreen(
                     )
                 }
                 WriteConversationState.WaitingForReply -> {
-                    /* no-op */
+                    // no-op
                 }
             }
         }

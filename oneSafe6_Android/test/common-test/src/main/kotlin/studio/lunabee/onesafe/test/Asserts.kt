@@ -53,6 +53,7 @@ fun assertNot(assertBlock: () -> Unit) {
 }
 
 // TODO move assertSuccess + assertFailure to lib?
+
 /**
  * Wrapper for assertIs<LBResult.Success> which adds the result failure throwable as cause if applicable
  *
@@ -104,6 +105,7 @@ inline fun <reified T, reified Err : OSError, ErrCode : Enum<ErrCode>> assertFai
 }
 
 // TODO move assertSuccess + assertFailure to lib?
+
 /**
  * Wrapper for assertIs<LBResult.Success> which adds the result failure throwable as cause if applicable
  *

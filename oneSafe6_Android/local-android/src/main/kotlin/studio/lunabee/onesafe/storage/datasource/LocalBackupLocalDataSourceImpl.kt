@@ -25,10 +25,10 @@ import kotlinx.coroutines.flow.Flow
 import studio.lunabee.importexport.datasource.LocalBackupLocalDataSource
 import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.qualifier.InternalDir
-import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.error.OSImportExportError
 import studio.lunabee.onesafe.error.OSStorageError
 import studio.lunabee.onesafe.importexport.model.LocalBackup
+import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.dao.BackupDao
 import studio.lunabee.onesafe.storage.model.RoomLocalBackup
@@ -49,17 +49,15 @@ class LocalBackupLocalDataSourceImpl @Inject constructor(
             return field
         }
 
-    override suspend fun addBackup(localBackup: LocalBackup): LocalBackup {
-        return try {
-            val finalBackup = localBackup.copy(file = File(backupsDir, localBackup.file.name))
-            transactionProvider.runAsTransaction {
-                localBackup.file.copyTo(finalBackup.file)
-                backupDao.insert(RoomLocalBackup.fromBackup(finalBackup))
-            }
-            finalBackup
-        } catch (e: IOException) {
-            throw OSStorageError.Code.UNKNOWN_FILE_ERROR.get(cause = e)
+    override suspend fun addBackup(localBackup: LocalBackup): LocalBackup = try {
+        val finalBackup = localBackup.copy(file = File(backupsDir, localBackup.file.name))
+        transactionProvider.runAsTransaction {
+            localBackup.file.copyTo(finalBackup.file)
+            backupDao.insert(RoomLocalBackup.fromBackup(finalBackup))
         }
+        finalBackup
+    } catch (e: IOException) {
+        throw OSStorageError.Code.UNKNOWN_FILE_ERROR.get(cause = e)
     }
 
     override suspend fun getBackups(safeId: SafeId): List<LBResult<LocalBackup>> =

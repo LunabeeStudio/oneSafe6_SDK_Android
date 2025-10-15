@@ -32,12 +32,11 @@ class RemoveOldItemsUseCase @Inject constructor(
     private val safeItemDeletedRepository: SafeItemDeletedRepository,
     private val clock: Clock,
 ) {
-    suspend operator fun invoke(): LBResult<Unit> {
-        return OSError.runCatching {
-            safeItemDeletedRepository.removeOldItems(
-                Instant.now(clock)
-                    .minusMillis(Constant.DefinitiveItemRemoveAfterDays.days.inWholeMilliseconds),
-            )
-        }
+    suspend operator fun invoke(): LBResult<Unit> = OSError.runCatching {
+        safeItemDeletedRepository.removeOldItems(
+            Instant
+                .now(clock)
+                .minusMillis(Constant.DefinitiveItemRemoveAfterDays.days.inWholeMilliseconds),
+        )
     }
 }

@@ -19,14 +19,14 @@
 
 package studio.lunabee.messaging.domain.usecase
 
-import kotlin.time.Instant
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.messaging.domain.MessagingConstant
 import studio.lunabee.messaging.domain.model.PlainMessageContentData
 import studio.lunabee.messaging.domain.model.PlainMessageData
 import studio.lunabee.messaging.domain.model.SafeMessage
+import studio.lunabee.onesafe.di.Inject
+import kotlin.time.Instant
 
 /**
  * Decrypt a [SafeMessage] into a [PlainMessageData] or only the content to a [PlainMessageContentData]

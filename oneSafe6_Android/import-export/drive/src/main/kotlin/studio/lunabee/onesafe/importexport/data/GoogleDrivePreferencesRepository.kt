@@ -27,14 +27,21 @@ class GoogleDrivePreferencesRepository @Inject constructor(
     private val datasource: GoogleDriveEnginePreferencesDatasource,
 ) {
     fun selectedAccountFlow(safeId: SafeId): Flow<String?> = datasource.selectedAccountFlow(safeId)
+
     fun folderIdFlow(safeId: SafeId): Flow<String?> = datasource.folderIdFlow(safeId)
+
     fun folderUrlFlow(safeId: SafeId): Flow<String?> = datasource.folderUrlFlow(safeId)
 
     suspend fun selectedAccount(safeId: SafeId): String? = datasource.selectedDriveAccount(safeId)
+
     suspend fun folderId(safeId: SafeId): String? = datasource.folderId(safeId)
+
     suspend fun folderUrl(safeId: SafeId): String? = datasource.folderUrl(safeId)
 
-    suspend fun setSelectedAccount(safeId: SafeId, account: String?): Unit = datasource.setDriveSelectedAccount(safeId, account)
+    suspend fun setSelectedAccount(safeId: SafeId, account: String?): Unit = datasource
+        .setDriveSelectedAccount(safeId, account)
+
     suspend fun setFolderId(safeId: SafeId, id: String?): Unit = datasource.setDriveFolderId(safeId, id)
+
     suspend fun setFolderUrl(safeId: SafeId, url: String?): Unit = datasource.setDriveFolderUrl(safeId, url)
 }

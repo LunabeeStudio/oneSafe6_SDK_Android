@@ -47,12 +47,12 @@ fun ResetConversationRow(
             style = MaterialTheme.typography.labelXSmall,
             modifier = modifier
                 .clip(MaterialTheme.shapes.medium)
-                .background(LocalColorPalette.current.Neutral80)
+                .background(LocalColorPalette.current.neutral80)
                 .padding(
                     horizontal = OSDimens.SystemSpacing.Small,
                     vertical = OSDimens.SystemSpacing.ExtraSmall,
                 ),
-            color = LocalColorPalette.current.Neutral10,
+            color = LocalColorPalette.current.neutral10,
         )
     }
 }

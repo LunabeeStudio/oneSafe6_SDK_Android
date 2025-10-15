@@ -81,12 +81,13 @@ class BackupExportEngineTest : OSHiltUnitTest() {
             bubblesConversation = emptyList(),
             bubblesMessages = emptyList(),
         )
-        val exportedArchiveResult = exportEngine.createExportArchiveContent(
-            dataHolderFolder = File(context.cacheDir, "exportEngineTest"),
-            data = data,
-            archiveKind = OSArchiveKind.Backup,
-            safeId = firstSafeId,
-        ).last()
+        val exportedArchiveResult = exportEngine
+            .createExportArchiveContent(
+                dataHolderFolder = File(context.cacheDir, "exportEngineTest"),
+                data = data,
+                archiveKind = OSArchiveKind.Backup,
+                safeId = firstSafeId,
+            ).last()
         assertSuccess(exportedArchiveResult)
     }
 
@@ -103,12 +104,13 @@ class BackupExportEngineTest : OSHiltUnitTest() {
             bubblesConversation = emptyList(),
             bubblesMessages = emptyList(),
         )
-        val exportedArchiveResult = exportEngine.createExportArchiveContent(
-            dataHolderFolder = File(context.cacheDir, "exportEngineTest"),
-            data = data,
-            archiveKind = OSArchiveKind.Backup,
-            safeId = firstSafeId,
-        ).last()
+        val exportedArchiveResult = exportEngine
+            .createExportArchiveContent(
+                dataHolderFolder = File(context.cacheDir, "exportEngineTest"),
+                data = data,
+                archiveKind = OSArchiveKind.Backup,
+                safeId = firstSafeId,
+            ).last()
 
         val failure = assertFailure(exportedArchiveResult).throwable
         assertIs<OSStorageError>(failure)

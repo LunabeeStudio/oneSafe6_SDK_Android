@@ -23,10 +23,10 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromHexString
 import kotlinx.serialization.encodeToHexString
 import kotlinx.serialization.protobuf.ProtoBuf
+import studio.lunabee.onesafe.test.assertDoesNotThrow
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
-import studio.lunabee.onesafe.test.assertDoesNotThrow
 
 @OptIn(ExperimentalSerializationApi::class)
 class LegacyLocalCtaStateTest {

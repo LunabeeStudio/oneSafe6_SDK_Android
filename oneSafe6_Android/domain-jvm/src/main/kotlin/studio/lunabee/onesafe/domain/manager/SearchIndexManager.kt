@@ -60,28 +60,30 @@ class SearchIndexManager @Inject constructor(
 
     private fun readAndStoreIndex(scope: CoroutineScope): Job {
         @OptIn(ExperimentalCoroutinesApi::class)
-        val flow = safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
-            safeId?.let { indexWordEntryRepository.getAll(safeId) } ?: flowOf(emptyList())
-        }.onEach {
-            _decryptedIndex.value = LBFlowResult.Loading()
-            _decryptedIndex.value = decryptIndexWordUseCase(it).asFlowResult()
-        }
+        val flow = safeRepository
+            .currentSafeIdFlow()
+            .flatMapLatest { safeId ->
+                safeId?.let { indexWordEntryRepository.getAll(safeId) } ?: flowOf(emptyList())
+            }.onEach {
+                _decryptedIndex.value = LBFlowResult.Loading()
+                _decryptedIndex.value = decryptIndexWordUseCase(it).asFlowResult()
+            }
         return flow.launchIn(scope)
     }
 
     private fun clearIndexAfterDelay(execScope: CoroutineScope) {
-        cleanStoreIndexJob?.cancel(RESET_TIMER_CLEAR_INDEX_REASON)
+        cleanStoreIndexJob?.cancel(ResetTimerClearIndexReason)
         cleanStoreIndexJob = execScope.launch {
-            delay(DELAY_CLEAR_DECRYPTED_INDEX)
-            storeIndexJob?.cancel(CANCEL_SEARCH_CAUSE_NOT_USED)
+            delay(DelayClearDecryptedIndex)
+            storeIndexJob?.cancel(CancelSearchCauseNotUsed)
             // TODO : Clean correctly the decrypted index
             _decryptedIndex.value = LBFlowResult.Loading()
         }
     }
 
     companion object {
-        const val DELAY_CLEAR_DECRYPTED_INDEX: Long = 20_000
-        private const val RESET_TIMER_CLEAR_INDEX_REASON: String = "Job cancelled  for resetting the clear index countdown"
-        private const val CANCEL_SEARCH_CAUSE_NOT_USED: String = "Collect index Job cancelled  for resetting the clear index countdown"
+        const val DelayClearDecryptedIndex: Long = 20_000
+        private const val ResetTimerClearIndexReason: String = "Job cancelled  for resetting the clear index countdown"
+        private const val CancelSearchCauseNotUsed: String = "Collect index Job cancelled  for resetting the clear index countdown"
     }
 }

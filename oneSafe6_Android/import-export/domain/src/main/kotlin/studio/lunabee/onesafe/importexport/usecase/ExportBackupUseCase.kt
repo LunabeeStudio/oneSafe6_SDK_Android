@@ -73,27 +73,31 @@ class ExportBackupUseCase @Inject constructor(
         exportEngine: BackupExportEngine,
         archiveExtractedDirectory: File,
         safeId: SafeId,
-    ): Flow<LBFlowResult<LocalBackup>> {
-        return flow {
-            val safeItemsWithKeys = safeItemRepository.getAllSafeItems(safeId).associate { safeItem ->
-                ExportItem(safeItem) to safeItemKeyRepository.getSafeItemKey(safeItem.id)
-            }
-            val contactsWithKeys = contactRepository.getAllContactsFlow(DoubleRatchetUUID(safeId.id)).first().associateWith { contact ->
+    ): Flow<LBFlowResult<LocalBackup>> = flow {
+        val safeItemsWithKeys = safeItemRepository.getAllSafeItems(safeId).associate { safeItem ->
+            ExportItem(safeItem) to safeItemKeyRepository.getSafeItemKey(safeItem.id)
+        }
+        val contactsWithKeys = contactRepository
+            .getAllContactsFlow(DoubleRatchetUUID(safeId.id))
+            .first()
+            .associateWith { contact ->
                 contactKeyRepository.getContactLocalKey(contact.id)
             }
-            val data = ExportData(
-                safeItemsWithKeys = safeItemsWithKeys,
-                safeItemFields = safeItemFieldRepository.getAllSafeItemFields(safeId),
-                icons = iconRepository.getIcons(safeId),
-                files = fileRepository.getFiles(safeId),
-                bubblesContactsWithKey = contactsWithKeys,
-                bubblesMessages = importExportBubblesRepository.getAllByContactList(contactsWithKeys.keys.map { it.id }),
-                bubblesConversation = importExportBubblesRepository.getEncConversations(contactsWithKeys.keys.map { it.id }),
-            )
+        val data = ExportData(
+            safeItemsWithKeys = safeItemsWithKeys,
+            safeItemFields = safeItemFieldRepository.getAllSafeItemFields(safeId),
+            icons = iconRepository.getIcons(safeId),
+            files = fileRepository.getFiles(safeId),
+            bubblesContactsWithKey = contactsWithKeys,
+            bubblesMessages = importExportBubblesRepository.getAllByContactList(contactsWithKeys.keys.map { it.id }),
+            bubblesConversation = importExportBubblesRepository
+                .getEncConversations(contactsWithKeys.keys.map { it.id }),
+        )
 
-            val now = Instant.now(clock)
-            emitAll(
-                exportEngine.createExportArchiveContent(
+        val now = Instant.now(clock)
+        emitAll(
+            exportEngine
+                .createExportArchiveContent(
                     dataHolderFolder = archiveExtractedDirectory,
                     data = data,
                     archiveKind = OSArchiveKind.Backup,
@@ -119,8 +123,7 @@ class ExportBackupUseCase @Inject constructor(
                         }
                     }
                 },
-            )
-        }
+        )
     }
 
     companion object {

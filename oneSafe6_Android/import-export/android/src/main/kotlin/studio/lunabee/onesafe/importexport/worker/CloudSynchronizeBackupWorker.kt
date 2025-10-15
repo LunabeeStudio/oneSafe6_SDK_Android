@@ -56,7 +56,7 @@ class CloudSynchronizeBackupWorker @AssistedInject constructor(
     private val autoBackupWorkersHelper: AutoBackupWorkersHelper,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
-        val safeId = SafeId(inputData.getByteArray(EXPORT_WORKER_SAFE_ID_DATA)!!.toUUID())
+        val safeId = SafeId(inputData.getByteArray(ExportWorkerSafeIdData)!!.toUUID())
         val flowResult = synchronizeCloudBackupsUseCase(safeId)
             .catch { error ->
                 emit(LBFlowResult.Failure(error))
@@ -80,20 +80,19 @@ class CloudSynchronizeBackupWorker @AssistedInject constructor(
     }
 
     companion object {
-        private const val EXPORT_WORKER_SAFE_ID_DATA = "4090613a-696e-4aaa-a13e-67ba0c272301"
+        private const val ExportWorkerSafeIdData = "4090613a-696e-4aaa-a13e-67ba0c272301"
 
         fun getWorkRequest(safeId: SafeId): OneTimeWorkRequest {
             val data = Data
                 .Builder()
-                .putByteArray(EXPORT_WORKER_SAFE_ID_DATA, safeId.id.toByteArray())
+                .putByteArray(ExportWorkerSafeIdData, safeId.id.toByteArray())
                 .build()
             return OneTimeWorkRequestBuilder<CloudSynchronizeBackupWorker>()
                 .addTag(ImportExportAndroidConstants.autoBackupWorkerTag(safeId))
                 .setInputData(data)
                 .setConstraints(
                     Constraints.Builder().setRequiredNetworkType(NetworkType.UNMETERED).build(),
-                )
-                .build()
+                ).build()
         }
     }
 }

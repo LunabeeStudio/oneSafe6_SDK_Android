@@ -25,7 +25,5 @@ import javax.inject.Inject
 class BubblesRandomKeyProviderImpl @Inject constructor(
     private val randomKeyProvider: RandomKeyProvider,
 ) : BubblesRandomKeyProvider {
-    override fun invoke(size: Int): ByteArray {
-        return randomKeyProvider.invoke(size)
-    }
+    override fun invoke(size: Int): ByteArray = randomKeyProvider.invoke(size)
 }

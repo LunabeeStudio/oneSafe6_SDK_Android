@@ -33,13 +33,14 @@ class SentMessageLocalDatasourceImpl @Inject constructor(
         sentMessageDao.insert(RoomSentMessage.fromSentMessage(sentMessage))
     }
 
-    override suspend fun getSentMessage(id: DoubleRatchetUUID): SentMessage? {
-        return sentMessageDao.getById(id.uuid)?.toSentMessage()
-    }
+    override suspend fun getSentMessage(id: DoubleRatchetUUID): SentMessage? = sentMessageDao
+        .getById(id.uuid)
+        ?.toSentMessage()
 
-    override suspend fun getOldestSentMessage(safeId: DoubleRatchetUUID): SentMessage? {
-        return sentMessageDao.getOldestSentMessage(safeId = safeId.uuid)?.toSentMessage()
-    }
+    override suspend fun getOldestSentMessage(safeId: DoubleRatchetUUID): SentMessage? = sentMessageDao
+        .getOldestSentMessage(
+            safeId = safeId.uuid,
+        )?.toSentMessage()
 
     override suspend fun deleteSentMessage(id: DoubleRatchetUUID) {
         sentMessageDao.deleteSentMessage(id.uuid)

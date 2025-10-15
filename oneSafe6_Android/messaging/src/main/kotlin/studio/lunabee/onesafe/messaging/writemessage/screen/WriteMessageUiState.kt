@@ -31,6 +31,7 @@ import studio.lunabee.onesafe.messaging.writemessage.model.WriteConversationStat
 @Stable
 sealed interface WriteMessageUiState {
     data object Initializing : WriteMessageUiState
+
     data class Data(
         val contactId: DoubleRatchetUUID,
         val nameProvider: OSNameProvider,

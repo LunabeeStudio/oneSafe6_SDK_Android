@@ -129,13 +129,13 @@ fun ConversationRow(
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = if (isSystemInDarkTheme()) LocalColorPalette.current.Neutral10 else Color.Unspecified,
+                    color = if (isSystemInDarkTheme()) LocalColorPalette.current.neutral10 else Color.Unspecified,
                 )
                 if (subtitle != null) { // TODO removed isNotEmpty check, should be handle before
                     OSText(
                         text = subtitle,
                         style = MaterialTheme.typography.labelSmall,
-                        color = if (isSystemInDarkTheme()) LocalColorPalette.current.Neutral20 else LocalColorPalette.current.Neutral60,
+                        color = if (isSystemInDarkTheme()) LocalColorPalette.current.neutral20 else LocalColorPalette.current.neutral60,
                         maxLines = itemSubtitleMaxLine,
                         overflow = TextOverflow.Ellipsis,
                     )

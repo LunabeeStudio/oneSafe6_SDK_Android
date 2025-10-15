@@ -23,12 +23,18 @@ import kotlinx.coroutines.flow.Flow
 
 interface GlobalSettingsLocalDataSource {
     fun hasVisitedLogin(): Flow<Boolean>
+
     fun hasDoneTutorialOpenOsk(): Flow<Boolean>
+
     fun hasDoneTutorialLockOsk(): Flow<Boolean>
+
     suspend fun getAppVersion(): Int?
 
     suspend fun setHasVisitedLogin(value: Boolean)
+
     suspend fun setHasDoneTutorialOpenOsk(value: Boolean)
+
     suspend fun setHasDoneTutorialLockOsk(value: Boolean)
+
     suspend fun setAppVersion(version: Int)
 }

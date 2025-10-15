@@ -16,13 +16,13 @@
 
 package studio.lunabee.onesafe.cryptography
 
-import kotlin.time.Instant
 import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.doubleratchet.model.toDoubleRatchetUUID
 import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.onesafe.error.OSCryptoError
 import kotlin.reflect.KClass
+import kotlin.time.Instant
 
 class CryptoDataMapper @Inject constructor() {
     operator fun <Data : Any> invoke(mapBlock: ((Data) -> ByteArray)?, data: Data): ByteArray = when {

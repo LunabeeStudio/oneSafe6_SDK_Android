@@ -149,16 +149,18 @@ class OSAccessibilityService : AccessibilityService() {
     /**
      * Extension method that returns true if the CharSequence is an encrypted oneSafe message.
      */
-    private fun CharSequence?.isOneSafeKMessage(): Boolean {
-        return this?.startsWith(OneSafeKMessagePrefix) ?: false
-    }
+    private fun CharSequence?.isOneSafeKMessage(): Boolean = this?.startsWith(OneSafeKMessagePrefix) ?: false
 
     /**
      * Extension method that remove everything after the OneSafeKMessageSuffix.
      */
     private fun CharSequence?.trimOneSafeKMessage(): String {
         if (this?.contains(OneSafeKMessageSuffix) == true) {
-            return this.toString().substringBefore(OneSafeKMessageSuffix).substringAfter(OneSafeKMessagePrefix).reversed()
+            return this
+                .toString()
+                .substringBefore(OneSafeKMessageSuffix)
+                .substringAfter(OneSafeKMessagePrefix)
+                .reversed()
         }
         return toString().substringAfter(OneSafeKMessagePrefix).reversed()
     }

@@ -24,14 +24,20 @@ import studio.lunabee.onesafe.domain.model.safe.SafeId
 
 interface GoogleDriveEnginePreferencesDatasource {
     fun selectedAccountFlow(safeId: SafeId): Flow<String?>
+
     fun folderIdFlow(safeId: SafeId): Flow<String?>
+
     fun folderUrlFlow(safeId: SafeId): Flow<String?>
 
     suspend fun selectedDriveAccount(safeId: SafeId): String?
+
     suspend fun folderId(safeId: SafeId): String?
+
     suspend fun folderUrl(safeId: SafeId): String?
 
     suspend fun setDriveSelectedAccount(safeId: SafeId, account: String?)
+
     suspend fun setDriveFolderId(safeId: SafeId, id: String?)
+
     suspend fun setDriveFolderUrl(safeId: SafeId, url: String?)
 }

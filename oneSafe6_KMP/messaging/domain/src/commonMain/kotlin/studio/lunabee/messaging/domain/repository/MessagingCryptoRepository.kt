@@ -19,13 +19,16 @@
 
 package studio.lunabee.messaging.domain.repository
 
+import studio.lunabee.doubleratchet.model.DRMessageKey
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
-import studio.lunabee.doubleratchet.model.DRMessageKey
 
 interface MessagingCryptoRepository {
     suspend fun <Data : Any> queueEncrypt(encryptEntry: EncryptEntry<Data>): ByteArray
+
     suspend fun <Data : Any> queueDecrypt(decryptEntry: DecryptEntry<Data>): Data
+
     suspend fun decryptMessage(data: ByteArray, key: DRMessageKey): ByteArray
+
     suspend fun encryptMessage(data: ByteArray, key: DRMessageKey): ByteArray
 }

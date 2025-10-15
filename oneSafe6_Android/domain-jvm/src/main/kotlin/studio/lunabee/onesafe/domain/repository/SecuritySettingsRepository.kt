@@ -27,30 +27,52 @@ import kotlin.time.Duration
 
 interface SecuritySettingsRepository {
     suspend fun autoLockInactivityDelay(safeId: SafeId): Duration
+
     suspend fun autoLockAppChangeDelay(safeId: SafeId): Duration
+
     suspend fun clipboardClearDelay(safeId: SafeId): Duration
+
     suspend fun verifyPasswordInterval(safeId: SafeId): VerifyPasswordInterval
+
     suspend fun lastPasswordVerificationInstant(safeId: SafeId): Instant
+
     suspend fun autoLockOSKInactivityDelay(safeId: SafeId): Duration
+
     suspend fun autoLockOSKHiddenDelay(safeId: SafeId): Duration
 
     fun autoLockInactivityDelayFlow(safeId: SafeId): Flow<Duration>
+
     fun autoLockAppChangeDelayFlow(safeId: SafeId): Flow<Duration>
+
     fun clipboardDelayFlow(safeId: SafeId): Flow<Duration>
+
     fun verifyPasswordIntervalFlow(safeId: SafeId): Flow<VerifyPasswordInterval>
+
     fun bubblesResendMessageDelayFlow(safeId: SafeId): Flow<Duration>
+
     fun autoLockOSKInactivityDelayFlow(safeId: SafeId): Flow<Duration>
+
     fun autoLockOSKHiddenDelayFlow(safeId: SafeId): Flow<Duration>
+
     fun shakeToLockFlow(safeId: SafeId): Flow<Boolean>
+
     suspend fun shakeToLock(safeId: SafeId): Boolean
 
     suspend fun setAutoLockInactivityDelay(safeId: SafeId, delay: Duration)
+
     suspend fun setAutoLockAppChangeDelay(safeId: SafeId, delay: Duration)
+
     suspend fun setClipboardClearDelay(safeId: SafeId, delay: Duration)
+
     suspend fun setVerifyPasswordInterval(safeId: SafeId, passwordInterval: VerifyPasswordInterval)
+
     suspend fun setLastPasswordVerification(safeId: SafeId, instant: Instant)
+
     suspend fun setBubblesResendMessageDelay(safeId: SafeId, delay: Duration)
+
     suspend fun setAutoLockOSKInactivityDelay(safeId: SafeId, delay: Duration)
+
     suspend fun setAutoLockOSKHiddenDelay(safeId: SafeId, delay: Duration)
+
     suspend fun toggleShakeToLock(safeId: SafeId)
 }

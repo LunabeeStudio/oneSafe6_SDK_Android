@@ -65,10 +65,11 @@ object ContactDetailScreenFactory {
                 ContactDetailUiState.UIConversationState.WaitingForReply -> {
                     OSMessageCard(
                         title = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_waitingForReply_title),
-                        description = LbcTextSpec.StringResource(
-                            OSString.bubbles_contactDetail_waitingForReply_description,
-                            contactName.name,
-                        ).markdown(),
+                        description = LbcTextSpec
+                            .StringResource(
+                                OSString.bubbles_contactDetail_waitingForReply_description,
+                                contactName.name,
+                            ).markdown(),
                     )
                 }
                 ContactDetailUiState.UIConversationState.Running,
@@ -96,7 +97,12 @@ object ContactDetailScreenFactory {
                     text = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_deleteContact),
                     onClick = onClick,
                     buttonColors = OSTextButtonDefaults.secondaryAlertTextButtonColors(state = OSActionState.Enabled),
-                    leadingIcon = { OSIconAlertDecorationButton(image = OSImageSpec.Drawable(drawable = OSDrawable.ic_delete)) },
+                    leadingIcon = {
+                        OSIconAlertDecorationButton(
+                            image = OSImageSpec
+                                .Drawable(drawable = OSDrawable.ic_delete),
+                        )
+                    },
                     contentPadding = LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
                         index = 0,
                         elementsCount = 1,
@@ -153,7 +159,12 @@ object ContactDetailScreenFactory {
                     } else {
                         OSActionState.Disabled
                     },
-                    leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = OSDrawable.ic_message)) },
+                    leadingIcon = {
+                        OSIconDecorationButton(
+                            image = OSImageSpec
+                                .Drawable(drawable = OSDrawable.ic_message),
+                        )
+                    },
                     contentPadding = LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
                         index = 0,
                         elementsCount = if (
@@ -180,7 +191,12 @@ object ContactDetailScreenFactory {
                             } else {
                                 OSActionState.Disabled
                             },
-                            leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = OSDrawable.ic_restore)) },
+                            leadingIcon = {
+                                OSIconDecorationButton(
+                                    image = OSImageSpec
+                                        .Drawable(drawable = OSDrawable.ic_restore),
+                                )
+                            },
                             contentPadding = LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
                                 index = 1,
                                 elementsCount = 2,
@@ -194,7 +210,12 @@ object ContactDetailScreenFactory {
                             text = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_resendInvitation),
                             onClick = onResendInvitationClick,
                             buttonColors = OSTextButtonDefaults.secondaryTextButtonColors(state = OSActionState.Enabled),
-                            leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = OSDrawable.ic_people)) },
+                            leadingIcon = {
+                                OSIconDecorationButton(
+                                    image = OSImageSpec
+                                        .Drawable(drawable = OSDrawable.ic_people),
+                                )
+                            },
                             contentPadding = LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
                                 index = 1,
                                 elementsCount = 3,
@@ -204,7 +225,12 @@ object ContactDetailScreenFactory {
                             text = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_scanAnswer),
                             onClick = onScanResponseClick,
                             buttonColors = OSTextButtonDefaults.secondaryTextButtonColors(state = OSActionState.Enabled),
-                            leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = OSDrawable.ic_qr_scanner)) },
+                            leadingIcon = {
+                                OSIconDecorationButton(
+                                    image = OSImageSpec
+                                        .Drawable(drawable = OSDrawable.ic_qr_scanner),
+                                )
+                            },
                             contentPadding = LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
                                 index = 2,
                                 elementsCount = 3,
@@ -216,7 +242,12 @@ object ContactDetailScreenFactory {
                             text = LbcTextSpec.StringResource(OSString.bubbles_contactDetail_resendResponse),
                             onClick = onResendResponseClick,
                             buttonColors = OSTextButtonDefaults.secondaryTextButtonColors(state = OSActionState.Enabled),
-                            leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = OSDrawable.ic_people)) },
+                            leadingIcon = {
+                                OSIconDecorationButton(
+                                    image = OSImageSpec
+                                        .Drawable(drawable = OSDrawable.ic_people),
+                                )
+                            },
                             contentPadding = LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
                                 index = 1,
                                 elementsCount = 2,

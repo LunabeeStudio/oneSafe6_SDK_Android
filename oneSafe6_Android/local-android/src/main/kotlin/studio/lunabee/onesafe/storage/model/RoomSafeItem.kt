@@ -96,7 +96,9 @@ data class RoomSafeItem(
         if (encName != null) {
             if (other.encName == null) return false
             if (!encName.contentEquals(other.encName)) return false
-        } else if (other.encName != null) return false
+        } else if (other.encName != null) {
+            return false
+        }
         if (parentId != other.parentId) return false
         if (isFavorite != other.isFavorite) return false
         if (createdAt != other.createdAt) return false
@@ -106,7 +108,9 @@ data class RoomSafeItem(
         if (encColor != null) {
             if (other.encColor == null) return false
             if (!encColor.contentEquals(other.encColor)) return false
-        } else if (other.encColor != null) return false
+        } else if (other.encColor != null) {
+            return false
+        }
         if (deletedAt != other.deletedAt) return false
         if (deletedParentId != other.deletedParentId) return false
         if (consultedAt != other.consultedAt) return false
@@ -135,23 +139,21 @@ data class RoomSafeItem(
     }
 
     companion object {
-        fun fromSafeItem(safeItem: SafeItem): RoomSafeItem {
-            return RoomSafeItem(
-                id = safeItem.id,
-                encName = safeItem.encName,
-                parentId = safeItem.parentId,
-                isFavorite = safeItem.isFavorite,
-                updatedAt = safeItem.updatedAt,
-                position = safeItem.position,
-                iconId = safeItem.iconId,
-                encColor = safeItem.encColor,
-                deletedAt = safeItem.deletedAt,
-                deletedParentId = safeItem.deletedParentId,
-                consultedAt = null,
-                indexAlpha = safeItem.indexAlpha,
-                createdAt = safeItem.createdAt,
-                safeId = safeItem.safeId,
-            )
-        }
+        fun fromSafeItem(safeItem: SafeItem): RoomSafeItem = RoomSafeItem(
+            id = safeItem.id,
+            encName = safeItem.encName,
+            parentId = safeItem.parentId,
+            isFavorite = safeItem.isFavorite,
+            updatedAt = safeItem.updatedAt,
+            position = safeItem.position,
+            iconId = safeItem.iconId,
+            encColor = safeItem.encColor,
+            deletedAt = safeItem.deletedAt,
+            deletedParentId = safeItem.deletedParentId,
+            consultedAt = null,
+            indexAlpha = safeItem.indexAlpha,
+            createdAt = safeItem.createdAt,
+            safeId = safeItem.safeId,
+        )
     }
 }

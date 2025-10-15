@@ -25,8 +25,8 @@ import javax.inject.Inject
 
 class MigrationFromV12ToV13 @Inject constructor() :
     AppMigration0(12, 13) {
-    override suspend fun migrate(migrationSafeData: MigrationSafeData0): LBResult<Unit> {
-        // Deprecated migration due to datastore to room migration (see MigrationToMultiSafeHelper::legacyMigrationFromV12ToV13)
-        return LBResult.Success(Unit)
+        override suspend fun migrate(migrationSafeData: MigrationSafeData0): LBResult<Unit> {
+            // Deprecated migration due to datastore to room migration (see MigrationToMultiSafeHelper::legacyMigrationFromV12ToV13)
+            return LBResult.Success(Unit)
+        }
     }
-}

@@ -71,7 +71,7 @@ object OSTestConfig {
         val extraSafeIds: List<
             @Serializable(with = SafeIdAsStringSerializer::class)
             SafeId,
-            > = List(random.nextInt(0, 3)) {
+        > = List(random.nextInt(0, 3)) {
             val randomBytes = random.nextBytes(16)
             val buffer = ByteBuffer.wrap(randomBytes)
             SafeId(buildUUID(randomBytes, buffer))

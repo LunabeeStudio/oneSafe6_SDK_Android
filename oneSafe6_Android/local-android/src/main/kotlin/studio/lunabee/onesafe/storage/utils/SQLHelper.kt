@@ -27,17 +27,15 @@ import studio.lunabee.onesafe.error.OSStorageError
 
 private val logger = LBLogger.get("SQLHelper")
 
-internal inline fun <R> runSQL(block: () -> R): R {
-    return try {
-        block()
-    } catch (e: SQLException) {
-        logger.e(e)
-        throw OSStorageError(OSStorageError.Code.UNKNOWN_DATABASE_ERROR, cause = e)
-    }
+internal inline fun <R> runSQL(block: () -> R): R = try {
+    block()
+} catch (e: SQLException) {
+    logger.e(e)
+    throw OSStorageError(OSStorageError.Code.UNKNOWN_DATABASE_ERROR, cause = e)
 }
 
-fun queryNumEntries(db: SupportSQLiteDatabase, table: String): Int {
-    return db.query("SELECT COUNT(*) FROM $table").apply {
+fun queryNumEntries(db: SupportSQLiteDatabase, table: String): Int = db
+    .query("SELECT COUNT(*) FROM $table")
+    .apply {
         moveToFirst()
     }.getInt(0)
-}

@@ -91,13 +91,11 @@ class RoomIndexWordEntry(
     }
 
     companion object {
-        fun fromIndexWordEntry(indexWordEntry: IndexWordEntry): RoomIndexWordEntry {
-            return RoomIndexWordEntry(
-                itemMatch = indexWordEntry.itemMatch,
-                encWord = indexWordEntry.encWord,
-                fieldMatch = indexWordEntry.fieldMatch,
-                safeId = indexWordEntry.safeId,
-            )
-        }
+        fun fromIndexWordEntry(indexWordEntry: IndexWordEntry): RoomIndexWordEntry = RoomIndexWordEntry(
+            itemMatch = indexWordEntry.itemMatch,
+            encWord = indexWordEntry.encWord,
+            fieldMatch = indexWordEntry.fieldMatch,
+            safeId = indexWordEntry.safeId,
+        )
     }
 }

@@ -42,11 +42,11 @@ class DeleteOldCloudBackupsUseCase @Inject constructor(
     /**
      * Refresh and delete old cloud backups
      */
-    operator fun invoke(safeId: SafeId): Flow<LBFlowResult<Unit>> {
-        return backupRepository.refreshBackupList(safeId).transformResult { success ->
+    operator fun invoke(safeId: SafeId): Flow<LBFlowResult<Unit>> = backupRepository
+        .refreshBackupList(safeId)
+        .transformResult { success ->
             emitAll(invoke(safeId, success.successData))
         }
-    }
 
     /**
      * Delete old cloud backups

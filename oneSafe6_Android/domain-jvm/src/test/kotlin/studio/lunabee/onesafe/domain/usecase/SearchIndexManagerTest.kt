@@ -91,7 +91,7 @@ class SearchIndexManagerTest {
     @Test
     fun clear_index_after_delay_test(): TestResult = runTest {
         indexManager.initStoreIndex(this)
-        advanceTimeBy(SearchIndexManager.DELAY_CLEAR_DECRYPTED_INDEX)
+        advanceTimeBy(SearchIndexManager.DelayClearDecryptedIndex)
 
         assertSuccess(indexManager.decryptedIndex.value)
         assertNotNull(indexManager.decryptedIndex.value.data)
@@ -121,12 +121,20 @@ class SearchIndexManagerTest {
         indexManager.initStoreIndex(this)
         runCurrent()
 
-        assertContentEquals(clearIndexWordEntries, indexManager.decryptedIndex.value.data!!.toList())
+        assertContentEquals(
+            clearIndexWordEntries,
+            indexManager.decryptedIndex.value.data!!
+                .toList(),
+        )
 
         indexFlow.value = indexList2
 
         runCurrent()
 
-        assertContentEquals(expectedIndex, indexManager.decryptedIndex.value.data!!.toList())
+        assertContentEquals(
+            expectedIndex,
+            indexManager.decryptedIndex.value.data!!
+                .toList(),
+        )
     }
 }

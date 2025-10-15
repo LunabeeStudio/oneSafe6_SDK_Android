@@ -51,8 +51,7 @@ fun OSImeScreen(
             Modifier
                 .fillMaxSize()
                 .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Bottom))
-        }
-            .landscapeSystemBarsPadding()
+        }.landscapeSystemBarsPadding()
             .then(modifier),
         background = background,
         applySystemBarPadding = applySystemBarPadding,

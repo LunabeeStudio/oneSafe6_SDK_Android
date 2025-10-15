@@ -42,7 +42,11 @@ fun MavenPublication.setAndroidArtifacts(
     project: Project,
     flavorAarSuffix: String? = null,
 ) {
-    val mainSourceSets = (project.android.sourceSets.getByName("main").kotlin as DefaultAndroidSourceDirectorySet).srcDirs
+    val mainSourceSets = (
+        project.android.sourceSets
+            .getByName("main")
+            .kotlin as DefaultAndroidSourceDirectorySet
+    ).srcDirs
     val sourceJar by project.tasks.registering(Jar::class) {
         archiveClassifier.set("sources")
         from(mainSourceSets)
@@ -55,7 +59,10 @@ fun MavenPublication.setAndroidArtifacts(
 
     artifact(sourceJar)
     artifact(javadocJar)
-    val aarBasePath = project.layout.buildDirectory.dir("outputs/aar").get().asFile.path
+    val aarBasePath = project.layout.buildDirectory
+        .dir("outputs/aar")
+        .get()
+        .asFile.path
     val filename = "${project.name.lowercase()}${flavorAarSuffix?.let { "-$it" }.orEmpty()}-release.aar"
     artifact("$aarBasePath/$filename")
 }
@@ -69,7 +76,12 @@ fun MavenPublication.setAndroidArtifacts(
  * @param project project current project
  */
 fun MavenPublication.setJavaArtifacts(project: Project) {
-    artifact(project.layout.buildDirectory.dir("libs/${project.name}-${project.version}.jar").get().asFile)
+    artifact(
+        project.layout.buildDirectory
+            .dir("libs/${project.name}-${project.version}.jar")
+            .get()
+            .asFile,
+    )
     artifact(project.tasks.named("sourcesJar"))
     artifact(project.tasks.named("javadocJar"))
 }

@@ -29,7 +29,5 @@ import javax.inject.Inject
 class MigrationGetSafeIdBeforeV14UseCase @Inject constructor(
     private val safeRepository: SafeRepository,
 ) {
-    suspend operator fun invoke(): SafeId {
-        return safeRepository.getAllSafeOrderByLastOpenAsc().first().id
-    }
+    suspend operator fun invoke(): SafeId = safeRepository.getAllSafeOrderByLastOpenAsc().first().id
 }

@@ -23,7 +23,6 @@ import com.google.crypto.tink.subtle.Hkdf
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import studio.lunabee.onesafe.domain.qualifier.CryptoDispatcher
-import studio.lunabee.onesafe.jvm.use
 import studio.lunabee.onesafe.jvm.toByteArray
 import studio.lunabee.onesafe.use
 import javax.inject.Inject
@@ -45,17 +44,17 @@ class HKDFTinkHashEngine @Inject constructor(
     private inline fun doHash(password: CharArray, salt: ByteArray): ByteArray {
         password.toByteArray().use { passwordBytes ->
             return Hkdf.computeHkdf(
-                ALGORITHM,
+                Algorithm,
                 passwordBytes,
                 salt,
                 byteArrayOf(),
-                DERIVED_KEY_LENGTH_BYTE,
+                DerivedKeyLengthByte,
             )
         }
     }
 
     companion object {
-        private const val ALGORITHM = "HMACSHA512"
-        private const val DERIVED_KEY_LENGTH_BYTE = 32
+        private const val Algorithm = "HMACSHA512"
+        private const val DerivedKeyLengthByte = 32
     }
 }

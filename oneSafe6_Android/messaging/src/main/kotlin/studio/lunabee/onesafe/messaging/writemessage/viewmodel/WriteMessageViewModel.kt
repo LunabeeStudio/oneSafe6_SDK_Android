@@ -47,8 +47,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlin.time.toJavaInstant
-import kotlin.time.toKotlinInstant
 import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.bubbles.domain.repository.ContactRepository
 import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
@@ -108,6 +106,8 @@ import javax.inject.Inject
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.random.Random
+import kotlin.time.toJavaInstant
+import kotlin.time.toKotlinInstant
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -150,24 +150,26 @@ class WriteMessageViewModel @Inject constructor(
         }
     }
 
-    val contactId: StateFlow<DoubleRatchetUUID?> = savedStateHandle.getStateFlow(
-        WriteMessageDestination.ContactIdArg,
-        savedStateHandle.get<String>(WriteMessageDestination.ContactIdArg),
-    ).map {
-        it?.let { DoubleRatchetUUID.fromString(it) }
-    }.stateIn(
-        viewModelScope,
-        CommonUiConstants.Flow.DefaultSharingStarted,
-        savedStateHandle.get<String>(WriteMessageDestination.ContactIdArg)?.let { DoubleRatchetUUID.fromString(it) },
-    )
+    val contactId: StateFlow<DoubleRatchetUUID?> = savedStateHandle
+        .getStateFlow(
+            WriteMessageDestination.ContactIdArg,
+            savedStateHandle.get<String>(WriteMessageDestination.ContactIdArg),
+        ).map {
+            it?.let { DoubleRatchetUUID.fromString(it) }
+        }.stateIn(
+            viewModelScope,
+            CommonUiConstants.Flow.DefaultSharingStarted,
+            savedStateHandle.get<String>(WriteMessageDestination.ContactIdArg)?.let { DoubleRatchetUUID.fromString(it) },
+        )
 
-    private val contactFlow = savedStateHandle.getStateFlow(
-        WriteMessageDestination.ContactIdArg,
-        savedStateHandle.get<String>(WriteMessageDestination.ContactIdArg),
-    ).flatMapLatest { contactId ->
-        val uuid = DoubleRatchetUUID.fromString(contactId.orEmpty())
-        this.contactId.value?.let { getContactUseCase.flow(uuid).distinctUntilChanged() } ?: flowOf(null)
-    }
+    private val contactFlow = savedStateHandle
+        .getStateFlow(
+            WriteMessageDestination.ContactIdArg,
+            savedStateHandle.get<String>(WriteMessageDestination.ContactIdArg),
+        ).flatMapLatest { contactId ->
+            val uuid = DoubleRatchetUUID.fromString(contactId.orEmpty())
+            this.contactId.value?.let { getContactUseCase.flow(uuid).distinctUntilChanged() } ?: flowOf(null)
+        }
 
     private val writeContactInfoFlow = combine(
         contactFlow,
@@ -277,79 +279,87 @@ class WriteMessageViewModel @Inject constructor(
                     config = PagingConfig(pageSize = 15, jumpThreshold = 30),
                     contactId = contactId,
                 )
-            }
-            .map { pagingData ->
+            }.map { pagingData ->
                 contactId.value?.let { contactId ->
                     messageRepository.markMessagesAsRead(contactId)
                     contactRepository.updateContactConsultedAt(contactId, Instant.now(clock).toKotlinInstant())
                 }
-                pagingData.map { message ->
-                    val plainMessageData: PlainMessageData = decryptSafeMessageUseCase.message(message)
-                    when (plainMessageData) {
-                        is PlainMessageData.AcceptedInvitation -> {
-                            ConversationUiData.Message.Text(
-                                id = message.id,
-                                text = LbcTextSpec.StringResource(OSString.bubbles_acceptedInvitation),
-                                direction = message.direction,
-                                date = plainMessageData.sentAt.data?.toJavaInstant(),
-                                channelName = plainMessageData.channel?.data,
-                                type = ConversationUiData.MessageType.Invitation,
-                                hasCorruptedData = plainMessageData.hasCorruptedData,
-                            )
-                        }
-                        is PlainMessageData.Default -> {
-                            val text = when (val plainContent: LBResult<String> = plainMessageData.content) {
-                                is LBResult.Failure -> {
-                                    LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_corruptedMessage)
-                                }
-                                is LBResult.Success -> {
-                                    LbcTextSpec.Raw(plainContent.successData)
-                                }
+                pagingData
+                    .map { message ->
+                        val plainMessageData: PlainMessageData = decryptSafeMessageUseCase.message(message)
+                        when (plainMessageData) {
+                            is PlainMessageData.AcceptedInvitation -> {
+                                ConversationUiData.Message.Text(
+                                    id = message.id,
+                                    text = LbcTextSpec.StringResource(OSString.bubbles_acceptedInvitation),
+                                    direction = message.direction,
+                                    date = plainMessageData.sentAt.data?.toJavaInstant(),
+                                    channelName = plainMessageData.channel?.data,
+                                    type = ConversationUiData.MessageType.Invitation,
+                                    hasCorruptedData = plainMessageData.hasCorruptedData,
+                                )
                             }
-                            ConversationUiData.Message.Text(
-                                id = message.id,
-                                text = text,
-                                direction = message.direction,
-                                date = plainMessageData.sentAt.data?.toJavaInstant(),
-                                channelName = plainMessageData.channel?.data,
-                                type = ConversationUiData.MessageType.Message,
-                                hasCorruptedData = plainMessageData.hasCorruptedData,
-                            )
-                        }
-                        is PlainMessageData.SafeItem -> {
-                            val item = plainMessageData.itemId?.uuid?.let { secureGetItemUseCase.withIdentifier(it).firstOrNull() }
-                            val name = item?.encName?.let { itemDecryptUseCase(it, item.id, String::class) }
-                            val identifier = item?.encIdentifier?.let { itemDecryptUseCase(it, item.id, String::class) }
-                            val icon = item?.iconId?.let { getIconUseCase(it, item.id) }
-                            val color = item?.encColor?.let { itemDecryptUseCase(it, item.id, String::class) }?.data?.toColor()
-                            val itemNameProvider = when {
-                                item == null -> RemovedNameProvider
-                                name is LBResult.Failure -> ErrorNameProvider
-                                else -> OSNameProvider.fromName(name = name?.data, hasIcon = icon?.data != null)
+                            is PlainMessageData.Default -> {
+                                val text = when (val plainContent: LBResult<String> = plainMessageData.content) {
+                                    is LBResult.Failure -> {
+                                        LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_corruptedMessage)
+                                    }
+                                    is LBResult.Success -> {
+                                        LbcTextSpec.Raw(plainContent.successData)
+                                    }
+                                }
+                                ConversationUiData.Message.Text(
+                                    id = message.id,
+                                    text = text,
+                                    direction = message.direction,
+                                    date = plainMessageData.sentAt.data?.toJavaInstant(),
+                                    channelName = plainMessageData.channel?.data,
+                                    type = ConversationUiData.MessageType.Message,
+                                    hasCorruptedData = plainMessageData.hasCorruptedData,
+                                )
                             }
-                            val illustration = OSItemIllustrationHelper.get(itemNameProvider, icon?.data, color)
-                            ConversationUiData.Message.SafeItem(
-                                id = message.id,
-                                direction = message.direction,
+                            is PlainMessageData.SafeItem -> {
+                                val item = plainMessageData.itemId?.uuid?.let {
+                                    secureGetItemUseCase
+                                        .withIdentifier(it)
+                                        .firstOrNull()
+                                }
+                                val name = item?.encName?.let { itemDecryptUseCase(it, item.id, String::class) }
+                                val identifier = item?.encIdentifier?.let { itemDecryptUseCase(it, item.id, String::class) }
+                                val icon = item?.iconId?.let { getIconUseCase(it, item.id) }
+                                val color = item
+                                    ?.encColor
+                                    ?.let { itemDecryptUseCase(it, item.id, String::class) }
+                                    ?.data
+                                    ?.toColor()
+                                val itemNameProvider = when {
+                                    item == null -> RemovedNameProvider
+                                    name is LBResult.Failure -> ErrorNameProvider
+                                    else -> OSNameProvider.fromName(name = name?.data, hasIcon = icon?.data != null)
+                                }
+                                val illustration = OSItemIllustrationHelper.get(itemNameProvider, icon?.data, color)
+                                ConversationUiData.Message.SafeItem(
+                                    id = message.id,
+                                    direction = message.direction,
+                                    date = plainMessageData.sentAt.data?.toJavaInstant(),
+                                    channelName = plainMessageData.channel?.data,
+                                    icon = illustration,
+                                    name = itemNameProvider,
+                                    identifier = identifier?.data?.let(LbcTextSpec::Raw),
+                                    itemId = item?.id,
+                                )
+                            }
+                            is PlainMessageData.ResetConversation -> ConversationUiData.ResetConversation(
                                 date = plainMessageData.sentAt.data?.toJavaInstant(),
-                                channelName = plainMessageData.channel?.data,
-                                icon = illustration,
-                                name = itemNameProvider,
-                                identifier = identifier?.data?.let(LbcTextSpec::Raw),
-                                itemId = item?.id,
                             )
                         }
-                        is PlainMessageData.ResetConversation -> ConversationUiData.ResetConversation(
-                            date = plainMessageData.sentAt.data?.toJavaInstant(),
-                        )
+                    }.insertSeparators { before, after ->
+                        val beforeSendAt = before?.date
+                        when {
+                            beforeSendAt == null || before.wereSentOnSameDay(after) -> null
+                            else -> ConversationUiData.DateHeader(beforeSendAt)
+                        }
                     }
-                }.insertSeparators { before, after ->
-                    val beforeSendAt = before?.date
-                    when {
-                        beforeSendAt == null || before.wereSentOnSameDay(after) -> null
-                        else -> ConversationUiData.DateHeader(beforeSendAt)
-                    }
-                }
             }
 
     fun onPlainMessageChange(value: TextFieldValue) {
@@ -439,7 +449,8 @@ class WriteMessageViewModel @Inject constructor(
 
     fun deleteMessage(messageId: DoubleRatchetUUID) {
         _dialogState.value = object : DialogState {
-            override val message: LbcTextSpec = LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_deleteMessage_message)
+            override val message: LbcTextSpec = LbcTextSpec
+                .StringResource(OSString.bubbles_writeMessageScreen_deleteMessage_message)
             override val title: LbcTextSpec = LbcTextSpec.StringResource(OSString.common_warning)
             override val dismiss: () -> Unit = ::dismissDialog
             override val actions: List<DialogAction> = listOf(
@@ -461,7 +472,8 @@ class WriteMessageViewModel @Inject constructor(
 
     fun displayRemoveConversationDialog() {
         _dialogState.value = object : DialogState {
-            override val message: LbcTextSpec = LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_deleteDialog_message)
+            override val message: LbcTextSpec = LbcTextSpec
+                .StringResource(OSString.bubbles_writeMessageScreen_deleteDialog_message)
             override val title: LbcTextSpec = LbcTextSpec.StringResource(OSString.common_warning)
             override val dismiss: () -> Unit = ::dismissDialog
             override val actions: List<DialogAction> = listOf(
@@ -483,13 +495,12 @@ class WriteMessageViewModel @Inject constructor(
 
     @OptIn(ExperimentalEncodingApi::class)
     // Simply create a random byte array, and encode it to Base64
-    private fun generatePreview(): String {
-        return Base64.encode(Random.nextBytes(128))
-    }
+    private fun generatePreview(): String = Base64.encode(Random.nextBytes(128))
 
     fun displayPreviewInfo() {
         _dialogState.value = object : DialogState {
-            override val message: LbcTextSpec = LbcTextSpec.StringResource(OSString.writeMessageScreen_previewInfo_description)
+            override val message: LbcTextSpec = LbcTextSpec
+                .StringResource(OSString.writeMessageScreen_previewInfo_description)
             override val dismiss: () -> Unit = ::dismissDialog
             override val actions: List<DialogAction> = listOf(DialogAction.commonOk(::dismissDialog))
             override val title: LbcTextSpec = LbcTextSpec.StringResource(OSString.writeMessageScreen_previewInfo_title)
@@ -504,7 +515,8 @@ class WriteMessageViewModel @Inject constructor(
             override val dismiss: () -> Unit = ::dismissDialog
             override val actions: List<DialogAction> = listOf(DialogAction.commonOk(::dismissDialog))
             override val title: LbcTextSpec = LbcTextSpec.StringResource(OSString.common_warning)
-            override val message: LbcTextSpec = LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_tooOldMessage)
+            override val message: LbcTextSpec = LbcTextSpec
+                .StringResource(OSString.bubbles_writeMessageScreen_tooOldMessage)
             override val customContent:
                 @Composable
                 (() -> Unit)? = null
@@ -526,10 +538,8 @@ class WriteMessageViewModel @Inject constructor(
     }
 
     @OptIn(ExperimentalEncodingApi::class)
-    suspend fun getResetMessage(): String? {
-        return contactId.value?.let {
-            getResetMessageUseCase(contactId = it).data?.let(Base64::encode)
-        }
+    suspend fun getResetMessage(): String? = contactId.value?.let {
+        getResetMessageUseCase(contactId = it).data?.let(Base64::encode)
     }
 
     /**

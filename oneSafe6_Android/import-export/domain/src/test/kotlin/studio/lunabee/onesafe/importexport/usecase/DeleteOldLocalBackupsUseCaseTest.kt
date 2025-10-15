@@ -68,7 +68,7 @@ class DeleteOldLocalBackupsUseCaseTest {
     }
 
     companion object {
-        private const val ext: String = ".${ImportExportConstant.ExtensionOs6Backup}"
+        private const val Ext: String = ".${ImportExportConstant.ExtensionOs6Backup}"
         private val tmpDir = File("DeleteOldLocalBackupsUseCaseTest")
 
         @BeforeClass
@@ -94,7 +94,7 @@ class DeleteOldLocalBackupsUseCaseTest {
     @Test
     fun nothing_to_delete_test(): TestResult = runTest {
         repeat(5) {
-            val file = File(tmpDir, "test-00000101-00000$it$ext")
+            val file = File(tmpDir, "test-00000101-00000$it$Ext")
             backupDb[file.name] = LocalBackup(date = Instant.ofEpochSecond(it.toLong()), file = file, safeId = SafeId(testUUIDs[0]))
             file.createNewFile()
         }
@@ -108,12 +108,12 @@ class DeleteOldLocalBackupsUseCaseTest {
     @Test
     fun delete_oldest_test(): TestResult = runTest {
         val localBackups = listOf(
-            LocalBackup(date = Instant.ofEpochSecond(5), file = File(tmpDir, "test-00000101-000005$ext"), safeId = SafeId(testUUIDs[0])),
-            LocalBackup(date = Instant.ofEpochSecond(4), file = File(tmpDir, "test-00000101-000004$ext"), safeId = SafeId(testUUIDs[0])),
-            LocalBackup(date = Instant.ofEpochSecond(3), file = File(tmpDir, "test-00000101-000003$ext"), safeId = SafeId(testUUIDs[0])),
-            LocalBackup(date = Instant.ofEpochSecond(2), file = File(tmpDir, "test-00000101-000002$ext"), safeId = SafeId(testUUIDs[0])),
-            LocalBackup(date = Instant.ofEpochSecond(1), file = File(tmpDir, "test-00000101-000001$ext"), safeId = SafeId(testUUIDs[0])),
-            LocalBackup(date = Instant.ofEpochSecond(0), file = File(tmpDir, "test-00000101-000000$ext"), safeId = SafeId(testUUIDs[0])),
+            LocalBackup(date = Instant.ofEpochSecond(5), file = File(tmpDir, "test-00000101-000005$Ext"), safeId = SafeId(testUUIDs[0])),
+            LocalBackup(date = Instant.ofEpochSecond(4), file = File(tmpDir, "test-00000101-000004$Ext"), safeId = SafeId(testUUIDs[0])),
+            LocalBackup(date = Instant.ofEpochSecond(3), file = File(tmpDir, "test-00000101-000003$Ext"), safeId = SafeId(testUUIDs[0])),
+            LocalBackup(date = Instant.ofEpochSecond(2), file = File(tmpDir, "test-00000101-000002$Ext"), safeId = SafeId(testUUIDs[0])),
+            LocalBackup(date = Instant.ofEpochSecond(1), file = File(tmpDir, "test-00000101-000001$Ext"), safeId = SafeId(testUUIDs[0])),
+            LocalBackup(date = Instant.ofEpochSecond(0), file = File(tmpDir, "test-00000101-000000$Ext"), safeId = SafeId(testUUIDs[0])),
         )
         localBackups.forEach {
             backupDb[it.file.name] = it

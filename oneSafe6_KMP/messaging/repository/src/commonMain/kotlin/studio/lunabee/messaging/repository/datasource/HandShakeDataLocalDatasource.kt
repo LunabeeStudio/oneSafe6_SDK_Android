@@ -24,6 +24,8 @@ import studio.lunabee.messaging.domain.model.EncHandShakeData
 
 interface HandShakeDataLocalDatasource {
     suspend fun insert(handShakeData: EncHandShakeData)
+
     suspend fun delete(conversationLocalId: DoubleRatchetUUID)
+
     suspend fun getById(conversationLocalId: DoubleRatchetUUID): EncHandShakeData?
 }

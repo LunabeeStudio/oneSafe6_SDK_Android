@@ -19,6 +19,4 @@
 
 package studio.lunabee.onesafe.error
 
-fun Throwable?.osCode(): OSError.ErrorCode<*, OSError>? {
-    return (this as? OSError)?.code
-}
+fun Throwable?.osCode(): OSError.ErrorCode<*, OSError>? = (this as? OSError)?.code

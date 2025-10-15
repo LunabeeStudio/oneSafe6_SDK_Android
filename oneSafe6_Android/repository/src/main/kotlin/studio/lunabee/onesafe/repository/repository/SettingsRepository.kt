@@ -77,9 +77,10 @@ class SettingsRepository @Inject constructor(
     override fun preventionWarningCtaState(safeId: SafeId): Flow<CtaState?> =
         safeDataSource.preventionWarningCtaState(safeId)
 
-    override fun hasExportSince(safeId: SafeId, duration: Duration): Flow<Boolean> {
-        return safeDataSource.hasExportSince(safeId = safeId, duration = duration)
-    }
+    override fun hasExportSince(safeId: SafeId, duration: Duration): Flow<Boolean> = safeDataSource.hasExportSince(
+        safeId = safeId,
+        duration = duration,
+    )
 
     override fun cameraSystemFlow(safeId: SafeId): Flow<CameraSystem> =
         safeDataSource.cameraSystemFlow(safeId).filterNotNull()
@@ -120,9 +121,7 @@ class SettingsRepository @Inject constructor(
     override suspend fun allowScreenshot(safeId: SafeId): Boolean =
         safeDataSource.allowScreenshot(safeId)
 
-    override suspend fun automation(safeId: SafeId): Boolean {
-        return safeDataSource.automation(safeId)
-    }
+    override suspend fun automation(safeId: SafeId): Boolean = safeDataSource.automation(safeId)
 
     override suspend fun setBubblesPreview(safeId: SafeId, value: Boolean): Unit =
         safeDataSource.setBubblesPreview(safeId, value)
@@ -168,9 +167,8 @@ class SettingsRepository @Inject constructor(
         safeDataSource.setAutoLockInactivityDelay(safeId, delay)
     }
 
-    override suspend fun autoLockAppChangeDelay(safeId: SafeId): Duration {
-        return safeDataSource.autoLockAppChangeDelay(safeId)
-    }
+    override suspend fun autoLockAppChangeDelay(safeId: SafeId): Duration = safeDataSource
+        .autoLockAppChangeDelay(safeId)
 
     override suspend fun setAutoLockAppChangeDelay(safeId: SafeId, delay: Duration) {
         safeDataSource.setAutoLockAppChangeDelay(safeId, delay)
@@ -223,105 +221,105 @@ class SettingsRepository @Inject constructor(
         safeDataSource.setItemLayout(safeId, style)
     }
 
-    override fun hasVisitedLogin(): Flow<Boolean> {
-        return globalDataSource.hasVisitedLogin()
-    }
+    override fun hasVisitedLogin(): Flow<Boolean> = globalDataSource.hasVisitedLogin()
 
-    override fun hasDoneTutorialOpenOsk(): Flow<Boolean> {
-        return globalDataSource.hasDoneTutorialOpenOsk()
-    }
+    override fun hasDoneTutorialOpenOsk(): Flow<Boolean> = globalDataSource.hasDoneTutorialOpenOsk()
 
-    override fun hasDoneTutorialLockOsk(): Flow<Boolean> {
-        return globalDataSource.hasDoneTutorialLockOsk()
-    }
+    override fun hasDoneTutorialLockOsk(): Flow<Boolean> = globalDataSource.hasDoneTutorialLockOsk()
 
-    override fun hasFinishOneSafeKOnBoardingFlow(safeId: SafeId): Flow<Boolean> {
-        return safeDataSource.hasFinishOneSafeKOnBoardingFlow(safeId).filterNotNull()
-    }
+    override fun hasFinishOneSafeKOnBoardingFlow(safeId: SafeId): Flow<Boolean> = safeDataSource
+        .hasFinishOneSafeKOnBoardingFlow(
+            safeId,
+        ).filterNotNull()
 
-    override fun hasDoneOnBoardingBubblesFlow(safeId: SafeId): Flow<Boolean> {
-        return safeDataSource.hasDoneOnBoardingBubblesFlow(safeId).filterNotNull()
-    }
+    override fun hasDoneOnBoardingBubblesFlow(safeId: SafeId): Flow<Boolean> = safeDataSource
+        .hasDoneOnBoardingBubblesFlow(
+            safeId,
+        ).filterNotNull()
 
-    override fun hasHiddenCameraTipsFlow(safeId: SafeId): Flow<Boolean> {
-        return safeDataSource.hasHiddenCameraTipsFlow(safeId).filterNotNull()
-    }
+    override fun hasHiddenCameraTipsFlow(safeId: SafeId): Flow<Boolean> = safeDataSource
+        .hasHiddenCameraTipsFlow(safeId)
+        .filterNotNull()
 
-    override fun hasSeenItemEditionUrlToolTipFlow(safeId: SafeId): Flow<Boolean> {
-        return safeDataSource.hasSeenItemEditionUrlToolTipFlow(safeId).filterNotNull()
-    }
+    override fun hasSeenItemEditionUrlToolTipFlow(safeId: SafeId): Flow<Boolean> = safeDataSource
+        .hasSeenItemEditionUrlToolTipFlow(
+            safeId,
+        ).filterNotNull()
 
-    override fun hasSeenItemEditionEmojiToolTipFlow(safeId: SafeId): Flow<Boolean> {
-        return safeDataSource.hasSeenItemEditionEmojiToolTipFlow(safeId).filterNotNull()
-    }
+    override fun hasSeenItemEditionEmojiToolTipFlow(safeId: SafeId): Flow<Boolean> = safeDataSource
+        .hasSeenItemEditionEmojiToolTipFlow(
+            safeId,
+        ).filterNotNull()
 
-    override fun hasSeenItemReadEditToolTipFlow(safeId: SafeId): Flow<Boolean> {
-        return safeDataSource.hasSeenItemReadEditToolTipFlow(safeId).filterNotNull()
-    }
+    override fun hasSeenItemReadEditToolTipFlow(safeId: SafeId): Flow<Boolean> = safeDataSource
+        .hasSeenItemReadEditToolTipFlow(
+            safeId,
+        ).filterNotNull()
 
-    override suspend fun hasSeenDialogMessageSaveConfirmation(safeId: SafeId): Boolean {
-        return safeDataSource.hasSeenDialogMessageSaveConfirmation(safeId)
-    }
+    override suspend fun hasSeenDialogMessageSaveConfirmation(safeId: SafeId): Boolean = safeDataSource
+        .hasSeenDialogMessageSaveConfirmation(
+            safeId,
+        )
 
-    override suspend fun hasSeenItemEditionUrlToolTip(safeId: SafeId): Boolean {
-        return safeDataSource.hasSeenItemEditionUrlToolTip(safeId)
-    }
+    override suspend fun hasSeenItemEditionUrlToolTip(safeId: SafeId): Boolean = safeDataSource
+        .hasSeenItemEditionUrlToolTip(safeId)
 
-    override suspend fun hasSeenItemEditionEmojiToolTip(safeId: SafeId): Boolean {
-        return safeDataSource.hasSeenItemEditionEmojiToolTip(safeId)
-    }
+    override suspend fun hasSeenItemEditionEmojiToolTip(safeId: SafeId): Boolean = safeDataSource
+        .hasSeenItemEditionEmojiToolTip(safeId)
 
     override suspend fun setHasSeenDialogMessageSaveConfirmation(safeId: SafeId) {
         safeDataSource.setHasSeenDialogMessageSaveConfirmation(safeId)
     }
 
-    override suspend fun setHasVisitedLogin(value: Boolean) {
-        return globalDataSource.setHasVisitedLogin(value)
-    }
+    override suspend fun setHasVisitedLogin(value: Boolean) = globalDataSource.setHasVisitedLogin(value)
 
-    override suspend fun setHasDoneTutorialOpenOsk(value: Boolean) {
-        return globalDataSource.setHasDoneTutorialOpenOsk(value)
-    }
+    override suspend fun setHasDoneTutorialOpenOsk(value: Boolean) = globalDataSource.setHasDoneTutorialOpenOsk(value)
 
-    override suspend fun setHasDoneTutorialLockOsk(value: Boolean) {
-        return globalDataSource.setHasDoneTutorialLockOsk(value)
-    }
+    override suspend fun setHasDoneTutorialLockOsk(value: Boolean) = globalDataSource.setHasDoneTutorialLockOsk(value)
 
-    override suspend fun setHasFinishOneSafeKOnBoarding(safeId: SafeId, value: Boolean) {
-        return safeDataSource.setHasFinishOneSafeKOnBoarding(safeId, value)
-    }
+    override suspend fun setHasFinishOneSafeKOnBoarding(safeId: SafeId, value: Boolean) = safeDataSource
+        .setHasFinishOneSafeKOnBoarding(
+            safeId,
+            value,
+        )
 
-    override suspend fun setHasDoneOnBoardingBubbles(safeId: SafeId, value: Boolean) {
-        return safeDataSource.setHasDoneOnBoardingBubbles(safeId, value)
-    }
+    override suspend fun setHasDoneOnBoardingBubbles(safeId: SafeId, value: Boolean) = safeDataSource
+        .setHasDoneOnBoardingBubbles(
+            safeId,
+            value,
+        )
 
-    override suspend fun setHasHiddenCameraTips(safeId: SafeId, value: Boolean) {
-        return safeDataSource.setHasHiddenCameraTips(safeId, value)
-    }
+    override suspend fun setHasHiddenCameraTips(safeId: SafeId, value: Boolean) = safeDataSource
+        .setHasHiddenCameraTips(safeId, value)
 
-    override suspend fun setHasSeenItemEditionUrlToolTip(safeId: SafeId, value: Boolean) {
-        return safeDataSource.setHasSeenItemEditionUrlToolTip(safeId, value)
-    }
+    override suspend fun setHasSeenItemEditionUrlToolTip(safeId: SafeId, value: Boolean) = safeDataSource
+        .setHasSeenItemEditionUrlToolTip(
+            safeId,
+            value,
+        )
 
-    override suspend fun setHasSeenItemEditionEmojiToolTip(safeId: SafeId, value: Boolean) {
-        return safeDataSource.setHasSeenItemEditionEmojiToolTip(safeId, value)
-    }
+    override suspend fun setHasSeenItemEditionEmojiToolTip(safeId: SafeId, value: Boolean) = safeDataSource
+        .setHasSeenItemEditionEmojiToolTip(
+            safeId,
+            value,
+        )
 
-    override suspend fun setHasSeenItemReadEditToolTip(safeId: SafeId, value: Boolean) {
-        return safeDataSource.setHasSeenItemReadEditToolTip(safeId, value)
-    }
+    override suspend fun setHasSeenItemReadEditToolTip(safeId: SafeId, value: Boolean) = safeDataSource
+        .setHasSeenItemReadEditToolTip(
+            safeId,
+            value,
+        )
 
-    override suspend fun bubblesResendMessageDelayInMillis(safeId: DoubleRatchetUUID): Long {
-        return safeDataSource.bubblesResendMessageDelay(SafeId(safeId.uuid)).inWholeMilliseconds
-    }
+    override suspend fun bubblesResendMessageDelayInMillis(safeId: DoubleRatchetUUID): Long = safeDataSource
+        .bubblesResendMessageDelay(
+            SafeId(safeId.uuid),
+        ).inWholeMilliseconds
 
     override suspend fun setPreventionWarningCtaState(safeId: SafeId, ctaState: CtaState) {
         safeDataSource.setPreventionWarningCtaState(safeId, ctaState)
     }
 
-    override suspend fun getAppVersion(): Int? {
-        return globalDataSource.getAppVersion()
-    }
+    override suspend fun getAppVersion(): Int? = globalDataSource.getAppVersion()
 
     override suspend fun setAppVersion(version: Int) {
         globalDataSource.setAppVersion(version)

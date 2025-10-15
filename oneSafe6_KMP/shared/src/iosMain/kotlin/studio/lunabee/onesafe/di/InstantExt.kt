@@ -19,10 +19,10 @@ package studio.lunabee.onesafe.di
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.usePinned
-import kotlin.time.Instant
 import platform.Foundation.NSDate
 import platform.Foundation.create
 import platform.Foundation.timeIntervalSince1970
+import kotlin.time.Instant
 
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 fun Instant.toDate(): NSDate = usePinned {

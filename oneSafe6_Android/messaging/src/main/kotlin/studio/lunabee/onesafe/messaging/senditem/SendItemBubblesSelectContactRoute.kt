@@ -38,7 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -68,8 +68,8 @@ import studio.lunabee.onesafe.organism.card.OSMessageCardStyle
 import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
 
-context(SendItemBubblesSelectContactNavScope)
 @Composable
+context(SendItemBubblesSelectContactNavScope)
 fun SendItemBubblesSelectContactRoute(
     viewModel: SendItemBubblesSelectContactViewModel = hiltViewModel(),
 ) {

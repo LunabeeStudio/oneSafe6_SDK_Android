@@ -11,14 +11,15 @@ data class CipherKeyPromptUiState(
 
     sealed interface OpenDatabaseState {
         data object Idle : OpenDatabaseState
+
         data class Error(val description: LbcTextSpec?) : OpenDatabaseState
+
         data object Success : OpenDatabaseState
+
         data object Loading : OpenDatabaseState
     }
 
     companion object {
-        fun default(): CipherKeyPromptUiState {
-            return CipherKeyPromptUiState("", OpenDatabaseState.Idle)
-        }
+        fun default(): CipherKeyPromptUiState = CipherKeyPromptUiState("", OpenDatabaseState.Idle)
     }
 }

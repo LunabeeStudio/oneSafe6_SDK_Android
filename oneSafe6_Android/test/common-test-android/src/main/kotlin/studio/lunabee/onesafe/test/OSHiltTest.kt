@@ -176,13 +176,14 @@ abstract class OSHiltTest : OSTest() {
 
     protected suspend fun signOut() {
         withContext(Dispatchers.IO) {
-            context.cacheDir.listFiles { pathname ->
-                pathname?.let {
-                    !pathname.path.contains("screenshot") && !pathname.path.contains("keep_")
-                } ?: true
-            }?.forEach {
-                it.deleteRecursively()
-            }
+            context.cacheDir
+                .listFiles { pathname ->
+                    pathname?.let {
+                        !pathname.path.contains("screenshot") && !pathname.path.contains("keep_")
+                    } ?: true
+                }?.forEach {
+                    it.deleteRecursively()
+                }
             context.filesDir.deleteRecursively()
             resetCryptography()
             mainDatabaseName.takeIf { it.isNotBlank() }?.let { mainDatabaseName ->
@@ -227,9 +228,7 @@ abstract class OSHiltTest : OSTest() {
     /**
      * Sign in user with [password] and save credential. A master key will be generated at this point.
      */
-    suspend fun login(password: CharArray = testPassword.toCharArray()): LBResult<Unit> {
-        return loginUseCase(password)
-    }
+    suspend fun login(password: CharArray = testPassword.toCharArray()): LBResult<Unit> = loginUseCase(password)
 
     /**
      * Force a logout. Can be useful if you need to execute actions for a specific test.

@@ -24,22 +24,22 @@ plugins {
     id("kotlin-android")
 }
 
-version = AndroidConfig.ONESAFE_SDK_VERSION
-group = ProjectConfig.GROUP_ID
+version = AndroidConfig.OnesafeSdkVersion
+group = ProjectConfig.GroupId
 
 android {
-    compileSdk = AndroidConfig.COMPILE_SDK
+    compileSdk = AndroidConfig.CompileSdk
 
     defaultConfig {
-        minSdk = AndroidConfig.MIN_LIB_SDK
+        minSdk = AndroidConfig.MinLibSdk
         @Suppress("DEPRECATION") // https://stackoverflow.com/questions/76084080/apply-targetsdk-in-android-instrumentation-test
-        targetSdk = AndroidConfig.TARGET_SDK
+        targetSdk = AndroidConfig.TargetSdk
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
-        sourceCompatibility = ProjectConfig.JDK_VERSION
-        targetCompatibility = ProjectConfig.JDK_VERSION
+        sourceCompatibility = ProjectConfig.JdkVersion
+        targetCompatibility = ProjectConfig.JdkVersion
     }
 }
 
@@ -66,7 +66,7 @@ dependencies {
 
 kotlin {
     compilerOptions {
-        jvmTarget.set(ProjectConfig.JVM_TARGET)
+        jvmTarget.set(ProjectConfig.JvmTarget)
         freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
     }
 }
