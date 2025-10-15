@@ -24,11 +24,11 @@ import android.content.Context
 
 object OneSafeKeyboardHelper {
 
-    fun parseIsOneSafeKeyboardEnabled(context: Context, activeImeIds: String): Boolean {
-        return activeImeIds.split(Delimiter).map { componentStr ->
+    fun parseIsOneSafeKeyboardEnabled(context: Context, activeImeIds: String): Boolean = activeImeIds
+        .split(Delimiter)
+        .map { componentStr ->
             ComponentName.unflattenFromString(componentStr)
         }.any { it?.packageName == context.packageName && it?.className == OSFlorisImeService::class.qualifiedName }
-    }
 
     fun parseIsOneSafeKeyboardSelected(context: Context, selectedImeId: String): Boolean {
         val component = ComponentName.unflattenFromString(selectedImeId)

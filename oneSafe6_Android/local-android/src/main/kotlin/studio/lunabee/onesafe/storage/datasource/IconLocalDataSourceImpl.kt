@@ -37,11 +37,9 @@ class IconLocalDataSourceImpl @Inject constructor(
     private val dao: SafeFileDao,
     private val transactionProvider: TransactionProvider<MainDatabase>,
 ) : IconLocalDataSource {
-    private val iconDir: File = File(appContext.filesDir, ICON_DIR)
+    private val iconDir: File = File(appContext.filesDir, IconDir)
 
-    override fun getIcon(filename: String): File {
-        return File(iconDir, filename)
-    }
+    override fun getIcon(filename: String): File = File(iconDir, filename)
 
     override suspend fun addIcon(filename: String, icon: ByteArray, safeId: SafeId): File {
         if (!iconDir.exists()) {
@@ -65,13 +63,9 @@ class IconLocalDataSourceImpl @Inject constructor(
     }
 
     @CrossSafeData
-    override fun getAllIcons(): List<File> {
-        return iconDir.listFiles()?.toList().orEmpty()
-    }
+    override fun getAllIcons(): List<File> = iconDir.listFiles()?.toList().orEmpty()
 
-    override suspend fun getIcons(safeId: SafeId): List<File> {
-        return dao.getAllFiles(safeId, iconDir.path)
-    }
+    override suspend fun getIcons(safeId: SafeId): List<File> = dao.getAllFiles(safeId, iconDir.path)
 
     override suspend fun copyAndDeleteIconFile(newIconFile: File, iconId: UUID, safeId: SafeId) {
         val target = File(iconDir, iconId.toString())
@@ -89,11 +83,12 @@ class IconLocalDataSourceImpl @Inject constructor(
         }
     }
 
-    override fun getIcons(iconsId: List<String>): List<File> {
-        return iconDir.listFiles()?.filter { iconsId.contains(it.name) }.orEmpty()
-    }
+    override fun getIcons(iconsId: List<String>): List<File> = iconDir
+        .listFiles()
+        ?.filter { iconsId.contains(it.name) }
+        .orEmpty()
 
     companion object {
-        private const val ICON_DIR: String = "icons"
+        private const val IconDir: String = "icons"
     }
 }

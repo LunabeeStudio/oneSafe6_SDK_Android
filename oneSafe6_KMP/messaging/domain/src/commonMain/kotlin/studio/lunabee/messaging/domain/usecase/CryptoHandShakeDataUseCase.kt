@@ -19,14 +19,14 @@
 
 package studio.lunabee.messaging.domain.usecase
 
-import studio.lunabee.onesafe.di.Inject
-import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
-import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.bubbles.domain.repository.ContactKeyRepository
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.messaging.domain.model.EncHandShakeData
 import studio.lunabee.messaging.domain.model.HandShakeData
+import studio.lunabee.onesafe.di.Inject
+import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
+import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 
 class CryptoHandShakeDataUseCase @Inject constructor(
     private val bubblesCryptoRepository: BubblesCryptoRepository,

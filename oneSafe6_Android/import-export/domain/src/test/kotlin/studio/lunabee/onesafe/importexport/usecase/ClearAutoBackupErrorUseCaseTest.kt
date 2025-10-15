@@ -47,6 +47,7 @@ class ClearAutoBackupErrorUseCaseTest {
 
     inner class DummyAutoBackupErrorRepository : AutoBackupErrorRepository {
         override fun getError(safeId: SafeId): Flow<AutoBackupError?> = flowOf(backupError)
+
         override suspend fun addError(error: AutoBackupError) {
             backupError = error
         }

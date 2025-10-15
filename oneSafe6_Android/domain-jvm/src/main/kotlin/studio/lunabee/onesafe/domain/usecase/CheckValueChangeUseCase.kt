@@ -35,11 +35,9 @@ class CheckValueChangeUseCase @Inject constructor() {
     operator fun <T> invoke(
         value: T,
         previousValue: T,
-    ): UpdateState<T> {
-        return when {
-            previousValue != null && value == null -> UpdateState.Removed()
-            previousValue != value -> UpdateState.ModifiedTo(newValue = value)
-            else -> UpdateState.Unchanged(value)
-        }
+    ): UpdateState<T> = when {
+        previousValue != null && value == null -> UpdateState.Removed()
+        previousValue != value -> UpdateState.ModifiedTo(newValue = value)
+        else -> UpdateState.Unchanged(value)
     }
 }

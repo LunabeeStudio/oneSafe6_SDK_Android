@@ -21,11 +21,18 @@ package studio.lunabee.onesafe.domain.common
 
 interface FeatureFlags {
     fun florisBoard(): Boolean
+
     fun accessibilityService(): Boolean
+
     fun oneSafeK(): Boolean
+
     fun bubbles(): Boolean
+
     fun quickSignIn(): Boolean
+
     fun cloudBackup(): Boolean
+
     fun backupWorkerExpedited(): Boolean
+
     fun sqlcipher(): Boolean
 }

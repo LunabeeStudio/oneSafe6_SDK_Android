@@ -34,11 +34,11 @@ class AndroidMigrationCryptoRepository @Inject constructor(
 ) : MigrationCryptoRepository {
     private var keyPair: KeyPair? = null
 
-    override fun getMigrationPubKey(): ByteArray {
-        return cryptoEngine.getKeyPair().also {
+    override fun getMigrationPubKey(): ByteArray = cryptoEngine
+        .getKeyPair()
+        .also {
             keyPair = it
         }.public.encoded
-    }
 
     @Throws(OSCryptoError::class)
     override fun decryptMigrationArchivePassword(encPassword: ByteArray): CharArray {

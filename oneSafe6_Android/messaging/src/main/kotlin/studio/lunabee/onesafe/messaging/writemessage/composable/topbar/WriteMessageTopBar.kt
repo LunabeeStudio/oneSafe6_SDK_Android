@@ -102,8 +102,7 @@ private fun RowScope.Title(
             .padding(
                 horizontal = OSDimens.SystemSpacing.Medium,
                 vertical = OSDimens.SystemSpacing.Small,
-            )
-            .weight(1f),
+            ).weight(1f),
     ) {
         illustration.ImageComposable(contentDescription = null, style = OSSafeItemStyle.Tiny)
         OSText(

@@ -21,5 +21,6 @@ package studio.lunabee.onesafe.domain.repository
 
 interface StorageManager {
     suspend fun withTransaction(block: suspend () -> Unit)
+
     suspend fun deleteStorage()
 }

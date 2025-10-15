@@ -43,28 +43,28 @@ class UrlMetadataApi @Inject constructor(
 ) {
     private val getHtmlPageTimeout = 5_000L
 
-    suspend fun getHtmlPageCode(url: String): String {
-        return httpClient.get(urlString = url) {
+    suspend fun getHtmlPageCode(url: String): String = httpClient
+        .get(urlString = url) {
             timeout {
                 requestTimeoutMillis = getHtmlPageTimeout
                 connectTimeoutMillis = getHtmlPageTimeout
                 socketTimeoutMillis = getHtmlPageTimeout
             }
         }.bodyAsText()
-    }
 
     fun downloadImage(url: String, targetFile: File): Flow<LBFlowResult<File>> = callbackFlow {
-        val byteReadChannel = httpClient.get(urlString = url) {
-            onDownload { bytesSentTotal, contentLength ->
-                val progress = if (contentLength == null || contentLength == 0L) {
-                    Constant.IndeterminateProgress
-                } else {
-                    bytesSentTotal.toFloat() / contentLength
+        val byteReadChannel = httpClient
+            .get(urlString = url) {
+                onDownload { bytesSentTotal, contentLength ->
+                    val progress = if (contentLength == null || contentLength == 0L) {
+                        Constant.IndeterminateProgress
+                    } else {
+                        bytesSentTotal.toFloat() / contentLength
+                    }
+                    logger.v { "downloading ${(progress * 100).toInt()}%" }
+                    send(LBFlowResult.Loading(targetFile, progress))
                 }
-                logger.v { "downloading ${(progress * 100).toInt()}%" }
-                send(LBFlowResult.Loading(targetFile, progress))
-            }
-        }.bodyAsChannel()
+            }.bodyAsChannel()
         byteReadChannel.copyAndClose(targetFile.writeChannel())
         send(LBFlowResult.Success(targetFile))
         close()

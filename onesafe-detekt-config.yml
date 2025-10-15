@@ -15,19 +15,22 @@ comments:
 
 complexity:
   LongMethod:
-    threshold: 250
+    allowedLines: 250
   CyclomaticComplexMethod:
-    threshold: 35
+    allowedComplexity: 35
   NestedBlockDepth:
-    threshold: 10
+    allowedDepth: 10
   ComplexCondition:
-    threshold: 10
+    allowedConditions: 10
   LongParameterList:
-    constructorThreshold: 10
+    allowedConstructorParameters: 10
 
+ktlint:
+  AnnotationOnSeparateLine:
+    ignoreAnnotated: [ 'AssistedInject', 'Inject', 'Assisted', 'JvmOverloads', 'PublishedApi' ]
 
 style:
-  UnusedPrivateMember:
+  UnusedParameter:
     ignoreAnnotated: [ 'Preview', 'OsDefaultPreview' ]
 
 performance:

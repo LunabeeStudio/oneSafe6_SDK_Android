@@ -29,6 +29,7 @@ suspend fun <T> DataStore<Preferences>.store(value: T, preferencesKey: Preferenc
     edit { preferences -> preferences[preferencesKey] = value }
 }
 
-fun <T> DataStore<Preferences>.getAsFlow(preferencesKey: Preferences.Key<T>, defaultValue: T): Flow<T> {
-    return data.map { preferences -> preferences[preferencesKey] ?: defaultValue }
+fun <T> DataStore<Preferences>.getAsFlow(preferencesKey: Preferences.Key<T>, defaultValue: T): Flow<T> = data.map { preferences ->
+    preferences[preferencesKey]
+        ?: defaultValue
 }

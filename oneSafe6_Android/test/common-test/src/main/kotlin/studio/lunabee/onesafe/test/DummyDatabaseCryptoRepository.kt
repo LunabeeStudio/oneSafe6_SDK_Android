@@ -30,9 +30,8 @@ class DummyDatabaseCryptoRepository(private val databaseKey: DatabaseKey) : Data
 
     val key: MutableStateFlow<DatabaseKey?> = MutableStateFlow(null)
     val backupKey: MutableStateFlow<DatabaseKey?> = MutableStateFlow(null)
-    override fun generateKey(): DatabaseKey {
-        return databaseKey
-    }
+
+    override fun generateKey(): DatabaseKey = databaseKey
 
     override suspend fun removeKey() {
         key.value = null

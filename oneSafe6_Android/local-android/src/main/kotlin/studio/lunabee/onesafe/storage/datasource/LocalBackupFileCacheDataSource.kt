@@ -37,7 +37,8 @@ class LocalBackupFileCacheDataSource @Inject constructor(
 ) : LocalBackupCacheDataSource {
     override suspend fun addBackup(inputStream: InputStream, date: Instant): File {
         val file = withContext(dispatcher) {
-            val file = File.createTempFile("$prefix${date.toEpochMilli()}", ".${ImportExportConstant.ExtensionOs6Backup}", cacheDir)
+            val file = File
+                .createTempFile("$Prefix${date.toEpochMilli()}", ".${ImportExportConstant.ExtensionOs6Backup}", cacheDir)
             file.outputStream().use { outputStream ->
                 inputStream.copyTo(outputStream)
             }
@@ -46,13 +47,11 @@ class LocalBackupFileCacheDataSource @Inject constructor(
         return file
     }
 
-    override suspend fun removeBackup(localBackup: LocalBackup): Boolean {
-        return withContext(dispatcher) {
-            localBackup.file.delete()
-        }
+    override suspend fun removeBackup(localBackup: LocalBackup): Boolean = withContext(dispatcher) {
+        localBackup.file.delete()
     }
 
     companion object {
-        private const val prefix = "backup-"
+        private const val Prefix = "backup-"
     }
 }

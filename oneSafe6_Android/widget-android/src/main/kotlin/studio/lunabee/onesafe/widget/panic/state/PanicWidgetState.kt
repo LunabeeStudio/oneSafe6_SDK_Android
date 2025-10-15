@@ -27,21 +27,19 @@ internal data class PanicWidgetState(
     val isLoading: Boolean,
 ) {
     companion object {
-        fun fromWidgetWorkerState(state: PanicWidgetWorkerState): PanicWidgetState {
-            return when (state) {
-                PanicWidgetWorkerState.Disabled -> PanicWidgetState(
-                    isEnabled = false,
-                    isLoading = false,
-                )
-                PanicWidgetWorkerState.Loading -> PanicWidgetState(
-                    isEnabled = true,
-                    isLoading = true,
-                )
-                PanicWidgetWorkerState.Idle -> PanicWidgetState(
-                    isEnabled = true,
-                    isLoading = false,
-                )
-            }
+        fun fromWidgetWorkerState(state: PanicWidgetWorkerState): PanicWidgetState = when (state) {
+            PanicWidgetWorkerState.Disabled -> PanicWidgetState(
+                isEnabled = false,
+                isLoading = false,
+            )
+            PanicWidgetWorkerState.Loading -> PanicWidgetState(
+                isEnabled = true,
+                isLoading = true,
+            )
+            PanicWidgetWorkerState.Idle -> PanicWidgetState(
+                isEnabled = true,
+                isLoading = false,
+            )
         }
     }
 }

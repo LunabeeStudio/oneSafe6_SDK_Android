@@ -29,13 +29,22 @@ import java.time.Instant
 
 interface LocalBackupRepository {
     suspend fun addBackup(localBackup: LocalBackup)
+
     suspend fun getBackups(safeId: SafeId): List<LBResult<LocalBackup>>
+
     suspend fun getBackupsExcludeRemote(safeId: SafeId): List<LBResult<LocalBackup>>
+
     fun getBackupsFlow(safeId: SafeId): Flow<List<LBResult<LocalBackup>>>
+
     suspend fun delete(backups: List<LocalBackup>, safeId: SafeId)
+
     suspend fun deleteAll(safeId: SafeId)
+
     suspend fun getFile(backupId: String): File?
+
     fun hasBackupFlow(safeId: SafeId): Flow<Boolean>
+
     suspend fun cacheBackup(inputStream: InputStream, date: Instant): File
+
     suspend fun clearCachedBackup(localBackup: LocalBackup)
 }

@@ -42,20 +42,18 @@ class RoomUpdateSafeItem(
     @ColumnInfo(name = "index_alpha") val indexAlpha: Double,
 ) {
     companion object {
-        fun fromSafeItem(safeItem: SafeItem): RoomUpdateSafeItem {
-            return RoomUpdateSafeItem(
-                id = safeItem.id,
-                encName = safeItem.encName,
-                parentId = safeItem.parentId,
-                isFavorite = safeItem.isFavorite,
-                updatedAt = safeItem.updatedAt,
-                position = safeItem.position,
-                iconId = safeItem.iconId,
-                encColor = safeItem.encColor,
-                deletedAt = safeItem.deletedAt,
-                deletedParentId = safeItem.deletedParentId,
-                indexAlpha = safeItem.indexAlpha,
-            )
-        }
+        fun fromSafeItem(safeItem: SafeItem): RoomUpdateSafeItem = RoomUpdateSafeItem(
+            id = safeItem.id,
+            encName = safeItem.encName,
+            parentId = safeItem.parentId,
+            isFavorite = safeItem.isFavorite,
+            updatedAt = safeItem.updatedAt,
+            position = safeItem.position,
+            iconId = safeItem.iconId,
+            encColor = safeItem.encColor,
+            deletedAt = safeItem.deletedAt,
+            deletedParentId = safeItem.deletedParentId,
+            indexAlpha = safeItem.indexAlpha,
+        )
     }
 }

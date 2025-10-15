@@ -65,19 +65,19 @@ class ImportExportBubblesLocalDatasourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAllContactIds(): List<DoubleRatchetUUID> {
-        return contactDao.getAllIds().map(::DoubleRatchetUUID)
-    }
+    override suspend fun getAllContactIds(): List<DoubleRatchetUUID> = contactDao.getAllIds().map(::DoubleRatchetUUID)
 
-    override suspend fun getAllMessageIds(): List<DoubleRatchetUUID> {
-        return safeMessageDao.getAllIds().map(::DoubleRatchetUUID)
-    }
+    override suspend fun getAllMessageIds(): List<DoubleRatchetUUID> = safeMessageDao
+        .getAllIds()
+        .map(::DoubleRatchetUUID)
 
-    override suspend fun getAllMessageByContactList(contactIds: List<DoubleRatchetUUID>): List<SafeMessage> {
-        return safeMessageDao.getAllByContactList(contactIds.map { it.uuid }).map(RoomMessage::toMessage)
-    }
+    override suspend fun getAllMessageByContactList(contactIds: List<DoubleRatchetUUID>): List<SafeMessage> = safeMessageDao
+        .getAllByContactList(
+            contactIds.map { it.uuid },
+        ).map(RoomMessage::toMessage)
 
-    override suspend fun getEncConversations(ids: List<DoubleRatchetUUID>): List<EncConversation> {
-        return conversationDao.getByIds(ids.map { it.uuid }).map { it.toEncConversation() }
-    }
+    override suspend fun getEncConversations(ids: List<DoubleRatchetUUID>): List<EncConversation> = conversationDao
+        .getByIds(
+            ids.map { it.uuid },
+        ).map { it.toEncConversation() }
 }

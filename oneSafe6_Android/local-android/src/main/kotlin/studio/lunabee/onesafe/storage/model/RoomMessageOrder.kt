@@ -28,11 +28,9 @@ data class RoomMessageOrder(
     val encSentAt: ByteArray,
     val order: Float,
 ) {
-    fun toMessageOrder(): MessageOrder {
-        return MessageOrder(
-            id = DoubleRatchetUUID(id),
-            encSentAt = encSentAt,
-            order = order,
-        )
-    }
+    fun toMessageOrder(): MessageOrder = MessageOrder(
+        id = DoubleRatchetUUID(id),
+        encSentAt = encSentAt,
+        order = order,
+    )
 }

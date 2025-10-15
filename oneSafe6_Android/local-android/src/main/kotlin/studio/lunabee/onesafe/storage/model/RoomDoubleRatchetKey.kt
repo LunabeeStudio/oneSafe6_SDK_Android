@@ -31,11 +31,9 @@ class RoomDoubleRatchetKey(
 ) {
 
     companion object {
-        fun fromEncDoubleRatchetKey(encDoubleRatchetKey: EncDoubleRatchetKey): RoomDoubleRatchetKey {
-            return RoomDoubleRatchetKey(
-                id = encDoubleRatchetKey.id,
-                data = encDoubleRatchetKey.data,
-            )
-        }
+        fun fromEncDoubleRatchetKey(encDoubleRatchetKey: EncDoubleRatchetKey): RoomDoubleRatchetKey = RoomDoubleRatchetKey(
+            id = encDoubleRatchetKey.id,
+            data = encDoubleRatchetKey.data,
+        )
     }
 }

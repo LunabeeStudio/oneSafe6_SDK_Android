@@ -44,9 +44,7 @@ fun <T, Output, StoreType> blockingDatastore(
     key: Preferences.Key<StoreType>,
     readMapper: (StoreType?) -> Output,
     writeMapper: (Output) -> StoreType,
-): ReadWriteProperty<T, Output> {
-    return ReadWriteBlockingDatastoreDelegate(dataStore, key, readMapper, writeMapper)
-}
+): ReadWriteProperty<T, Output> = ReadWriteBlockingDatastoreDelegate(dataStore, key, readMapper, writeMapper)
 
 /**
  * Specific implementation of [blockingDatastore] for primitive (non-null) types
@@ -57,9 +55,7 @@ fun <T, Output> blockingDatastore(
     dataStore: DataStore<Preferences>,
     key: Preferences.Key<Output>,
     defaultValue: Output,
-): ReadWriteProperty<T, Output> {
-    return ReadWriteBlockingDatastoreDelegate(dataStore, key, { it ?: defaultValue }, { it })
-}
+): ReadWriteProperty<T, Output> = ReadWriteBlockingDatastoreDelegate(dataStore, key, { it ?: defaultValue }, { it })
 
 /**
  * Property delegates that read datastore preferences synchronously using [runBlocking]
@@ -72,9 +68,7 @@ fun <T, Output, StoreType> blockingReadDatastore(
     dataStore: DataStore<Preferences>,
     key: Preferences.Key<StoreType>,
     readMapper: (StoreType?) -> Output,
-): ReadOnlyProperty<T, Output> {
-    return ReadOnlyBlockingDatastoreDelegate(dataStore, key, readMapper)
-}
+): ReadOnlyProperty<T, Output> = ReadOnlyBlockingDatastoreDelegate(dataStore, key, readMapper)
 
 /**
  * Specific implementation of [blockingReadDatastore] for primitive (non-null) types
@@ -85,9 +79,7 @@ fun <T, Output> blockingReadDatastore(
     dataStore: DataStore<Preferences>,
     key: Preferences.Key<Output>,
     defaultValue: Output,
-): ReadOnlyProperty<T, Output> {
-    return ReadOnlyBlockingDatastoreDelegate(dataStore, key) { it ?: defaultValue }
-}
+): ReadOnlyProperty<T, Output> = ReadOnlyBlockingDatastoreDelegate(dataStore, key) { it ?: defaultValue }
 
 /**
  * Specific implementation of [blockingEnumDatastore] for enum types
@@ -98,14 +90,12 @@ inline fun <T, reified Output : Enum<Output>> blockingEnumDatastore(
     dataStore: DataStore<Preferences>,
     key: Preferences.Key<String>,
     defaultValue: Output,
-): ReadWriteProperty<T, Output> {
-    return ReadWriteBlockingDatastoreDelegate(
-        dataStore = dataStore,
-        key = key,
-        readMapper = { it?.let { enumValueOf<Output>(it) } ?: defaultValue },
-        writeMapper = { it.toString() },
-    )
-}
+): ReadWriteProperty<T, Output> = ReadWriteBlockingDatastoreDelegate(
+    dataStore = dataStore,
+    key = key,
+    readMapper = { it?.let { enumValueOf<Output>(it) } ?: defaultValue },
+    writeMapper = { it.toString() },
+)
 
 /**
  * Specific implementation of [blockingEnumDatastore] for [Duration] type
@@ -116,9 +106,12 @@ fun <T> blockingDurationDatastore(
     dataStore: DataStore<Preferences>,
     key: Preferences.Key<Long>,
     defaultValue: Duration,
-): ReadWriteProperty<T, Duration> {
-    return ReadWriteBlockingDatastoreDelegate(dataStore, key, { it?.milliseconds ?: defaultValue }, { it.inWholeMilliseconds })
-}
+): ReadWriteProperty<T, Duration> = ReadWriteBlockingDatastoreDelegate(
+    dataStore,
+    key,
+    { it?.milliseconds ?: defaultValue },
+    { it.inWholeMilliseconds },
+)
 
 class ReadWriteBlockingDatastoreDelegate<T, Output, StoreType>(
     private val dataStore: DataStore<Preferences>,

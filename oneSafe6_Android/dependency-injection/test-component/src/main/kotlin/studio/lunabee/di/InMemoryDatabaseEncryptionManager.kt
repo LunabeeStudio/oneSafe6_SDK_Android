@@ -21,8 +21,8 @@ package studio.lunabee.di
 
 import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
 import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
-import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.error.OSStorageError
+import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.storage.SqlCipherDBManager
 
 class InMemoryDatabaseEncryptionManager(

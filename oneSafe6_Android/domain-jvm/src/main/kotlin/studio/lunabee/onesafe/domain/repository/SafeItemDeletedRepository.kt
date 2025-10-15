@@ -31,20 +31,35 @@ import java.util.UUID
 
 interface SafeItemDeletedRepository {
     suspend fun getDeletedItemsByDeletedParent(deletedParentId: UUID?, order: ItemOrder, safeId: SafeId): List<SafeItem>
+
     suspend fun getSiblingOriginalChildren(parentId: UUID, order: ItemOrder): List<SafeItem>
+
     suspend fun updateSiblingOriginalChildrenParentId(parentId: UUID, newParentId: UUID?)
+
     fun countSafeItemByParentIdDeletedFlow(parentId: UUID?, safeId: SafeId): Flow<Int>
+
     suspend fun countSafeItemByParentIdDeleted(parentId: UUID?, safeId: SafeId): Int
+
     fun getPagerItemByParentIdDeleted(config: PagingConfig, parentId: UUID?, order: ItemOrder, safeId: SafeId): Flow<PagingData<SafeItem>>
+
     suspend fun getHighestDeletedPosition(parentId: UUID?, safeId: SafeId): Double?
+
     suspend fun removeItem(id: UUID)
+
     suspend fun removeItems(ids: List<UUID>)
+
     suspend fun findDeletedByIdWithDeletedDescendants(id: UUID): List<SafeItem>
+
     suspend fun findByIdWithDeletedAncestors(id: UUID): List<SafeItem>
+
     suspend fun restoreItemToParentWithDescendants(id: UUID?, safeId: SafeId)
+
     suspend fun updateParentToNonDeletedAncestor(id: UUID)
+
     suspend fun removeOldItems(threshold: Instant)
+
     fun getAllDeletedItemsCount(safeId: SafeId): Flow<Int>
+
     fun getPagerItemByParentIdDeletedWithIdentifier(
         config: PagingConfig,
         parentId: UUID?,

@@ -49,38 +49,42 @@ import studio.lunabee.onesafe.ime.R as imeR
 
 enum class OSKeyboardStatus {
     LoggedIn {
-        override val contentDescription: LbcTextSpec = LbcTextSpec.StringResource(OSString.oneSafeK_ime_status_login_description)
+        override val contentDescription: LbcTextSpec = LbcTextSpec
+            .StringResource(OSString.oneSafeK_ime_status_login_description)
         override val logo: Int = imeR.drawable.onesafek_logo_login
         override val actionText: LbcTextSpec = LbcTextSpec.StringResource(OSString.oneSafeK_lock)
         override val actionIcon: OSImageSpec = OSImageSpec.Drawable(OSDrawable.ic_lock)
         override val tint: Color
-            @Composable get() = if (LocalKeyboardIsNightMode.current) OSKColorPalette.Primary20 else OSKColorPalette.Primary30
+            @Composable get() = if (LocalKeyboardIsNightMode.current) OSKColorPalette.primary20 else OSKColorPalette.primary30
     },
     LoggedOut {
-        override val contentDescription: LbcTextSpec = LbcTextSpec.StringResource(OSString.oneSafeK_ime_status_logout_description)
+        override val contentDescription: LbcTextSpec = LbcTextSpec
+            .StringResource(OSString.oneSafeK_ime_status_logout_description)
         override val logo: Int = imeR.drawable.onesafek_logo_logout
         override val actionText: LbcTextSpec = LbcTextSpec.StringResource(OSString.oneSafeK_open)
         override val actionIcon: OSImageSpec = OSImageSpec.Drawable(OSDrawable.ic_key)
         override val tint: Color
-            @Composable get() = if (LocalKeyboardIsNightMode.current) OSKColorPalette.Primary10 else OSKColorPalette.Primary60
+            @Composable get() = if (LocalKeyboardIsNightMode.current) OSKColorPalette.primary10 else OSKColorPalette.primary60
     },
     DatabaseError {
-        override val contentDescription: LbcTextSpec = LbcTextSpec.StringResource(OSString.oneSafeK_ime_status_databaseError_description)
+        override val contentDescription: LbcTextSpec = LbcTextSpec
+            .StringResource(OSString.oneSafeK_ime_status_databaseError_description)
         override val logo: Int = imeR.drawable.onesafek_logo_logout
         override val actionText: LbcTextSpec = LbcTextSpec.StringResource(OSString.oneSafeK_ime_actionDecryptDatabase)
         override val actionIcon: OSImageSpec = OSImageSpec.Drawable(OSDrawable.ic_key)
         override val tint: Color
             @Composable get() = if (LocalKeyboardIsNightMode.current) {
-                LocalColorPalette.current.Alert05
+                LocalColorPalette.current.alert05
             } else {
-                LocalColorPalette.current.Error30
+                LocalColorPalette.current.error30
             }
     },
     ;
 
     @Composable
     fun Logo(modifier: Modifier = Modifier) {
-        key(logo) { // FIXME this key seems to fix a weird issue/optim of partially drawn logo problem
+        key(logo) {
+            // FIXME this key seems to fix a weird issue/optim of partially drawn logo problem
             Icon(
                 painter = painterResource(logo),
                 contentDescription = contentDescription.string,

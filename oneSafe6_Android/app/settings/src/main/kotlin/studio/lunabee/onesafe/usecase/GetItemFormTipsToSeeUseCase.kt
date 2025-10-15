@@ -20,9 +20,9 @@
 package studio.lunabee.onesafe.usecase
 
 import com.lunabee.lbcore.model.LBResult
-import studio.lunabee.onesafe.domain.repository.SafeSettingsRepository
 import studio.lunabee.onesafe.domain.repository.AppVisitRepository
 import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.domain.repository.SafeSettingsRepository
 import studio.lunabee.onesafe.error.OSError
 import javax.inject.Inject
 

@@ -38,30 +38,52 @@ interface SafeLocalDataSource {
     suspend fun deleteSafe(safeId: SafeId)
 
     suspend fun getAllSafeCryptoOrderByLastOpenAsc(): List<SafeCrypto>
+
     suspend fun updateSafeCrypto(safeCrypto: SafeCrypto)
 
     suspend fun getIndexKey(safeId: SafeId): ByteArray?
+
     suspend fun getItemEditionKey(safeId: SafeId): ByteArray?
+
     suspend fun getBubblesKey(safeId: SafeId): ByteArray?
+
     suspend fun hasSafe(): Boolean
+
     suspend fun getSalt(safeId: SafeId): ByteArray
+
     suspend fun getAllSafeId(): List<SafeId>
+
     suspend fun setVersion(safeId: SafeId, version: Int)
+
     suspend fun getSafeVersion(safeId: SafeId): Int
 
     suspend fun setBiometricKey(safeId: SafeId, biometricCryptoMaterial: BiometricCryptoMaterial)
+
     suspend fun setAutoDestructionKey(safeId: SafeId, autoDestructionKey: ByteArray?)
+
     suspend fun removeAllBiometricKeys()
+
     suspend fun getBiometricSafe(): SafeCrypto?
+
     fun hasBiometricSafe(): Flow<Boolean>
+
     fun isBiometricEnabledForSafeFlow(safeId: SafeId): Flow<Boolean>
+
     suspend fun isAutoDestructionEnabledForSafe(safeId: SafeId): Boolean
+
     suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean
+
     suspend fun setLastOpen(safeId: SafeId)
+
     suspend fun getSafeCrypto(safeId: SafeId): SafeCrypto?
+
     fun isAutoDestructionEnabledForSafeFlow(safeId: SafeId): Flow<Boolean>
+
     fun isPanicDestructionEnabledFlow(safeId: SafeId): Flow<Boolean>
+
     suspend fun setIsPanicDestructionEnabled(safeId: SafeId, isEnabled: Boolean)
+
     suspend fun hasAnySafePanicWidgetEnabled(): Boolean
+
     suspend fun getSafeToDestroy(): List<SafeId>
 }

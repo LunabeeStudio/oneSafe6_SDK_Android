@@ -33,18 +33,19 @@ class CreateIndexWordEntriesFromItemFieldUseCase @Inject constructor(
         data: List<ItemFieldDataToIndex>,
     ): List<IndexWordEntry> {
         val safeId = safeRepository.currentSafeId()
-        return data.filter {
-            !it.isSecured && it.value.isNotEmpty()
-        }.flatMap { dataToIndex ->
-            val words = SearchStringUtils.getListStringSearch(dataToIndex.value)
-            cryptoRepository.encryptIndexWord(words).map { encWord ->
-                IndexWordEntry(
-                    encWord = encWord,
-                    itemMatch = dataToIndex.itemId,
-                    fieldMatch = dataToIndex.fieldId,
-                    safeId = safeId,
-                )
+        return data
+            .filter {
+                !it.isSecured && it.value.isNotEmpty()
+            }.flatMap { dataToIndex ->
+                val words = SearchStringUtils.getListStringSearch(dataToIndex.value)
+                cryptoRepository.encryptIndexWord(words).map { encWord ->
+                    IndexWordEntry(
+                        encWord = encWord,
+                        itemMatch = dataToIndex.itemId,
+                        fieldMatch = dataToIndex.fieldId,
+                        safeId = safeId,
+                    )
+                }
             }
-        }
     }
 }

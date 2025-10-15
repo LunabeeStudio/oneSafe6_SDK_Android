@@ -21,8 +21,8 @@ package studio.lunabee.onesafe.domain.usecase.settings
 
 import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.domain.common.CtaState
-import studio.lunabee.onesafe.domain.repository.SafeSettingsRepository
 import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.domain.repository.SafeSettingsRepository
 import studio.lunabee.onesafe.error.OSError
 import java.time.Clock
 import java.time.Instant

@@ -25,12 +25,8 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class DurationConverter {
     @TypeConverter
-    fun fromDuration(value: Long): Duration {
-        return value.milliseconds
-    }
+    fun fromDuration(value: Long): Duration = value.milliseconds
 
     @TypeConverter
-    fun instantToDuration(duration: Duration): Long {
-        return duration.inWholeMilliseconds
-    }
+    fun instantToDuration(duration: Duration): Long = duration.inWholeMilliseconds
 }

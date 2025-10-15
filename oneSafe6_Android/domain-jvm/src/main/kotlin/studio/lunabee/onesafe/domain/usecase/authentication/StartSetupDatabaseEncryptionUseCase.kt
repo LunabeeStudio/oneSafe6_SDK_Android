@@ -27,8 +27,8 @@ import studio.lunabee.onesafe.domain.repository.DatabaseKeyRepository
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSDomainError
 import studio.lunabee.onesafe.error.OSError
-import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.error.osCode
+import studio.lunabee.onesafe.jvm.get
 import javax.inject.Inject
 
 /**
@@ -45,9 +45,7 @@ class StartSetupDatabaseEncryptionUseCase @Inject constructor(
     /**
      * @see StartSetupDatabaseEncryptionUseCase
      */
-    suspend operator fun invoke(key: DatabaseKey?): LBResult<Unit> {
-        return if (key != null) startEnable(key) else startDisable()
-    }
+    suspend operator fun invoke(key: DatabaseKey?): LBResult<Unit> = if (key != null) startEnable(key) else startDisable()
 
     private suspend fun startEnable(key: DatabaseKey) = OSError.runCatching(
         mapErr = { e ->

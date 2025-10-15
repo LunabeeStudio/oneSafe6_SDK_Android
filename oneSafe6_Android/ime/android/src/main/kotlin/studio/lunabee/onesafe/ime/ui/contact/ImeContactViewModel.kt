@@ -42,34 +42,35 @@ class ImeContactViewModel @Inject constructor(
     private val getConversationStateUseCase: GetConversationStateUseCase,
 ) : ViewModel() {
 
-    val uiState: StateFlow<ImeContactUiState> = getEncryptedBubblesContactList().map { encryptedContacts ->
-        if (encryptedContacts.isEmpty()) {
-            ImeContactUiState.Empty
-        } else {
-            val plainContacts = encryptedContacts.map { contact ->
-                val decryptedNameResult = contactLocalDecryptUseCase(contact.encName, contact.id, String::class)
-                val conversationState = getConversationStateUseCase(contact.id)
+    val uiState: StateFlow<ImeContactUiState> = getEncryptedBubblesContactList()
+        .map { encryptedContacts ->
+            if (encryptedContacts.isEmpty()) {
+                ImeContactUiState.Empty
+            } else {
+                val plainContacts = encryptedContacts.map { contact ->
+                    val decryptedNameResult = contactLocalDecryptUseCase(contact.encName, contact.id, String::class)
+                    val conversationState = getConversationStateUseCase(contact.id)
 
-                when (conversationState) {
-                    is LBResult.Failure -> UIBubblesContactInfo(
-                        id = contact.id,
-                        nameProvider = decryptedNameResult.getNameProvider(),
-                        isConversationReady = true, // default to true to not display specific info
-                    )
-                    is LBResult.Success -> {
-                        UIBubblesContactInfo(
+                    when (conversationState) {
+                        is LBResult.Failure -> UIBubblesContactInfo(
                             id = contact.id,
                             nameProvider = decryptedNameResult.getNameProvider(),
-                            isConversationReady = conversationState.successData != ConversationState.WaitingForReply,
+                            isConversationReady = true, // default to true to not display specific info
                         )
+                        is LBResult.Success -> {
+                            UIBubblesContactInfo(
+                                id = contact.id,
+                                nameProvider = decryptedNameResult.getNameProvider(),
+                                isConversationReady = conversationState.successData != ConversationState.WaitingForReply,
+                            )
+                        }
                     }
                 }
+                ImeContactUiState.Data(plainContacts)
             }
-            ImeContactUiState.Data(plainContacts)
-        }
-    }.stateIn(
-        viewModelScope,
-        CommonUiConstants.Flow.DefaultSharingStarted,
-        ImeContactUiState.Initializing,
-    )
+        }.stateIn(
+            viewModelScope,
+            CommonUiConstants.Flow.DefaultSharingStarted,
+            ImeContactUiState.Initializing,
+        )
 }

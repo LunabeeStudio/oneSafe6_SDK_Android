@@ -60,25 +60,25 @@ class GetSafeItemFieldValueUseCase @Inject constructor(
                         encColor?.let {
                             decryptUseCase(encColor, itemId, String::class)
                         } as? LBResult.Success
-                        )?.successData
+                    )?.successData
 
                     val decValue: String? = (
                         encFieldValue?.let {
                             decryptUseCase(encFieldValue, itemId, String::class)
                         } as? LBResult.Success
-                        )?.successData
+                    )?.successData
 
                     val decName: String? = (
                         encFieldName?.let {
                             decryptUseCase(encFieldName, itemId, String::class)
                         } as? LBResult.Success
-                        )?.successData
+                    )?.successData
 
                     val decKind: SafeItemFieldKind? = (
                         encKind?.let {
                             decryptUseCase(encKind, itemId, SafeItemFieldKind::class)
                         } as? LBResult.Success
-                        )?.successData
+                    )?.successData
 
                     SafeItemFieldValue(
                         color = decColor,

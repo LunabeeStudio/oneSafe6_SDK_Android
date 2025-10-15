@@ -51,14 +51,14 @@ android {
         resources.pickFirsts += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
     }
 
-    flavorDimensions += AndroidConfig.CRYPTO_BACKEND_FLAVOR_DIMENSION
+    flavorDimensions += AndroidConfig.CryptoBackendFlavorDimension
     productFlavors {
-        create(AndroidConfig.CRYPTO_BACKEND_FLAVOR_JCE) {
-            dimension = AndroidConfig.CRYPTO_BACKEND_FLAVOR_DIMENSION
+        create(AndroidConfig.CryptoBackendFlavorJce) {
+            dimension = AndroidConfig.CryptoBackendFlavorDimension
         }
 
-        create(AndroidConfig.CRYPTO_BACKEND_FLAVOR_TINK) {
-            dimension = AndroidConfig.CRYPTO_BACKEND_FLAVOR_DIMENSION
+        create(AndroidConfig.CryptoBackendFlavorTink) {
+            dimension = AndroidConfig.CryptoBackendFlavorDimension
         }
     }
 

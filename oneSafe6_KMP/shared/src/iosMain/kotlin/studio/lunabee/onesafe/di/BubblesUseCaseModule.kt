@@ -33,8 +33,8 @@ import studio.lunabee.bubbles.domain.usecase.UpdateContactUseCase
 import studio.lunabee.bubbles.domain.usecase.UpdateMessageSharingModeContactUseCase
 import studio.lunabee.messaging.domain.usecase.CreateInvitationUseCase
 import studio.lunabee.messaging.domain.usecase.GetInvitationMessageUseCase
-import studio.lunabee.messaging.domain.usecase.UpdateContactResetConversationDateUseCase
 import studio.lunabee.messaging.domain.usecase.GetResetMessageUseCase
+import studio.lunabee.messaging.domain.usecase.UpdateContactResetConversationDateUseCase
 
 val bubblesUseCaseModule: Module = module {
     singleOf(::ContactLocalDecryptUseCase)

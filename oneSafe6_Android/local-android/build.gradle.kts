@@ -38,7 +38,7 @@ android {
 
     defaultConfig {
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
-        missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
+        missingDimensionStrategy("crypto", AndroidConfig.CryptoBackendFlavorDefault)
         missingDimensionStrategy(OSDimensions.Environment.value, OSDimensions.Environment.Store)
     }
 

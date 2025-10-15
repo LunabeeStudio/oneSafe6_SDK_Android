@@ -136,7 +136,9 @@ class AndroidMainCryptoRepositoryTest {
         assertEquals(error2.code, OSCryptoError.Code.MASTER_KEY_NOT_LOADED)
 
         val error3 = assertFailsWith<OSCryptoError> {
-            this@AndroidMainCryptoRepositoryTest.repository.decrypt(mockk(relaxed = true), DecryptEntry(byteArrayOf(), Unit::class))
+            this@AndroidMainCryptoRepositoryTest
+                .repository
+                .decrypt(mockk(relaxed = true), DecryptEntry(byteArrayOf(), Unit::class))
         }
         assertEquals(error3.code, OSCryptoError.Code.MASTER_KEY_NOT_LOADED)
     }
@@ -171,8 +173,12 @@ class AndroidMainCryptoRepositoryTest {
         generateAndLoadCrypto()
         val kind = SafeItemFieldKind.Email
         val key = this@AndroidMainCryptoRepositoryTest.repository.generateKeyForItemId(testUUIDs[0])
-        val encKind = this@AndroidMainCryptoRepositoryTest.repository.encrypt(key, EncryptEntry(kind, SafeItemFieldKind::toByteArray))
-        val decKind = this@AndroidMainCryptoRepositoryTest.repository.decrypt(key, DecryptEntry(encKind, SafeItemFieldKind::class))
+        val encKind = this@AndroidMainCryptoRepositoryTest
+            .repository
+            .encrypt(key, EncryptEntry(kind, SafeItemFieldKind::toByteArray))
+        val decKind = this@AndroidMainCryptoRepositoryTest
+            .repository
+            .decrypt(key, DecryptEntry(encKind, SafeItemFieldKind::class))
         assertEquals(kind, decKind)
     }
 
@@ -181,8 +187,12 @@ class AndroidMainCryptoRepositoryTest {
         generateAndLoadCrypto()
         val kind = SafeItemFieldKind.Unknown("unknown_type")
         val key = this@AndroidMainCryptoRepositoryTest.repository.generateKeyForItemId(testUUIDs[0])
-        val encKind = this@AndroidMainCryptoRepositoryTest.repository.encrypt(key, EncryptEntry(kind, SafeItemFieldKind::toByteArray))
-        val decKind = this@AndroidMainCryptoRepositoryTest.repository.decrypt(key, DecryptEntry(encKind, SafeItemFieldKind::class))
+        val encKind = this@AndroidMainCryptoRepositoryTest
+            .repository
+            .encrypt(key, EncryptEntry(kind, SafeItemFieldKind::toByteArray))
+        val decKind = this@AndroidMainCryptoRepositoryTest
+            .repository
+            .decrypt(key, DecryptEntry(encKind, SafeItemFieldKind::class))
 
         assertIs<SafeItemFieldKind.Unknown>(decKind)
         assertEquals(kind.id, decKind.id)
@@ -251,8 +261,12 @@ class AndroidMainCryptoRepositoryTest {
         val initialWords = listOf(
             "word",
         )
-        val encryptedEntries: List<ByteArray> = this@AndroidMainCryptoRepositoryTest.repository.encryptIndexWord(initialWords)
-        val decryptedEntries: List<String> = this@AndroidMainCryptoRepositoryTest.repository.decryptIndexWord(encryptedEntries)
+        val encryptedEntries: List<ByteArray> = this@AndroidMainCryptoRepositoryTest
+            .repository
+            .encryptIndexWord(initialWords)
+        val decryptedEntries: List<String> = this@AndroidMainCryptoRepositoryTest
+            .repository
+            .decryptIndexWord(encryptedEntries)
         assertContentEquals(initialWords, decryptedEntries)
     }
 
@@ -264,13 +278,25 @@ class AndroidMainCryptoRepositoryTest {
             this@AndroidMainCryptoRepositoryTest.repository.isCryptoDataInMemoryFlow().toList(values)
         }
 
-        this@AndroidMainCryptoRepositoryTest.repository.isCryptoDataInMemoryFlow().filter { !it }.first()
+        this@AndroidMainCryptoRepositoryTest
+            .repository
+            .isCryptoDataInMemoryFlow()
+            .filter { !it }
+            .first()
         assertFalse(values[0])
         generateAndLoadCrypto()
-        this@AndroidMainCryptoRepositoryTest.repository.isCryptoDataInMemoryFlow().filter { it }.first()
+        this@AndroidMainCryptoRepositoryTest
+            .repository
+            .isCryptoDataInMemoryFlow()
+            .filter { it }
+            .first()
         assertTrue(values[1])
         unloadMasterKey()
-        this@AndroidMainCryptoRepositoryTest.repository.isCryptoDataInMemoryFlow().filter { !it }.first()
+        this@AndroidMainCryptoRepositoryTest
+            .repository
+            .isCryptoDataInMemoryFlow()
+            .filter { !it }
+            .first()
         assertFalse(values[2])
 
         assertEquals(3, values.size)
@@ -342,7 +368,9 @@ class AndroidMainCryptoRepositoryTest {
     fun encrypt_decrypt_for_bubbles_test(): TestResult = runTest {
         generateAndLoadCrypto()
         val plainData = "contactName"
-        val encryptedData = this@AndroidMainCryptoRepositoryTest.repository.encryptBubbles(plainData.encodeToByteArray())
+        val encryptedData = this@AndroidMainCryptoRepositoryTest
+            .repository
+            .encryptBubbles(plainData.encodeToByteArray())
         val decryptedData = this@AndroidMainCryptoRepositoryTest.repository.decryptBubbles(encryptedData)
         assertEquals(plainData, decryptedData.decodeToString())
     }

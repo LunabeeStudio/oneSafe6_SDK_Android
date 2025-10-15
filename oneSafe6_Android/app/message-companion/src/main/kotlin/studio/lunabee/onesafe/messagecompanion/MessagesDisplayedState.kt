@@ -20,5 +20,6 @@
 package studio.lunabee.onesafe.messagecompanion
 
 enum class MessagesDisplayedState {
-    Plain, Encrypted
+    Plain,
+    Encrypted,
 }

@@ -20,8 +20,8 @@
 package studio.lunabee.messaging.domain.model
 
 import com.lunabee.lbcore.model.LBResult
-import kotlin.time.Instant
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import kotlin.time.Instant
 
 sealed class PlainMessageData(
     val id: DoubleRatchetUUID,
@@ -41,12 +41,12 @@ sealed class PlainMessageData(
         channel: LBResult<String>?,
         isRead: Boolean,
     ) : PlainMessageData(
-        id = id,
-        sentAt = sentAt,
-        direction = direction,
-        channel = channel,
-        isRead = isRead,
-    ) {
+            id = id,
+            sentAt = sentAt,
+            direction = direction,
+            channel = channel,
+            isRead = isRead,
+        ) {
         override val hasCorruptedData: Boolean
             get() = super.hasCorruptedData || content is LBResult.Failure
     }
@@ -57,12 +57,12 @@ sealed class PlainMessageData(
         channel: LBResult<String>?,
         isRead: Boolean,
     ) : PlainMessageData(
-        id = id,
-        sentAt = sentAt,
-        direction = MessageDirection.RECEIVED,
-        channel = channel,
-        isRead = isRead,
-    )
+            id = id,
+            sentAt = sentAt,
+            direction = MessageDirection.RECEIVED,
+            channel = channel,
+            isRead = isRead,
+        )
 
     class ResetConversation(
         id: DoubleRatchetUUID,
@@ -70,12 +70,12 @@ sealed class PlainMessageData(
         channel: LBResult<String>?,
         isRead: Boolean,
     ) : PlainMessageData(
-        id = id,
-        sentAt = sentAt,
-        direction = MessageDirection.RECEIVED,
-        channel = channel,
-        isRead = isRead,
-    )
+            id = id,
+            sentAt = sentAt,
+            direction = MessageDirection.RECEIVED,
+            channel = channel,
+            isRead = isRead,
+        )
 
     class SafeItem(
         id: DoubleRatchetUUID,
@@ -85,10 +85,10 @@ sealed class PlainMessageData(
         isRead: Boolean,
         val itemId: DoubleRatchetUUID?,
     ) : PlainMessageData(
-        id = id,
-        sentAt = sentAt,
-        direction = direction,
-        channel = channel,
-        isRead = isRead,
-    )
+            id = id,
+            sentAt = sentAt,
+            direction = direction,
+            channel = channel,
+            isRead = isRead,
+        )
 }

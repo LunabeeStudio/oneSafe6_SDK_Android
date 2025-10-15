@@ -33,19 +33,15 @@ class ForceUpgradeApi @Inject constructor(
     private val httpClient: HttpClient,
 ) {
 
-    suspend fun getForceUpgradeInfo(): ApiForceUpgradeInfo? {
-        return try {
-            httpClient.get(urlString = "$forceUpgradeUrl/android-info-force-upgrade.json").body()
-        } catch (e: Exception) {
-            null
-        }
+    suspend fun getForceUpgradeInfo(): ApiForceUpgradeInfo? = try {
+        httpClient.get(urlString = "$forceUpgradeUrl/android-info-force-upgrade.json").body()
+    } catch (e: Exception) {
+        null
     }
 
-    suspend fun getForceUpgradeStrings(languageFileUrl: String): ApiForceUpgradeStrings? {
-        return try {
-            httpClient.get(urlString = languageFileUrl).body()
-        } catch (e: Exception) {
-            null
-        }
+    suspend fun getForceUpgradeStrings(languageFileUrl: String): ApiForceUpgradeStrings? = try {
+        httpClient.get(urlString = languageFileUrl).body()
+    } catch (e: Exception) {
+        null
     }
 }

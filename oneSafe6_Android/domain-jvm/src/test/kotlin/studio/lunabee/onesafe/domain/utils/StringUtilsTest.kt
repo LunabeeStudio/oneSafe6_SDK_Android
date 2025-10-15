@@ -19,8 +19,8 @@
 
 package studio.lunabee.onesafe.domain.utils
 
-import kotlin.test.Test
 import studio.lunabee.onesafe.domain.usecase.search.SearchStringUtils
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 
 class StringUtilsTest {

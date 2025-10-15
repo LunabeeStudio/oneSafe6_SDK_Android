@@ -28,11 +28,7 @@ value class SafeId(val id: UUID) {
     constructor(id: String) : this(UUID.fromString(id))
     constructor(id: ByteArray) : this(id.toUUID())
 
-    override fun toString(): String {
-        return id.toString()
-    }
+    override fun toString(): String = id.toString()
 
-    fun toByteArray(): ByteArray {
-        return id.toByteArray()
-    }
+    fun toByteArray(): ByteArray = id.toByteArray()
 }

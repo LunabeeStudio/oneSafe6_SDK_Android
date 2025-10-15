@@ -20,5 +20,6 @@
 package studio.lunabee.messaging.domain.model
 
 enum class MessageDirection {
-    SENT, RECEIVED
+    SENT,
+    RECEIVED,
 }

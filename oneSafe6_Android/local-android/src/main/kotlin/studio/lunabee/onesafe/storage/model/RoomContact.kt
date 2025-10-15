@@ -23,14 +23,14 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import kotlin.time.toJavaInstant
-import kotlin.time.toKotlinInstant
 import studio.lunabee.bubbles.domain.model.contact.Contact
 import studio.lunabee.bubbles.domain.model.contactkey.ContactSharedKey
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.onesafe.domain.model.safe.SafeId
 import java.time.Instant
 import java.util.UUID
+import kotlin.time.toJavaInstant
+import kotlin.time.toKotlinInstant
 
 @Entity(
     tableName = "Contact",

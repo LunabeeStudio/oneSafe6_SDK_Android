@@ -39,17 +39,12 @@ class LocalBackupRepositoryImpl @Inject constructor(
         dataSource.addBackup(localBackup)
     }
 
-    override suspend fun getBackups(safeId: SafeId): List<LBResult<LocalBackup>> {
-        return dataSource.getBackups(safeId)
-    }
+    override suspend fun getBackups(safeId: SafeId): List<LBResult<LocalBackup>> = dataSource.getBackups(safeId)
 
-    override suspend fun getBackupsExcludeRemote(safeId: SafeId): List<LBResult<LocalBackup>> {
-        return dataSource.getBackupsToUpload(safeId)
-    }
+    override suspend fun getBackupsExcludeRemote(safeId: SafeId): List<LBResult<LocalBackup>> = dataSource
+        .getBackupsToUpload(safeId)
 
-    override fun getBackupsFlow(safeId: SafeId): Flow<List<LBResult<LocalBackup>>> {
-        return dataSource.getBackupsFlow(safeId)
-    }
+    override fun getBackupsFlow(safeId: SafeId): Flow<List<LBResult<LocalBackup>>> = dataSource.getBackupsFlow(safeId)
 
     override suspend fun delete(backups: List<LocalBackup>, safeId: SafeId) {
         dataSource.delete(backups)
@@ -65,9 +60,8 @@ class LocalBackupRepositoryImpl @Inject constructor(
     override fun hasBackupFlow(safeId: SafeId): Flow<Boolean> =
         dataSource.hasBackup(safeId)
 
-    override suspend fun cacheBackup(inputStream: InputStream, date: Instant): File {
-        return cacheDataSource.addBackup(inputStream, date)
-    }
+    override suspend fun cacheBackup(inputStream: InputStream, date: Instant): File = cacheDataSource
+        .addBackup(inputStream, date)
 
     override suspend fun clearCachedBackup(localBackup: LocalBackup) {
         cacheDataSource.removeBackup(localBackup)

@@ -28,9 +28,7 @@ import java.time.Instant
 internal class LegacyLocalCtaStateMap(
     val data: Map<String, LegacyLocalCtaState>,
 ) {
-    operator fun get(key: String): LegacyLocalCtaState {
-        return data.getOrDefault(key, LegacyLocalCtaState.Hidden)
-    }
+    operator fun get(key: String): LegacyLocalCtaState = data.getOrDefault(key, LegacyLocalCtaState.Hidden)
 }
 
 @Serializable

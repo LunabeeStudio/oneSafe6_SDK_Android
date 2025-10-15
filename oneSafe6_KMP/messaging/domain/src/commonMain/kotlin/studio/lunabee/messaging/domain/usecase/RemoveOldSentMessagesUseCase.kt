@@ -21,18 +21,18 @@ package studio.lunabee.messaging.domain.usecase
 
 import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
-import kotlin.time.Clock
-import kotlin.time.Instant
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.messaging.domain.model.SentMessage
 import studio.lunabee.messaging.domain.repository.MessagingSettingsRepository
 import studio.lunabee.messaging.domain.repository.SentMessageRepository
+import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.onesafe.error.BubblesCryptoError
 import studio.lunabee.onesafe.error.OSError
+import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Instant
 
 private val logger = LBLogger.get<RemoveOldSentMessagesUseCase>()
 
@@ -45,7 +45,9 @@ class RemoveOldSentMessagesUseCase @Inject constructor(
 
     suspend operator fun invoke(safeId: DoubleRatchetUUID): LBResult<Unit> = OSError.runCatching(logger) {
         var oldestSentMessage: SentMessage? = sentMessageRepository.getOldestSentMessage(safeId)
-        val sentMessageTimeToLive: Duration = messagingSettingsRepository.bubblesResendMessageDelayInMillis(safeId).milliseconds
+        val sentMessageTimeToLive: Duration = messagingSettingsRepository
+            .bubblesResendMessageDelayInMillis(safeId)
+            .milliseconds
         while (oldestSentMessage != null) {
             val createdAtRes: LBResult<Instant> = localContactLocalDecryptUseCase(
                 data = oldestSentMessage.encCreatedAt,

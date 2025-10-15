@@ -20,5 +20,6 @@
 package studio.lunabee.onesafe.domain.model.camera
 
 enum class CameraSystem {
-    InApp, External
+    InApp,
+    External,
 }

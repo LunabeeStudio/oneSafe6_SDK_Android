@@ -26,15 +26,15 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.yield
-import studio.lunabee.onesafe.di.Inject
-import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.bubbles.domain.repository.BubblesSafeRepository
-import studio.lunabee.onesafe.error.BubblesCryptoError
 import studio.lunabee.doubleratchet.model.createRandomUUID
 import studio.lunabee.messaging.domain.model.DecryptIncomingMessageData
 import studio.lunabee.messaging.domain.model.EnqueuedMessage
 import studio.lunabee.messaging.domain.repository.EnqueuedMessageRepository
 import studio.lunabee.messaging.domain.repository.MessagingCryptoRepository
+import studio.lunabee.onesafe.di.Inject
+import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
+import studio.lunabee.onesafe.error.BubblesCryptoError
 
 private val log = LBLogger.get<ProcessMessageQueueUseCase>()
 
@@ -112,7 +112,7 @@ class ProcessMessageQueueUseCase @Inject constructor(
                             log.e(it.message.orEmpty(), it)
                         }
                         is LBResult.Success -> {
-                            /* no-op */
+                            // no-op
                         }
                     }
                 }

@@ -44,7 +44,8 @@ class RoomMigration16to17 @Inject constructor() : Migration(16, 17) {
     }
 
     private fun fixColumns(db: SupportSQLiteDatabase) {
-        val query = """
+        val query =
+            """
             UPDATE Safe
             SET (
             `setting_bubbles_preview`,
@@ -118,7 +119,7 @@ class RoomMigration16to17 @Inject constructor() : Migration(16, 17) {
                 `open_order`
                 FROM Safe as BadSafe
                 WHERE Safe.id = BadSafe.id )
-        """.trimIndent()
+            """.trimIndent()
         db.execSQL(query)
     }
 }

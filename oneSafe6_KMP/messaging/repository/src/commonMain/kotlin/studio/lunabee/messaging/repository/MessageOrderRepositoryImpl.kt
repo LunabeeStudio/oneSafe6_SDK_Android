@@ -16,11 +16,11 @@
 
 package studio.lunabee.messaging.repository
 
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.messaging.domain.model.MessageOrder
 import studio.lunabee.messaging.domain.repository.MessageOrderRepository
 import studio.lunabee.messaging.repository.datasource.MessageLocalDataSource
+import studio.lunabee.onesafe.di.Inject
 
 class MessageOrderRepositoryImpl @Inject constructor(
     private val datasource: MessageLocalDataSource,
@@ -41,10 +41,11 @@ class MessageOrderRepositoryImpl @Inject constructor(
         exceptIds,
     )
 
-    override suspend fun count(contactId: DoubleRatchetUUID, exceptIds: List<DoubleRatchetUUID>): Int = datasource.countByContact(
-        contactId,
-        exceptIds,
-    )
+    override suspend fun count(contactId: DoubleRatchetUUID, exceptIds: List<DoubleRatchetUUID>): Int = datasource
+        .countByContact(
+            contactId,
+            exceptIds,
+        )
 
     override suspend fun getAt(contactId: DoubleRatchetUUID, position: Int, exceptIds: List<DoubleRatchetUUID>): MessageOrder? =
         datasource.getAtByContact(position, contactId, exceptIds)

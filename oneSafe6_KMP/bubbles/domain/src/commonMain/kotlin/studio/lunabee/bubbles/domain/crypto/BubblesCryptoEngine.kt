@@ -21,5 +21,6 @@ package studio.lunabee.bubbles.domain.crypto
 
 interface BubblesCryptoEngine {
     fun bubblesEncrypt(plainData: ByteArray, key: ByteArray, associatedData: ByteArray?): ByteArray?
+
     fun bubblesDecrypt(cipherData: ByteArray, key: ByteArray, associatedData: ByteArray?): ByteArray?
 }

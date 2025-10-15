@@ -114,7 +114,8 @@ class MigrationFromV9ToV10Test : OSHiltTest() {
         )
         addFieldUseCase(item.id, itemFieldData)
 
-        val result = migrationFromV9ToV10.migrate(AppMigrationsTestUtils.safeData0(version = 9, masterKey = masterKey()))
+        val result = migrationFromV9ToV10
+            .migrate(AppMigrationsTestUtils.safeData0(version = 9, masterKey = masterKey()))
         assertSuccess(result)
 
         val encFile = File(context.filesDir, "files/$filedId")
@@ -152,7 +153,8 @@ class MigrationFromV9ToV10Test : OSHiltTest() {
         )
         addFieldUseCase(item.id, itemFieldData)
 
-        val result = migrationFromV9ToV10.migrate(AppMigrationsTestUtils.safeData0(version = 9, masterKey = masterKey()))
+        val result = migrationFromV9ToV10
+            .migrate(AppMigrationsTestUtils.safeData0(version = 9, masterKey = masterKey()))
         assertSuccess(result)
 
         val encFile = File(context.filesDir, "files/$filedId")
@@ -232,7 +234,8 @@ class MigrationFromV9ToV10Test : OSHiltTest() {
         val corruptedData = pngData.copyOfRange(0, 12) + OSTestConfig.random.nextBytes(50)
 
         encFile.writeBytes(corruptedData)
-        val resultBadFile = migrationFromV9ToV10.migrate(AppMigrationsTestUtils.safeData0(version = 9, masterKey = masterKey()))
+        val resultBadFile = migrationFromV9ToV10
+            .migrate(AppMigrationsTestUtils.safeData0(version = 9, masterKey = masterKey()))
         assertSuccess(resultBadFile)
         val decryptResult = decryptUseCase(encFile.readBytes(), item.id, ByteArray::class)
         assertFailure(decryptResult)

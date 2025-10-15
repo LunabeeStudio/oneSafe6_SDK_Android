@@ -30,5 +30,6 @@ interface UrlMetadataRepository {
     suspend fun getHtmlPageCode(url: String): String
 
     suspend fun downloadFavIcon(baseUrl: String, targetFile: File): LBResult<File>
+
     fun downloadImage(url: String, targetFile: File): Flow<LBFlowResult<File>>
 }

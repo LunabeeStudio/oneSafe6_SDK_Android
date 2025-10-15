@@ -30,7 +30,5 @@ class CreateBackupInfoUseCase @Inject constructor(
     @BuildNumber private val buildNumber: Int,
 ) {
 
-    operator fun invoke(): String {
-        return "$Platform-$versionName-$buildNumber"
-    }
+    operator fun invoke(): String = "$Platform-$versionName-$buildNumber"
 }

@@ -21,6 +21,8 @@ package studio.lunabee.onesafe.widget.panic.state
 
 internal sealed interface PanicWidgetWorkerState {
     data object Disabled : PanicWidgetWorkerState
+
     data object Idle : PanicWidgetWorkerState
+
     data object Loading : PanicWidgetWorkerState
 }

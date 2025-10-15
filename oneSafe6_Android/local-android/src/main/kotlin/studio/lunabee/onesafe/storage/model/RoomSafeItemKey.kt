@@ -43,12 +43,10 @@ data class RoomSafeItemKey(
     val id: UUID,
     @ColumnInfo(name = "enc_value") val encValue: ByteArray,
 ) {
-    internal fun toSafeItemKey(): SafeItemKey {
-        return SafeItemKey(
-            id = id,
-            encValue = encValue,
-        )
-    }
+    internal fun toSafeItemKey(): SafeItemKey = SafeItemKey(
+        id = id,
+        encValue = encValue,
+    )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -69,11 +67,9 @@ data class RoomSafeItemKey(
     }
 
     companion object {
-        fun fromSafeItemKey(safeItemKey: SafeItemKey): RoomSafeItemKey {
-            return RoomSafeItemKey(
-                id = safeItemKey.id,
-                encValue = safeItemKey.encValue,
-            )
-        }
+        fun fromSafeItemKey(safeItemKey: SafeItemKey): RoomSafeItemKey = RoomSafeItemKey(
+            id = safeItemKey.id,
+            encValue = safeItemKey.encValue,
+        )
     }
 }

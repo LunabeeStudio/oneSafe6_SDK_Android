@@ -32,5 +32,6 @@ class IndexWordEntryRepositoryImpl @Inject constructor(
 ) : IndexWordEntryRepository {
     override fun getAll(safeId: SafeId): Flow<List<IndexWordEntry>> = searchIndexLocalDataSource.getAll(safeId)
 
-    override suspend fun deleteNameIndexFromItemId(itemId: UUID): Unit = searchIndexLocalDataSource.deleteNameIndexFromItemId(itemId)
+    override suspend fun deleteNameIndexFromItemId(itemId: UUID): Unit = searchIndexLocalDataSource
+        .deleteNameIndexFromItemId(itemId)
 }

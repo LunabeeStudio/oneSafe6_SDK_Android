@@ -24,17 +24,14 @@ class ExportInfo(
      * Key used to encrypt data file in final archive if needed (sharing case)
      */
     val archiveMasterKey: ByteArray?,
-
     /**
      * Version to put in metadata file
      */
     val fromPlatformVersion: String,
-
     /**
      * Salt used to generate crypto key for SafeItemKey re-encryption
      */
     val exportSalt: ByteArray,
-
     /**
      * encrypted bubbles Master key from actual safe
      */

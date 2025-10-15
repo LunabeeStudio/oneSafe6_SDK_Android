@@ -19,13 +19,13 @@
 
 package studio.lunabee.onesafe.cryptography.android
 
-import kotlin.test.Test
-import studio.lunabee.onesafe.test.assertThrows
 import studio.lunabee.onesafe.cryptography.android.utils.OSCryptoInputStream
 import studio.lunabee.onesafe.error.OSCryptoError
+import studio.lunabee.onesafe.test.assertThrows
 import java.io.IOException
 import java.io.InputStream
 import java.security.GeneralSecurityException
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class OSCryptoInputStreamTest {
@@ -33,9 +33,7 @@ class OSCryptoInputStreamTest {
     @Test
     fun crypto_error_test() {
         val stream = object : InputStream() {
-            override fun read(): Int {
-                throw GeneralSecurityException()
-            }
+            override fun read(): Int = throw GeneralSecurityException()
         }
         val cryptoStream = OSCryptoInputStream(stream)
         val error = assertThrows<OSCryptoError> {
@@ -47,9 +45,7 @@ class OSCryptoInputStreamTest {
     @Test
     fun io_error_test() {
         val stream = object : InputStream() {
-            override fun read(): Int {
-                throw IOException()
-            }
+            override fun read(): Int = throw IOException()
         }
         val cryptoStream = OSCryptoInputStream(stream)
         val error = assertThrows<OSCryptoError> {

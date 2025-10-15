@@ -28,7 +28,8 @@ import javax.inject.Inject
 class RecentSearchRepositoryImpl @Inject constructor(
     private val recentSearchLocalDatasource: RecentSearchLocalDatasource,
 ) : RecentSearchRepository {
-    override fun getRecentSearch(safeId: SafeId): Flow<List<ByteArray>> = recentSearchLocalDatasource.getRecentSearch(safeId)
+    override fun getRecentSearch(safeId: SafeId): Flow<List<ByteArray>> = recentSearchLocalDatasource
+        .getRecentSearch(safeId)
 
     override suspend fun saveRecentSearch(
         safeId: SafeId,

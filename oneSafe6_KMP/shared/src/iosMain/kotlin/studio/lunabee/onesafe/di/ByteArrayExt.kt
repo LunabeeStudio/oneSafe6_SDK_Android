@@ -29,11 +29,9 @@ import platform.Foundation.create
 import platform.posix.memcpy
 
 @OptIn(ExperimentalForeignApi::class)
-fun NSData.toByteArray(): ByteArray {
-    return ByteArray(length.toInt()).apply {
-        usePinned {
-            memcpy(it.addressOf(0), bytes, length)
-        }
+fun NSData.toByteArray(): ByteArray = ByteArray(length.toInt()).apply {
+    usePinned {
+        memcpy(it.addressOf(0), bytes, length)
     }
 }
 

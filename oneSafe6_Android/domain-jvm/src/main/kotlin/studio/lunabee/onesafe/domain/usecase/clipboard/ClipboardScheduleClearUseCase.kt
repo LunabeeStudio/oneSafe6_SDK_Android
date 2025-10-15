@@ -27,5 +27,6 @@ import kotlin.time.Duration
  */
 interface ClipboardScheduleClearUseCase {
     suspend fun setup(clearDelay: Duration, safeId: SafeId)
+
     fun cancel()
 }

@@ -40,29 +40,35 @@ class ManageIncomingMessageUseCase @Inject constructor(
     private val decryptIncomingMessageUseCase: DecryptIncomingMessageUseCase,
     private val saveMessageUseCase: SaveMessageUseCase,
 ) {
-    suspend operator fun invoke(data: ByteArray, channel: String?): LBResult<ManagingIncomingMessageResultData> {
-        return if (tryParseInvitationMessage(data)) {
-            LBResult.Success(ManagingIncomingMessageResultData.Invitation)
-        } else {
-            when (val result = decryptIncomingMessageUseCase(messageData = data)) {
-                is LBResult.Success -> {
-                    when (val successData = result.successData) {
-                        is DecryptIncomingMessageData.ResetMessage -> LBResult.Success(manageResetMessage(successData))
-                        is DecryptIncomingMessageData.NewMessage -> LBResult.Success(manageNewMessage(successData, channel))
-                        is DecryptIncomingMessageData.AlreadyDecryptedMessage,
-                        is DecryptIncomingMessageData.DecryptOwnMessage,
-                        is DecryptIncomingMessageData.OutdatedConversationMessage,
-                        -> {
-                            LBResult.Success(
-                                ManagingIncomingMessageResultData.Message(
-                                    DecryptResult.fromDecryptIncomingMessageData(result.successData),
-                                ),
-                            )
-                        }
+    suspend operator fun invoke(
+        data: ByteArray,
+        channel: String?,
+    ): LBResult<ManagingIncomingMessageResultData> = if (tryParseInvitationMessage(
+            data,
+        )
+    ) {
+        LBResult.Success(ManagingIncomingMessageResultData.Invitation)
+    } else {
+        when (val result = decryptIncomingMessageUseCase(messageData = data)) {
+            is LBResult.Success -> {
+                when (val successData = result.successData) {
+                    is DecryptIncomingMessageData.ResetMessage -> LBResult.Success(manageResetMessage(successData))
+                    is DecryptIncomingMessageData.NewMessage ->
+                        LBResult
+                            .Success(manageNewMessage(successData, channel))
+                    is DecryptIncomingMessageData.AlreadyDecryptedMessage,
+                    is DecryptIncomingMessageData.DecryptOwnMessage,
+                    is DecryptIncomingMessageData.OutdatedConversationMessage,
+                    -> {
+                        LBResult.Success(
+                            ManagingIncomingMessageResultData.Message(
+                                DecryptResult.fromDecryptIncomingMessageData(result.successData),
+                            ),
+                        )
                     }
                 }
-                is LBResult.Failure -> LBResult.Failure(result.throwable)
             }
+            is LBResult.Failure -> LBResult.Failure(result.throwable)
         }
     }
 
@@ -111,21 +117,19 @@ class ManageIncomingMessageUseCase @Inject constructor(
     }
 
     @OptIn(ExperimentalSerializationApi::class)
-    private fun tryParseInvitationMessage(messageData: ByteArray): Boolean {
-        return try {
-            val result = ProtoBuf.decodeFromByteArray<ProtoInvitationMessage>(messageData)
-            DoubleRatchetUUID.fromString(result.recipientId)
-            DoubleRatchetUUID.fromString(result.conversationId)
-            true
-        } catch (e: SerializationException) {
-            false
-        } catch (e: IllegalArgumentException) {
-            false
-        } catch (e: NullPointerException) {
-            false
-        } catch (e: IndexOutOfBoundsException) {
-            false
-        }
+    private fun tryParseInvitationMessage(messageData: ByteArray): Boolean = try {
+        val result = ProtoBuf.decodeFromByteArray<ProtoInvitationMessage>(messageData)
+        DoubleRatchetUUID.fromString(result.recipientId)
+        DoubleRatchetUUID.fromString(result.conversationId)
+        true
+    } catch (e: SerializationException) {
+        false
+    } catch (e: IllegalArgumentException) {
+        false
+    } catch (e: NullPointerException) {
+        false
+    } catch (e: IndexOutOfBoundsException) {
+        false
     }
 }
 

@@ -56,7 +56,8 @@ open class HelpActivity : FragmentActivity() {
     }
 
     private fun exitToMain() {
-        packageManager.getLaunchIntentForPackage(packageName)
+        packageManager
+            .getLaunchIntentForPackage(packageName)
             ?.setData(launchDataUri)
             ?.putExtra(CommonUiConstants.AppLaunch.DeleteOnImportExtraKey, true)
             ?.let {

@@ -82,7 +82,7 @@ class DropDownMenuMessageTextLongPress(
                 )
             }
             ConversationUiData.MessageType.Invitation -> {
-                /* no-op */
+                // no-op
             }
         }
     }

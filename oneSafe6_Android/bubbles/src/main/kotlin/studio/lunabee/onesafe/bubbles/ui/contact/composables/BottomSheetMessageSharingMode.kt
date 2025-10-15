@@ -70,7 +70,7 @@ fun ModeMessageShared(
                     painter = painterResource(id = OSDrawable.ic_navigate_next),
                     modifier = Modifier.size(OSDimens.ActionButton.IconRegular),
                     contentDescription = null,
-                    tint = LocalColorPalette.current.Neutral30,
+                    tint = LocalColorPalette.current.neutral30,
                 )
             },
         )

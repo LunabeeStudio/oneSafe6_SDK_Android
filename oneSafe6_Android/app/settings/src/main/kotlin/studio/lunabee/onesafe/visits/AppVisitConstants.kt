@@ -20,15 +20,15 @@
 package studio.lunabee.onesafe.visits
 
 object AppVisitConstants {
-    const val hasVisitedLoginKey: String = "8e2386e8-d876-11ed-afa1-0242ac120002"
-    const val hasVisitedLoginDefault: Boolean = false
+    const val HasVisitedLoginKey: String = "8e2386e8-d876-11ed-afa1-0242ac120002"
+    const val HasVisitedLoginDefault: Boolean = false
 
-    const val hasDoneTutorialOpenOsk: String = "db2675cd-522f-494a-a459-af355a8bc330"
-    const val hasDoneTutorialOpenOskDefault: Boolean = false
+    const val HasDoneTutorialOpenOsk: String = "db2675cd-522f-494a-a459-af355a8bc330"
+    const val HasDoneTutorialOpenOskDefault: Boolean = false
 
-    const val hasDoneTutorialLockOsk: String = "ef1d7a93-b1fd-45f3-aa55-e39e32ddf201"
-    const val hasDoneTutorialLockOskDefault: Boolean = false
+    const val HasDoneTutorialLockOsk: String = "ef1d7a93-b1fd-45f3-aa55-e39e32ddf201"
+    const val HasDoneTutorialLockOskDefault: Boolean = false
 
-    const val appVersion: String = "d434166a-5b59-44c7-a8b0-8455dd570f4f"
-    const val appVersionDefault: Int = -1
+    const val AppVersion: String = "d434166a-5b59-44c7-a8b0-8455dd570f4f"
+    const val AppVersionDefault: Int = -1
 }

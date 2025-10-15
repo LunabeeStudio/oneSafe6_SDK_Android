@@ -34,26 +34,23 @@ import java.io.InputStream
 import java.io.OutputStream
 
 internal object PanicWidgetStateDefinition : GlanceStateDefinition<PanicWidgetState> {
-    private const val DATA_STORE_FILENAME = "PANIC_WIDGET_DATASTORE_"
+    private const val DataStoreFilename = "PANIC_WIDGET_DATASTORE_"
 
-    override suspend fun getDataStore(context: Context, fileKey: String): DataStore<PanicWidgetState> {
-        return DataStoreFactory.create(
+    override suspend fun getDataStore(context: Context, fileKey: String): DataStore<PanicWidgetState> = DataStoreFactory
+        .create(
             serializer = PanicWidgetStateSerializer,
-            produceFile = { context.dataStoreFile(fileName = "$DATA_STORE_FILENAME$fileKey") },
+            produceFile = { context.dataStoreFile(fileName = "$DataStoreFilename$fileKey") },
         )
-    }
 
-    override fun getLocation(context: Context, fileKey: String): File {
-        return context.dataStoreFile(fileName = "$DATA_STORE_FILENAME$fileKey")
-    }
+    override fun getLocation(context: Context, fileKey: String): File = context
+        .dataStoreFile(fileName = "$DataStoreFilename$fileKey")
 
     @OptIn(ExperimentalSerializationApi::class)
     object PanicWidgetStateSerializer : Serializer<PanicWidgetState> {
         override val defaultValue: PanicWidgetState = PanicWidgetState(isEnabled = false, isLoading = false)
 
-        override suspend fun readFrom(input: InputStream): PanicWidgetState {
-            return Json.decodeFromStream<PanicWidgetState>(input)
-        }
+        override suspend fun readFrom(input: InputStream): PanicWidgetState = Json
+            .decodeFromStream<PanicWidgetState>(input)
 
         override suspend fun writeTo(t: PanicWidgetState, output: OutputStream) {
             Json.encodeToStream(t, output)

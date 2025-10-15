@@ -44,13 +44,13 @@ class AutoBackupEnableCtaHomeInfoData(
     visibleSince: Instant,
     private val onDismiss: () -> Unit,
 ) : HomeInfoData(
-    type = HomeInfoType.Standard,
-    key = KeyAutoBackupEnableCtaCard,
-    contentType = ContentTypeAutoBackupEnableCtaCard,
-    visibleSince = visibleSince,
-) {
-    context(HomeInfoDataNavScope)
+        type = HomeInfoType.Standard,
+        key = KeyAutoBackupEnableCtaCard,
+        contentType = ContentTypeAutoBackupEnableCtaCard,
+        visibleSince = visibleSince,
+    ) {
     @Composable
+    context(HomeInfoDataNavScope)
     override fun Composable(modifier: Modifier) {
         OSMessageCard(
             title = LbcTextSpec.StringResource(OSString.home_autoBackupCard_title),
@@ -60,8 +60,7 @@ class AutoBackupEnableCtaHomeInfoData(
                     icon = OSImageSpec.Drawable(OSDrawable.ic_baseline_close),
                     contentDescription = LbcTextSpec.StringResource(OSString.common_accessibility_dismissCta),
                     onDismiss = onDismiss,
-                )
-                .style(OSMessageCardStyle.Default),
+                ).style(OSMessageCardStyle.Default),
             modifier = modifier
                 .testTag(UiConstants.TestTag.Item.AutoBackupEnableCtaCard),
             action = {

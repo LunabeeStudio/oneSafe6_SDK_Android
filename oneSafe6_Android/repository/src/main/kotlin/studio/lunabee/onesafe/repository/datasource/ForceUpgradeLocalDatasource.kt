@@ -24,6 +24,7 @@ import studio.lunabee.onesafe.domain.model.forceupgrade.ForceUpgradeData
 
 interface ForceUpgradeLocalDatasource {
     suspend fun saveForceUpgradeData(data: ForceUpgradeData)
+
     fun getForceUpgradeData(): Flow<ForceUpgradeData?>
 
     suspend fun cleanForceUpgradeData()

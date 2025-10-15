@@ -90,8 +90,21 @@ class RenameLegacyDatastoreTest {
         val testValue2 = "test_value2"
         dataStore.get().insertValue(testKey2, testValue2.encodeToByteArray())
 
-        assertEquals(testValue, context.newDatastore.data.first().dataMap[testKey]!!.toStringUtf8())
-        assertEquals(testValue2, dataStore.get().retrieveValue(testKey2).first()!!.decodeToString())
+        assertEquals(
+            testValue,
+            context.newDatastore.data
+                .first()
+                .dataMap[testKey]!!
+                .toStringUtf8(),
+        )
+        assertEquals(
+            testValue2,
+            dataStore
+                .get()
+                .retrieveValue(testKey2)
+                .first()!!
+                .decodeToString(),
+        )
         assertFalse(context.dataStoreFile(legacyFilename).exists())
     }
 }

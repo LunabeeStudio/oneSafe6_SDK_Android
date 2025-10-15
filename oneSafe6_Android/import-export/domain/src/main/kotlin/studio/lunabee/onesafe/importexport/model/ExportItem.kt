@@ -60,7 +60,9 @@ data class ExportItem(
         if (encName != null) {
             if (other.encName == null) return false
             if (!encName.contentEquals(other.encName)) return false
-        } else if (other.encName != null) return false
+        } else if (other.encName != null) {
+            return false
+        }
         if (parentId != other.parentId) return false
         if (isFavorite != other.isFavorite) return false
         if (updatedAt != other.updatedAt) return false
@@ -69,7 +71,9 @@ data class ExportItem(
         if (encColor != null) {
             if (other.encColor == null) return false
             if (!encColor.contentEquals(other.encColor)) return false
-        } else if (other.encColor != null) return false
+        } else if (other.encColor != null) {
+            return false
+        }
         if (deletedAt != other.deletedAt) return false
         if (deletedParentId != other.deletedParentId) return false
         return createdAt == other.createdAt

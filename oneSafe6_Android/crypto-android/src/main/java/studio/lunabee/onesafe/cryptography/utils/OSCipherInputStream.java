@@ -18,7 +18,8 @@
  */
 
 package studio.lunabee.onesafe.cryptography.android.utils
-;
+        ;
+
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,15 +65,15 @@ public class OSCipherInputStream extends FilterInputStream {
 
     /**
      * private convenience function.
-     *
+     * <p>
      * Entry condition: ostart = ofinish
-     *
+     * <p>
      * Exit condition: ostart <= ofinish
-     *
+     * <p>
      * return (ofinish-ostart) (we have this many bytes for you)
      * return 0 (no data now, but could have more later)
      * return -1 (absolutely no more data)
-     *
+     * <p>
      * Note:  Exceptions are only thrown after the stream is completely read.
      * For AEAD ciphers a read() of any length will internally cause the
      * whole stream to be read fully and verify the authentication tag before
@@ -126,8 +127,9 @@ public class OSCipherInputStream extends FilterInputStream {
      * <br>Note: if the specified input stream or cipher is
      * null, a NullPointerException may be thrown later when
      * they are used.
+     *
      * @param is the to-be-processed input stream
-     * @param c an initialized Cipher object
+     * @param c  an initialized Cipher object
      */
     public OSCipherInputStream(InputStream is, Cipher c) {
         super(is);
@@ -141,6 +143,7 @@ public class OSCipherInputStream extends FilterInputStream {
      * CipherInputStream using a NullCipher.
      * <br>Note: if the specified input stream is null, a
      * NullPointerException may be thrown later when it is used.
+     *
      * @param is the to-be-processed input stream
      */
     protected OSCipherInputStream(InputStream is) {
@@ -159,9 +162,9 @@ public class OSCipherInputStream extends FilterInputStream {
      * is thrown.
      * <p>
      *
-     * @return  the next byte of data, or <code>-1</code> if the end of the
-     *          stream is reached.
-     * @exception  IOException  if an I/O error occurs.
+     * @return the next byte of data, or <code>-1</code> if the end of the
+     * stream is reached.
+     * @throws IOException if an I/O error occurs.
      * @since JCE1.2
      */
     public int read() throws IOException {
@@ -172,7 +175,9 @@ public class OSCipherInputStream extends FilterInputStream {
             if (i == -1) return -1;
         }
         return ((int) obuffer[ostart++] & 0xff);
-    };
+    }
+
+    ;
 
     /**
      * Reads up to <code>b.length</code> bytes of data from this input
@@ -182,13 +187,13 @@ public class OSCipherInputStream extends FilterInputStream {
      * the <code>read</code> method of three arguments with the arguments
      * <code>b</code>, <code>0</code>, and <code>b.length</code>.
      *
-     * @param      b   the buffer into which the data is read.
-     * @return     the total number of bytes read into the buffer, or
-     *             <code>-1</code> is there is no more data because the end of
-     *             the stream has been reached.
-     * @exception  IOException  if an I/O error occurs.
-     * @see        java.io.InputStream#read(byte[], int, int)
-     * @since      JCE1.2
+     * @param b the buffer into which the data is read.
+     * @return the total number of bytes read into the buffer, or
+     * <code>-1</code> is there is no more data because the end of
+     * the stream has been reached.
+     * @throws IOException if an I/O error occurs.
+     * @see java.io.InputStream#read(byte[], int, int)
+     * @since JCE1.2
      */
     public int read(byte b[]) throws IOException {
         return read(b, 0, b.length);
@@ -200,16 +205,16 @@ public class OSCipherInputStream extends FilterInputStream {
      * available. If the first argument is <code>null,</code> up to
      * <code>len</code> bytes are read and discarded.
      *
-     * @param      b     the buffer into which the data is read.
-     * @param      off   the start offset in the destination array
-     *                   <code>buf</code>
-     * @param      len   the maximum number of bytes read.
-     * @return     the total number of bytes read into the buffer, or
-     *             <code>-1</code> if there is no more data because the end of
-     *             the stream has been reached.
-     * @exception  IOException  if an I/O error occurs.
-     * @see        java.io.InputStream#read()
-     * @since      JCE1.2
+     * @param b   the buffer into which the data is read.
+     * @param off the start offset in the destination array
+     *            <code>buf</code>
+     * @param len the maximum number of bytes read.
+     * @return the total number of bytes read into the buffer, or
+     * <code>-1</code> if there is no more data because the end of
+     * the stream has been reached.
+     * @throws IOException if an I/O error occurs.
+     * @see java.io.InputStream#read()
+     * @since JCE1.2
      */
     public int read(byte b[], int off, int len) throws IOException {
         if (ostart >= ofinish) {
@@ -243,9 +248,9 @@ public class OSCipherInputStream extends FilterInputStream {
      *
      * <p>The actual number of bytes skipped is returned.
      *
-     * @param      n the number of bytes to be skipped.
-     * @return     the actual number of bytes skipped.
-     * @exception  IOException  if an I/O error occurs.
+     * @param n the number of bytes to be skipped.
+     * @return the actual number of bytes skipped.
+     * @throws IOException if an I/O error occurs.
      * @since JCE1.2
      */
     public long skip(long n) throws IOException {
@@ -266,10 +271,10 @@ public class OSCipherInputStream extends FilterInputStream {
      * <code>InputStream</code> returns <code>0</code>. This method
      * <B>should</B> be overridden by subclasses.
      *
-     * @return     the number of bytes that can be read from this input stream
-     *             without blocking.
-     * @exception  IOException  if an I/O error occurs.
-     * @since      JCE1.2
+     * @return the number of bytes that can be read from this input stream
+     * without blocking.
+     * @throws IOException if an I/O error occurs.
+     * @since JCE1.2
      */
     public int available() throws IOException {
         return (ofinish - ostart);
@@ -283,7 +288,7 @@ public class OSCipherInputStream extends FilterInputStream {
      * calls the <code>close</code> method of its underlying input
      * stream.
      *
-     * @exception  IOException  if an I/O error occurs.
+     * @throws IOException if an I/O error occurs.
      * @since JCE1.2
      */
     public void close() throws IOException {
@@ -298,8 +303,7 @@ public class OSCipherInputStream extends FilterInputStream {
         if (!done) {
             try {
                 cipher.doFinal();
-            }
-            catch (BadPaddingException | IllegalBlockSizeException ex) {
+            } catch (BadPaddingException | IllegalBlockSizeException ex) {
                 // Android-changed: Added throw if bad tag is seen.  See b/31590622.
                 if (ex instanceof AEADBadTagException) {
                     throw new IOException(ex);
@@ -314,11 +318,11 @@ public class OSCipherInputStream extends FilterInputStream {
      * Tests if this input stream supports the <code>mark</code>
      * and <code>reset</code> methods, which it does not.
      *
-     * @return  <code>false</code>, since this class does not support the
-     *          <code>mark</code> and <code>reset</code> methods.
-     * @see     java.io.InputStream#mark(int)
-     * @see     java.io.InputStream#reset()
-     * @since   JCE1.2
+     * @return <code>false</code>, since this class does not support the
+     * <code>mark</code> and <code>reset</code> methods.
+     * @see java.io.InputStream#mark(int)
+     * @see java.io.InputStream#reset()
+     * @since JCE1.2
      */
     public boolean markSupported() {
         return false;

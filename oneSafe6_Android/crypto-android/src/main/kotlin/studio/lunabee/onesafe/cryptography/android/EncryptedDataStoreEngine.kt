@@ -57,7 +57,7 @@ class EncryptedDataStoreEngine @Inject constructor(
     dataStore: DataStore<ProtoData>,
 ) : DatastoreEngine(dataStore) {
 
-    private fun getCipher() = Cipher.getInstance(TRANSFORMATION)
+    private fun getCipher() = Cipher.getInstance(Transformation)
 
     /**
      * Encrypt the value and store it in the [dataStore]
@@ -94,13 +94,13 @@ class EncryptedDataStoreEngine @Inject constructor(
             return withContext(cryptoDispatcher) {
                 withMasterKey { masterKey ->
                     val cipher = getCipher()
-                    val iv: ByteArray = encData.copyOfRange(0, AES_GCM_IV_LENGTH)
+                    val iv: ByteArray = encData.copyOfRange(0, AesGcmIvLength)
                     val ivSpec = getGcmParameterSpec(iv)
                     cipher.init(Cipher.DECRYPT_MODE, masterKey, ivSpec)
                     cipher.doFinal(
                         encData,
-                        AES_GCM_IV_LENGTH,
-                        encData.size - AES_GCM_IV_LENGTH,
+                        AesGcmIvLength,
+                        encData.size - AesGcmIvLength,
                     )
                 }
             }
@@ -115,38 +115,37 @@ class EncryptedDataStoreEngine @Inject constructor(
         }
     }
 
-    private suspend fun encryptData(value: ByteArray): ByteArray {
-        return withContext(cryptoDispatcher) {
-            withMasterKey { masterKey ->
-                val bos = ByteArrayOutputStream()
-                val cipher = getCipher()
-                val iv = ivProvider(AES_GCM_IV_LENGTH)
-                cipher.init(Cipher.ENCRYPT_MODE, masterKey, getGcmParameterSpec(iv))
-                bos.write(iv)
-                CipherOutputStream(bos, cipher).use { cos ->
-                    value.inputStream().use { input ->
-                        input.copyTo(cos)
-                    }
+    private suspend fun encryptData(value: ByteArray): ByteArray = withContext(cryptoDispatcher) {
+        withMasterKey { masterKey ->
+            val bos = ByteArrayOutputStream()
+            val cipher = getCipher()
+            val iv = ivProvider(AesGcmIvLength)
+            cipher.init(Cipher.ENCRYPT_MODE, masterKey, getGcmParameterSpec(iv))
+            bos.write(iv)
+            CipherOutputStream(bos, cipher).use { cos ->
+                value.inputStream().use { input ->
+                    input.copyTo(cos)
                 }
-                bos.toByteArray()
             }
+            bos.toByteArray()
         }
     }
 
     override suspend fun clearDataStore() {
         withContext(fileDispatcher) {
             super.clearDataStore()
-            androidKeyStoreEngine.removeSecretKey(MASTER_KEY_ALIAS)
-            androidKeyStoreEngine.removeSecretKey(BiometricEngine.KEY_ALIAS)
+            androidKeyStoreEngine.removeSecretKey(MasterKeyAlias)
+            androidKeyStoreEngine.removeSecretKey(BiometricEngine.KeyAlias)
         }
     }
 
-    private fun getGcmParameterSpec(iv: ByteArray) = GCMParameterSpec(AES_GCM_TAG_LENGTH_IN_BITS, iv)
+    private fun getGcmParameterSpec(iv: ByteArray) = GCMParameterSpec(AesGcmTagLengthInBits, iv)
 
     private fun getKeyGenParameterSpec(): KeyGenParameterSpec {
-        val builder = KeyGenParameterSpec.Builder(MASTER_KEY_ALIAS, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
-        builder.setBlockModes(BLOCK_MODE)
-        builder.setEncryptionPaddings(PADDING)
+        val builder = KeyGenParameterSpec
+            .Builder(MasterKeyAlias, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
+        builder.setBlockModes(BlockMode)
+        builder.setEncryptionPaddings(Padding)
         builder.setUserAuthenticationRequired(false)
         builder.setRandomizedEncryptionRequired(false) // Required
         builder.setStrongBoxBackedIfAvailable()
@@ -160,20 +159,19 @@ class EncryptedDataStoreEngine @Inject constructor(
         }
     }
 
-    private inline fun <T> withMasterKey(block: (masterKey: SecretKey) -> T): T {
-        return androidKeyStoreEngine.retrieveOrGenerateSecretKey(
-            keyName = MASTER_KEY_ALIAS,
+    private inline fun <T> withMasterKey(block: (masterKey: SecretKey) -> T): T = androidKeyStoreEngine
+        .retrieveOrGenerateSecretKey(
+            keyName = MasterKeyAlias,
             keyGenParameterSpec = getKeyGenParameterSpec(),
         ).use { block(it) }
-    }
 
     companion object {
-        private const val AES_GCM_IV_LENGTH = 12
-        private const val AES_GCM_TAG_LENGTH_IN_BITS = 128
-        private const val MASTER_KEY_ALIAS = "5ce9163a-e77a-4966-8966-a575cf286608"
-        private const val ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
-        private const val BLOCK_MODE = KeyProperties.BLOCK_MODE_GCM
-        private const val PADDING = KeyProperties.ENCRYPTION_PADDING_NONE
-        private const val TRANSFORMATION = "$ALGORITHM/$BLOCK_MODE/$PADDING"
+        private const val AesGcmIvLength = 12
+        private const val AesGcmTagLengthInBits = 128
+        private const val MasterKeyAlias = "5ce9163a-e77a-4966-8966-a575cf286608"
+        private const val Algorithm = KeyProperties.KEY_ALGORITHM_AES
+        private const val BlockMode = KeyProperties.BLOCK_MODE_GCM
+        private const val Padding = KeyProperties.ENCRYPTION_PADDING_NONE
+        private const val Transformation = "$Algorithm/$BlockMode/$Padding"
     }
 }

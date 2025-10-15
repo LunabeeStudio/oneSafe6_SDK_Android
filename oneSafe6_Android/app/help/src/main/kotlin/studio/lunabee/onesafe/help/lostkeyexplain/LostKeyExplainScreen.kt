@@ -19,8 +19,8 @@ import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import studio.lunabee.onesafe.ui.theme.OSTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
 
-context(LostKeyExplainNavigation)
 @Composable
+context(LostKeyExplainNavigation)
 fun LostKeyExplainRoute() {
     LostKeyExplainScreen(
         navigateBack = navigateBack,

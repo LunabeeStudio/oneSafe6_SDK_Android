@@ -26,5 +26,6 @@ import java.io.File
  */
 interface ResizeIconUseCase {
     suspend operator fun invoke(srcData: ByteArray): ByteArray
+
     suspend operator fun invoke(srcFile: File): ByteArray
 }

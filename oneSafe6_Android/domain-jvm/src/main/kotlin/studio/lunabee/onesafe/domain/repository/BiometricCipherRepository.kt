@@ -25,6 +25,8 @@ import javax.crypto.Cipher
 interface BiometricCipherRepository {
     @Throws(OSCryptoError::class)
     fun getCipherBiometricForDecrypt(iv: ByteArray): Cipher
+
     fun createCipherBiometricForEncrypt(): Cipher
+
     fun clear()
 }

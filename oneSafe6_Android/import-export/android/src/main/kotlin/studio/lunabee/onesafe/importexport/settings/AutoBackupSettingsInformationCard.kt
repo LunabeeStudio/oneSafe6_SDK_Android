@@ -121,10 +121,8 @@ fun AutoBackupSettingsInformationCardPreview() {
     }
 }
 
-private fun LatestBackups.count(): Int {
-    return when {
-        local != null && cloud != null -> 2
-        local != null || cloud != null -> 1
-        else -> 0
-    }
+private fun LatestBackups.count(): Int = when {
+    local != null && cloud != null -> 2
+    local != null || cloud != null -> 1
+    else -> 0
 }

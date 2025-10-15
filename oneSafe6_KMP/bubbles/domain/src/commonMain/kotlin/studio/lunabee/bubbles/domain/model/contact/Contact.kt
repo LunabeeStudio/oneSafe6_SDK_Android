@@ -16,9 +16,9 @@
 
 package studio.lunabee.bubbles.domain.model.contact
 
-import kotlin.time.Instant
 import studio.lunabee.bubbles.domain.model.contactkey.ContactSharedKey
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import kotlin.time.Instant
 
 data class Contact(
     val id: DoubleRatchetUUID,

@@ -25,15 +25,15 @@ plugins {
 
 android {
     namespace = "studio.lunabee.onesafe.di"
-    compileSdk = AndroidConfig.COMPILE_SDK
+    compileSdk = AndroidConfig.CompileSdk
 
     defaultConfig {
-        minSdk = AndroidConfig.MIN_LIB_SDK
+        minSdk = AndroidConfig.MinLibSdk
     }
 
     compileOptions {
-        sourceCompatibility = ProjectConfig.JDK_VERSION
-        targetCompatibility = ProjectConfig.JDK_VERSION
+        sourceCompatibility = ProjectConfig.JdkVersion
+        targetCompatibility = ProjectConfig.JdkVersion
     }
 }
 

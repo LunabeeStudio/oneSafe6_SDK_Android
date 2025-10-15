@@ -52,7 +52,8 @@ internal fun AutoBackupFrequencyBottomSheetContent(
         OSText(
             text = LbcTextSpec.StringResource(id = OSString.settings_autoBackupFrequencyScreen_title),
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(horizontal = OSDimens.SystemSpacing.Regular, vertical = OSDimens.SystemSpacing.Small),
+            modifier = Modifier
+                .padding(horizontal = OSDimens.SystemSpacing.Regular, vertical = OSDimens.SystemSpacing.Small),
         )
         AutoBackupFrequency.entries.forEach { entry ->
             OSOptionRow(

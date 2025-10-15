@@ -24,7 +24,10 @@ import studio.lunabee.messaging.domain.model.MessageOrder
 
 interface MessageOrderRepository {
     suspend fun getMostRecent(contactId: DoubleRatchetUUID, exceptIds: List<DoubleRatchetUUID>): MessageOrder?
+
     suspend fun getLeastRecent(contactId: DoubleRatchetUUID, exceptIds: List<DoubleRatchetUUID>): MessageOrder?
+
     suspend fun count(contactId: DoubleRatchetUUID, exceptIds: List<DoubleRatchetUUID>): Int
+
     suspend fun getAt(contactId: DoubleRatchetUUID, position: Int, exceptIds: List<DoubleRatchetUUID>): MessageOrder?
 }

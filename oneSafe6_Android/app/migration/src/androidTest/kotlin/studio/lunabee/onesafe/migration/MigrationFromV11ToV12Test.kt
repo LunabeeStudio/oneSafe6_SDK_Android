@@ -27,14 +27,13 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
-import kotlin.test.Test
 import studio.lunabee.onesafe.cryptography.android.PasswordHashEngine
-import studio.lunabee.onesafe.domain.utils.SaltProvider
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.domain.usecase.item.AddFieldUseCase
 import studio.lunabee.onesafe.domain.usecase.item.CreateItemUseCase
+import studio.lunabee.onesafe.domain.utils.SaltProvider
 import studio.lunabee.onesafe.migration.migration.MigrationFromV11ToV12
 import studio.lunabee.onesafe.test.CommonTestUtils
 import studio.lunabee.onesafe.test.InitialTestState
@@ -43,6 +42,7 @@ import studio.lunabee.onesafe.test.OSTestConfig
 import studio.lunabee.onesafe.test.test
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull

@@ -50,35 +50,31 @@ class RoomDoubleRatchetConversation(
     val encLastContactPublicKey: ByteArray? = null, // DRPublicKey?
     val encReceivedLastMessageNumber: ByteArray? = null, // Int?
 ) {
-    fun toEncConversation(): EncConversation {
-        return EncConversation(
-            id = DoubleRatchetUUID(id),
-            encPersonalPublicKey = encPersonalPublicKey,
-            encPersonalPrivateKey = encPersonalPrivateKey,
-            encMessageNumber = encMessageNumber,
-            encSequenceNumber = encSequenceNumber,
-            encRootKey = encRootKey,
-            encSendingChainKey = encSendingChainKey,
-            encReceiveChainKey = encReceiveChainKey,
-            encLastContactPublicKey = encLastContactPublicKey,
-            encReceivedLastMessageNumber = encReceivedLastMessageNumber,
-        )
-    }
+    fun toEncConversation(): EncConversation = EncConversation(
+        id = DoubleRatchetUUID(id),
+        encPersonalPublicKey = encPersonalPublicKey,
+        encPersonalPrivateKey = encPersonalPrivateKey,
+        encMessageNumber = encMessageNumber,
+        encSequenceNumber = encSequenceNumber,
+        encRootKey = encRootKey,
+        encSendingChainKey = encSendingChainKey,
+        encReceiveChainKey = encReceiveChainKey,
+        encLastContactPublicKey = encLastContactPublicKey,
+        encReceivedLastMessageNumber = encReceivedLastMessageNumber,
+    )
 
     companion object {
-        fun fromEncConversation(conversation: EncConversation): RoomDoubleRatchetConversation {
-            return RoomDoubleRatchetConversation(
-                id = conversation.id.uuid,
-                encPersonalPublicKey = conversation.encPersonalPublicKey,
-                encPersonalPrivateKey = conversation.encPersonalPrivateKey,
-                encMessageNumber = conversation.encMessageNumber,
-                encSequenceNumber = conversation.encSequenceNumber,
-                encRootKey = conversation.encRootKey,
-                encSendingChainKey = conversation.encSendingChainKey,
-                encReceiveChainKey = conversation.encReceiveChainKey,
-                encLastContactPublicKey = conversation.encLastContactPublicKey,
-                encReceivedLastMessageNumber = conversation.encReceivedLastMessageNumber,
-            )
-        }
+        fun fromEncConversation(conversation: EncConversation): RoomDoubleRatchetConversation = RoomDoubleRatchetConversation(
+            id = conversation.id.uuid,
+            encPersonalPublicKey = conversation.encPersonalPublicKey,
+            encPersonalPrivateKey = conversation.encPersonalPrivateKey,
+            encMessageNumber = conversation.encMessageNumber,
+            encSequenceNumber = conversation.encSequenceNumber,
+            encRootKey = conversation.encRootKey,
+            encSendingChainKey = conversation.encSendingChainKey,
+            encReceiveChainKey = conversation.encReceiveChainKey,
+            encLastContactPublicKey = conversation.encLastContactPublicKey,
+            encReceivedLastMessageNumber = conversation.encReceivedLastMessageNumber,
+        )
     }
 }

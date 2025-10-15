@@ -31,6 +31,7 @@ import java.io.Closeable
 
 interface ContactFormDelegate : Closeable {
     val createInvitationResult: StateFlow<LBResult<DoubleRatchetUUID>?>
+
     fun saveContact(
         contactName: String,
         sharingMode: MessageSharingMode,

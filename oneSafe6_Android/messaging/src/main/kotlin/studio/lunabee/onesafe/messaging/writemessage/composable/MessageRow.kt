@@ -95,7 +95,9 @@ fun MessageRow(
         verticalAlignment = Alignment.Bottom,
     ) {
         if (messageData.direction == MessageDirection.RECEIVED) {
-            OSItemIllustrationHelper.get(contactName).ImageComposable(contentDescription = null, style = OSSafeItemStyle.Small)
+            OSItemIllustrationHelper
+                .get(contactName)
+                .ImageComposable(contentDescription = null, style = OSSafeItemStyle.Small)
         }
         Column(
             modifier = Modifier
@@ -108,8 +110,7 @@ fun MessageRow(
                     onClick = { onClick?.invoke() },
                     onClickLabel = null,
                     onLongClickLabel = null,
-                )
-                .padding(horizontal = OSDimens.SystemSpacing.Regular, vertical = OSDimens.SystemSpacing.Small),
+                ).padding(horizontal = OSDimens.SystemSpacing.Regular, vertical = OSDimens.SystemSpacing.Small),
             verticalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.ExtraSmall),
         ) {
             when (messageData) {
@@ -121,7 +122,8 @@ fun MessageRow(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             OSTheme(isSystemInDarkTheme = style.isIconDarkMode) {
-                                messageData.icon.ImageComposable(contentDescription = null, style = OSSafeItemStyle.Small)
+                                messageData.icon
+                                    .ImageComposable(contentDescription = null, style = OSSafeItemStyle.Small)
                             }
                             Spacer(modifier = Modifier.size(OSDimens.SystemSpacing.Small))
                             Column {
@@ -166,7 +168,9 @@ fun MessageRow(
                 OSText(
                     text = LbcTextSpec.StringResource(
                         OSString.oneSafeK_messageRow_timeChannelLabel,
-                        sendAt.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)),
+                        sendAt
+                            .atZone(ZoneId.systemDefault())
+                            .format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)),
                         channelText,
                     ),
                     textAlign = style.textAlign,
@@ -195,39 +199,36 @@ interface MessageRowStyle {
 
 object MessageRowDefault {
     @Composable
-    fun received(): MessageRowStyle {
-        return object : MessageRowStyle {
-            override val backgroundColor: Color = MaterialTheme.colorScheme.surface
-            override val shape: RoundedCornerShape = RoundedCornerShape(
-                topStart = OSDimens.SystemCornerRadius.ExtraLarge,
-                topEnd = OSDimens.SystemCornerRadius.ExtraLarge,
-                bottomStart = OSDimens.SystemCornerRadius.Small,
-                bottomEnd = OSDimens.SystemCornerRadius.ExtraLarge,
-            )
-            override val textColor: Color = MaterialTheme.colorScheme.onSurface
-            override val textAlign: TextAlign = TextAlign.Start
-            override val containerArrangement: Arrangement.Horizontal = Arrangement.spacedBy(OSDimens.SystemSpacing.Small)
-            override val widthRow: Float = ReceiveMessageRowWidthRatio
-            override val isIconDarkMode: Boolean = isSystemInDarkTheme()
-        }
+    fun received(): MessageRowStyle = object : MessageRowStyle {
+        override val backgroundColor: Color = MaterialTheme.colorScheme.surface
+        override val shape: RoundedCornerShape = RoundedCornerShape(
+            topStart = OSDimens.SystemCornerRadius.ExtraLarge,
+            topEnd = OSDimens.SystemCornerRadius.ExtraLarge,
+            bottomStart = OSDimens.SystemCornerRadius.Small,
+            bottomEnd = OSDimens.SystemCornerRadius.ExtraLarge,
+        )
+        override val textColor: Color = MaterialTheme.colorScheme.onSurface
+        override val textAlign: TextAlign = TextAlign.Start
+        override val containerArrangement: Arrangement.Horizontal = Arrangement
+            .spacedBy(OSDimens.SystemSpacing.Small)
+        override val widthRow: Float = ReceiveMessageRowWidthRatio
+        override val isIconDarkMode: Boolean = isSystemInDarkTheme()
     }
 
     @Composable
-    fun send(): MessageRowStyle {
-        return object : MessageRowStyle {
-            override val backgroundColor: Color = MaterialTheme.colorScheme.primary
-            override val shape: RoundedCornerShape = RoundedCornerShape(
-                topStart = OSDimens.SystemCornerRadius.ExtraLarge,
-                topEnd = OSDimens.SystemCornerRadius.ExtraLarge,
-                bottomStart = OSDimens.SystemCornerRadius.ExtraLarge,
-                bottomEnd = OSDimens.SystemCornerRadius.Small,
-            )
-            override val textColor: Color = MaterialTheme.colorScheme.onPrimary
-            override val textAlign: TextAlign = TextAlign.End
-            override val containerArrangement: Arrangement.Horizontal = Arrangement.End
-            override val widthRow: Float = SendMessageRowWidthRatio
-            override val isIconDarkMode: Boolean = !isSystemInDarkTheme()
-        }
+    fun send(): MessageRowStyle = object : MessageRowStyle {
+        override val backgroundColor: Color = MaterialTheme.colorScheme.primary
+        override val shape: RoundedCornerShape = RoundedCornerShape(
+            topStart = OSDimens.SystemCornerRadius.ExtraLarge,
+            topEnd = OSDimens.SystemCornerRadius.ExtraLarge,
+            bottomStart = OSDimens.SystemCornerRadius.ExtraLarge,
+            bottomEnd = OSDimens.SystemCornerRadius.Small,
+        )
+        override val textColor: Color = MaterialTheme.colorScheme.onPrimary
+        override val textAlign: TextAlign = TextAlign.End
+        override val containerArrangement: Arrangement.Horizontal = Arrangement.End
+        override val widthRow: Float = SendMessageRowWidthRatio
+        override val isIconDarkMode: Boolean = !isSystemInDarkTheme()
     }
 }
 

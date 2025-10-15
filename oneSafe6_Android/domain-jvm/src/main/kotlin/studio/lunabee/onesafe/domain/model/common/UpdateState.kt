@@ -26,6 +26,8 @@ package studio.lunabee.onesafe.domain.model.common
  */
 sealed class UpdateState<T> {
     class Removed<T> : UpdateState<T>()
+
     class Unchanged<T>(val value: T) : UpdateState<T>()
+
     data class ModifiedTo<T>(val newValue: T) : UpdateState<T>()
 }

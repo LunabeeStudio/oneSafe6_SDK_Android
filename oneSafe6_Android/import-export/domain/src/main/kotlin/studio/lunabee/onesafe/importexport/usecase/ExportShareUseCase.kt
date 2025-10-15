@@ -66,47 +66,49 @@ class ExportShareUseCase @Inject constructor(
         itemToShare: UUID,
         includeChildren: Boolean,
         archiveExtractedDirectory: File,
-    ): Flow<LBFlowResult<File>> {
-        return flow {
-            // Get all item and re-encrypt keys with export key
-            val items = safeItemRepository.getSafeItemsAndChildren(itemToShare, includeChildren)
-            val safeItemsWithKeys = items.associate { safeItem ->
-                val item = if (safeItem.id == itemToShare) {
-                    // Nullify parent id of root item
-                    safeItem.copy(parentId = null)
-                } else {
-                    safeItem
-                }
-                ExportItem(item, keepFavorite = false) to
-                    safeItemKeyRepository.getSafeItemKey(id = item.id).also { itemKey ->
-                        mainCryptoRepository.reEncryptItemKey(itemKey, exportEngine.exportKey)
-                    }
+    ): Flow<LBFlowResult<File>> = flow {
+        // Get all item and re-encrypt keys with export key
+        val items = safeItemRepository.getSafeItemsAndChildren(itemToShare, includeChildren)
+        val safeItemsWithKeys = items.associate { safeItem ->
+            val item = if (safeItem.id == itemToShare) {
+                // Nullify parent id of root item
+                safeItem.copy(parentId = null)
+            } else {
+                safeItem
             }
-            val itemsId: List<UUID> = safeItemsWithKeys.keys.map { it.id }
-            val iconsId: List<String> = safeItemsWithKeys.keys.map { it.iconId.toString() }
-            val safeItemFields = safeItemFieldRepository.getAllSafeItemFieldsOfItems(itemsId)
+            ExportItem(item, keepFavorite = false) to
+                safeItemKeyRepository.getSafeItemKey(id = item.id).also { itemKey ->
+                    mainCryptoRepository.reEncryptItemKey(itemKey, exportEngine.exportKey)
+                }
+        }
+        val itemsId: List<UUID> = safeItemsWithKeys.keys.map { it.id }
+        val iconsId: List<String> = safeItemsWithKeys.keys.map { it.iconId.toString() }
+        val safeItemFields = safeItemFieldRepository.getAllSafeItemFieldsOfItems(itemsId)
 
-            val fileIdList = safeItemFields.mapNotNull { field ->
-                val kind = field.encKind?.let { kind -> decryptUseCase(kind, field.itemId, String::class).data }
-                kind?.takeIf { SafeItemFieldKind.isKindFile(SafeItemFieldKind.fromString(kind)) }?.let {
-                    field.encValue?.let { encValue ->
-                        decryptUseCase(encValue, field.itemId, String::class).data?.substringBefore(Constant.FileTypeExtSeparator)
-                    }
+        val fileIdList = safeItemFields.mapNotNull { field ->
+            val kind = field.encKind?.let { kind -> decryptUseCase(kind, field.itemId, String::class).data }
+            kind?.takeIf { SafeItemFieldKind.isKindFile(SafeItemFieldKind.fromString(kind)) }?.let {
+                field.encValue?.let { encValue ->
+                    decryptUseCase(encValue, field.itemId, String::class)
+                        .data
+                        ?.substringBefore(Constant.FileTypeExtSeparator)
                 }
             }
+        }
 
-            val data = ExportData(
-                safeItemsWithKeys = safeItemsWithKeys,
-                safeItemFields = safeItemFields,
-                icons = iconRepository.getIcons(iconsId),
-                files = fileRepository.getFiles(fileIdList),
-                bubblesContactsWithKey = emptyMap(),
-                bubblesMessages = emptyList(),
-                bubblesConversation = emptyList(),
-            )
+        val data = ExportData(
+            safeItemsWithKeys = safeItemsWithKeys,
+            safeItemFields = safeItemFields,
+            icons = iconRepository.getIcons(iconsId),
+            files = fileRepository.getFiles(fileIdList),
+            bubblesContactsWithKey = emptyMap(),
+            bubblesMessages = emptyList(),
+            bubblesConversation = emptyList(),
+        )
 
-            emitAll(
-                exportEngine.createExportArchiveContent(
+        emitAll(
+            exportEngine
+                .createExportArchiveContent(
                     dataHolderFolder = archiveExtractedDirectory,
                     data = data,
                     archiveKind = OSArchiveKind.Sharing,
@@ -122,20 +124,17 @@ class ExportShareUseCase @Inject constructor(
                         )
                     }
                 },
-            )
-        }
+        )
     }
 
     companion object {
         /**
          * Return final archive name (i.e oneSafe-20221212-134622.os6lss)
          */
-        private fun buildArchiveName(clock: Clock): String {
-            return listOf(
-                ImportExportConstant.ArchiveFilePrefix,
-                ImportExportConstant.ArchiveDateFormatter.format(LocalDate.now(clock)), // i.e 20230113
-                ImportExportConstant.ArchiveTimeFormatter.format(LocalTime.now(clock)), // i.e 134602
-            ).joinToString(ImportExportConstant.ArchiveFileSeparator) + ".${ImportExportConstant.ExtensionOs6Sharing}"
-        }
+        private fun buildArchiveName(clock: Clock): String = listOf(
+            ImportExportConstant.ArchiveFilePrefix,
+            ImportExportConstant.ArchiveDateFormatter.format(LocalDate.now(clock)), // i.e 20230113
+            ImportExportConstant.ArchiveTimeFormatter.format(LocalTime.now(clock)), // i.e 134602
+        ).joinToString(ImportExportConstant.ArchiveFileSeparator) + ".${ImportExportConstant.ExtensionOs6Sharing}"
     }
 }

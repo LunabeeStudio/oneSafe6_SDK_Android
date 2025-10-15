@@ -26,10 +26,11 @@ import studio.lunabee.onesafe.error.OSError
 @PublishedApi
 internal val log: Logger = LBLogger.get<OSError>()
 
+// TODO Lint rule to enforce param of OSError subclass's ctor
+
 /**
  * Unsafe getter for default error constructor
  */
-// TODO Lint rule to enforce param of OSError subclass's ctor
 inline fun <Code : Enum<Code>, reified Err : OSError> OSError.ErrorCode<Code, Err>.get(
     message: String? = this.message,
     cause: Throwable? = null,

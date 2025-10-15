@@ -19,9 +19,6 @@
 
 package studio.lunabee.messaging.repository
 
-import studio.lunabee.onesafe.di.Inject
-import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
-import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.bubbles.domain.repository.ContactKeyRepository
 import studio.lunabee.doubleratchet.model.AsymmetricKeyPair
@@ -38,6 +35,9 @@ import studio.lunabee.messaging.domain.model.EncConversation
 import studio.lunabee.messaging.domain.model.EncDoubleRatchetKey
 import studio.lunabee.messaging.repository.datasource.ConversationLocalDatasource
 import studio.lunabee.messaging.repository.datasource.DoubleRatchetKeyLocalDatasource
+import studio.lunabee.onesafe.di.Inject
+import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
+import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 
 // TODO rework KMP lib to have use case like GetConversationUseCase
 class DoubleRatchetDatasourceImpl @Inject constructor(

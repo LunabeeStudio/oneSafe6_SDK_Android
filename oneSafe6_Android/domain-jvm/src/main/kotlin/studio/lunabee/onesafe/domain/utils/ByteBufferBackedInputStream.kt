@@ -26,12 +26,10 @@ import kotlin.math.min
 
 class ByteBufferBackedInputStream(private var byteBuffer: ByteBuffer) : InputStream() {
     @Throws(IOException::class)
-    override fun read(): Int {
-        return if (!byteBuffer.hasRemaining()) {
-            -1
-        } else {
-            byteBuffer.get().toInt() and 0xFF
-        }
+    override fun read(): Int = if (!byteBuffer.hasRemaining()) {
+        -1
+    } else {
+        byteBuffer.get().toInt() and 0xFF
     }
 
     @Throws(IOException::class)

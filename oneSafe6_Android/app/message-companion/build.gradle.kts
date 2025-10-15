@@ -29,9 +29,9 @@ android {
     }
 
     defaultConfig {
-        minSdk = AndroidConfig.MIN_APP_SDK
+        minSdk = AndroidConfig.MinAppSdk
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
-        missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
+        missingDimensionStrategy("crypto", AndroidConfig.CryptoBackendFlavorDefault)
         missingDimensionStrategy(OSDimensions.Environment.value, OSDimensions.Environment.Store)
     }
 

@@ -53,7 +53,7 @@ class CipherKeyPromptViewModel @Inject constructor(
                     is LBResult.Success -> {
                         when (result.successData) {
                             FinishSetupDatabaseEncryptionUseCase.SuccessState.Noop -> {
-                                /* no-op */
+                                // no-op
                             }
                             FinishSetupDatabaseEncryptionUseCase.SuccessState.Success -> {
                                 logger.i("Database encryption setup succeed")
@@ -109,7 +109,8 @@ class CipherKeyPromptViewModel @Inject constructor(
                 is LBResult.Failure -> {
                     loadingManager.stopLoading()
                     _uiState.value = _uiState.value.copy(
-                        openDatabaseResult = CipherKeyPromptUiState.OpenDatabaseState.Error(result.throwable.description()),
+                        openDatabaseResult = CipherKeyPromptUiState.OpenDatabaseState
+                            .Error(result.throwable.description()),
                     )
                 }
                 is LBResult.Success ->

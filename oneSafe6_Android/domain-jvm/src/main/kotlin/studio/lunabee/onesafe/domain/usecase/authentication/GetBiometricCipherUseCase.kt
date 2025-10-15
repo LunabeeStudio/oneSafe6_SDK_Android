@@ -35,17 +35,13 @@ class GetBiometricCipherUseCase @Inject constructor(
     private val biometricCipherRepository: BiometricCipherRepository,
     private val safeRepository: SafeRepository,
 ) {
-    suspend fun forVerify(): LBResult<Cipher> {
-        return OSError.runCatching(log) {
-            val key = safeRepository.getBiometricSafe().biometricCryptoMaterial
-                ?: throw OSDomainError.Code.MISSING_BIOMETRIC_KEY.get()
-            biometricCipherRepository.getCipherBiometricForDecrypt(key.iv)
-        }
+    suspend fun forVerify(): LBResult<Cipher> = OSError.runCatching(log) {
+        val key = safeRepository.getBiometricSafe().biometricCryptoMaterial
+            ?: throw OSDomainError.Code.MISSING_BIOMETRIC_KEY.get()
+        biometricCipherRepository.getCipherBiometricForDecrypt(key.iv)
     }
 
-    fun forCreate(): LBResult<Cipher> {
-        return OSError.runCatching(log) {
-            biometricCipherRepository.createCipherBiometricForEncrypt()
-        }
+    fun forCreate(): LBResult<Cipher> = OSError.runCatching(log) {
+        biometricCipherRepository.createCipherBiometricForEncrypt()
     }
 }

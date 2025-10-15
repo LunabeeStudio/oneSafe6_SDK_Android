@@ -19,8 +19,8 @@
 
 package studio.lunabee.onesafe.cryptography.android
 
-import kotlin.test.Test
 import studio.lunabee.onesafe.jvm.toByteArray
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 
 class CryptoUtilsTest {

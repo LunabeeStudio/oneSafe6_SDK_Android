@@ -23,17 +23,17 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import kotlin.test.Test
 import studio.lunabee.onesafe.domain.model.crypto.DatabaseKey
 import studio.lunabee.onesafe.domain.repository.DatabaseEncryptionManager
 import studio.lunabee.onesafe.domain.usecase.authentication.SetDatabaseKeyUseCase
-import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.error.OSStorageError
 import studio.lunabee.onesafe.error.osCode
+import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.test.DummyDatabaseCryptoRepository
 import studio.lunabee.onesafe.test.OSTestConfig
 import studio.lunabee.onesafe.test.assertFailure
 import studio.lunabee.onesafe.test.assertSuccess
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class SetDatabaseKeyUseCaseTest {

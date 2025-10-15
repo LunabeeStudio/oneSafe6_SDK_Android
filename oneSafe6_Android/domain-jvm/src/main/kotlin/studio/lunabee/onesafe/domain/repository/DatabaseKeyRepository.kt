@@ -27,11 +27,16 @@ interface DatabaseKeyRepository {
      * Create a key suitable for database encryption. Does not store it.
      */
     fun generateKey(): DatabaseKey
+
     suspend fun removeKey()
+
     fun getKeyFlow(): Flow<DatabaseKey?>
+
     suspend fun setKey(key: DatabaseKey, override: Boolean)
 
     fun getBackupKeyFlow(): Flow<DatabaseKey?>
+
     suspend fun removeBackupKey()
+
     suspend fun copyKeyToBackupKey()
 }

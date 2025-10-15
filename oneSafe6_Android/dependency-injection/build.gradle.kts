@@ -35,14 +35,14 @@ android {
         missingDimensionStrategy(OSDimensions.Environment.value, OSDimensions.Environment.Store)
     }
 
-    flavorDimensions += AndroidConfig.CRYPTO_BACKEND_FLAVOR_DIMENSION
+    flavorDimensions += AndroidConfig.CryptoBackendFlavorDimension
     productFlavors {
-        create(AndroidConfig.CRYPTO_BACKEND_FLAVOR_JCE) {
-            dimension = AndroidConfig.CRYPTO_BACKEND_FLAVOR_DIMENSION
+        create(AndroidConfig.CryptoBackendFlavorJce) {
+            dimension = AndroidConfig.CryptoBackendFlavorDimension
         }
 
-        create(AndroidConfig.CRYPTO_BACKEND_FLAVOR_TINK) {
-            dimension = AndroidConfig.CRYPTO_BACKEND_FLAVOR_DIMENSION
+        create(AndroidConfig.CryptoBackendFlavorTink) {
+            dimension = AndroidConfig.CryptoBackendFlavorDimension
         }
     }
 

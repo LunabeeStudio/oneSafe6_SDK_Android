@@ -37,13 +37,14 @@ data class FieldMask(
             }
             val clearedMask = formattingMask.filterIndexed { index, _ -> symbolsIndices.contains(index) }
             val clearedValue = maskedValue.filterIndexed { index, _ -> symbolsIndices.contains(index) }
-            clearedValue.mapIndexed { index, char ->
-                clearedMask.getOrNull(index)?.let { maskChar ->
-                    SpecialSymbols.firstOrNull { it.second == maskChar }?.let { (regex, _) ->
-                        char.toString().hasMatchRegex(regex)
+            clearedValue
+                .mapIndexed { index, char ->
+                    clearedMask.getOrNull(index)?.let { maskChar ->
+                        SpecialSymbols.firstOrNull { it.second == maskChar }?.let { (regex, _) ->
+                            char.toString().hasMatchRegex(regex)
+                        } ?: false
                     } ?: false
-                } ?: false
-            }.all { it }
+                }.all { it }
         }
     }
 
@@ -109,8 +110,9 @@ data class FieldMask(
             FieldMask(null, "••••••"),
         )
 
-        fun getMatchingMask(maskList: List<FieldMask>, value: String): FieldMask? {
-            return maskList.firstOrNull { it.isMatchingWithValue(value) }
+        fun getMatchingMask(maskList: List<FieldMask>, value: String): FieldMask? = maskList.firstOrNull {
+            it
+                .isMatchingWithValue(value)
         }
 
         fun getApplyMaskOnString(value: CharArray, mask: String): String {

@@ -41,9 +41,9 @@ class BubblesTabsData(
     val contentDescription: LbcTextSpec?,
     private val hasNotification: Boolean,
 ) : TabsData(
-    title,
-    contentDescription,
-) {
+        title,
+        contentDescription,
+    ) {
     @Composable
     override fun Composable(index: Int, selectedTabIndex: Int, isEnabled: Boolean) {
         val titleDescription = contentDescription?.string
@@ -62,7 +62,7 @@ class BubblesTabsData(
                 color = when {
                     isEnabled -> Color.Unspecified
                     index == selectedTabIndex -> LocalDesignSystem.current.tabPrimaryDisabledColor
-                    else -> LocalColorPalette.current.Neutral30
+                    else -> LocalColorPalette.current.neutral30
                 },
             )
             if (hasNotification) {

@@ -35,25 +35,16 @@ class GlobalSettingsDataStore @Inject constructor(
         dataStore.store(value = value, preferencesKey = preferencesTips.preferencesKey)
     }
 
-    private suspend fun <T> get(preferencesTips: OSPreferenceTips<T>): T? {
-        return getAsFlow(preferencesTips).firstOrNull()
-    }
+    private suspend fun <T> get(preferencesTips: OSPreferenceTips<T>): T? = getAsFlow(preferencesTips).firstOrNull()
 
-    private fun <T> getAsFlow(preferencesTips: OSPreferenceTips<T>): Flow<T> {
-        return dataStore.getAsFlow(preferencesKey = preferencesTips.preferencesKey, defaultValue = preferencesTips.defaultValue)
-    }
+    private fun <T> getAsFlow(preferencesTips: OSPreferenceTips<T>): Flow<T> = dataStore
+        .getAsFlow(preferencesKey = preferencesTips.preferencesKey, defaultValue = preferencesTips.defaultValue)
 
-    override fun hasVisitedLogin(): Flow<Boolean> {
-        return getAsFlow(OSPreferenceTips.HasVisitedLogin)
-    }
+    override fun hasVisitedLogin(): Flow<Boolean> = getAsFlow(OSPreferenceTips.HasVisitedLogin)
 
-    override fun hasDoneTutorialOpenOsk(): Flow<Boolean> {
-        return getAsFlow(OSPreferenceTips.HasDoneTutorialOpenOsk)
-    }
+    override fun hasDoneTutorialOpenOsk(): Flow<Boolean> = getAsFlow(OSPreferenceTips.HasDoneTutorialOpenOsk)
 
-    override fun hasDoneTutorialLockOsk(): Flow<Boolean> {
-        return getAsFlow(OSPreferenceTips.HasDoneTutorialLockOsk)
-    }
+    override fun hasDoneTutorialLockOsk(): Flow<Boolean> = getAsFlow(OSPreferenceTips.HasDoneTutorialLockOsk)
 
     override suspend fun setHasVisitedLogin(value: Boolean) {
         store(true, OSPreferenceTips.HasVisitedLogin)
@@ -67,9 +58,7 @@ class GlobalSettingsDataStore @Inject constructor(
         store(true, OSPreferenceTips.HasDoneTutorialLockOsk)
     }
 
-    override suspend fun getAppVersion(): Int? {
-        return get(OSPreferenceTips.AppVersion).takeIf { it != OSPreferenceTips.AppVersion.defaultValue }
-    }
+    override suspend fun getAppVersion(): Int? = get(OSPreferenceTips.AppVersion).takeIf { it != OSPreferenceTips.AppVersion.defaultValue }
 
     override suspend fun setAppVersion(version: Int) {
         store(version, OSPreferenceTips.AppVersion)

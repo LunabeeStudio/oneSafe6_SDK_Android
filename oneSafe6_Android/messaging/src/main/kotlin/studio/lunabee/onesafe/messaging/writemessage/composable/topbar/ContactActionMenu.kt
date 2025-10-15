@@ -53,11 +53,11 @@ fun ContactActionMenu(
         OSClickableRow(
             onClick = onHideConversation,
             text =
-            if (isConversationHidden) {
-                LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_showConversation)
-            } else {
-                LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_hideConversation)
-            },
+                if (isConversationHidden) {
+                    LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_showConversation)
+                } else {
+                    LbcTextSpec.StringResource(OSString.bubbles_writeMessageScreen_hideConversation)
+                },
             leadingIcon = {
                 OSIconDecorationButton(
                     image = if (isConversationHidden) {

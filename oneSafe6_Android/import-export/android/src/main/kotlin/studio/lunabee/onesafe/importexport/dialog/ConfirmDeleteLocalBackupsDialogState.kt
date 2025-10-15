@@ -29,8 +29,10 @@ class ConfirmDeleteLocalBackupsDialogState(
     confirm: () -> Unit,
     override val dismiss: () -> Unit,
 ) : DialogState {
-    override val title: LbcTextSpec = LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_dialog_disableLocalBackup_title)
-    override val message: LbcTextSpec = LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_dialog_disableLocalBackup_message)
+    override val title: LbcTextSpec = LbcTextSpec
+        .StringResource(OSString.settings_autoBackupScreen_dialog_disableLocalBackup_title)
+    override val message: LbcTextSpec = LbcTextSpec
+        .StringResource(OSString.settings_autoBackupScreen_dialog_disableLocalBackup_message)
     override val customContent: (@Composable () -> Unit)? = null
     override val actions: List<DialogAction> = listOf(
         DialogAction.commonCancel(dismiss),

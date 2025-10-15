@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlin.time.toJavaInstant
 import studio.lunabee.bubbles.domain.model.contact.Contact
 import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
 import studio.lunabee.messaging.domain.model.EncConversation
@@ -60,6 +59,7 @@ import java.io.File
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.time.toJavaInstant
 
 /**
  * Core implementation of [ExportEngine] shared with export and share features
@@ -74,30 +74,28 @@ abstract class AbstractExportEngine(
         data: ExportData,
         archiveKind: OSArchiveKind,
         exportInfo: ExportInfo,
-    ): Flow<LBFlowResult<Unit>> {
-        return flow {
-            dataHolderFolder.mkdirs(override = true)
-            createArchiveMetadataFile(
-                folderDestination = dataHolderFolder,
-                platformInfo = exportInfo.fromPlatformVersion,
-                itemCount = data.safeItemsWithKeys.size,
-                archiveKind = archiveKind.toProtoArchiveKind(),
-                contactCount = data.bubblesContactsWithKey.size,
-            )
-            createArchiveData(
-                folderDestination = dataHolderFolder,
-                safeItemsWithKeys = data.safeItemsWithKeys,
-                safeItemFields = data.safeItemFields,
-                contactsWithKeys = data.bubblesContactsWithKey,
-                bubblesConversations = data.bubblesConversation,
-                bubblesMessages = data.bubblesMessages,
-                exportInfo = exportInfo,
-            )
-            copyIconFilesToExportFolder(icons = data.icons, folderDestination = dataHolderFolder)
-            copyFilesToExportFolder(files = data.files, folderDestination = dataHolderFolder)
-            emit(LBFlowResult.Success(Unit))
-        }.flowOn(fileDispatcher)
-    }
+    ): Flow<LBFlowResult<Unit>> = flow {
+        dataHolderFolder.mkdirs(override = true)
+        createArchiveMetadataFile(
+            folderDestination = dataHolderFolder,
+            platformInfo = exportInfo.fromPlatformVersion,
+            itemCount = data.safeItemsWithKeys.size,
+            archiveKind = archiveKind.toProtoArchiveKind(),
+            contactCount = data.bubblesContactsWithKey.size,
+        )
+        createArchiveData(
+            folderDestination = dataHolderFolder,
+            safeItemsWithKeys = data.safeItemsWithKeys,
+            safeItemFields = data.safeItemFields,
+            contactsWithKeys = data.bubblesContactsWithKey,
+            bubblesConversations = data.bubblesConversation,
+            bubblesMessages = data.bubblesMessages,
+            exportInfo = exportInfo,
+        )
+        copyIconFilesToExportFolder(icons = data.icons, folderDestination = dataHolderFolder)
+        copyFilesToExportFolder(files = data.files, folderDestination = dataHolderFolder)
+        emit(LBFlowResult.Success(Unit))
+    }.flowOn(fileDispatcher)
 
     /**
      * Create metadata file that will be wrapped into the final archive.
@@ -121,7 +119,10 @@ abstract class AbstractExportEngine(
             val metadataDestFile = File(folderDestination, ArchiveConstants.MetadataFile)
             archiveMetadata.writeAsFile(destFile = metadataDestFile)
         } catch (e: Exception) {
-            emit(LBFlowResult.Failure(throwable = OSImportExportError(code = OSImportExportError.Code.EXPORT_METADATA_FAILURE, cause = e)))
+            emit(
+                LBFlowResult
+                    .Failure(throwable = OSImportExportError(code = OSImportExportError.Code.EXPORT_METADATA_FAILURE, cause = e)),
+            )
         }
     }
 
@@ -146,7 +147,10 @@ abstract class AbstractExportEngine(
                 createArchiveSafeItemFields(safeItemFields)
             val safeItemsToExport: List<OSExportProto.ArchiveSafeItem> =
                 createArchiveSafeItems(safeItemsWithKeys.keys.toList())
-            val contactsToExport: List<OSExportProto.ArchiveBubblesContact> = createArchiveBubblesContacts(contactsWithKeys.keys.toList())
+            val contactsToExport: List<OSExportProto.ArchiveBubblesContact> = createArchiveBubblesContacts(
+                contactsWithKeys.keys
+                    .toList(),
+            )
             val conversationsToExport: List<OSExportProto.ArchiveBubblesConversation> = createArchiveBubblesConversations(
                 bubblesConversations,
             )
@@ -167,7 +171,10 @@ abstract class AbstractExportEngine(
                 archiveData.writeTo(outputStream)
             }
         } catch (e: Exception) {
-            emit(LBFlowResult.Failure(throwable = OSImportExportError(code = OSImportExportError.Code.EXPORT_DATA_FAILURE, cause = e)))
+            emit(
+                LBFlowResult
+                    .Failure(throwable = OSImportExportError(code = OSImportExportError.Code.EXPORT_DATA_FAILURE, cause = e)),
+            )
         }
     }
 
@@ -183,7 +190,10 @@ abstract class AbstractExportEngine(
                 file.copyTo(target = File(iconFolder, file.name))
             }
         } catch (e: Exception) {
-            emit(LBFlowResult.Failure(throwable = OSImportExportError(code = OSImportExportError.Code.EXPORT_ICON_FAILURE, cause = e)))
+            emit(
+                LBFlowResult
+                    .Failure(throwable = OSImportExportError(code = OSImportExportError.Code.EXPORT_ICON_FAILURE, cause = e)),
+            )
         }
     }
 
@@ -199,21 +209,23 @@ abstract class AbstractExportEngine(
                 file.copyTo(target = File(fileFolder, file.name))
             }
         } catch (e: Exception) {
-            emit(LBFlowResult.Failure(throwable = OSImportExportError(code = OSImportExportError.Code.EXPORT_FILE_FAILURE, cause = e)))
+            emit(
+                LBFlowResult
+                    .Failure(throwable = OSImportExportError(code = OSImportExportError.Code.EXPORT_FILE_FAILURE, cause = e)),
+            )
         }
     }
 
-    private fun createArchiveSafeItemKeys(safeItemKeys: List<SafeItemKey>): List<OSExportProto.ArchiveSafeItemKey> {
-        return safeItemKeys.map { safeItemKey ->
+    private fun createArchiveSafeItemKeys(safeItemKeys: List<SafeItemKey>): List<OSExportProto.ArchiveSafeItemKey> = safeItemKeys
+        .map { safeItemKey ->
             archiveSafeItemKey {
                 id = safeItemKey.id.toString()
                 value = safeItemKey.encValue.toByteString()
             }
         }
-    }
 
-    private fun createArchiveSafeItemFields(safeItemFields: List<SafeItemField>): List<OSExportProto.ArchiveSafeItemField> {
-        return safeItemFields.map { safeItemField ->
+    private fun createArchiveSafeItemFields(safeItemFields: List<SafeItemField>): List<OSExportProto.ArchiveSafeItemField> = safeItemFields
+        .map { safeItemField ->
             archiveSafeItemField {
                 id = safeItemField.id.toString()
                 createdAt = dateTimeFormatter.format(safeItemField.updatedAt.atZone(ZoneId.systemDefault()))
@@ -231,45 +243,40 @@ abstract class AbstractExportEngine(
                 isSecured = safeItemField.isSecured
             }
         }
-    }
 
     private fun createArchiveMetadata(
         safeItemCount: Int,
         contactCount: Int,
         platformInfo: String,
         kind: ArchiveKind,
-    ): OSExportProto.ArchiveMetadata {
-        return archiveMetadata {
-            archiveVersion = com.lunabee.onesafe.proto.ArchiveProtoConstants.ArchiveSpecVersion
-            archiveKind = kind
-            fromPlatform = platformInfo
-            isFromOneSafePlus = false
-            itemsCount = safeItemCount
-            bubblesContactsCount = contactCount
-            createdAt = dateTimeFormatter.format(ZonedDateTime.now())
+    ): OSExportProto.ArchiveMetadata = archiveMetadata {
+        archiveVersion = com.lunabee.onesafe.proto.ArchiveProtoConstants.ArchiveSpecVersion
+        archiveKind = kind
+        fromPlatform = platformInfo
+        isFromOneSafePlus = false
+        itemsCount = safeItemCount
+        bubblesContactsCount = contactCount
+        createdAt = dateTimeFormatter.format(ZonedDateTime.now())
+    }
+
+    private fun createArchiveSafeItems(items: List<ExportItem>): List<OSExportProto.ArchiveSafeItem> = items.map { item ->
+        archiveSafeItem {
+            id = item.id.toString()
+            createdAt = dateTimeFormatter.format(item.createdAt)
+            deletedAt = item.deletedAt?.let { deletedAt -> dateTimeFormatter.format(deletedAt) }.orEmpty()
+            deletedParentId = item.deletedParentId?.toString().orEmpty()
+            encColor = item.encColor.byteStringOrEmpty()
+            iconId = item.iconId?.toString().orEmpty()
+            encName = item.encName.byteStringOrEmpty()
+            parentId = item.parentId?.toString().orEmpty()
+            isFavorite = item.isFavorite
+            updatedAt = dateTimeFormatter.format(item.updatedAt)
+            position = item.position
         }
     }
 
-    private fun createArchiveSafeItems(items: List<ExportItem>): List<OSExportProto.ArchiveSafeItem> {
-        return items.map { item ->
-            archiveSafeItem {
-                id = item.id.toString()
-                createdAt = dateTimeFormatter.format(item.createdAt)
-                deletedAt = item.deletedAt?.let { deletedAt -> dateTimeFormatter.format(deletedAt) }.orEmpty()
-                deletedParentId = item.deletedParentId?.toString().orEmpty()
-                encColor = item.encColor.byteStringOrEmpty()
-                iconId = item.iconId?.toString().orEmpty()
-                encName = item.encName.byteStringOrEmpty()
-                parentId = item.parentId?.toString().orEmpty()
-                isFavorite = item.isFavorite
-                updatedAt = dateTimeFormatter.format(item.updatedAt)
-                position = item.position
-            }
-        }
-    }
-
-    private fun createArchiveBubblesContacts(contacts: List<Contact>): List<OSExportProto.ArchiveBubblesContact> {
-        return contacts.map { contact ->
+    private fun createArchiveBubblesContacts(contacts: List<Contact>): List<OSExportProto.ArchiveBubblesContact> = contacts
+        .map { contact ->
             archiveBubblesContact {
                 id = contact.id.uuidString()
                 encName = contact.encName.toByteString()
@@ -278,31 +285,37 @@ abstract class AbstractExportEngine(
                 sharedConversationId = contact.sharedConversationId.uuidString()
                 encSharingMode = contact.encSharingMode.toByteString()
                 sharedConversationId = contact.sharedConversationId.uuidString()
-                consultedAt = contact.consultedAt?.let { consultedAt -> dateTimeFormatter.format(consultedAt.toJavaInstant()) }.orEmpty()
+                consultedAt = contact.consultedAt
+                    ?.let { consultedAt ->
+                        dateTimeFormatter
+                            .format(consultedAt.toJavaInstant())
+                    }.orEmpty()
                 encResetConversationDate = contact.encResetConversationDate.byteStringOrEmpty()
             }
         }
-    }
 
-    private fun createArchiveBubblesConversations(conversations: List<EncConversation>): List<OSExportProto.ArchiveBubblesConversation> {
-        return conversations.map { conversation ->
-            archiveBubblesConversation {
-                id = conversation.id.uuidString()
-                encPersonalPublicKey = conversation.encPersonalPublicKey.toByteString()
-                encPersonalPrivateKey = conversation.encPersonalPrivateKey.toByteString()
-                encMessageNumber = conversation.encMessageNumber.toByteString()
-                encSequenceNumber = conversation.encSequenceNumber.toByteString()
-                encRootKey = conversation.encRootKey.byteStringOrEmpty()
-                encSendingChainKey = conversation.encSendingChainKey.byteStringOrEmpty()
-                encReceiveChainKey = conversation.encReceiveChainKey.byteStringOrEmpty()
-                encLastContactPublicKey = conversation.encLastContactPublicKey.byteStringOrEmpty()
-                encReceivedLastMessageNumber = conversation.encReceivedLastMessageNumber.byteStringOrEmpty()
-            }
+    private fun createArchiveBubblesConversations(
+        conversations: List<EncConversation>,
+    ): List<OSExportProto.ArchiveBubblesConversation> = conversations.map { conversation ->
+        archiveBubblesConversation {
+            id = conversation.id.uuidString()
+            encPersonalPublicKey = conversation.encPersonalPublicKey.toByteString()
+            encPersonalPrivateKey = conversation.encPersonalPrivateKey.toByteString()
+            encMessageNumber = conversation.encMessageNumber.toByteString()
+            encSequenceNumber = conversation.encSequenceNumber.toByteString()
+            encRootKey = conversation.encRootKey.byteStringOrEmpty()
+            encSendingChainKey = conversation.encSendingChainKey.byteStringOrEmpty()
+            encReceiveChainKey = conversation.encReceiveChainKey.byteStringOrEmpty()
+            encLastContactPublicKey = conversation.encLastContactPublicKey.byteStringOrEmpty()
+            encReceivedLastMessageNumber = conversation.encReceivedLastMessageNumber.byteStringOrEmpty()
         }
     }
 
-    private fun createArchiveBubblesMessage(messages: List<SafeMessage>): List<OSExportProto.ArchiveBubblesMessage> {
-        return messages.mapIndexed { index, message ->
+    private fun createArchiveBubblesMessage(messages: List<SafeMessage>): List<OSExportProto.ArchiveBubblesMessage> = messages
+        .mapIndexed {
+            index,
+            message,
+            ->
             archiveBubblesMessage {
                 id = message.id.uuidString()
                 fromContactId = message.fromContactId.uuidString()
@@ -318,14 +331,16 @@ abstract class AbstractExportEngine(
                 order = index.toFloat()
             }
         }
-    }
 
-    private suspend fun createArchiveContactKey(contactKeys: Map<Contact, ContactLocalKey>): List<OSExportProto.ArchiveBubblesContactKey> {
-        return contactKeys.map { (contact, contactKey) ->
-            archiveBubblesContactKey {
-                contactId = contact.id.uuidString()
-                encLocalKey = contactKey.encKey.toByteString()
-            }
+    private suspend fun createArchiveContactKey(
+        contactKeys: Map<
+            Contact,
+            ContactLocalKey,
+        >,
+    ): List<OSExportProto.ArchiveBubblesContactKey> = contactKeys.map { (contact, contactKey) ->
+        archiveBubblesContactKey {
+            contactId = contact.id.uuidString()
+            encLocalKey = contactKey.encKey.toByteString()
         }
     }
 

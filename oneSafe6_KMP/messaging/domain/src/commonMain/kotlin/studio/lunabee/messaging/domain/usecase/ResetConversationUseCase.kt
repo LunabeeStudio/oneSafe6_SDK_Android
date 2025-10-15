@@ -19,7 +19,6 @@
 
 package studio.lunabee.messaging.domain.usecase
 
-import kotlin.time.Clock
 import studio.lunabee.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.bubbles.domain.repository.BubblesSafeRepository
 import studio.lunabee.bubbles.domain.repository.ContactRepository
@@ -34,6 +33,7 @@ import studio.lunabee.messaging.domain.model.HandShakeData
 import studio.lunabee.messaging.domain.model.SharedMessage
 import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.onesafe.error.BubblesDomainError
+import kotlin.time.Clock
 
 class ResetConversationUseCase @Inject constructor(
     private val doubleRatchetEngine: DoubleRatchetEngine,

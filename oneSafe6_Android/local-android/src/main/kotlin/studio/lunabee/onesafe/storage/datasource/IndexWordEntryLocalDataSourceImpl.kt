@@ -33,7 +33,8 @@ import javax.inject.Inject
 class IndexWordEntryLocalDataSourceImpl @Inject constructor(
     private val searchIndexDao: IndexWordEntryDao,
 ) : IndexWordEntryLocalDataSource {
-    override fun getAll(safeId: SafeId): Flow<List<IndexWordEntry>> = searchIndexDao.getAll(safeId)
+    override fun getAll(safeId: SafeId): Flow<List<IndexWordEntry>> = searchIndexDao
+        .getAll(safeId)
         .distinctUntilChanged()
         .mapValues(RoomIndexWordEntry::toIndexWordEntry)
 

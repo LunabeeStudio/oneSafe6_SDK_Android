@@ -48,23 +48,21 @@ class ArchiveZipUseCase @Inject constructor(
      *
      * @return a flow emitting zip progress.
      */
-    operator fun invoke(folderToZip: File, outputZipFile: File): Flow<LBFlowResult<File>> {
-        return flow<LBFlowResult<File>> {
-            try {
-                @Suppress("BlockingMethodInNonBlockingContext")
-                ZipOutputStream(BufferedOutputStream(FileOutputStream(outputZipFile))).use { outStream ->
-                    zip(zipDestStream = outStream, sourceFile = folderToZip, parentFile = null, archiveName = outputZipFile.name)
-                }
-                // Delete zipped files except the zip itself.
-                folderToZip.listFiles()?.forEach { fileToDelete ->
-                    if (fileToDelete.name != outputZipFile.name) fileToDelete.deleteRecursively()
-                }
-                emit(LBFlowResult.Success(outputZipFile))
-            } catch (e: Exception) {
-                emit(LBFlowResult.Failure(OSDomainError(code = OSDomainError.Code.ZIP_FAILURE, cause = e)))
+    operator fun invoke(folderToZip: File, outputZipFile: File): Flow<LBFlowResult<File>> = flow<LBFlowResult<File>> {
+        try {
+            @Suppress("BlockingMethodInNonBlockingContext")
+            ZipOutputStream(BufferedOutputStream(FileOutputStream(outputZipFile))).use { outStream ->
+                zip(zipDestStream = outStream, sourceFile = folderToZip, parentFile = null, archiveName = outputZipFile.name)
             }
-        }.flowOn(fileDispatcher)
-    }
+            // Delete zipped files except the zip itself.
+            folderToZip.listFiles()?.forEach { fileToDelete ->
+                if (fileToDelete.name != outputZipFile.name) fileToDelete.deleteRecursively()
+            }
+            emit(LBFlowResult.Success(outputZipFile))
+        } catch (e: Exception) {
+            emit(LBFlowResult.Failure(OSDomainError(code = OSDomainError.Code.ZIP_FAILURE, cause = e)))
+        }
+    }.flowOn(fileDispatcher)
 
     /**
      * @see invoke
@@ -74,22 +72,20 @@ class ArchiveZipUseCase @Inject constructor(
      *
      * @return a flow emitting zip progress.
      */
-    operator fun invoke(folderToZip: File, outputZipFileStream: OutputStream): Flow<LBFlowResult<Unit>> {
-        return flow<LBFlowResult<Unit>> {
-            try {
-                ZipOutputStream(BufferedOutputStream(outputZipFileStream)).use { outStream ->
-                    zip(zipDestStream = outStream, sourceFile = folderToZip, parentFile = null, archiveName = null)
-                }
-                // Delete zipped files except the zip itself.
-                folderToZip.listFiles()?.forEach { fileToDelete ->
-                    fileToDelete.deleteRecursively()
-                }
-                emit(LBFlowResult.Success(Unit))
-            } catch (e: Exception) {
-                emit(LBFlowResult.Failure(OSDomainError(code = OSDomainError.Code.ZIP_FAILURE, cause = e)))
+    operator fun invoke(folderToZip: File, outputZipFileStream: OutputStream): Flow<LBFlowResult<Unit>> = flow<LBFlowResult<Unit>> {
+        try {
+            ZipOutputStream(BufferedOutputStream(outputZipFileStream)).use { outStream ->
+                zip(zipDestStream = outStream, sourceFile = folderToZip, parentFile = null, archiveName = null)
             }
-        }.flowOn(fileDispatcher)
-    }
+            // Delete zipped files except the zip itself.
+            folderToZip.listFiles()?.forEach { fileToDelete ->
+                fileToDelete.deleteRecursively()
+            }
+            emit(LBFlowResult.Success(Unit))
+        } catch (e: Exception) {
+            emit(LBFlowResult.Failure(OSDomainError(code = OSDomainError.Code.ZIP_FAILURE, cause = e)))
+        }
+    }.flowOn(fileDispatcher)
 
     private fun <T : Any> FlowCollector<LBFlowResult<T>>.zip(
         zipDestStream: ZipOutputStream,

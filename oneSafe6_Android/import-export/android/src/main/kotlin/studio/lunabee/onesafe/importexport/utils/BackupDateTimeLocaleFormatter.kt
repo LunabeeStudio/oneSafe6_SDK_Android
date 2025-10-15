@@ -43,8 +43,10 @@ class BackupDateTimeLocaleFormatter(
         val daysUntilNow = localDate
             .until(LocalDate.ofInstant(Instant.now(clock), zone), ChronoUnit.DAYS)
         val dateStr = when (daysUntilNow) {
-            0L -> fmt.format(RelativeDateTimeFormatter.Direction.THIS, RelativeDateTimeFormatter.AbsoluteUnit.DAY)
-                .replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
+            0L ->
+                fmt
+                    .format(RelativeDateTimeFormatter.Direction.THIS, RelativeDateTimeFormatter.AbsoluteUnit.DAY)
+                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
             1L ->
                 fmt
                     .format(RelativeDateTimeFormatter.Direction.LAST, RelativeDateTimeFormatter.AbsoluteUnit.DAY)
@@ -52,7 +54,9 @@ class BackupDateTimeLocaleFormatter(
             else -> DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale).format(localDate)
         }
 
-        val timeStr = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale)
+        val timeStr = DateTimeFormatter
+            .ofLocalizedTime(FormatStyle.SHORT)
+            .withLocale(locale)
             .format(LocalTime.ofInstant(date, zone))
 
         return fmt.combineDateAndTime(dateStr, timeStr)

@@ -57,11 +57,12 @@ class EnforceCryptoDispatcherDetectorTest {
 
     @Test
     fun suspend_call_with_withContext_check_test() {
-        lint().files(
-            cryptoQualifierStub,
-            mainRepoStub,
-            kt(
-                """
+        lint()
+            .files(
+                cryptoQualifierStub,
+                mainRepoStub,
+                kt(
+                    """
                 package studio.lunabee.onesafe.cryptography.android
                 import ${CryptoDispatcher::class.qualifiedName}
                 import $mainCryptoRepoQualified
@@ -78,9 +79,8 @@ class EnforceCryptoDispatcherDetectorTest {
                     }
                 }
                 """,
-            ).indented(),
-        )
-            .allowMissingSdk()
+                ).indented(),
+            ).allowMissingSdk()
             .issues(EnforceCryptoDispatcherDetector.SuspendCryptoDispatcherIssue)
             .run()
             .expect("No warnings.")
@@ -88,11 +88,12 @@ class EnforceCryptoDispatcherDetectorTest {
 
     @Test
     fun suspend_call_without_withContext_check_test() {
-        lint().files(
-            cryptoQualifierStub,
-            mainRepoStub,
-            kt(
-                """
+        lint()
+            .files(
+                cryptoQualifierStub,
+                mainRepoStub,
+                kt(
+                    """
                 package studio.lunabee.onesafe.cryptography.android
                 import ${CryptoDispatcher::class.qualifiedName}
                 import $mainCryptoRepoQualified
@@ -108,9 +109,8 @@ class EnforceCryptoDispatcherDetectorTest {
                     }
                 }
                 """,
-            ).indented(),
-        )
-            .issues(EnforceCryptoDispatcherDetector.SuspendCryptoDispatcherIssue)
+                ).indented(),
+            ).issues(EnforceCryptoDispatcherDetector.SuspendCryptoDispatcherIssue)
             .allowMissingSdk()
             .run()
             .expect(
@@ -128,11 +128,12 @@ class EnforceCryptoDispatcherDetectorTest {
 
     @Test
     fun non_suspend_call_without_withContext_check_test() {
-        lint().files(
-            mainRepoStub,
-            cryptoQualifierStub,
-            kt(
-                """
+        lint()
+            .files(
+                mainRepoStub,
+                cryptoQualifierStub,
+                kt(
+                    """
                 package studio.lunabee.onesafe.cryptography.android
                 class AndroidMainCryptoRepository : $mainCryptoRepoName {
                     fun publicMethod() { 
@@ -140,9 +141,8 @@ class EnforceCryptoDispatcherDetectorTest {
                     }
                 }
                 """,
-            ).indented(),
-        )
-            .issues(EnforceCryptoDispatcherDetector.SuspendCryptoDispatcherIssue)
+                ).indented(),
+            ).issues(EnforceCryptoDispatcherDetector.SuspendCryptoDispatcherIssue)
             .allowMissingSdk()
             .run()
             .expect("No warnings.")
@@ -150,12 +150,13 @@ class EnforceCryptoDispatcherDetectorTest {
 
     @Test
     fun flow_call_with_flowOn_check_test() {
-        lint().files(
-            flowStub,
-            cryptoQualifierStub,
-            mainRepoStub,
-            kt(
-                """
+        lint()
+            .files(
+                flowStub,
+                cryptoQualifierStub,
+                mainRepoStub,
+                kt(
+                    """
                 package studio.lunabee.onesafe.cryptography.android
 
                 import ${CryptoDispatcher::class.qualifiedName}
@@ -173,9 +174,8 @@ class EnforceCryptoDispatcherDetectorTest {
                     fun publicFlowReturnMethod(): Flow<Unit> = flowOf(Unit).flowOn(myCryptoDispatcher)
                 }
                 """,
-            ).indented(),
-        )
-            .issues(EnforceCryptoDispatcherDetector.FlowCryptoDispatcherIssue)
+                ).indented(),
+            ).issues(EnforceCryptoDispatcherDetector.FlowCryptoDispatcherIssue)
             .allowMissingSdk()
             .run()
             .expect("No warnings.")
@@ -183,12 +183,13 @@ class EnforceCryptoDispatcherDetectorTest {
 
     @Test
     fun flow_call_without_flowOn_check_test() {
-        lint().files(
-            flowStub,
-            cryptoQualifierStub,
-            mainRepoStub,
-            kt(
-                """
+        lint()
+            .files(
+                flowStub,
+                cryptoQualifierStub,
+                mainRepoStub,
+                kt(
+                    """
                 package studio.lunabee.onesafe.cryptography.android
 
                 import ${CryptoDispatcher::class.qualifiedName}
@@ -208,9 +209,8 @@ class EnforceCryptoDispatcherDetectorTest {
                     fun publicFlowReturnMethod(): Flow<Unit> = flowOf(Unit).flowOn(wrongDispatcher)
                 }
                 """,
-            ).indented(),
-        )
-            .issues(EnforceCryptoDispatcherDetector.FlowCryptoDispatcherIssue)
+                ).indented(),
+            ).issues(EnforceCryptoDispatcherDetector.FlowCryptoDispatcherIssue)
             .allowMissingSdk()
             .run()
             .expect(

@@ -24,12 +24,12 @@ import kotlinx.coroutines.test.runTest
 import studio.lunabee.bubbles.domain.crypto.BubblesDataHashEngine
 import studio.lunabee.bubbles.domain.crypto.BubblesKeyExchangeEngine
 import studio.lunabee.bubbles.repository.DoubleRatchetKeyRepositoryImpl
-import kotlin.test.Test
 import studio.lunabee.doubleratchet.model.DRChainKey
 import studio.lunabee.doubleratchet.model.DRRootKey
 import studio.lunabee.doubleratchet.model.DRSharedSecret
-import studio.lunabee.onesafe.test.testUUIDs
 import studio.lunabee.onesafe.jvm.toByteArray
+import studio.lunabee.onesafe.test.testUUIDs
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 
 class AndroidDoubleRatchetKeyRepositoryTest {
@@ -60,8 +60,10 @@ class AndroidDoubleRatchetKeyRepositoryTest {
         val sharedSecretAlice = DRSharedSecret(ByteArray(cryptoRepositoryA.sharedSecretByteSize) { -1 })
         val sharedSecretBob = DRSharedSecret(ByteArray(cryptoRepositoryB.sharedSecretByteSize) { -2 })
 
-        cryptoRepositoryA.createDiffieHellmanSharedSecret(keyPairBob.publicKey, keyPairAlice.privateKey, sharedSecretAlice)
-        cryptoRepositoryB.createDiffieHellmanSharedSecret(keyPairAlice.publicKey, keyPairBob.privateKey, sharedSecretBob)
+        cryptoRepositoryA
+            .createDiffieHellmanSharedSecret(keyPairBob.publicKey, keyPairAlice.privateKey, sharedSecretAlice)
+        cryptoRepositoryB
+            .createDiffieHellmanSharedSecret(keyPairAlice.publicKey, keyPairBob.privateKey, sharedSecretBob)
 
         assertContentEquals(sharedSecretAlice.value, sharedSecretBob.value)
     }

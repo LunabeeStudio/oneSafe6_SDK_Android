@@ -27,9 +27,9 @@ import kotlinx.coroutines.launch
 import studio.lunabee.onesafe.domain.usecase.authentication.GetBiometricCipherUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.LoginUseCase
 import studio.lunabee.onesafe.error.OSAppError
-import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.error.OSImeError
 import studio.lunabee.onesafe.ime.repository.ImeBiometricResultRepository
+import studio.lunabee.onesafe.jvm.get
 import javax.crypto.Cipher
 import javax.inject.Inject
 
@@ -40,9 +40,7 @@ class ImeBiometricViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
 ) : ViewModel() {
 
-    suspend fun getCipher(): Cipher? {
-        return getBiometricCipherUseCase.forVerify().data
-    }
+    suspend fun getCipher(): Cipher? = getBiometricCipherUseCase.forVerify().data
 
     fun biometricLogin(cipher: Cipher) {
         viewModelScope.launch {
@@ -53,7 +51,7 @@ class ImeBiometricViewModel @Inject constructor(
                     imeBiometricResultRepository.setError(error)
                 }
                 is LBResult.Success -> {
-                    /* no-op, observe safeReadyUseCase */
+                    // no-op, observe safeReadyUseCase
                 }
             }
         }

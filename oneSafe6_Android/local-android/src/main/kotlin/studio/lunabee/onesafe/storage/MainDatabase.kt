@@ -119,23 +119,41 @@ import studio.lunabee.onesafe.storage.utils.addUniqueBiometricKeyTrigger
 )
 abstract class MainDatabase : RoomDatabase() {
     abstract fun safeItemDao(): SafeItemDao
+
     abstract fun safeItemRawDao(): SafeItemRawDao
+
     abstract fun safeItemFieldDao(): SafeItemFieldDao
+
     abstract fun searchIndexDao(): IndexWordEntryDao
+
     abstract fun safeItemKeyDao(): SafeItemKeyDao
+
     abstract fun contactDao(): ContactDao
+
     abstract fun contactKeyDao(): ContactKeyDao
+
     abstract fun messageDao(): MessageDao
+
     abstract fun enqueuedMessageDao(): EnqueuedMessageDao
+
     abstract fun doubleRatchetKeyDao(): DoubleRatchetKeyDao
+
     abstract fun doubleRatchetConversationDao(): DoubleRatchetConversationDao
+
     abstract fun handShakeDataDao(): HandShakeDataDao
+
     abstract fun sentMessageDao(): SentMessageDao
+
     abstract fun backupDao(): BackupDao
+
     abstract fun safeDao(): SafeDao
+
     abstract fun settingsDao(): SettingsDao
+
     abstract fun autoBackupErrorDao(): AutoBackupErrorDao
+
     abstract fun safeFileDao(): SafeFileDao
+
     abstract fun recentSearchDao(): RecentSearchDao
 
     companion object {
@@ -145,12 +163,12 @@ abstract class MainDatabase : RoomDatabase() {
             mainDatabaseName: String,
             vararg migrations: Migration,
         ): MainDatabase {
-            val builder = Room.databaseBuilder(
-                appContext,
-                MainDatabase::class.java,
-                mainDatabaseName,
-            )
-                .addCallback(MainDatabaseCallback())
+            val builder = Room
+                .databaseBuilder(
+                    appContext,
+                    MainDatabase::class.java,
+                    mainDatabaseName,
+                ).addCallback(MainDatabaseCallback())
                 .addMigrations(*migrations)
                 .openHelperFactory(SupportOpenHelperFactory(dbKey?.raw))
 

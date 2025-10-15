@@ -28,7 +28,7 @@ android {
     namespace = "studio.lunabee.onesafe.migration"
 
     defaultConfig {
-        missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
+        missingDimensionStrategy("crypto", AndroidConfig.CryptoBackendFlavorDefault)
         testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
     }
 

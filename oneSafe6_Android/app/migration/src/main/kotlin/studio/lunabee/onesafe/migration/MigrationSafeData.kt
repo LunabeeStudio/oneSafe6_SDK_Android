@@ -33,19 +33,17 @@ class MigrationSafeData0(
     val encItemEditionKey: ByteArray?,
     val biometricCryptoMaterial: BiometricCryptoMaterial?,
 ) {
-    fun as15(): MigrationSafeData15 {
-        return MigrationSafeData15(
-            masterKey = masterKey,
-            version = version,
-            id = id,
-            salt = salt,
-            encTest = encTest,
-            encIndexKey = encIndexKey!!,
-            encBubblesKey = encBubblesKey,
-            encItemEditionKey = encItemEditionKey!!,
-            biometricCryptoMaterial = biometricCryptoMaterial,
-        )
-    }
+    fun as15(): MigrationSafeData15 = MigrationSafeData15(
+        masterKey = masterKey,
+        version = version,
+        id = id,
+        salt = salt,
+        encTest = encTest,
+        encIndexKey = encIndexKey!!,
+        encBubblesKey = encBubblesKey,
+        encItemEditionKey = encItemEditionKey!!,
+        biometricCryptoMaterial = biometricCryptoMaterial,
+    )
 }
 
 // Safe data after V15 have non null encIndexKey and encItemEditionKey

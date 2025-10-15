@@ -70,7 +70,7 @@ class LocalBackupWorker @AssistedInject constructor(
     private val featureFlags: FeatureFlags,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
-        val safeId = SafeId(inputData.getByteArray(EXPORT_WORKER_SAFE_ID_DATA)!!.toUUID())
+        val safeId = SafeId(inputData.getByteArray(ExportWorkerSafeIdData)!!.toUUID())
         val flowResult = localAutoBackupUseCase(safeId)
             .catch { error ->
                 emit(LBFlowResult.Failure(error))
@@ -99,8 +99,9 @@ class LocalBackupWorker @AssistedInject constructor(
     }
 
     private suspend fun updateProgress(progress: Float) {
-        val data = Data.Builder()
-            .putFloat(PROGRESS_DATA_KEY, progress)
+        val data = Data
+            .Builder()
+            .putFloat(ProgressDataKey, progress)
             .build()
         setProgress(data)
 
@@ -109,7 +110,10 @@ class LocalBackupWorker @AssistedInject constructor(
         }
     }
 
-    override suspend fun getForegroundInfo(): ForegroundInfo = createForegroundInfo(inputData.getFloat(PROGRESS_DATA_KEY, 0f))
+    override suspend fun getForegroundInfo(): ForegroundInfo = createForegroundInfo(
+        inputData
+            .getFloat(ProgressDataKey, 0f),
+    )
 
     private fun createForegroundInfo(progress: Float): ForegroundInfo {
         logger.d("Progress $progress") // TODO show progress
@@ -125,19 +129,19 @@ class LocalBackupWorker @AssistedInject constructor(
             .build()
 
         return ForegroundInfoCompat.foregroundInfoDataSync(
-            notificationId = OSNotificationManager.AUTO_BACKUP_WORKER_NOTIFICATION_ID,
+            notificationId = OSNotificationManager.AutoBackupWorkerNotificationId,
             notification = notification,
         )
     }
 
     companion object {
-        private const val PROGRESS_DATA_KEY: String = "375f2850-9884-4ef7-a50b-6e58be73a483"
-        private const val EXPORT_WORKER_SAFE_ID_DATA = "c403bc67-67ea-42b9-b6df-e3ee6bf47a7f"
+        private const val ProgressDataKey: String = "375f2850-9884-4ef7-a50b-6e58be73a483"
+        private const val ExportWorkerSafeIdData = "c403bc67-67ea-42b9-b6df-e3ee6bf47a7f"
 
         internal fun getWorkRequest(setExpedited: Boolean, safeId: SafeId): OneTimeWorkRequest {
             val data = Data
                 .Builder()
-                .putByteArray(EXPORT_WORKER_SAFE_ID_DATA, safeId.id.toByteArray())
+                .putByteArray(ExportWorkerSafeIdData, safeId.id.toByteArray())
                 .build()
             val workRequestBuilder = OneTimeWorkRequestBuilder<LocalBackupWorker>()
             workRequestBuilder

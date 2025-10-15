@@ -36,7 +36,9 @@ class RoomCtaState(
     }
 
     enum class State {
-        Hidden, DismissedAt, VisibleSince
+        Hidden,
+        DismissedAt,
+        VisibleSince,
     }
 
     companion object {

@@ -55,23 +55,21 @@ object OSTestUtils {
         indexAlpha: Double = 0.0,
         createdAt: Instant = Instant.now(OSTestConfig.clock),
         safeId: SafeId = firstSafeId,
-    ): SafeItem {
-        return SafeItem(
-            id = id,
-            encName = encName,
-            parentId = parentId,
-            isFavorite = isFavorite,
-            updatedAt = updatedAt,
-            position = position,
-            iconId = iconId,
-            encColor = encColor,
-            deletedAt = deletedAt,
-            deletedParentId = deletedParentId,
-            indexAlpha = indexAlpha,
-            createdAt = createdAt,
-            safeId = safeId,
-        )
-    }
+    ): SafeItem = SafeItem(
+        id = id,
+        encName = encName,
+        parentId = parentId,
+        isFavorite = isFavorite,
+        updatedAt = updatedAt,
+        position = position,
+        iconId = iconId,
+        encColor = encColor,
+        deletedAt = deletedAt,
+        deletedParentId = deletedParentId,
+        indexAlpha = indexAlpha,
+        createdAt = createdAt,
+        safeId = safeId,
+    )
 
     fun createSafeItemWithIdentifier(
         id: UUID = UUID.randomUUID(),
@@ -82,20 +80,18 @@ object OSTestUtils {
         encIdentifierKind: ByteArray? = byteArrayOf(),
         position: Double = 0.0,
         updatedAt: Instant = Instant.EPOCH,
-    ): SafeItemWithIdentifier {
-        return SafeItemWithIdentifier(
-            id = id,
-            encName = encName,
-            iconId = iconId,
-            encColor = encColor,
-            encIdentifier = identifier,
-            deletedAt = null,
-            encSecuredDisplayMask = null,
-            encIdentifierKind = encIdentifierKind,
-            position = position,
-            updatedAt = updatedAt,
-        )
-    }
+    ): SafeItemWithIdentifier = SafeItemWithIdentifier(
+        id = id,
+        encName = encName,
+        iconId = iconId,
+        encColor = encColor,
+        encIdentifier = identifier,
+        deletedAt = null,
+        encSecuredDisplayMask = null,
+        encIdentifierKind = encIdentifierKind,
+        position = position,
+        updatedAt = updatedAt,
+    )
 
     fun createSafeItems(
         size: Int,
@@ -112,24 +108,22 @@ object OSTestUtils {
         indexAlpha: (idx: Int) -> Double = { 0.0 },
         createdAt: (idx: Int) -> Instant = { Instant.now(OSTestConfig.clock) },
         safeId: (idx: Int) -> SafeId = { firstSafeId },
-    ): List<SafeItem> {
-        return (0 until size).map { idx ->
-            SafeItem(
-                id = id(idx),
-                encName = encName(idx),
-                parentId = parentId(idx),
-                isFavorite = isFavorite(idx),
-                updatedAt = updatedAt(idx),
-                position = position(idx),
-                iconId = iconId(idx),
-                encColor = encColor(idx),
-                deletedAt = deletedAt(idx),
-                deletedParentId = deletedParentId(idx),
-                indexAlpha = indexAlpha(idx),
-                createdAt = createdAt(idx),
-                safeId = safeId(idx),
-            )
-        }
+    ): List<SafeItem> = (0 until size).map { idx ->
+        SafeItem(
+            id = id(idx),
+            encName = encName(idx),
+            parentId = parentId(idx),
+            isFavorite = isFavorite(idx),
+            updatedAt = updatedAt(idx),
+            position = position(idx),
+            iconId = iconId(idx),
+            encColor = encColor(idx),
+            deletedAt = deletedAt(idx),
+            deletedParentId = deletedParentId(idx),
+            indexAlpha = indexAlpha(idx),
+            createdAt = createdAt(idx),
+            safeId = safeId(idx),
+        )
     }
 
     fun createSafeItemField(
@@ -147,24 +141,22 @@ object OSTestUtils {
         formattingMask: ByteArray? = null,
         secureDisplayMask: ByteArray? = null,
         isSecured: Boolean = false,
-    ): SafeItemField {
-        return SafeItemField(
-            id,
-            encName,
-            position,
-            itemId,
-            encPlaceholder,
-            encValue,
-            showPrediction,
-            encKind,
-            updatedAt,
-            isItemIdentifier,
-            formattingMask,
-            secureDisplayMask,
-            encThumbnailFileName,
-            isSecured,
-        )
-    }
+    ): SafeItemField = SafeItemField(
+        id,
+        encName,
+        position,
+        itemId,
+        encPlaceholder,
+        encValue,
+        showPrediction,
+        encKind,
+        updatedAt,
+        isItemIdentifier,
+        formattingMask,
+        secureDisplayMask,
+        encThumbnailFileName,
+        isSecured,
+    )
 
     fun featureFlags(
         florisBoard: Boolean = false,
@@ -175,17 +167,22 @@ object OSTestUtils {
         cloudBackup: Boolean = false,
         backupForegroundService: Boolean = false,
         sqlcipher: Boolean = true,
-    ): FeatureFlags {
-        return object : FeatureFlags {
-            override fun florisBoard(): Boolean = florisBoard
-            override fun accessibilityService(): Boolean = accessibilityService
-            override fun oneSafeK(): Boolean = oneSafeK
-            override fun bubbles(): Boolean = bubbles
-            override fun quickSignIn(): Boolean = quickSignIn
-            override fun cloudBackup(): Boolean = cloudBackup
-            override fun backupWorkerExpedited(): Boolean = backupForegroundService
-            override fun sqlcipher(): Boolean = sqlcipher
-        }
+    ): FeatureFlags = object : FeatureFlags {
+        override fun florisBoard(): Boolean = florisBoard
+
+        override fun accessibilityService(): Boolean = accessibilityService
+
+        override fun oneSafeK(): Boolean = oneSafeK
+
+        override fun bubbles(): Boolean = bubbles
+
+        override fun quickSignIn(): Boolean = quickSignIn
+
+        override fun cloudBackup(): Boolean = cloudBackup
+
+        override fun backupWorkerExpedited(): Boolean = backupForegroundService
+
+        override fun sqlcipher(): Boolean = sqlcipher
     }
 
     fun safeSettings(
@@ -323,6 +320,5 @@ suspend fun CreateItemUseCase.test(
 }
 
 val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
-fun Random.nextString(length: Int = 10): String {
-    return buildString(length) { append(charPool.random(this@nextString)) }
-}
+
+fun Random.nextString(length: Int = 10): String = buildString(length) { append(charPool.random(this@nextString)) }

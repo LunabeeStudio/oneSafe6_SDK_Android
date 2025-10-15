@@ -23,15 +23,13 @@ import java.security.SecureRandom
 import javax.inject.Inject
 
 class RandomKeyProvider @Inject constructor() {
-    operator fun invoke(size: Int = DEFAULT_KEY_LENGTH_BYTE): ByteArray {
-        return ByteArray(size).apply {
-            random.nextBytes(this)
-        }
+    operator fun invoke(size: Int = DefaultKeyLengthByte): ByteArray = ByteArray(size).apply {
+        random.nextBytes(this)
     }
 
     private companion object {
         val random = SecureRandom()
 
-        const val DEFAULT_KEY_LENGTH_BYTE: Int = 32
+        const val DefaultKeyLengthByte: Int = 32
     }
 }

@@ -21,13 +21,13 @@ package studio.lunabee.messaging.domain.usecase
 
 import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.bubbles.domain.repository.ContactRepository
-import studio.lunabee.onesafe.di.Inject
-import studio.lunabee.onesafe.error.OSError
-import studio.lunabee.onesafe.error.BubblesMessagingError
 import studio.lunabee.doubleratchet.model.Conversation
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.messaging.domain.model.ConversationState
 import studio.lunabee.messaging.domain.repository.ConversationRepository
+import studio.lunabee.onesafe.di.Inject
+import studio.lunabee.onesafe.error.BubblesMessagingError
+import studio.lunabee.onesafe.error.OSError
 
 class GetConversationStateUseCase @Inject constructor(
     private val conversationRepository: ConversationRepository,

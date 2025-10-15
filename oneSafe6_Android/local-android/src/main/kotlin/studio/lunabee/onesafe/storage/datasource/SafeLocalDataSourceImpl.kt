@@ -57,103 +57,78 @@ class SafeLocalDataSourceImpl @Inject constructor(
         safeDao.delete(safeId)
     }
 
-    override suspend fun getAllSafeCryptoOrderByLastOpenAsc(): List<SafeCrypto> {
-        return safeDao.getAllOrderByLastOpenAsc().map { it.toSafeCrypto() }
-    }
+    override suspend fun getAllSafeCryptoOrderByLastOpenAsc(): List<SafeCrypto> = safeDao
+        .getAllOrderByLastOpenAsc()
+        .map {
+            it.toSafeCrypto()
+        }
 
     override suspend fun updateSafeCrypto(safeCrypto: SafeCrypto) {
         safeDao.updateCrypto(RoomSafeCryptoUpdate.fromSafeCrypto(safeCrypto))
     }
 
-    override suspend fun getIndexKey(safeId: SafeId): ByteArray? {
-        return safeDao.getIndexKey(safeId)
-    }
+    override suspend fun getIndexKey(safeId: SafeId): ByteArray? = safeDao.getIndexKey(safeId)
 
-    override suspend fun getItemEditionKey(safeId: SafeId): ByteArray? {
-        return safeDao.getItemEditionKey(safeId)
-    }
+    override suspend fun getItemEditionKey(safeId: SafeId): ByteArray? = safeDao.getItemEditionKey(safeId)
 
-    override suspend fun getBubblesKey(safeId: SafeId): ByteArray? {
-        return safeDao.getBubblesKey(safeId)
-    }
+    override suspend fun getBubblesKey(safeId: SafeId): ByteArray? = safeDao.getBubblesKey(safeId)
 
-    override suspend fun hasSafe(): Boolean {
-        return safeDao.countAll() > 0
-    }
+    override suspend fun hasSafe(): Boolean = safeDao.countAll() > 0
 
-    override suspend fun getSalt(safeId: SafeId): ByteArray {
-        return safeDao.getSalt(safeId) ?: throw OSStorageError.Code.NO_SALT_FOUND.get()
-    }
+    override suspend fun getSalt(safeId: SafeId): ByteArray = safeDao.getSalt(safeId) ?: throw OSStorageError.Code.NO_SALT_FOUND
+        .get()
 
-    override suspend fun getAllSafeId(): List<SafeId> {
-        return safeDao.getAllSafeIdByLastOpenAsc()
-    }
+    override suspend fun getAllSafeId(): List<SafeId> = safeDao.getAllSafeIdByLastOpenAsc()
 
     override suspend fun setVersion(safeId: SafeId, version: Int) {
         safeDao.setVersion(safeId, version)
     }
 
-    override suspend fun getSafeVersion(safeId: SafeId): Int {
-        return safeDao.getSafeVersion(safeId)
-    }
+    override suspend fun getSafeVersion(safeId: SafeId): Int = safeDao.getSafeVersion(safeId)
 
-    override suspend fun setBiometricKey(safeId: SafeId, biometricCryptoMaterial: BiometricCryptoMaterial) {
-        return safeDao.setBiometricMaterial(safeId, biometricCryptoMaterial)
-    }
+    override suspend fun setBiometricKey(safeId: SafeId, biometricCryptoMaterial: BiometricCryptoMaterial) = safeDao
+        .setBiometricMaterial(
+            safeId,
+            biometricCryptoMaterial,
+        )
 
-    override suspend fun setAutoDestructionKey(safeId: SafeId, autoDestructionKey: ByteArray?) {
-        return safeDao.setAutoDestructionKey(safeId, autoDestructionKey)
-    }
+    override suspend fun setAutoDestructionKey(safeId: SafeId, autoDestructionKey: ByteArray?) = safeDao
+        .setAutoDestructionKey(
+            safeId,
+            autoDestructionKey,
+        )
 
-    override suspend fun removeAllBiometricKeys() {
-        return safeDao.removeAllBiometricKeys()
-    }
+    override suspend fun removeAllBiometricKeys() = safeDao.removeAllBiometricKeys()
 
-    override suspend fun getBiometricSafe(): SafeCrypto? {
-        return safeDao.getBiometricSafe()?.toSafeCrypto()
-    }
+    override suspend fun getBiometricSafe(): SafeCrypto? = safeDao.getBiometricSafe()?.toSafeCrypto()
 
-    override fun hasBiometricSafe(): Flow<Boolean> {
-        return safeDao.hasBiometricSafe()
-    }
+    override fun hasBiometricSafe(): Flow<Boolean> = safeDao.hasBiometricSafe()
 
-    override fun isBiometricEnabledForSafeFlow(safeId: SafeId): Flow<Boolean> {
-        return safeDao.isBiometricEnabledForSafeFlow(safeId)
-    }
+    override fun isBiometricEnabledForSafeFlow(safeId: SafeId): Flow<Boolean> = safeDao
+        .isBiometricEnabledForSafeFlow(safeId)
 
-    override suspend fun isAutoDestructionEnabledForSafe(safeId: SafeId): Boolean {
-        return safeDao.isAutoDestructionEnabledForSafe(safeId)
-    }
+    override suspend fun isAutoDestructionEnabledForSafe(safeId: SafeId): Boolean = safeDao
+        .isAutoDestructionEnabledForSafe(safeId)
 
-    override suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean {
-        return safeDao.isBiometricEnabledForSafe(safeId)
-    }
+    override suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean = safeDao.isBiometricEnabledForSafe(safeId)
 
     override suspend fun setLastOpen(safeId: SafeId) {
         safeDao.setLastOpen(safeId)
     }
 
-    override suspend fun getSafeCrypto(safeId: SafeId): SafeCrypto? {
-        return safeDao.getSafeCrypto(safeId)?.toSafeCrypto()
-    }
+    override suspend fun getSafeCrypto(safeId: SafeId): SafeCrypto? = safeDao.getSafeCrypto(safeId)?.toSafeCrypto()
 
-    override fun isAutoDestructionEnabledForSafeFlow(safeId: SafeId): Flow<Boolean> {
-        return safeDao.isAutoDestructionEnabledForSafeFlow(safeId)
-    }
+    override fun isAutoDestructionEnabledForSafeFlow(safeId: SafeId): Flow<Boolean> = safeDao
+        .isAutoDestructionEnabledForSafeFlow(safeId)
 
-    override fun isPanicDestructionEnabledFlow(safeId: SafeId): Flow<Boolean> {
-        return safeDao.isPanicDestructionEnabledFlow(safeId = safeId)
-    }
+    override fun isPanicDestructionEnabledFlow(safeId: SafeId): Flow<Boolean> = safeDao
+        .isPanicDestructionEnabledFlow(safeId = safeId)
 
     override suspend fun setIsPanicDestructionEnabled(safeId: SafeId, isEnabled: Boolean) {
         safeDao.setIsPanicDestructionEnabled(safeId = safeId, isEnabled = isEnabled)
     }
 
-    override suspend fun hasAnySafePanicWidgetEnabled(): Boolean {
-        return safeDao.hasAnySafePanicWidgetEnabled()
-    }
+    override suspend fun hasAnySafePanicWidgetEnabled(): Boolean = safeDao.hasAnySafePanicWidgetEnabled()
 
-    override suspend fun getSafeToDestroy(): List<SafeId> {
-        return safeDao.getSafeToDestroy()
-    }
+    override suspend fun getSafeToDestroy(): List<SafeId> = safeDao.getSafeToDestroy()
 }

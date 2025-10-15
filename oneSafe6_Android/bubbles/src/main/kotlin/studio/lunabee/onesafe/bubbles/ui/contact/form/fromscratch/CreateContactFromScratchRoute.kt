@@ -20,18 +20,21 @@
 package studio.lunabee.onesafe.bubbles.ui.contact.form.fromscratch
 
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormNavScope
 import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormRoute
 import studio.lunabee.onesafe.bubbles.ui.contact.form.common.ContactFormType
 import java.util.UUID
 
-context (CreateContactFromScratchNavScope)
 @Composable
+context (CreateContactFromScratchNavScope)
 fun CreateContactFromScratchRoute() {
     with(object : ContactFormNavScope {
         override val navigateBack: () -> Unit = this@CreateContactFromScratchNavScope.navigateBack
-        override val navigateToNextScreen: (UUID) -> Unit = { this@CreateContactFromScratchNavScope.navigateToInvitationPopToHome(it) }
+        override val navigateToNextScreen: (UUID) -> Unit = {
+            this@CreateContactFromScratchNavScope
+                .navigateToInvitationPopToHome(it)
+        }
     }) {
         ContactFormRoute(
             viewModel = hiltViewModel<ContactFromScratchFormDelegate>(),

@@ -43,18 +43,14 @@ internal fun SecretKey.safeDestroy() {
     }
 }
 
-internal inline fun <T> PrivateKey.use(block: (PrivateKey) -> T): T {
-    return try {
-        block(this)
-    } finally {
-        this.safeDestroy()
-    }
+internal inline fun <T> PrivateKey.use(block: (PrivateKey) -> T): T = try {
+    block(this)
+} finally {
+    this.safeDestroy()
 }
 
-internal inline fun <T> SecretKey.use(block: (SecretKey) -> T): T {
-    return try {
-        block(this)
-    } finally {
-        this.safeDestroy()
-    }
+internal inline fun <T> SecretKey.use(block: (SecretKey) -> T): T = try {
+    block(this)
+} finally {
+    this.safeDestroy()
 }

@@ -19,9 +19,9 @@
 
 package studio.lunabee.messaging.repository
 
+import studio.lunabee.messaging.domain.repository.MessageChannelRepository
 import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.onesafe.di.Singleton
-import studio.lunabee.messaging.domain.repository.MessageChannelRepository
 
 @Singleton
 class MessageChannelRepositoryImpl @Inject constructor() : MessageChannelRepository {

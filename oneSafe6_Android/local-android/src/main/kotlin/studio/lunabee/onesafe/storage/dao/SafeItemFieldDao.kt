@@ -25,7 +25,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.model.safe.SafeId
-import studio.lunabee.onesafe.storage.DaoUtils.FIELD_ORDER_BY_POSITION
+import studio.lunabee.onesafe.storage.DaoUtils.FieldOrderByPosition
 import studio.lunabee.onesafe.storage.model.RoomSafeItemField
 import java.util.UUID
 
@@ -40,10 +40,10 @@ interface SafeItemFieldDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(safeItem: List<RoomSafeItemField>)
 
-    @Query("SELECT * FROM SafeItemField WHERE item_id = :itemId $FIELD_ORDER_BY_POSITION")
+    @Query("SELECT * FROM SafeItemField WHERE item_id = :itemId $FieldOrderByPosition")
     suspend fun getSafeItemFields(itemId: UUID): List<RoomSafeItemField>
 
-    @Query("SELECT * FROM SafeItemField WHERE item_id = :itemId $FIELD_ORDER_BY_POSITION")
+    @Query("SELECT * FROM SafeItemField WHERE item_id = :itemId $FieldOrderByPosition")
     fun getSafeItemFieldsAsFlow(itemId: UUID): Flow<List<RoomSafeItemField>>
 
     @Query("DELETE FROM SafeItemField WHERE item_id = :itemId")

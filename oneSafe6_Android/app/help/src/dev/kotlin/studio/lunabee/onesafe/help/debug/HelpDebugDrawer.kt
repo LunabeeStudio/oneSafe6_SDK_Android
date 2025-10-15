@@ -50,7 +50,7 @@ import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -388,15 +388,19 @@ private fun buildNavigationDebugString(
     context: Context,
 ): String {
     val navLog = StringBuilder()
+
     fun formatEntry(entry: NavBackStackEntry) {
-        navLog.appendLine("\t• ${entry.resolveArgsToString()} [${entry.lifecycle.currentState}] [${entry.destination.id}]")
+        navLog
+            .appendLine("\t• ${entry.resolveArgsToString()} [${entry.lifecycle.currentState}] [${entry.destination.id}]")
     }
     navLog.appendLine("Main nav")
     mainNavController.currentBackStack.value.forEach(::formatEntry)
     val onBackPressedDispatcher = context.findFragmentActivity().onBackPressedDispatcher
-    val field = onBackPressedDispatcher::class.declaredMemberProperties.find {
-        it.name == "onBackPressedCallbacks"
-    }.apply { this?.isAccessible = true }
+    val field = onBackPressedDispatcher::class
+        .declaredMemberProperties
+        .find {
+            it.name == "onBackPressedCallbacks"
+        }.apply { this?.isAccessible = true }
 
     @Suppress("UNCHECKED_CAST")
     val callbacks: ArrayDeque<OnBackPressedCallback> = field?.getter?.call(onBackPressedDispatcher) as ArrayDeque<OnBackPressedCallback>
@@ -404,10 +408,11 @@ private fun buildNavigationDebugString(
     navLog.appendLine("Back dispatchers")
     callbacks.forEach { callback ->
         val associatedGraph = (
-            callback::class.java.declaredFields.first()
+            callback::class.java.declaredFields
+                .first()
                 ?.apply { isAccessible = true }
                 ?.get(callback) as? NavController
-            )?.graph?.route
+        )?.graph?.route
         navLog.append("\t• $callback")
         if (associatedGraph != null) {
             navLog.append(", graph = $associatedGraph)")
@@ -430,8 +435,7 @@ fun AnimatedListTestItem(
         modifier = Modifier
             .clickable {
                 isShowing = !isShowing
-            }
-            .then(modifier)
+            }.then(modifier)
             .padding(vertical = OSDimens.SystemSpacing.Small),
     ) {
         OSText(
@@ -458,8 +462,7 @@ fun AnimatedListTestItem(
             modifier = Modifier
                 .clickable {
                     isShowing = !isShowing
-                }
-                .fillMaxWidth()
+                }.fillMaxWidth()
                 .padding(horizontal = OSDimens.SystemSpacing.Regular),
             content = content,
         )

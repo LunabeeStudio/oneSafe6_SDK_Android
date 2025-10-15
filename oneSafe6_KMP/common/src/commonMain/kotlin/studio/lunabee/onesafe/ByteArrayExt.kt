@@ -33,10 +33,8 @@ fun ByteArray.randomize(): ByteArray {
  * Randomize data on close.
  * @see randomize
  */
-inline fun <T> ByteArray.use(block: (ByteArray) -> T): T {
-    return try {
-        block(this)
-    } finally {
-        this.randomize()
-    }
+inline fun <T> ByteArray.use(block: (ByteArray) -> T): T = try {
+    block(this)
+} finally {
+    this.randomize()
 }

@@ -67,11 +67,10 @@ object InMemoryMainDatabaseNamesModule {
 object InMemoryMainDatabaseModule {
     @Provides
     @Singleton
-    internal fun provideMainDatabase(@ApplicationContext appContext: Context): MainDatabase {
-        return Room.inMemoryDatabaseBuilder(appContext, MainDatabase::class.java)
-            .addCallback(MainDatabaseCallback())
-            .build()
-    }
+    internal fun provideMainDatabase(@ApplicationContext appContext: Context): MainDatabase = Room
+        .inMemoryDatabaseBuilder(appContext, MainDatabase::class.java)
+        .addCallback(MainDatabaseCallback())
+        .build()
 
     @Provides
     @Singleton
@@ -80,9 +79,7 @@ object InMemoryMainDatabaseModule {
         @ApplicationContext context: Context,
         @DatabaseName(DatabaseName.Type.Main) dbName: String,
         @DatabaseName(DatabaseName.Type.CipherTemp) tempDbName: String,
-    ): DatabaseEncryptionManager {
-        return InMemoryDatabaseEncryptionManager(SqlCipherDBManager(dispatcher, context, dbName, tempDbName), dbName)
-    }
+    ): DatabaseEncryptionManager = InMemoryDatabaseEncryptionManager(SqlCipherDBManager(dispatcher, context, dbName, tempDbName), dbName)
 }
 
 @Module
@@ -92,13 +89,13 @@ object InMemoryMainDatabaseModule {
 )
 object AppMaintenanceDatastoreTestModule {
 
-    private const val datastoreFile: String = "force_upgrade_datastore"
+    private const val DatastoreFile: String = "force_upgrade_datastore"
 
     @Provides
     fun provideDatastore(@ApplicationContext context: Context): DataStore<ForceUpgradeProtoData> = context.dataStoreProto
 
     private val Context.dataStoreProto: DataStore<ForceUpgradeProtoData> by dataStore(
-        fileName = datastoreFile,
+        fileName = DatastoreFile,
         serializer = ForceUpgradeDataSerializer,
     )
 }

@@ -68,8 +68,8 @@ import kotlin.time.Duration.Companion.milliseconds
 @InstallIn(SingletonComponent::class)
 object FrameworkTestModule {
 
-    const val RESIZE_ICON_SIZE: Int = 50
-    const val ICON_DIR: String = "testDir"
+    const val ResizeIconSize: Int = 50
+    const val IconDir: String = "testDir"
 
     @Provides
     @Singleton
@@ -77,10 +77,10 @@ object FrameworkTestModule {
         @ApplicationContext context: Context,
         androidResizeIconUseCaseFactory: AndroidResizeIconUseCaseFactory,
     ): ResizeIconUseCase {
-        val tmpDir = File(context.cacheDir, ICON_DIR)
+        val tmpDir = File(context.cacheDir, IconDir)
         return androidResizeIconUseCaseFactory.create(
-            width = RESIZE_ICON_SIZE,
-            height = RESIZE_ICON_SIZE,
+            width = ResizeIconSize,
+            height = ResizeIconSize,
             tmpDir = tmpDir,
         )
     }
@@ -95,42 +95,32 @@ object FrameworkTestModule {
 
     @Provides
     @ArchiveCacheDir(type = ArchiveCacheDir.Type.AutoBackup)
-    fun provideArchiveAutoBackupDirectory(@ApplicationContext context: Context): File {
-        return File(context.cacheDir, "keep_archiveAutoBackup")
-    }
+    fun provideArchiveAutoBackupDirectory(@ApplicationContext context: Context): File = File(context.cacheDir, "keep_archiveAutoBackup")
 
     @Provides
     @ArchiveCacheDir(type = ArchiveCacheDir.Type.Message)
-    fun provideArchiveMessageDirectory(@ApplicationContext context: Context): File {
-        return File(context.cacheDir, "keep_archivemessage")
-    }
+    fun provideArchiveMessageDirectory(@ApplicationContext context: Context): File = File(context.cacheDir, "keep_archivemessage")
 
     @Provides
     @ArchiveCacheDir(type = ArchiveCacheDir.Type.Export)
-    fun provideArchiveExportedDirectory(@ApplicationContext context: Context): File {
-        return File(context.cacheDir, "keep_archiveExported")
-    }
+    fun provideArchiveExportedDirectory(@ApplicationContext context: Context): File = File(context.cacheDir, "keep_archiveExported")
 
     @Provides
     fun provideLoadFileCancelAllUseCase(
         fileRepository: FileRepository,
-    ): LoadFileCancelAllUseCase {
-        return object : LoadFileCancelAllUseCase {
-            override suspend operator fun invoke(itemId: UUID) {
-                fileRepository.deleteItemDir(itemId)
-            }
+    ): LoadFileCancelAllUseCase = object : LoadFileCancelAllUseCase {
+        override suspend operator fun invoke(itemId: UUID) {
+            fileRepository.deleteItemDir(itemId)
+        }
 
-            override suspend operator fun invoke() {
-                fileRepository.deletePlainFilesCacheDir()
-            }
+        override suspend operator fun invoke() {
+            fileRepository.deletePlainFilesCacheDir()
         }
     }
 
     @Provides
     @InternalBackupMimetype
-    fun provideInternalBackupMimetype(): String {
-        return "application/onesafe6_debug"
-    }
+    fun provideInternalBackupMimetype(): String = "application/onesafe6_debug"
 
     @Provides
     @RemoteDir(RemoteDir.Type.Backups)
@@ -147,15 +137,14 @@ object FrameworkTestModule {
     @Provides
     fun provideIsAppBlockedUseCase(loadingManager: LoadingManager): IsAppBlockedUseCase = object : IsAppBlockedUseCase {
         override fun flow(): Flow<Boolean> = loadingManager.loadingState.map { it.isBlocking }
+
         override suspend operator fun invoke(): Boolean = loadingManager.loadingState.value.isBlocking
     }
 
     @Provides
-    fun provideClipboardClearUseCase(): ClipboardClearUseCase {
-        return object : ClipboardClearUseCase {
-            override suspend fun invoke(safeId: SafeId) {
-                /* no-op */
-            }
+    fun provideClipboardClearUseCase(): ClipboardClearUseCase = object : ClipboardClearUseCase {
+        override suspend fun invoke(safeId: SafeId) {
+            // no-op
         }
     }
 
@@ -168,7 +157,8 @@ object FrameworkTestModule {
 
     @SuppressLint("RestrictedApi")
     private fun initializeWorkManager(context: Context, workerFactory: HiltWorkerFactory) {
-        val config = Configuration.Builder()
+        val config = Configuration
+            .Builder()
             .setMinimumLoggingLevel(Log.DEBUG)
             .setExecutor(SynchronousExecutor())
             .setWorkerFactory(workerFactory)
@@ -212,29 +202,23 @@ object FrameworkTestModule {
     }
 
     @Provides
-    fun provideAppComponents(): Array<ComponentName> {
-        return arrayOf(
-            ComponentName("studio.lunabee.onesafe", "studio.lunabee.onesafe.MainActivity"),
-        )
+    fun provideAppComponents(): Array<ComponentName> = arrayOf(
+        ComponentName("studio.lunabee.onesafe", "studio.lunabee.onesafe.MainActivity"),
+    )
+
+    @Provides
+    fun provideClipboardShouldClearUseCase(): ClipboardContainsSafeDataUseCase = object : ClipboardContainsSafeDataUseCase {
+        override fun invoke(): Boolean? = null
     }
 
     @Provides
-    fun provideClipboardShouldClearUseCase(): ClipboardContainsSafeDataUseCase {
-        return object : ClipboardContainsSafeDataUseCase {
-            override fun invoke(): Boolean? = null
+    fun provideClipboardScheduleClearUseCase(): ClipboardScheduleClearUseCase = object : ClipboardScheduleClearUseCase {
+        override suspend fun setup(clearDelay: Duration, safeId: SafeId) {
+            // no-op
         }
-    }
 
-    @Provides
-    fun provideClipboardScheduleClearUseCase(): ClipboardScheduleClearUseCase {
-        return object : ClipboardScheduleClearUseCase {
-            override suspend fun setup(clearDelay: Duration, safeId: SafeId) {
-                /* no-op */
-            }
-
-            override fun cancel() {
-                /* no-op */
-            }
+        override fun cancel() {
+            // no-op
         }
     }
 }

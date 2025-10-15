@@ -66,17 +66,13 @@ class EnforceCryptoDispatcherDetector : Detector(), SourceCodeScanner {
             androidSpecific = null,
         )
 
-        private const val withContextFun = "withContext"
-        private const val flowOnFun = "flowOn"
+        private const val WithContextFun = "withContext"
+        private const val FlowOnFun = "flowOn"
     }
 
-    override fun getApplicableUastTypes(): List<Class<out UElement>> {
-        return listOf(UMethod::class.java)
-    }
+    override fun getApplicableUastTypes(): List<Class<out UElement>> = listOf(UMethod::class.java)
 
-    override fun createUastHandler(context: JavaContext): UElementHandler {
-        return CheckDispatcherUElementHandler(context)
-    }
+    override fun createUastHandler(context: JavaContext): UElementHandler = CheckDispatcherUElementHandler(context)
 
     // It looks like we cannot use reflection to get class names
     private val dispatcherAnnotationName = "CryptoDispatcher"
@@ -92,25 +88,25 @@ class EnforceCryptoDispatcherDetector : Detector(), SourceCodeScanner {
             }
 
             if (context.evaluator.isSuspend(node) && context.evaluator.isPublic(node)) {
-                val withContextCallUastVisitor = CryptoDispatcherCheckUastVisitor(context, withContextFun)
+                val withContextCallUastVisitor = CryptoDispatcherCheckUastVisitor(context, WithContextFun)
                 node.uastBody?.accept(withContextCallUastVisitor)
                 if (!withContextCallUastVisitor.hasExpectedCall) {
                     context.report(
                         issue = SuspendCryptoDispatcherIssue,
                         location = context.getNameLocation(node),
-                        message = "Expected call to `$withContextFun($dispatcherAnnotationName)` not found",
+                        message = "Expected call to `$WithContextFun($dispatcherAnnotationName)` not found",
                     )
                 }
             } else if (context.evaluator.isPublic(node) &&
                 context.evaluator.getTypeClass(node.returnType)?.qualifiedName == Flow::class.qualifiedName
             ) {
-                val flowOnCallUastVisitor = CryptoDispatcherCheckUastVisitor(context, flowOnFun)
+                val flowOnCallUastVisitor = CryptoDispatcherCheckUastVisitor(context, FlowOnFun)
                 node.uastBody?.accept(flowOnCallUastVisitor)
                 if (!flowOnCallUastVisitor.hasExpectedCall) {
                     context.report(
                         issue = FlowCryptoDispatcherIssue,
                         location = context.getNameLocation(node),
-                        message = "Expected call to `$flowOnFun($dispatcherAnnotationName)` not found",
+                        message = "Expected call to `$FlowOnFun($dispatcherAnnotationName)` not found",
                     )
                 }
             }
@@ -125,7 +121,8 @@ class EnforceCryptoDispatcherDetector : Detector(), SourceCodeScanner {
             if (!hasExpectedCall) {
                 hasExpectedCall = if (node.methodIdentifier?.name == funName) {
                     (node.valueArguments.first().tryResolve() as? PsiModifierListOwner)?.let { firstArg ->
-                        context.evaluator.getAnnotations(firstArg)
+                        context.evaluator
+                            .getAnnotations(firstArg)
                             .any { it.qualifiedName == dispatcherAnnotationQualified }
                     } ?: false
                 } else {

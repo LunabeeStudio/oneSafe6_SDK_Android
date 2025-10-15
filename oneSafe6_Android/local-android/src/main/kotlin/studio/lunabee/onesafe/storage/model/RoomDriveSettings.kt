@@ -31,8 +31,10 @@ class RoomDriveSettings(
     val folderUrl: String?,
 ) {
     companion object {
-        fun fromDriveSettings(driveSettings: GoogleDriveSettings): RoomDriveSettings {
-            return RoomDriveSettings(driveSettings.selectedAccount, driveSettings.folderId, driveSettings.folderUrl)
-        }
+        fun fromDriveSettings(driveSettings: GoogleDriveSettings): RoomDriveSettings = RoomDriveSettings(
+            driveSettings.selectedAccount,
+            driveSettings.folderId,
+            driveSettings.folderUrl,
+        )
     }
 }

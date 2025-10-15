@@ -35,17 +35,22 @@ suspend fun CryptoEngine.encrypt_aes256gcm_data() {
 }
 
 suspend fun CryptoEngine.encrypt_aes256gcm_data_authenticated() {
-    val actualData = this.encrypt(CryptoAndroidTestUtils.plainData, CryptoAndroidTestUtils.key256, CryptoAndroidTestUtils.ad).getOrNull()
+    val actualData = this
+        .encrypt(CryptoAndroidTestUtils.plainData, CryptoAndroidTestUtils.key256, CryptoAndroidTestUtils.ad)
+        .getOrNull()
     assertContentEquals(CryptoAndroidTestUtils.aes256gcm_data, actualData)
 }
 
 suspend fun CryptoEngine.decrypt_aes256gcm_data() {
-    val actualData = this.decrypt(CryptoAndroidTestUtils.aes256gcm_data, CryptoAndroidTestUtils.key256, null).getOrNull()
+    val actualData = this
+        .decrypt(CryptoAndroidTestUtils.aes256gcm_data, CryptoAndroidTestUtils.key256, null)
+        .getOrNull()
     assertContentEquals(CryptoAndroidTestUtils.plainData, actualData)
 }
 
 suspend fun CryptoEngine.decrypt_aes256gcm_data_authenticated() {
-    val actualData = this.decrypt(CryptoAndroidTestUtils.aes256gcm_data, CryptoAndroidTestUtils.key256, CryptoAndroidTestUtils.ad)
+    val actualData = this
+        .decrypt(CryptoAndroidTestUtils.aes256gcm_data, CryptoAndroidTestUtils.key256, CryptoAndroidTestUtils.ad)
         .getOrNull()
     assertContentEquals(CryptoAndroidTestUtils.plainData, actualData)
 }

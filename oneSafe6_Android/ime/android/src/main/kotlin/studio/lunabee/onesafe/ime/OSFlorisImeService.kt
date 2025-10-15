@@ -223,7 +223,7 @@ class OSFlorisImeService : FlorisImeService() {
         if (event?.keyCode == KeyEvent.KEYCODE_BACK) {
             when (oskImeStateFlow.value) {
                 OSKImeState.Hidden -> {
-                    /* no-op */
+                    // no-op
                 }
                 // hide oSK UI and let ime handle back
                 OSKImeState.Screen -> isOneSafeUiVisibleFlow.value = false
@@ -315,9 +315,11 @@ class OSFlorisImeService : FlorisImeService() {
             super.ThemeImeView()
         } else {
             val coroutineScope = rememberCoroutineScope()
-            val hasDoneOpenTutorial by getAppVisitUseCase.hasDoneTutorialOpenOsk()
+            val hasDoneOpenTutorial by getAppVisitUseCase
+                .hasDoneTutorialOpenOsk()
                 .collectAsStateWithLifecycle(initialValue = true)
-            val hasDoneLockTutorial by getAppVisitUseCase.hasDoneTutorialLockOsk()
+            val hasDoneLockTutorial by getAppVisitUseCase
+                .hasDoneTutorialLockOsk()
                 .collectAsStateWithLifecycle(initialValue = true)
             val isSafeReady by isSafeReadyUseCase.flow().collectAsStateWithLifecycle(
                 false,
@@ -337,9 +339,9 @@ class OSFlorisImeService : FlorisImeService() {
             val isNightTheme = activeThemeInfo.config.isNightTheme
 
             val contentColor = if (isNightTheme) {
-                LocalColorPalette.current.Neutral00
+                LocalColorPalette.current.neutral00
             } else {
-                LocalColorPalette.current.Primary30
+                LocalColorPalette.current.primary30
             }
 
             CompositionLocalProvider(
@@ -391,12 +393,13 @@ class OSFlorisImeService : FlorisImeService() {
         }
     }
 
-    override fun calculateTouchableTopY(visibleTopY: Int, needAdditionalOverlay: Boolean): Int {
-        return if (oskImeStateFlow.value.isOneSafeUiVisible) {
-            0
-        } else {
-            super.calculateTouchableTopY(visibleTopY, needAdditionalOverlay)
-        }
+    override fun calculateTouchableTopY(
+        visibleTopY: Int,
+        needAdditionalOverlay: Boolean,
+    ): Int = if (oskImeStateFlow.value.isOneSafeUiVisible) {
+        0
+    } else {
+        super.calculateTouchableTopY(visibleTopY, needAdditionalOverlay)
     }
 
     override fun onComposeViewTouchEvent(ev: MotionEvent?) {
@@ -548,7 +551,8 @@ class OSFlorisImeService : FlorisImeService() {
     fun OneSafeKUi(
         modifier: Modifier,
     ) {
-        val hasDoneOnBoardingBubbles: Boolean by getAppVisitUseCase.hasDoneOnBoardingBubbles()
+        val hasDoneOnBoardingBubbles: Boolean by getAppVisitUseCase
+            .hasDoneOnBoardingBubbles()
             .collectAsStateWithLifecycle(initialValue = true)
         Surface(
             modifier = modifier,
@@ -591,11 +595,13 @@ class OSFlorisImeService : FlorisImeService() {
     companion object {
         fun kill(context: Context) {
             val activityManager = context.getSystemService(ActivityManager::class.java)
-            activityManager.runningAppProcesses.firstOrNull {
-                it.processName == context.packageName + BuildConfig.IME_PROCESS_NAME
-            }?.pid?.let {
-                Process.killProcess(it)
-            }
+            activityManager.runningAppProcesses
+                .firstOrNull {
+                    it.processName == context.packageName + BuildConfig.IME_PROCESS_NAME
+                }?.pid
+                ?.let {
+                    Process.killProcess(it)
+                }
         }
     }
 }

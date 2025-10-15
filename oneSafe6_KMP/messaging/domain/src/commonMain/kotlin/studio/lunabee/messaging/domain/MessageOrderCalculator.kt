@@ -20,18 +20,18 @@
 package studio.lunabee.messaging.domain
 
 import com.lunabee.lblogger.LBLogger
-import kotlin.time.Clock
-import kotlin.time.Instant
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
 import studio.lunabee.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.messaging.domain.model.MessageOrder
 import studio.lunabee.messaging.domain.repository.MessageOrderRepository
+import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.error.BubblesCryptoError
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 private val logger = LBLogger.get<MessageOrderCalculator>()
 
@@ -91,7 +91,9 @@ class MessageOrderCalculator @Inject constructor(
                 }
                 OrderResult.Found(order)
             } else {
-                val firstMessageOrder = messageOrderRepository.getLeastRecent(contactId, excludedMessages.map { it.id })!!.order
+                val firstMessageOrder = messageOrderRepository
+                    .getLeastRecent(contactId, excludedMessages.map { it.id })!!
+                    .order
                 binarySearch(messageSentAt, contactId, key, lastMessageOrder.order to firstMessageOrder, excludedMessages)
             }
         }
@@ -128,7 +130,9 @@ class MessageOrderCalculator @Inject constructor(
                         0 -> OrderResult.Duplicated(floor(midMessage.order + 1f), midMessage.order)
                         count -> OrderResult.Duplicated(ceil(midMessage.order - 1f), midMessage.order)
                         else -> {
-                            val nextMessageOrder = messageOrderRepository.getAt(contactId, mid - 1, excludedMessages.map { it.id })!!.order
+                            val nextMessageOrder = messageOrderRepository
+                                .getAt(contactId, mid - 1, excludedMessages.map { it.id })!!
+                                .order
                             OrderResult.Duplicated((nextMessageOrder + midMessage.order) / 2f, midMessage.order)
                         }
                     }

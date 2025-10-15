@@ -62,8 +62,8 @@ class HandleBubblesFileMessageUseCase @Inject constructor(
         }
     }
 
-    private fun unzip(stream: InputStream): Flow<LBFlowResult<DecryptResult?>> {
-        return unzipUseCase(stream, messageArchiveDir).transformResult {
+    private fun unzip(stream: InputStream): Flow<LBFlowResult<DecryptResult?>> = unzipUseCase(stream, messageArchiveDir)
+        .transformResult {
             // Assert that file is really a message file
             val messageFile = File(messageArchiveDir, MessagingConstant.MessageFileName)
             val result = if (messageFile.exists()) {
@@ -75,9 +75,11 @@ class HandleBubblesFileMessageUseCase @Inject constructor(
         }.catch { e ->
             when (e) {
                 is IllegalArgumentException ->
-                    emit(LBFlowResult.Failure(OSDomainError(code = OSDomainError.Code.DECRYPT_MESSAGE_NOT_BASE64, cause = e)))
+                    emit(
+                        LBFlowResult
+                            .Failure(OSDomainError(code = OSDomainError.Code.DECRYPT_MESSAGE_NOT_BASE64, cause = e)),
+                    )
                 else -> throw e
             }
         }
-    }
 }

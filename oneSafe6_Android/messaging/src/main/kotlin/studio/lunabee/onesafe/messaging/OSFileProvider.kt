@@ -26,4 +26,6 @@ import androidx.core.content.res.ResourcesCompat
 /**
  * Avoid manifest collision
  */
-class OSFileProvider @JvmOverloads constructor(@XmlRes resourceId: Int = ResourcesCompat.ID_NULL) : FileProvider(resourceId)
+class OSFileProvider @JvmOverloads constructor(
+    @XmlRes resourceId: Int = ResourcesCompat.ID_NULL,
+) : FileProvider(resourceId)

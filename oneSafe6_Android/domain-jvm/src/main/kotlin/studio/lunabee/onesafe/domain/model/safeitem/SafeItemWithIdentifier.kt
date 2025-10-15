@@ -47,25 +47,35 @@ data class SafeItemWithIdentifier(
         if (encName != null) {
             if (other.encName == null) return false
             if (!encName.contentEquals(other.encName)) return false
-        } else if (other.encName != null) return false
+        } else if (other.encName != null) {
+            return false
+        }
         if (iconId != other.iconId) return false
         if (encColor != null) {
             if (other.encColor == null) return false
             if (!encColor.contentEquals(other.encColor)) return false
-        } else if (other.encColor != null) return false
+        } else if (other.encColor != null) {
+            return false
+        }
         if (encIdentifier != null) {
             if (other.encIdentifier == null) return false
             if (!encIdentifier.contentEquals(other.encIdentifier)) return false
-        } else if (other.encIdentifier != null) return false
+        } else if (other.encIdentifier != null) {
+            return false
+        }
         if (deletedAt != other.deletedAt) return false
         if (encSecuredDisplayMask != null) {
             if (other.encSecuredDisplayMask == null) return false
             if (!encSecuredDisplayMask.contentEquals(other.encSecuredDisplayMask)) return false
-        } else if (other.encSecuredDisplayMask != null) return false
+        } else if (other.encSecuredDisplayMask != null) {
+            return false
+        }
         if (encIdentifierKind != null) {
             if (other.encIdentifierKind == null) return false
             if (!encIdentifierKind.contentEquals(other.encIdentifierKind)) return false
-        } else if (other.encIdentifierKind != null) return false
+        } else if (other.encIdentifierKind != null) {
+            return false
+        }
         if (position != other.position) return false
         if (updatedAt != other.updatedAt) return false
 

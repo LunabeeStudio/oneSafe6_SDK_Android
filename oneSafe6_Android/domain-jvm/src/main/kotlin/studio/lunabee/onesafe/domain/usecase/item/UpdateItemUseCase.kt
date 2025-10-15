@@ -56,92 +56,90 @@ class UpdateItemUseCase @Inject constructor(
         updateData: UpdateData,
         fields: List<ItemFieldData> = emptyList(),
         fileSavingData: List<FileSavingData> = emptyList(),
-    ): LBResult<SafeItem> {
-        return OSError.runCatching {
-            // Get current safe item.
-            val safeItem = safeItemRepository.getSafeItem(id = itemId)
-            val itemKey = safeItemKeyRepository.getSafeItemKey(id = itemId)
+    ): LBResult<SafeItem> = OSError.runCatching {
+        // Get current safe item.
+        val safeItem = safeItemRepository.getSafeItem(id = itemId)
+        val itemKey = safeItemKeyRepository.getSafeItemKey(id = itemId)
 
-            // Update or remove icon if needed.
-            val iconId: UUID? = when (updateData.icon) {
-                is UpdateState.ModifiedTo -> updateData.icon.newValue?.let { icon ->
-                    setIconUseCase(
-                        itemKey = itemKey,
-                        icon = icon,
-                        safeId = safeItem.safeId,
-                    ).also {
-                        safeItem.iconId?.let { currentIconId -> deleteIconUseCase(currentIconId) }
-                    }
+        // Update or remove icon if needed.
+        val iconId: UUID? = when (updateData.icon) {
+            is UpdateState.ModifiedTo -> updateData.icon.newValue?.let { icon ->
+                setIconUseCase(
+                    itemKey = itemKey,
+                    icon = icon,
+                    safeId = safeItem.safeId,
+                ).also {
+                    safeItem.iconId?.let { currentIconId -> deleteIconUseCase(currentIconId) }
                 }
-                is UpdateState.Removed -> {
-                    deleteIconUseCase(safeItem = safeItem)
-                    null
-                }
-                is UpdateState.Unchanged -> safeItem.iconId
             }
-
-            val (encName: ByteArray?, indexAlpha: Double) = when (updateData.name) {
-                is UpdateState.ModifiedTo -> {
-                    val newName = updateData.name.newValue
-                    newName?.let {
-                        cryptoRepository.encrypt(
-                            itemKey,
-                            EncryptEntry(newName),
-                        )
-                    } to computeItemAlphaIndexUseCase(newName, safeItem.indexAlpha).getOrThrow()
-                }
-                is UpdateState.Removed -> null to computeItemAlphaIndexUseCase(null, safeItem.indexAlpha).getOrThrow()
-                is UpdateState.Unchanged -> safeItem.encName to safeItem.indexAlpha
-            }
-
-            val encColor: ByteArray? = when (updateData.color) {
-                is UpdateState.ModifiedTo -> updateData.color.newValue?.let {
-                    cryptoRepository.encrypt(
-                        itemKey,
-                        EncryptEntry(it),
-                    )
-                }
-                is UpdateState.Removed -> null
-                is UpdateState.Unchanged -> safeItem.encColor
-            }
-
-            var itemWithUpdatedValue = safeItem.copy(
-                encName = encName,
-                iconId = iconId,
-                encColor = encColor,
-                indexAlpha = indexAlpha,
-            )
-
-            val indexWordEntries = if (itemWithUpdatedValue != safeItem) {
-                indexWordEntryRepository.deleteNameIndexFromItemId(itemId)
-                when (val name = updateData.name) {
-                    is UpdateState.Unchanged<String?> -> name.value
-                    is UpdateState.ModifiedTo<String?> -> name.newValue
-                    else -> null
-                }?.let { itemName ->
-                    createIndexWordEntriesFromItemUseCase(name = itemName, id = itemId)
-                }
-            } else {
+            is UpdateState.Removed -> {
+                deleteIconUseCase(safeItem = safeItem)
                 null
             }
-
-            // Updated at
-            itemWithUpdatedValue = itemWithUpdatedValue.copy(updatedAt = Instant.now(clock))
-
-            safeItemRepository.updateSafeItem(
-                safeItem = itemWithUpdatedValue,
-                indexWordEntries = indexWordEntries,
-            )
-
-            // UpdateFields
-            updateFieldsUseCase(safeItem, fields)
-
-            // Add files from new fields
-            // remove files from removed fields
-            addAndRemoveFileUseCase(item = safeItem, fileSavingData = fileSavingData)
-
-            itemWithUpdatedValue
+            is UpdateState.Unchanged -> safeItem.iconId
         }
+
+        val (encName: ByteArray?, indexAlpha: Double) = when (updateData.name) {
+            is UpdateState.ModifiedTo -> {
+                val newName = updateData.name.newValue
+                newName?.let {
+                    cryptoRepository.encrypt(
+                        itemKey,
+                        EncryptEntry(newName),
+                    )
+                } to computeItemAlphaIndexUseCase(newName, safeItem.indexAlpha).getOrThrow()
+            }
+            is UpdateState.Removed -> null to computeItemAlphaIndexUseCase(null, safeItem.indexAlpha).getOrThrow()
+            is UpdateState.Unchanged -> safeItem.encName to safeItem.indexAlpha
+        }
+
+        val encColor: ByteArray? = when (updateData.color) {
+            is UpdateState.ModifiedTo -> updateData.color.newValue?.let {
+                cryptoRepository.encrypt(
+                    itemKey,
+                    EncryptEntry(it),
+                )
+            }
+            is UpdateState.Removed -> null
+            is UpdateState.Unchanged -> safeItem.encColor
+        }
+
+        var itemWithUpdatedValue = safeItem.copy(
+            encName = encName,
+            iconId = iconId,
+            encColor = encColor,
+            indexAlpha = indexAlpha,
+        )
+
+        val indexWordEntries = if (itemWithUpdatedValue != safeItem) {
+            indexWordEntryRepository.deleteNameIndexFromItemId(itemId)
+            when (val name = updateData.name) {
+                is UpdateState.Unchanged<String?> -> name.value
+                is UpdateState.ModifiedTo<String?> -> name.newValue
+                else -> null
+            }?.let { itemName ->
+                createIndexWordEntriesFromItemUseCase(name = itemName, id = itemId)
+            }
+        } else {
+            null
+        }
+
+        // Updated at
+        itemWithUpdatedValue = itemWithUpdatedValue.copy(updatedAt = Instant.now(clock))
+
+        safeItemRepository.updateSafeItem(
+            safeItem = itemWithUpdatedValue,
+            indexWordEntries = indexWordEntries,
+        )
+
+        // UpdateFields
+        updateFieldsUseCase(safeItem, fields)
+
+        // Add files from new fields
+        // remove files from removed fields
+        addAndRemoveFileUseCase(item = safeItem, fileSavingData = fileSavingData)
+
+        itemWithUpdatedValue
     }
 
     class UpdateData(

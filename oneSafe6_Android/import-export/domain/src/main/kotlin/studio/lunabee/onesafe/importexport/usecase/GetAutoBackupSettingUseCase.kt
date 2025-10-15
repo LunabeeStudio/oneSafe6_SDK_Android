@@ -53,7 +53,8 @@ class GetAutoBackupSettingUseCase @Inject constructor(
     fun autoBackupFrequencyFlow(currentSafeId: SafeId? = null): Flow<Duration> =
         currentSafeId?.let { safeId ->
             autoBackupSettingsRepository.autoBackupFrequencyFlow(safeId)
-        } ?: safeRepository.currentSafeIdFlow()
+        } ?: safeRepository
+            .currentSafeIdFlow()
             .flatMapLatest { safeId ->
                 safeId?.let {
                     autoBackupSettingsRepository.autoBackupFrequencyFlow(safeId)
@@ -94,7 +95,8 @@ class GetAutoBackupSettingUseCase @Inject constructor(
     fun enableAutoBackupCtaState(currentSafeId: SafeId? = null): Flow<CtaState> =
         currentSafeId?.let { safeId ->
             autoBackupSettingsRepository.enableAutoBackupCtaState(safeId)
-        } ?: safeRepository.currentSafeIdFlow()
+        } ?: safeRepository
+            .currentSafeIdFlow()
             .flatMapLatest { safeId ->
                 safeId?.let {
                     autoBackupSettingsRepository.enableAutoBackupCtaState(safeId)

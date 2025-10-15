@@ -17,6 +17,8 @@
  * Last modified 16/07/2024 14:11
  */
 
+@file:Suppress("BackingPropertyNaming")
+
 package studio.lunabee.onesafe.di
 
 import kotlinx.coroutines.channels.BufferOverflow

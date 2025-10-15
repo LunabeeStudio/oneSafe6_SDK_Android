@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSRegularSpacer
@@ -39,8 +39,8 @@ import studio.lunabee.onesafe.ui.theme.LocalDesignSystem
 import studio.lunabee.onesafe.ui.theme.OSTheme
 import studio.lunabee.onesafe.utils.OsDefaultPreview
 
-context(LostKeyNavigation)
 @Composable
+context(LostKeyNavigation)
 fun LostKeyRoute(
     viewModel: LostKeyViewModel = hiltViewModel(),
 ) {
@@ -50,7 +50,8 @@ fun LostKeyRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     when (val state = uiState) {
         is LostKeyUiState.ExitToMain -> {
-            context.packageManager.getLaunchIntentForPackage(context.packageName)
+            context.packageManager
+                .getLaunchIntentForPackage(context.packageName)
                 ?.setData(state.backupUri)
                 ?.let { intent ->
                     context.startActivity(intent)
@@ -58,7 +59,7 @@ fun LostKeyRoute(
                 }
         }
         LostKeyUiState.Idle -> {
-            /* no-op */
+            // no-op
         }
     }
 
@@ -74,7 +75,8 @@ fun LostKeyRoute(
     val folderUri by viewModel.folderUri.collectAsStateWithLifecycle()
 
     val pickFileLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
-        uri?.let { // uri can be null if user cancel the file selection (not an error)
+        uri?.let {
+            // uri can be null if user cancel the file selection (not an error)
             viewModel.cacheBackupFile(uri)
         }
     }

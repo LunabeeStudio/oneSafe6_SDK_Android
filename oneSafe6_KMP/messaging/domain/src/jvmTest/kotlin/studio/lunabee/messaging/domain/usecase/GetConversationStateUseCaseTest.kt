@@ -24,7 +24,6 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import kotlin.time.Clock
 import studio.lunabee.bubbles.domain.model.contact.Contact
 import studio.lunabee.bubbles.domain.model.contactkey.ContactSharedKey
 import studio.lunabee.bubbles.domain.repository.ContactRepository
@@ -39,6 +38,7 @@ import studio.lunabee.messaging.domain.testUUID
 import studio.lunabee.onesafe.error.BubblesMessagingError
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Clock
 
 class GetConversationStateUseCaseTest {
 

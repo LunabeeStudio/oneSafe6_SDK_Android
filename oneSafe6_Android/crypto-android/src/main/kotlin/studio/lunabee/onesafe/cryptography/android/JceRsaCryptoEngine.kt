@@ -52,14 +52,14 @@ class JceRsaCryptoEngine @Inject constructor() : RsaCryptoEngine {
     }
 
     override fun getKeyPair(): KeyPair {
-        val keyPairGenerator: KeyPairGenerator = KeyPairGenerator.getInstance(RSA_ALGORITHM)
-        keyPairGenerator.initialize(RSA_KEY_SIZE)
+        val keyPairGenerator: KeyPairGenerator = KeyPairGenerator.getInstance(RsaAlgorithm)
+        keyPairGenerator.initialize(RsaKeySize)
         return keyPairGenerator.genKeyPair()
     }
 
-    override fun getPublicKey(key: ByteArray): PublicKey {
-        return KeyFactory.getInstance(RSA_ALGORITHM).generatePublic(X509EncodedKeySpec(key))
-    }
+    override fun getPublicKey(key: ByteArray): PublicKey = KeyFactory
+        .getInstance(RsaAlgorithm)
+        .generatePublic(X509EncodedKeySpec(key))
 
     override fun encrypt(key: PublicKey, data: ByteArray): ByteArray {
         val cipher: Cipher = getCipher()
@@ -73,11 +73,11 @@ class JceRsaCryptoEngine @Inject constructor() : RsaCryptoEngine {
         return cipher.doFinal(data)
     }
 
-    private fun getCipher() = Cipher.getInstance(RSA_TRANSFORMATION)
+    private fun getCipher() = Cipher.getInstance(RsaTransformation)
 
     companion object {
-        private const val RSA_KEY_SIZE: Int = 2048
-        private const val RSA_ALGORITHM: String = "RSA"
-        private const val RSA_TRANSFORMATION: String = "RSA/ECB/OAEPwithSHA-256andMGF1Padding"
+        private const val RsaKeySize: Int = 2048
+        private const val RsaAlgorithm: String = "RSA"
+        private const val RsaTransformation: String = "RSA/ECB/OAEPwithSHA-256andMGF1Padding"
     }
 }

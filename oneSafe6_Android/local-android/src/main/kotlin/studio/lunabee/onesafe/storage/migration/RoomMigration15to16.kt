@@ -96,14 +96,15 @@ class RoomMigration15to16 @Inject constructor() : Migration(15, 16) {
         // Insert open_order value in Safe_Old table
         db.execSQL("ALTER TABLE Safe_Old ADD open_order INTEGER")
 
-        val incrementalValueUpdate = """
+        val incrementalValueUpdate =
+            """
             WITH numbered_rows AS (
                 SELECT id, ROW_NUMBER() OVER (ORDER BY ROWID) - 1 AS new_open_order
                 FROM Safe_Old
             )
             UPDATE Safe_Old
             SET open_order = (SELECT new_open_order FROM numbered_rows WHERE numbered_rows.id = Safe_Old.id)
-        """.trimIndent()
+            """.trimIndent()
         db.execSQL(incrementalValueUpdate)
 
         val valueNames =

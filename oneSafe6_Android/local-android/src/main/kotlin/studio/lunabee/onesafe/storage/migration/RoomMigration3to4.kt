@@ -55,7 +55,8 @@ class RoomMigration3to4 @Inject constructor(private val idProvider: MessageIdPro
         db.execSQL("DROP INDEX IF EXISTS `index_Message_order_contact_id`")
         db.execSQL("DROP INDEX IF EXISTS `index_Message_contact_id`")
         db.execSQL("ALTER TABLE TEMP_Message RENAME TO Message")
-        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_Message_order_contact_id` ON Message (`order` DESC, `contact_id` DESC)")
+        db
+            .execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_Message_order_contact_id` ON Message (`order` DESC, `contact_id` DESC)")
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_Message_contact_id` ON Message (`contact_id`)")
     }
 }

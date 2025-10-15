@@ -34,19 +34,17 @@ object AppMigrationsTestUtils {
         encBubblesKey: ByteArray? = null,
         encItemEditionKey: ByteArray? = null,
         biometricCryptoMaterial: BiometricCryptoMaterial? = null,
-    ): MigrationSafeData0 {
-        return MigrationSafeData0(
-            masterKey = masterKey,
-            version = version,
-            id = id,
-            salt = salt,
-            encTest = encTest,
-            encIndexKey = encIndexKey,
-            encBubblesKey = encBubblesKey,
-            encItemEditionKey = encItemEditionKey,
-            biometricCryptoMaterial = biometricCryptoMaterial,
-        )
-    }
+    ): MigrationSafeData0 = MigrationSafeData0(
+        masterKey = masterKey,
+        version = version,
+        id = id,
+        salt = salt,
+        encTest = encTest,
+        encIndexKey = encIndexKey,
+        encBubblesKey = encBubblesKey,
+        encItemEditionKey = encItemEditionKey,
+        biometricCryptoMaterial = biometricCryptoMaterial,
+    )
 
     fun safeData15(
         masterKey: ByteArray = byteArrayOf(),
@@ -58,17 +56,15 @@ object AppMigrationsTestUtils {
         encBubblesKey: ByteArray? = null,
         encItemEditionKey: ByteArray = byteArrayOf(),
         biometricCryptoMaterial: BiometricCryptoMaterial? = null,
-    ): MigrationSafeData15 {
-        return MigrationSafeData15(
-            masterKey = masterKey,
-            version = version,
-            id = id,
-            salt = salt,
-            encTest = encTest,
-            encIndexKey = encIndexKey,
-            encBubblesKey = encBubblesKey,
-            encItemEditionKey = encItemEditionKey,
-            biometricCryptoMaterial = biometricCryptoMaterial,
-        )
-    }
+    ): MigrationSafeData15 = MigrationSafeData15(
+        masterKey = masterKey,
+        version = version,
+        id = id,
+        salt = salt,
+        encTest = encTest,
+        encIndexKey = encIndexKey,
+        encBubblesKey = encBubblesKey,
+        encItemEditionKey = encItemEditionKey,
+        biometricCryptoMaterial = biometricCryptoMaterial,
+    )
 }

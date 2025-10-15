@@ -25,9 +25,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
-import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemDeletedRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.error.OSError
 import java.util.UUID
 import javax.inject.Inject
@@ -38,16 +38,14 @@ class CountSafeItemUseCase @Inject constructor(
     private val safeRepository: SafeRepository,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun flow(parentItem: SafeItem): Flow<Int> {
-        return safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
-            safeId?.let {
-                if (parentItem.isDeleted) {
-                    safeItemDeletedRepository.countSafeItemByParentIdDeletedFlow(parentItem.id, safeId)
-                } else {
-                    safeItemRepository.countSafeItemByParentIdFlow(parentItem.id, safeId)
-                }
-            } ?: flowOf(0)
-        }
+    fun flow(parentItem: SafeItem): Flow<Int> = safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+        safeId?.let {
+            if (parentItem.isDeleted) {
+                safeItemDeletedRepository.countSafeItemByParentIdDeletedFlow(parentItem.id, safeId)
+            } else {
+                safeItemRepository.countSafeItemByParentIdFlow(parentItem.id, safeId)
+            }
+        } ?: flowOf(0)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

@@ -42,12 +42,13 @@ class PlainDatastoreEngine @Inject constructor(
         }
     }
 
-    override fun retrieveValue(key: String): Flow<ByteArray?> = dataStore.data.map { securedData ->
-        val encValue = try {
-            securedData.dataMap[key]
-        } catch (e: Exception) {
-            null
-        }
-        encValue?.toByteArray()
-    }.flowOn(fileDispatcher)
+    override fun retrieveValue(key: String): Flow<ByteArray?> = dataStore.data
+        .map { securedData ->
+            val encValue = try {
+                securedData.dataMap[key]
+            } catch (e: Exception) {
+                null
+            }
+            encValue?.toByteArray()
+        }.flowOn(fileDispatcher)
 }

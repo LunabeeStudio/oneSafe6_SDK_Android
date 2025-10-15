@@ -22,8 +22,8 @@ package studio.lunabee.onesafe.migration.utils
 import androidx.core.util.AtomicFile
 import studio.lunabee.onesafe.cryptography.android.CryptoEngine
 import studio.lunabee.onesafe.cryptography.android.utils.OSCryptoInputStream
-import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.error.OSMigrationError
+import studio.lunabee.onesafe.jvm.get
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
@@ -37,20 +37,16 @@ import javax.inject.Inject
 class MigrationCryptoV1UseCase @Inject constructor(
     private val cryptoEngine: CryptoEngine,
 ) {
-    fun decrypt(cipherData: ByteArray, key: ByteArray): ByteArray {
-        return try {
-            cryptoEngine.decrypt(cipherData, key, null).getOrThrow()
-        } catch (e: GeneralSecurityException) {
-            throw OSMigrationError.Code.DECRYPT_FAIL.get(cause = e)
-        }
+    fun decrypt(cipherData: ByteArray, key: ByteArray): ByteArray = try {
+        cryptoEngine.decrypt(cipherData, key, null).getOrThrow()
+    } catch (e: GeneralSecurityException) {
+        throw OSMigrationError.Code.DECRYPT_FAIL.get(cause = e)
     }
 
-    fun encrypt(plainData: ByteArray, key: ByteArray): ByteArray {
-        return try {
-            cryptoEngine.encrypt(plainData, key, null).getOrThrow()
-        } catch (e: GeneralSecurityException) {
-            throw OSMigrationError.Code.ENCRYPT_FAIL.get(cause = e)
-        }
+    fun encrypt(plainData: ByteArray, key: ByteArray): ByteArray = try {
+        cryptoEngine.encrypt(plainData, key, null).getOrThrow()
+    } catch (e: GeneralSecurityException) {
+        throw OSMigrationError.Code.ENCRYPT_FAIL.get(cause = e)
     }
 
     fun getDecryptStream(aFile: AtomicFile, plainKey: ByteArray): InputStream {
@@ -62,11 +58,9 @@ class MigrationCryptoV1UseCase @Inject constructor(
         return OSCryptoInputStream(cryptoStream)
     }
 
-    fun getCipherOutputStream(fileStream: FileOutputStream, plainKey: ByteArray): OutputStream {
-        return try {
-            cryptoEngine.getCipherOutputStream(fileStream, plainKey, null)
-        } catch (e: GeneralSecurityException) {
-            throw OSMigrationError.Code.GET_ENCRYPT_STREAM_FAIL.get(cause = e)
-        }
+    fun getCipherOutputStream(fileStream: FileOutputStream, plainKey: ByteArray): OutputStream = try {
+        cryptoEngine.getCipherOutputStream(fileStream, plainKey, null)
+    } catch (e: GeneralSecurityException) {
+        throw OSMigrationError.Code.GET_ENCRYPT_STREAM_FAIL.get(cause = e)
     }
 }

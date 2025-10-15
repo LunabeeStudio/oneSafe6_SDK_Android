@@ -30,10 +30,15 @@ import java.net.URI
 
 interface CloudBackupEngine {
     fun fetchBackupList(safeId: SafeId): Flow<LBFlowResult<List<CloudBackup>>>
+
     fun uploadBackup(localBackup: LocalBackup): Flow<LBFlowResult<CloudBackup>>
+
     fun getInputStream(remoteId: String, safeId: SafeId): Flow<LBFlowResult<InputStream>>
+
     fun deleteBackup(cloudBackup: CloudBackup): Flow<LBFlowResult<Unit>>
+
     fun setupAccount(accountName: String, safeId: SafeId): Flow<LBFlowResult<Unit>>
+
     fun getCloudInfoFlow(safeId: SafeId): Flow<CloudInfo>
 
     /**

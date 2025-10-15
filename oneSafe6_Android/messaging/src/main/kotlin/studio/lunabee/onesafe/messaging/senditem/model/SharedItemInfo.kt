@@ -30,24 +30,20 @@ sealed interface SharedItemInfo {
     data class NoChildren(
         override val name: LbcTextSpec,
     ) : SharedItemInfo {
-        override fun getDescription(): LbcTextSpec {
-            return LbcTextSpec.StringResource(
-                OSString.bubbles_shareItem_itemDescription_noChildren,
-                name,
-            )
-        }
+        override fun getDescription(): LbcTextSpec = LbcTextSpec.StringResource(
+            OSString.bubbles_shareItem_itemDescription_noChildren,
+            name,
+        )
     }
 
     data class WithChildren(
         override val name: LbcTextSpec,
         val numberOfChild: Int,
     ) : SharedItemInfo {
-        override fun getDescription(): LbcTextSpec {
-            return LbcTextSpec.StringResource(
-                OSString.bubbles_shareItem_itemDescription_withChildren,
-                name,
-                numberOfChild,
-            )
-        }
+        override fun getDescription(): LbcTextSpec = LbcTextSpec.StringResource(
+            OSString.bubbles_shareItem_itemDescription_withChildren,
+            name,
+            numberOfChild,
+        )
     }
 }

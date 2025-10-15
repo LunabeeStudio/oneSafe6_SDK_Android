@@ -19,12 +19,12 @@
 
 package studio.lunabee.bubbles.repository
 
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
 import studio.lunabee.bubbles.domain.repository.ContactKeyRepository
-import studio.lunabee.onesafe.error.BubblesDomainError
 import studio.lunabee.bubbles.repository.datasource.ContactKeyLocalDataSource
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import studio.lunabee.onesafe.di.Inject
+import studio.lunabee.onesafe.error.BubblesDomainError
 
 class ContactKeyRepositoryImpl @Inject constructor(
     private val localDataSource: ContactKeyLocalDataSource,

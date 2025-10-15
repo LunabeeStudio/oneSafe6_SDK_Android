@@ -6,11 +6,11 @@ plugins {
 android {
     namespace = "com.lunabee.onesafe"
 
-    compileSdk = AndroidConfig.COMPILE_SDK
+    compileSdk = AndroidConfig.CompileSdk
 
     defaultConfig {
-        minSdk = AndroidConfig.MIN_APP_SDK
-        targetSdk = AndroidConfig.TARGET_SDK
+        minSdk = AndroidConfig.MinAppSdk
+        targetSdk = AndroidConfig.TargetSdk
         versionCode = 1
         versionName = "1.0"
     }
@@ -33,8 +33,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = ProjectConfig.JDK_VERSION
-        targetCompatibility = ProjectConfig.JDK_VERSION
+        sourceCompatibility = ProjectConfig.JdkVersion
+        targetCompatibility = ProjectConfig.JdkVersion
     }
 }
 

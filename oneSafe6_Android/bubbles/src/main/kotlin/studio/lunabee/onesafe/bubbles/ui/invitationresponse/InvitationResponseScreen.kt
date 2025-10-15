@@ -32,7 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import studio.lunabee.bubbles.domain.model.MessageSharingMode
 import studio.lunabee.compose.core.LbcTextSpec
@@ -52,8 +52,8 @@ import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
 import java.util.UUID
 
-context(InvitationResponseNavScope)
 @Composable
+context(InvitationResponseNavScope)
 fun InvitationResponseRoute(
     viewModel: InvitationResponseViewModel = hiltViewModel(),
 ) {
@@ -113,7 +113,10 @@ fun InvitationResponseScreen(
             ) {
                 InvitationResponseFactory.explanationCard(contactName, this)
                 lazyVerticalOSRegularSpacer()
-                invitationQr?.let { CommonInvitationFactory.invitationBarcodeCard(invitationQr = invitationQr, lazyListScope = this) }
+                invitationQr?.let {
+                    CommonInvitationFactory
+                        .invitationBarcodeCard(invitationQr = invitationQr, lazyListScope = this)
+                }
                 lazyVerticalOSRegularSpacer()
                 InvitationResponseFactory.sharedCard(lazyListScope = this, onShareClick = onShareInvitationClick)
                 lazyVerticalOSRegularSpacer()

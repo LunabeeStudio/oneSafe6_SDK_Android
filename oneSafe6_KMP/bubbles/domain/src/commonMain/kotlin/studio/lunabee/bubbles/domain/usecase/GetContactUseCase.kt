@@ -28,13 +28,10 @@ import studio.lunabee.onesafe.di.Inject
 class GetContactUseCase @Inject constructor(
     private val contactRepository: ContactRepository,
 ) {
-    suspend operator fun invoke(id: DoubleRatchetUUID): Contact? {
-        return contactRepository.getContact(id)
-    }
+    suspend operator fun invoke(id: DoubleRatchetUUID): Contact? = contactRepository.getContact(id)
 
-    suspend operator fun invoke(id: DoubleRatchetUUID, safeId: DoubleRatchetUUID): Contact? {
-        return contactRepository.getContactInSafe(id, safeId)
-    }
+    suspend operator fun invoke(id: DoubleRatchetUUID, safeId: DoubleRatchetUUID): Contact? = contactRepository
+        .getContactInSafe(id, safeId)
 
     fun flow(id: DoubleRatchetUUID): Flow<Contact?> = contactRepository.getContactFlow(id)
 }

@@ -33,8 +33,10 @@ class ExecutePanicDestructionUseCase @Inject constructor(
 
     suspend operator fun invoke(): LBResult<Unit> {
         val currentSafeId: SafeId? = OSError.runCatching { safeRepository.currentSafeId() }.data
-        return safeRepository.getSafeToDestroy().map {
-            deleteSafeUseCase(it, currentSafeId == it)
-        }.lastOrNull() ?: LBResult.Success(Unit)
+        return safeRepository
+            .getSafeToDestroy()
+            .map {
+                deleteSafeUseCase(it, currentSafeId == it)
+            }.lastOrNull() ?: LBResult.Success(Unit)
     }
 }

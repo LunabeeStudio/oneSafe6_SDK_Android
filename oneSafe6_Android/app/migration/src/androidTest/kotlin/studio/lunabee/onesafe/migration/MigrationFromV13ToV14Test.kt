@@ -28,7 +28,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import kotlin.time.toKotlinInstant
 import org.junit.Rule
 import org.junit.Test
 import studio.lunabee.bubbles.domain.model.MessageSharingMode
@@ -56,6 +55,7 @@ import javax.inject.Inject
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.toKotlinInstant
 
 @HiltAndroidTest
 class MigrationFromV13ToV14Test : OSHiltTest() {

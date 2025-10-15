@@ -25,10 +25,16 @@ import studio.lunabee.messaging.domain.model.SafeMessage
 
 interface MessageRepository {
     suspend fun save(message: SafeMessage, order: Float)
+
     suspend fun getAllByContact(contactId: DoubleRatchetUUID): List<SafeMessage>
+
     suspend fun getLastMessage(contactId: DoubleRatchetUUID): Flow<SafeMessage?>
+
     suspend fun getByContactByOrder(contactId: DoubleRatchetUUID, order: Float): SafeMessage
+
     suspend fun deleteAllMessages(contactId: DoubleRatchetUUID)
+
     suspend fun deleteMessage(messageId: DoubleRatchetUUID)
+
     suspend fun markMessagesAsRead(contactId: DoubleRatchetUUID)
 }

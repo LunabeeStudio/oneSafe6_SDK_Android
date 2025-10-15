@@ -31,44 +31,36 @@ class InterceptEditorInstance(context: Context) : EditorInstance(context) {
     var interceptAction: ((action: ImeOptions.Action) -> Boolean) = { false }
     var blockInput: Boolean = false
 
-    override fun commitChar(char: String): Boolean {
-        return when {
-            intercept != null -> {
-                intercept?.invoke(char)
-                true
-            }
-            blockInput -> true
-            else -> super.commitChar(char)
+    override fun commitChar(char: String): Boolean = when {
+        intercept != null -> {
+            intercept?.invoke(char)
+            true
         }
+        blockInput -> true
+        else -> super.commitChar(char)
     }
 
-    override fun commitText(text: String): Boolean {
-        return when {
-            intercept != null -> {
-                intercept?.invoke(text)
-                true
-            }
-            blockInput -> true
-            else -> super.commitText(text)
+    override fun commitText(text: String): Boolean = when {
+        intercept != null -> {
+            intercept?.invoke(text)
+            true
         }
+        blockInput -> true
+        else -> super.commitText(text)
     }
 
-    override fun deleteBackwards(unit: OperationUnit): Boolean {
-        return when {
-            deleteBackwards != null -> {
-                deleteBackwards?.invoke()
-                true
-            }
-            blockInput -> true
-            else -> super.deleteBackwards(unit)
+    override fun deleteBackwards(unit: OperationUnit): Boolean = when {
+        deleteBackwards != null -> {
+            deleteBackwards?.invoke()
+            true
         }
+        blockInput -> true
+        else -> super.deleteBackwards(unit)
     }
 
-    override fun performEnterAction(action: ImeOptions.Action): Boolean {
-        return when {
-            interceptAction(action) -> true // intercept action and forward to oSK
-            blockInput -> true // block action even if not intercepted because oSK is shown
-            else -> super.performEnterAction(action)
-        }
+    override fun performEnterAction(action: ImeOptions.Action): Boolean = when {
+        interceptAction(action) -> true // intercept action and forward to oSK
+        blockInput -> true // block action even if not intercepted because oSK is shown
+        else -> super.performEnterAction(action)
     }
 }

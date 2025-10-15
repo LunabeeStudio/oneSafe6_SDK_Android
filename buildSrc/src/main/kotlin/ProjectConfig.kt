@@ -18,12 +18,11 @@
  */
 
 import org.gradle.api.JavaVersion
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 object ProjectConfig {
-    const val LIBRARY_URL: String = "https://github.com/LunabeeStudio/oneSafe6_SDK_Android"
-    const val GROUP_ID: String = "studio.lunabee.onesafe"
+    const val LibraryUrl: String = "https://github.com/LunabeeStudio/oneSafe6_SDK_Android"
+    const val GroupId: String = "studio.lunabee.onesafe"
 
-    val JDK_VERSION: JavaVersion = JavaVersion.VERSION_21
-    val JVM_TARGET: JvmTarget = JvmTarget.JVM_21
+    val JdkVersion: JavaVersion = JavaVersion.VERSION_21
+    val JvmTarget: org.jetbrains.kotlin.gradle.dsl.JvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
 }

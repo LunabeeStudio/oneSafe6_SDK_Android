@@ -40,13 +40,15 @@ class EnqueuedMessageLocalDataSourceImpl @Inject constructor(
     }
 
     override suspend fun getAll(): List<EnqueuedMessage> = dao.getAll().map(RoomEnqueuedMessage::toEnqueuedMessage)
+
     override suspend fun delete(id: Int) {
         if (dao.delete(id) != 1) {
             throw OSStorageError(OSStorageError.Code.ENQUEUED_MESSAGE_NOT_FOUND_FOR_DELETE)
         }
     }
 
-    override suspend fun getOldestAsFlow(): Flow<EnqueuedMessage?> = dao.getOldestAsFlow()
+    override suspend fun getOldestAsFlow(): Flow<EnqueuedMessage?> = dao
+        .getOldestAsFlow()
         .distinctUntilChanged { old, new ->
             old?.id == new?.id
         }.map {

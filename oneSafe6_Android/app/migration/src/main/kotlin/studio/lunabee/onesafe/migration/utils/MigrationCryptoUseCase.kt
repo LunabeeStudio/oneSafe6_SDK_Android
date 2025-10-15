@@ -42,38 +42,34 @@ class MigrationCryptoUseCase @Inject constructor(
     private val migrationCryptoV0UseCase: MigrationCryptoV0UseCase,
     private val migrationCryptoV1UseCase: MigrationCryptoV1UseCase,
 ) {
-    suspend fun decrypt(cipherData: ByteArray, key: ByteArray, safeVersion: Int): ByteArray {
-        return try {
-            if (safeVersion == 0) {
-                dataStoreEngine.retrieveValue(MigrationConstant.DATASTORE_USERNAME_V0).firstOrNull()?.let { username ->
-                    migrationCryptoV0UseCase.decrypt(cipherData, key, username)
-                } ?: throw OSMigrationError.Code.MISSING_LEGACY_USERNAME.get()
-            } else {
-                migrationCryptoV1UseCase.decrypt(cipherData, key)
-            }
-        } catch (e: GeneralSecurityException) {
-            throw OSMigrationError.Code.DECRYPT_FAIL.get(cause = e)
+    suspend fun decrypt(cipherData: ByteArray, key: ByteArray, safeVersion: Int): ByteArray = try {
+        if (safeVersion == 0) {
+            dataStoreEngine.retrieveValue(MigrationConstant.DatastoreUsernameV0).firstOrNull()?.let { username ->
+                migrationCryptoV0UseCase.decrypt(cipherData, key, username)
+            } ?: throw OSMigrationError.Code.MISSING_LEGACY_USERNAME.get()
+        } else {
+            migrationCryptoV1UseCase.decrypt(cipherData, key)
         }
+    } catch (e: GeneralSecurityException) {
+        throw OSMigrationError.Code.DECRYPT_FAIL.get(cause = e)
     }
 
-    suspend fun encrypt(plainData: ByteArray, key: ByteArray, safeVersion: Int): ByteArray {
-        return try {
-            if (safeVersion == 0) {
-                dataStoreEngine.retrieveValue(MigrationConstant.DATASTORE_USERNAME_V0).firstOrNull()?.let { username ->
-                    migrationCryptoV0UseCase.encrypt(plainData, key, username)
-                } ?: throw OSMigrationError.Code.MISSING_LEGACY_USERNAME.get()
-            } else {
-                migrationCryptoV1UseCase.encrypt(plainData, key)
-            }
-        } catch (e: GeneralSecurityException) {
-            throw OSMigrationError.Code.DECRYPT_FAIL.get(cause = e)
+    suspend fun encrypt(plainData: ByteArray, key: ByteArray, safeVersion: Int): ByteArray = try {
+        if (safeVersion == 0) {
+            dataStoreEngine.retrieveValue(MigrationConstant.DatastoreUsernameV0).firstOrNull()?.let { username ->
+                migrationCryptoV0UseCase.encrypt(plainData, key, username)
+            } ?: throw OSMigrationError.Code.MISSING_LEGACY_USERNAME.get()
+        } else {
+            migrationCryptoV1UseCase.encrypt(plainData, key)
         }
+    } catch (e: GeneralSecurityException) {
+        throw OSMigrationError.Code.DECRYPT_FAIL.get(cause = e)
     }
 
     suspend fun getDecryptStream(aFile: AtomicFile, key: ByteArray, safeVersion: Int): InputStream {
         val cryptoStream = try {
             if (safeVersion == 0) {
-                dataStoreEngine.retrieveValue(MigrationConstant.DATASTORE_USERNAME_V0).firstOrNull()?.let { username ->
+                dataStoreEngine.retrieveValue(MigrationConstant.DatastoreUsernameV0).firstOrNull()?.let { username ->
                     migrationCryptoV0UseCase.getDecryptStream(aFile, key, username)
                 } ?: throw OSMigrationError.Code.MISSING_LEGACY_USERNAME.get()
             } else {
@@ -85,17 +81,15 @@ class MigrationCryptoUseCase @Inject constructor(
         return OSCryptoInputStream(cryptoStream)
     }
 
-    suspend fun getCipherOutputStream(fileStream: FileOutputStream, key: ByteArray, safeVersion: Int): OutputStream {
-        return try {
-            if (safeVersion == 0) {
-                dataStoreEngine.retrieveValue(MigrationConstant.DATASTORE_USERNAME_V0).firstOrNull()?.let { username ->
-                    migrationCryptoV0UseCase.getCipherOutputStream(fileStream, key, username)
-                } ?: throw OSMigrationError.Code.MISSING_LEGACY_USERNAME.get()
-            } else {
-                migrationCryptoV1UseCase.getCipherOutputStream(fileStream, key)
-            }
-        } catch (e: GeneralSecurityException) {
-            throw OSMigrationError.Code.GET_ENCRYPT_STREAM_FAIL.get(cause = e)
+    suspend fun getCipherOutputStream(fileStream: FileOutputStream, key: ByteArray, safeVersion: Int): OutputStream = try {
+        if (safeVersion == 0) {
+            dataStoreEngine.retrieveValue(MigrationConstant.DatastoreUsernameV0).firstOrNull()?.let { username ->
+                migrationCryptoV0UseCase.getCipherOutputStream(fileStream, key, username)
+            } ?: throw OSMigrationError.Code.MISSING_LEGACY_USERNAME.get()
+        } else {
+            migrationCryptoV1UseCase.getCipherOutputStream(fileStream, key)
         }
+    } catch (e: GeneralSecurityException) {
+        throw OSMigrationError.Code.GET_ENCRYPT_STREAM_FAIL.get(cause = e)
     }
 }

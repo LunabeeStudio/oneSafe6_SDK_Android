@@ -67,41 +67,42 @@ class ExportWorker @AssistedInject constructor(
     @ArchiveCacheDir(type = ArchiveCacheDir.Type.Export) private val archiveDir: File,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
-        val safeId = SafeId(inputData.getByteArray(EXPORT_WORKER_SAFE_ID_DATA)!!.toUUID())
+        val safeId = SafeId(inputData.getByteArray(ExportWorkerSafeIdData)!!.toUUID())
         var workerResult = Result.success()
         exportBackupUseCase(
             exportEngine = exportEngine,
             archiveExtractedDirectory = archiveDir,
             safeId = safeId,
-        )
-            .onStart {
-                updateProgress(0f)
-            }
-            .collect { result ->
-                when (result) {
-                    is LBFlowResult.Failure -> {
-                        val data = Data.Builder()
-                            .putString(ERROR_OUTPUT_KEY, result.throwable.toString())
-                            .build()
-                        result.throwable?.let(logger::e)
-                        workerResult = Result.failure(data)
-                    }
-                    is LBFlowResult.Loading -> updateProgress(result.progress ?: -1f)
-                    is LBFlowResult.Success -> {
-                        val data = Data.Builder()
-                            .putString(FILE_OUTPUT_KEY, result.successData.file.path)
-                            .build()
-                        workerResult = Result.success(data)
-                    }
+        ).onStart {
+            updateProgress(0f)
+        }.collect { result ->
+            when (result) {
+                is LBFlowResult.Failure -> {
+                    val data = Data
+                        .Builder()
+                        .putString(ErrorOutputKey, result.throwable.toString())
+                        .build()
+                    result.throwable?.let(logger::e)
+                    workerResult = Result.failure(data)
+                }
+                is LBFlowResult.Loading -> updateProgress(result.progress ?: -1f)
+                is LBFlowResult.Success -> {
+                    val data = Data
+                        .Builder()
+                        .putString(FileOutputKey, result.successData.file.path)
+                        .build()
+                    workerResult = Result.success(data)
                 }
             }
+        }
 
         return workerResult
     }
 
     private suspend fun updateProgress(progress: Float) {
-        val data = Data.Builder()
-            .putFloat(PROGRESS_DATA_KEY, progress)
+        val data = Data
+            .Builder()
+            .putFloat(ProgressDataKey, progress)
             .build()
         setProgress(data)
         val foregroundInfo = createForegroundInfo(progress)
@@ -125,19 +126,19 @@ class ExportWorker @AssistedInject constructor(
             .build()
 
         return ForegroundInfoCompat.foregroundInfoDataSync(
-            notificationId = OSNotificationManager.EXPORT_WORKER_NOTIFICATION_ID,
+            notificationId = OSNotificationManager.ExportWorkerNotificationId,
             notification = notification,
         )
     }
 
     companion object {
-        private const val EXPORT_WORKER_NAME = "ded150c0-51f5-4d98-b572-243f6d4e3b55"
+        private const val ExportWorkerName = "ded150c0-51f5-4d98-b572-243f6d4e3b55"
 
-        private const val FILE_OUTPUT_KEY = "a35542e6-6003-4dd9-9267-0556e0c6bbf5"
-        private const val PROGRESS_DATA_KEY = "375f2850-9884-4ef7-a50b-6e58be73a483"
-        private const val ERROR_OUTPUT_KEY: String = "ab2c1e17-2b69-4839-b954-bf2b8a3fab73"
+        private const val FileOutputKey = "a35542e6-6003-4dd9-9267-0556e0c6bbf5"
+        private const val ProgressDataKey = "375f2850-9884-4ef7-a50b-6e58be73a483"
+        private const val ErrorOutputKey: String = "ab2c1e17-2b69-4839-b954-bf2b8a3fab73"
 
-        private const val EXPORT_WORKER_SAFE_ID_DATA = "cffdf5f4-2e63-4a36-8e72-32557f1cb4a8"
+        private const val ExportWorkerSafeIdData = "cffdf5f4-2e63-4a36-8e72-32557f1cb4a8"
 
         fun start(workManager: WorkManager, setExpedited: Boolean, safeId: SafeId): Flow<LBFlowResult<File>> {
             val workRequestBuilder = OneTimeWorkRequestBuilder<ExportWorker>()
@@ -146,11 +147,11 @@ class ExportWorker @AssistedInject constructor(
             }
             val data = Data
                 .Builder()
-                .putByteArray(EXPORT_WORKER_SAFE_ID_DATA, safeId.id.toByteArray())
+                .putByteArray(ExportWorkerSafeIdData, safeId.id.toByteArray())
                 .build()
             workRequestBuilder.setInputData(data)
             val workRequest = workRequestBuilder.build()
-            workManager.enqueueUniqueWork(EXPORT_WORKER_NAME, ExistingWorkPolicy.APPEND_OR_REPLACE, workRequest)
+            workManager.enqueueUniqueWork(ExportWorkerName, ExistingWorkPolicy.APPEND_OR_REPLACE, workRequest)
 
             return workManager.getWorkInfoByIdFlow(workRequest.id).map { workInfo ->
                 when (workInfo?.state) {
@@ -158,15 +159,15 @@ class ExportWorker @AssistedInject constructor(
                     WorkInfo.State.ENQUEUED,
                     WorkInfo.State.RUNNING,
                     -> {
-                        val progress = workInfo.progress.getFloat(PROGRESS_DATA_KEY, -1f)
+                        val progress = workInfo.progress.getFloat(ProgressDataKey, -1f)
                         LBFlowResult.Loading(progress = progress)
                     }
                     WorkInfo.State.SUCCEEDED -> {
-                        val finalPath = workInfo.outputData.getString(FILE_OUTPUT_KEY)!!
+                        val finalPath = workInfo.outputData.getString(FileOutputKey)!!
                         LBFlowResult.Success(File(finalPath))
                     }
                     WorkInfo.State.FAILED -> {
-                        val message = workInfo.outputData.getString(ERROR_OUTPUT_KEY)
+                        val message = workInfo.outputData.getString(ErrorOutputKey)
                             ?: OSAppError.Code.EXPORT_WORKER_FAILURE.message
                         LBFlowResult.Failure(OSAppError(OSAppError.Code.EXPORT_WORKER_FAILURE, message))
                     }

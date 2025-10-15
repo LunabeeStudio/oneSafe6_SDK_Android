@@ -24,5 +24,6 @@ import studio.lunabee.onesafe.domain.model.password.PasswordConfig
 
 interface PasswordGeneratorConfigRepository {
     fun getConfig(): Flow<PasswordConfig>
+
     suspend fun setConfig(config: PasswordConfig)
 }

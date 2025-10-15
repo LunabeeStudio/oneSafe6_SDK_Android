@@ -34,11 +34,9 @@ class AndroidCloudBackupDescriptionProvider @Inject constructor(
     @param:BuildNumber private val versionCode: Int,
     private val clock: Clock,
 ) : CloudBackupDescriptionProvider {
-    override operator fun invoke(): String {
-        return context.getString(
-            OSString.googleDrive_backup_description,
-            "${context.getString(OSString.application_name)} Android - $versionName#$versionCode",
-            ZonedDateTime.now(clock).toString(),
-        )
-    }
+    override operator fun invoke(): String = context.getString(
+        OSString.googleDrive_backup_description,
+        "${context.getString(OSString.application_name)} Android - $versionName#$versionCode",
+        ZonedDateTime.now(clock).toString(),
+    )
 }

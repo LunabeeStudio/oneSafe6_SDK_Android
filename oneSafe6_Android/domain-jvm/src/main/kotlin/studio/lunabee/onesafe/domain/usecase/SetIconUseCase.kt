@@ -52,17 +52,15 @@ class SetIconUseCase @Inject constructor(
     suspend operator fun invoke(
         safeItem: SafeItem,
         icon: ByteArray,
-    ): LBResult<Unit> {
-        return OSError.runCatching {
-            val itemKey = safeItemKeyRepository.getSafeItemKey(safeItem.id)
+    ): LBResult<Unit> = OSError.runCatching {
+        val itemKey = safeItemKeyRepository.getSafeItemKey(safeItem.id)
 
-            if (safeItem.iconId != null) {
-                deleteIconUseCase(safeItem)
-            }
-
-            val iconId = invoke(itemKey, icon, safeItem.safeId)
-            safeItemRepository.updateIcon(safeItem.id, iconId)
+        if (safeItem.iconId != null) {
+            deleteIconUseCase(safeItem)
         }
+
+        val iconId = invoke(itemKey, icon, safeItem.safeId)
+        safeItemRepository.updateIcon(safeItem.id, iconId)
     }
 
     /**

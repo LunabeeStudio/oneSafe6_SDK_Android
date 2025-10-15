@@ -29,11 +29,11 @@ class CardSettingsActionAutoLockOSKInactivityAction(
     delay: AutoLockInactivityDelay,
     override val onClick: () -> Unit,
 ) : CardSettingsNavAction(
-    icon = null,
-    text = LbcTextSpec.StringResource(OSString.oneSafeK_extension_configuration_autolock_inactivity),
-    onClickLabel = LbcTextSpec.StringResource(OSString.common_modify),
-    secondaryText = delay.text,
-)
+        icon = null,
+        text = LbcTextSpec.StringResource(OSString.oneSafeK_extension_configuration_autolock_inactivity),
+        onClickLabel = LbcTextSpec.StringResource(OSString.common_modify),
+        secondaryText = delay.text,
+    )
 
 class CardSettingsActionAutoLockOSKHiddenAction(delay: AutoLockBackgroundDelay, override val onClick: () -> Unit) : CardSettingsNavAction(
     icon = null,

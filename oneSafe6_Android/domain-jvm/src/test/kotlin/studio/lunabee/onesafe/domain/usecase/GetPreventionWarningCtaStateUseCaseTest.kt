@@ -72,7 +72,10 @@ class GetPreventionWarningCtaStateUseCaseTest {
             every { contactRepository.getContactCountFlow(any()) } returns flowOf(10)
             every { safeItemRepository.getSafeItemsCountFlow(any()) } returns flowOf(10)
             every { settingRepository.hasBackupSince(any(), any()) } returns flowOf(true)
-            every { settingRepository.preventionWarningCtaState(any()) } returns flowOf(CtaState.DismissedAt(Instant.now()))
+            every { settingRepository.preventionWarningCtaState(any()) } returns flowOf(
+                CtaState
+                    .DismissedAt(Instant.now()),
+            )
             every { settingRepository.hasExportSince(any(), any()) } returns flowOf(true)
             assertEquals(null, useCase().first())
         }
@@ -86,7 +89,10 @@ class GetPreventionWarningCtaStateUseCaseTest {
             every { contactRepository.getContactCountFlow(any()) } returns flowOf(10)
             every { safeItemRepository.getSafeItemsCountFlow(any()) } returns flowOf(10)
             every { settingRepository.hasBackupSince(any(), any()) } returns flowOf(true)
-            every { settingRepository.preventionWarningCtaState(any()) } returns flowOf(CtaState.DismissedAt(lastDismissAt))
+            every { settingRepository.preventionWarningCtaState(any()) } returns flowOf(
+                CtaState
+                    .DismissedAt(lastDismissAt),
+            )
             every { settingRepository.hasExportSince(any(), any()) } returns flowOf(true)
             assertEquals(PreventionSettingsWarning.PasswordVerification, useCase().first())
         }
@@ -100,7 +106,10 @@ class GetPreventionWarningCtaStateUseCaseTest {
             every { contactRepository.getContactCountFlow(any()) } returns flowOf(10)
             every { safeItemRepository.getSafeItemsCountFlow(any()) } returns flowOf(10)
             every { settingRepository.hasBackupSince(any(), any()) } returns flowOf(false)
-            every { settingRepository.preventionWarningCtaState(any()) } returns flowOf(CtaState.DismissedAt(lastDismissAt))
+            every { settingRepository.preventionWarningCtaState(any()) } returns flowOf(
+                CtaState
+                    .DismissedAt(lastDismissAt),
+            )
             every { settingRepository.hasExportSince(any(), any()) } returns flowOf(false)
             assertEquals(PreventionSettingsWarning.PasswordVerificationAndBackup, useCase().first())
         }
@@ -114,7 +123,10 @@ class GetPreventionWarningCtaStateUseCaseTest {
             every { contactRepository.getContactCountFlow(any()) } returns flowOf(10)
             every { safeItemRepository.getSafeItemsCountFlow(any()) } returns flowOf(10)
             every { settingRepository.hasBackupSince(any(), any()) } returns flowOf(false)
-            every { settingRepository.preventionWarningCtaState(any()) } returns flowOf(CtaState.DismissedAt(lastDismissAt))
+            every { settingRepository.preventionWarningCtaState(any()) } returns flowOf(
+                CtaState
+                    .DismissedAt(lastDismissAt),
+            )
             every { settingRepository.hasExportSince(any(), any()) } returns flowOf(false)
             assertEquals(PreventionSettingsWarning.Backup, useCase().first())
         }
@@ -128,7 +140,10 @@ class GetPreventionWarningCtaStateUseCaseTest {
             every { contactRepository.getContactCountFlow(any()) } returns flowOf(10)
             every { safeItemRepository.getSafeItemsCountFlow(any()) } returns flowOf(10)
             every { settingRepository.hasBackupSince(any(), any()) } returns flowOf(true)
-            every { settingRepository.preventionWarningCtaState(any()) } returns flowOf(CtaState.DismissedAt(lastDismissAt))
+            every { settingRepository.preventionWarningCtaState(any()) } returns flowOf(
+                CtaState
+                    .DismissedAt(lastDismissAt),
+            )
             every { settingRepository.hasExportSince(any(), any()) } returns flowOf(true)
             assertEquals(null, useCase().first())
         }
@@ -142,7 +157,10 @@ class GetPreventionWarningCtaStateUseCaseTest {
             every { contactRepository.getContactCountFlow(any()) } returns flowOf(0)
             every { safeItemRepository.getSafeItemsCountFlow(any()) } returns flowOf(0)
             every { settingRepository.hasBackupSince(any(), any()) } returns flowOf(false)
-            every { settingRepository.preventionWarningCtaState(any()) } returns flowOf(CtaState.DismissedAt(lastDismissAt))
+            every { settingRepository.preventionWarningCtaState(any()) } returns flowOf(
+                CtaState
+                    .DismissedAt(lastDismissAt),
+            )
             every { settingRepository.hasExportSince(any(), any()) } returns flowOf(true)
             assertEquals(null, useCase().first())
         }
@@ -156,7 +174,10 @@ class GetPreventionWarningCtaStateUseCaseTest {
             every { contactRepository.getContactCountFlow(any()) } returns flowOf(0)
             every { safeItemRepository.getSafeItemsCountFlow(any()) } returns flowOf(10)
             every { settingRepository.hasBackupSince(any(), any()) } returns flowOf(false)
-            every { settingRepository.preventionWarningCtaState(any()) } returns flowOf(CtaState.DismissedAt(lastDismissAt))
+            every { settingRepository.preventionWarningCtaState(any()) } returns flowOf(
+                CtaState
+                    .DismissedAt(lastDismissAt),
+            )
             every { settingRepository.hasExportSince(any(), any()) } returns flowOf(true)
             assertNull(useCase().first())
         }
@@ -170,7 +191,10 @@ class GetPreventionWarningCtaStateUseCaseTest {
             every { contactRepository.getContactCountFlow(any()) } returns flowOf(0)
             every { safeItemRepository.getSafeItemsCountFlow(any()) } returns flowOf(10)
             every { settingRepository.hasBackupSince(any(), any()) } returns flowOf(false)
-            every { settingRepository.preventionWarningCtaState(any()) } returns flowOf(CtaState.DismissedAt(lastDismissAt))
+            every { settingRepository.preventionWarningCtaState(any()) } returns flowOf(
+                CtaState
+                    .DismissedAt(lastDismissAt),
+            )
             every { settingRepository.hasExportSince(any(), any()) } returns flowOf(false)
             assertEquals(PreventionSettingsWarning.Backup, useCase().first())
         }

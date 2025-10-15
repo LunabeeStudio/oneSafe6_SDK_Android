@@ -23,14 +23,12 @@ import java.security.SecureRandom
 import javax.inject.Inject
 
 class SaltProvider @Inject constructor() {
-    operator fun invoke(size: Int = ITEM_KEY_LENGTH_BYTE): ByteArray {
-        return ByteArray(size).apply {
-            random.nextBytes(this)
-        }
+    operator fun invoke(size: Int = ItemKeyLengthByte): ByteArray = ByteArray(size).apply {
+        random.nextBytes(this)
     }
 
     private companion object {
         val random = SecureRandom()
-        const val ITEM_KEY_LENGTH_BYTE: Int = 32
+        const val ItemKeyLengthByte: Int = 32
     }
 }

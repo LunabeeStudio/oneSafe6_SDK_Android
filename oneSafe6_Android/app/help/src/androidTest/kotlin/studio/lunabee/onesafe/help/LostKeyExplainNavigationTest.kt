@@ -8,12 +8,12 @@ import androidx.test.espresso.Espresso
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Rule
-import kotlin.test.Test
 import studio.lunabee.compose.androidtest.extension.waitUntilExactlyOneExists
 import studio.lunabee.onesafe.commonui.OSString
 import studio.lunabee.onesafe.test.InitialTestState
 import studio.lunabee.onesafe.ui.UiConstants
 import javax.inject.Inject
+import kotlin.test.Test
 
 @HiltAndroidTest
 @OptIn(ExperimentalTestApi::class)

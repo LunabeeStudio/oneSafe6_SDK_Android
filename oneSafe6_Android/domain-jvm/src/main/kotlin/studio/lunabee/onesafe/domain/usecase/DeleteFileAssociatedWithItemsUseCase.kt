@@ -70,7 +70,9 @@ class DeleteFileAssociatedWithItemsUseCase @Inject constructor(
                         fileRepository.deleteFile(fileId = UUID.fromString(fileId))
                     }
                     field.encThumbnailFileName?.let {
-                        val thumbnailFileName = cryptoRepository.decrypt(itemKey, DecryptEntry(it, UUID::class)).toString()
+                        val thumbnailFileName = cryptoRepository
+                            .decrypt(itemKey, DecryptEntry(it, UUID::class))
+                            .toString()
                         fileRepository.getThumbnailFile(thumbnailFileName, isFullWidth = true).delete()
                         fileRepository.getThumbnailFile(thumbnailFileName, isFullWidth = false).delete()
                     }

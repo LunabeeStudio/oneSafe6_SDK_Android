@@ -294,25 +294,23 @@ object DatabaseModule {
         migration24to25: RoomMigration24to25,
         databaseKeyRepository: DatabaseKeyRepository,
         @DatabaseName(DatabaseName.Type.Main) dbName: String,
-    ): MainDatabase {
-        return runBlocking {
-            val dbKey = kotlin.runCatching { databaseKeyRepository.getKeyFlow().firstOrNull() }.getOrNull()
-            MainDatabase.build(
-                appContext = appContext,
-                dbKey = dbKey,
-                mainDatabaseName = dbName,
-                migration3to4,
-                migration8to9,
-                migration9to10,
-                migration12to13,
-                migration13to14,
-                migration15to16,
-                migration16to17,
-                migration19to20,
-                migration22to23,
-                migration24to25,
-            )
-        }
+    ): MainDatabase = runBlocking {
+        val dbKey = kotlin.runCatching { databaseKeyRepository.getKeyFlow().firstOrNull() }.getOrNull()
+        MainDatabase.build(
+            appContext = appContext,
+            dbKey = dbKey,
+            mainDatabaseName = dbName,
+            migration3to4,
+            migration8to9,
+            migration9to10,
+            migration12to13,
+            migration13to14,
+            migration15to16,
+            migration16to17,
+            migration19to20,
+            migration22to23,
+            migration24to25,
+        )
     }
 
     @Provides
@@ -321,9 +319,7 @@ object DatabaseModule {
         @ApplicationContext context: Context,
         @DatabaseName(DatabaseName.Type.Main) dbName: String,
         @DatabaseName(DatabaseName.Type.CipherTemp) tempDbName: String,
-    ): DatabaseEncryptionManager {
-        return SqlCipherDBManager(dispatcher, context, dbName, tempDbName)
-    }
+    ): DatabaseEncryptionManager = SqlCipherDBManager(dispatcher, context, dbName, tempDbName)
 }
 
 @Module
@@ -334,122 +330,83 @@ object MainDatabaseModule {
         mainDatabase: MainDatabase,
         @ApplicationContext context: Context,
         @FileDispatcher dispatcher: CoroutineDispatcher,
-    ): StorageManager {
-        return MainDatabaseTransactionManager(
-            mainDatabase = mainDatabase,
-            context = context,
-            dispatcher = dispatcher,
-        )
-    }
+    ): StorageManager = MainDatabaseTransactionManager(
+        mainDatabase = mainDatabase,
+        context = context,
+        dispatcher = dispatcher,
+    )
 
     @Provides
-    fun provideSafeItemDao(mainDatabase: MainDatabase): SafeItemDao {
-        return mainDatabase.safeItemDao()
-    }
+    fun provideSafeItemDao(mainDatabase: MainDatabase): SafeItemDao = mainDatabase.safeItemDao()
 
     @Provides
-    fun provideSafeItemRawDao(mainDatabase: MainDatabase): SafeItemRawDao {
-        return mainDatabase.safeItemRawDao()
-    }
+    fun provideSafeItemRawDao(mainDatabase: MainDatabase): SafeItemRawDao = mainDatabase.safeItemRawDao()
 
     @Provides
-    fun provideSafeItemFieldDao(mainDatabase: MainDatabase): SafeItemFieldDao {
-        return mainDatabase.safeItemFieldDao()
-    }
+    fun provideSafeItemFieldDao(mainDatabase: MainDatabase): SafeItemFieldDao = mainDatabase.safeItemFieldDao()
 
     @Provides
-    fun provideSearchIndexDao(mainDatabase: MainDatabase): IndexWordEntryDao {
-        return mainDatabase.searchIndexDao()
-    }
+    fun provideSearchIndexDao(mainDatabase: MainDatabase): IndexWordEntryDao = mainDatabase.searchIndexDao()
 
     @Provides
-    fun provideSafeItemKeyDao(mainDatabase: MainDatabase): SafeItemKeyDao {
-        return mainDatabase.safeItemKeyDao()
-    }
+    fun provideSafeItemKeyDao(mainDatabase: MainDatabase): SafeItemKeyDao = mainDatabase.safeItemKeyDao()
 
     @Provides
-    fun provideContactDao(mainDatabase: MainDatabase): ContactDao {
-        return mainDatabase.contactDao()
-    }
+    fun provideContactDao(mainDatabase: MainDatabase): ContactDao = mainDatabase.contactDao()
 
     @Provides
-    fun provideContactKeyDao(mainDatabase: MainDatabase): ContactKeyDao {
-        return mainDatabase.contactKeyDao()
-    }
+    fun provideContactKeyDao(mainDatabase: MainDatabase): ContactKeyDao = mainDatabase.contactKeyDao()
 
     @Provides
-    fun provideMessageDao(mainDatabase: MainDatabase): MessageDao {
-        return mainDatabase.messageDao()
-    }
+    fun provideMessageDao(mainDatabase: MainDatabase): MessageDao = mainDatabase.messageDao()
 
     @Provides
-    fun provideEnqueuedMessageDao(mainDatabase: MainDatabase): EnqueuedMessageDao {
-        return mainDatabase.enqueuedMessageDao()
-    }
+    fun provideEnqueuedMessageDao(mainDatabase: MainDatabase): EnqueuedMessageDao = mainDatabase.enqueuedMessageDao()
 
     @Provides
-    fun provideMessageKeyDao(mainDatabase: MainDatabase): DoubleRatchetKeyDao {
-        return mainDatabase.doubleRatchetKeyDao()
-    }
+    fun provideMessageKeyDao(mainDatabase: MainDatabase): DoubleRatchetKeyDao = mainDatabase.doubleRatchetKeyDao()
 
     @Provides
-    fun provideConversationDao(mainDatabase: MainDatabase): DoubleRatchetConversationDao {
-        return mainDatabase.doubleRatchetConversationDao()
-    }
+    fun provideConversationDao(mainDatabase: MainDatabase): DoubleRatchetConversationDao = mainDatabase
+        .doubleRatchetConversationDao()
 
     @Provides
-    fun provideHandShakeDataDao(mainDatabase: MainDatabase): HandShakeDataDao {
-        return mainDatabase.handShakeDataDao()
-    }
+    fun provideHandShakeDataDao(mainDatabase: MainDatabase): HandShakeDataDao = mainDatabase.handShakeDataDao()
 
     @Provides
-    fun provideSentMessageDao(mainDatabase: MainDatabase): SentMessageDao {
-        return mainDatabase.sentMessageDao()
-    }
+    fun provideSentMessageDao(mainDatabase: MainDatabase): SentMessageDao = mainDatabase.sentMessageDao()
 
     @Provides
-    fun provideBackupDao(mainDatabase: MainDatabase): BackupDao {
-        return mainDatabase.backupDao()
-    }
+    fun provideBackupDao(mainDatabase: MainDatabase): BackupDao = mainDatabase.backupDao()
 
     @Provides
-    fun provideSafeDao(mainDatabase: MainDatabase): SafeDao {
-        return mainDatabase.safeDao()
-    }
+    fun provideSafeDao(mainDatabase: MainDatabase): SafeDao = mainDatabase.safeDao()
 
     @Provides
-    fun provideSettingsDao(mainDatabase: MainDatabase): SettingsDao {
-        return mainDatabase.settingsDao()
-    }
+    fun provideSettingsDao(mainDatabase: MainDatabase): SettingsDao = mainDatabase.settingsDao()
 
     @Provides
-    fun provideAutoBackupErrorDao(mainDatabase: MainDatabase): AutoBackupErrorDao {
-        return mainDatabase.autoBackupErrorDao()
-    }
+    fun provideAutoBackupErrorDao(mainDatabase: MainDatabase): AutoBackupErrorDao = mainDatabase.autoBackupErrorDao()
 
     @Provides
-    fun provideSafeFileDao(mainDatabase: MainDatabase): SafeFileDao {
-        return mainDatabase.safeFileDao()
-    }
+    fun provideSafeFileDao(mainDatabase: MainDatabase): SafeFileDao = mainDatabase.safeFileDao()
 
     @Provides
-    fun provideRecentSearchDao(mainDatabase: MainDatabase): RecentSearchDao {
-        return mainDatabase.recentSearchDao()
-    }
+    fun provideRecentSearchDao(mainDatabase: MainDatabase): RecentSearchDao = mainDatabase.recentSearchDao()
 }
 
 @Module
 @InstallIn(SingletonComponent::class)
 object AppMaintenanceDatastoreModule {
 
-    private const val datastoreFile: String = "e6c59819-f0ea-4e32-bb0f-442e546bf9bd"
+    private const val DatastoreFile: String = "e6c59819-f0ea-4e32-bb0f-442e546bf9bd"
 
     @Provides
     @Singleton
     fun provideDatastore(@ApplicationContext context: Context): DataStore<ForceUpgradeProtoData> = context.dataStoreProto
 
     private val Context.dataStoreProto: DataStore<ForceUpgradeProtoData> by dataStore(
-        fileName = datastoreFile,
+        fileName = DatastoreFile,
         serializer = ForceUpgradeDataSerializer,
     )
 }
@@ -458,14 +415,14 @@ object AppMaintenanceDatastoreModule {
 @InstallIn(SingletonComponent::class)
 object PasswordGeneratorConfigDatastoreModule {
 
-    private const val datastoreFile: String = "5a483983-a9c3-4385-8747-7baff8d6b29b"
+    private const val DatastoreFile: String = "5a483983-a9c3-4385-8747-7baff8d6b29b"
 
     @Provides
     @Singleton
     fun provideDatastore(@ApplicationContext context: Context): DataStore<PasswordGeneratorConfigProto> = context.dataStoreProto
 
     private val Context.dataStoreProto: DataStore<PasswordGeneratorConfigProto> by dataStore(
-        fileName = datastoreFile,
+        fileName = DatastoreFile,
         serializer = PasswordGeneratorConfigSerializer,
     )
 }

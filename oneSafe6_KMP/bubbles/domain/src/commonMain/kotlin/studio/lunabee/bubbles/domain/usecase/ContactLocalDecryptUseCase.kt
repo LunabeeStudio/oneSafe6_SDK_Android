@@ -20,7 +20,6 @@
 package studio.lunabee.bubbles.domain.usecase
 
 import com.lunabee.lbcore.model.LBResult
-import kotlin.time.Instant
 import studio.lunabee.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.bubbles.domain.repository.ContactKeyRepository
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
@@ -28,6 +27,7 @@ import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.onesafe.error.OSError
 import kotlin.reflect.KClass
+import kotlin.time.Instant
 
 // TODO <bubbles> invoke overload to decrypt an array of data without retrieving the key for each data (see EncryptFieldsUseCase)
 
@@ -48,26 +48,21 @@ class ContactLocalDecryptUseCase @Inject constructor(
      *
      * @return Plain data wrapped in a [LBResult]
      */
-    suspend operator fun <Data : Any> invoke(data: ByteArray, contactId: DoubleRatchetUUID, clazz: KClass<Data>): LBResult<Data> {
-        return OSError.runCatching {
+    suspend operator fun <Data : Any> invoke(data: ByteArray, contactId: DoubleRatchetUUID, clazz: KClass<Data>): LBResult<Data> = OSError
+        .runCatching {
             val key = contactKeyRepository.getContactLocalKey(contactId)
             bubblesCryptoRepository.localDecrypt(key, DecryptEntry(data, clazz))
         }
-    }
 
-    suspend fun string(data: ByteArray, contactId: DoubleRatchetUUID): LBResult<String> {
-        return invoke(data, contactId, String::class)
-    }
+    suspend fun string(data: ByteArray, contactId: DoubleRatchetUUID): LBResult<String> = invoke(data, contactId, String::class)
 
-    suspend fun uuid(data: ByteArray, contactId: DoubleRatchetUUID): LBResult<DoubleRatchetUUID> {
-        return invoke(data, contactId, DoubleRatchetUUID::class)
-    }
+    suspend fun uuid(data: ByteArray, contactId: DoubleRatchetUUID): LBResult<DoubleRatchetUUID> = invoke(
+        data,
+        contactId,
+        DoubleRatchetUUID::class,
+    )
 
-    suspend fun instant(data: ByteArray, contactId: DoubleRatchetUUID): LBResult<Instant> {
-        return invoke(data, contactId, Instant::class)
-    }
+    suspend fun instant(data: ByteArray, contactId: DoubleRatchetUUID): LBResult<Instant> = invoke(data, contactId, Instant::class)
 
-    suspend fun byteArray(data: ByteArray, contactId: DoubleRatchetUUID): LBResult<ByteArray> {
-        return invoke(data, contactId, ByteArray::class)
-    }
+    suspend fun byteArray(data: ByteArray, contactId: DoubleRatchetUUID): LBResult<ByteArray> = invoke(data, contactId, ByteArray::class)
 }

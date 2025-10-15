@@ -47,7 +47,8 @@ class InvitationViewModel @Inject constructor(
     private val contactLocalDecryptUseCase: ContactLocalDecryptUseCase,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    val contactId: DoubleRatchetUUID = savedStateHandle.get<String>(InvitationDestination.ContactIdArgs)
+    val contactId: DoubleRatchetUUID = savedStateHandle
+        .get<String>(InvitationDestination.ContactIdArgs)
         ?.let { DoubleRatchetUUID.fromString(it) }
         ?: error("Missing contact id in args")
 

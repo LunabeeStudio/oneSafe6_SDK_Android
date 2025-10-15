@@ -80,7 +80,11 @@ class SynchronizeCloudBackupsUseCaseTest {
         }
     }
     private val getAllLocalBackupsUseCase: GetAllLocalBackupsUseCase = mockk {
-        coEvery { this@mockk.invoke(firstSafeId, excludeRemote = true) } answers { localMap.values.filter { !it.second }.map { it.first } }
+        coEvery { this@mockk.invoke(firstSafeId, excludeRemote = true) } answers {
+            localMap.values
+                .filter { !it.second }
+                .map { it.first }
+        }
         coEvery { this@mockk.invoke(firstSafeId, excludeRemote = false) } answers { localMap.values.toList().map { it.first } }
     }
 
@@ -142,7 +146,10 @@ class SynchronizeCloudBackupsUseCaseTest {
         coVerify(exactly = 1) { cloudBackupRepository.getBackups(firstSafeId) }
         coVerify(exactly = 1) {
             cloudBackupRepository.uploadBackup(
-                backups = localMap.values.map { it.first }.sortedDescending().take(keepBackupsNumber),
+                backups = localMap.values
+                    .map { it.first }
+                    .sortedDescending()
+                    .take(keepBackupsNumber),
             )
         }
         coVerify(exactly = 1) { cloudBackupRepository.deleteBackup(backups = emptyList()) }

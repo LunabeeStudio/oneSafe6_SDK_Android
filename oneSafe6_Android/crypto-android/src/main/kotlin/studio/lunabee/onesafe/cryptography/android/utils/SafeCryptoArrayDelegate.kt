@@ -23,9 +23,9 @@ import studio.lunabee.onesafe.error.OSCryptoError
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-fun <T> safeCryptoArrayDelete(safeDataMutableStateFlow: SafeDataMutableStateFlow): ReadWriteProperty<T, ByteArray?> {
-    return SafeCryptoArrayDelegate(safeDataMutableStateFlow)
-}
+fun <T> safeCryptoArrayDelete(
+    safeDataMutableStateFlow: SafeDataMutableStateFlow,
+): ReadWriteProperty<T, ByteArray?> = SafeCryptoArrayDelegate(safeDataMutableStateFlow)
 
 private class SafeCryptoArrayDelegate<T>(
     private val safeDataMutableStateFlow: SafeDataMutableStateFlow,
@@ -33,9 +33,7 @@ private class SafeCryptoArrayDelegate<T>(
 
     private var value: ByteArray? = null
 
-    override fun getValue(thisRef: T, property: KProperty<*>): ByteArray? {
-        return safeDataMutableStateFlow.value
-    }
+    override fun getValue(thisRef: T, property: KProperty<*>): ByteArray? = safeDataMutableStateFlow.value
 
     @Throws(OSCryptoError::class)
     override fun setValue(thisRef: T, property: KProperty<*>, value: ByteArray?) {

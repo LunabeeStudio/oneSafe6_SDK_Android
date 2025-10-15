@@ -94,10 +94,8 @@ class GetUrlMetadataUseCase @Inject constructor(
         }
     }
 
-    private suspend fun getHtmlPageCode(url: String): LBResult<String> {
-        return OSError.runCatching {
-            urlMetadataRepository.getHtmlPageCode(url = url)
-        }
+    private suspend fun getHtmlPageCode(url: String): LBResult<String> = OSError.runCatching {
+        urlMetadataRepository.getHtmlPageCode(url = url)
     }
 
     private fun extractTitle(htmlCode: String): String? {

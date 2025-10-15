@@ -66,6 +66,7 @@ object RemoteTestModule {
 
                 this.logger = object : Logger {
                     private val delegate = LBLogger.get("HttpClient")
+
                     override fun log(message: String) {
                         delegate.v(message)
                     }
@@ -77,9 +78,7 @@ object RemoteTestModule {
     @Provides
     fun provideForceUpdateRemoteDatasource(
         forceUpgradeApi: ForceUpgradeApi,
-    ): ForceUpdateRemoteDatasource {
-        return ForceUpdateRemoteDatasourceImpl(
-            forceUpgradeApi = forceUpgradeApi,
-        )
-    }
+    ): ForceUpdateRemoteDatasource = ForceUpdateRemoteDatasourceImpl(
+        forceUpgradeApi = forceUpgradeApi,
+    )
 }

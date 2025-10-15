@@ -26,11 +26,11 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
-import kotlin.test.Test
 import studio.lunabee.onesafe.error.OSCryptoError
 import studio.lunabee.onesafe.error.OSError
 import java.security.KeyStore
 import javax.inject.Inject
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
@@ -91,9 +91,9 @@ class EncryptedDatastoreTest {
         }
     }
 
-    private fun accessMasterKeyString(): String {
-        return EncryptedDataStoreEngine::class.java.getDeclaredField("MASTER_KEY_ALIAS").apply {
+    private fun accessMasterKeyString(): String = EncryptedDataStoreEngine::class.java
+        .getDeclaredField("MasterKeyAlias")
+        .apply {
             this.isAccessible = true
         }.get(dataStore) as String
-    }
 }

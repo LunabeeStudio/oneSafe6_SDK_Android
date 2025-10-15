@@ -36,7 +36,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.messaging.domain.model.DecryptResult
@@ -58,8 +58,8 @@ import studio.lunabee.onesafe.ui.UiConstants
 import studio.lunabee.onesafe.ui.res.OSDimens
 import studio.lunabee.onesafe.ui.theme.LocalColorPalette
 
-context(DecryptMessageNavScope)
 @Composable
+context(DecryptMessageNavScope)
 fun DecryptMessageRoute(
     viewModel: DecryptMessageViewModel = hiltViewModel(),
 ) {
@@ -118,14 +118,14 @@ fun DecryptMessageScreen(
                     isError = error != null,
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedBorderColor = if (isSystemInDarkTheme()) {
-                            LocalColorPalette.current.Neutral70
+                            LocalColorPalette.current.neutral70
                         } else {
-                            LocalColorPalette.current.Neutral30
+                            LocalColorPalette.current.neutral30
                         },
                         unfocusedLabelColor = if (isSystemInDarkTheme()) {
-                            LocalColorPalette.current.Neutral10
+                            LocalColorPalette.current.neutral10
                         } else {
-                            LocalColorPalette.current.Neutral80
+                            LocalColorPalette.current.neutral80
                         },
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
                         unfocusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -139,7 +139,8 @@ fun DecryptMessageScreen(
                                 state = OSActionState.Enabled,
                                 buttonSize = OSDimens.SystemButtonDimension.NavBarAction,
                                 colors = OSIconButtonDefaults.secondaryIconButtonColors(state = OSActionState.Enabled),
-                                contentDescription = LbcTextSpec.StringResource(OSString.bubbles_decrypMessageScreen_accessibility_erase),
+                                contentDescription = LbcTextSpec
+                                    .StringResource(OSString.bubbles_decrypMessageScreen_accessibility_erase),
                                 modifier = Modifier.padding(horizontal = OSDimens.SystemSpacing.Small),
                             )
                         }

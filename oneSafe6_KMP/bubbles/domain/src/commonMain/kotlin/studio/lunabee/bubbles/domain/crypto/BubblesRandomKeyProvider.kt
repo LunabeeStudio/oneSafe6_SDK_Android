@@ -21,9 +21,9 @@ package studio.lunabee.bubbles.domain.crypto
 
 interface BubblesRandomKeyProvider {
 
-    fun invoke(size: Int = DEFAULT_KEY_LENGTH_BYTE): ByteArray
+    fun invoke(size: Int = DefaultKeyLengthByte): ByteArray
 
     private companion object {
-        const val DEFAULT_KEY_LENGTH_BYTE: Int = 32
+        const val DefaultKeyLengthByte: Int = 32
     }
 }

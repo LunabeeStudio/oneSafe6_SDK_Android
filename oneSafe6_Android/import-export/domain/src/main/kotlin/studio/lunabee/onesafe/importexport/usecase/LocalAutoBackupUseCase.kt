@@ -40,23 +40,22 @@ class LocalAutoBackupUseCase @Inject constructor(
     @param:BackupType(BackupType.Type.Auto) private val exportEngine: BackupExportEngine,
     @param:ArchiveCacheDir(type = ArchiveCacheDir.Type.AutoBackup) private val archiveDir: File,
 ) {
-    operator fun invoke(safeId: SafeId): Flow<LBFlowResult<Unit>> {
-        return exportBackupUseCase(
-            exportEngine = exportEngine,
-            archiveExtractedDirectory = archiveDir,
-            safeId = safeId,
-        ).map { result ->
-            when (result) {
-                is LBFlowResult.Failure -> LBFlowResult.Failure(throwable = result.throwable)
-                is LBFlowResult.Loading -> LBFlowResult.Loading(progress = result.progress)
-                is LBFlowResult.Success -> {
-                    val backup = result.successData
-                    val moveResult = OSError.runCatching {
+    operator fun invoke(safeId: SafeId): Flow<LBFlowResult<Unit>> = exportBackupUseCase(
+        exportEngine = exportEngine,
+        archiveExtractedDirectory = archiveDir,
+        safeId = safeId,
+    ).map { result ->
+        when (result) {
+            is LBFlowResult.Failure -> LBFlowResult.Failure(throwable = result.throwable)
+            is LBFlowResult.Loading -> LBFlowResult.Loading(progress = result.progress)
+            is LBFlowResult.Success -> {
+                val backup = result.successData
+                val moveResult = OSError
+                    .runCatching {
                         backupRepository.addBackup(backup)
                     }.asFlowResult()
-                    backup.file.delete()
-                    moveResult
-                }
+                backup.file.delete()
+                moveResult
             }
         }
     }

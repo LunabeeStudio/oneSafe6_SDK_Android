@@ -24,16 +24,14 @@ import javax.inject.Inject
 
 class ShaEngine @Inject constructor() {
     fun sha256(input: ByteArray): ByteArray {
-        val messageDigest = MessageDigest.getInstance(ALG_SHA_256)
+        val messageDigest = MessageDigest.getInstance(AlgSha256)
         messageDigest.update(input)
         return messageDigest.digest()
     }
 
-    fun sha256(input: String): ByteArray {
-        return sha256(input.toByteArray())
-    }
+    fun sha256(input: String): ByteArray = sha256(input.toByteArray())
 
     companion object {
-        private const val ALG_SHA_256 = "SHA-256"
+        private const val AlgSha256 = "SHA-256"
     }
 }

@@ -31,6 +31,7 @@ import studio.lunabee.onesafe.error.osCode
 import javax.inject.Inject
 
 // TODO unit test
+
 /**
  * Check if biometric is enabled for at least one Safe. In case of unrecoverable error, reset the data and emit failure.
  */
@@ -56,6 +57,8 @@ class HasBiometricSafeUseCase @Inject constructor(
 
 sealed class IsBiometricEnabledState(val isEnabled: Boolean) {
     data object Enabled : IsBiometricEnabledState(true)
+
     data object Disabled : IsBiometricEnabledState(false)
+
     data class Error(val error: Throwable?) : IsBiometricEnabledState(false)
 }

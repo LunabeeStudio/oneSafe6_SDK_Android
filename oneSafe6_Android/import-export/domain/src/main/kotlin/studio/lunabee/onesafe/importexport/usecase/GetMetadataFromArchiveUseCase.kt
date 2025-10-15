@@ -40,19 +40,24 @@ class GetMetadataFromArchiveUseCase @Inject constructor(
      * Extract archive content from [inputStream] in [archiveExtractedDirectory] and read metadata file.
      * Return an [LBFlowResult] with [ImportMetadata] in case of success.
      */
-    operator fun invoke(inputStream: InputStream, archiveExtractedDirectory: File): Flow<LBFlowResult<ImportMetadata>> {
-        return archiveUnzipUseCase(inputStream, archiveExtractedDirectory).map { unzipResult ->
-            when (unzipResult) {
-                is LBFlowResult.Failure -> {
-                    archiveExtractedDirectory.deleteRecursively()
-                    LBFlowResult.Failure(throwable = unzipResult.throwable)
-                }
-                is LBFlowResult.Loading -> LBFlowResult.Loading(progress = unzipResult.progress)
-                is LBFlowResult.Success -> {
-                    OSError.runCatching(logger = log) {
+    operator fun invoke(
+        inputStream: InputStream,
+        archiveExtractedDirectory: File,
+    ): Flow<LBFlowResult<ImportMetadata>> = archiveUnzipUseCase(
+        inputStream,
+        archiveExtractedDirectory,
+    ).map { unzipResult ->
+        when (unzipResult) {
+            is LBFlowResult.Failure -> {
+                archiveExtractedDirectory.deleteRecursively()
+                LBFlowResult.Failure(throwable = unzipResult.throwable)
+            }
+            is LBFlowResult.Loading -> LBFlowResult.Loading(progress = unzipResult.progress)
+            is LBFlowResult.Success -> {
+                OSError
+                    .runCatching(logger = log) {
                         importEngine.getMetadata(archiveExtractedDirectory)
                     }.asFlowResult()
-                }
             }
         }
     }

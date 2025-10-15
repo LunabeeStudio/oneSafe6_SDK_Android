@@ -20,5 +20,11 @@
 package studio.lunabee.onesafe.domain.model.password
 
 enum class PasswordStrength {
-    VeryWeak, Weak, Good, Strong, VeryStrong, BulletProof, Unknown
+    VeryWeak,
+    Weak,
+    Good,
+    Strong,
+    VeryStrong,
+    BulletProof,
+    Unknown,
 }

@@ -20,5 +20,9 @@
 package studio.lunabee.onesafe.domain.model.safeitem
 
 enum class SafeItemType {
-    WEBSITE, CREDIT_CARD, CUSTOM, APP, FOLDER
+    WEBSITE,
+    CREDIT_CARD,
+    CUSTOM,
+    APP,
+    FOLDER,
 }

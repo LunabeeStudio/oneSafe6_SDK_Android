@@ -156,7 +156,8 @@ class LoginAndMigrateUseCase @Inject constructor(
             }
             when (result) {
                 is LBResult.Failure -> {
-                    logger.e("Migration from ${migration.startVersion} to ${migration.endVersion} failed", result.throwable)
+                    logger
+                        .e("Migration from ${migration.startVersion} to ${migration.endVersion} failed", result.throwable)
                     failure = result
                 }
                 is LBResult.Success -> {

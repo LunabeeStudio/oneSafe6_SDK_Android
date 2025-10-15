@@ -35,9 +35,8 @@ class ImportExportItemRepositoryImpl @Inject constructor(
     private val safeItemRepository: SafeItemRepository,
     private val localDataSource: ImportExportSafeItemLocalDataSource,
 ) : ImportExportItemRepository {
-    override suspend fun getAllSafeItemIdName(safeId: SafeId): List<SafeItemIdName> {
-        return safeItemRepository.getAllSafeItemIdName(safeId)
-    }
+    override suspend fun getAllSafeItemIdName(safeId: SafeId): List<SafeItemIdName> = safeItemRepository
+        .getAllSafeItemIdName(safeId)
 
     override suspend fun save(
         items: List<SafeItem>,
@@ -55,7 +54,5 @@ class ImportExportItemRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun getAllSafeItemIds(safeId: SafeId): List<UUID> {
-        return localDataSource.getAllSafeItemIds(safeId)
-    }
+    override suspend fun getAllSafeItemIds(safeId: SafeId): List<UUID> = localDataSource.getAllSafeItemIds(safeId)
 }

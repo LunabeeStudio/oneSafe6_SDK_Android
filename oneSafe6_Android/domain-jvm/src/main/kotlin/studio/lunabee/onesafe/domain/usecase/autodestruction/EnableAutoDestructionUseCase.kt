@@ -31,14 +31,12 @@ class EnableAutoDestructionUseCase @Inject constructor(
     private val mainCryptoRepository: MainCryptoRepository,
 ) {
 
-    suspend operator fun invoke(password: CharArray): LBResult<Unit> {
-        return OSError.runCatching {
-            password.use {
-                val safeId = safeRepository.currentSafeId()
-                val salt = safeRepository.getSalt(safeId)
-                val autoDestructionKey = mainCryptoRepository.derivePassword(password = password, salt = salt)
-                safeRepository.setAutoDestructionKey(safeId, autoDestructionKey)
-            }
+    suspend operator fun invoke(password: CharArray): LBResult<Unit> = OSError.runCatching {
+        password.use {
+            val safeId = safeRepository.currentSafeId()
+            val salt = safeRepository.getSalt(safeId)
+            val autoDestructionKey = mainCryptoRepository.derivePassword(password = password, salt = salt)
+            safeRepository.setAutoDestructionKey(safeId, autoDestructionKey)
         }
     }
 }

@@ -31,16 +31,13 @@ import javax.inject.Inject
  */
 class CleanForAlphaIndexingUseCase @Inject constructor() {
 
-    operator fun invoke(name: String): String {
-        return name
-            .remove("[^\\p{L}\\p{N}\\p{P}\\p{Z}]".toRegex()) // keep letters + numerics + punctuations + spaces
-            .run {
-                // Replace diacritics
-                Normalizer
-                    .normalize(this, Normalizer.Form.NFD)
-                    .remove("\\p{Mn}+".toRegex())
-            }
-            .trim()
-            .lowercase()
-    }
+    operator fun invoke(name: String): String = name
+        .remove("[^\\p{L}\\p{N}\\p{P}\\p{Z}]".toRegex()) // keep letters + numerics + punctuations + spaces
+        .run {
+            // Replace diacritics
+            Normalizer
+                .normalize(this, Normalizer.Form.NFD)
+                .remove("\\p{Mn}+".toRegex())
+        }.trim()
+        .lowercase()
 }

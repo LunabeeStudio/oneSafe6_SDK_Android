@@ -61,14 +61,14 @@ class AutoBackupErrorHomeInfoData(
     visibleSince: Instant,
     private val onDismiss: () -> Unit,
 ) : HomeInfoData(
-    type = HomeInfoType.Error,
-    key = KeyAutoBackupErrorCard,
-    contentType = ContentTypeAutoBackupErrorCard,
-    visibleSince = visibleSince,
-) {
-    context(HomeInfoDataNavScope)
+        type = HomeInfoType.Error,
+        key = KeyAutoBackupErrorCard,
+        contentType = ContentTypeAutoBackupErrorCard,
+        visibleSince = visibleSince,
+    ) {
     @OptIn(ExperimentalLayoutApi::class)
     @Composable
+    context(HomeInfoDataNavScope)
     override fun Composable(modifier: Modifier) {
         val uriHandler = LocalUriHandler.current
         val clipboard: Clipboard = LocalClipboard.current
@@ -83,8 +83,7 @@ class AutoBackupErrorHomeInfoData(
                     icon = OSImageSpec.Drawable(OSDrawable.ic_baseline_close),
                     contentDescription = LbcTextSpec.StringResource(OSString.common_accessibility_dismissCta),
                     onDismiss = onDismiss,
-                )
-                .style(OSMessageCardStyle.Alert),
+                ).style(OSMessageCardStyle.Alert),
             modifier = modifier
                 .testTag(UiConstants.TestTag.Item.AutoBackupErrorCard),
             action = {
@@ -106,7 +105,9 @@ class AutoBackupErrorHomeInfoData(
                                         ),
                                     ),
                                 )
-                                Toast.makeText(context, OSString.common_copyErrorMessage_feedback, Toast.LENGTH_SHORT).show()
+                                Toast
+                                    .makeText(context, OSString.common_copyErrorMessage_feedback, Toast.LENGTH_SHORT)
+                                    .show()
                             }
                         },
                         modifier = Modifier.padding(bottom = OSDimens.SystemSpacing.Small),

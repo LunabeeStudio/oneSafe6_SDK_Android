@@ -50,39 +50,39 @@ class GetEnableAutoBackupCtaStateUseCase @Inject constructor(
     private val safeRepository: SafeRepository,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(): Flow<CtaState> {
-        return safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
-            safeId?.let {
-                autoBackupSettingsRepository.enableAutoBackupCtaState(safeId).flatMapLatest { currentState ->
-                    flow {
-                        emit(currentState)
-                        when (currentState) {
-                            is CtaState.DismissedAt -> {} // keep dismiss
-                            CtaState.Hidden,
-                            is CtaState.VisibleSince,
-                            -> { // observe new value and update on value change
-                                val hasItemFlow = itemRepository.getSafeItemsCountFlow(safeId)
-                                    .map { count -> count >= MinItemBeforeCta }
-                                    .distinctUntilChanged()
-                                combine(
-                                    autoBackupSettingsRepository.autoBackupEnabledFlow(safeId),
-                                    hasItemFlow,
-                                ) { isBackupEnabled, hasItem ->
-                                    val newState = if (!isBackupEnabled && hasItem) {
-                                        CtaState.VisibleSince(Instant.now(clock).plus(DelayBeforeCtaDays, ChronoUnit.DAYS))
-                                    } else {
-                                        CtaState.Hidden
-                                    }
-                                    if (newState::class != currentState::class) {
-                                        autoBackupSettingsRepository.setEnableAutoBackupCtaState(safeId, newState)
-                                    }
-                                }.collect()
-                            }
+    operator fun invoke(): Flow<CtaState> = safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+        safeId?.let {
+            autoBackupSettingsRepository.enableAutoBackupCtaState(safeId).flatMapLatest { currentState ->
+                flow {
+                    emit(currentState)
+                    when (currentState) {
+                        is CtaState.DismissedAt -> {} // keep dismiss
+                        CtaState.Hidden,
+                        is CtaState.VisibleSince,
+                        -> { // observe new value and update on value change
+                            val hasItemFlow = itemRepository
+                                .getSafeItemsCountFlow(safeId)
+                                .map { count -> count >= MinItemBeforeCta }
+                                .distinctUntilChanged()
+                            combine(
+                                autoBackupSettingsRepository.autoBackupEnabledFlow(safeId),
+                                hasItemFlow,
+                            ) { isBackupEnabled, hasItem ->
+                                val newState = if (!isBackupEnabled && hasItem) {
+                                    CtaState
+                                        .VisibleSince(Instant.now(clock).plus(DelayBeforeCtaDays, ChronoUnit.DAYS))
+                                } else {
+                                    CtaState.Hidden
+                                }
+                                if (newState::class != currentState::class) {
+                                    autoBackupSettingsRepository.setEnableAutoBackupCtaState(safeId, newState)
+                                }
+                            }.collect()
                         }
                     }
                 }
-            } ?: flowOf()
-        }
+            }
+        } ?: flowOf()
     }
 
     companion object {

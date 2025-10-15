@@ -24,8 +24,6 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import kotlin.time.Clock
-import kotlin.time.Instant
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromByteArray
@@ -62,6 +60,8 @@ import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
 import studio.lunabee.onesafe.error.BubblesCryptoError
 import studio.lunabee.onesafe.error.BubblesDomainError
 import studio.lunabee.onesafe.error.OSError
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 /**
  * Try to decrypt a message with every contact key
@@ -88,7 +88,8 @@ class DecryptIncomingMessageUseCase @Inject constructor(
     suspend operator fun invoke(messageData: ByteArray): LBResult<DecryptIncomingMessageData> {
         // We try to parse the data as HandShakeMessage to know what kind of message we are dealing with
         val handShakeMessage = tryParseHandShakeMessage(messageData)
-        return getAllContactsUseCase().first()
+        return getAllContactsUseCase()
+            .first()
             .asFlow()
             .map { contact ->
                 val localKey = contactKeyRepository.getContactLocalKey(contact.id)
@@ -213,9 +214,11 @@ class DecryptIncomingMessageUseCase @Inject constructor(
         val messageResetConversationDate = plainMessageProto?.conversationResetDate?.toInstant()
             ?: plainResetInvitationMessage?.conversationResetDate?.toInstant() ?: Instant.DISTANT_PAST
         return when {
-            messageResetConversationDate < contactResetConversationDate -> DecryptIncomingMessageData.OutdatedConversationMessage(
-                contact.id,
-            )
+            messageResetConversationDate < contactResetConversationDate ->
+                DecryptIncomingMessageData
+                    .OutdatedConversationMessage(
+                        contact.id,
+                    )
             plainMessageProto != null -> decryptSafeMessage(contact, plainMessageProto)
             plainResetInvitationMessage != null -> handleResetMessage(contact, plainResetInvitationMessage)
             else -> throw BubblesDomainError(BubblesDomainError.Code.NOT_A_BUBBLES_MESSAGE)

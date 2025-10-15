@@ -21,5 +21,6 @@ package studio.lunabee.onesafe.domain.repository
 
 interface MigrationCryptoRepository {
     fun getMigrationPubKey(): ByteArray
+
     fun decryptMigrationArchivePassword(encPassword: ByteArray): CharArray
 }

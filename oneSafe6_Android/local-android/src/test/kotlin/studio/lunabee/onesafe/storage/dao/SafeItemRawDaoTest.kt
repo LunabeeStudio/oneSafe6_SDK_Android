@@ -172,14 +172,17 @@ class SafeItemRawDaoTest {
     fun findByParentIdAsPagingSource_test(): TestResult = runTest {
         ItemOrder.entries.forEach { itemOrder ->
             val expectedNull = listOf(itemA, itemB, itemMultipleId).sortedBy(itemOrder)
-            val actualNull = rawDao.getPagedItems(SafeItemRawDao.findByParentIdQuery(null, itemOrder, firstSafeId))
+            val actualNull = rawDao
+                .getPagedItems(SafeItemRawDao.findByParentIdQuery(null, itemOrder, firstSafeId))
                 .data()
             assertContentEquals(expectedNull, actualNull, itemOrder)
             val expectedA = listOf(itemA1)
-            val actualA = rawDao.getPagedItems(SafeItemRawDao.findByParentIdQuery(itemA.id, itemOrder, firstSafeId))
+            val actualA = rawDao
+                .getPagedItems(SafeItemRawDao.findByParentIdQuery(itemA.id, itemOrder, firstSafeId))
                 .data()
             assertContentEquals(expectedA, actualA, itemOrder)
-            val actualB = rawDao.getPagedItems(SafeItemRawDao.findByParentIdQuery(itemB.id, itemOrder, firstSafeId))
+            val actualB = rawDao
+                .getPagedItems(SafeItemRawDao.findByParentIdQuery(itemB.id, itemOrder, firstSafeId))
                 .data()
             assertContentEquals(emptyList(), actualB, itemOrder)
         }
@@ -189,13 +192,14 @@ class SafeItemRawDaoTest {
     fun getAllSafeItemsWithIdentifierAsPagingSource_test(): TestResult = runTest {
         ItemOrder.entries.forEach { itemOrder ->
             val expected = listOf(itemA, itemA1, itemMultipleId).sortedBy(itemOrder)
-            val actual = rawDao.getPagedSafeItemsWithIdentifier(
-                SafeItemRawDao.getAllSafeItemsWithIdentifierQuery(
-                    idsToExclude = listOf(itemB.id),
-                    order = itemOrder,
-                    safeId = firstSafeId,
-                ),
-            ).data()
+            val actual = rawDao
+                .getPagedSafeItemsWithIdentifier(
+                    SafeItemRawDao.getAllSafeItemsWithIdentifierQuery(
+                        idsToExclude = listOf(itemB.id),
+                        order = itemOrder,
+                        safeId = firstSafeId,
+                    ),
+                ).data()
 
             assertContentEqualsIdentifier(expected, actual, itemOrder)
         }
@@ -304,9 +308,10 @@ class SafeItemRawDaoTest {
     fun findByIdWithIdentifierQuery_test(): TestResult = runTest {
         ItemOrder.entries.forEach { itemOrder ->
             val expected = listOf(itemA1, itemB).sortedBy(itemOrder)
-            val actual = rawDao.getSafeItemsWithIdentifierFlow(
-                SafeItemRawDao.findByIdWithIdentifierQuery(listOf(itemA1.id, itemB.id), itemOrder),
-            ).first()
+            val actual = rawDao
+                .getSafeItemsWithIdentifierFlow(
+                    SafeItemRawDao.findByIdWithIdentifierQuery(listOf(itemA1.id, itemB.id), itemOrder),
+                ).first()
             assertContentEqualsIdentifier(expected, actual, itemOrder)
         }
     }
@@ -315,9 +320,10 @@ class SafeItemRawDaoTest {
     fun findByParentIdWithIdentifierQuery_test(): TestResult = runTest {
         ItemOrder.entries.forEach { itemOrder ->
             val expected = listOf(itemA, itemB, itemMultipleId).sortedBy(itemOrder)
-            val actual = rawDao.getSafeItemsWithIdentifierFlow(
-                SafeItemRawDao.findByParentIdWithIdentifierQuery(null, itemOrder, firstSafeId),
-            ).first()
+            val actual = rawDao
+                .getSafeItemsWithIdentifierFlow(
+                    SafeItemRawDao.findByParentIdWithIdentifierQuery(null, itemOrder, firstSafeId),
+                ).first()
             assertContentEqualsIdentifier(expected, actual, itemOrder)
         }
     }
@@ -328,9 +334,10 @@ class SafeItemRawDaoTest {
         safeItemDao.setDeletedAndRemoveFromFavorite(itemA.id, Instant.now(OSTestConfig.clock), firstSafeId)
         ItemOrder.entries.forEach { itemOrder ->
             val expected = listOf(itemA, itemB).sortedBy(itemOrder)
-            val actual = rawDao.getSafeItemsWithIdentifierFlow(
-                SafeItemRawDao.findByDeletedParentIdWithIdentifierQuery(null, itemOrder, firstSafeId),
-            ).first()
+            val actual = rawDao
+                .getSafeItemsWithIdentifierFlow(
+                    SafeItemRawDao.findByDeletedParentIdWithIdentifierQuery(null, itemOrder, firstSafeId),
+                ).first()
             assertContentEqualsIdentifier(expected, actual, itemOrder)
         }
     }
@@ -339,21 +346,19 @@ class SafeItemRawDaoTest {
 /**
  * Sort according to DaoUtils constants
  */
-private fun List<RoomSafeItem>.sortedBy(itemOrder: ItemOrder): List<RoomSafeItem> {
-    return when (itemOrder) {
-        ItemOrder.Position -> sortedWith(compareBy({ it.position }, { it.indexAlpha }))
-        ItemOrder.Alphabetic -> sortedWith(compareBy({ it.indexAlpha }, { it.position }))
-        ItemOrder.UpdatedAt -> sortedWith(compareBy({ 1.0 / it.updatedAt.toEpochMilli() }, { it.indexAlpha }, { it.position }))
-        ItemOrder.DeletedAt -> sortedWith(compareBy({ it.deletedAt }, { it.indexAlpha }, { it.position }))
-        ItemOrder.ConsultedAt -> sortedWith(
-            compareBy(
-                { 1.0 / (it.consultedAt?.toEpochMilli() ?: Long.MIN_VALUE) },
-                { it.indexAlpha },
-                { it.position },
-            ),
-        )
-        ItemOrder.CreatedAt -> sortedWith(compareBy({ it.createdAt }, { it.indexAlpha }, { it.position }))
-    }
+private fun List<RoomSafeItem>.sortedBy(itemOrder: ItemOrder): List<RoomSafeItem> = when (itemOrder) {
+    ItemOrder.Position -> sortedWith(compareBy({ it.position }, { it.indexAlpha }))
+    ItemOrder.Alphabetic -> sortedWith(compareBy({ it.indexAlpha }, { it.position }))
+    ItemOrder.UpdatedAt -> sortedWith(compareBy({ 1.0 / it.updatedAt.toEpochMilli() }, { it.indexAlpha }, { it.position }))
+    ItemOrder.DeletedAt -> sortedWith(compareBy({ it.deletedAt }, { it.indexAlpha }, { it.position }))
+    ItemOrder.ConsultedAt -> sortedWith(
+        compareBy(
+            { 1.0 / (it.consultedAt?.toEpochMilli() ?: Long.MIN_VALUE) },
+            { it.indexAlpha },
+            { it.position },
+        ),
+    )
+    ItemOrder.CreatedAt -> sortedWith(compareBy({ it.createdAt }, { it.indexAlpha }, { it.position }))
 }
 
 private fun assertContentEquals(expected: List<RoomSafeItem>, actual: List<RoomSafeItem>, itemOrder: ItemOrder) {

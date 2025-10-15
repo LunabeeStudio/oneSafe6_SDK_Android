@@ -46,6 +46,8 @@ class SafeIdMemoryDataSource @Inject constructor() : SafeIdCacheDataSource {
     }
 
     override fun getSafeIdFlow(): StateFlow<SafeId?> = currentSafeId.asStateFlow()
+
     override suspend fun getSafeId(): SafeId? = currentSafeId.value
+
     override fun getLastSafeId(): SafeId? = lastSafeId
 }

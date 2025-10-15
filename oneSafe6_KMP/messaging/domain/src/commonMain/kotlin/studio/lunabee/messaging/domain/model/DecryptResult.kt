@@ -60,19 +60,19 @@ sealed interface DecryptResult {
     }
 
     companion object {
-        fun fromDecryptIncomingMessageData(decryptIncomingMessageData: DecryptIncomingMessageData): DecryptResult {
-            return when (decryptIncomingMessageData) {
-                is DecryptIncomingMessageData.AlreadyDecryptedMessage -> AlreadyDecrypted(decryptIncomingMessageData.contactId)
-                is DecryptIncomingMessageData.DecryptOwnMessage -> OwnMessage(decryptIncomingMessageData.contactId)
-                is DecryptIncomingMessageData.OutdatedConversationMessage -> OutdatedMessage(decryptIncomingMessageData.contactId)
-                is DecryptIncomingMessageData.NewMessage -> NewMessage(
-                    contactId = decryptIncomingMessageData.contactId,
-                    messageKey = decryptIncomingMessageData.messageKey,
-                )
-                is DecryptIncomingMessageData.ResetMessage -> ResetMessage(
-                    contactId = decryptIncomingMessageData.contactId,
-                )
-            }
+        fun fromDecryptIncomingMessageData(
+            decryptIncomingMessageData: DecryptIncomingMessageData,
+        ): DecryptResult = when (decryptIncomingMessageData) {
+            is DecryptIncomingMessageData.AlreadyDecryptedMessage -> AlreadyDecrypted(decryptIncomingMessageData.contactId)
+            is DecryptIncomingMessageData.DecryptOwnMessage -> OwnMessage(decryptIncomingMessageData.contactId)
+            is DecryptIncomingMessageData.OutdatedConversationMessage -> OutdatedMessage(decryptIncomingMessageData.contactId)
+            is DecryptIncomingMessageData.NewMessage -> NewMessage(
+                contactId = decryptIncomingMessageData.contactId,
+                messageKey = decryptIncomingMessageData.messageKey,
+            )
+            is DecryptIncomingMessageData.ResetMessage -> ResetMessage(
+                contactId = decryptIncomingMessageData.contactId,
+            )
         }
     }
 

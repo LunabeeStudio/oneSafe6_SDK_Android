@@ -26,9 +26,9 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.transformLatest
 import studio.lunabee.onesafe.domain.common.CtaState
-import studio.lunabee.onesafe.domain.repository.SafeSettingsRepository
 import studio.lunabee.onesafe.domain.repository.AppVisitRepository
 import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.domain.repository.SafeSettingsRepository
 import java.time.Clock
 import java.time.Instant
 import javax.inject.Inject
@@ -51,7 +51,8 @@ class GetEnableBubblesCtaStateUseCase @Inject constructor(
                     CtaState.Hidden,
                     is CtaState.VisibleSince,
                     -> { // observe new value and update on value change
-                        appVisitRepository.hasDoneOnBoardingBubblesFlow(safeId)
+                        appVisitRepository
+                            .hasDoneOnBoardingBubblesFlow(safeId)
                             .distinctUntilChanged()
                             .collect { hasDoneOnBoardingBubbles ->
                                 val newState = when (hasDoneOnBoardingBubbles) {

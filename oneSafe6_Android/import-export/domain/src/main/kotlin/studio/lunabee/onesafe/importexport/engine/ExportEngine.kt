@@ -37,6 +37,7 @@ interface ExportEngine {
 
 interface ShareExportEngine : ExportEngine {
     val exportKey: ByteArray
+
     fun buildExportInfo(password: CharArray): Flow<LBFlowResult<Unit>>
 }
 

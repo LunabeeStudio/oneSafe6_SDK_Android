@@ -19,11 +19,11 @@
 
 package studio.lunabee.messaging.repository
 
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.messaging.domain.model.SentMessage
 import studio.lunabee.messaging.domain.repository.SentMessageRepository
 import studio.lunabee.messaging.repository.datasource.SentMessageLocalDatasource
+import studio.lunabee.onesafe.di.Inject
 
 class SentMessageRepositoryImpl @Inject constructor(
     private val datasource: SentMessageLocalDatasource,
@@ -36,11 +36,8 @@ class SentMessageRepositoryImpl @Inject constructor(
         datasource.deleteSentMessage(id)
     }
 
-    override suspend fun getSentMessage(id: DoubleRatchetUUID): SentMessage? {
-        return datasource.getSentMessage(id)
-    }
+    override suspend fun getSentMessage(id: DoubleRatchetUUID): SentMessage? = datasource.getSentMessage(id)
 
-    override suspend fun getOldestSentMessage(safeId: DoubleRatchetUUID): SentMessage? {
-        return datasource.getOldestSentMessage(safeId)
-    }
+    override suspend fun getOldestSentMessage(safeId: DoubleRatchetUUID): SentMessage? = datasource
+        .getOldestSentMessage(safeId)
 }

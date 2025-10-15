@@ -22,8 +22,8 @@ package studio.lunabee.onesafe.cryptography.android
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import kotlin.test.Test
 import java.util.Base64
+import kotlin.test.Test
 
 class PBKDF2JceHashEngineTest {
 

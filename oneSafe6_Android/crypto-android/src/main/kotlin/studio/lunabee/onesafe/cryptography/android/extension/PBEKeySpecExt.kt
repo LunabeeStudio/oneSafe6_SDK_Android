@@ -22,10 +22,8 @@ package studio.lunabee.onesafe.cryptography.android.extension
 import java.security.spec.KeySpec
 import javax.crypto.spec.PBEKeySpec
 
-internal inline fun <T> PBEKeySpec.use(block: (KeySpec) -> T): T {
-    return try {
-        block(this)
-    } finally {
-        clearPassword()
-    }
+internal inline fun <T> PBEKeySpec.use(block: (KeySpec) -> T): T = try {
+    block(this)
+} finally {
+    clearPassword()
 }

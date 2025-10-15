@@ -30,11 +30,17 @@ import kotlin.time.Duration
 
 interface SafeRepository {
     suspend fun loadSafeId(safeId: SafeId)
+
     suspend fun currentSafeId(): SafeId
+
     fun lastSafeIdLoaded(): SafeId?
+
     suspend fun currentSafeIdOrNull(): SafeId?
+
     suspend fun getAllSafeId(): List<SafeId>
+
     suspend fun getAllSafeOrderByLastOpenAsc(): List<SafeCrypto>
+
     suspend fun insertSafe(
         safeCrypto: SafeCrypto,
         safeSettings: SafeSettings,
@@ -42,16 +48,23 @@ interface SafeRepository {
     )
 
     suspend fun updateSafeCrypto(safeCrypto: SafeCrypto)
+
     suspend fun deleteSafe(safeId: SafeId)
 
     fun currentSafeIdFlow(): Flow<SafeId?>
 
     suspend fun getSubKey(safeId: SafeId, subKeyType: SubKeyType): ByteArray?
+
     suspend fun hasSafe(): Boolean
+
     suspend fun getSalt(safeId: SafeId): ByteArray
+
     suspend fun getCurrentSalt(): ByteArray
+
     suspend fun clearSafeId()
+
     suspend fun getSafeVersion(safeId: SafeId): Int?
+
     suspend fun setSafeVersion(safeId: SafeId, version: Int)
 
     suspend fun isSafeIdInMemory(timeout: Duration): Boolean
@@ -60,18 +73,32 @@ interface SafeRepository {
      * Set the unique biometric material (remove any other biometric material set to other safes)
      */
     suspend fun setBiometricMaterial(safeId: SafeId, biometricCryptoMaterial: BiometricCryptoMaterial)
+
     suspend fun setAutoDestructionKey(safeId: SafeId, autoDestructionKey: ByteArray?)
+
     suspend fun removeBiometricKey()
+
     suspend fun getBiometricSafe(): SafeCrypto
+
     fun hasBiometricSafe(): Flow<Boolean>
+
     fun isBiometricEnabledForSafeFlow(safeId: SafeId): Flow<Boolean>
+
     suspend fun isAutoDestructionEnabledForSafe(safeId: SafeId): Boolean
+
     fun isAutoDestructionEnabledForSafeFlow(safeId: SafeId): Flow<Boolean>
+
     suspend fun isBiometricEnabledForSafe(safeId: SafeId): Boolean
+
     suspend fun setLastOpen(safeId: SafeId)
+
     suspend fun getSafeCrypto(safeId: SafeId): SafeCrypto?
+
     fun isPanicDestructionEnabledFlow(safeId: SafeId): Flow<Boolean>
+
     suspend fun setIsPanicDestructionEnabled(safeId: SafeId, isEnabled: Boolean)
+
     suspend fun hasAnySafePanicWidgetEnabled(): Boolean
+
     suspend fun getSafeToDestroy(): List<SafeId>
 }

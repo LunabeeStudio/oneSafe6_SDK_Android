@@ -82,7 +82,7 @@ fun ImeNavGraph(
                 onSuccess = {
                     onLoginSuccess()
                     navController.navigate(
-                        SelectContactDestination.route,
+                        SelectContactDestination.Route,
                         navOptions {
                             popUpTo(LoginDestination.route) {
                                 inclusive = true
@@ -99,7 +99,7 @@ fun ImeNavGraph(
         }
 
         composable(
-            route = SelectContactDestination.route,
+            route = SelectContactDestination.Route,
         ) { backStackEntry ->
             ImeContactRoute(
                 navigateBack = dismissUi,
@@ -136,7 +136,7 @@ fun ImeNavGraph(
                 )
 
                 WriteMessageRoute(
-                    onChangeRecipient = { navController.navigate(ChangeContactDestination.route) },
+                    onChangeRecipient = { navController.navigate(ChangeContactDestination.Route) },
                     sendMessage = { sentMessageData, messageToSend, _ ->
                         sentMessageData?.let { viewModel.saveEncryptedMessage(it) }
                         sendMessage(messageToSend)
@@ -145,22 +145,24 @@ fun ImeNavGraph(
                         sendMessage(messageToSend)
                     },
                     viewModel = viewModel,
-                    contactIdFlow = backStackEntry.savedStateHandle.getStateFlow(WriteMessageDestination.ContactIdArg, null),
+                    contactIdFlow = backStackEntry.savedStateHandle
+                        .getStateFlow(WriteMessageDestination.ContactIdArg, null),
                     sendIcon = OSImageSpec.Drawable(OSDrawable.ic_send),
                 )
             }
         }
 
         composable(
-            route = ChangeContactDestination.route,
+            route = ChangeContactDestination.Route,
         ) { backStackEntry ->
             val viewModelStoreOwner = remember(backStackEntry) {
-                navController.getBackStackEntry(SelectContactDestination.route)
+                navController.getBackStackEntry(SelectContactDestination.Route)
             }
             ImeContactRoute(
                 navigateBack = { navController.popBackStack() },
                 navigateToWriteMessage = { contactId ->
-                    navController.getBackStackEntry(WriteMessageDestination.route)
+                    navController
+                        .getBackStackEntry(WriteMessageDestination.route)
                         .savedStateHandle[WriteMessageDestination.ContactIdArg] = contactId.toString()
                     navController.popBackStack()
                 },

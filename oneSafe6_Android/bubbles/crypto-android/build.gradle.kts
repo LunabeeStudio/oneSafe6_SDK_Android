@@ -25,7 +25,7 @@ android {
     namespace = "studio.lunabee.onesafe.bubbles.crypto"
 
     defaultConfig {
-        missingDimensionStrategy("crypto", AndroidConfig.CRYPTO_BACKEND_FLAVOR_DEFAULT)
+        missingDimensionStrategy("crypto", AndroidConfig.CryptoBackendFlavorDefault)
     }
 
     packaging {

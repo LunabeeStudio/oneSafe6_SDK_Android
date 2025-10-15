@@ -98,44 +98,46 @@ class AutoBackupSettingsViewModel @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<AutoBackupSettingsUiState?> = getSettings.autoBackupEnabled().flatMapLatest { enabled ->
-        if (enabled) {
-            combine(
-                getSettings.autoBackupFrequencyFlow(),
-                getLatestBackupUseCase.flow(),
-                cloudBackupEnabledState,
-                getSettings.keepLocalBackupEnabled(),
-                getCloudInfoUseCase.current(),
-                hasBackupUseCase(),
-                getSettings.autoBackupMaxNumberFlow(),
-            ) { values ->
-                val frequency = values[0] as Duration
-                val latestBackups = values[1] as LatestBackups?
-                val cloudBackupEnabledState = values[2] as OSSwitchState
-                val isKeepLocalBackupEnabled = values[3] as Boolean
-                val cloudInfo = values[4] as CloudInfo
-                val hasBackup = values[5] as Boolean
-                val autoBackupMaxNumber = values[6] as Int
-                AutoBackupSettingsUiState(
-                    isAutoBackupEnabled = true,
-                    autoBackupFrequency = AutoBackupFrequency.valueForDuration(frequency),
-                    autoBackupMaxNumber = AutoBackupMaxNumber.valueForInt(autoBackupMaxNumber),
-                    latestBackups = latestBackups,
-                    cloudBackupEnabledState = cloudBackupEnabledState,
-                    isKeepLocalBackupEnabled = isKeepLocalBackupEnabled,
-                    toggleKeepLocalBackup = { toggleKeepLocalBackup(hasBackup, isKeepLocalBackupEnabled) },
-                    driveUri = cloudInfo.folderURI,
-                    driveAccount = cloudInfo.driveAccount,
-                )
+    val uiState: StateFlow<AutoBackupSettingsUiState?> = getSettings
+        .autoBackupEnabled()
+        .flatMapLatest { enabled ->
+            if (enabled) {
+                combine(
+                    getSettings.autoBackupFrequencyFlow(),
+                    getLatestBackupUseCase.flow(),
+                    cloudBackupEnabledState,
+                    getSettings.keepLocalBackupEnabled(),
+                    getCloudInfoUseCase.current(),
+                    hasBackupUseCase(),
+                    getSettings.autoBackupMaxNumberFlow(),
+                ) { values ->
+                    val frequency = values[0] as Duration
+                    val latestBackups = values[1] as LatestBackups?
+                    val cloudBackupEnabledState = values[2] as OSSwitchState
+                    val isKeepLocalBackupEnabled = values[3] as Boolean
+                    val cloudInfo = values[4] as CloudInfo
+                    val hasBackup = values[5] as Boolean
+                    val autoBackupMaxNumber = values[6] as Int
+                    AutoBackupSettingsUiState(
+                        isAutoBackupEnabled = true,
+                        autoBackupFrequency = AutoBackupFrequency.valueForDuration(frequency),
+                        autoBackupMaxNumber = AutoBackupMaxNumber.valueForInt(autoBackupMaxNumber),
+                        latestBackups = latestBackups,
+                        cloudBackupEnabledState = cloudBackupEnabledState,
+                        isKeepLocalBackupEnabled = isKeepLocalBackupEnabled,
+                        toggleKeepLocalBackup = { toggleKeepLocalBackup(hasBackup, isKeepLocalBackupEnabled) },
+                        driveUri = cloudInfo.folderURI,
+                        driveAccount = cloudInfo.driveAccount,
+                    )
+                }
+            } else {
+                flowOf(AutoBackupSettingsUiState.disabled())
             }
-        } else {
-            flowOf(AutoBackupSettingsUiState.disabled())
-        }
-    }.stateIn(
-        viewModelScope,
-        CommonUiConstants.Flow.DefaultSharingStarted,
-        null,
-    )
+        }.stateIn(
+            viewModelScope,
+            CommonUiConstants.Flow.DefaultSharingStarted,
+            null,
+        )
 
     private val _snackbarState: MutableStateFlow<SnackbarState?> = MutableStateFlow(null)
     val snackbarState: StateFlow<SnackbarState?> = _snackbarState.asStateFlow()

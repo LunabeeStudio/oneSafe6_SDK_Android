@@ -37,21 +37,20 @@ private val log = LBLogger.get<GenerateCryptoForNewSafeUseCase>()
 class GenerateCryptoForNewSafeUseCase @Inject constructor(
     private val editCryptoRepository: EditCryptoRepository,
 ) {
-    suspend operator fun invoke(password: CharArray): LBResult<CreateMasterKeyResult> {
-        return OSError.runCatching(log) {
-            password.use {
-                val isNotUsed = editCryptoRepository.checkPasswordUniqueness(password)
-                if (isNotUsed) {
-                    editCryptoRepository.generateCryptographicData(password)
-                    CreateMasterKeyResult.Ok
-                } else {
-                    CreateMasterKeyResult.AlreadyExist
-                }
+    suspend operator fun invoke(password: CharArray): LBResult<CreateMasterKeyResult> = OSError.runCatching(log) {
+        password.use {
+            val isNotUsed = editCryptoRepository.checkPasswordUniqueness(password)
+            if (isNotUsed) {
+                editCryptoRepository.generateCryptographicData(password)
+                CreateMasterKeyResult.Ok
+            } else {
+                CreateMasterKeyResult.AlreadyExist
             }
         }
     }
 }
 
 enum class CreateMasterKeyResult {
-    Ok, AlreadyExist,
+    Ok,
+    AlreadyExist,
 }

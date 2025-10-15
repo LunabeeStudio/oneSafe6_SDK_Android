@@ -28,9 +28,7 @@ import studio.lunabee.onesafe.jvm.toByteArray
 class EncryptPasswordAutoDestructionUseCase @Inject constructor(
     private val workerCryptoRepository: WorkerCryptoRepository,
 ) {
-    suspend operator fun invoke(password: CharArray): LBResult<ByteArray> {
-        return OSError.runCatching {
-            workerCryptoRepository.encrypt(password.toByteArray())
-        }
+    suspend operator fun invoke(password: CharArray): LBResult<ByteArray> = OSError.runCatching {
+        workerCryptoRepository.encrypt(password.toByteArray())
     }
 }

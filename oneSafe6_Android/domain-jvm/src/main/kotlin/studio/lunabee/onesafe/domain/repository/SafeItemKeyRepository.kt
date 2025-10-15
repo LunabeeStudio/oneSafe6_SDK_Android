@@ -25,8 +25,12 @@ import java.util.UUID
 
 interface SafeItemKeyRepository {
     suspend fun save(itemKey: SafeItemKey)
+
     suspend fun update(itemKeys: List<SafeItemKey>)
+
     suspend fun getSafeItemKey(id: UUID): SafeItemKey
+
     suspend fun getSafeItemKeys(ids: List<UUID>): List<SafeItemKey>
+
     suspend fun getAllSafeItemKeys(safeId: SafeId): List<SafeItemKey>
 }

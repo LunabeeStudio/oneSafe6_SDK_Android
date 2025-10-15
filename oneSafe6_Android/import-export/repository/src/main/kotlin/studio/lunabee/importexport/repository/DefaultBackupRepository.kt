@@ -27,13 +27,13 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import studio.lunabee.importexport.datasource.CloudBackupEngine
 import studio.lunabee.importexport.datasource.CloudBackupLocalDataSource
-import studio.lunabee.onesafe.jvm.combine
 import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.error.OSImportExportError
 import studio.lunabee.onesafe.importexport.model.CloudBackup
 import studio.lunabee.onesafe.importexport.model.CloudInfo
 import studio.lunabee.onesafe.importexport.model.LocalBackup
 import studio.lunabee.onesafe.importexport.repository.CloudBackupRepository
+import studio.lunabee.onesafe.jvm.combine
 import java.io.InputStream
 import java.net.URI
 import javax.inject.Inject
@@ -58,24 +58,25 @@ class DefaultBackupRepository @Inject constructor(
         }
 
     override fun uploadBackup(backups: List<LocalBackup>): Flow<LBFlowResult<List<CloudBackup?>>> =
-        backups.map { backup ->
-            uploadBackup(backup)
-        }.combine()
+        backups
+            .map { backup ->
+                uploadBackup(backup)
+            }.combine()
 
-    override fun deleteBackup(backup: CloudBackup): Flow<LBFlowResult<Unit>> {
-        return cloudBackupEngine.deleteBackup(backup).mapResult {
+    override fun deleteBackup(backup: CloudBackup): Flow<LBFlowResult<Unit>> = cloudBackupEngine
+        .deleteBackup(backup)
+        .mapResult {
             localCloudBackupDatasource.deleteCloudBackup(backup.id)
         }
-    }
 
     override fun deleteBackup(backups: List<CloudBackup>): Flow<LBFlowResult<Unit>> =
         backups.map { deleteBackup(it) }.combine().unit()
 
-    override suspend fun getBackups(safeId: SafeId): List<CloudBackup> = localCloudBackupDatasource.getCloudBackups(safeId)
+    override suspend fun getBackups(safeId: SafeId): List<CloudBackup> = localCloudBackupDatasource
+        .getCloudBackups(safeId)
 
-    override fun getBackupsFlow(safeId: SafeId): Flow<List<CloudBackup>> {
-        return localCloudBackupDatasource.getCloudBackupsFlow(safeId)
-    }
+    override fun getBackupsFlow(safeId: SafeId): Flow<List<CloudBackup>> = localCloudBackupDatasource
+        .getCloudBackupsFlow(safeId)
 
     override fun getInputStream(backupId: String, safeId: SafeId): Flow<LBFlowResult<InputStream>> = flow {
         localCloudBackupDatasource.getRemoteId(backupId)?.let { remoteId ->
@@ -93,15 +94,13 @@ class DefaultBackupRepository @Inject constructor(
         localCloudBackupDatasource.deleteAll(safeId)
     }
 
-    override fun getCloudInfoFlow(safeId: SafeId): Flow<CloudInfo> {
-        return cloudBackupEngine.getCloudInfoFlow(safeId)
-    }
+    override fun getCloudInfoFlow(safeId: SafeId): Flow<CloudInfo> = cloudBackupEngine.getCloudInfoFlow(safeId)
 
-    override fun setupAccount(accountName: String, safeId: SafeId): Flow<LBFlowResult<Unit>> {
-        return cloudBackupEngine.setupAccount(accountName, safeId)
-    }
+    override fun setupAccount(accountName: String, safeId: SafeId): Flow<LBFlowResult<Unit>> = cloudBackupEngine
+        .setupAccount(
+            accountName,
+            safeId,
+        )
 
-    override suspend fun getFirstCloudFolderAvailable(): URI? {
-        return cloudBackupEngine.getFirstCloudFolderAvailable()
-    }
+    override suspend fun getFirstCloudFolderAvailable(): URI? = cloudBackupEngine.getFirstCloudFolderAvailable()
 }

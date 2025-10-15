@@ -20,17 +20,20 @@
 package studio.lunabee.messaging.repository
 
 import kotlinx.coroutines.flow.Flow
-import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.messaging.domain.model.EnqueuedMessage
 import studio.lunabee.messaging.domain.repository.EnqueuedMessageRepository
 import studio.lunabee.messaging.repository.datasource.EnqueuedMessageLocalDataSource
+import studio.lunabee.onesafe.di.Inject
 
 class EnqueuedMessageRepositoryImpl @Inject constructor(
     private val localDataSource: EnqueuedMessageLocalDataSource,
 ) : EnqueuedMessageRepository {
     override suspend fun getOldestAsFlow(): Flow<EnqueuedMessage?> = localDataSource.getOldestAsFlow()
+
     override suspend fun getAll(): List<EnqueuedMessage> = localDataSource.getAll()
+
     override suspend fun delete(id: Int): Unit = localDataSource.delete(id)
+
     override suspend fun save(encMessage: ByteArray, encChannel: ByteArray?): Unit = localDataSource.save(
         encMessage,
         encChannel,

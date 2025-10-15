@@ -25,6 +25,7 @@ import kotlin.contracts.contract
 import kotlin.test.assertIs
 
 // TODO move assertSuccess + assertFailure to lib?
+
 /**
  * Wrapper for assertIs<LBResult.Success> which adds the result failure throwable as cause if applicable
  *

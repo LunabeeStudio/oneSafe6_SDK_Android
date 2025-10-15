@@ -28,11 +28,12 @@ import javax.inject.Inject
 class ForceUpdateRemoteDatasourceImpl @Inject constructor(
     private val forceUpgradeApi: ForceUpgradeApi,
 ) : ForceUpdateRemoteDatasource {
-    override suspend fun fetchForceUpgradeInfo(): ForceUpgradeInfo? {
-        return forceUpgradeApi.getForceUpgradeInfo()?.toForceUpgradeInfo()
-    }
+    override suspend fun fetchForceUpgradeInfo(): ForceUpgradeInfo? = forceUpgradeApi
+        .getForceUpgradeInfo()
+        ?.toForceUpgradeInfo()
 
-    override suspend fun fetchForceUpgradeStrings(languageFileUrl: String): ForceUpgradeStrings? {
-        return forceUpgradeApi.getForceUpgradeStrings(languageFileUrl)?.toForceUpgradeStrings()
-    }
+    override suspend fun fetchForceUpgradeStrings(languageFileUrl: String): ForceUpgradeStrings? = forceUpgradeApi
+        .getForceUpgradeStrings(
+            languageFileUrl,
+        )?.toForceUpgradeStrings()
 }

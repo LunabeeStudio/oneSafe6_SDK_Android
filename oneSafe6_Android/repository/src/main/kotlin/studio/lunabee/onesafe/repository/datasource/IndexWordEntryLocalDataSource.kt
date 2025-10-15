@@ -26,6 +26,8 @@ import java.util.UUID
 
 interface IndexWordEntryLocalDataSource {
     fun getAll(safeId: SafeId): Flow<List<IndexWordEntry>>
+
     suspend fun insert(indexWordEntries: List<IndexWordEntry>)
+
     suspend fun deleteNameIndexFromItemId(itemId: UUID)
 }

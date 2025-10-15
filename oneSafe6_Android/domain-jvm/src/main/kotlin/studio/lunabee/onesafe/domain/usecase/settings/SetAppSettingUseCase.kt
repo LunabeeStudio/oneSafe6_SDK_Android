@@ -23,8 +23,8 @@ import com.lunabee.lbcore.model.LBResult
 import com.lunabee.lblogger.LBLogger
 import studio.lunabee.onesafe.domain.common.CtaState
 import studio.lunabee.onesafe.domain.model.camera.CameraSystem
-import studio.lunabee.onesafe.domain.repository.SafeSettingsRepository
 import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.domain.repository.SafeSettingsRepository
 import studio.lunabee.onesafe.error.OSError
 import javax.inject.Inject
 

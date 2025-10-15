@@ -70,7 +70,7 @@ class MigrationCryptoUseCaseTest : OSHiltUnitTest() {
         val key = OSTestConfig.random.nextBytes(32)
         val plainData = OSTestConfig.random.nextBytes(128)
         val ad = OSTestConfig.random.nextBytes(32)
-        dataStoreEngine.insertValue(MigrationConstant.DATASTORE_USERNAME_V0, ad)
+        dataStoreEngine.insertValue(MigrationConstant.DatastoreUsernameV0, ad)
 
         val actualCipherData = migrationCryptoUseCase.encrypt(plainData, key, 0)
         migrationCryptoUseCase.getCipherOutputStream(cipherFile.outputStream(), key, 0).use { outputStream ->
@@ -93,7 +93,7 @@ class MigrationCryptoUseCaseTest : OSHiltUnitTest() {
         val plainData = OSTestConfig.random.nextBytes(128)
         val ad = OSTestConfig.random.nextBytes(32)
         val cipherData = cryptoEngine.encrypt(plainData, key, ad).getOrThrow()
-        dataStoreEngine.insertValue(MigrationConstant.DATASTORE_USERNAME_V0, ad)
+        dataStoreEngine.insertValue(MigrationConstant.DatastoreUsernameV0, ad)
         cipherFile.writeBytes(cryptoEngine.encrypt(plainData, key, ad).getOrThrow())
 
         val actualData = migrationCryptoUseCase.decrypt(cipherData, key, 0)

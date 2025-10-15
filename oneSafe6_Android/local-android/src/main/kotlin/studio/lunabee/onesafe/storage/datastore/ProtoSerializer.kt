@@ -66,11 +66,10 @@ class ProtoSerializer<T : Any> @PublishedApi internal constructor(
          * @param default The default value of the data stored in the DataStore
          * @param fileName The filename of the DataStore stored in data/files/datastore
          */
-        inline fun <reified T : Any> dataStore(context: Context, default: T, fileName: String): DataStore<T> {
-            return DataStoreFactory.create(
+        inline fun <reified T : Any> dataStore(context: Context, default: T, fileName: String): DataStore<T> = DataStoreFactory
+            .create(
                 serializer = ProtoSerializer(default, typeOf<T>()),
                 produceFile = { context.dataStoreFile(fileName) },
             )
-        }
     }
 }

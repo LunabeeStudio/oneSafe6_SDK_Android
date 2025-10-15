@@ -30,7 +30,6 @@ import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
-import kotlin.test.Test
 import studio.lunabee.di.CryptoConstantsTestModule
 import studio.lunabee.onesafe.cryptography.android.CryptoConstants
 import studio.lunabee.onesafe.cryptography.android.PBKDF2JceHashEngine
@@ -46,6 +45,7 @@ import studio.lunabee.onesafe.test.assertSuccess
 import studio.lunabee.onesafe.test.firstSafeId
 import java.io.File
 import javax.inject.Inject
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
@@ -70,9 +70,10 @@ class ShareExportEngineTest : OSHiltUnitTest() {
 
     @Test
     fun share_export_engine_empty_test(): TestResult = runTest {
-        val prepareResult = exportEngine.buildExportInfo(
-            password = testPassword.toCharArray(),
-        ).last()
+        val prepareResult = exportEngine
+            .buildExportInfo(
+                password = testPassword.toCharArray(),
+            ).last()
         assertSuccess(prepareResult)
 
         val data = ExportData(
@@ -85,12 +86,13 @@ class ShareExportEngineTest : OSHiltUnitTest() {
             bubblesMessages = emptyList(),
         )
 
-        val exportedArchiveResult = exportEngine.createExportArchiveContent(
-            dataHolderFolder = File(context.cacheDir, "exportEngineTest"),
-            data = data,
-            archiveKind = OSArchiveKind.Backup,
-            safeId = firstSafeId,
-        ).last()
+        val exportedArchiveResult = exportEngine
+            .createExportArchiveContent(
+                dataHolderFolder = File(context.cacheDir, "exportEngineTest"),
+                data = data,
+                archiveKind = OSArchiveKind.Backup,
+                safeId = firstSafeId,
+            ).last()
         assertSuccess(exportedArchiveResult)
     }
 
@@ -105,12 +107,13 @@ class ShareExportEngineTest : OSHiltUnitTest() {
             bubblesConversation = emptyList(),
             bubblesMessages = emptyList(),
         )
-        val exportedArchiveResult = exportEngine.createExportArchiveContent(
-            dataHolderFolder = File(context.cacheDir, "exportEngineTest"),
-            data = data,
-            archiveKind = OSArchiveKind.Backup,
-            safeId = firstSafeId,
-        ).last()
+        val exportedArchiveResult = exportEngine
+            .createExportArchiveContent(
+                dataHolderFolder = File(context.cacheDir, "exportEngineTest"),
+                data = data,
+                archiveKind = OSArchiveKind.Backup,
+                safeId = firstSafeId,
+            ).last()
 
         val failure = assertFailure(exportedArchiveResult).throwable
         assertIs<OSImportExportError>(failure)

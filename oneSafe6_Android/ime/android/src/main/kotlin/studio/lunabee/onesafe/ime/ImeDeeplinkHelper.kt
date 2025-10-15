@@ -33,7 +33,7 @@ object ImeDeeplinkHelper {
     fun deeplinkBubblesHomeContact(context: Context) {
         val packageManager = context.packageManager
         val contactIntent = packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
-            val stringUri = CommonUiConstants.Deeplink.MAIN_NAV_SCHEME + "://" + BubblesHomeDestination.getRoute(BubblesHomeTab.Contacts)
+            val stringUri = CommonUiConstants.Deeplink.MainNavScheme + "://" + BubblesHomeDestination.getRoute(BubblesHomeTab.Contacts)
             data = stringUri.toUri()
         }
         context.startActivity(contactIntent)
@@ -42,7 +42,7 @@ object ImeDeeplinkHelper {
     fun deeplinkBubblesWriteMessage(context: Context, contactId: UUID) {
         val packageManager = context.packageManager
         val contactIntent = packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
-            val stringUri = CommonUiConstants.Deeplink.MAIN_NAV_SCHEME + "://" + WriteMessageDestination.getRouteFromContactId(contactId)
+            val stringUri = CommonUiConstants.Deeplink.MainNavScheme + "://" + WriteMessageDestination.getRouteFromContactId(contactId)
             data = stringUri.toUri()
         }
         context.startActivity(contactIntent)
@@ -51,7 +51,11 @@ object ImeDeeplinkHelper {
     fun deeplinkBubblesOnboarding(context: Context) {
         val packageManager = context.packageManager
         val contactIntent = packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
-            data = Uri.Builder().scheme(CommonUiConstants.Deeplink.MAIN_NAV_SCHEME).authority(OnBoardingBubblesDestination.route).build()
+            data = Uri
+                .Builder()
+                .scheme(CommonUiConstants.Deeplink.MainNavScheme)
+                .authority(OnBoardingBubblesDestination.route)
+                .build()
         }
         context.startActivity(contactIntent)
     }

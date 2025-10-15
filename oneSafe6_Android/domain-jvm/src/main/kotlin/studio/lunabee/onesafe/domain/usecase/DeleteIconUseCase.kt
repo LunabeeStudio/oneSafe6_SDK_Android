@@ -43,25 +43,22 @@ class DeleteIconUseCase @Inject constructor(
      */
     suspend operator fun invoke(
         safeItems: List<SafeItem>,
-    ): LBResult<Unit> {
-        return safeItems.map {
+    ): LBResult<Unit> = safeItems
+        .map {
             invoke(it)
         }.firstOrNull { result ->
             result is LBResult.Failure
         } ?: LBResult.Success(Unit)
-    }
 
     /**
      * @param safeItem The [SafeItem] which icon will be removed
      */
     suspend operator fun invoke(
         safeItem: SafeItem,
-    ): LBResult<Unit> {
-        return OSError.runCatching(log) {
-            if (safeItem.iconId == null) throw OSDomainError(OSDomainError.Code.SAFE_ITEM_NO_ICON)
-            safeItemRepository.updateIcon(safeItem.id, null)
-            invoke(safeItem.iconId)
-        }
+    ): LBResult<Unit> = OSError.runCatching(log) {
+        if (safeItem.iconId == null) throw OSDomainError(OSDomainError.Code.SAFE_ITEM_NO_ICON)
+        safeItemRepository.updateIcon(safeItem.id, null)
+        invoke(safeItem.iconId)
     }
 
     /**
@@ -69,12 +66,10 @@ class DeleteIconUseCase @Inject constructor(
      */
     internal suspend operator fun invoke(
         iconId: UUID,
-    ): LBResult<Unit> {
-        return OSError.runCatching(log) {
-            val deleted = iconRepository.deleteIcon(iconId)
-            if (!deleted) {
-                log.e("Unable to delete icon $iconId")
-            }
+    ): LBResult<Unit> = OSError.runCatching(log) {
+        val deleted = iconRepository.deleteIcon(iconId)
+        if (!deleted) {
+            log.e("Unable to delete icon $iconId")
         }
     }
 }

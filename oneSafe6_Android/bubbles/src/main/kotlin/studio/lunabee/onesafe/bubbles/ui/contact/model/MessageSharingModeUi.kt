@@ -30,17 +30,20 @@ enum class MessageSharingModeUi(
 ) {
     Deeplinks(
         title = LbcTextSpec.StringResource(OSString.bubbles_createContactScreen_messageSharingMode_deeplink),
-        description = LbcTextSpec.StringResource(OSString.bubbles_createContactScreen_messageSharingMode_deeplink_description),
+        description = LbcTextSpec
+            .StringResource(OSString.bubbles_createContactScreen_messageSharingMode_deeplink_description),
         mode = MessageSharingMode.Deeplink,
     ),
     CypherText(
         title = LbcTextSpec.StringResource(OSString.bubbles_createContactScreen_messageSharingMode_encryptedText),
-        description = LbcTextSpec.StringResource(OSString.bubbles_createContactScreen_messageSharingMode_encryptedText_description),
+        description = LbcTextSpec
+            .StringResource(OSString.bubbles_createContactScreen_messageSharingMode_encryptedText_description),
         mode = MessageSharingMode.CypherText,
     ),
     Archive(
         title = LbcTextSpec.StringResource(OSString.bubbles_createContactScreen_messageSharingMode_archiveFile),
-        description = LbcTextSpec.StringResource(OSString.bubbles_createContactScreen_messageSharingMode_archiveFile_description),
+        description = LbcTextSpec
+            .StringResource(OSString.bubbles_createContactScreen_messageSharingMode_archiveFile_description),
         mode = MessageSharingMode.Archive,
     ),
     ;

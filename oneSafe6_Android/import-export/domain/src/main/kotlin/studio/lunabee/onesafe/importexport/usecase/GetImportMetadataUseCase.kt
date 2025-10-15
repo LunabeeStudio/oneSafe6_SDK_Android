@@ -27,7 +27,5 @@ import javax.inject.Inject
 class GetImportMetadataUseCase @Inject constructor(
     private val importEngine: ImportEngine,
 ) {
-    operator fun invoke(): LBResult<ImportMetadata> {
-        return importEngine.getMetadataFromCache()
-    }
+    operator fun invoke(): LBResult<ImportMetadata> = importEngine.getMetadataFromCache()
 }

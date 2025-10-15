@@ -32,7 +32,12 @@ import javax.inject.Inject
 class AutoBackupErrorLocalDataSourceImpl @Inject constructor(
     private val dao: AutoBackupErrorDao,
 ) : AutoBackupErrorLocalDataSource {
-    override fun getLastError(safeId: SafeId): Flow<AutoBackupError?> = dao.getLastError(safeId).map { it?.toAutoBackupError() }
+    override fun getLastError(safeId: SafeId): Flow<AutoBackupError?> = dao.getLastError(safeId).map {
+        it
+            ?.toAutoBackupError()
+    }
+
     override suspend fun addError(error: AutoBackupError): Unit = dao.setError(RoomAutoBackupError.from(error))
+
     override suspend fun removeError(errorId: UUID): Unit = dao.removeError(errorId)
 }

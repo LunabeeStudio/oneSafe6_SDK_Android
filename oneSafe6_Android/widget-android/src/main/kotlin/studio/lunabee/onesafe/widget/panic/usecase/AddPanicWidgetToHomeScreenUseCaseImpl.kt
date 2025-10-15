@@ -44,7 +44,5 @@ internal class AddPanicWidgetToHomeScreenUseCaseImpl @Inject constructor(
         )
     }
 
-    override suspend fun isSupported(): Boolean {
-        return pinWidgetToHomeScreenHelper.isPinSupported()
-    }
+    override suspend fun isSupported(): Boolean = pinWidgetToHomeScreenHelper.isPinSupported()
 }

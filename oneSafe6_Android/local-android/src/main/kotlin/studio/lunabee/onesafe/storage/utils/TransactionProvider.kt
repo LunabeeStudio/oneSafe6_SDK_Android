@@ -26,7 +26,5 @@ import javax.inject.Inject
 class TransactionProvider<DB : RoomDatabase> @Inject constructor(
     private val db: DB,
 ) {
-    suspend fun <R> runAsTransaction(block: suspend () -> R): R {
-        return db.withTransaction(block)
-    }
+    suspend fun <R> runAsTransaction(block: suspend () -> R): R = db.withTransaction(block)
 }

@@ -27,21 +27,34 @@ import kotlin.time.Duration
 
 interface AutoBackupSettingsDataSource {
     fun autoBackupEnabledFlow(safeId: SafeId): Flow<Boolean?>
+
     fun autoBackupFrequencyFlow(safeId: SafeId): Flow<Duration?>
+
     fun autoBackupMaxNumberFlow(safeId: SafeId): Flow<Int?>
+
     fun cloudBackupEnabled(safeId: SafeId): Flow<Boolean?>
+
     fun keepLocalBackupEnabled(safeId: SafeId): Flow<Boolean?>
+
     fun enableAutoBackupCtaState(safeId: SafeId): Flow<CtaState?>
 
     suspend fun autoBackupEnabled(safeId: SafeId): Boolean
+
     suspend fun autoBackupFrequency(safeId: SafeId): Duration
+
     suspend fun autoBackupMaxNumber(safeId: SafeId): Int
+
     suspend fun getSafeAutoBackupEnabled(): List<SafeAutoBackupEnabled>
 
     suspend fun toggleAutoBackupSettings(safeId: SafeId)
+
     suspend fun setAutoBackupFrequency(safeId: SafeId, frequency: Duration)
+
     suspend fun updateAutoBackupMaxNumber(safeId: SafeId, updatedValue: Int)
+
     suspend fun setCloudBackupEnabled(safeId: SafeId, enabled: Boolean)
+
     suspend fun setKeepLocalBackupSettings(safeId: SafeId, enabled: Boolean)
+
     suspend fun setEnableAutoBackupCtaState(safeId: SafeId, ctaState: CtaState)
 }

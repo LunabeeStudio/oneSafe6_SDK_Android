@@ -46,11 +46,11 @@ class OpenAndroidInternalBackupStorageUseCase @Inject constructor(
         try {
             val fileManagerIntent = getFileManagerIntentOnDocumentProvider(Intent.ACTION_VIEW, context.packageName)
             val chooserTitle = context.getString(OSString.import_selectFile_internalStorageChooser_title)
-            val chooserIntent = Intent.createChooser(
-                fileManagerIntent,
-                chooserTitle,
-            )
-                .putExtra(Intent.EXTRA_EXCLUDE_COMPONENTS, appComponents)
+            val chooserIntent = Intent
+                .createChooser(
+                    fileManagerIntent,
+                    chooserTitle,
+                ).putExtra(Intent.EXTRA_EXCLUDE_COMPONENTS, appComponents)
                 .putExtra(Intent.EXTRA_TITLE, chooserTitle)
             context.startActivity(chooserIntent)
             result = true
@@ -69,7 +69,8 @@ class OpenAndroidInternalBackupStorageUseCase @Inject constructor(
 
         if (!result) {
             try {
-                context.startActivity(getFileManagerIntentOnDocumentProvider("android.provider.action.BROWSE", context.packageName))
+                context
+                    .startActivity(getFileManagerIntentOnDocumentProvider("android.provider.action.BROWSE", context.packageName))
                 result = true
             } catch (_: ActivityNotFoundException) {
                 logger.v("fallback 2")
@@ -103,7 +104,7 @@ class OpenAndroidInternalBackupStorageUseCase @Inject constructor(
         val authority = BackupsProvider.authority(appId)
         val intent = Intent(action)
         intent.addCategory(Intent.CATEGORY_DEFAULT)
-        intent.data = DocumentsContract.buildRootUri(authority, BackupsProvider.ROOT_ID)
+        intent.data = DocumentsContract.buildRootUri(authority, BackupsProvider.RootId)
         intent.addFlags(
             Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
                 Intent.FLAG_GRANT_PREFIX_URI_PERMISSION or

@@ -62,7 +62,7 @@ class BiometricEngine @Inject constructor(
     }
 
     override fun clear() {
-        androidKeyStoreEngine.removeSecretKey(KEY_ALIAS)
+        androidKeyStoreEngine.removeSecretKey(KeyAlias)
     }
 
     @Throws(OSCryptoError::class)
@@ -77,24 +77,22 @@ class BiometricEngine @Inject constructor(
     }
 
     @Throws(OSCryptoError::class)
-    fun decryptKey(cryptoMaterial: BiometricCryptoMaterial, cipher: Cipher): ByteArray {
-        return try {
-            cipher.doFinal(cryptoMaterial.encKey)
-        } catch (e: IllegalBlockSizeException) {
-            throw OSCryptoError(OSCryptoError.Code.BIOMETRIC_DECRYPTION_NOT_AUTHENTICATED, cause = e)
-        } catch (e: BadPaddingException) {
-            throw OSCryptoError(OSCryptoError.Code.BIOMETRIC_DECRYPTION_FAIL, cause = e)
-        }
+    fun decryptKey(cryptoMaterial: BiometricCryptoMaterial, cipher: Cipher): ByteArray = try {
+        cipher.doFinal(cryptoMaterial.encKey)
+    } catch (e: IllegalBlockSizeException) {
+        throw OSCryptoError(OSCryptoError.Code.BIOMETRIC_DECRYPTION_NOT_AUTHENTICATED, cause = e)
+    } catch (e: BadPaddingException) {
+        throw OSCryptoError(OSCryptoError.Code.BIOMETRIC_DECRYPTION_FAIL, cause = e)
     }
 
     private fun generateKeyBiometric(): SecretKey {
         try {
             return androidKeyStoreEngine.generateSecretKey(
-                KeyGenParameterSpec.Builder(
-                    KEY_ALIAS,
-                    KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT,
-                )
-                    .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+                KeyGenParameterSpec
+                    .Builder(
+                        KeyAlias,
+                        KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT,
+                    ).setBlockModes(KeyProperties.BLOCK_MODE_CBC)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
                     .setUserAuthenticationRequired(true)
                     .build(),
@@ -104,24 +102,22 @@ class BiometricEngine @Inject constructor(
         }
     }
 
-    private fun getCipher(): Cipher {
-        return Cipher.getInstance(
-            KeyProperties.KEY_ALGORITHM_AES + "/"
-                + KeyProperties.BLOCK_MODE_CBC + "/"
-                + KeyProperties.ENCRYPTION_PADDING_PKCS7,
-        )
-    }
+    private fun getCipher(): Cipher = Cipher.getInstance(
+        KeyProperties.KEY_ALGORITHM_AES + "/"
+            + KeyProperties.BLOCK_MODE_CBC + "/"
+            + KeyProperties.ENCRYPTION_PADDING_PKCS7,
+    )
 
     @Throws(OSCryptoError::class)
     private fun getSecretKey(): SecretKey {
         try {
-            return androidKeyStoreEngine.retrieveSecretKeyFromKeyStore(KEY_ALIAS)
+            return androidKeyStoreEngine.retrieveSecretKeyFromKeyStore(KeyAlias)
         } catch (e: OSCryptoError) {
             throw OSCryptoError(OSCryptoError.Code.BIOMETRIC_KEY_NOT_GENERATED, cause = e)
         }
     }
 
     companion object {
-        const val KEY_ALIAS: String = "2bebec3e-4029-469b-a054-725689254611"
+        const val KeyAlias: String = "2bebec3e-4029-469b-a054-725689254611"
     }
 }

@@ -64,9 +64,7 @@ object SettingsPreferenceDataStoreModule {
     @Singleton
     fun providePreferenceDataStore(
         @ApplicationContext context: Context,
-    ): DataStore<Preferences> {
-        return PreferenceDataStoreFactory.create {
-            context.preferencesDataStoreFile(SettingsPrefDataStore)
-        }
+    ): DataStore<Preferences> = PreferenceDataStoreFactory.create {
+        context.preferencesDataStoreFile(SettingsPrefDataStore)
     }
 }

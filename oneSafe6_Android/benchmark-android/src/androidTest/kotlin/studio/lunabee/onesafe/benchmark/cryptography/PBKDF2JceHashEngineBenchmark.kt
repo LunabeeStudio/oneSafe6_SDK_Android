@@ -25,10 +25,10 @@ import androidx.benchmark.junit4.measureRepeated
 import androidx.test.filters.LargeTest
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Rule
-import kotlin.test.Test
 import studio.lunabee.onesafe.cryptography.android.CryptoConstants
 import studio.lunabee.onesafe.cryptography.android.PBKDF2JceHashEngine
 import java.lang.reflect.Method
+import kotlin.test.Test
 
 @LargeTest
 class PBKDF2JceHashEngineBenchmark {
@@ -41,13 +41,14 @@ class PBKDF2JceHashEngineBenchmark {
     private val password: CharArray = "LTDf#@sGEdczDe?X@53TK&P4A^heLttP".toCharArray()
     private val salt = Base64.decode("rTygUEZCVBg4RNbJP1U16QFgIeIKwg/T0gEVA0cfIDU=", Base64.NO_WRAP)
 
-    private val doHash: Method = PBKDF2JceHashEngine::class.java.getDeclaredMethod(
-        "doHash",
-        CharArray::class.java,
-        ByteArray::class.java,
-    ).apply {
-        isAccessible = true
-    }
+    private val doHash: Method = PBKDF2JceHashEngine::class.java
+        .getDeclaredMethod(
+            "doHash",
+            CharArray::class.java,
+            ByteArray::class.java,
+        ).apply {
+            isAccessible = true
+        }
 
     @Test
     fun hashEngine_benchmark() {

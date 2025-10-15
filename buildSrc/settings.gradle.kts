@@ -17,22 +17,12 @@
  * Last modified 4/7/23, 12:45 AM
  */
 
-pluginManagement {
-    plugins {
-        id("de.fayard.refreshVersions") version "0.60.6"
-    }
-}
-
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
             from(files("../gradle/libs.versions.toml"))
         }
     }
-}
-
-plugins {
-    id("de.fayard.refreshVersions")
 }
 
 rootProject.name = "buildSrc"

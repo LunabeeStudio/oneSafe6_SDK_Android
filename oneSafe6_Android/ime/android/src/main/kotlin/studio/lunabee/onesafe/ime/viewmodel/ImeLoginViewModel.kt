@@ -86,7 +86,8 @@ class ImeLoginViewModel(
 
     init {
         // Observe login state
-        isSafeReadyUseCase.safeIdFlow()
+        isSafeReadyUseCase
+            .safeIdFlow()
             .filterNotNull()
             .onEach {
                 loginUiStateHolder.dataState
@@ -95,8 +96,7 @@ class ImeLoginViewModel(
                         imeBiometricResultRepository.setError(null)
                         loginUiStateHolder.setUiState(state)
                     }
-            }
-            .launchIn(viewModelScope)
+            }.launchIn(viewModelScope)
 
         // Observe error state
         imeBiometricResultRepository.error
@@ -109,7 +109,6 @@ class ImeLoginViewModel(
                         },
                     )
                 }
-            }
-            .launchIn(viewModelScope)
+            }.launchIn(viewModelScope)
     }
 }

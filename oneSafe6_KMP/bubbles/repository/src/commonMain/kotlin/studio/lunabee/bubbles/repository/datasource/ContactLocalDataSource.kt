@@ -20,27 +20,42 @@
 package studio.lunabee.bubbles.repository.datasource
 
 import kotlinx.coroutines.flow.Flow
-import kotlin.time.Instant
 import studio.lunabee.bubbles.domain.model.contact.Contact
 import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
 import studio.lunabee.bubbles.domain.model.contactkey.ContactSharedKey
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
+import kotlin.time.Instant
 
 interface ContactLocalDataSource {
     suspend fun saveContact(contact: Contact, key: ContactLocalKey)
+
     fun getAllContactsFlow(safeId: DoubleRatchetUUID): Flow<List<Contact>>
+
     fun getRecentContactsFlow(maxNumber: Int, safeId: DoubleRatchetUUID): Flow<List<Contact>>
+
     fun getContactFlow(id: DoubleRatchetUUID): Flow<Contact?>
+
     fun getContactCountFlow(safeId: DoubleRatchetUUID): Flow<Int>
+
     suspend fun getContact(id: DoubleRatchetUUID): Contact?
+
     suspend fun getContactInSafe(id: DoubleRatchetUUID, safeId: DoubleRatchetUUID): Contact?
+
     suspend fun getContactSharedKey(id: DoubleRatchetUUID): ContactSharedKey?
+
     suspend fun addContactSharedKey(id: DoubleRatchetUUID, sharedKey: ContactSharedKey)
+
     suspend fun deleteContact(id: DoubleRatchetUUID)
+
     suspend fun updateMessageSharingMode(id: DoubleRatchetUUID, encSharingMode: ByteArray, updateAt: Instant)
+
     suspend fun updateUpdatedAt(id: DoubleRatchetUUID, updateAt: Instant)
+
     suspend fun updateContact(id: DoubleRatchetUUID, encSharingMode: ByteArray, encName: ByteArray, updateAt: Instant)
+
     suspend fun updateContactConsultedAt(id: DoubleRatchetUUID, consultedAt: Instant)
+
     suspend fun getContactCount(safeId: DoubleRatchetUUID): Int
+
     suspend fun updateContactResetConversationDate(id: DoubleRatchetUUID, encResetConversationDate: ByteArray)
 }

@@ -82,19 +82,18 @@ fun ComposeMessageCard(
     val isKeyboardVisible: Boolean = LocalOneSafeKImeController.current.isVisible
     Box(
         modifier = Modifier
-            .background(LocalColorPalette.current.Neutral70)
+            .background(LocalColorPalette.current.neutral70)
             .landscapeSystemBarsPadding(),
     ) {
         OSCard(
             colors = CardDefaults.cardColors(
-                containerColor = LocalColorPalette.current.Neutral80,
+                containerColor = LocalColorPalette.current.neutral80,
             ),
             modifier = Modifier
                 .padding(
                     horizontal = OSDimens.SystemSpacing.Small,
                     vertical = OSDimens.SystemSpacing.Regular,
-                )
-                .then(
+                ).then(
                     if (isKeyboardVisible) {
                         Modifier
                     } else {
@@ -111,14 +110,14 @@ fun ComposeMessageCard(
                 label = null,
                 placeholder = LbcTextSpec.StringResource(OSString.oneSafeK_composeMessageCard_label),
                 colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = LocalColorPalette.current.Neutral80,
-                    focusedContainerColor = LocalColorPalette.current.Neutral80,
-                    focusedIndicatorColor = LocalColorPalette.current.Neutral80,
-                    unfocusedIndicatorColor = LocalColorPalette.current.Neutral80,
-                    focusedTextColor = LocalColorPalette.current.Neutral10,
-                    unfocusedTextColor = LocalColorPalette.current.Neutral10,
-                    unfocusedPlaceholderColor = LocalColorPalette.current.Neutral60,
-                    focusedLabelColor = LocalColorPalette.current.Neutral60,
+                    unfocusedContainerColor = LocalColorPalette.current.neutral80,
+                    focusedContainerColor = LocalColorPalette.current.neutral80,
+                    focusedIndicatorColor = LocalColorPalette.current.neutral80,
+                    unfocusedIndicatorColor = LocalColorPalette.current.neutral80,
+                    focusedTextColor = LocalColorPalette.current.neutral10,
+                    unfocusedTextColor = LocalColorPalette.current.neutral10,
+                    unfocusedPlaceholderColor = LocalColorPalette.current.neutral60,
+                    focusedLabelColor = LocalColorPalette.current.neutral60,
                 ),
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions {
@@ -135,7 +134,7 @@ fun ComposeMessageCard(
                     modifier = Modifier.size(LockIconSize),
                     painter = painterResource(id = OSDrawable.ic_lock),
                     contentDescription = null,
-                    tint = LocalColorPalette.current.Neutral60,
+                    tint = LocalColorPalette.current.neutral60,
                 )
                 OSSmallDivider(
                     modifier = Modifier.weight(1f),
@@ -152,7 +151,7 @@ fun ComposeMessageCard(
                 OSText(
                     text = LbcTextSpec.Raw(encryptedMessage),
                     style = MaterialTheme.typography.bodySmall,
-                    color = LocalColorPalette.current.Neutral60,
+                    color = LocalColorPalette.current.neutral60,
                     maxLines = EncryptedMessageMaxLines,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier

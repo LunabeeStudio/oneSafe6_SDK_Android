@@ -31,7 +31,5 @@ object ImportExportConstant {
     val ArchiveTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HHmmss")
     val ArchiveDateFormatter: DateTimeFormatter = DateTimeFormatter.BASIC_ISO_DATE
 
-    fun isOS6Extension(extension: String): Boolean {
-        return extension == ExtensionOs6Backup || extension == ExtensionOs6Sharing
-    }
+    fun isOS6Extension(extension: String): Boolean = extension == ExtensionOs6Backup || extension == ExtensionOs6Sharing
 }

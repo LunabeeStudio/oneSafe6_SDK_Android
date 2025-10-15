@@ -17,9 +17,11 @@
  * Last modified 4/7/23, 12:30 AM
  */
 
+import java.net.URI
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-@Suppress("VariableNaming")
+@Suppress("PropertyName")
 pluginManagement {
     val artifactory_consumer_username: String? by settings
     val artifactory_consumer_api_key: String? by settings
@@ -48,9 +50,64 @@ pluginManagement {
 }
 
 plugins {
-    // See https://jmfayard.github.io/refreshVersions
-    id("de.fayard.refreshVersions") version "0.60.6"
     id("studio.lunabee.plugins.cache") version "1.0.0"
+}
+
+dependencyResolutionManagement {
+    val artifactoryUsername: String = providers
+        .gradleProperty("artifactory_consumer_username")
+        .getOrElse("library-consumer-public")
+    val artifactoryPassword: String = providers
+        .gradleProperty("artifactory_consumer_api_key")
+        .getOrElse("AKCp8k8PbuxYXoLgvNpc5Aro1ytENk3rSyXCwQ71BA4byg3h7iuMyQ6Sd4ZmJtSJcr7XjwMej")
+
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        mavenLocal()
+        maven("https://artifactory.lunabee.studio/artifactory/libs-release-local") {
+            credentials {
+                username = artifactoryUsername
+                password = artifactoryPassword
+            }
+            mavenContent {
+                releasesOnly()
+            }
+        }
+        maven {
+            url = URI("https://artifactory.lunabee.studio/artifactory/libs-snapshot-local")
+            credentials {
+                username = artifactoryUsername
+                password = artifactoryPassword
+            }
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
+        maven {
+            url = uri("https://artifactory.lunabee.studio/artifactory/double-ratchet-kmm/")
+            credentials {
+                username = artifactoryUsername
+                password = artifactoryPassword
+            }
+        }
+        maven {
+            url = uri("https://artifactory.lunabee.studio/artifactory/florisboard-library-local")
+            credentials {
+                username = artifactoryUsername
+                password = artifactoryPassword
+            }
+            mavenContent {
+                releasesOnly()
+            }
+        }
+        maven(url = "https://central.sonatype.com/repository/maven-snapshots/") {
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
+    }
 }
 
 rootProject.name = "oneSafe6"

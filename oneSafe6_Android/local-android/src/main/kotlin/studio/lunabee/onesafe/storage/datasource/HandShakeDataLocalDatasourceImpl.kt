@@ -37,7 +37,8 @@ class HandShakeDataLocalDatasourceImpl @Inject constructor(
         handShakeDataDao.deleteById(conversationLocalId.uuid)
     }
 
-    override suspend fun getById(conversationLocalId: DoubleRatchetUUID): EncHandShakeData? {
-        return handShakeDataDao.getById(conversationLocalId.uuid)?.toHandShakeData()
-    }
+    override suspend fun getById(conversationLocalId: DoubleRatchetUUID): EncHandShakeData? = handShakeDataDao
+        .getById(
+            conversationLocalId.uuid,
+        )?.toHandShakeData()
 }

@@ -35,8 +35,6 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlin.time.toJavaInstant
-import kotlin.time.toKotlinInstant
 import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
 import studio.lunabee.bubbles.domain.usecase.GetAllContactsUseCase
 import studio.lunabee.compose.core.LbcTextSpec
@@ -68,6 +66,8 @@ import java.time.Clock
 import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.time.toJavaInstant
+import kotlin.time.toKotlinInstant
 
 @HiltViewModel
 class SendItemBubblesSelectContactViewModel @Inject constructor(
@@ -86,7 +86,8 @@ class SendItemBubblesSelectContactViewModel @Inject constructor(
     private val deleteBubblesArchiveUseCase: DeleteBubblesArchiveUseCase,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    private val itemId: UUID = savedStateHandle.get<String>(SendItemBubblesSelectContactDestination.ItemToShareIdArgument)
+    private val itemId: UUID = savedStateHandle
+        .get<String>(SendItemBubblesSelectContactDestination.ItemToShareIdArgument)
         ?.let(UUID::fromString) ?: error("missing argument")
     private val includeChildren: Boolean = savedStateHandle.get<Boolean>(SendItemBubblesSelectContactDestination.IncludeChildrenArgument)
         ?: error("missing argument")
@@ -115,7 +116,12 @@ class SendItemBubblesSelectContactViewModel @Inject constructor(
                 )
             },
         )
-    }.stateIn(viewModelScope, SharingStarted.Lazily, SharedItemInfo.NoChildren(LbcTextSpec.StringResource(OSString.common_loading)))
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.Lazily,
+        SharedItemInfo
+            .NoChildren(LbcTextSpec.StringResource(OSString.common_loading)),
+    )
 
     init {
         viewModelScope.launch {
@@ -159,11 +165,13 @@ class SendItemBubblesSelectContactViewModel @Inject constructor(
     fun getMessageToSend(contactId: DoubleRatchetUUID) {
         viewModelScope.launch {
             loadingManager.withLoading {
-                val result = createMessageWithItemSharedUseCase.invoke(
-                    contactId = contactId,
-                    itemId = itemId,
-                    includeChildren = includeChildren,
-                ).first { it !is LBFlowResult.Loading }.asResult()
+                val result = createMessageWithItemSharedUseCase
+                    .invoke(
+                        contactId = contactId,
+                        itemId = itemId,
+                        includeChildren = includeChildren,
+                    ).first { it !is LBFlowResult.Loading }
+                    .asResult()
                 when (result) {
                     is LBResult.Failure -> displayErrorDialog(result.throwable)
                     is LBResult.Success -> _fileToShare.value = FileShareData(

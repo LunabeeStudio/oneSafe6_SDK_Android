@@ -26,7 +26,6 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
-import kotlin.test.Test
 import studio.lunabee.onesafe.domain.qualifier.InternalDir
 import studio.lunabee.onesafe.importexport.android.test.BuildConfig
 import studio.lunabee.onesafe.importexport.model.ImportExportConstant
@@ -36,6 +35,7 @@ import studio.lunabee.onesafe.test.OSTestConfig
 import java.io.File
 import java.io.FileInputStream
 import javax.inject.Inject
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
@@ -79,9 +79,11 @@ class BackupsProviderTest : OSHiltTest() {
         }
         val rootDocumentIdIdx = rootCursor.getColumnIndex(DocumentsContract.Root.COLUMN_DOCUMENT_ID)
         val rootDocumentId = rootCursor.getString(rootDocumentIdIdx)
-        val childrenCursor = provider.queryChildDocuments(parentDocumentId = rootDocumentId, projection = null, sortOrder = null).apply {
-            moveToFirst()
-        }
+        val childrenCursor = provider
+            .queryChildDocuments(parentDocumentId = rootDocumentId, projection = null, sortOrder = null)
+            .apply {
+                moveToFirst()
+            }
 
         repeat(childrenCursor.columnCount) {
             println("${childrenCursor.getColumnName(it)} - ${childrenCursor.getString(it)}")

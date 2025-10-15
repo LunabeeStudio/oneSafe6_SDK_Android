@@ -32,6 +32,7 @@ class SafeItemFieldRepositoryImpl @Inject constructor(
     private val localDataSource: SafeItemFieldLocalDataSource,
 ) : SafeItemFieldRepository {
     override suspend fun getSafeItemField(fieldId: UUID): SafeItemField = localDataSource.getSafeItemField(fieldId)
+
     override suspend fun getSafeItemFields(itemId: UUID): List<SafeItemField> = localDataSource.getSafeItemFields(
         itemId,
     )
@@ -52,15 +53,15 @@ class SafeItemFieldRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteByItemId(itemId: UUID): Unit = localDataSource.deleteByItemId(itemId)
-    override suspend fun getAllSafeItemFieldIds(safeId: SafeId): List<UUID> {
-        return localDataSource.getAllSafeItemFieldIds(safeId)
-    }
 
-    override suspend fun getAllSafeItemFields(safeId: SafeId): List<SafeItemField> {
-        return localDataSource.getAllSafeItemFields(safeId)
-    }
+    override suspend fun getAllSafeItemFieldIds(safeId: SafeId): List<UUID> = localDataSource
+        .getAllSafeItemFieldIds(safeId)
 
-    override suspend fun getAllSafeItemFieldsOfItems(items: List<UUID>): List<SafeItemField> {
-        return localDataSource.getAllSafeItemFieldsOfItems(items)
-    }
+    override suspend fun getAllSafeItemFields(safeId: SafeId): List<SafeItemField> = localDataSource
+        .getAllSafeItemFields(safeId)
+
+    override suspend fun getAllSafeItemFieldsOfItems(items: List<UUID>): List<SafeItemField> = localDataSource
+        .getAllSafeItemFieldsOfItems(
+            items,
+        )
 }

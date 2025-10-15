@@ -43,17 +43,12 @@ class ImportExportBubblesRepositoryImpl @Inject constructor(
         localDataSource.save(contacts, conversations, contactsKey, messages, safeId)
     }
 
-    override suspend fun getAllContactIds(): List<DoubleRatchetUUID> {
-        return localDataSource.getAllContactIds()
-    }
+    override suspend fun getAllContactIds(): List<DoubleRatchetUUID> = localDataSource.getAllContactIds()
 
-    override suspend fun getAllMessageIds(): List<DoubleRatchetUUID> {
-        return localDataSource.getAllMessageIds()
-    }
+    override suspend fun getAllMessageIds(): List<DoubleRatchetUUID> = localDataSource.getAllMessageIds()
 
-    override suspend fun getEncConversations(ids: List<DoubleRatchetUUID>): List<EncConversation> {
-        return localDataSource.getEncConversations(ids)
-    }
+    override suspend fun getEncConversations(ids: List<DoubleRatchetUUID>): List<EncConversation> = localDataSource
+        .getEncConversations(ids)
 
     override suspend fun getAllByContactList(contactIds: List<DoubleRatchetUUID>): List<SafeMessage> =
         localDataSource.getAllMessageByContactList(contactIds)

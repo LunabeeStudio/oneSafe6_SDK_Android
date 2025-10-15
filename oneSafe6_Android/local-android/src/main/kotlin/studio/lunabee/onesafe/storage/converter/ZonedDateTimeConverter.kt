@@ -24,12 +24,8 @@ import java.time.ZonedDateTime
 
 class ZonedDateTimeConverter {
     @TypeConverter
-    fun fromZonedDateTime(value: String): ZonedDateTime {
-        return ZonedDateTime.parse(value)
-    }
+    fun fromZonedDateTime(value: String): ZonedDateTime = ZonedDateTime.parse(value)
 
     @TypeConverter
-    fun zonedDateTimeToString(zonedDateTime: ZonedDateTime): String {
-        return zonedDateTime.toString()
-    }
+    fun zonedDateTimeToString(zonedDateTime: ZonedDateTime): String = zonedDateTime.toString()
 }

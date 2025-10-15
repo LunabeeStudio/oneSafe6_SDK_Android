@@ -29,7 +29,6 @@ import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlin.time.Instant
 import studio.lunabee.doubleratchet.DoubleRatchetEngine
 import studio.lunabee.doubleratchet.crypto.DoubleRatchetKeyRepository
 import studio.lunabee.doubleratchet.storage.DoubleRatchetLocalDatasource
@@ -62,6 +61,7 @@ import studio.lunabee.onesafe.test.firstSafeId
 import java.io.File
 import java.time.Clock
 import javax.inject.Singleton
+import kotlin.time.Instant
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -135,9 +135,7 @@ object DomainTestModule {
     @Provides
     @Singleton
     fun providesKotlinClock(): kotlin.time.Clock = object : kotlin.time.Clock {
-        override fun now(): Instant {
-            return Instant.fromEpochMilliseconds(0)
-        }
+        override fun now(): Instant = Instant.fromEpochMilliseconds(0)
     }
 
     @Provides
@@ -161,25 +159,21 @@ object DomainTestModule {
         autoLockRepository: AutoLockRepository,
         clock: Clock,
         safeRepository: SafeRepository,
-    ): AutoLockInactivityGetRemainingTimeUseCase {
-        return AutoLockInactivityGetRemainingTimeUseCaseImpl(
-            securitySettingsRepository,
-            autoLockRepository,
-            clock,
-            safeRepository,
-        )
-    }
+    ): AutoLockInactivityGetRemainingTimeUseCase = AutoLockInactivityGetRemainingTimeUseCaseImpl(
+        securitySettingsRepository,
+        autoLockRepository,
+        clock,
+        safeRepository,
+    )
 
     @Provides
-    fun providesAutoLockBackgroundUseCase(): AutoLockBackgroundUseCase {
-        return object : AutoLockBackgroundUseCase {
-            override suspend fun app() {
-                /* no-op */
-            }
+    fun providesAutoLockBackgroundUseCase(): AutoLockBackgroundUseCase = object : AutoLockBackgroundUseCase {
+        override suspend fun app() {
+            // no-op
+        }
 
-            override suspend fun osk() {
-                /* no-op */
-            }
+        override suspend fun osk() {
+            // no-op
         }
     }
 }

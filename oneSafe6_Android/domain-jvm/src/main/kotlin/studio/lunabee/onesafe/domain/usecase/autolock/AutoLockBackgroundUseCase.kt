@@ -30,6 +30,7 @@ import kotlin.time.Duration
  */
 interface AutoLockBackgroundUseCase {
     suspend fun app()
+
     suspend fun osk()
 }
 

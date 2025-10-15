@@ -24,8 +24,12 @@ import studio.lunabee.messaging.domain.model.EnqueuedMessage
 
 interface EnqueuedMessageLocalDataSource {
     suspend fun save(encMessage: ByteArray, encChannel: ByteArray?)
+
     suspend fun getAll(): List<EnqueuedMessage>
+
     suspend fun delete(id: Int)
+
     suspend fun getOldestAsFlow(): Flow<EnqueuedMessage?>
+
     suspend fun deleteAll()
 }

@@ -29,12 +29,20 @@ interface SupportOSDataSource {
     val lastLanguageConfig: Flow<String?>
     val languageConfigCount: Flow<Int>
     val visibleSince: Flow<Instant?>
+
     suspend fun incrementAppVisit()
+
     suspend fun resetAppVisit()
+
     suspend fun setAppVisit(count: Int)
+
     suspend fun setRatingInstant(instant: Instant?)
+
     suspend fun setRattingInstant(instant: Instant?)
+
     suspend fun markLanguageConfigAsHandled()
+
     suspend fun resetLanguageConfigWithNewLocale(newLocale: String)
+
     suspend fun setVisibleSince(visibleSince: Instant?)
 }

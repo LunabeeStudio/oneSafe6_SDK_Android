@@ -19,13 +19,13 @@
 
 package studio.lunabee.messaging.domain.usecase
 
-import kotlin.time.Instant
 import studio.lunabee.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.bubbles.domain.repository.ContactKeyRepository
 import studio.lunabee.bubbles.domain.repository.ContactRepository
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.onesafe.di.Inject
 import studio.lunabee.onesafe.domain.model.crypto.EncryptEntry
+import kotlin.time.Instant
 
 class UpdateContactResetConversationDateUseCase @Inject constructor(
     private val contactRepository: ContactRepository,

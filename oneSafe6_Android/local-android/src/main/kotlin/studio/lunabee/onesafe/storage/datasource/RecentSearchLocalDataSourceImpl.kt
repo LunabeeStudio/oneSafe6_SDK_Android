@@ -29,9 +29,7 @@ import javax.inject.Inject
 class RecentSearchLocalDataSourceImpl @Inject constructor(
     private val recentSearchDao: RecentSearchDao,
 ) : RecentSearchLocalDatasource {
-    override fun getRecentSearch(safeId: SafeId): Flow<List<ByteArray>> {
-        return recentSearchDao.getAllOrderByDateDesc(safeId)
-    }
+    override fun getRecentSearch(safeId: SafeId): Flow<List<ByteArray>> = recentSearchDao.getAllOrderByDateDesc(safeId)
 
     override suspend fun saveRecentSearch(
         safeId: SafeId,

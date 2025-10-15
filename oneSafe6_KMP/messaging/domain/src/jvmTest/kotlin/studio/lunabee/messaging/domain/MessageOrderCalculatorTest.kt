@@ -25,18 +25,18 @@ import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import kotlin.time.Clock
-import kotlin.time.Instant
-import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
 import studio.lunabee.bubbles.domain.repository.BubblesCryptoRepository
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.doubleratchet.model.createRandomUUID
 import studio.lunabee.messaging.domain.model.MessageOrder
 import studio.lunabee.messaging.domain.repository.MessageOrderRepository
+import studio.lunabee.onesafe.domain.model.crypto.DecryptEntry
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 class MessageOrderCalculatorTest {
     private val contactId: DoubleRatchetUUID = createRandomUUID()

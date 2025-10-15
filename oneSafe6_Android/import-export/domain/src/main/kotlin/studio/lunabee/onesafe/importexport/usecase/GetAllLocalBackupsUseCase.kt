@@ -55,10 +55,8 @@ class GetAllLocalBackupsUseCase @Inject constructor(
     /**
      * Get a flow of all valid local backups and remove (+log) potential broken backups (backup file missing)
      */
-    fun flow(safeId: SafeId): Flow<List<LocalBackup>> {
-        return backupRepository.getBackupsFlow(safeId).map {
-            handleResult(it, safeId)
-        }
+    fun flow(safeId: SafeId): Flow<List<LocalBackup>> = backupRepository.getBackupsFlow(safeId).map {
+        handleResult(it, safeId)
     }
 
     private suspend fun handleResult(backupResults: List<LBResult<LocalBackup>>, safeId: SafeId): List<LocalBackup> {

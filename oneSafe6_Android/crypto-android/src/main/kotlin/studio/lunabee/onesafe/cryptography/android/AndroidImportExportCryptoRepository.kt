@@ -34,43 +34,33 @@ class AndroidImportExportCryptoRepository @Inject constructor(
     private val saltProvider: SaltProvider,
 ) : ImportExportCryptoRepository {
 
-    override suspend fun deriveKey(password: CharArray, salt: ByteArray): ByteArray {
-        return hashEngine.deriveKey(
-            password = password,
-            salt = salt,
-        )
+    override suspend fun deriveKey(password: CharArray, salt: ByteArray): ByteArray = hashEngine.deriveKey(
+        password = password,
+        salt = salt,
+    )
+
+    override suspend fun createMasterKeyAndSalt(password: CharArray): Pair<ByteArray, ByteArray> = password.use {
+        val salt = saltProvider()
+        val masterKey = hashEngine.deriveKey(password, salt)
+        masterKey to salt
     }
 
-    override suspend fun createMasterKeyAndSalt(password: CharArray): Pair<ByteArray, ByteArray> {
-        return password.use {
-            val salt = saltProvider()
-            val masterKey = hashEngine.deriveKey(password, salt)
-            masterKey to salt
-        }
+    override suspend fun decryptRawItemKey(cipherData: ByteArray, key: ByteArray): ByteArray = try {
+        crypto.decrypt(cipherData = cipherData, key, null).getOrThrow()
+    } catch (e: GeneralSecurityException) {
+        throw OSCryptoError(OSCryptoError.Code.DECRYPTION_FAILED_WRONG_KEY, cause = e)
     }
 
-    override suspend fun decryptRawItemKey(cipherData: ByteArray, key: ByteArray): ByteArray {
-        return try {
-            crypto.decrypt(cipherData = cipherData, key, null).getOrThrow()
-        } catch (e: GeneralSecurityException) {
-            throw OSCryptoError(OSCryptoError.Code.DECRYPTION_FAILED_WRONG_KEY, cause = e)
-        }
+    override suspend fun decrypt(cipherData: ByteArray, key: ByteArray): ByteArray = try {
+        crypto.decrypt(cipherData = cipherData, key, null).getOrThrow()
+    } catch (e: GeneralSecurityException) {
+        throw OSCryptoError(OSCryptoError.Code.DECRYPTION_FAILED_WRONG_KEY, cause = e)
     }
 
-    override suspend fun decrypt(cipherData: ByteArray, key: ByteArray): ByteArray {
-        return try {
-            crypto.decrypt(cipherData = cipherData, key, null).getOrThrow()
-        } catch (e: GeneralSecurityException) {
-            throw OSCryptoError(OSCryptoError.Code.DECRYPTION_FAILED_WRONG_KEY, cause = e)
-        }
-    }
-
-    override suspend fun encrypt(plainData: ByteArray, key: ByteArray): ByteArray {
-        return try {
-            crypto.encrypt(plainData = plainData, key, null).getOrThrow()
-        } catch (e: GeneralSecurityException) {
-            throw OSCryptoError(OSCryptoError.Code.ENCRYPTION_FAILED_BAD_KEY, cause = e)
-        }
+    override suspend fun encrypt(plainData: ByteArray, key: ByteArray): ByteArray = try {
+        crypto.encrypt(plainData = plainData, key, null).getOrThrow()
+    } catch (e: GeneralSecurityException) {
+        throw OSCryptoError(OSCryptoError.Code.ENCRYPTION_FAILED_BAD_KEY, cause = e)
     }
 
     override suspend fun createSafeItemKeyFromRaw(

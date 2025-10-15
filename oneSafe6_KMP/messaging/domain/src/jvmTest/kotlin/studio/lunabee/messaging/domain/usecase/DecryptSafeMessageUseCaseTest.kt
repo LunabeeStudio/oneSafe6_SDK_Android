@@ -24,9 +24,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import kotlin.time.Instant
 import studio.lunabee.bubbles.domain.usecase.ContactLocalDecryptUseCase
-import studio.lunabee.onesafe.error.BubblesCryptoError
 import studio.lunabee.doubleratchet.model.DoubleRatchetUUID
 import studio.lunabee.doubleratchet.model.createRandomUUID
 import studio.lunabee.messaging.domain.MessagingConstant
@@ -36,11 +34,13 @@ import studio.lunabee.messaging.domain.model.MessageDirection
 import studio.lunabee.messaging.domain.model.PlainMessageData
 import studio.lunabee.messaging.domain.model.SafeMessage
 import studio.lunabee.messaging.domain.testUUID
+import studio.lunabee.onesafe.error.BubblesCryptoError
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
+import kotlin.time.Instant
 
 class DecryptSafeMessageUseCaseTest {
     private val contactId: DoubleRatchetUUID = testUUID[1]

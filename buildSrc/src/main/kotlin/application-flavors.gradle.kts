@@ -23,7 +23,7 @@ plugins {
 }
 
 version = AndroidConfig.envVersionName
-group = ProjectConfig.GROUP_ID
+group = ProjectConfig.GroupId
 
 android {
     flavorDimensions += listOf(OSDimensions.Environment.value, OSDimensions.StoreChannel.value)
@@ -31,7 +31,7 @@ android {
         val customBackupMimetype = "application/onesafe6"
 
         create(OSDimensions.Environment.Dev) {
-            minSdk = AndroidConfig.MIN_APP_SDK
+            minSdk = AndroidConfig.MinAppSdk
 
             dimension = OSDimensions.Environment.value
             applicationIdSuffix = ".dev"
@@ -42,7 +42,7 @@ android {
         }
 
         create(OSDimensions.Environment.Store) {
-            minSdk = AndroidConfig.MIN_APP_SDK
+            minSdk = AndroidConfig.MinAppSdk
             dimension = OSDimensions.Environment.value
 
             // TODO prod backup mimetype inverted with _dev
@@ -83,6 +83,6 @@ androidComponents {
 
 kotlin {
     compilerOptions {
-        jvmTarget.set(ProjectConfig.JVM_TARGET)
+        jvmTarget.set(ProjectConfig.JvmTarget)
     }
 }

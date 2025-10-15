@@ -59,19 +59,19 @@ class SqlCipherDBManagerTest {
     init {
         System.loadLibrary("sqlcipher")
 
-        plainDbBuilder = Room.databaseBuilder(
-            context,
-            MainDatabase::class.java,
-            dbName,
-        )
-            .openHelperFactory(SupportOpenHelperFactory(null))
+        plainDbBuilder = Room
+            .databaseBuilder(
+                context,
+                MainDatabase::class.java,
+                dbName,
+            ).openHelperFactory(SupportOpenHelperFactory(null))
 
-        cipherDbBuilder = Room.databaseBuilder(
-            context,
-            MainDatabase::class.java,
-            dbName,
-        )
-            .openHelperFactory(SupportOpenHelperFactory(dbKey.raw))
+        cipherDbBuilder = Room
+            .databaseBuilder(
+                context,
+                MainDatabase::class.java,
+                dbName,
+            ).openHelperFactory(SupportOpenHelperFactory(dbKey.raw))
     }
 
     @After
@@ -144,9 +144,10 @@ class SqlCipherDBManagerTest {
         val data = assertSuccess(results[1]).successData
         assertEquals(DatabaseEncryptionManager.MigrationState.Canceled, data)
 
-        val tempDbFiles = tempDbFile.parentFile?.listFiles { _, file ->
-            file.startsWith(tempDbFile.name)
-        }.orEmpty()
+        val tempDbFiles = tempDbFile.parentFile
+            ?.listFiles { _, file ->
+                file.startsWith(tempDbFile.name)
+            }.orEmpty()
         assertTrue(tempDbFiles.isEmpty())
 
         cipherDb = cipherDbBuilder.build() // re-open

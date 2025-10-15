@@ -29,12 +29,12 @@ import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import org.junit.After
-import kotlin.test.Test
 import studio.lunabee.onesafe.domain.model.common.UrlMetadata
 import studio.lunabee.onesafe.domain.repository.UrlMetadataRepository
 import studio.lunabee.onesafe.domain.usecase.item.DownloadItemIconFromUrlUseCase
 import studio.lunabee.onesafe.test.assertSuccess
 import java.io.File
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class DownloadItemIconFromUrlUseCaseTest {
@@ -50,7 +50,8 @@ class DownloadItemIconFromUrlUseCaseTest {
 
     private val getUrlMetadataUseCase = mockk<GetUrlMetadataUseCase> {
         coEvery {
-            this@mockk.invoke(urlKo, tmpFile, true, studio.lunabee.onesafe.domain.usecase.GetUrlMetadataUseCase.RequestedData.Image)
+            this@mockk
+                .invoke(urlKo, tmpFile, true, studio.lunabee.onesafe.domain.usecase.GetUrlMetadataUseCase.RequestedData.Image)
         } returns LBResult.Success(fallbackUrlMetadata)
     }
 

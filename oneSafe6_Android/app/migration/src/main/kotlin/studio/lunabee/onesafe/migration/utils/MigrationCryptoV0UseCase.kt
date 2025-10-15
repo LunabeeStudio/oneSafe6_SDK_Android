@@ -37,20 +37,16 @@ import javax.inject.Inject
 class MigrationCryptoV0UseCase @Inject constructor(
     private val cryptoEngine: CryptoEngine,
 ) {
-    fun decrypt(cipherData: ByteArray, key: ByteArray, username: ByteArray): ByteArray {
-        return try {
-            cryptoEngine.decrypt(cipherData, key, username).getOrThrow()
-        } catch (e: GeneralSecurityException) {
-            throw OSMigrationError.Code.DECRYPT_FAIL.get(cause = e)
-        }
+    fun decrypt(cipherData: ByteArray, key: ByteArray, username: ByteArray): ByteArray = try {
+        cryptoEngine.decrypt(cipherData, key, username).getOrThrow()
+    } catch (e: GeneralSecurityException) {
+        throw OSMigrationError.Code.DECRYPT_FAIL.get(cause = e)
     }
 
-    fun encrypt(plainData: ByteArray, key: ByteArray, username: ByteArray): ByteArray {
-        return try {
-            cryptoEngine.encrypt(plainData, key, username).getOrThrow()
-        } catch (e: GeneralSecurityException) {
-            throw OSMigrationError.Code.ENCRYPT_FAIL.get(cause = e)
-        }
+    fun encrypt(plainData: ByteArray, key: ByteArray, username: ByteArray): ByteArray = try {
+        cryptoEngine.encrypt(plainData, key, username).getOrThrow()
+    } catch (e: GeneralSecurityException) {
+        throw OSMigrationError.Code.ENCRYPT_FAIL.get(cause = e)
     }
 
     fun getDecryptStream(aFile: AtomicFile, plainKey: ByteArray, username: ByteArray): InputStream {
@@ -62,11 +58,9 @@ class MigrationCryptoV0UseCase @Inject constructor(
         return OSCryptoInputStream(cryptoStream)
     }
 
-    fun getCipherOutputStream(fileStream: FileOutputStream, plainKey: ByteArray, username: ByteArray): OutputStream {
-        return try {
-            cryptoEngine.getCipherOutputStream(fileStream, plainKey, username)
-        } catch (e: GeneralSecurityException) {
-            throw OSMigrationError.Code.GET_ENCRYPT_STREAM_FAIL.get(cause = e)
-        }
+    fun getCipherOutputStream(fileStream: FileOutputStream, plainKey: ByteArray, username: ByteArray): OutputStream = try {
+        cryptoEngine.getCipherOutputStream(fileStream, plainKey, username)
+    } catch (e: GeneralSecurityException) {
+        throw OSMigrationError.Code.GET_ENCRYPT_STREAM_FAIL.get(cause = e)
     }
 }

@@ -78,8 +78,8 @@ class DuplicateItemUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         itemId: UUID,
-    ): LBResult<SafeItem> {
-        return OSError.runCatching(log, { OSDomainError(OSDomainError.Code.DUPLICATE_ICON_FAILED, cause = it.cause) }) {
+    ): LBResult<SafeItem> = OSError
+        .runCatching(log, { OSDomainError(OSDomainError.Code.DUPLICATE_ICON_FAILED, cause = it.cause) }) {
             val allItems = safeItemRepository.findByIdWithChildren(itemId)
             val mappedIds = allItems.associate { it.id to itemIdProvider() } // generate new id for every duplicates
 
@@ -130,7 +130,6 @@ class DuplicateItemUseCase @Inject constructor(
 
             duplicationDataList.first().item
         }
-    }
 
     private suspend fun duplicateItem(
         originalItem: SafeItem,
@@ -261,19 +260,21 @@ class DuplicateItemUseCase @Inject constructor(
         }
     }
 
-    private suspend fun createIndexWordEntriesFromDuplicatedItems(duplicationDataList: List<DuplicationData>): List<IndexWordEntry> {
-        return duplicationDataList.mapNotNull { duplicationData ->
+    private suspend fun createIndexWordEntriesFromDuplicatedItems(
+        duplicationDataList: List<DuplicationData>,
+    ): List<IndexWordEntry> = duplicationDataList
+        .mapNotNull { duplicationData ->
             duplicationData.plainName?.let { name ->
                 createIndexWordEntriesFromItemUseCase(name, duplicationData.item.id)
             }
         }.flatten()
-    }
 
     private suspend fun createIndexWordEntriesFromDuplicatedFields(
         duplicationDataList: List<DuplicationData>,
         duplicatedFields: List<SafeItemField>,
     ): List<IndexWordEntry> {
-        val fieldsForIndex = duplicationDataList.flatMap { it.fields }
+        val fieldsForIndex = duplicationDataList
+            .flatMap { it.fields }
             .zip(duplicatedFields)
             .mapNotNull { (plain, encrypt) ->
                 plain.value?.let {

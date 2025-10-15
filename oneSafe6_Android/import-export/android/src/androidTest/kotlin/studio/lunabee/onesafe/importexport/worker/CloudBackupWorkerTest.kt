@@ -46,7 +46,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import net.bytebuddy.matcher.ElementMatchers.returns
 import org.junit.After
 import org.junit.BeforeClass
 import org.junit.Rule
@@ -120,7 +119,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
 
     @After
     fun tearsDown(): TestResult = runTest {
-        osNotificationManager.manager.cancel(OSNotificationManager.AUTO_BACKUP_ERROR_WORKER_NOTIFICATION_ID)
+        osNotificationManager.manager.cancel(OSNotificationManager.AutoBackupErrorWorkerNotificationId)
         autoBackupWorkersHelper.cancel()
     }
 
@@ -170,7 +169,11 @@ class CloudBackupWorkerTest : OSHiltTest() {
         CloudBackupWorker.start(workManager, false, firstSafeId)
         val workId = getWorkId(workManager)
         launch(UnconfinedTestDispatcher(testScheduler)) {
-            val actual = workManager.getWorkInfoByIdFlow(workId).take(3).map { it!!.state }.toList()
+            val actual = workManager
+                .getWorkInfoByIdFlow(workId)
+                .take(3)
+                .map { it!!.state }
+                .toList()
             assertContentEquals(expected, actual)
         }
 
@@ -225,7 +228,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
         runWorker(workManager, testDriver)
 
         val notificationOnFailure = osNotificationManager.manager.activeNotifications.firstOrNull {
-            it.id == OSNotificationManager.AUTO_BACKUP_ERROR_WORKER_NOTIFICATION_ID
+            it.id == OSNotificationManager.AutoBackupErrorWorkerNotificationId
         }
         assertNotNull(notificationOnFailure)
 
@@ -233,7 +236,7 @@ class CloudBackupWorkerTest : OSHiltTest() {
         runWorker(workManager, testDriver)
 
         val notificationAfterSuccess = osNotificationManager.manager.activeNotifications.firstOrNull {
-            it.id == OSNotificationManager.AUTO_BACKUP_ERROR_WORKER_NOTIFICATION_ID
+            it.id == OSNotificationManager.AutoBackupErrorWorkerNotificationId
         }
         assertNull(notificationAfterSuccess)
     }
@@ -249,7 +252,8 @@ class CloudBackupWorkerTest : OSHiltTest() {
     }
 
     private suspend fun getWorkId(workManager: WorkManager): UUID {
-        val workInfo: WorkInfo = workManager.getWorkInfosForUniqueWorkFlow(ImportExportAndroidConstants.autoBackupWorkerName(firstSafeId))
+        val workInfo: WorkInfo = workManager
+            .getWorkInfosForUniqueWorkFlow(ImportExportAndroidConstants.autoBackupWorkerName(firstSafeId))
             .first()
             .first()
         return workInfo.id

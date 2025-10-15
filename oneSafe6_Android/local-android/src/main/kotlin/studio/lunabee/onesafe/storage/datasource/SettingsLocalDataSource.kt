@@ -106,9 +106,11 @@ class SettingsLocalDataSource @Inject constructor(
     override fun itemLayout(safeId: SafeId): Flow<ItemLayout?> =
         dao.getItemLayout(safeId).distinctUntilChanged()
 
-    override fun preventionWarningCtaState(safeId: SafeId): Flow<CtaState?> {
-        return dao.preventionWarningCtaState(safeId).map { it?.toCtaState() }.distinctUntilChanged()
-    }
+    override fun preventionWarningCtaState(safeId: SafeId): Flow<CtaState?> = dao
+        .preventionWarningCtaState(
+            safeId,
+        ).map { it?.toCtaState() }
+        .distinctUntilChanged()
 
     override fun independentSafeInfoCtaState(safeId: SafeId): Flow<CtaState?> =
         dao.getIndependentSafeInfoCtaState(safeId).map { it?.toCtaState() }.distinctUntilChanged()
@@ -143,21 +145,21 @@ class SettingsLocalDataSource @Inject constructor(
     override fun enableAutoBackupCtaState(safeId: SafeId): Flow<CtaState?> =
         dao.getEnableAutoBackupCtaState(safeId).map { it?.toCtaState() }.distinctUntilChanged()
 
-    override fun bubblesResendMessageDelayFlow(safeId: SafeId): Flow<Duration?> {
-        return dao.getBubblesResendMessageDelayFlow(safeId)
-    }
+    override fun bubblesResendMessageDelayFlow(safeId: SafeId): Flow<Duration?> = dao
+        .getBubblesResendMessageDelayFlow(safeId)
 
-    override fun hasBackupSince(safeId: SafeId, duration: Duration): Flow<Boolean> {
-        return backupDao.hasBackupSince(safeId = safeId, duration = duration.inWholeSeconds)
-    }
+    override fun hasBackupSince(safeId: SafeId, duration: Duration): Flow<Boolean> = backupDao.hasBackupSince(
+        safeId = safeId,
+        duration = duration.inWholeSeconds,
+    )
 
-    override fun hasExportSince(safeId: SafeId, duration: Duration): Flow<Boolean> {
-        return dao.hasExportSince(safeId = safeId, durationSec = duration.inWholeSeconds)
-    }
+    override fun hasExportSince(safeId: SafeId, duration: Duration): Flow<Boolean> = dao.hasExportSince(
+        safeId = safeId,
+        durationSec = duration.inWholeSeconds,
+    )
 
-    override suspend fun hasSeenDialogMessageSaveConfirmation(safeId: SafeId): Boolean {
-        return dao.hasSeenDialogMessageSaveConfirmation(safeId)
-    }
+    override suspend fun hasSeenDialogMessageSaveConfirmation(safeId: SafeId): Boolean = dao
+        .hasSeenDialogMessageSaveConfirmation(safeId)
 
     override suspend fun setPreventionWarningCtaState(safeId: SafeId, ctaState: CtaState) {
         val state = RoomCtaState.fromCtaState(ctaState)
@@ -344,9 +346,7 @@ class SettingsLocalDataSource @Inject constructor(
     override suspend fun folderUrl(safeId: SafeId): String? =
         dao.driveFolderUrl(safeId)
 
-    override suspend fun bubblesResendMessageDelay(safeId: SafeId): Duration {
-        return dao.getBubblesResendMessageDelay(safeId)
-    }
+    override suspend fun bubblesResendMessageDelay(safeId: SafeId): Duration = dao.getBubblesResendMessageDelay(safeId)
 
     override suspend fun setLastExportDate(instant: Instant, safeId: SafeId) {
         dao.setLastExportDate(instant = instant, safeId = safeId)

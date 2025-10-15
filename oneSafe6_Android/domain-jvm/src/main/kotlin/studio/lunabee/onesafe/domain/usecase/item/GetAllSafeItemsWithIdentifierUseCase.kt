@@ -37,8 +37,12 @@ class GetAllSafeItemsWithIdentifierUseCase @Inject constructor(
     private val safeRepository: SafeRepository,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(pagingConfig: PagingConfig, suggestions: List<SafeItemWithIdentifier>): Flow<PagingData<SafeItemWithIdentifier>> {
-        return safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+    operator fun invoke(
+        pagingConfig: PagingConfig,
+        suggestions: List<SafeItemWithIdentifier>,
+    ): Flow<PagingData<SafeItemWithIdentifier>> = safeRepository
+        .currentSafeIdFlow()
+        .flatMapLatest { safeId ->
             safeId?.let {
                 itemSettingsRepository.itemOrdering(safeId).flatMapLatest { itemOrder ->
                     safeItemRepository.getAllSafeItemsWithIdentifier(
@@ -50,5 +54,4 @@ class GetAllSafeItemsWithIdentifierUseCase @Inject constructor(
                 }
             } ?: flowOf(PagingData.empty())
         }
-    }
 }

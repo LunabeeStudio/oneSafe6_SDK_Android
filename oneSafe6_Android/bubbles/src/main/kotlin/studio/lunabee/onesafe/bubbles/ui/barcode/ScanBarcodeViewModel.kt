@@ -62,9 +62,11 @@ class ScanBarcodeViewModel @Inject constructor(
                         when (result) {
                             is LBResult.Success -> {
                                 _uiResultState.value = when (val resultData = result.successData) {
-                                    is ManagingIncomingMessageResultData.Invitation -> ScanBarcodeUiState.NavigateToCreateContact(
-                                        messageString,
-                                    )
+                                    is ManagingIncomingMessageResultData.Invitation ->
+                                        ScanBarcodeUiState
+                                            .NavigateToCreateContact(
+                                                messageString,
+                                            )
                                     is ManagingIncomingMessageResultData.Message -> {
                                         ScanBarcodeUiState.NavigateToConversation(resultData.decryptResult)
                                     }

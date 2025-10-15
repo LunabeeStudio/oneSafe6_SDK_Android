@@ -45,7 +45,7 @@ fun ImeLoginRoute(
     val loginUiState: ImeLoginUiState by viewModel.uiState.collectAsStateWithLifecycle()
     when (val uiState = loginUiState.commonLoginUiState) {
         CommonLoginUiState.Initialize -> {
-            /* no-op */
+            // no-op
         }
         CommonLoginUiState.Bypass -> onSuccess()
         is CommonLoginUiState.Data -> {

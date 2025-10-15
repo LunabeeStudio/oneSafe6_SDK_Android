@@ -47,11 +47,14 @@ class SecureGetRecentSearchUseCase @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(): Flow<LBFlowResult<List<String>>> = safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
         safeId?.let {
-            recentSearchRepository.getRecentSearch(safeId).map { encRecentSearch ->
-                OSError.runCatching(logger) {
-                    cryptoRepository.decryptRecentSearch(encRecentSearch.toList())
-                }.asFlowResult()
-            }.onStart { emit(LBFlowResult.Loading()) }
+            recentSearchRepository
+                .getRecentSearch(safeId)
+                .map { encRecentSearch ->
+                    OSError
+                        .runCatching(logger) {
+                            cryptoRepository.decryptRecentSearch(encRecentSearch.toList())
+                        }.asFlowResult()
+                }.onStart { emit(LBFlowResult.Loading()) }
         } ?: flowOf(LBFlowResult.Success(emptyList()))
     }
 }

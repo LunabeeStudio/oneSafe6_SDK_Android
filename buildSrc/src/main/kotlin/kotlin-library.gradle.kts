@@ -18,15 +18,14 @@
  */
 
 import org.gradle.accessors.dm.LibrariesForLibs
-import org.gradle.kotlin.dsl.implementation
 
 plugins {
     id("java-library")
     id("kotlin")
 }
 
-version = AndroidConfig.ONESAFE_SDK_VERSION
-group = ProjectConfig.GROUP_ID
+version = AndroidConfig.OnesafeSdkVersion
+group = ProjectConfig.GroupId
 
 // FIXME workaround https://github.com/gradle/gradle/issues/15383#issuecomment-779893192
 val libs: LibrariesForLibs = the<LibrariesForLibs>()
@@ -41,16 +40,16 @@ dependencies {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
     compilerOptions {
-        jvmTarget.set(ProjectConfig.JVM_TARGET)
+        jvmTarget.set(ProjectConfig.JvmTarget)
         freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
     }
 }
 
 java {
-    sourceCompatibility = ProjectConfig.JDK_VERSION
-    targetCompatibility = ProjectConfig.JDK_VERSION
+    sourceCompatibility = ProjectConfig.JdkVersion
+    targetCompatibility = ProjectConfig.JdkVersion
 
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(ProjectConfig.JDK_VERSION.toString()))
+        languageVersion.set(JavaLanguageVersion.of(ProjectConfig.JdkVersion.toString()))
     }
 }

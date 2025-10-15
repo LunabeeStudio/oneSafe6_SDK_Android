@@ -38,7 +38,8 @@ class GlobalMigration1 @Inject constructor(
         safeAutoBackupEnabled.forEach { backupEnabled ->
             workManager.cancelAllWorkByTag("fac62754-ddfe-4777-aeb6-e59591bbfc5c_${backupEnabled.safeId.id}")
 
-            val data = Data.Builder()
+            val data = Data
+                .Builder()
                 .putBoolean("373ad937-98c8-4b42-9dea-43df44985d00", backupEnabled.cloudAutoBackupEnabled)
                 .putByteArray("bfa2d4da-ebfe-4231-87ee-29b012109f7b", backupEnabled.safeId.toByteArray())
                 .build()

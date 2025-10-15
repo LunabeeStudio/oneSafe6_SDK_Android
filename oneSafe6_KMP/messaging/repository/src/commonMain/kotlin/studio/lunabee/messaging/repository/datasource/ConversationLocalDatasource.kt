@@ -24,5 +24,6 @@ import studio.lunabee.messaging.domain.model.EncConversation
 
 interface ConversationLocalDatasource {
     suspend fun insert(conversation: EncConversation)
+
     suspend fun getById(id: DoubleRatchetUUID): EncConversation?
 }

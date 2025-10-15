@@ -53,12 +53,14 @@ internal fun AutoLockOSKHiddenBottomSheetContent(
         OSText(
             text = LbcTextSpec.StringResource(id = OSString.oneSafeK_byChangingAppAutolockScreen_header_title),
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(horizontal = OSDimens.SystemSpacing.Regular, vertical = OSDimens.SystemSpacing.Small),
+            modifier = Modifier
+                .padding(horizontal = OSDimens.SystemSpacing.Regular, vertical = OSDimens.SystemSpacing.Small),
         )
         OSText(
             text = LbcTextSpec.StringResource(id = OSString.oneSafeK_byChangingAppAutolockScreen_footer_title),
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(horizontal = OSDimens.SystemSpacing.Regular, vertical = OSDimens.SystemSpacing.Small),
+            modifier = Modifier
+                .padding(horizontal = OSDimens.SystemSpacing.Regular, vertical = OSDimens.SystemSpacing.Small),
         )
         AutoLockBackgroundDelay.entries.forEach { entry ->
             OSOptionRow(

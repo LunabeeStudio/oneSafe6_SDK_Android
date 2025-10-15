@@ -47,7 +47,8 @@ class MigrationFromV11ToV12 @Inject constructor(
         allFields.forEach { field ->
             val key = safeItemKeyRepository.getSafeItemKey(field.itemId)
             val plainKey = migrationCryptoV1UseCase.decrypt(key.encValue, masterKey)
-            val encThumbnailFileName = migrationCryptoV1UseCase.encrypt(Constant.ThumbnailPlaceHolderName.toByteArray(), plainKey)
+            val encThumbnailFileName = migrationCryptoV1UseCase
+                .encrypt(Constant.ThumbnailPlaceHolderName.toByteArray(), plainKey)
             safeItemFieldRepository.saveThumbnailFileName(field.id, encThumbnailFileName)
         }
         logger.i("Added encThumbnailName placeholders on ${allFields.size} fields")

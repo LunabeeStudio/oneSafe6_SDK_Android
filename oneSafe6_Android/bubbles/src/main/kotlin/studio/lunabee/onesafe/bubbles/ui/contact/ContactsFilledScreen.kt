@@ -76,7 +76,12 @@ fun FilledContactsScreen(
                 OSClickableRow(
                     text = LbcTextSpec.StringResource(OSString.bubbles_scanQRCode),
                     onClick = onScanClick,
-                    leadingIcon = { OSIconDecorationButton(image = OSImageSpec.Drawable(drawable = OSDrawable.ic_qr_scanner)) },
+                    leadingIcon = {
+                        OSIconDecorationButton(
+                            image = OSImageSpec
+                                .Drawable(drawable = OSDrawable.ic_qr_scanner),
+                        )
+                    },
                     contentPadding = LocalDesignSystem.current.getRowClickablePaddingValuesDependingOnIndex(
                         index = 1,
                         elementsCount = 2,

@@ -115,7 +115,8 @@ internal class MainPanicWidgetWorker @AssistedInject constructor(
         private const val IsPanicDestruction: String = "f0db3709-3736-4d87-a407-5d3cf5e5e2ca"
 
         fun start(widgetId: Int, workManager: WorkManager, isPanicDestruction: Boolean) {
-            val data = Data.Builder()
+            val data = Data
+                .Builder()
                 .putInt(WidgetId, widgetId)
                 .putBoolean(IsPanicDestruction, isPanicDestruction)
                 .build()

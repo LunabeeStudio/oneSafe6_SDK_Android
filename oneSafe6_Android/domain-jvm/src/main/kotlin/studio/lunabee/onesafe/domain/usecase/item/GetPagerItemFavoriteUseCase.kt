@@ -38,8 +38,9 @@ class GetPagerItemFavoriteUseCase @Inject constructor(
     private val safeRepository: SafeRepository,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(pagingConfig: PagingConfig): Flow<PagingData<SafeItem>> {
-        return safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+    operator fun invoke(pagingConfig: PagingConfig): Flow<PagingData<SafeItem>> = safeRepository
+        .currentSafeIdFlow()
+        .flatMapLatest { safeId ->
             safeId?.let {
                 itemSettingsRepository.itemOrdering(safeId).flatMapLatest { itemOrder ->
                     safeItemRepository.getPagerItemFavorite(
@@ -50,11 +51,11 @@ class GetPagerItemFavoriteUseCase @Inject constructor(
                 }
             } ?: flowOf(PagingData.empty())
         }
-    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun withIdentifier(pagingConfig: PagingConfig): Flow<PagingData<SafeItemWithIdentifier>> {
-        return safeRepository.currentSafeIdFlow().flatMapLatest { safeId ->
+    fun withIdentifier(pagingConfig: PagingConfig): Flow<PagingData<SafeItemWithIdentifier>> = safeRepository
+        .currentSafeIdFlow()
+        .flatMapLatest { safeId ->
             safeId?.let {
                 itemSettingsRepository.itemOrdering(safeId).flatMapLatest { itemOrder ->
                     safeItemRepository.getPagerItemFavoriteWithIdentifier(
@@ -65,5 +66,4 @@ class GetPagerItemFavoriteUseCase @Inject constructor(
                 }
             } ?: flowOf(PagingData.empty())
         }
-    }
 }

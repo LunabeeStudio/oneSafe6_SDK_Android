@@ -24,12 +24,8 @@ import java.io.File
 
 class FileConverter {
     @TypeConverter
-    fun fromString(value: String): File {
-        return File(value)
-    }
+    fun fromString(value: String): File = File(value)
 
     @TypeConverter
-    fun fileToString(file: File): String {
-        return file.path
-    }
+    fun fileToString(file: File): String = file.path
 }

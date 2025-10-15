@@ -35,21 +35,26 @@ suspend fun CryptoEngine.encrypt_chacha20poly1305_data() {
 }
 
 suspend fun CryptoEngine.encrypt_chacha20poly1305_data_authenticated() {
-    val actualData = this.encrypt(CryptoAndroidTestUtils.plainData, CryptoAndroidTestUtils.key256, CryptoAndroidTestUtils.ad).getOrNull()
+    val actualData = this
+        .encrypt(CryptoAndroidTestUtils.plainData, CryptoAndroidTestUtils.key256, CryptoAndroidTestUtils.ad)
+        .getOrNull()
     assertContentEquals(CryptoAndroidTestUtils.chacha20poly1305_data_authenticated, actualData)
 }
 
 suspend fun CryptoEngine.decrypt_chacha20poly1305_data() {
-    val actualData = this.decrypt(CryptoAndroidTestUtils.chacha20poly1305_data, CryptoAndroidTestUtils.key256, null).getOrNull()
+    val actualData = this
+        .decrypt(CryptoAndroidTestUtils.chacha20poly1305_data, CryptoAndroidTestUtils.key256, null)
+        .getOrNull()
     assertContentEquals(CryptoAndroidTestUtils.plainData, actualData)
 }
 
 suspend fun CryptoEngine.decrypt_chacha20poly1305_data_authenticated() {
-    val actualData = this.decrypt(
-        CryptoAndroidTestUtils.chacha20poly1305_data_authenticated,
-        CryptoAndroidTestUtils.key256,
-        CryptoAndroidTestUtils.ad,
-    ).getOrNull()
+    val actualData = this
+        .decrypt(
+            CryptoAndroidTestUtils.chacha20poly1305_data_authenticated,
+            CryptoAndroidTestUtils.key256,
+            CryptoAndroidTestUtils.ad,
+        ).getOrNull()
     assertContentEquals(CryptoAndroidTestUtils.plainData, actualData)
 }
 

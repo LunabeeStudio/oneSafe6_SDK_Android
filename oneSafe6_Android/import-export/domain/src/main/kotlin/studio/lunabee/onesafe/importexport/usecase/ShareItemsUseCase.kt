@@ -58,46 +58,52 @@ class ShareItemsUseCase @Inject constructor(
             ),
         ).value
 
-        exportEngine.buildExportInfo(
-            password = password.toCharArray(),
-        ).collect { prepareSharingResult ->
-            when (prepareSharingResult) {
-                is LBFlowResult.Success -> {
-                    exportShareUseCase(
-                        exportEngine = exportEngine,
-                        itemToShare = itemId,
-                        includeChildren = includeChildren,
-                        archiveExtractedDirectory = archiveExtractedDirectory,
-                    ).collect { result ->
-                        when (result) {
-                            is LBFlowResult.Success -> {
-                                val file = result.data
-                                if (file != null) {
-                                    emit(
-                                        LBFlowResult.Success(
-                                            SharingData(
-                                                password = password,
-                                                file = file,
-                                                itemsNbr = safeItemRepository.getSafeItemsAndChildren(itemId, includeChildren).size,
+        exportEngine
+            .buildExportInfo(
+                password = password.toCharArray(),
+            ).collect { prepareSharingResult ->
+                when (prepareSharingResult) {
+                    is LBFlowResult.Success -> {
+                        exportShareUseCase(
+                            exportEngine = exportEngine,
+                            itemToShare = itemId,
+                            includeChildren = includeChildren,
+                            archiveExtractedDirectory = archiveExtractedDirectory,
+                        ).collect { result ->
+                            when (result) {
+                                is LBFlowResult.Success -> {
+                                    val file = result.data
+                                    if (file != null) {
+                                        emit(
+                                            LBFlowResult.Success(
+                                                SharingData(
+                                                    password = password,
+                                                    file = file,
+                                                    itemsNbr = safeItemRepository
+                                                        .getSafeItemsAndChildren(itemId, includeChildren)
+                                                        .size,
+                                                ),
                                             ),
-                                        ),
-                                    )
-                                } else {
-                                    emit(LBFlowResult.Failure(OSImportExportError(OSImportExportError.Code.EXPORT_DATA_FAILURE)))
+                                        )
+                                    } else {
+                                        emit(
+                                            LBFlowResult
+                                                .Failure(OSImportExportError(OSImportExportError.Code.EXPORT_DATA_FAILURE)),
+                                        )
+                                    }
                                 }
-                            }
-                            is LBFlowResult.Failure -> emit(LBFlowResult.Failure(result.throwable))
-                            is LBFlowResult.Loading -> {
-                                /* no-op */
+                                is LBFlowResult.Failure -> emit(LBFlowResult.Failure(result.throwable))
+                                is LBFlowResult.Loading -> {
+                                    // no-op
+                                }
                             }
                         }
                     }
-                }
-                is LBFlowResult.Failure -> emit(LBFlowResult.Failure(prepareSharingResult.throwable))
-                is LBFlowResult.Loading -> {
-                    /* no-op */
+                    is LBFlowResult.Failure -> emit(LBFlowResult.Failure(prepareSharingResult.throwable))
+                    is LBFlowResult.Loading -> {
+                        // no-op
+                    }
                 }
             }
-        }
     }
 }

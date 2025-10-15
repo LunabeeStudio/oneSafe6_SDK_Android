@@ -28,31 +28,54 @@ import kotlin.time.Duration
 
 interface SafeSettingsRepository {
     fun materialYou(safeId: SafeId): Flow<Boolean>
+
     fun automationFlow(safeId: SafeId): Flow<Boolean>
+
     fun displayShareWarningFlow(safeId: SafeId): Flow<Boolean>
+
     fun cameraSystemFlow(safeId: SafeId): Flow<CameraSystem>
+
     fun allowScreenshotFlow(safeId: SafeId): Flow<Boolean> // TODO <multisafe> -> security settings (?)
+
     fun bubblesPreview(safeId: SafeId): Flow<Boolean> // TODO <multisafe> -> new bubbles settings (?)
+
     fun bubblesHomeCardCtaState(safeId: SafeId): Flow<CtaState> // TODO <multisafe> -> new bubbles settings (?)
+
     fun independentSafeInfoCtaState(safeId: SafeId): Flow<CtaState>
+
     fun hasBackupSince(safeId: SafeId, duration: Duration): Flow<Boolean>
+
     fun preventionWarningCtaState(safeId: SafeId): Flow<CtaState?>
+
     fun hasExportSince(safeId: SafeId, duration: Duration): Flow<Boolean>
 
     suspend fun cameraSystem(safeId: SafeId): CameraSystem
+
     suspend fun allowScreenshot(safeId: SafeId): Boolean
+
     suspend fun automation(safeId: SafeId): Boolean
 
     suspend fun toggleMaterialYou(safeId: SafeId)
+
     suspend fun toggleAutomation(safeId: SafeId)
+
     suspend fun disableShareWarningDisplay(safeId: SafeId)
+
     suspend fun toggleAllowScreenshot(safeId: SafeId)
+
     suspend fun toggleShakeToLock(safeId: SafeId)
+
     suspend fun setBubblesPreview(safeId: SafeId, value: Boolean)
+
     suspend fun setCameraSystem(safeId: SafeId, value: CameraSystem)
+
     suspend fun setBubblesHomeCardCtaState(safeId: SafeId, ctaState: CtaState)
+
     suspend fun setLastExportDate(instant: Instant, safeId: SafeId)
+
     suspend fun displayShareWarning(safeId: SafeId): Boolean
+
     suspend fun setIndependentSafeInfoCtaState(safeId: SafeId, ctaState: CtaState)
+
     suspend fun setPreventionWarningCtaState(safeId: SafeId, ctaState: CtaState)
 }

@@ -29,5 +29,6 @@ class PasswordGeneratorConfigRepositoryImpl @Inject constructor(
     private val datasource: PasswordGeneratorConfigLocalDataSource,
 ) : PasswordGeneratorConfigRepository {
     override fun getConfig(): Flow<PasswordConfig> = datasource.getConfig()
+
     override suspend fun setConfig(config: PasswordConfig): Unit = datasource.setConfig(config)
 }

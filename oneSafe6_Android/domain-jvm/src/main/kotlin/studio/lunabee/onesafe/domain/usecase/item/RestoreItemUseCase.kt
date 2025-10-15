@@ -21,8 +21,8 @@ package studio.lunabee.onesafe.domain.usecase.item
 
 import com.lunabee.lbcore.model.LBResult
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItem
-import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemDeletedRepository
+import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.error.OSError
 import java.util.UUID
 import javax.inject.Inject
@@ -41,11 +41,9 @@ class RestoreItemUseCase @Inject constructor(
 
     suspend operator fun invoke(
         itemId: UUID?,
-    ): LBResult<Unit> {
-        return OSError.runCatching {
-            val safeId = safeRepository.currentSafeId()
-            safeItemDeletedRepository.restoreItemToParentWithDescendants(itemId, safeId)
-            itemId?.let { safeItemDeletedRepository.updateParentToNonDeletedAncestor(itemId) }
-        }
+    ): LBResult<Unit> = OSError.runCatching {
+        val safeId = safeRepository.currentSafeId()
+        safeItemDeletedRepository.restoreItemToParentWithDescendants(itemId, safeId)
+        itemId?.let { safeItemDeletedRepository.updateParentToNonDeletedAncestor(itemId) }
     }
 }
