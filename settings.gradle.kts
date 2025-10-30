@@ -102,6 +102,13 @@ dependencyResolutionManagement {
                 releasesOnly()
             }
         }
+        maven {
+            url = uri("https://artifactory.lunabee.studio/artifactory/jetpref-local")
+            credentials {
+                username = artifactoryUsername
+                password = artifactoryPassword
+            }
+        }
         maven(url = "https://central.sonatype.com/repository/maven-snapshots/") {
             mavenContent {
                 snapshotsOnly()
