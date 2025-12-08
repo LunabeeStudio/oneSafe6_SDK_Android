@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.repository.datasource
 
 import studio.lunabee.onesafe.domain.model.safe.SafeId
+import studio.lunabee.onesafe.domain.utils.CrossSafeData
 import java.io.File
 import java.io.InputStream
 import java.util.UUID
@@ -33,15 +34,16 @@ interface FileLocalDatasource {
 
     fun createTempFile(fileId: String): File
 
-    suspend fun addFile(filename: String, file: ByteArray, safeId: SafeId): File
-
     suspend fun deleteFile(filename: String): Boolean
 
-    suspend fun getAllFiles(safeId: SafeId): List<File>
+    suspend fun getAllFiles(safeId: SafeId): Set<File>
+
+    @CrossSafeData
+    suspend fun getAllFiles(): Set<File>
 
     suspend fun copyAndDeleteFile(newFile: File, fileId: UUID, safeId: SafeId)
 
-    fun getFiles(filesId: List<String>): List<File>
+    fun getFiles(filesId: List<String>): Set<File>
 
     suspend fun deleteItemDir(itemId: UUID)
 
@@ -52,4 +54,6 @@ interface FileLocalDatasource {
     suspend fun savePlainFile(inputStream: InputStream, filename: String, itemId: UUID, fieldId: UUID): File
 
     suspend fun deleteAll(safeId: SafeId)
+
+    suspend fun saveFilesRef(safeId: SafeId, relinkFiles: List<String>): List<File>
 }

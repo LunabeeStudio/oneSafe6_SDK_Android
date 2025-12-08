@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2025 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 10/5/2023 - for the oneSafe6 SDK.
- * Last modified 10/5/23, 9:51 AM
+ * Created by Lunabee Studio / Date - 11/26/2025 - for the oneSafe6 SDK.
+ * Last modified 11/26/25, 9:58 AM
  */
 
-package studio.lunabee.onesafe.domain.qualifier
+package studio.lunabee.onesafe.importexport.model
 
-import javax.inject.Qualifier
+import studio.lunabee.onesafe.error.OSImportExportError
 
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class InternalDir(val type: Type) {
-    enum class Type {
-        Backups,
-        Cache,
-        Logs,
-    }
+sealed interface ExportSuccessResult {
+    data object Success : ExportSuccessResult
+
+    data class Failure(
+        val errors: List<OSImportExportError>,
+    ) : ExportSuccessResult
 }

@@ -66,7 +66,7 @@ class AddAndRemoveFileUseCase @Inject constructor(
                                 val stream = data.getStream()
                                 stream?.use { it.copyTo(outputStream) }
                             } catch (e: FileNotFoundException) {
-                                throw OSDomainError(OSDomainError.Code.MISSING_URI_OUTPUT_STREAM)
+                                throw OSDomainError(OSDomainError.Code.MISSING_URI_OUTPUT_STREAM, cause = e)
                             }
                         }
                     }

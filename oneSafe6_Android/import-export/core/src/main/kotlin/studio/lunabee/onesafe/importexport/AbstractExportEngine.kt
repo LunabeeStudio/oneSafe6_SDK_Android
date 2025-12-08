@@ -22,11 +22,15 @@ package studio.lunabee.onesafe.importexport
 import com.google.protobuf.GeneratedMessageLite
 import com.google.protobuf.kotlin.toByteString
 import com.lunabee.lbcore.model.LBFlowResult
+import com.lunabee.onesafe.proto.ArchiveProtoConstants
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.transform
 import studio.lunabee.bubbles.domain.model.contact.Contact
 import studio.lunabee.bubbles.domain.model.contactkey.ContactLocalKey
 import studio.lunabee.messaging.domain.model.EncConversation
@@ -42,6 +46,8 @@ import studio.lunabee.onesafe.importexport.engine.ExportEngine
 import studio.lunabee.onesafe.importexport.model.ExportData
 import studio.lunabee.onesafe.importexport.model.ExportInfo
 import studio.lunabee.onesafe.importexport.model.ExportItem
+import studio.lunabee.onesafe.importexport.model.ExportSuccessResult
+import studio.lunabee.onesafe.jvm.get
 import studio.lunabee.onesafe.proto.OSExportProto
 import studio.lunabee.onesafe.proto.OSExportProto.ArchiveMetadata.ArchiveKind
 import studio.lunabee.onesafe.proto.archive
@@ -69,68 +75,129 @@ abstract class AbstractExportEngine(
     private val dateTimeFormatter: DateTimeFormatter,
 ) : ExportEngine {
 
+    // TODO factorize flow chaining
     protected fun createExportArchiveContent(
         dataHolderFolder: File,
         data: ExportData,
         archiveKind: OSArchiveKind,
         exportInfo: ExportInfo,
-    ): Flow<LBFlowResult<Unit>> = flow {
+    ): Flow<LBFlowResult<ExportSuccessResult>> = flow {
         dataHolderFolder.mkdirs(override = true)
-        createArchiveMetadataFile(
+        val errors = mutableListOf<OSImportExportError>()
+        val computeFlow = createArchiveMetadataFile(
             folderDestination = dataHolderFolder,
             platformInfo = exportInfo.fromPlatformVersion,
             itemCount = data.safeItemsWithKeys.size,
             archiveKind = archiveKind.toProtoArchiveKind(),
             contactCount = data.bubblesContactsWithKey.size,
-        )
-        createArchiveData(
-            folderDestination = dataHolderFolder,
-            safeItemsWithKeys = data.safeItemsWithKeys,
-            safeItemFields = data.safeItemFields,
-            contactsWithKeys = data.bubblesContactsWithKey,
-            bubblesConversations = data.bubblesConversation,
-            bubblesMessages = data.bubblesMessages,
-            exportInfo = exportInfo,
-        )
-        copyIconFilesToExportFolder(icons = data.icons, folderDestination = dataHolderFolder)
-        copyFilesToExportFolder(files = data.files, folderDestination = dataHolderFolder)
-        emit(LBFlowResult.Success(Unit))
+        ).transform { result ->
+            when (result) {
+                is LBFlowResult.Failure -> emit(result)
+                is LBFlowResult.Loading -> emit(result)
+                is LBFlowResult.Success -> {
+                    when (val data = result.successData) {
+                        is ExportSuccessResult.Failure -> errors += data.errors
+                        ExportSuccessResult.Success -> {
+                            // no-op
+                        }
+                    }
+                    emitAll(
+                        createArchiveData(
+                            folderDestination = dataHolderFolder,
+                            safeItemsWithKeys = data.safeItemsWithKeys,
+                            safeItemFields = data.safeItemFields,
+                            contactsWithKeys = data.bubblesContactsWithKey,
+                            bubblesConversations = data.bubblesConversation,
+                            bubblesMessages = data.bubblesMessages,
+                            exportInfo = exportInfo,
+                        ),
+                    )
+                }
+            }
+        }.transform { result ->
+            when (result) {
+                is LBFlowResult.Failure -> emit(result)
+                is LBFlowResult.Loading -> emit(result)
+                is LBFlowResult.Success -> {
+                    when (val data = result.successData) {
+                        is ExportSuccessResult.Failure -> errors += data.errors
+                        ExportSuccessResult.Success -> {
+                            // no-op
+                        }
+                    }
+                    emitAll(copyIconFilesToExportFolder(icons = data.icons, folderDestination = dataHolderFolder))
+                }
+            }
+        }.transform { result ->
+            when (result) {
+                is LBFlowResult.Failure -> emit(result)
+                is LBFlowResult.Loading -> emit(result)
+                is LBFlowResult.Success -> {
+                    when (val data = result.successData) {
+                        is ExportSuccessResult.Failure -> errors += data.errors
+                        ExportSuccessResult.Success -> {
+                            // no-op
+                        }
+                    }
+                    emitAll(copyFilesToExportFolder(files = data.files, folderDestination = dataHolderFolder))
+                }
+            }
+        }.map { result ->
+            when (result) {
+                is LBFlowResult.Failure -> result
+                is LBFlowResult.Loading -> result
+                is LBFlowResult.Success -> {
+                    when (val data = result.successData) {
+                        is ExportSuccessResult.Failure -> errors += data.errors
+                        ExportSuccessResult.Success -> {
+                            // no-op
+                        }
+                    }
+                    if (errors.isNotEmpty()) {
+                        LBFlowResult.Success(ExportSuccessResult.Failure(errors))
+                    } else {
+                        LBFlowResult.Success(ExportSuccessResult.Success)
+                    }
+                }
+            }
+        }
+
+        emitAll(computeFlow)
     }.flowOn(fileDispatcher)
 
     /**
      * Create metadata file that will be wrapped into the final archive.
      * This file is not encrypted. It contains data for UI during import.
      */
-    private suspend fun FlowCollector<LBFlowResult<Unit>>.createArchiveMetadataFile(
+    private fun createArchiveMetadataFile(
         folderDestination: File,
         platformInfo: String,
         itemCount: Int,
         contactCount: Int,
         archiveKind: ArchiveKind,
-    ) {
+    ): Flow<LBFlowResult<ExportSuccessResult>> = flow {
         emit(LBFlowResult.Loading(progress = ExportProgress.BuildMetadata.value()))
-        try {
-            val archiveMetadata = createArchiveMetadata(
-                safeItemCount = itemCount,
-                platformInfo = platformInfo,
-                kind = archiveKind,
-                contactCount = contactCount,
-            )
-            val metadataDestFile = File(folderDestination, ArchiveConstants.MetadataFile)
-            archiveMetadata.writeAsFile(destFile = metadataDestFile)
-        } catch (e: Exception) {
-            emit(
-                LBFlowResult
-                    .Failure(throwable = OSImportExportError(code = OSImportExportError.Code.EXPORT_METADATA_FAILURE, cause = e)),
-            )
-        }
+        val archiveMetadata = createArchiveMetadata(
+            safeItemCount = itemCount,
+            platformInfo = platformInfo,
+            kind = archiveKind,
+            contactCount = contactCount,
+        )
+        val metadataDestFile = File(folderDestination, ArchiveConstants.MetadataFile)
+        archiveMetadata.writeAsFile(destFile = metadataDestFile)
+        emit(LBFlowResult.Success(ExportSuccessResult.Success))
+    }.catch { e ->
+        emit(
+            LBFlowResult
+                .Failure(throwable = OSImportExportError(code = OSImportExportError.Code.EXPORT_METADATA_FAILURE, cause = e)),
+        )
     }
 
     /**
      * Create data file that will be wrapped into the final archive.
      */
     @Suppress("LongParameterList")
-    private suspend fun FlowCollector<LBFlowResult<Unit>>.createArchiveData(
+    private fun createArchiveData(
         folderDestination: File,
         safeItemsWithKeys: Map<ExportItem, SafeItemKey>,
         safeItemFields: List<SafeItemField>,
@@ -138,82 +205,91 @@ abstract class AbstractExportEngine(
         bubblesConversations: List<EncConversation>,
         bubblesMessages: List<SafeMessage>,
         exportInfo: ExportInfo,
-    ) {
+    ) = flow {
         emit(LBFlowResult.Loading(progress = ExportProgress.BuildData.value()))
-        try {
-            val safeItemKeysToExport: List<OSExportProto.ArchiveSafeItemKey> =
-                createArchiveSafeItemKeys(safeItemsWithKeys.values.toList())
-            val safeItemFieldsToExport: List<OSExportProto.ArchiveSafeItemField> =
-                createArchiveSafeItemFields(safeItemFields)
-            val safeItemsToExport: List<OSExportProto.ArchiveSafeItem> =
-                createArchiveSafeItems(safeItemsWithKeys.keys.toList())
-            val contactsToExport: List<OSExportProto.ArchiveBubblesContact> = createArchiveBubblesContacts(
-                contactsWithKeys.keys
-                    .toList(),
-            )
-            val conversationsToExport: List<OSExportProto.ArchiveBubblesConversation> = createArchiveBubblesConversations(
-                bubblesConversations,
-            )
-            val messagesToExport: List<OSExportProto.ArchiveBubblesMessage> = createArchiveBubblesMessage(bubblesMessages)
-            val contactKeysToExport: List<OSExportProto.ArchiveBubblesContactKey> = createArchiveContactKey(contactsWithKeys)
-            val archiveData: OSExportProto.Archive = archive {
-                salt = exportInfo.exportSalt.use(ByteArray::byteStringOrEmpty)
-                encBubblesMasterKey = exportInfo.encBubblesMasterKey.byteStringOrEmpty()
-                items.addAll(safeItemsToExport)
-                fields.addAll(safeItemFieldsToExport)
-                keys.addAll(safeItemKeysToExport)
-                contacts.addAll(contactsToExport)
-                messages.addAll(messagesToExport)
-                contactKeys.addAll(contactKeysToExport)
-                conversations.addAll(conversationsToExport)
-            }
-            File(folderDestination, ArchiveConstants.DataFile).outputStream().use { outputStream ->
-                archiveData.writeTo(outputStream)
-            }
-        } catch (e: Exception) {
-            emit(
-                LBFlowResult
-                    .Failure(throwable = OSImportExportError(code = OSImportExportError.Code.EXPORT_DATA_FAILURE, cause = e)),
-            )
+        val safeItemKeysToExport: List<OSExportProto.ArchiveSafeItemKey> =
+            createArchiveSafeItemKeys(safeItemsWithKeys.values.toList())
+        val safeItemFieldsToExport: List<OSExportProto.ArchiveSafeItemField> =
+            createArchiveSafeItemFields(safeItemFields)
+        val safeItemsToExport: List<OSExportProto.ArchiveSafeItem> =
+            createArchiveSafeItems(safeItemsWithKeys.keys.toList())
+        val contactsToExport: List<OSExportProto.ArchiveBubblesContact> = createArchiveBubblesContacts(
+            contactsWithKeys.keys
+                .toList(),
+        )
+        val conversationsToExport: List<OSExportProto.ArchiveBubblesConversation> = createArchiveBubblesConversations(
+            bubblesConversations,
+        )
+        val messagesToExport: List<OSExportProto.ArchiveBubblesMessage> = createArchiveBubblesMessage(bubblesMessages)
+        val contactKeysToExport: List<OSExportProto.ArchiveBubblesContactKey> = createArchiveContactKey(contactsWithKeys)
+        val archiveData: OSExportProto.Archive = archive {
+            salt = exportInfo.exportSalt.use(ByteArray::byteStringOrEmpty)
+            encBubblesMasterKey = exportInfo.encBubblesMasterKey.byteStringOrEmpty()
+            items.addAll(safeItemsToExport)
+            fields.addAll(safeItemFieldsToExport)
+            keys.addAll(safeItemKeysToExport)
+            contacts.addAll(contactsToExport)
+            messages.addAll(messagesToExport)
+            contactKeys.addAll(contactKeysToExport)
+            conversations.addAll(conversationsToExport)
         }
+        File(folderDestination, ArchiveConstants.DataFile).outputStream().use { outputStream ->
+            archiveData.writeTo(outputStream)
+        }
+        emit(LBFlowResult.Success(ExportSuccessResult.Success))
+    }.catch { e ->
+        emit(
+            LBFlowResult
+                .Failure(throwable = OSImportExportError(code = OSImportExportError.Code.EXPORT_DATA_FAILURE, cause = e)),
+        )
     }
 
     /**
      * Take all the icons files from current installation and copy it into the export icon folder.
      */
-    private suspend fun FlowCollector<LBFlowResult<Unit>>.copyIconFilesToExportFolder(icons: List<File>, folderDestination: File) {
+    private fun copyIconFilesToExportFolder(icons: Set<File>, folderDestination: File): Flow<LBFlowResult<ExportSuccessResult>> = flow {
         emit(LBFlowResult.Loading(progress = ExportProgress.CopyIcons.value()))
-        try {
-            val iconFolder = File(folderDestination, ArchiveConstants.IconFolder)
-            if (!iconFolder.exists()) iconFolder.mkdirs()
-            icons.forEach { file ->
+        val iconFolder = File(folderDestination, ArchiveConstants.IconFolder)
+        if (!iconFolder.exists()) iconFolder.mkdirs()
+        val errors = mutableListOf<OSImportExportError>()
+        icons.forEach { file ->
+            try {
                 file.copyTo(target = File(iconFolder, file.name))
+            } catch (e: NoSuchFileException) {
+                errors += OSImportExportError.Code.EXPORT_FILE_ICON_NOT_FOUND.get(cause = e)
             }
-        } catch (e: Exception) {
-            emit(
-                LBFlowResult
-                    .Failure(throwable = OSImportExportError(code = OSImportExportError.Code.EXPORT_ICON_FAILURE, cause = e)),
-            )
         }
+        if (errors.isEmpty()) {
+            emit(LBFlowResult.Success(ExportSuccessResult.Success))
+        } else {
+            emit(LBFlowResult.Success(ExportSuccessResult.Failure(errors)))
+        }
+    }.catch { e ->
+        emit(LBFlowResult.Failure(throwable = OSImportExportError(code = OSImportExportError.Code.EXPORT_FILE_UNKNOWN_FAILURE, cause = e)))
     }
 
     /**
      * Take all the files from current installation and copy it into the export file folder.
      */
-    private suspend fun FlowCollector<LBFlowResult<Unit>>.copyFilesToExportFolder(files: List<File>, folderDestination: File) {
+    private fun copyFilesToExportFolder(files: Set<File>, folderDestination: File): Flow<LBFlowResult<ExportSuccessResult>> = flow {
         emit(LBFlowResult.Loading(progress = ExportProgress.CopyIcons.value()))
-        try {
-            val fileFolder = File(folderDestination, ArchiveConstants.FileFolder)
-            if (!fileFolder.exists()) fileFolder.mkdirs()
-            files.forEach { file ->
+        val fileFolder = File(folderDestination, ArchiveConstants.FileFolder)
+        if (!fileFolder.exists()) fileFolder.mkdirs()
+        val errors = mutableListOf<OSImportExportError>()
+        files.forEach { file ->
+            try {
                 file.copyTo(target = File(fileFolder, file.name))
+            } catch (e: NoSuchFileException) {
+                errors += OSImportExportError.Code.EXPORT_FILE_FIELD_FILE_NOT_FOUND.get(cause = e)
             }
-        } catch (e: Exception) {
-            emit(
-                LBFlowResult
-                    .Failure(throwable = OSImportExportError(code = OSImportExportError.Code.EXPORT_FILE_FAILURE, cause = e)),
-            )
         }
+        if (errors.isEmpty()) {
+            emit(LBFlowResult.Success(ExportSuccessResult.Success))
+        } else {
+            emit(LBFlowResult.Success(ExportSuccessResult.Failure(errors)))
+        }
+    }.catch { e ->
+        emit(LBFlowResult.Failure(throwable = OSImportExportError(code = OSImportExportError.Code.EXPORT_FILE_UNKNOWN_FAILURE, cause = e)))
     }
 
     private fun createArchiveSafeItemKeys(safeItemKeys: List<SafeItemKey>): List<OSExportProto.ArchiveSafeItemKey> = safeItemKeys
@@ -250,7 +326,7 @@ abstract class AbstractExportEngine(
         platformInfo: String,
         kind: ArchiveKind,
     ): OSExportProto.ArchiveMetadata = archiveMetadata {
-        archiveVersion = com.lunabee.onesafe.proto.ArchiveProtoConstants.ArchiveSpecVersion
+        archiveVersion = ArchiveProtoConstants.ArchiveSpecVersion
         archiveKind = kind
         fromPlatform = platformInfo
         isFromOneSafePlus = false
@@ -332,15 +408,12 @@ abstract class AbstractExportEngine(
             }
         }
 
-    private suspend fun createArchiveContactKey(
-        contactKeys: Map<
-            Contact,
-            ContactLocalKey,
-        >,
-    ): List<OSExportProto.ArchiveBubblesContactKey> = contactKeys.map { (contact, contactKey) ->
-        archiveBubblesContactKey {
-            contactId = contact.id.uuidString()
-            encLocalKey = contactKey.encKey.toByteString()
+    private fun createArchiveContactKey(contactKeys: Map<Contact, ContactLocalKey>): List<OSExportProto.ArchiveBubblesContactKey> {
+        return contactKeys.map { (contact, contactKey) ->
+            archiveBubblesContactKey {
+                contactId = contact.id.uuidString()
+                encLocalKey = contactKey.encKey.toByteString()
+            }
         }
     }
 

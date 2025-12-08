@@ -25,6 +25,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
+import studio.lunabee.onesafe.domain.utils.CrossSafeData
 import studio.lunabee.onesafe.repository.datasource.FileLocalDatasource
 import studio.lunabee.onesafe.storage.MainDatabase
 import studio.lunabee.onesafe.storage.dao.SafeFileDao
@@ -64,7 +65,7 @@ class FileLocalDatasourceImpl @Inject constructor(
         val file = File(encFilesDir, fileId)
         transactionProvider.runAsTransaction {
             file.parentFile?.mkdirs()
-            dao.insertFile(RoomSafeFile(file, safeId))
+            dao.upsertFile(RoomSafeFile(file, safeId))
         }
         return file
     }
@@ -78,20 +79,6 @@ class FileLocalDatasourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun addFile(filename: String, file: ByteArray, safeId: SafeId): File = withContext(fileDispatcher) {
-        if (!encFilesDir.exists()) {
-            encFilesDir.mkdir()
-        }
-
-        val localFile = File(encFilesDir, filename)
-        transactionProvider.runAsTransaction {
-            dao.insertFile(RoomSafeFile(localFile, safeId))
-            localFile.writeBytes(file)
-        }
-
-        localFile
-    }
-
     override suspend fun deleteFile(filename: String): Boolean = withContext(fileDispatcher) {
         val file = File(encFilesDir, filename)
         transactionProvider.runAsTransaction {
@@ -100,23 +87,27 @@ class FileLocalDatasourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAllFiles(safeId: SafeId): List<File> = dao.getAllFiles(safeId, encFilesDir.path)
+    override suspend fun getAllFiles(safeId: SafeId): Set<File> = dao.getAllFiles(safeId, encFilesDir.path).toSet()
+
+    @CrossSafeData
+    override suspend fun getAllFiles(): Set<File> = encFilesDir.listFiles { !it.isDirectory }?.toSet().orEmpty()
 
     override suspend fun copyAndDeleteFile(newFile: File, fileId: UUID, safeId: SafeId) {
         val target = File(encFilesDir, fileId.toString())
         withContext(fileDispatcher) {
             transactionProvider.runAsTransaction {
-                dao.insertFile(RoomSafeFile(target, safeId))
+                dao.upsertFile(RoomSafeFile(target, safeId))
                 newFile.copyTo(target = target)
                 newFile.delete()
             }
         }
     }
 
-    override fun getFiles(filesId: List<String>): List<File> = encFilesDir
+    override fun getFiles(filesId: List<String>): Set<File> = encFilesDir
         .listFiles()
         ?.filter { filesId.contains(it.name) }
         .orEmpty()
+        .toSet()
 
     /**
      * Save plain file in cacheDir/files/[itemId]/[fieldId]/[filename]
@@ -162,5 +153,14 @@ class FileLocalDatasourceImpl @Inject constructor(
         val file = File(encThumbnailsCacheDir, "$size/$thumbnailFileName")
         file.parentFile?.mkdirs()
         return file
+    }
+
+    override suspend fun saveFilesRef(
+        safeId: SafeId,
+        relinkFiles: List<String>,
+    ): List<File> {
+        val roomSafeFiles = relinkFiles.map { RoomSafeFile(File(encFilesDir, it), safeId) }
+        dao.upsertFiles(roomSafeFiles)
+        return roomSafeFiles.map { it.file }
     }
 }

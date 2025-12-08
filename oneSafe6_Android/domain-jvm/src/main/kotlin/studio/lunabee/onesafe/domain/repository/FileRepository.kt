@@ -20,6 +20,7 @@
 package studio.lunabee.onesafe.domain.repository
 
 import studio.lunabee.onesafe.domain.model.safe.SafeId
+import studio.lunabee.onesafe.domain.utils.CrossSafeData
 import java.io.File
 import java.io.InputStream
 import java.util.UUID
@@ -33,13 +34,11 @@ interface FileRepository {
 
     fun createTempFile(fileId: String = UUID.randomUUID().toString()): File
 
-    fun getFiles(filesId: List<String>): List<File>
-
-    suspend fun addFile(fileId: UUID, file: ByteArray, safeId: SafeId): File
+    fun getFiles(filesId: List<String>): Set<File>
 
     suspend fun deleteFile(fileId: UUID): Boolean
 
-    suspend fun getFiles(safeId: SafeId): List<File>
+    suspend fun getFiles(safeId: SafeId): Set<File>
 
     suspend fun copyAndDeleteFile(file: File, fileId: UUID, safeId: SafeId)
 
@@ -52,4 +51,9 @@ interface FileRepository {
     fun getThumbnailFile(thumbnailFileName: String, isFullWidth: Boolean): File
 
     suspend fun deleteAll(safeId: SafeId)
+
+    suspend fun saveFilesRef(safeId: SafeId, relinkFiles: List<String>): List<File>
+
+    @CrossSafeData
+    suspend fun getAllFiles(): Set<File>
 }

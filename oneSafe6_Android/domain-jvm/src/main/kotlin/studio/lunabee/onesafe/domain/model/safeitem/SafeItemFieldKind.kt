@@ -28,6 +28,29 @@ sealed class SafeItemFieldKind(
     val maskList: List<FieldMask> = listOf(),
 ) : IdentifiableObject {
 
+    fun isKindFile(): Boolean = when (this) {
+        is File,
+        is Photo,
+        is Video,
+        -> true
+        CreditCardNumber,
+        Date,
+        DateAndHour,
+        Email,
+        Hour,
+        Iban,
+        Note,
+        Number,
+        Password,
+        Phone,
+        SocialSecurityNumber,
+        Text,
+        is Unknown,
+        Url,
+        YearMonth,
+        -> false
+    }
+
     companion object {
         fun fromString(raw: String): SafeItemFieldKind = when (raw) {
             Text.id -> Text
@@ -48,29 +71,6 @@ sealed class SafeItemFieldKind(
             Video.id -> Video
             File.id -> File
             else -> Unknown(raw)
-        }
-
-        fun isKindFile(kind: SafeItemFieldKind): Boolean = when (kind) {
-            is File,
-            is Photo,
-            is Video,
-            -> true
-            CreditCardNumber,
-            Date,
-            DateAndHour,
-            Email,
-            Hour,
-            Iban,
-            Note,
-            Number,
-            Password,
-            Phone,
-            SocialSecurityNumber,
-            Text,
-            is Unknown,
-            Url,
-            YearMonth,
-            -> false
         }
 
         const val TextMimeType: String = "text/plain"

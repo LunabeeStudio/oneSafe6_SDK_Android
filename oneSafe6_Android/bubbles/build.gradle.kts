@@ -30,7 +30,6 @@ android {
 
     defaultConfig {
         minSdk = AndroidConfig.MinAppSdk
-        testInstrumentationRunner = "studio.lunabee.onesafe.test.HiltTestRunner"
         missingDimensionStrategy("crypto", AndroidConfig.CryptoBackendFlavorDefault)
     }
 
@@ -94,7 +93,4 @@ dependencies {
     implementation(projects.oneSafe6KMP.messagingDomain)
 
     debugImplementation(libs.compose.ui.tooling)
-
-    kspAndroidTest(libs.dagger.hilt.compiler)
-    androidTestImplementation(projects.commonTestAndroid)
 }

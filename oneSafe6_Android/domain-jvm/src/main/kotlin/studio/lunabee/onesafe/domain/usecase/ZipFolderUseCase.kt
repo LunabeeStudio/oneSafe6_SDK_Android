@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2025 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 9/29/2023 - for the oneSafe6 SDK.
- * Last modified 9/29/23, 6:05 PM
+ * Created by Lunabee Studio / Date - 12/4/2025 - for the oneSafe6 SDK.
+ * Last modified 12/4/25, 9:44 AM
  */
 
-package studio.lunabee.onesafe.importexport.usecase
+package studio.lunabee.onesafe.domain.usecase
 
 import com.lunabee.lbcore.model.LBFlowResult
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import studio.lunabee.onesafe.domain.qualifier.FileDispatcher
@@ -37,57 +37,65 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import javax.inject.Inject
 
-class ArchiveZipUseCase @Inject constructor(
+class ZipFolderUseCase @Inject constructor(
     @param:FileDispatcher private val fileDispatcher: CoroutineDispatcher,
 ) {
     /**
-     * Zip a file to a specific directory.
+     * Zip a folder.
      *
-     * @param folderToZip folder to zip
+     * @param inputFolder folder to zip
      * @param outputZipFile destination to keep the final archive
+     * @param deleteFiles delete zipped files after zipping succeeded
      *
      * @return a flow emitting zip progress.
      */
-    operator fun invoke(folderToZip: File, outputZipFile: File): Flow<LBFlowResult<File>> = flow<LBFlowResult<File>> {
-        try {
-            @Suppress("BlockingMethodInNonBlockingContext")
-            ZipOutputStream(BufferedOutputStream(FileOutputStream(outputZipFile))).use { outStream ->
-                zip(zipDestStream = outStream, sourceFile = folderToZip, parentFile = null, archiveName = outputZipFile.name)
-            }
+    operator fun invoke(inputFolder: File, outputZipFile: File, deleteFiles: Boolean): Flow<LBFlowResult<File>> = flow<LBFlowResult<File>> {
+        outputZipFile.delete()
+        outputZipFile.parentFile?.mkdirs()
+
+        @Suppress("BlockingMethodInNonBlockingContext")
+        ZipOutputStream(BufferedOutputStream(FileOutputStream(outputZipFile))).use { outStream ->
+            zip(zipDestStream = outStream, sourceFile = inputFolder, parentFile = null, archiveName = outputZipFile.name)
+        }
+        if (deleteFiles) {
             // Delete zipped files except the zip itself.
-            folderToZip.listFiles()?.forEach { fileToDelete ->
+            inputFolder.listFiles()?.forEach { fileToDelete ->
                 if (fileToDelete.name != outputZipFile.name) fileToDelete.deleteRecursively()
             }
-            emit(LBFlowResult.Success(outputZipFile))
-        } catch (e: Exception) {
-            emit(LBFlowResult.Failure(OSDomainError(code = OSDomainError.Code.ZIP_FAILURE, cause = e)))
         }
+        emit(LBFlowResult.Success(outputZipFile))
+    }.catch { e ->
+        emit(LBFlowResult.Failure(OSDomainError(code = OSDomainError.Code.ZIP_FAILURE, cause = e)))
     }.flowOn(fileDispatcher)
 
     /**
      * @see invoke
      *
-     * @param folderToZip folder to zip
+     * @param inputFolder folder to zip
      * @param outputZipFileStream destination to keep the final archive
      *
      * @return a flow emitting zip progress.
      */
-    operator fun invoke(folderToZip: File, outputZipFileStream: OutputStream): Flow<LBFlowResult<Unit>> = flow<LBFlowResult<Unit>> {
-        try {
-            ZipOutputStream(BufferedOutputStream(outputZipFileStream)).use { outStream ->
-                zip(zipDestStream = outStream, sourceFile = folderToZip, parentFile = null, archiveName = null)
-            }
+    operator fun invoke(
+        inputFolder: File,
+        outputZipFileStream: OutputStream,
+        deleteFiles: Boolean,
+    ): Flow<LBFlowResult<Unit>> = flow<LBFlowResult<Unit>> {
+        ZipOutputStream(BufferedOutputStream(outputZipFileStream)).use { outStream ->
+            zip(zipDestStream = outStream, sourceFile = inputFolder, parentFile = null, archiveName = null)
+        }
+        if (deleteFiles) {
             // Delete zipped files except the zip itself.
-            folderToZip.listFiles()?.forEach { fileToDelete ->
+            inputFolder.listFiles()?.forEach { fileToDelete ->
                 fileToDelete.deleteRecursively()
             }
-            emit(LBFlowResult.Success(Unit))
-        } catch (e: Exception) {
-            emit(LBFlowResult.Failure(OSDomainError(code = OSDomainError.Code.ZIP_FAILURE, cause = e)))
         }
+        emit(LBFlowResult.Success(Unit))
+    }.catch { e ->
+        emit(LBFlowResult.Failure(OSDomainError(code = OSDomainError.Code.ZIP_FAILURE, cause = e)))
     }.flowOn(fileDispatcher)
 
-    private fun <T : Any> FlowCollector<LBFlowResult<T>>.zip(
+    private fun zip(
         zipDestStream: ZipOutputStream,
         sourceFile: File,
         parentFile: File?,

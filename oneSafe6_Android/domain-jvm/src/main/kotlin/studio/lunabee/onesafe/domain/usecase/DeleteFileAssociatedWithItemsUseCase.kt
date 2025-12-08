@@ -63,7 +63,7 @@ class DeleteFileAssociatedWithItemsUseCase @Inject constructor(
             // Iterate over value/kind pairs to delete
             encValueKindPairs.forEach kinds@{ (field, strKind) ->
                 val kind = strKind?.let(SafeItemFieldKind::fromString) ?: return@kinds
-                if (SafeItemFieldKind.isKindFile(kind)) {
+                if (kind.isKindFile()) {
                     field.encValue?.let {
                         val plainValue = cryptoRepository.decrypt(itemKey, DecryptEntry(it, String::class))
                         val fileId = plainValue.substringBefore(Constant.FileTypeExtSeparator)

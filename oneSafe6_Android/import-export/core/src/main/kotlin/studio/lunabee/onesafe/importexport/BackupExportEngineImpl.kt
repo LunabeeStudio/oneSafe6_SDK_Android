@@ -38,6 +38,7 @@ import studio.lunabee.onesafe.importexport.engine.BackupExportEngine
 import studio.lunabee.onesafe.importexport.engine.ExportEngine
 import studio.lunabee.onesafe.importexport.model.ExportData
 import studio.lunabee.onesafe.importexport.model.ExportInfo
+import studio.lunabee.onesafe.importexport.model.ExportSuccessResult
 import studio.lunabee.onesafe.importexport.usecase.CreateBackupInfoUseCase
 import java.io.File
 import java.time.format.DateTimeFormatter
@@ -61,7 +62,7 @@ class BackupExportEngineImpl @Inject constructor(
         data: ExportData,
         archiveKind: OSArchiveKind,
         safeId: SafeId,
-    ): Flow<LBFlowResult<Unit>> = flow {
+    ): Flow<LBFlowResult<ExportSuccessResult>> = flow {
         val exportInfoResult: LBResult<ExportInfo> = OSError.runCatching {
             ExportInfo(
                 archiveMasterKey = null,

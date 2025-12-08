@@ -28,7 +28,7 @@ import java.util.UUID
 interface IconRepository {
     fun getIcon(iconId: String): File
 
-    fun getIcons(iconsId: List<String>): List<File>
+    fun getIcons(iconsId: List<String>): Set<File>
 
     suspend fun addIcon(iconId: UUID, icon: ByteArray, safeId: SafeId): File
 
@@ -37,9 +37,11 @@ interface IconRepository {
     @CrossSafeData
     fun getAllIcons(): List<File>
 
-    suspend fun getIcons(safeId: SafeId): List<File>
+    suspend fun getIcons(safeId: SafeId): Set<File>
 
     suspend fun copyAndDeleteIconFile(iconFile: File, iconId: UUID, safeId: SafeId)
 
     suspend fun deleteAll(safeId: SafeId)
+
+    suspend fun saveIconRef(safeId: SafeId, iconId: UUID)
 }

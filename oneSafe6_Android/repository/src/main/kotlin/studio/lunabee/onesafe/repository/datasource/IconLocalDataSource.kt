@@ -34,11 +34,13 @@ interface IconLocalDataSource {
     @CrossSafeData
     fun getAllIcons(): List<File>
 
-    suspend fun getIcons(safeId: SafeId): List<File>
+    suspend fun getIcons(safeId: SafeId): Set<File>
 
     suspend fun copyAndDeleteIconFile(newIconFile: File, iconId: UUID, safeId: SafeId)
 
-    fun getIcons(iconsId: List<String>): List<File>
+    fun getIcons(iconsId: List<String>): Set<File>
 
     suspend fun deleteAll(safeId: SafeId)
+
+    suspend fun saveIconRef(filename: String, safeId: SafeId): File
 }

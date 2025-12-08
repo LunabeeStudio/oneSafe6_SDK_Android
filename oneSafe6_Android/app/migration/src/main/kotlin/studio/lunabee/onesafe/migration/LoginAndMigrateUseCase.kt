@@ -29,6 +29,7 @@ import studio.lunabee.onesafe.domain.repository.MainCryptoRepository
 import studio.lunabee.onesafe.domain.repository.SafeRepository
 import studio.lunabee.onesafe.domain.usecase.authentication.LoadSafeUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.LoginUseCase
+import studio.lunabee.onesafe.domain.usecase.item.RelinkFilesUseCase
 import studio.lunabee.onesafe.domain.usecase.settings.SetSecuritySettingUseCase
 import studio.lunabee.onesafe.error.OSError
 import studio.lunabee.onesafe.error.OSMigrationError
@@ -86,6 +87,7 @@ class LoginAndMigrateUseCase @Inject constructor(
     private val migrationGetSafeCryptoUseCase: MigrationGetSafeCryptoUseCase,
     private val loadSafeUseCase: LoadSafeUseCase,
     private val setSecuritySettingUseCase: SetSecuritySettingUseCase,
+    private val relinkFilesUseCase: RelinkFilesUseCase,
 ) : LoginUseCase {
 
     override suspend operator fun invoke(password: CharArray): LBResult<Unit> = withContext(dispatcher) {
@@ -182,6 +184,9 @@ class LoginAndMigrateUseCase @Inject constructor(
             if (migrationSafeData0.version != version) {
                 logger.i("Migration from v${migrationSafeData0.version} to v$version succeeded")
             }
+
+            // TODO temp always run relinkFilesUseCase until we have a better solution (found initial issue or just move it to migration)
+            runCatching { relinkFilesUseCase() }.onFailure { logger.e("Relink files failed", it) }
         } else {
             failure.getOrThrow()
         }

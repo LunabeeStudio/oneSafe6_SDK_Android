@@ -36,7 +36,7 @@ import kotlin.time.Duration
 interface MainCryptoRepository {
     suspend fun <Data : Any> decrypt(key: SafeItemKey, decryptEntry: DecryptEntry<Data>): Data
 
-    suspend fun decrypt(key: SafeItemKey, decryptEntries: List<DecryptEntry<out Any>?>): List<Any?>
+    suspend fun decrypt(key: SafeItemKey, decryptEntries: Collection<DecryptEntry<out Any>?>): List<Any?>
 
     suspend fun <Data : Any?, Output : Any> decryptWithData(
         key: SafeItemKey,

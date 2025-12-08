@@ -79,6 +79,7 @@ dependencies {
     implementation(libs.hilt.work)
     implementation(libs.lbccore)
     implementation(libs.lbcore)
+    implementation(libs.lbextensions)
     implementation(libs.lblogger)
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.navigation.compose)

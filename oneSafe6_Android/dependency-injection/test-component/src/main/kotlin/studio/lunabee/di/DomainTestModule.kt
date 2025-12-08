@@ -151,6 +151,12 @@ object DomainTestModule {
     ): File = context.cacheDir
 
     @Provides
+    @InternalDir(InternalDir.Type.Logs)
+    fun providesInternalDirLogs(
+        @InternalDir(InternalDir.Type.Cache) cacheDir: File,
+    ): File = File(cacheDir, "logs")
+
+    @Provides
     fun provideUuidProvider(): UuidProvider = IncrementalIdProvider()
 
     @Provides

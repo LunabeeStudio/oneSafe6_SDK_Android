@@ -94,6 +94,12 @@ object DomainModule {
     fun providesInternalDirCache(
         @ApplicationContext context: Context,
     ): File = context.cacheDir
+
+    @Provides
+    @InternalDir(InternalDir.Type.Logs)
+    fun providesInternalDirLogs(
+        @InternalDir(InternalDir.Type.Cache) cacheDir: File,
+    ): File = File(cacheDir, "logs")
 }
 
 @Module

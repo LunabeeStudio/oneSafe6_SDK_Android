@@ -20,16 +20,19 @@
 package studio.lunabee.onesafe.storage.dao
 
 import androidx.room.Dao
-import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Upsert
 import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.storage.model.RoomSafeFile
 import java.io.File
 
 @Dao
 interface SafeFileDao {
-    @Insert
-    suspend fun insertFile(safeFile: RoomSafeFile)
+    @Upsert
+    suspend fun upsertFile(safeFile: RoomSafeFile)
+
+    @Upsert
+    suspend fun upsertFiles(map: List<RoomSafeFile>)
 
     @Query("DELETE FROM SafeFile WHERE file = :file")
     suspend fun removeFile(file: File)

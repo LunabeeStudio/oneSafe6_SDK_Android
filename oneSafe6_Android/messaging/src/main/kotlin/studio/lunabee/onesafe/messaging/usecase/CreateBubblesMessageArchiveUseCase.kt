@@ -24,14 +24,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import studio.lunabee.messaging.domain.MessagingConstant
 import studio.lunabee.onesafe.domain.qualifier.ArchiveCacheDir
-import studio.lunabee.onesafe.importexport.usecase.ArchiveZipUseCase
+import studio.lunabee.onesafe.domain.usecase.ZipFolderUseCase
 import java.io.File
 import java.util.UUID
 import javax.inject.Inject
 
 class CreateBubblesMessageArchiveUseCase @Inject constructor(
-    private val archiveZipUseCase: ArchiveZipUseCase,
-    @ArchiveCacheDir(type = ArchiveCacheDir.Type.Message) private val archiveDir: File,
+    private val zipFolderUseCase: ZipFolderUseCase,
+    @param:ArchiveCacheDir(type = ArchiveCacheDir.Type.Message) private val archiveDir: File,
 ) {
     operator fun invoke(
         messageData: ByteArray,
@@ -49,9 +49,10 @@ class CreateBubblesMessageArchiveUseCase @Inject constructor(
         tempMessageFile.outputStream().use { it.write(messageData) }
         val messageFile = File(tempArchiveFile, MessagingConstant.MessageFileName)
         tempMessageFile.copyTo(messageFile)
-        return archiveZipUseCase(
-            folderToZip = tempArchiveFile,
+        return zipFolderUseCase(
+            inputFolder = tempArchiveFile,
             outputZipFile = finalArchiveFile,
+            deleteFiles = true,
         ).map {
             if (it !is LBFlowResult.Loading) {
                 tempArchiveFile.deleteRecursively()

@@ -49,7 +49,7 @@ class CloudAutoBackupUseCase @Inject constructor(
         archiveExtractedDirectory = archiveDir,
         safeId = safeId,
     ).transformResult { result ->
-        val backup = result.successData
+        val backup = result.successData.localBackup
         val uploadFlow = cloudBackupRepository
             .uploadBackup(backup)
             .onCompletion {

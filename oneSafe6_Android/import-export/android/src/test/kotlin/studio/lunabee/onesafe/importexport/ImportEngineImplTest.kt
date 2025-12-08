@@ -49,7 +49,6 @@ import studio.lunabee.onesafe.domain.Constant
 import studio.lunabee.onesafe.domain.model.importexport.ImportMetadata
 import studio.lunabee.onesafe.domain.model.importexport.ImportMode
 import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind
-import studio.lunabee.onesafe.domain.model.safeitem.SafeItemFieldKind.Companion.isKindFile
 import studio.lunabee.onesafe.domain.model.search.IndexWordEntry
 import studio.lunabee.onesafe.domain.model.search.ItemFieldDataToIndex
 import studio.lunabee.onesafe.domain.repository.IndexWordEntryRepository
@@ -215,7 +214,7 @@ class ImportEngineImplTest : OSHiltUnitTest() {
 
                     safeItemField.encKind?.let {
                         val kind = decryptUseCase(it, safeItem.id, String::class).data
-                        if (isKindFile(SafeItemFieldKind.fromString(kind!!))) {
+                        if (SafeItemFieldKind.fromString(kind!!).isKindFile()) {
                             val file = fileRepository
                                 .getFile(fileId = value.substringBefore(Constant.FileTypeExtSeparator))
                             file.inputStream().use { inputStream ->
