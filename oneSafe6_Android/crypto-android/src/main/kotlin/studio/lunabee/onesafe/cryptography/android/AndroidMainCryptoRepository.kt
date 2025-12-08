@@ -352,7 +352,10 @@ class AndroidMainCryptoRepository @Inject constructor(
         }
     }
 
-    override suspend fun decrypt(key: SafeItemKey, decryptEntries: List<DecryptEntry<out Any>?>): List<Any?> = withContext(dispatcher) {
+    override suspend fun decrypt(
+        key: SafeItemKey,
+        decryptEntries: Collection<DecryptEntry<out Any>?>,
+    ): List<Any?> = withContext(dispatcher) {
         try {
             crypto.decrypt(key.encValue, masterKey!!, null).getOrThrow().use { rawKey ->
                 decryptEntries.map { decryptEntry ->

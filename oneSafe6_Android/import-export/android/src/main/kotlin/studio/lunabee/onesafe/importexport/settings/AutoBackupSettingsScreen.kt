@@ -55,6 +55,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.zIndex
 import androidx.core.app.ActivityCompat
@@ -269,6 +270,7 @@ private fun AutoBackupSettingsScreen(
     snackbarHostState: SnackbarHostState,
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val coroutineScope = rememberCoroutineScope()
     val mainCardUiState = if (uiState.isAutoBackupEnabled) {
         var isAutoBackupFrequencyBottomSheetVisible by rememberSaveable { mutableStateOf(value = false) }
@@ -359,7 +361,7 @@ private fun AutoBackupSettingsScreen(
                             } else {
                                 coroutineScope.launch {
                                     snackbarHostState.showSnackbar(
-                                        context.getString(OSString.settings_autoBackupScreen_restore_noBackupMessage),
+                                        resources.getString(OSString.settings_autoBackupScreen_restore_noBackupMessage),
                                     )
                                 }
                             }

@@ -415,7 +415,7 @@ class ImportEngineImpl @Inject constructor(
                 Constant.ThumbnailPlaceHolderName.toByteArray(),
                 decryptedKey,
             )
-            if (SafeItemFieldKind.isKindFile(itemFieldKind)) {
+            if (itemFieldKind.isKindFile()) {
                 val decryptedValue = importCryptoRepository
                     .decrypt(
                         cipherData = archiveSafeItemField.encValue.toByteArray(),

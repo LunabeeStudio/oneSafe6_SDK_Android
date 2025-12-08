@@ -24,7 +24,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import studio.lunabee.compose.core.LbcTextSpec
 import studio.lunabee.onesafe.atom.OSSmallSpacer
@@ -60,8 +60,7 @@ fun AutoBackupSettingsInformationCard(
                     text = LbcTextSpec.StringResource(OSString.settings_autoBackupScreen_informations_noBackups),
                 )
             } else {
-                val context = LocalContext.current
-                val locale = Locale(context.getString(OSString.locale_lang))
+                val locale = Locale.forLanguageTag(stringResource(OSString.locale_lang))
                 val backupCount = latestBackups.count()
                 Column(verticalArrangement = Arrangement.spacedBy(OSDimens.SystemSpacing.Small)) {
                     latestBackups.local?.date?.let { date ->

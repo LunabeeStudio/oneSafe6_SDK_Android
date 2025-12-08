@@ -36,6 +36,7 @@ import studio.lunabee.onesafe.domain.repository.SafeItemFieldRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemKeyRepository
 import studio.lunabee.onesafe.domain.repository.SafeItemRepository
 import studio.lunabee.onesafe.domain.repository.SafeRepository
+import studio.lunabee.onesafe.domain.usecase.ZipFolderUseCase
 import studio.lunabee.onesafe.domain.usecase.item.ItemDecryptUseCase
 import studio.lunabee.onesafe.importexport.engine.ShareExportEngine
 import studio.lunabee.onesafe.importexport.model.ExportData
@@ -55,7 +56,7 @@ class ExportShareUseCase @Inject constructor(
     private val iconRepository: IconRepository,
     private val decryptUseCase: ItemDecryptUseCase,
     private val fileRepository: FileRepository,
-    private val archiveZipUseCase: ArchiveZipUseCase,
+    private val zipFolderUseCase: ZipFolderUseCase,
     private val mainCryptoRepository: MainCryptoRepository,
     private val clock: Clock,
     private val safeRepository: SafeRepository,
@@ -87,7 +88,7 @@ class ExportShareUseCase @Inject constructor(
 
         val fileIdList = safeItemFields.mapNotNull { field ->
             val kind = field.encKind?.let { kind -> decryptUseCase(kind, field.itemId, String::class).data }
-            kind?.takeIf { SafeItemFieldKind.isKindFile(SafeItemFieldKind.fromString(kind)) }?.let {
+            kind?.takeIf { SafeItemFieldKind.fromString(kind).isKindFile() }?.let {
                 field.encValue?.let { encValue ->
                     decryptUseCase(encValue, field.itemId, String::class)
                         .data
@@ -118,9 +119,10 @@ class ExportShareUseCase @Inject constructor(
                         is LBFlowResult.Failure -> flowOf(LBFlowResult.Failure(throwable = result.throwable))
                         is LBFlowResult.Loading -> flowOf(LBFlowResult.Loading(progress = result.progress))
                         // Zip if creation is success. Will return the progress of zip.
-                        is LBFlowResult.Success -> archiveZipUseCase(
-                            folderToZip = archiveExtractedDirectory,
+                        is LBFlowResult.Success -> zipFolderUseCase(
+                            inputFolder = archiveExtractedDirectory,
                             outputZipFile = File(archiveExtractedDirectory, buildArchiveName(clock)),
+                            deleteFiles = true,
                         )
                     }
                 },

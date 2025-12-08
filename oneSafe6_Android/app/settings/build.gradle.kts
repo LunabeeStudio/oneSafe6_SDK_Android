@@ -39,6 +39,7 @@ dependencies {
 
     implementation(libs.datastore)
     implementation(libs.datastore.preferences)
+    implementation(libs.hilt.android)
     implementation(libs.kotlinx.serialization.protobuf)
     implementation(libs.lbcore)
     implementation(libs.lbextensions)

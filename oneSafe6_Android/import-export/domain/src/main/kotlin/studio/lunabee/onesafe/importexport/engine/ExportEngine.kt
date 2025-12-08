@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.Flow
 import studio.lunabee.onesafe.domain.model.importexport.OSArchiveKind
 import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.importexport.model.ExportData
+import studio.lunabee.onesafe.importexport.model.ExportSuccessResult
 import java.io.File
 
 interface ExportEngine {
@@ -32,7 +33,7 @@ interface ExportEngine {
         data: ExportData,
         archiveKind: OSArchiveKind,
         safeId: SafeId,
-    ): Flow<LBFlowResult<Unit>>
+    ): Flow<LBFlowResult<ExportSuccessResult>>
 }
 
 interface ShareExportEngine : ExportEngine {

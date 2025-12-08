@@ -31,5 +31,7 @@ object ImportExportConstant {
     val ArchiveTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HHmmss")
     val ArchiveDateFormatter: DateTimeFormatter = DateTimeFormatter.BASIC_ISO_DATE
 
+    const val BackupLogFilename: String = "last_backup.log"
+
     fun isOS6Extension(extension: String): Boolean = extension == ExtensionOs6Backup || extension == ExtensionOs6Sharing
 }

@@ -49,12 +49,12 @@ class LocalAutoBackupUseCase @Inject constructor(
             is LBFlowResult.Failure -> LBFlowResult.Failure(throwable = result.throwable)
             is LBFlowResult.Loading -> LBFlowResult.Loading(progress = result.progress)
             is LBFlowResult.Success -> {
-                val backup = result.successData
+                val localBackup = result.successData.localBackup
                 val moveResult = OSError
                     .runCatching {
-                        backupRepository.addBackup(backup)
+                        backupRepository.addBackup(localBackup)
                     }.asFlowResult()
-                backup.file.delete()
+                localBackup.file.delete()
                 moveResult
             }
         }

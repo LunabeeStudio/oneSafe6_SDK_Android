@@ -33,7 +33,9 @@ data class OSImportExportError(
         EXPORT_METADATA_FAILURE("Fail to export metadata"),
         EXPORT_DATA_FAILURE("Fail to export data"),
         EXPORT_ICON_FAILURE("Fail to export icons"),
-        EXPORT_FILE_FAILURE("Fail to export files"),
+        EXPORT_FILE_ICON_NOT_FOUND("Icon file not found in storage for export"),
+        EXPORT_FILE_FIELD_FILE_NOT_FOUND("Field file not found in storage for export"),
+        EXPORT_FILE_UNKNOWN_FAILURE("Fail to export files"),
         WRONG_CREDENTIALS("Wrong credentials"),
         UNEXPECTED_ERROR("Unexpected error occurred"),
         METADATA_NOT_IN_CACHE("Metadata not in cache"),
@@ -46,5 +48,7 @@ data class OSImportExportError(
         CANNOT_OPEN_STREAM_WITHOUT_SAFE_ID("Unable to open a stream without loaded safe id"),
         MISSING_MAPPED_BACKUP_ICON("Missing new mapped id for icon"),
         MISSING_MAPPED_BACKUP_FILE("Missing new mapped id for file"),
+        BACKUP_SANITY_CHECK_RECOVERABLE_ERROR_FOUND("Sanity check found recoverable errors during backup"),
+        BACKUP_SANITY_CHECK_ERROR_FOUND("Sanity check found errors during backup"),
     }
 }

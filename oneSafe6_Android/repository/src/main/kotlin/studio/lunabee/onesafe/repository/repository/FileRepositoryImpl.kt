@@ -21,6 +21,7 @@ package studio.lunabee.onesafe.repository.repository
 
 import studio.lunabee.onesafe.domain.model.safe.SafeId
 import studio.lunabee.onesafe.domain.repository.FileRepository
+import studio.lunabee.onesafe.domain.utils.CrossSafeData
 import studio.lunabee.onesafe.repository.datasource.FileLocalDatasource
 import java.io.File
 import java.io.InputStream
@@ -43,15 +44,9 @@ class FileRepositoryImpl @Inject constructor(
         filename = filename,
     )
 
-    override fun getFiles(filesId: List<String>): List<File> = fileLocalDatasource.getFiles(filesId)
+    override fun getFiles(filesId: List<String>): Set<File> = fileLocalDatasource.getFiles(filesId)
 
-    override suspend fun getFiles(safeId: SafeId): List<File> = fileLocalDatasource.getAllFiles(safeId)
-
-    override suspend fun addFile(fileId: UUID, file: ByteArray, safeId: SafeId): File = fileLocalDatasource.addFile(
-        filename = fileId.toString(),
-        file = file,
-        safeId = safeId,
-    )
+    override suspend fun getFiles(safeId: SafeId): Set<File> = fileLocalDatasource.getAllFiles(safeId)
 
     override suspend fun deleteFile(fileId: UUID): Boolean = fileLocalDatasource.deleteFile(fileId.toString())
 
@@ -77,9 +72,19 @@ class FileRepositoryImpl @Inject constructor(
             isFullWidth,
         )
 
-    override suspend fun deleteAll(safeId: SafeId) = fileLocalDatasource.deleteAll(safeId)
+    override suspend fun deleteAll(safeId: SafeId): Unit = fileLocalDatasource.deleteAll(safeId)
 
     override suspend fun deletePlainFilesCacheDir() {
         fileLocalDatasource.deletePlainFilesCacheDir()
     }
+
+    override suspend fun saveFilesRef(
+        safeId: SafeId,
+        relinkFiles: List<String>,
+    ): List<File> {
+        return fileLocalDatasource.saveFilesRef(safeId, relinkFiles)
+    }
+
+    @CrossSafeData
+    override suspend fun getAllFiles(): Set<File> = fileLocalDatasource.getAllFiles()
 }

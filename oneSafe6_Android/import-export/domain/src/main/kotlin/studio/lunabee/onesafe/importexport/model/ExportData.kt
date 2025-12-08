@@ -30,8 +30,8 @@ import java.io.File
 class ExportData(
     val safeItemsWithKeys: Map<ExportItem, SafeItemKey>,
     val safeItemFields: List<SafeItemField>,
-    val icons: List<File>,
-    val files: List<File>,
+    val icons: Set<File>,
+    val files: Set<File>,
     val bubblesContactsWithKey: Map<Contact, ContactLocalKey>,
     val bubblesConversation: List<EncConversation>,
     val bubblesMessages: List<SafeMessage>,

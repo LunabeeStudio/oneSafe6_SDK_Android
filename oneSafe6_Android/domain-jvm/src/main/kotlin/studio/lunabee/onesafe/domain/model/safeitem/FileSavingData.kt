@@ -23,7 +23,25 @@ import java.io.InputStream
 import java.util.UUID
 
 sealed interface FileSavingData {
-    data class ToRemove(val fileId: UUID, val encThumbnailFileName: ByteArray?) : FileSavingData
+    data class ToRemove(val fileId: UUID, val encThumbnailFileName: ByteArray?) : FileSavingData {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as ToRemove
+
+            if (fileId != other.fileId) return false
+            if (!encThumbnailFileName.contentEquals(other.encThumbnailFileName)) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = fileId.hashCode()
+            result = 31 * result + (encThumbnailFileName?.contentHashCode() ?: 0)
+            return result
+        }
+    }
 
     data class ToSave(
         val fileId: UUID,

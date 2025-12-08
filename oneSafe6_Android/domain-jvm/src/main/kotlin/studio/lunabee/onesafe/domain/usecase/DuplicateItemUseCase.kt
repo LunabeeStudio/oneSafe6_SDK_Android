@@ -248,6 +248,7 @@ class DuplicateItemUseCase @Inject constructor(
                     } catch (e: Throwable) {
                         // If error, remove file, don't save the field
                         fileRepository.deleteFile(newFileId)
+                        log.e(e)
                         return@mapNotNull null
                     }
                     val newValue = "$newFileId${Constant.FileTypeExtSeparator}${data.value.substringAfter(Constant.FileTypeExtSeparator)}"

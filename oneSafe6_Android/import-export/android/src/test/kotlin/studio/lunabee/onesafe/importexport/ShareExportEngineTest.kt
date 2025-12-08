@@ -79,8 +79,8 @@ class ShareExportEngineTest : OSHiltUnitTest() {
         val data = ExportData(
             safeItemsWithKeys = emptyMap(),
             safeItemFields = emptyList(),
-            icons = emptyList(),
-            files = emptyList(),
+            icons = emptySet(),
+            files = emptySet(),
             bubblesContactsWithKey = mapOf(),
             bubblesConversation = emptyList(),
             bubblesMessages = emptyList(),
@@ -101,8 +101,8 @@ class ShareExportEngineTest : OSHiltUnitTest() {
         val data = ExportData(
             safeItemsWithKeys = emptyMap(),
             safeItemFields = emptyList(),
-            icons = emptyList(),
-            files = emptyList(),
+            icons = emptySet(),
+            files = emptySet(),
             bubblesContactsWithKey = mapOf(),
             bubblesConversation = emptyList(),
             bubblesMessages = emptyList(),

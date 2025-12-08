@@ -12,7 +12,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/os_file_path" />
+                android:resource="@xml/os_messaging_cache_path" />
         </provider>
 
     </application>

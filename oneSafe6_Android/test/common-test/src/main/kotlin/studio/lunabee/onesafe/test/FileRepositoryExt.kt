@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Lunabee Studio
+ * Copyright (c) 2025-2025 Lunabee Studio
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by Lunabee Studio / Date - 10/5/2023 - for the oneSafe6 SDK.
- * Last modified 10/5/23, 9:51 AM
+ * Created by Lunabee Studio / Date - 11/21/2025 - for the oneSafe6 SDK.
+ * Last modified 11/21/25, 11:34 AM
  */
 
-package studio.lunabee.onesafe.domain.qualifier
+package studio.lunabee.onesafe.test
 
-import javax.inject.Qualifier
+import studio.lunabee.onesafe.domain.model.safe.SafeId
+import studio.lunabee.onesafe.domain.repository.FileRepository
+import java.io.File
+import java.util.UUID
 
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class InternalDir(val type: Type) {
-    enum class Type {
-        Backups,
-        Cache,
-        Logs,
-    }
+suspend fun FileRepository.addFile(
+    fileId: UUID,
+    data: ByteArray,
+    safeId: SafeId,
+): File {
+    val file = createFile(fileId.toString(), safeId)
+    file.writeBytes(data)
+    return file
 }

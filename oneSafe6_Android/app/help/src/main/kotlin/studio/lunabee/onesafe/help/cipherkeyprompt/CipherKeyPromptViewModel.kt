@@ -2,7 +2,6 @@ package studio.lunabee.onesafe.help.cipherkeyprompt
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lunabee.lbcore.model.LBResult
@@ -26,6 +25,7 @@ import studio.lunabee.onesafe.commonui.utils.OSProcessPhoenix
 import studio.lunabee.onesafe.domain.usecase.authentication.FinishSetupDatabaseEncryptionUseCase
 import studio.lunabee.onesafe.domain.usecase.authentication.SetDatabaseKeyUseCase
 import javax.inject.Inject
+import androidx.core.net.toUri
 
 private val logger = LBLogger.get<CipherKeyPromptViewModel>()
 
@@ -90,7 +90,7 @@ class CipherKeyPromptViewModel @Inject constructor(
     }
 
     private fun openDiscord(context: Context) {
-        val discordIntent = Intent(Intent.ACTION_VIEW, Uri.parse(CommonUiConstants.ExternalLink.Discord))
+        val discordIntent = Intent(Intent.ACTION_VIEW, CommonUiConstants.ExternalLink.Discord.toUri())
         context.startActivity(discordIntent)
     }
 

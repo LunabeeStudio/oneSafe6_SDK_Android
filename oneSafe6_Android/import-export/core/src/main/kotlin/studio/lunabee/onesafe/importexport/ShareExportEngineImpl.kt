@@ -34,6 +34,7 @@ import studio.lunabee.onesafe.importexport.engine.ExportEngine
 import studio.lunabee.onesafe.importexport.engine.ShareExportEngine
 import studio.lunabee.onesafe.importexport.model.ExportData
 import studio.lunabee.onesafe.importexport.model.ExportInfo
+import studio.lunabee.onesafe.importexport.model.ExportSuccessResult
 import studio.lunabee.onesafe.importexport.repository.ImportExportCryptoRepository
 import studio.lunabee.onesafe.importexport.usecase.CreateBackupInfoUseCase
 import java.io.File
@@ -76,7 +77,7 @@ class ShareExportEngineImpl @Inject constructor(
         data: ExportData,
         archiveKind: OSArchiveKind,
         safeId: SafeId, // TODO <multisafe> unused? (unneeded?)
-    ): Flow<LBFlowResult<Unit>> {
+    ): Flow<LBFlowResult<ExportSuccessResult>> {
         val exportInfo = exportInfo
             ?: return flowOf(LBFlowResult.Failure(OSImportExportError(OSImportExportError.Code.ENGINE_NOT_PREPARED)))
         return createExportArchiveContent(

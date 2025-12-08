@@ -43,13 +43,17 @@ class IconRepositoryImpl @Inject constructor(
     @CrossSafeData
     override fun getAllIcons(): List<File> = iconLocalDataSource.getAllIcons()
 
-    override suspend fun getIcons(safeId: SafeId): List<File> = iconLocalDataSource.getIcons(safeId)
+    override suspend fun getIcons(safeId: SafeId): Set<File> = iconLocalDataSource.getIcons(safeId)
 
     override suspend fun copyAndDeleteIconFile(iconFile: File, iconId: UUID, safeId: SafeId) {
         iconLocalDataSource.copyAndDeleteIconFile(newIconFile = iconFile, iconId = iconId, safeId = safeId)
     }
 
-    override fun getIcons(iconsId: List<String>): List<File> = iconLocalDataSource.getIcons(iconsId)
+    override fun getIcons(iconsId: List<String>): Set<File> = iconLocalDataSource.getIcons(iconsId)
 
     override suspend fun deleteAll(safeId: SafeId): Unit = iconLocalDataSource.deleteAll(safeId)
+
+    override suspend fun saveIconRef(safeId: SafeId, iconId: UUID) {
+        iconLocalDataSource.saveIconRef(iconId.toString(), safeId)
+    }
 }
