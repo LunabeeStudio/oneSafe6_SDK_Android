@@ -124,19 +124,19 @@ class RelinkFilesUseCase @Inject constructor(
                                 .orEmpty()
                             missingRefCount += relinkFiles.size
                         }
-
-                        item.iconId?.let { iconId ->
-                            runCatching { iconRepository.saveIconRef(safeId, iconId) } // also re-link icon just in case
-                                .onFailure {
-                                    appendLog("❌ Save icon ref failed", it)
-                                }
-                                .onSuccess {
-                                    appendLog("✅ Relink icon $iconId")
-                                }
-                        }
                     }
                 }.onFailure {
                     appendLog("❌ Relink algo for item ${item.id} failed", it)
+                }
+
+                item.iconId?.let { iconId ->
+                    runCatching { iconRepository.saveIconRef(safeId, iconId) } // also re-link icon just in case
+                        .onFailure {
+                            appendLog("❌ Save icon ref failed", it)
+                        }
+                        .onSuccess {
+                            appendLog("✅ Relink icon $iconId")
+                        }
                 }
             }
 
